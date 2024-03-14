@@ -1,0 +1,9 @@
+					Arrays Module
+					2023-09-21
+
+"Container" classes for arrays of dimensions 1, 2, 2.5, 3, 4 and n.
+They handle the memory allocation and elements access.
+They all make use of the TMemory class, which optimally allocates
+memory on the most convenient place, but usually the virtual memory.
+
+These are header-only files, just include it into your source files.
