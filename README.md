@@ -1,7 +1,9 @@
 # ![CartoolGitHubLogo5](https://github.com/DenisBrunet/Cartool/assets/145106558/60ad91e9-8f4b-4765-a68b-b6b4c7c14af3)
-**Cartool** is a software primarily designed as a scientific tool for the analysis of EEG data. It facilitates real-time interaction with EEG, electrodes, and MRI data. The software encompasses a variety of tools, including preprocessing for EEG, electrodes, and MRI, frequency analysis, micro-states analysis, and electrical source imaging.
+**Cartool** is a software primarily designed as a scientific tool tailored for the **visualization and analysis of EEG data**, encompassing full recordings, resting states, evoked responses, intra-cranial activity, and more.
 
-Programmed in C++ for Windows, Cartool boasts minimal dependencies and has been continuously developed since 1996, showcasing its sustained commitment to enhancement and refinement.
+It enables seamless real-time integration of diverse modalities such as EEG, electrodes, and MRI. Offering an array of tools, including preprocessing for EEG, electrodes, and MRI, as well as frequency and micro-states analysis, and electrical source imaging.
+
+Developed in C++ for Windows, Cartool is highly optimized for parallel processing, has a very small memory print, and very few dependencies. It has been undergoing continuous development since 1996, thanks to the [_Functional Brain Mapping_](https://neurocenter-unige.ch/research-groups/christoph-michel/), Geneva, and [_CIBM_](https://www.cibm.ch), Lausanne.
 
 ## Prerequisites
 - Windows 7 and above
