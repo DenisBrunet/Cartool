@@ -6,7 +6,7 @@ Programmed in C++ for Windows, Cartool boasts minimal dependencies and has been 
 ## Prerequisites
 - Windows 7 and above
 - Recommended 8 CPU cores or above
-- Recommneded 8 GB of RAM or above
+- Recommended 8 GB of RAM or above
 - SSD disks recommended
 
 ## Installation
