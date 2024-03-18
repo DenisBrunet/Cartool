@@ -1,0 +1,17 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+
+#define BeginBytePacking
+#define EndBytePacking
+
+#define EV_COMMAND(id, method)
+//#define EV_COMMAND(id, method) OWL_ID_EV_GENERIC_(WM_COMMAND, 0, id, method, ::owl::TDispatchCommand)
+//#define EV_COMMAND(id, method) {{0}, static_cast<::owl::uint>(id), OWL_DISPATCH(::owl::DispatchCommand, method)}
+
+#define EV_COMMAND_AND_ID(id, method)
+//#define EV_COMMAND_AND_ID(id, method) OWL_ID_EV_GENERIC_(WM_COMMAND, 0, id, method, ::owl::TDispatchCommandWithId)
+//#define EV_COMMAND_AND_ID(id, method) {{0}, static_cast<::owl::uint>(id), OWL_DISPATCH(::owl::DispatchCommandWithId, method)}
+
+#define EV_COMMAND_ENABLE(id, method)
+//#define EV_COMMAND_ENABLE(id, method) OWL_ID_EV_(WM_COMMAND_ENABLE, id, method)

@@ -1,0 +1,1805 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Src\App\TCartoolApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TCartoolAboutDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\App\TCartoolMdiChild.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\App\TCartoolMdiClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\App\TCartoolDocManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TBaseDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TElectrodesDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TFreqDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TVolumeDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TTracksDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegBIDMC128Doc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegBiosemiBdfDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegBioLogicDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegBrainVisionDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegMIDDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegCartoolEpDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegEgiRawDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegNeuroscanCntDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegERPSSRdfDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegCartoolSefDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegMicromedTrcDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TFreqCartoolDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TLinkManyDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TInverseMatrixDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TVolumeAnalyzeDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TVolumeAvsDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TVolumeNiftiDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TVolumeVmrDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TRisDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TRoisDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TSegDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TSolutionPointsDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TXyzDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TBaseView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TFrequenciesView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TInverseView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TLinkManyView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TInverseMatrixView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TPotentialsView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TRoisView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TSolutionPointsView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TTracksView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TVolumeView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TElectrodesView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Files.Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Math.Histo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Geometry.TPoints.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Math.Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\OpenGL\OpenGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\OpenGL\OpenGL.Colors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\OpenGL\OpenGL.Geometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\OpenGL\OpenGL.Lighting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\OpenGL\OpenGL.Texture3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\OpenGL\OpenGL.Drawing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\OpenGL\OpenGL.Font.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\TSelection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Math.Stats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Strings.Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\System.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\CartoolTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\BadEpochs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\TTFCursor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Volumes\Volumes.SagittalTransversePlanes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\TExportTracks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Volumes\TExportVolume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\Files.Conversions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\GlobalOptimize\GlobalOptimize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\GlobalOptimize\GlobalOptimize.Points.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\GlobalOptimize\GlobalOptimize.Tracks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\GlobalOptimize\GlobalOptimize.Volumes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\TMaps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\TRois.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Volumes\ComputingTemplateMri.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Volumes\TVolumeRegions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Volumes\TVolume.SkullStripping.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Volumes\TVolume.TissuesSegmentation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TBaseDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TLabeling.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TMicroStatesSegDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TMicroStatesFitDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\Files.BatchAveragingFiles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TComputingRisDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Volumes\Volumes.Coregistration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\CorrelateFiles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TCreateInverseMatricesDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TCreateRoisDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TFileCalculatorDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TTracksFiltersDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TFrequencyAnalysisDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\GenerateData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\ICA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\PCA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\Files.PreProcessFiles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TPreprocessMrisDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TRisToVolumeDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TStatisticsDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TTracksAveragingDialogs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TExportTracksDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TInterpolateTracksDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Geometry.TDisplaySpaces.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\ExtractElectrodesFromKriosUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ESI\ESI.HeadSphericalModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ESI\ESI.InverseModels.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ESI\ESI.LeadFields.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ESI\ESI.SolutionPoints.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ESI\ESI.TissuesConductivities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ESI\ESI.TissuesThicknesses.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TCoregistrationDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\BuildTemplateElectrodesUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Math.Armadillo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Math.TMatrix44.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Math.Random.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Math.Resampling.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Math.FFT.MKL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Volumes\Volumes.TTalairachOracle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Volumes\Volumes.AAL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Geometry.TOrientation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Geometry.TGeometryTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\TMarkers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Strings.Grep.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Strings.TStrings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Strings.TSplitStrings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Strings.TStringsMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Files.TGoF.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Dialogs.Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Dialogs.TSuperGauge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Files.ReadFromHeader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TElsDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TSpiDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TSxyzDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TLocDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TLeadField.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TMatrixIsDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TMatrixSpinvDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegNeuroscanAvgDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegEgiNsrDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Docs\TEegEgiMffDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TGlobalOpenGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TSecondaryView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Views\TTracksViewScrollbar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\TScanTriggersDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\App\TCartoolVersionInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\AnalyzeGeneratedDataUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\GenerateDataUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\GenerateOscillatingDataUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\GenerateRandomDataUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\GenerateOscillatingData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\GenerateRandomData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Electrodes\Electrodes.BuildTemplateElectrodes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\DownsamplingElectrodesUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Electrodes\Electrodes.ExtractElectrodesFromKrios.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\BrainToSolutionPointsUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\BatchProcessMrisUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\MergingMriMasksUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Volumes\MergingMriMasks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Electrodes\Electrodes.Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\CoregistrationMrisUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\ComputingTemplateMriUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\BatchAveragingFilesUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\ComputeCentroidFilesUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\ComputeCentroidFiles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\CorrelateFilesUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\PCA_ICA_UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\SplitFreqFilesUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\MergeTracksToFreqFilesUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\FilesConversionVrbToTvaUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Dialogs\RisToCloudVectorsUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\TParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\FileCalculator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ESI\ESI.ComputingRis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Electrodes\Electrodes.TransformElectrodes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\GenerateRois.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\ReprocessTracks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ESI\ESI.RisToVolume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Volumes\PreprocessMris.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\TInterpolateTracks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Math.Statistics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Tracks\FrequencyAnalysis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.ClusteringKMeans.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.ClusteringCriteria.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.SmoothingLabeling.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.RejectSmallSegments.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.SequentializeSegments.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.MergeCorrelatedSegments.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.RejectLowCorrelation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.ReorderingSegments.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.ClusteringMetaCriterion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.Segmentation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.BackFitting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MicroStates\TMicroStates.ClusteringTAAHC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Geometry.TTriangleSurface.ComputeIsoSurfaceMinecraft.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Geometry.TTriangleSurface.ComputeIsoSurfaceMarchingCube.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Geometry.TTriangleSurface.ComputeIsoSurfaceBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Geometry.TTriangleNetwork.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Geometry.TTriangleSurface.IsosurfaceFromVolume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Utils\Geometry.TTriangleSurface.SurfaceThroughPoints.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Src\Docs\TBaseDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TElectrodesDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TFreqDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TInverseResults.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TVolumeDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TTracksDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegBIDMC128Doc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegBiosemiBdfDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegBioLogicDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegBrainVisionDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegMIDDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegCartoolEpDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegEgiRawDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegNeuroscanCntDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegERPSSRdfDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegCartoolSefDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegMicromedTrcDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TFreqCartoolDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TLinkManyDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TInverseMatrixDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TVolumeAnalyzeDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TVolumeAvsDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TVolumeNiftiDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TVolumeVmrDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TRisDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TRoisDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TSegDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TSolutionPointsDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TXyzDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TBaseView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TFrequenciesView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TInverseView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TLinkManyView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TInverseMatrixView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TPotentialsView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TRoisView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TSolutionPointsView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TTracksView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TVolumeView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TElectrodesView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TBaseDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\MicroStates\TMicroStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\MicroStates\TLabeling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TMicroStatesSegDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TMicroStatesFitDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\Files.BatchAveragingFiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TComputingRisDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\Volumes.Coregistration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\CorrelateFiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TCreateInverseMatricesDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TCreateRoisDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TFileCalculatorDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TTracksFiltersDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TFrequencyAnalysisDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\GenerateData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\ICA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\PCA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\Files.PreProcessFiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TPreprocessMrisDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TRisToVolumeDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TStatisticsDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TTracksAveragingDialogs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TExportTracksDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TInterpolateTracksDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Geometry.TDisplaySpaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\BadEpochs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\TTFCursor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\Volumes.SagittalTransversePlanes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TExportTracks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\TExportVolume.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\Files.Conversions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TTracksFilters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\GlobalOptimize\GlobalOptimize.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\GlobalOptimize\GlobalOptimize.Points.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\GlobalOptimize\GlobalOptimize.Tracks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\GlobalOptimize\GlobalOptimize.Volumes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Geometry.TTriangleSurface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TMaps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\TRois.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\ComputingTemplateMri.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Arrays\TArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Arrays\TArray1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Arrays\TArray2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Arrays\TSetArray2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Arrays\TArray3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Arrays\TArray4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Arrays\TArrayM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\TVolume.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\TVolume.Drawing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\TVolume.Filters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\TVolume.Gradients.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\TVolume.Masks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\TVolume.Morphology.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\TVolume.Regions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\TVolume.ReadWrite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\TVolumeRegions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\TCacheVolumes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\Volumes.AnalyzeNifti.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\Files.Format.Analyze7.5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\Files.Format.nifti1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\Files.Format.nifti2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Files.Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TFilters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Math.Histo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\TInterval.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\TLimits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\TList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Geometry.TPoints.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Math.Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\OpenGL\OpenGL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\OpenGL\OpenGL.Colors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\OpenGL\OpenGL.Geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\OpenGL\OpenGL.Lighting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\OpenGL\OpenGL.Texture3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\OpenGL\OpenGL.Drawing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\OpenGL\OpenGL.Font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\TSelection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Math.Stats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Strings.Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\System.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Time.Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\CartoolTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\TVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\res\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TCartoolAboutDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\App\TCartoolMdiClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\App\TCartoolApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Files.Extensions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\App\TCartoolMdiChild.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\App\TCartoolDocManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\App\SubWCRev.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\MemUtil\MemUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\ESI\ESI.HeadSphericalModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\ESI\ESI.InverseModels.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\ESI\ESI.LeadFields.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\ESI\ESI.SolutionPoints.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\ESI\ESI.TissuesConductivities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\ESI\ESI.TissuesThicknesses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\WindowingUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TCoregistrationDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Math.Armadillo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Math.FFT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Math.TMatrix44.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Math.Random.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Math.Resampling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Math.FFT.MKL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\System.OpenMP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Geometry.TBoundingBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TTracks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Geometry.TPoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Geometry.TDipole.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Geometry.TVertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\TWeightedPoints.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\Volumes.TTalairachOracle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\Volumes.AAL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Geometry.TOrientation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Geometry.TGeometryTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TMarkers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Files.Stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Strings.Grep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Strings.TStrings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Strings.TSplitStrings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Strings.TStringsMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Files.XML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Files.TVerboseFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Files.SpreadSheet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Files.TFindFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Files.TGoF.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Time.TTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Time.TAcceleration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Time.TDateTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TFilters.Baseline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TFilters.Envelope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TFilters.Threshold.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TFilters.Rectification.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TFilters.Ranking.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TFilters.Spatial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TFilters.Butterworth.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TFilters.Base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Dialogs.Input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Dialogs.TSuperGauge.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Files.TOpenDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Files.ReadFromHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\App\App.DocView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TElsDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TSpiDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TSxyzDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TLocDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TSplitLinkManyFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TLeadField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Files.WriteInverseMatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TMatrixIsDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TMatrixSpinvDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegNeuroscanAvgDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegEgiNsrDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Docs\TEegEgiMffDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TDisplayScaling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TGlobalOpenGL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TBaseVolumeView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TSecondaryView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TTracksViewScrollbar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TTracksViewMontage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Views\TTracksViewWindowSlots.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\TScanTriggersDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\App\TCartoolVersionInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\GenerateOscillatingData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\GenerateRandomData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Electrodes\Electrodes.BuildTemplateElectrodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Electrodes\Electrodes.ExtractElectrodesFromKrios.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\BrainToSolutionPointsUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\MergingMriMasks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Electrodes\Electrodes.Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Dialogs\CoregistrationMrisUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\ComputeCentroidFiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\TParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\FileCalculator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\ESI\ESI.ComputingRis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Electrodes\Electrodes.TransformElectrodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\TCoregistrationTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\GenerateRois.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\ReprocessTracks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\ESI\ESI.RisToVolume.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Volumes\PreprocessMris.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\TInterpolateTracks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Math.Statistics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Tracks\FrequencyAnalysis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utils\Geometry.TTriangleNetwork.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\Src\res\resource.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <None Include="..\Src\res\cur\help.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Src\res\cur\syncviews.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Src\res\cur\addtogroup.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Src\res\cur\linkview.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Src\res\cur\magnify.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Src\res\cur\operation.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <Image Include="..\Src\res\cartool.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\cartooldoc.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\eegtext.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\eegbin.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\eegsd.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\markers.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\mtg.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\tva.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\calibration.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\xyzcoord.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\mri.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\leadfld.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\invmat.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\invres.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\spcoord.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\spirr.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\linkmany.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\seg.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\data.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\freq.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\verbose.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\roi.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\CartoolSplashScreen5.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\new.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\open.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\save.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\undo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cut.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\copy.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\paste.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\find.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\findnext.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\help.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\addview.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\syncviews.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\synczero.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_exttracksv.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_comptracksv.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_exttracksh.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_comptracksh.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_up.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_down.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_lesstracks.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_moretracks.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_trackssuper.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_vertunits.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showelec.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_horizunits.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showtriangles.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rangecursor.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_stylewindow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showmin.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showmax.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_spincbright.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_spdecbright.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rgestepinc.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rgestepdec.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rangeave.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rangeseq.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rangeani.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_fixedscale.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showmarkers.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextmarker.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_prevmarker.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_spcolor.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showzero.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_lesspseudotracks.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_morepseudotracks.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showpmminmax.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_filter.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_addmarker.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showsd.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_splitwindow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_2eegs.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextis.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_prevreg.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextreg.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_resetreg.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_searchbestregglobal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_gtvfit.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_gtvkeepsize.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_gtvstandsize.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_addtogroup.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipvert.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_montage.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_lessslices.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_moreslices.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_firstslicefwd.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_firstslicebwd.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextmri.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showmri.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showis.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_lastslicebwd.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_lastslicefwd.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_findminmax.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showelnames.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextxyz.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_quadrant.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_segment.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_fitsegment.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_filling.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextsession.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipx.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipy.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipz.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipxy.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipxz.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipyz.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flatview.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_2object.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_cutplanex.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_cutplaney.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_cutplanez.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_surfacemode.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_cutplanemode.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_solpshownames.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_capping.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_pairview.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_orient.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_planemode.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_magnifier.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_isomanual.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_isovalue.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showtracks.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_setavgref.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_freqdisplay_eft.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_freqdisplay_et.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_freqdisplay_fte.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_freqnormalize.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_lessfreqs.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_morefreqs.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextfreq.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_previousfreq.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_syncall.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_desyncall.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_desyncbetweeneeg.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_syncbetweeneeg.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_commandscloning.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_filenewemptylm.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_freqdisplay_spectrum.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_freqdisplay_ef.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_freqdisplay_fe.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_averagetracks.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_displayintensity.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_isdecbright.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_isincbright.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_isinccontrast.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_isdeccontrast.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_show3dmri.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showsp.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_show2dis.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_show3dis.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextroi.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_averagerois.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_cutplanecoronal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_cutplanetransverse.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_cutplanesagittal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showvectorsis.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_colorizesurface.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_editing.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <ResourceCompile Include="$(owlroot)\include\owl\except.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+    <None Include="..\Src\res\resource.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>
