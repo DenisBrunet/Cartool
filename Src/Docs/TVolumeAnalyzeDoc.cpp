@@ -530,7 +530,7 @@ else {
     TVolume<MriType>    tal ( dim1, dim2, dim3 );
 
                                         // get the baby!
-    sprintf ( (char*) file, "%s\\Talairach.dlf", (char*) path );
+    StringCopy  ( file, path, "\\", TalairachOracleFileName );
 
     tal.ReadFile ( file );
 

@@ -199,6 +199,7 @@ END_RESPONSE_TABLE;
 
 //----------------------------------------------------------------------------
                                         // tomodule is 0 for non-interactive application, f.ex. when running tests
+                                        // Expected files at root directory: HelpShortFileName, TalairachOracleFileName
         TCartoolApp::TCartoolApp ( LPCTSTR name, TModule*& tomodule, TAppDictionary* appdir )
       : TApplication ( name, tomodule, appdir ),
         TRecentFiles ( ".\\Cartool.ini", 9 ),
