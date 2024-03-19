@@ -5,3 +5,4 @@
 *.res
 *.recipe
 *.ini
+/Setup/GitWCRev.h
