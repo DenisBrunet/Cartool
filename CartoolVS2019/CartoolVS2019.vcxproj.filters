@@ -1291,18 +1291,20 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="$(owlroot)\include\owl\except.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
     <ResourceCompile Include="..\Src\res\resource.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-    <None Include="..\Src\res\cur\help.cur">
+    <None Include="..\Src\res\resource.rc2">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Src\res\cur\syncviews.cur">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Src\res\cur\addtogroup.cur">
-      <Filter>Resource Files</Filter>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\Src\res\cur\linkview.cur">
       <Filter>Resource Files</Filter>
     </None>
@@ -1312,73 +1314,111 @@
     <None Include="..\Src\res\cur\operation.cur">
       <Filter>Resource Files</Filter>
     </None>
-    <Image Include="..\Src\res\cartool.ico">
+    <None Include="..\Src\res\cur\syncviews.cur">
       <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\cartooldoc.ico">
+    </None>
+    <None Include="..\Src\res\cur\addtogroup.cur">
       <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\eegtext.ico">
+    </None>
+    <None Include="..\Src\res\cur\help.cur">
       <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\eegbin.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\eegsd.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\markers.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\mtg.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\tva.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\calibration.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\xyzcoord.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\mri.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\leadfld.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\invmat.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\invres.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\spcoord.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\spirr.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\linkmany.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\seg.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\data.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\freq.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\verbose.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\ico\roi.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <Image Include="..\Src\res\bmp\CartoolSplashScreen5.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rgestepinc.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_searchbestregglobal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_segment.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_setavgref.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_show2dis.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_show3dis.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_show3dmri.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showelec.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showelnames.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showis.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showmarkers.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showmax.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showmin.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showmri.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showpmminmax.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showsd.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showsp.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showtracks.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showtriangles.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showvectorsis.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_showzero.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_solpshownames.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_spcolor.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_spdecbright.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_spincbright.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_splitwindow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_stylewindow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_surfacemode.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_trackssuper.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_up.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_vertunits.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Src\res\bmp\new.bmp">
@@ -1387,19 +1427,46 @@
     <Image Include="..\Src\res\bmp\open.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\Src\res\bmp\paste.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
     <Image Include="..\Src\res\bmp\save.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\syncviews.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\synczero.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Src\res\bmp\undo.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\cut.bmp">
+    <Image Include="..\Src\res\bmp\addview.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_commandscloning.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_desyncall.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_desyncbetweeneeg.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_filenewemptylm.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_syncall.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\cm_syncbetweeneeg.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Src\res\bmp\copy.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\paste.bmp">
+    <Image Include="..\Src\res\bmp\cut.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Src\res\bmp\find.bmp">
@@ -1411,235 +1478,46 @@
     <Image Include="..\Src\res\bmp\help.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\addview.bmp">
+    <Image Include="..\Src\res\bmp\idb_2eegs.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\syncviews.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\synczero.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_exttracksv.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_comptracksv.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_exttracksh.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_comptracksh.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_up.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_down.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_lesstracks.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_moretracks.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_trackssuper.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_vertunits.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_showelec.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_horizunits.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_showtriangles.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_rangecursor.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_stylewindow.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_showmin.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_showmax.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_spincbright.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_spdecbright.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_rgestepinc.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_rgestepdec.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_rangeave.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_rangeseq.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_rangeani.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_fixedscale.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_showmarkers.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_nextmarker.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_prevmarker.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_spcolor.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_showzero.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_lesspseudotracks.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_morepseudotracks.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_showpmminmax.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_filter.bmp">
+    <Image Include="..\Src\res\bmp\idb_2object.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Src\res\bmp\idb_addmarker.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_showsd.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_splitwindow.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_2eegs.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_nextis.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_prevreg.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_nextreg.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_resetreg.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_searchbestregglobal.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_gtvfit.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_gtvkeepsize.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_gtvstandsize.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\Src\res\bmp\idb_addtogroup.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_flipvert.bmp">
+    <Image Include="..\Src\res\bmp\idb_averagerois.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_montage.bmp">
+    <Image Include="..\Src\res\bmp\idb_averagetracks.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_lessslices.bmp">
+    <Image Include="..\Src\res\bmp\idb_capping.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_moreslices.bmp">
+    <Image Include="..\Src\res\bmp\idb_colorizesurface.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_firstslicefwd.bmp">
+    <Image Include="..\Src\res\bmp\idb_comptracksh.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_firstslicebwd.bmp">
+    <Image Include="..\Src\res\bmp\idb_comptracksv.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_nextmri.bmp">
+    <Image Include="..\Src\res\bmp\idb_cutplanecoronal.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_showmri.bmp">
+    <Image Include="..\Src\res\bmp\idb_cutplanemode.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_showis.bmp">
+    <Image Include="..\Src\res\bmp\idb_cutplanesagittal.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_lastslicebwd.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_lastslicefwd.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_findminmax.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_showelnames.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_nextxyz.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_quadrant.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_segment.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_fitsegment.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_filling.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_nextsession.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_flipx.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_flipy.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_flipz.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_flipxy.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_flipxz.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_flipyz.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_flatview.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_2object.bmp">
+    <Image Include="..\Src\res\bmp\idb_cutplanetransverse.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Src\res\bmp\idb_cutplanex.bmp">
@@ -1651,40 +1529,67 @@
     <Image Include="..\Src\res\bmp\idb_cutplanez.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_surfacemode.bmp">
+    <Image Include="..\Src\res\bmp\idb_displayintensity.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_cutplanemode.bmp">
+    <Image Include="..\Src\res\bmp\idb_down.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_solpshownames.bmp">
+    <Image Include="..\Src\res\bmp\idb_editing.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_capping.bmp">
+    <Image Include="..\Src\res\bmp\idb_exttracksh.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_pairview.bmp">
+    <Image Include="..\Src\res\bmp\idb_exttracksv.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_orient.bmp">
+    <Image Include="..\Src\res\bmp\idb_filling.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_planemode.bmp">
+    <Image Include="..\Src\res\bmp\idb_filter.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_magnifier.bmp">
+    <Image Include="..\Src\res\bmp\idb_findminmax.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_isomanual.bmp">
+    <Image Include="..\Src\res\bmp\idb_firstslicebwd.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_isovalue.bmp">
+    <Image Include="..\Src\res\bmp\idb_firstslicefwd.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_showtracks.bmp">
+    <Image Include="..\Src\res\bmp\idb_fitsegment.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_setavgref.bmp">
+    <Image Include="..\Src\res\bmp\idb_fixedscale.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flatview.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipvert.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipx.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipxy.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipxz.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipy.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipyz.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_flipz.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_freqdisplay_ef.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Src\res\bmp\idb_freqdisplay_eft.bmp">
@@ -1693,58 +1598,34 @@
     <Image Include="..\Src\res\bmp\idb_freqdisplay_et.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\Src\res\bmp\idb_freqdisplay_fe.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
     <Image Include="..\Src\res\bmp\idb_freqdisplay_fte.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_freqnormalize.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_lessfreqs.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_morefreqs.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_nextfreq.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\idb_previousfreq.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\cm_syncall.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\cm_desyncall.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\cm_desyncbetweeneeg.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\cm_syncbetweeneeg.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\cm_commandscloning.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Src\res\bmp\cm_filenewemptylm.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Src\res\bmp\idb_freqdisplay_spectrum.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_freqdisplay_ef.bmp">
+    <Image Include="..\Src\res\bmp\idb_freqnormalize.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_freqdisplay_fe.bmp">
+    <Image Include="..\Src\res\bmp\idb_gtvfit.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_averagetracks.bmp">
+    <Image Include="..\Src\res\bmp\idb_gtvkeepsize.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_displayintensity.bmp">
+    <Image Include="..\Src\res\bmp\idb_gtvstandsize.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_horizunits.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Src\res\bmp\idb_isdecbright.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_isdeccontrast.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Src\res\bmp\idb_isincbright.bmp">
@@ -1753,53 +1634,178 @@
     <Image Include="..\Src\res\bmp\idb_isinccontrast.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_isdeccontrast.bmp">
+    <Image Include="..\Src\res\bmp\idb_isomanual.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_show3dmri.bmp">
+    <Image Include="..\Src\res\bmp\idb_isovalue.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_showsp.bmp">
+    <Image Include="..\Src\res\bmp\idb_lastslicebwd.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_show2dis.bmp">
+    <Image Include="..\Src\res\bmp\idb_lastslicefwd.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_show3dis.bmp">
+    <Image Include="..\Src\res\bmp\idb_lessfreqs.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_lesspseudotracks.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_lessslices.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_lesstracks.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_magnifier.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_montage.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_morefreqs.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_morepseudotracks.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_moreslices.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_moretracks.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextfreq.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextis.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextmarker.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextmri.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_nextreg.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\Src\res\bmp\idb_nextroi.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_averagerois.bmp">
+    <Image Include="..\Src\res\bmp\idb_nextsession.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_cutplanecoronal.bmp">
+    <Image Include="..\Src\res\bmp\idb_nextxyz.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_cutplanetransverse.bmp">
+    <Image Include="..\Src\res\bmp\idb_orient.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_cutplanesagittal.bmp">
+    <Image Include="..\Src\res\bmp\idb_pairview.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_showvectorsis.bmp">
+    <Image Include="..\Src\res\bmp\idb_planemode.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_colorizesurface.bmp">
+    <Image Include="..\Src\res\bmp\idb_previousfreq.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\Src\res\bmp\idb_editing.bmp">
+    <Image Include="..\Src\res\bmp\idb_prevmarker.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <ResourceCompile Include="$(owlroot)\include\owl\except.rc">
+    <Image Include="..\Src\res\bmp\idb_prevreg.bmp">
       <Filter>Resource Files</Filter>
-    </ResourceCompile>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_quadrant.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rangeani.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rangeave.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rangecursor.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rangeseq.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_resetreg.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\bmp\idb_rgestepdec.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cpp.hint" />
-    <None Include="..\Src\res\resource.rc2">
+    <Image Include="..\Src\res\ico\calibration.ico">
       <Filter>Resource Files</Filter>
-    </None>
+    </Image>
+    <Image Include="..\Src\res\ico\cartooldoc.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\data.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\eegbin.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\eegsd.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\eegtext.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\freq.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\invmat.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\invres.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\leadfld.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\linkmany.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\markers.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\mri.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\mtg.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\roi.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\seg.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\spcoord.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\spirr.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\tva.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\verbose.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\ico\xyzcoord.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Src\res\cartool.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
