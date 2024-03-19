@@ -1,1 +1,7 @@
 .vs
+*.pdb
+*.obj
+*.log
+*.res
+*.recipe
+*.ini
