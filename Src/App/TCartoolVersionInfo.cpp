@@ -26,7 +26,7 @@ limitations under the License.
 //-=-=-=-=-=-=-=-=-
 
 #include    "TCartoolVersionInfo.h"
-#include    "SubWCRev.h"
+#include    "..\..\Setup\GitWCRev.h"
 
 #include    "Strings.Utils.h"
 
@@ -126,7 +126,7 @@ return ::VerQueryValue (   (LPTSTR) FVData,    (LPTSTR) subBlockName,  (void**) 
 //----------------------------------------------------------------------------
 bool    TCartoolVersionInfo::GetProductRevision ( LPSTR &s )
 {
-s   = SVNRevision;
+s   = GitRevision7;
 return true;
 }
 
@@ -134,7 +134,7 @@ return true;
 //----------------------------------------------------------------------------
 bool    TCartoolVersionInfo::GetProductDate ( LPSTR &s )
 {
-s   = SVNNow;
+s   = GitDateNow;
 return true;
 }
 

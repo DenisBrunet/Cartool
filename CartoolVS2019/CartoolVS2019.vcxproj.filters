@@ -998,9 +998,6 @@
     <ClInclude Include="..\Src\App\TCartoolDocManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\App\SubWCRev.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\MemUtil\MemUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1287,6 +1284,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Utils\Geometry.TTriangleNetwork.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Setup\GitWCRev.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

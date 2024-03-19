@@ -29,7 +29,7 @@ limitations under the License.
 //-=-=-=-=-=-=-=-=-
 
 #include    "TCartoolAboutDialog.h"
-#include    "SubWCRev.h"
+#include    "..\..\Setup\GitWCRev.h"
 
 #include    "Strings.Utils.h"
 #include    "TGlobalOpenGL.h"
@@ -156,7 +156,7 @@ else
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // SVN infos
+                                        // Git infos
 LPSTR               prodRevision    = 0;
 LPSTR               prodDate        = 0;
 
