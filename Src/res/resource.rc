@@ -1319,7 +1319,7 @@ IDB_EDITING             BITMAP                  "./bmp/idb_editing.bmp"
 // Dialog
 //
 
-IDD_ABOUT DIALOGEX 12, 17, 255, 351
+IDD_ABOUT DIALOGEX 12, 17, 255, 358
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Cartool"
 FONT 8, "Verdana", 0, 0, 0x0
@@ -1327,43 +1327,45 @@ BEGIN
     ICON            IDI_MDIAPPLICATION,-1,4,4,20,20
     CONTROL         "<Cartool>",IDC_APPNAME,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,10,188,8
     CONTROL         "Version:",110,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,4,30,60,8
+    CONTROL         "Branch:",114,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,4,41,60,8
+    CONTROL         "<branch name>",IDC_BRANCH,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,41,188,8
     CONTROL         "<cartool version>",IDC_VERSION,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,30,188,8
-    CONTROL         "Revision:",111,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,4,41,60,8
-    CONTROL         "<build number>",IDC_BUILD,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,41,188,8
-    CONTROL         "Date:",112,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,4,52,60,8
-    CONTROL         "<build date>",IDC_BUILDDATE,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,52,188,8
-    CONTROL         "Optimizations:",121,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,4,63,60,8
-    CONTROL         "<optimizations>",IDC_OPTIMIZATIONS,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,63,188,8
-    CONTROL         "",116,"Static",SS_ETCHEDFRAME,3,84,250,1
-    CONTROL         "OwlNext",117,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,94,188,8
-    LTEXT           "Version:",118,4,114,60,8,SS_NOPREFIX
-    LTEXT           "<owlnext version>",IDC_OWLNEXTVERSION,64,114,188,8,SS_NOPREFIX
-    LTEXT           "Revision:",130,4,125,60,8,SS_NOPREFIX
-    LTEXT           "<owlnext revision>",IDC_OWLNEXTBUILD,64,125,188,8,SS_NOPREFIX
-    LTEXT           "Date:",119,4,136,60,8,SS_NOPREFIX
-    LTEXT           "<owlnext date>",IDC_OWLNEXTBUILDDATE,64,136,188,8,SS_NOPREFIX
-    LTEXT           "Licence:",120,4,147,60,8,SS_NOPREFIX
-    LTEXT           "<owlnext licence>",IDC_OWLNEXTCOMPANYNAME,64,147,188,8,SS_NOPREFIX
-    CONTROL         "",102,"Static",SS_ETCHEDFRAME,3,167,250,1
-    CONTROL         "OpenGL",101,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,177,188,8
-    LTEXT           "Version:",104,4,197,60,8,SS_NOPREFIX
-    LTEXT           "<ogl version>",IDC_OGLVERSION,64,197,188,8,SS_NOPREFIX
-    LTEXT           "GLSL:",131,4,208,60,8,SS_NOPREFIX
-    LTEXT           "<glsl version>",IDC_GLSLVERSION,64,208,188,8,SS_NOPREFIX
-    LTEXT           "Vendor:",105,4,219,60,8,SS_NOPREFIX
-    LTEXT           "<ogl vendor>",IDC_OGLVENDOR,64,219,188,8,SS_NOPREFIX
-    LTEXT           "Renderer:",106,4,230,60,8,SS_NOPREFIX
-    LTEXT           "<ogl renderer>",IDC_OGLRENDERER,64,230,188,8,SS_NOPREFIX
-    LTEXT           "Selected mode:",107,4,241,60,8,SS_NOPREFIX
-    LTEXT           "<ogl prop1>",IDC_OGLPROP1,64,241,188,8,SS_NOPREFIX
-    LTEXT           "",108,4,252,60,8,SS_NOPREFIX
-    LTEXT           "<ogl prop2>",IDC_OGLPROP2,64,252,188,8,SS_NOPREFIX
-    CONTROL         "",109,"Static",SS_ETCHEDFRAME,3,271,250,1
-    LTEXT           "Websites:",113,4,281,60,8,SS_NOPREFIX
-    CONTROL         "github.com/DenisBrunet/Cartool",140,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,281,188,8
-    CONTROL         "cartoolcommunity.unige.ch",103,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,292,188,8
-    CONTROL         "CIBM.ch",115,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,303,188,8
-    DEFPUSHBUTTON   "&OK",IDOK,97,325,60,14
+    CONTROL         "Revision:",111,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,4,52,60,8
+    CONTROL         "<build number>",IDC_BUILD,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,52,188,8
+    CONTROL         "Date:",112,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,4,63,60,8
+    CONTROL         "<build date>",IDC_BUILDDATE,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,63,188,8
+    CONTROL         "Optimizations:",121,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,4,74,60,8
+    CONTROL         "<optimizations>",IDC_OPTIMIZATIONS,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,74,188,8
+    CONTROL         "",116,"Static",SS_ETCHEDFRAME,3,95,250,1
+    CONTROL         "OwlNext",117,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,105,188,8
+    LTEXT           "Version:",118,4,125,60,8,SS_NOPREFIX
+    LTEXT           "<owlnext version>",IDC_OWLNEXTVERSION,64,125,188,8,SS_NOPREFIX
+    LTEXT           "Revision:",130,4,136,60,8,SS_NOPREFIX
+    LTEXT           "<owlnext revision>",IDC_OWLNEXTBUILD,64,136,188,8,SS_NOPREFIX
+    LTEXT           "Date:",119,4,147,60,8,SS_NOPREFIX
+    LTEXT           "<owlnext date>",IDC_OWLNEXTBUILDDATE,64,147,188,8,SS_NOPREFIX
+    LTEXT           "Licence:",120,4,158,60,8,SS_NOPREFIX
+    LTEXT           "<owlnext licence>",IDC_OWLNEXTCOMPANYNAME,64,158,188,8,SS_NOPREFIX
+    CONTROL         "",102,"Static",SS_ETCHEDFRAME,3,178,250,1
+    CONTROL         "OpenGL",101,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,188,188,8
+    LTEXT           "Version:",104,4,208,60,8,SS_NOPREFIX
+    LTEXT           "<ogl version>",IDC_OGLVERSION,64,208,188,8,SS_NOPREFIX
+    LTEXT           "GLSL:",131,4,219,60,8,SS_NOPREFIX
+    LTEXT           "<glsl version>",IDC_GLSLVERSION,64,219,188,8,SS_NOPREFIX
+    LTEXT           "Vendor:",105,4,230,60,8,SS_NOPREFIX
+    LTEXT           "<ogl vendor>",IDC_OGLVENDOR,64,230,188,8,SS_NOPREFIX
+    LTEXT           "Renderer:",106,4,241,60,8,SS_NOPREFIX
+    LTEXT           "<ogl renderer>",IDC_OGLRENDERER,64,241,188,8,SS_NOPREFIX
+    LTEXT           "Selected mode:",107,4,252,60,8,SS_NOPREFIX
+    LTEXT           "<ogl prop1>",IDC_OGLPROP1,64,252,188,8,SS_NOPREFIX
+    LTEXT           "",108,4,263,60,8,SS_NOPREFIX
+    LTEXT           "<ogl prop2>",IDC_OGLPROP2,64,263,188,8,SS_NOPREFIX
+    CONTROL         "",109,"Static",SS_ETCHEDFRAME,3,282,250,1
+    LTEXT           "Websites:",113,4,292,60,8,SS_NOPREFIX
+    CONTROL         "github.com/DenisBrunet/Cartool",140,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,292,188,8
+    CONTROL         "cartoolcommunity.unige.ch",103,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,303,188,8
+    CONTROL         "CIBM.ch",115,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,314,188,8
+    DEFPUSHBUTTON   "&OK",IDOK,97,333,60,14
 END
 
 IDD_AVERAGE1 DIALOG 0, 0, 383, 414
@@ -2993,7 +2995,7 @@ GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUT, DIALOG
     BEGIN
-        BOTTOMMARGIN, 339
+        BOTTOMMARGIN, 350
     END
 
     IDD_AVERAGE2, DIALOG

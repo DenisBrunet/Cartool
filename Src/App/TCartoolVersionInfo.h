@@ -32,6 +32,7 @@ public:
 
 
     bool            GetProductName      ( LPSTR &s );
+    bool            GetBranchName       ( LPSTR &s );
     bool            GetProductVersion   ( LPSTR &s );
     bool            GetProductRevision  ( LPSTR &s );
     bool            GetProductDate      ( LPSTR &s );
