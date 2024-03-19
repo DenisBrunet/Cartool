@@ -569,16 +569,22 @@
     <ClInclude Include="..\Src\Utils\WindowingUtils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Src\res\resource.rc2" />
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
     <ResourceCompile Include="$(owlroot)\include\owl\except.rc" />
     <ResourceCompile Include="..\Src\res\resource.rc" />
-    <None Include="..\Src\res\cur\help.cur" />
+    <None Include="..\Src\res\resource.rc2" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\Src\res\cur\addtogroup.cur" />
+    <None Include="..\Src\res\cur\help.cur" />
     <None Include="..\Src\res\cur\linkview.cur" />
     <None Include="..\Src\res\cur\magnify.cur" />
     <None Include="..\Src\res\cur\operation.cur" />
     <None Include="..\Src\res\cur\syncviews.cur" />
+  </ItemGroup>
+  <ItemGroup>
     <Image Include="..\Src\res\bmp\CartoolSplashScreen5.bmp" />
     <Image Include="..\Src\res\bmp\addview.bmp" />
     <Image Include="..\Src\res\bmp\cm_commandscloning.bmp" />
@@ -660,18 +666,18 @@
     <Image Include="..\Src\res\bmp\idb_moretracks.bmp" />
     <Image Include="..\Src\res\bmp\idb_nextfreq.bmp" />
     <Image Include="..\Src\res\bmp\idb_nextis.bmp" />
+    <Image Include="..\Src\res\bmp\idb_nextmarker.bmp" />
     <Image Include="..\Src\res\bmp\idb_nextmri.bmp" />
     <Image Include="..\Src\res\bmp\idb_nextreg.bmp" />
     <Image Include="..\Src\res\bmp\idb_nextroi.bmp" />
     <Image Include="..\Src\res\bmp\idb_nextsession.bmp" />
-    <Image Include="..\Src\res\bmp\idb_nextmarker.bmp" />
     <Image Include="..\Src\res\bmp\idb_nextxyz.bmp" />
     <Image Include="..\Src\res\bmp\idb_orient.bmp" />
     <Image Include="..\Src\res\bmp\idb_pairview.bmp" />
     <Image Include="..\Src\res\bmp\idb_planemode.bmp" />
     <Image Include="..\Src\res\bmp\idb_previousfreq.bmp" />
-    <Image Include="..\Src\res\bmp\idb_prevreg.bmp" />
     <Image Include="..\Src\res\bmp\idb_prevmarker.bmp" />
+    <Image Include="..\Src\res\bmp\idb_prevreg.bmp" />
     <Image Include="..\Src\res\bmp\idb_quadrant.bmp" />
     <Image Include="..\Src\res\bmp\idb_rangeani.bmp" />
     <Image Include="..\Src\res\bmp\idb_rangeave.bmp" />
@@ -689,13 +695,13 @@
     <Image Include="..\Src\res\bmp\idb_showelec.bmp" />
     <Image Include="..\Src\res\bmp\idb_showelnames.bmp" />
     <Image Include="..\Src\res\bmp\idb_showis.bmp" />
+    <Image Include="..\Src\res\bmp\idb_showmarkers.bmp" />
     <Image Include="..\Src\res\bmp\idb_showmax.bmp" />
     <Image Include="..\Src\res\bmp\idb_showmin.bmp" />
     <Image Include="..\Src\res\bmp\idb_showmri.bmp" />
     <Image Include="..\Src\res\bmp\idb_showpmminmax.bmp" />
     <Image Include="..\Src\res\bmp\idb_showsd.bmp" />
     <Image Include="..\Src\res\bmp\idb_showsp.bmp" />
-    <Image Include="..\Src\res\bmp\idb_showmarkers.bmp" />
     <Image Include="..\Src\res\bmp\idb_showtracks.bmp" />
     <Image Include="..\Src\res\bmp\idb_showtriangles.bmp" />
     <Image Include="..\Src\res\bmp\idb_showvectorsis.bmp" />
@@ -717,26 +723,28 @@
     <Image Include="..\Src\res\bmp\syncviews.bmp" />
     <Image Include="..\Src\res\bmp\synczero.bmp" />
     <Image Include="..\Src\res\bmp\undo.bmp" />
+  </ItemGroup>
+  <ItemGroup>
     <Image Include="..\Src\res\cartool.ico" />
+    <Image Include="..\Src\res\ico\calibration.ico" />
     <Image Include="..\Src\res\ico\cartooldoc.ico" />
+    <Image Include="..\Src\res\ico\data.ico" />
     <Image Include="..\Src\res\ico\eegbin.ico" />
     <Image Include="..\Src\res\ico\eegsd.ico" />
     <Image Include="..\Src\res\ico\eegtext.ico" />
-    <Image Include="..\Src\res\ico\calibration.ico" />
-    <Image Include="..\Src\res\ico\data.ico" />
     <Image Include="..\Src\res\ico\freq.ico" />
-    <Image Include="..\Src\res\ico\mri.ico" />
-    <Image Include="..\Src\res\ico\mtg.ico" />
-    <Image Include="..\Src\res\ico\roi.ico" />
-    <Image Include="..\Src\res\ico\seg.ico" />
-    <Image Include="..\Src\res\ico\spirr.ico" />
-    <Image Include="..\Src\res\ico\tva.ico" />
     <Image Include="..\Src\res\ico\invmat.ico" />
     <Image Include="..\Src\res\ico\invres.ico" />
     <Image Include="..\Src\res\ico\leadfld.ico" />
     <Image Include="..\Src\res\ico\linkmany.ico" />
     <Image Include="..\Src\res\ico\markers.ico" />
+    <Image Include="..\Src\res\ico\mri.ico" />
+    <Image Include="..\Src\res\ico\mtg.ico" />
+    <Image Include="..\Src\res\ico\roi.ico" />
+    <Image Include="..\Src\res\ico\seg.ico" />
     <Image Include="..\Src\res\ico\spcoord.ico" />
+    <Image Include="..\Src\res\ico\spirr.ico" />
+    <Image Include="..\Src\res\ico\tva.ico" />
     <Image Include="..\Src\res\ico\verbose.ico" />
     <Image Include="..\Src\res\ico\xyzcoord.ico" />
   </ItemGroup>
