@@ -373,7 +373,7 @@ for ( int x = scanxmin; x <= scanxmax; x++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // write Talaraich volume as .dlf file
-StringCopy          ( file, path, "\\Talairach.dlf" );
+StringCopy          ( file, path, "\\", TalairachOracleFileName );
 CheckNoOverwrite    ( file );
 
 tal.WriteFile ( file );

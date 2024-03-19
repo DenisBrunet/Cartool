@@ -160,8 +160,8 @@ if      ( IsTransversePlaneMNI ( how ) ) {
 
     MniSlicedoc.Open ( MniSliceFile, OpenDocHidden );
 
-                                        // problem! downgrade the search to something stable
-    if ( ! MniSlicedoc.IsOpen () )
+                                        // slice file not found -> downgrade the search to a stable alternative
+    if ( MniSlicedoc.IsNotOpen () )
 
         how     = TransversePlaneBiggestSurface;
 
