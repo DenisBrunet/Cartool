@@ -105,6 +105,12 @@
       <Culture>0x0009</Culture>
       <PreprocessorDefinitions>_WIN64</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>..\Setup\GitWcRev.exe  ..  ..\Setup\GitWCRev.txt  ..\Setup\GitWCRev.h</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Retrieving Git infos...</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -139,6 +145,12 @@
       <Culture>0x0009</Culture>
       <PreprocessorDefinitions>_DEBUG;_WIN64</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>..\Setup\GitWcRev.exe  ..  ..\Setup\GitWCRev.txt  ..\Setup\GitWCRev.h</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Retrieving Git infos...</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\App\TCartoolVersionInfo.cpp" />
@@ -340,6 +352,7 @@
     <ClCompile Include="..\Src\Utils\CartoolTypes.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Setup\GitWCRev.h" />
     <ClInclude Include="..\Src\App\App.DocView.h" />
     <ClInclude Include="..\Src\App\TCartoolVersionInfo.h" />
     <ClInclude Include="..\Src\Dialogs\BrainToSolutionPointsUI.h" />
@@ -403,7 +416,6 @@
     <ClInclude Include="..\Src\Docs\TSegDoc.h" />
     <ClInclude Include="..\Src\Docs\TSolutionPointsDoc.h" />
     <ClInclude Include="..\Src\Docs\TXyzDoc.h" />
-    <ClInclude Include="..\Src\App\SubWCRev.h" />
     <ClInclude Include="..\Src\Utils\Dialogs.Input.h" />
     <ClInclude Include="..\Src\Utils\Dialogs.TSuperGauge.h" />
     <ClInclude Include="..\Src\Utils\Files.SpreadSheet.h" />

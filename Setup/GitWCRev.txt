@@ -1,0 +1,15 @@
+                                        // Info retrieved from Git via GitWCRev
+                                        // If variables are $WC...$, file should be run through GitWCRev beforehand
+
+#define GitBranchName       "$WCBRANCH$"
+#define GitRevision         "$WCREV$"
+#define GitRevision7    	"$WCREV=7$"
+#define GitRevision4Hex   	0x$WCREV=4$
+#define GitRevision8Hex   	0x$WCREV=8$
+#define GitModified         "$WCMODS?Modified:Not modified$"
+#define GitUnversioned      "$WCUNVER?Unversioned items found:no unversioned items$"
+#define GitIsInGit          "$WCINGIT?versioned:not versioned$"
+#define GitIsTagged         "$WCISTAGGED?Tagged:Not tagged$"
+#define GitDateCommit		"$WCDATE$"
+#define GitDateNow          "$WCNOW$"
+
