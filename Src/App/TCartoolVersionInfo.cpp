@@ -124,6 +124,14 @@ return ::VerQueryValue (   (LPTSTR) FVData,    (LPTSTR) subBlockName,  (void**) 
 
 
 //----------------------------------------------------------------------------
+bool    TCartoolVersionInfo::GetBranchName ( LPSTR &s )
+{
+s   = GitBranchName;
+return true;
+}
+
+
+//----------------------------------------------------------------------------
 bool    TCartoolVersionInfo::GetProductRevision ( LPSTR &s )
 {
 s   = GitRevision7;

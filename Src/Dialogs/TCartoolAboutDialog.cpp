@@ -56,6 +56,7 @@ void    TCartoolAboutDialog::SetupWindow ()
 {
                                         // Creating the actual window
 TStatic*            nameCtrl        = new TStatic ( this, IDC_APPNAME,              256 );
+TStatic*            branchCtrl      = new TStatic ( this, IDC_BRANCH,               256 );
 TStatic*            versionCtrl     = new TStatic ( this, IDC_VERSION,              256 );
 TStatic*            buildCtrl       = new TStatic ( this, IDC_BUILD,                256 );
 TStatic*            builddateCtrl   = new TStatic ( this, IDC_BUILDDATE,            256 );
@@ -147,6 +148,15 @@ optimizationCtrl->SetText ( (LPCTSTR) optimization );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+LPSTR               branch      = 0;
+                                        // Get the branch name string
+if ( applVersion.GetBranchName ( branch ) )
+    branchCtrl->SetText ( (LPCTSTR) branch );
+else
+    branchCtrl->SetText ( (LPCTSTR) "" );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 LPSTR               prodVersion     = 0;
                                         // Get the product version string
 if ( applVersion.GetProductVersion ( prodVersion ) )
@@ -175,10 +185,6 @@ else
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // OwlNext infos
-//DBGV ( OWL_STRICT, "OwlNext");
-//DBGM4 ( OWL_PRODUCTNAME, OWL_LEGALCOPYRIGHT, OWL_COMPANYNAME, OWL_URL, "OwlNext");
-
-
 owlnextversion  ->SetText ( (LPCTSTR) OWL_PRODUCTVERSION_STRING );
 
 owlnextbuild    ->SetText ( (LPCTSTR) IntegerToString ( OWL_BUILD_REVISION ) );

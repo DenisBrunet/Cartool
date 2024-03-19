@@ -2,15 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by resource.rc
 //
-
-
-//----------------------------------------------------------------------------
-										// CM_FILENEW, CM_FILEOPEN, CM_FILESAVE etc...
-#include    <owl\editfile.rh>
-
-
-//----------------------------------------------------------------------------
-
 #define IDM_MDI                         100
 #define IDB_FORWARD                     201
 #define IDB_BACKWARD                    202
@@ -1148,7 +1139,8 @@
 #define IDC_OWLNEXTBUILDDATE            20022
 #define IDD_ABOUT                       22000
 #define IDC_VERSION                     22001
-#define IDC_COPYRIGHT                   22002
+#define IDC_BRANCH                      22002
+#define IDC_COPYRIGHT                   22003
 #define IDC_BUILD                       22004
 #define IDC_BUILDDATE                   22005
 #define IDC_APPNAME                     22006
@@ -1182,8 +1174,19 @@
 #define CM_EDITCLEAR                    24326
 #define CM_EDITADD                      24327
 #define CM_EDITEDIT                     24328
-#define CM_MDIFILENEW                   CM_FILENEW
-#define CM_MDIFILEOPEN                  CM_FILEOPEN
+#define CM_EDITREDO                     24329
+#define CM_FILENEW                      24331
+#define CM_MDIFILENEW                   24331
+#define CM_FILEOPEN                     24332
+#define CM_MDIFILEOPEN                  24332
+#define CM_FILESAVE                     24333
+#define CM_FILESAVEAS                   24334
+#define CM_FILEREVERT                   24335
+#define CM_FILEPAGESETUP                24336
+#define CM_FILEPRINT                    24337
+#define CM_FILEPRINTERSETUP             24338
+#define CM_FILECLOSE                    24339
+#define CM_FILEPRINTPREVIEW             24340
 #define CM_VIEWCREATE                   24341
 #define CM_EDITFIND                     24351
 #define CM_EDITREPLACE                  24352
@@ -1198,15 +1201,21 @@
 #define CM_HELPUSING                    24372
 #define CM_HELPABOUT                    24373
 #define CM_HELPCARTOOLCOMMUNITY         24374
-#define CM_HELPCARTOOLGITHUB			24381
 #define CM_HELPWEBUSERSGUIDE            24375
 #define CM_HELPWEBREFERENCEGUIDE        24376
 #define CM_HELPWEBFBMLAB                24377
 #define CM_HELPWEBRELEASES              24378
 #define CM_HELPAUTOUPDATE               24379
 #define CM_HELPWEBCIBM                  24380
+#define CM_HELPCARTOOLGITHUB            24381
+#define IDI_OWLAPP                      32000
+#define IDW_MDICLIENT                   32000
 #define IDB_HSLIDERTHUMB                32000
+#define IDI_OWLAPPSM                    32001
+#define IDW_FIRSTMDICHILD               32001
 #define IDB_VSLIDERTHUMB                32001
+#define IDW_STATUSBAR                   32040
+#define IDW_TOOLBAR                     32041
 #define IDM_DOCMANAGERFILE              32401
 #define IDS_DOCMANAGERFILE              32500
 #define IDS_DOCLIST                     32501
@@ -1229,10 +1238,16 @@
 #define IDS_MODES                       32530
 #define IDS_MODESOFF                    32531
 #define IDS_CANNOTFIND                  32540
+#define IDM_EDITSEARCH                  32541
+#define IDA_EDITSEARCH                  32542
+#define IDS_UNTITLEDFILE                32550
+#define IDM_EDITFILE                    32550
+#define IDA_EDITFILE                    32550
 #define IDS_UNABLEREAD                  32551
 #define IDS_UNABLEWRITE                 32552
 #define IDS_FILECHANGED                 32553
 #define IDS_FILEFILTER                  32554
+#define IDS_RICHEDITFILTER              32555
 #define IDM_EDITVIEW                    32581
 #define IDM_LISTVIEW                    32582
 #define IDS_LISTNUM                     32584
