@@ -41,17 +41,19 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="LibrariesPaths.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="LibrariesPaths.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <TargetName>Cartool64</TargetName>
-    <IncludePath>$(owlroot)\include;$(armaroot)\include;$(mklroot)\include;$(pcreroot)\Src;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
-    <LibraryPath>$(owlroot)\lib;$(mklroot)\lib\intel64;$(pcreroot)\Bin;..\Lib;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(pcreroot)\Src;$(owlroot)\source\owlcore;$(SourcePath)</SourcePath>
+    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;$(PcreRoot)\Src;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OwlNextRoot)\lib;$(PcreRoot)\Bin;..\Lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(PcreRoot)\Src;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
     <OutDir>..\Bin\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
@@ -60,9 +62,9 @@
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <TargetName>Cartool64d</TargetName>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(owlroot)\include;$(armaroot)\include;$(mklroot)\include;$(pcreroot)\Src;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
-    <LibraryPath>$(owlroot)\lib;$(mklroot)\lib\intel64;$(pcreroot)\Bin;..\Lib;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(pcreroot)\Src;$(owlroot)\source\owlcore;$(SourcePath)</SourcePath>
+    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;$(PcreRoot)\Src;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OwlNextRoot)\lib;$(PcreRoot)\Bin;..\Lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(PcreRoot)\Src;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
     <OutDir>..\Bin\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
@@ -587,7 +589,7 @@
     <ClInclude Include="..\Src\Volumes\Volumes.TTalairachOracle.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="$(owlroot)\include\owl\except.rc" />
+    <ResourceCompile Include="$(OwlNextRoot)\include\owl\except.rc" />
     <ResourceCompile Include="..\Src\res\resource.rc" />
     <None Include="..\Src\res\resource.rc2" />
   </ItemGroup>
