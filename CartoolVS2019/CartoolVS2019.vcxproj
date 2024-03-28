@@ -51,9 +51,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <TargetName>Cartool64</TargetName>
-    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;$(PcreRoot)\Src;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
-    <LibraryPath>$(OwlNextRoot)\lib;$(PcreRoot)\Bin;..\Lib;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(PcreRoot)\Src;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
+    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OwlNextRoot)\lib;..\Lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
     <OutDir>..\Bin\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
@@ -62,12 +62,21 @@
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <TargetName>Cartool64d</TargetName>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;$(PcreRoot)\Src;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
-    <LibraryPath>$(OwlNextRoot)\lib;$(PcreRoot)\Bin;..\Lib;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(PcreRoot)\Src;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
+    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OwlNextRoot)\lib;..\Lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
     <OutDir>..\Bin\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -94,7 +103,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalDependencies>OPENGL32.LIB;GLU32.LIB;htmlhelp.lib;pcre-7.00-x64-ta.lib;version.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OPENGL32.LIB;GLU32.LIB;htmlhelp.lib;version.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/IGNORE:4006 %(AdditionalOptions)</AdditionalOptions>
       <EntryPointSymbol>WinMainCRTStartup</EntryPointSymbol>
       <HeapReserveSize>10485760</HeapReserveSize>
@@ -137,7 +146,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OPENGL32.LIB;GLU32.LIB;htmlhelp.lib;pcre-7.00-x64-tad.lib;version.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OPENGL32.LIB;GLU32.LIB;htmlhelp.lib;version.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/IGNORE:4006 %(AdditionalOptions)</AdditionalOptions>
       <EntryPointSymbol>WinMainCRTStartup</EntryPointSymbol>
       <HeapReserveSize>10485760</HeapReserveSize>

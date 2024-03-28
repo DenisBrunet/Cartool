@@ -5,7 +5,6 @@
     <OwlNextRoot>E:\OwlNext</OwlNextRoot>
     <CartoolRoot>E:\Development\C++\Cartool</CartoolRoot>
     <ArmadilloRoot>E:\Development\C++\Armadillo\armadillo-12.2.0</ArmadilloRoot>
-    <PcreRoot>E:\Development\C++\pcre7</PcreRoot>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
@@ -20,10 +19,6 @@
     </BuildMacro>
     <BuildMacro Include="ArmadilloRoot">
       <Value>$(ArmadilloRoot)</Value>
-      <EnvironmentVariable>true</EnvironmentVariable>
-    </BuildMacro>
-    <BuildMacro Include="PcreRoot">
-      <Value>$(PcreRoot)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

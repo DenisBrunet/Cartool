@@ -18,8 +18,7 @@ limitations under the License.
 
 #include    "Math.Utils.h"
 
-//#include  "regex.h"                   // pcre + posix regular expressions
-#include    "pcre.h"                    // pcre regular expressions
+#include    <pcre.h>                    // pcre regular expressions (using vcpkg)
 
 namespace crtl {
 

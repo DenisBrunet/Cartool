@@ -1303,15 +1303,15 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="$(owlroot)\include\owl\except.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
     <ResourceCompile Include="..\Src\res\resource.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
     <None Include="..\Src\res\resource.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <ResourceCompile Include="$(OwlNextRoot)\include\owl\except.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Src\res\cur\linkview.cur">
