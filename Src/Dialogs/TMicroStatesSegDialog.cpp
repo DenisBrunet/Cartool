@@ -138,7 +138,7 @@ ClearString     ( ResamplingCoverage   );
 
 
 TFileName           cp;
-GetCurrentDirectory ( cp.Size (), cp );
+cp.GetCurrentDir ();
 StringAppend ( cp, "\\Seg" );
 StringCopy ( BaseFileName, cp );
 
