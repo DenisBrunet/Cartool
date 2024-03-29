@@ -16,13 +16,13 @@ limitations under the License.
 
 #pragma once
 
-#include    "armadillo.h"               // !Using a renamed version of file "armadillo" to "armadillo.h", for Intellisense to work properly!
+#include    "armadillo"                 // Armadillo is a header-only library - It is NOT NEEDED NOR RECOMMENDED to use vcpkg as it will forcefully install OpenBlas, lapack etc... libraries which we DO NOT NEED NOR WANT
 
 namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-                                        // For faster processing, Armadillo strongly recommend to set this, f.ex. in the compiler flags:
+                                        // For faster processing, Armadillo strongly recommends to set these, f.ex. from the compiler's flags:
 #if !defined (ARMA_USE_LAPACK)
 #define     ARMA_USE_LAPACK
 #endif

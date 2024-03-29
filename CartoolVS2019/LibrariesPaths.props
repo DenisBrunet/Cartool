@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros">
     <OwlNextRoot>E:\OwlNext</OwlNextRoot>
     <CartoolRoot>E:\Development\C++\Cartool</CartoolRoot>
-    <ArmadilloRoot>E:\Development\C++\Armadillo\armadillo-12.2.0</ArmadilloRoot>
+    <ArmadilloRoot>E:\Development\C++\Armadillo\armadillo-12.8.1</ArmadilloRoot>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
