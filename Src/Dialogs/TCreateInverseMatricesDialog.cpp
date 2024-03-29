@@ -195,7 +195,7 @@ InverseLaura        = BoolToCheck ( false );
 InverseELoreta      = BoolToCheck ( false );
 
 TFileName           cp;
-GetCurrentDirectory ( cp.Size (), cp );
+cp.GetCurrentDir ();
 StringAppend ( cp, "\\InverseSolutions" );
 StringCopy ( BaseFileName, cp );
 

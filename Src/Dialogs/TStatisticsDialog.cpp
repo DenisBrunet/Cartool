@@ -202,7 +202,7 @@ GroupsSummary.Clear ();
 
 //ClearString ( BaseFileName );
 TFileName           cp;
-GetCurrentDirectory ( cp.Size (), cp );
+cp.GetCurrentDir ();
 StringAppend        ( cp, "\\Stat" );
 StringCopy          ( BaseFileName, cp );
 

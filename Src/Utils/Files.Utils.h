@@ -219,6 +219,8 @@ public:
     void            MsDosPathToWindowsPath  ();
     void            CheckSiblingFile        ();
     void            CheckNoOverwrite        ();
+    void            GetCurrentDir           ()                      { ::GetCurrentDirectory ( Size (), FileName ); }
+
 
     void            ClipFileName            ( int from, int to );   // only the (last) file name part
     char*           ReplaceExtension        ( const char* newext )  { return  crtl::ReplaceExtension ( FileName, newext ); };

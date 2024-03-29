@@ -132,7 +132,7 @@ EpochTo  .Clear ();
 EpochMaps.Clear ();
 
 TFileName           cp;
-GetCurrentDirectory ( cp.Size (), cp );
+cp.GetCurrentDir ();
 StringAppend ( cp, "\\Fit" );
 StringCopy ( BaseFileName, cp );
 
