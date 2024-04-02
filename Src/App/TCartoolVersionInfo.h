@@ -49,6 +49,7 @@ protected:
 
     UCHAR*          TransBlock;
     void*           FVData;
+    char            Revision[ 8 ];
 
 
 private:

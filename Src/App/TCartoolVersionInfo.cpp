@@ -50,6 +50,9 @@ char				subBlockName[ CartoolMaxExtendedPath ];
 TransBlock  = 0;
 FVData      = 0;
 
+StringCopy          ( Revision, GitRevision7, 7 );
+StringToUppercase   ( Revision );
+
 
 module->GetModuleFileName ( (LPTSTR) appFName, sizeof appFName );
 
@@ -134,7 +137,7 @@ return true;
 //----------------------------------------------------------------------------
 bool    TCartoolVersionInfo::GetProductRevision ( LPSTR &s )
 {
-s   = GitRevision7;
+s   = Revision;
 return true;
 }
 
