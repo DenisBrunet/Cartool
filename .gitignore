@@ -1,4 +1,3 @@
-.vs
 *.pdb
 *.obj
 *.log
@@ -6,3 +5,9 @@
 *.recipe
 *.ini
 /Setup/GitWCRev.h
+.vs
+vcpkg_installed
+x64
+*.chm
+/Bin/*.exe
+GitWCRev.h
