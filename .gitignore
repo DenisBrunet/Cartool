@@ -6,3 +6,6 @@
 *.recipe
 *.ini
 /Setup/GitWCRev.h
+vcpkg_installed
+x64
+GitWCRev.h
