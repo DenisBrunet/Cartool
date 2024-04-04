@@ -1,16 +1,22 @@
 # Building Cartool from sources
 
-Cartool currently targets **Windows 64bit platform** only. 32bit architecture was available at some point but is not supported anymore.
+Cartool currently builds for **Windows 64bit platform** only.
 
-Porting to other platforms is not under investigations for the moment.
+There are very few dependencies: some are directly included within this repo, some can be set from the Visual Studio project property pages, and some need to be downloaded, either manually or through *vcpkg*.
 
 ## Compiler
-
 **Visual Studio 2019** is the current compiler for dev.
 
 **Visual Studio 2022** should be working, but has not been fully tested yet.
 
 **Visual Studio 2015** *might* be working for Cartool itself, but some dependencies might not support it.
+
+## *vcpkg* C++ package manager
+We are going to use the very convenient C++ package manager from Microsoft called *vcpkg*:
+- [vcpkg overview](https://learn.microsoft.com/en-us/vcpkg/get_started/overview)
+- [vcpkg installation](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started-msbuild?pivots=shell-cmd)
+
+***Note:*** it seems to be already installed with Visual Studio 2022
 
 ## Dependencies
 Here is the list of all the dependencies needed to compile Cartool:
@@ -59,7 +65,12 @@ Open the project property pages, and from the *Intel Libraries for OneAPI* panel
 - Also, do **not** use *vcpkg* to install Armadillo, as it will forcibly install said *OpenBLAS*, which we do **not** want!
 
 ## pcre 7
+Using *vcpkg*, install **pcre Version: 8.45**:
+```
+.\vcpkg install pcre
+````
 
+***Important***: there are 2 versions of pcre, we use pcre here, *not* pcre2!
 
 ## OwlNext 7
 
