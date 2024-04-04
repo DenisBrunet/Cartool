@@ -100,5 +100,21 @@ Installation and build:
 - **Build both Debug and Release for x64 platform**
 - Check you now have 2 .lib files in the .\\lib directory
 
+## Compiling Cartool
+Open the *Visual Studio* solution **CartoolVS2019.sln** provided in the *.\CartoolVS2019* directory.
 
+You need first to update the proper paths to the manually installed libraries (*vcpkg* libraries are taken care of automatically).
+Instead of using Windows environment variables, which need rebooting all the time, we can use macros from a *property sheet*:
+- Open the *Property Manager*
+- Open the *LibrariesPaths* property sheet
+- Select *User Macros* from the top-left
+- You can now see a list of macros. Edit each of them with your actual paths:
+  - *OwlNextRoot*: path to your own OwlNext root directory, f.ex. "D:\OwlNext"
+  - *CartoolRoot*: path to your own Cartool root directory, f.ex. "D:\Dev\C++\Cartool"
+  - *OwlNextRoot*: path to your own Armadillo root directory, f.ex. "D:\Dev\C++\Armadillo"
+
+The provided Solution and Project have all the correct options set for you. You can review and modify them *if you know what you are doing*!
+
+Finally, you can **build the *Release* and *Debug* versions**!
+Executable files are in the .\Bin directory.
 
