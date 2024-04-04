@@ -185,7 +185,7 @@ else
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // OwlNext infos
-owlnextversion  ->SetText ( (LPCTSTR) OWL_PRODUCTVERSION_STRING );
+owlnextversion  ->SetText ( (LPCTSTR) OWL_VERSION(OWL_FORMAT_VERSION_MAJOR_MINOR_RELEASE_STRING) );
 
 owlnextbuild    ->SetText ( (LPCTSTR) IntegerToString ( OWL_BUILD_REVISION ) );
 

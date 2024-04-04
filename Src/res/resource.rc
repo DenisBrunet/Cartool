@@ -1340,7 +1340,7 @@ BEGIN
     CONTROL         "OwlNext",117,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,105,188,8
     LTEXT           "Version:",118,4,125,60,8,SS_NOPREFIX
     LTEXT           "<owlnext version>",IDC_OWLNEXTVERSION,64,125,188,8,SS_NOPREFIX
-    LTEXT           "Revision:",130,4,136,60,8,SS_NOPREFIX
+    LTEXT           "Build:",130,4,136,60,8,SS_NOPREFIX
     LTEXT           "<owlnext revision>",IDC_OWLNEXTBUILD,64,136,188,8,SS_NOPREFIX
     LTEXT           "Date:",119,4,147,60,8,SS_NOPREFIX
     LTEXT           "<owlnext date>",IDC_OWLNEXTBUILDDATE,64,147,188,8,SS_NOPREFIX
