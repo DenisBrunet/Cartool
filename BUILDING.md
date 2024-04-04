@@ -1,10 +1,15 @@
 # Building Cartool from sources
 
-## Tools
+Cartool currently targets only **Windows platform 64bit architecture**. It might be possible to target a 32bit architecture, as it was the case before being abandonned.
+Porting to other platforms is not under investigations for the moment.
 
-Visual Studio 2019 is the compiler currently used.
-Visual Studio 2015 might work for Cartool itlself, but maybe not for all dependencies.
-Visual Studio 2022 ought to be working, but no project is offered for the moment
+## Compiler
+
+**Visual Studio 2019** is the current compiler for dev.
+
+**Visual Studio 2022** should be working, but has not been fully tested yet.
+
+**Visual Studio 2015** *might* be working for Cartool itself, but some dependencies might not support it.
 
 ## Dependencies
 
