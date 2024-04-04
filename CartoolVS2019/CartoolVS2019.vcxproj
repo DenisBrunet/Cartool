@@ -109,8 +109,8 @@
       <HeapReserveSize>10485760</HeapReserveSize>
       <StackReserveSize>10485760</StackReserveSize>
       <OptimizeReferences>true</OptimizeReferences>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <ResourceCompile>
       <Culture>0x0009</Culture>

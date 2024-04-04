@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <OwlNextRoot>E:\OwlNext</OwlNextRoot>
+    <OwlNextRoot>E:\OwlNext7012</OwlNextRoot>
     <CartoolRoot>E:\Development\C++\Cartool</CartoolRoot>
     <ArmadilloRoot>E:\Development\C++\Armadillo\armadillo-12.8.1</ArmadilloRoot>
   </PropertyGroup>
