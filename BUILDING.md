@@ -69,8 +69,36 @@ Using *vcpkg*, install **pcre Version: 8.45**:
 ```
 .\vcpkg install pcre
 ````
-
 ***Important***: there are 2 versions of pcre, we use pcre here, *not* pcre2!
 
 ## OwlNext 7
+Cartool uses an application framework library called [***OwlNext***](https://sourceforge.net/p/owlnext/wiki/Main_Page/), which is very similar to the *Microsoft Foundation Class*.
+
+It is *not* available from *vcpkg*, nor from *GitHub*, but only from *sourceforge.net* as source files. This meand you need to build the library yourself, though there should not be any major difficulties if you follow the following steps.
+
+*If you are going to compile and distribute Cartool from sources, you need to pay attention to the following licensing terms*:
+- [OWLNext License.txt](https://sourceforge.net/p/owlnext/code/HEAD/tree/trunk/OWLNext%20License.txt)
+- [Frequently_Asked_Questions/#license](https://sourceforge.net/p/owlnext/wiki/Frequently_Asked_Questions/#license)
+
+Installation and build:
+- [OwlNext step-by-step installation](https://sourceforge.net/p/owlnext/wiki/Installing_OWLNext/)
+- Download latest stable release, here [7.0.12](https://sourceforge.net/p/owlnext/code/HEAD/tree/tags/7.0.12/)
+- Edit the following files:
+  | File | Line | Replace | by |
+  | :- | :- | :-  | :- |
+  | registry.h | 264 | std::byte | BYTE |
+  | decframe.h | 24 | const int | #define |
+  | framewin.h | 28, 29 | const unsigned int | #define |
+- Open the provided solution file ".\source\owlcore\VS\OWLNext.sln" in Visual Studio
+- Open *Project Property Pages* and change the following options:
+  | Option | Set to |
+  | :- | :- |
+  | Output Directory | **..\\..\\..\\lib\\** |   
+  | Target Name | **owl-7.0-v1920-x64-t.lib** (release) |   
+  | Target Name | **owl-7.0-v1920-x64-dt.lib** (debug) |   
+  | Character Set | **Not Set** |   
+- **Build both Debug and Release for x64 platform**
+- Check you now have 2 .lib files in the .\\lib directory
+
+
 
