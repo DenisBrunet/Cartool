@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.31402.337
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CartoolVS2019", "CartoolVS2019.vcxproj", "{42EFA2C4-47A6-4B4A-86CF-61C95C1FDF6E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Examples", "..\Examples\Examples.vcxproj", "{759804BC-FA6C-4DC2-92C8-D96974F26E35}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{42EFA2C4-47A6-4B4A-86CF-61C95C1FDF6E}.Debug|x64.Build.0 = Debug|x64
 		{42EFA2C4-47A6-4B4A-86CF-61C95C1FDF6E}.Release|x64.ActiveCfg = Release|x64
 		{42EFA2C4-47A6-4B4A-86CF-61C95C1FDF6E}.Release|x64.Build.0 = Release|x64
+		{759804BC-FA6C-4DC2-92C8-D96974F26E35}.Debug|x64.ActiveCfg = Debug|x64
+		{759804BC-FA6C-4DC2-92C8-D96974F26E35}.Debug|x64.Build.0 = Debug|x64
+		{759804BC-FA6C-4DC2-92C8-D96974F26E35}.Release|x64.ActiveCfg = Release|x64
+		{759804BC-FA6C-4DC2-92C8-D96974F26E35}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

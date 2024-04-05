@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{759804bc-fa6c-4dc2-92c8-d96974f26e35}</ProjectGuid>
+    <RootNamespace>Examples</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+    <UseInteloneMKL>Parallel</UseInteloneMKL>
+    <UseILP64Interfaces1A>true</UseILP64Interfaces1A>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+    <UseInteloneMKL>Parallel</UseInteloneMKL>
+    <UseILP64Interfaces1A>true</UseILP64Interfaces1A>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\CartoolVS2019\LibrariesPaths.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\CartoolVS2019\LibrariesPaths.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\Bin\</OutDir>
+    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;Src;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OwlNextRoot)\lib;..\Lib;..\CartoolVS2019\x64\Debug;$(LibraryPath)</LibraryPath>
+    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;Src;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
+    <OutDir>..\Bin\</OutDir>
+    <ReferencePath>$(VC_ReferencesPath);</ReferencePath>
+    <TargetName>$(ProjectName)d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\Bin\</OutDir>
+    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;Src;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OwlNextRoot)\lib;..\Lib;..\CartoolVS2019\x64\Release;$(LibraryPath)</LibraryPath>
+    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;Src;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
+    <OutDir>..\Bin\</OutDir>
+    <ReferencePath>$(VC_ReferencesPath);</ReferencePath>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level1</WarningLevel>
+      <SDLCheck>
+      </SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <OpenMPSupport>true</OpenMPSupport>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableSpecificWarnings>26812;6031;6993</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>AnalyzeGeneratedDataUI.obj;Volumes.AAL.obj;BadEpochs.obj;BatchAveragingFilesUI.obj;BatchProcessMrisUI.obj;BrainToSolutionPointsUI.obj;Electrodes.BuildTemplateElectrodes.obj;BuildTemplateElectrodesUI.obj;CartoolTypes.obj;ComputeCentroidFiles.obj;ComputeCentroidFilesUI.obj;ComputingTemplateMri.obj;ComputingTemplateMriUI.obj;Volumes.SagittalTransversePlanes.obj;CoregistrationMrisUI.obj;CorrelateFiles.obj;CorrelateFilesUI.obj;Dialogs.Input.obj;Dialogs.TSuperGauge.obj;TPreprocessMrisDialog.obj;PreprocessMris.obj;DownsamplingElectrodesUI.obj;Electrodes.Utils.obj;ESI.HeadSphericalModel.obj;ESI.InverseModels.obj;ESI.LeadFields.obj;ESI.SolutionPoints.obj;ESI.TissuesConductivities.obj;ESI.TissuesThicknesses.obj;Electrodes.ExtractElectrodesFromKrios.obj;ExtractElectrodesFromKriosUI.obj;Files.BatchAveragingFiles.obj;Files.Conversions.obj;Files.ReadFromHeader.obj;Files.TGoF.obj;Files.Utils.obj;FilesConversionVrbToTvaUI.obj;TMicroStates.obj;TMicroStates.ClusteringKMeans.obj;TMicroStates.ClusteringTAAHC.obj;TMicroStates.Segmentation.obj;TMicroStates.ClusteringMetaCriterion.obj;TMicroStates.ClusteringCriteria.obj;TMicroStates.SmoothingLabeling.obj;TMicroStates.RejectSmallSegments.obj;TMicroStates.SequentializeSegments.obj;TMicroStates.MergeCorrelatedSegments.obj;TMicroStates.RejectLowCorrelation.obj;TMicroStates.ReorderingSegments.obj;TMicroStates.BackFitting.obj;TComputingRisDialog.obj;ESI.ComputingRis.obj;TCreateInverseMatricesDialog.obj;TCreateRoisDialog.obj;GenerateRois.obj;GenerateData.obj;GenerateDataUI.obj;GenerateOscillatingData.obj;GenerateOscillatingDataUI.obj;GenerateRandomData.obj;GenerateRandomDataUI.obj;Geometry.TDisplaySpaces.obj;Geometry.TGeometryTransform.obj;Geometry.TOrientation.obj;Geometry.TPoints.obj;Geometry.TTriangleSurface.ComputeIsoSurfaceBox.obj;Geometry.TTriangleSurface.ComputeIsoSurfaceMarchingCube.obj;Geometry.TTriangleSurface.ComputeIsoSurfaceMinecraft.obj;Geometry.TTriangleSurface.SurfaceThroughPoints.obj;Geometry.TTriangleSurface.IsosurfaceFromVolume.obj;Geometry.TTriangleNetwork.obj;TFileCalculatorDialog.obj;FileCalculator.obj;TTracksFiltersDialog.obj;TMicroStatesSegDialog.obj;TFrequencyAnalysisDialog.obj;FrequencyAnalysis.obj;GlobalOptimize.obj;GlobalOptimize.Points.obj;GlobalOptimize.Tracks.obj;GlobalOptimize.Volumes.obj;Files.PreProcessFiles.obj;TRisToVolumeDialog.obj;ESI.RisToVolume.obj;TMicroStatesFitDialog.obj;Math.Statistics.obj;TStatisticsDialog.obj;TTracksAveragingDialogs.obj;TExportTracksDialog.obj;ReprocessTracks.obj;TInterpolateTracks.obj;TInterpolateTracksDialog.obj;ICA.obj;Math.Armadillo.obj;Math.FFT.MKL.obj;Math.Histo.obj;Math.Random.obj;Math.Resampling.obj;Math.Stats.obj;Math.TMatrix44.obj;Math.Utils.obj;MergeTracksToFreqFilesUI.obj;MergingMriMasks.obj;MergingMriMasksUI.obj;OpenGL.Colors.obj;OpenGL.Drawing.obj;OpenGL.Font.obj;OpenGL.Geometry.obj;OpenGL.Lighting.obj;OpenGL.obj;OpenGL.Texture3D.obj;PCA.obj;PCA_ICA_UI.obj;RisToCloudVectorsUI.obj;SplitFreqFilesUI.obj;Strings.Grep.obj;Strings.TSplitStrings.obj;Strings.TStrings.obj;Strings.TStringsMap.obj;Strings.Utils.obj;System.obj;Volumes.TTalairachOracle.obj;TBaseDialog.obj;TBaseDoc.obj;TBaseView.obj;TCartoolAboutDialog.obj;TCartoolApp.obj;TCartoolDocManager.obj;TCartoolMdiChild.obj;TCartoolMdiClient.obj;TCartoolVersionInfo.obj;TCoregistrationDialog.obj;Electrodes.TransformElectrodes.obj;TEegBIDMC128Doc.obj;TEegBioLogicDoc.obj;TEegBiosemiBdfDoc.obj;TEegBrainVisionDoc.obj;TEegCartoolEpDoc.obj;TEegCartoolSefDoc.obj;TEegEgiMffDoc.obj;TEegEgiNsrDoc.obj;TEegEgiRawDoc.obj;TEegERPSSRdfDoc.obj;TEegMicromedTrcDoc.obj;TEegMIDDoc.obj;TEegNeuroscanAvgDoc.obj;TEegNeuroscanCntDoc.obj;TElectrodesDoc.obj;TElectrodesView.obj;TElsDoc.obj;TExportTracks.obj;TExportVolume.obj;TFreqCartoolDoc.obj;TFreqDoc.obj;TFrequenciesView.obj;TGlobalOpenGL.obj;TInverseMatrixDoc.obj;TInverseMatrixView.obj;TInverseView.obj;TLabeling.obj;TLeadField.obj;TLinkManyDoc.obj;TLinkManyView.obj;TLocDoc.obj;TMaps.obj;TMarkers.obj;TMatrixIsDoc.obj;TMatrixSpinvDoc.obj;TParser.obj;TPotentialsView.obj;TRisDoc.obj;TRois.obj;TRoisDoc.obj;TRoisView.obj;TScanTriggersDialog.obj;TSecondaryView.obj;TSegDoc.obj;TSelection.obj;TSolutionPointsDoc.obj;TSolutionPointsView.obj;TSpiDoc.obj;TSxyzDoc.obj;TTFCursor.obj;TTracksDoc.obj;TTracksView.obj;TTracksViewScrollbar.obj;TVolume.SkullStripping.obj;TVolume.TissuesSegmentation.obj;TVolumeAnalyzeDoc.obj;TVolumeAvsDoc.obj;TVolumeDoc.obj;TVolumeNiftiDoc.obj;TVolumeRegions.obj;TVolumeView.obj;TVolumeVmrDoc.obj;TXyzDoc.obj;Volumes.Coregistration.obj;OPENGL32.LIB;GLU32.LIB;htmlhelp.lib;version.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level1</WarningLevel>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>
+      </SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <OpenMPSupport>true</OpenMPSupport>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableSpecificWarnings>26812;6031;6993</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>AnalyzeGeneratedDataUI.obj;Volumes.AAL.obj;BadEpochs.obj;BatchAveragingFilesUI.obj;BatchProcessMrisUI.obj;BrainToSolutionPointsUI.obj;Electrodes.BuildTemplateElectrodes.obj;BuildTemplateElectrodesUI.obj;CartoolTypes.obj;ComputeCentroidFiles.obj;ComputeCentroidFilesUI.obj;ComputingTemplateMri.obj;ComputingTemplateMriUI.obj;Volumes.SagittalTransversePlanes.obj;CoregistrationMrisUI.obj;CorrelateFiles.obj;CorrelateFilesUI.obj;Dialogs.Input.obj;Dialogs.TSuperGauge.obj;TPreprocessMrisDialog.obj;PreprocessMris.obj;DownsamplingElectrodesUI.obj;Electrodes.Utils.obj;ESI.HeadSphericalModel.obj;ESI.InverseModels.obj;ESI.LeadFields.obj;ESI.SolutionPoints.obj;ESI.TissuesConductivities.obj;ESI.TissuesThicknesses.obj;Electrodes.ExtractElectrodesFromKrios.obj;ExtractElectrodesFromKriosUI.obj;Files.BatchAveragingFiles.obj;Files.Conversions.obj;Files.ReadFromHeader.obj;Files.TGoF.obj;Files.Utils.obj;FilesConversionVrbToTvaUI.obj;TMicroStates.obj;TMicroStates.ClusteringKMeans.obj;TMicroStates.ClusteringTAAHC.obj;TMicroStates.Segmentation.obj;TMicroStates.ClusteringMetaCriterion.obj;TMicroStates.ClusteringCriteria.obj;TMicroStates.SmoothingLabeling.obj;TMicroStates.RejectSmallSegments.obj;TMicroStates.SequentializeSegments.obj;TMicroStates.MergeCorrelatedSegments.obj;TMicroStates.RejectLowCorrelation.obj;TMicroStates.ReorderingSegments.obj;TMicroStates.BackFitting.obj;TComputingRisDialog.obj;ESI.ComputingRis.obj;TCreateInverseMatricesDialog.obj;TCreateRoisDialog.obj;GenerateRois.obj;GenerateData.obj;GenerateDataUI.obj;GenerateOscillatingData.obj;GenerateOscillatingDataUI.obj;GenerateRandomData.obj;GenerateRandomDataUI.obj;Geometry.TDisplaySpaces.obj;Geometry.TGeometryTransform.obj;Geometry.TOrientation.obj;Geometry.TPoints.obj;Geometry.TTriangleSurface.ComputeIsoSurfaceBox.obj;Geometry.TTriangleSurface.ComputeIsoSurfaceMarchingCube.obj;Geometry.TTriangleSurface.ComputeIsoSurfaceMinecraft.obj;Geometry.TTriangleSurface.SurfaceThroughPoints.obj;Geometry.TTriangleSurface.IsosurfaceFromVolume.obj;Geometry.TTriangleNetwork.obj;TFileCalculatorDialog.obj;FileCalculator.obj;TTracksFiltersDialog.obj;TMicroStatesSegDialog.obj;TFrequencyAnalysisDialog.obj;FrequencyAnalysis.obj;GlobalOptimize.obj;GlobalOptimize.Points.obj;GlobalOptimize.Tracks.obj;GlobalOptimize.Volumes.obj;Files.PreProcessFiles.obj;TRisToVolumeDialog.obj;ESI.RisToVolume.obj;TMicroStatesFitDialog.obj;Math.Statistics.obj;TStatisticsDialog.obj;TTracksAveragingDialogs.obj;TExportTracksDialog.obj;ReprocessTracks.obj;TInterpolateTracks.obj;TInterpolateTracksDialog.obj;ICA.obj;Math.Armadillo.obj;Math.FFT.MKL.obj;Math.Histo.obj;Math.Random.obj;Math.Resampling.obj;Math.Stats.obj;Math.TMatrix44.obj;Math.Utils.obj;MergeTracksToFreqFilesUI.obj;MergingMriMasks.obj;MergingMriMasksUI.obj;OpenGL.Colors.obj;OpenGL.Drawing.obj;OpenGL.Font.obj;OpenGL.Geometry.obj;OpenGL.Lighting.obj;OpenGL.obj;OpenGL.Texture3D.obj;PCA.obj;PCA_ICA_UI.obj;RisToCloudVectorsUI.obj;SplitFreqFilesUI.obj;Strings.Grep.obj;Strings.TSplitStrings.obj;Strings.TStrings.obj;Strings.TStringsMap.obj;Strings.Utils.obj;System.obj;Volumes.TTalairachOracle.obj;TBaseDialog.obj;TBaseDoc.obj;TBaseView.obj;TCartoolAboutDialog.obj;TCartoolApp.obj;TCartoolDocManager.obj;TCartoolMdiChild.obj;TCartoolMdiClient.obj;TCartoolVersionInfo.obj;TCoregistrationDialog.obj;Electrodes.TransformElectrodes.obj;TEegBIDMC128Doc.obj;TEegBioLogicDoc.obj;TEegBiosemiBdfDoc.obj;TEegBrainVisionDoc.obj;TEegCartoolEpDoc.obj;TEegCartoolSefDoc.obj;TEegEgiMffDoc.obj;TEegEgiNsrDoc.obj;TEegEgiRawDoc.obj;TEegERPSSRdfDoc.obj;TEegMicromedTrcDoc.obj;TEegMIDDoc.obj;TEegNeuroscanAvgDoc.obj;TEegNeuroscanCntDoc.obj;TElectrodesDoc.obj;TElectrodesView.obj;TElsDoc.obj;TExportTracks.obj;TExportVolume.obj;TFreqCartoolDoc.obj;TFreqDoc.obj;TFrequenciesView.obj;TGlobalOpenGL.obj;TInverseMatrixDoc.obj;TInverseMatrixView.obj;TInverseView.obj;TLabeling.obj;TLeadField.obj;TLinkManyDoc.obj;TLinkManyView.obj;TLocDoc.obj;TMaps.obj;TMarkers.obj;TMatrixIsDoc.obj;TMatrixSpinvDoc.obj;TParser.obj;TPotentialsView.obj;TRisDoc.obj;TRois.obj;TRoisDoc.obj;TRoisView.obj;TScanTriggersDialog.obj;TSecondaryView.obj;TSegDoc.obj;TSelection.obj;TSolutionPointsDoc.obj;TSolutionPointsView.obj;TSpiDoc.obj;TSxyzDoc.obj;TTFCursor.obj;TTracksDoc.obj;TTracksView.obj;TTracksViewScrollbar.obj;TVolume.SkullStripping.obj;TVolume.TissuesSegmentation.obj;TVolumeAnalyzeDoc.obj;TVolumeAvsDoc.obj;TVolumeDoc.obj;TVolumeNiftiDoc.obj;TVolumeRegions.obj;TVolumeView.obj;TVolumeVmrDoc.obj;TXyzDoc.obj;Volumes.Coregistration.obj;OPENGL32.LIB;GLU32.LIB;htmlhelp.lib;version.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\Examples.cpp" />
+    <ClCompile Include="Src\ExampleTEasyStats.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CartoolVS2019\CartoolVS2019.vcxproj">
+      <Project>{42efa2c4-47a6-4b4a-86cf-61c95c1fdf6e}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
