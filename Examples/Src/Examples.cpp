@@ -14,9 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 \************************************************************************/
 
-void    ExampleTEasyStats ();
+#include    <iostream>
+
+#include    "TCartoolApp.h"
+crtl::TCartoolApp   app ( crtl::CartoolTitle, owl::Module, 0 ); // We need a (minimal) Cartool app object properly initialized
+
+
+void    ExampleTEasyStats   ();
+void    ExampleTTracks      ();
+
 
 int     main ()
 {
-ExampleTEasyStats ();
+ExampleTEasyStats   ();
+
+ExampleTTracks      ();
 }
