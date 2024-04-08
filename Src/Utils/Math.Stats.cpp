@@ -1304,7 +1304,7 @@ iqrright    = ( right.Quantile ( 0.50 ) - center                  ) * IQRToSigma
 }
 
 
-double  TEasyStats::TruncatedMean ( double from, double to )
+double  TEasyStats::TruncatedMean ( double qfrom, double qto )
 {
 if ( ! ( IsAllocated () && NumItems ) )
     return  0;
@@ -1312,8 +1312,8 @@ if ( ! ( IsAllocated () && NumItems ) )
 Sort ();
 
 double              sum             = 0;
-int                 fromi           = Round ( ( NumItems - 1 ) * Clip ( 1 - to,   (double) 0, (double) 1 ) ); // data sorted descending
-int                 toi             = Round ( ( NumItems - 1 ) * Clip ( 1 - from, (double) 0, (double) 1 ) );
+int                 fromi           = Round ( ( NumItems - 1 ) * Clip ( 1 - qto,   (double) 0, (double) 1 ) );  // data sorted descending
+int                 toi             = Round ( ( NumItems - 1 ) * Clip ( 1 - qfrom, (double) 0, (double) 1 ) );
 
 
 OmpParallelForSum ( sum )

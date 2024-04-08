@@ -171,13 +171,18 @@ public:
     bool            IsAngular   ();
     bool            IsInteger   ();
 
-                                                //  Data ordering / storage not relevant
+                                                // These methods do NOT need to store data: fast execution and very small memory print
+    double          AbsoluteMax             ()                   { return  max ( fabs ( Max () ), fabs ( Min () ) ); }
     double          Average                 ();
     double          CoefficientOfVariation  ()                   { return  CoV (); }
     double          CoV                     (); // SD / Mean
     double          ConsistentMean          ( double penalty = 1 );     // Mean * ( 1 - SD )
+    double          Max                     ();
     double          Mean                    ()                   { return  Average (); }
+    double          Min                     ();
+    double          MinMax                  ( double v );
     double          Normalize               ( double v );   // results in [0..1]
+    double          Range                   ()                   { return  Max () - Min (); }
     double          RMS                     (); // Root Mean Square, kind of SD without mean subtraction
     double          SD                      ()                   { return  sqrt ( Variance () ); }
     double          SD                      ( double center )    { return  sqrt ( Variance ( center ) ); }
@@ -188,9 +193,9 @@ public:
     double          Variance                ();
     double          Variance                ( double center );
     double          ZScore                  ( double v );
-
-                                                //  Data ordering / storage relevant
-    double          AbsoluteMax             ()                   { return  max ( fabs ( Max () ), fabs ( Min () ) ); }
+                                                // These methods DO need to store all data points
+                                                // To enable that, pass a non-null allocation size upon creation, or call Resize
+                                                // Data order is NOT guaranteed AFTER calling any of these methods, as they will very likely call Sort
     double          ConsistentMedian        ( double penalty = 1 );     // Median * ( 1 - IQR )
     double          FirstMode               ( double noisethreshold = 0.50 );   // Give some threshold to ignore low values
     double          InterQuartileRange      ();
@@ -209,12 +214,8 @@ public:
     double          MaxModeHRM              ();                         // #2 estimate for 2 modes  - Done by Half Range Mode   ;HRM & HSM will asymptotically behave the same past ~128 samples
     double          MaxModeHSM              ();                         // #2 estimate for 1 mode   - Done by Half Sample Mode  ;HRM & HSM will asymptotically behave the same past ~128 samples
     void            MaxModeRobust           ( TEasyStats& statcenter );
-    double          Max                     ();
-    double          Min                     ();
-    double          MinMax                  ( double v );
     double          Qn                      ( int maxitems );           // Rousseeuw and Croux Qn for Robust Standard Deviation
     double          Quantile                ( double p );               // can return an interpolated value
-    double          Range                   ()                   { return  Max () - Min (); }
     double          RobustCoV               ();                         // CoV with Median and MAD: MAD / Median
     double          RobustKurtosis          ();                         // Using Median and MAD
     double          RobustKurtosisCS        ();                         // Crow Siddiqui estimate
@@ -230,13 +231,12 @@ public:
     double          SkewnessPearson         ();                         // adjusted Fisher-Pearson, parametric, sensitive to outliers
     double          SkewnessPearson         ( double center );          // adjusted Fisher-Pearson, parametric, sensitive to outliers
     void            SkewnessPearsonAsym     ( double center, double &skewleft, double &skewright );
-    double          TruncatedMean           ( double from, double to ); // mean without some extreme values
+    double          TruncatedMean           ( double qfrom, double qto );// mean without some extreme values
     void            VarianceAsym            ( double center, double &varleft, double &varright );
     double          ZScoreRobust            ( double v );
 
     int             PairsToNumItems         ( int numpairs = -1 );      // converting pairs of comparisons to the corresponding number of items
     int             NumItemsToPairs         ( int numitems      );      // converting number of items to pairs
-
 
     double          GaussianKernelDensity   ( KernelDensityType kdetype = KernelDensityDefault, int numgaussians = 1 );
 
@@ -252,23 +252,24 @@ public:
 
 
                     TEasyStats          ( const TEasyStats &op  );
-    TEasyStats&     operator    =       ( const TEasyStats &op2 );
+    TEasyStats&     operator        =   ( const TEasyStats &op2 );
 
 
-                    operator        int                     ()  { return    NumItems; }
-                    operator        TVector<float>&         ()  { return    Data;     }
+                    operator        int                     ()  const   { return    NumItems; }
+                    operator        const TVector<float>&   ()  const   { return    Data;     }
+                    operator              TVector<float>&   ()          { return    Data;     }
 
-    float          &operator        []              ( int i )   { return    Data[ i /*Clipped ( i, 0, NumItems - 1 )*/ ]; }
+    float           operator        []  ( int i )   const               { return    Data[ i ]; }    // !NO checks on index boundaries!
+    float&          operator        []  ( int i )                       { return    Data[ i ]; }
 
 
 private:
 
-//  TVector<double> Data;               // max sized - But do we really need double precision?
-    TVector<float>  Data;               // max sized
+    TVector<float>  Data;               // unallocated, or allocated to max size
     int             NumItems;           // actual # of data
-    bool            Sorted;
+    bool            Sorted;             // remember if data has been sorted or not
 
-                                        // for fast & simpler stats, don't allocate a buffer and simply compute these data on the fly:
+                                        // for faster & simpler stats, we need only these fields:
     double          CacheSum;
     double          CacheSum2;
     double          CacheMin;
