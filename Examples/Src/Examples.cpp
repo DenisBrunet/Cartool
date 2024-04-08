@@ -22,6 +22,7 @@ crtl::TCartoolApp   app ( crtl::CartoolTitle, owl::Module, 0 ); // We need a (mi
 
 void    ExampleTEasyStats   ();
 void    ExampleTTracks      ();
+void    ExampleTMaps        ();
 
 
 int     main ()
@@ -29,4 +30,6 @@ int     main ()
 ExampleTEasyStats   ();
 
 ExampleTTracks      ();
+
+ExampleTMaps        ();
 }

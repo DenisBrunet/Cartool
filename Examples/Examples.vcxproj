@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClCompile Include="Src\Examples.cpp" />
     <ClCompile Include="Src\ExampleTEasyStats.cpp" />
+    <ClCompile Include="Src\ExampleTMaps.cpp" />
     <ClCompile Include="Src\ExampleTTracks.cpp" />
   </ItemGroup>
   <ItemGroup>
