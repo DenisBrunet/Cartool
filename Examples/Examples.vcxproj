@@ -82,7 +82,7 @@
       <WarningLevel>Level1</WarningLevel>
       <SDLCheck>
       </SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;ARMA_USE_LAPACK;ARMA_USE_BLAS;ARMA_BLAS_LONG_LONG;STRICT;NOMINMAX;_HAS_AUTO_PTR_ETC=1;_HAS_STD_BYTE=0;_OWLPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <OpenMPSupport>true</OpenMPSupport>
@@ -91,6 +91,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <UndefinePreprocessorDefinitions>OWL_EV_SIGNATURE_CHECK;ARMA_DONT_ZERO_INIT</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,7 +105,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>
       </SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;ARMA_NO_DEBUG;ARMA_USE_LAPACK;ARMA_USE_BLAS;ARMA_BLAS_LONG_LONG;STRICT;NOMINMAX;_HAS_AUTO_PTR_ETC=1;_HAS_STD_BYTE=0;_OWLPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <OpenMPSupport>true</OpenMPSupport>
@@ -115,6 +116,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <UndefinePreprocessorDefinitions>ARMA_DONT_ZERO_INIT</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,6 +130,7 @@
   <ItemGroup>
     <ClCompile Include="Src\Examples.cpp" />
     <ClCompile Include="Src\ExampleTEasyStats.cpp" />
+    <ClCompile Include="Src\ExampleTTracks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CartoolVS2019\CartoolVS2019.vcxproj">

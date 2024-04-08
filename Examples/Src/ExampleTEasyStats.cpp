@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 \************************************************************************/
 
-#include    <iostream>
-
 #include	"Math.Stats.h"
 #include    "Math.Random.h"
 
@@ -25,8 +23,11 @@ using namespace crtl;
 void    ExampleTEasyStats ()
 {
 cout << fastendl;
+cout << "--------------------------------------------------------------------------------" << fastendl;
 cout << "ExampleTEasyStats:" << fastendl;
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Create a Normal random generator object
 double              center          = 0;
 double              spread          = 1;
@@ -116,6 +117,9 @@ cout << "Kurtosis               = " << stata.Kurtosis  ()                   << f
 cout << "RobustKurtosis         = " << stata.RobustKurtosis ()              << fastendl;
 cout << "SkewnessPearson        = " << statna.SkewnessPearson ()            << fastendl;
 cout << "RobustSkewnessPearson  = " << statna.RobustSkewnessPearson ()      << fastendl;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 cout << fastendl << flush;
 }
