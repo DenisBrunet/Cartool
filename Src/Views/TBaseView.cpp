@@ -1168,7 +1168,7 @@ if ( VkQuery () ) {
 //    ypos   += ydeltaS;
 //
 //    if ( dynamic_cast< TTracksDoc* > ( BaseDoc ) ) {
-//        SFont->Print ( xpos, ypos, zpos, dynamic_cast< TTracksDoc* > ( BaseDoc )->GetDim1TypeName (), TA_LEFT | TA_BOTTOM );
+//        SFont->Print ( xpos, ypos, zpos, dynamic_cast< TTracksDoc* > ( BaseDoc )->GetDim2TypeName (), TA_LEFT | TA_BOTTOM );
 ////      ypos   += ydeltaS;
 //        }
 

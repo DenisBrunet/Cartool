@@ -185,64 +185,62 @@ public:
     virtual void                ResetAuxTracks ();
 
 
+    virtual double  GetSamplingFrequency    ()          const   { return SamplingFrequency; }
+    virtual void    SetSamplingFrequency    ( double sf )       { Maxed ( sf, 0.0 ); if ( sf != SamplingFrequency ) { SamplingFrequency = sf; DirtySamplingFrequency = true; } }  // !caller is accountable for correct check & call!
     virtual long    GetNumTimeFrames        ()          const   { return NumTimeFrames;          }
     virtual long    GetStartingTimeFrame    ()          const   { return StartingTimeFrame;      }
     virtual long    AbsToRelTime            ( long tf ) const   { return tf - StartingTimeFrame; }
     virtual long    RelToAbsTime            ( long tf ) const   { return tf + StartingTimeFrame; }
-    int             GetDim1Type             ()          const   { return Dim1Type; }
-    const char*     GetDim1TypeName         ()          const;
+    int             GetDim2Type             ()          const   { return Dim2Type; }
+    const char*     GetDim2TypeName         ()          const;
 
-    virtual int     GetNumElectrodes        ()          const   { return NumElectrodes; }
-    virtual int     GetNumMinElectrodes     ()          const   { return NumMinElectrodes; }
-    virtual int     GetNumAuxElectrodes     ()          const   { return NumAuxElectrodes; }
-    virtual int     GetNumPseudoElectrodes  ()          const   { return TotalElectrodes - NumElectrodes; }
-    virtual int     GetTotalElectrodes      ()          const   { return TotalElectrodes; }
-    virtual int     GetNumValidElectrodes   ()          const   { return NumElectrodes - BadTracks.NumSetOr ( AuxTracks ); }
-    bool            HasPseudoElectrodes     ()          const   { return TotalElectrodes > NumElectrodes; }
-
-    virtual double  GetSamplingFrequency    ()          const   { return SamplingFrequency; }
-    virtual void    SetSamplingFrequency    ( double sf )       { Maxed ( sf, 0.0 ); if ( sf != SamplingFrequency ) { SamplingFrequency = sf; DirtySamplingFrequency = true; } }  // !caller is accountable for correct check & call!
-
-    int             GetNumSessions          ()          const   { return NumSequences; }
-    virtual int     GetCurrentSession       ()          const;  // 0 if only one session, otherwise 1..3 for 3 sessions
-    virtual void    GoToSession             ( int newsession = 0 );
-    virtual bool    UpdateSession           ( int newsession )  { return true; }
-    virtual void    UpdateTitle             ();
-
-    char*           GetBaseFileName         ( char* basefilename )  const;  // the base name to be used for any processing ouput (removing extension, caring for mff directory...)
-
+                                        // Channels / electrodes need to be differientiated
+    virtual int     GetNumElectrodes        ()          const   { return NumElectrodes;                     }           // Number of electrodes / tracks
+    virtual int     GetNumMinElectrodes     ()          const   { return NumMinElectrodes;                  }           // Number of electrodes minus auxiliaries
+    virtual int     GetNumAuxElectrodes     ()          const   { return NumAuxElectrodes;                  }           // Number of auxiliary channels
+    virtual int     GetNumPseudoElectrodes  ()          const   { return TotalElectrodes - NumElectrodes;   }           // Number of channels added by Cartool
+    virtual int     GetTotalElectrodes      ()          const   { return TotalElectrodes;                   }           // Grand total of all channels, i.e. size for arrays
+    virtual int     GetNumBadElectrodes     ()          const   { return BadTracks.NumSet ();               }           // Number of bad channels
+    virtual int     GetNumInvalidElectrodes ()          const   { return BadTracks.NumSetOr ( AuxTracks );  }           // Number of bad or auxiliary channels
+    virtual int     GetNumValidElectrodes   ()          const   { return NumElectrodes - GetNumInvalidElectrodes (); }  // Number of valid channels
+    bool            HasPseudoElectrodes     ()          const   { return TotalElectrodes > NumElectrodes;   }
     virtual const char*         GetElectrodeName    ( int e = 0 )   const   { return  ElectrodesNames[ e ]; }
     virtual const TStrings*     GetElectrodesNames  ()              const   { return &ElectrodesNames;      }
 
-                                        // Wrapping all sorts of handy index functions
-    virtual int     GetGfpIndex         ()              const   { return OffGfp; }
-    virtual int     GetDisIndex         ()              const   { return OffDis; }
-    virtual int     GetAvgIndex         ()              const   { return OffAvg; }
+                                        // Wrapping all sorts of handy channel indexes functions
+    virtual int     GetGfpIndex             ()          const   { return OffGfp; }
+    virtual int     GetDisIndex             ()          const   { return OffDis; }
+    virtual int     GetAvgIndex             ()          const   { return OffAvg; }
 
-    virtual int     GetFirstRegularIndex()              const   { return 0; }
-    virtual int     GetLastRegularIndex ()              const   { return NumElectrodes - 1; }
-    virtual int     GetFirstPseudoIndex ()              const   { return GetNumPseudoElectrodes() ? NumElectrodes       : -1; }
-    virtual int     GetLastPseudoIndex  ()              const   { return GetNumPseudoElectrodes() ? TotalElectrodes - 1 : -1; }
+    virtual int     GetFirstRegularIndex    ()          const   { return 0;                 }
+    virtual int     GetLastRegularIndex     ()          const   { return NumElectrodes - 1; }
+    virtual int     GetFirstPseudoIndex     ()          const   { return GetNumPseudoElectrodes() ? NumElectrodes       : -1; }
+    virtual int     GetLastPseudoIndex      ()          const   { return GetNumPseudoElectrodes() ? TotalElectrodes - 1 : -1; }
 
     int             GetNumSelectedRegular ( const TSelection& sel ) const   { return sel.NumSet ( GetFirstRegularIndex(), GetLastRegularIndex() ); }
     int             GetNumSelectedPseudo  ( const TSelection& sel ) const   { return GetNumPseudoElectrodes() ? sel.NumSet ( GetFirstPseudoIndex(),  GetLastPseudoIndex()  ) : 0; }
 
-    void            SetRegular          ( TSelection& sel )     const   { sel.Set   ( GetFirstRegularIndex(), GetLastRegularIndex() ); }
-    void            ClearRegular        ( TSelection& sel )     const   { sel.Reset ( GetFirstRegularIndex(), GetLastRegularIndex() ); }
-    void            SetPseudo           ( TSelection& sel )     const   { if ( GetNumPseudoElectrodes() ) sel.Set   ( GetFirstPseudoIndex(),  GetLastPseudoIndex()  ); }
-    void            ClearPseudo         ( TSelection& sel )     const   { if ( GetNumPseudoElectrodes() ) sel.Reset ( GetFirstPseudoIndex(),  GetLastPseudoIndex()  ); }
-    void            SetAuxs             ( TSelection& sel )     const   { sel  += AuxTracks; }
-    void            ClearAuxs           ( TSelection& sel )     const   { sel  -= AuxTracks; }
-    void            SetBads             ( TSelection& sel )     const   { sel  += BadTracks; }
-    void            ClearBads           ( TSelection& sel )     const   { sel  -= BadTracks; }
+    void            SetRegular      ( TSelection& sel ) const   { sel.Set   ( GetFirstRegularIndex(), GetLastRegularIndex() ); }
+    void            ClearRegular    ( TSelection& sel ) const   { sel.Reset ( GetFirstRegularIndex(), GetLastRegularIndex() ); }
+    void            SetPseudo       ( TSelection& sel ) const   { if ( GetNumPseudoElectrodes() ) sel.Set   ( GetFirstPseudoIndex(),  GetLastPseudoIndex()  ); }
+    void            ClearPseudo     ( TSelection& sel ) const   { if ( GetNumPseudoElectrodes() ) sel.Reset ( GetFirstPseudoIndex(),  GetLastPseudoIndex()  ); }
+    void            SetAuxs         ( TSelection& sel ) const   { sel  += AuxTracks; }
+    void            ClearAuxs       ( TSelection& sel ) const   { sel  -= AuxTracks; }
+    void            SetBads         ( TSelection& sel ) const   { sel  += BadTracks; }
+    void            ClearBads       ( TSelection& sel ) const   { sel  -= BadTracks; }
 
-                    // Initializing all structures during Open-ing time
-    virtual bool    SetArrays           ()  = 0;
+                                        // Recordings can store multiple blocks / sessions within the same file(!)
+    int             GetNumSessions      ()              const   { return NumSequences; }
+    virtual int     GetCurrentSession   ()              const;  // 0 if only one session, otherwise 1..3 for 3 sessions
+    virtual void    GoToSession         ( int newsession = 0 );
+    virtual bool    UpdateSession       ( int newsession )      { return true; }
+    virtual void    UpdateTitle         ();
+    char*           GetBaseFileName     ( char* basefilename )  const;  // the base name to be used for any processing ouput (removing extension, caring for mff directory...)
 
-                    // Reading the raw tracks from the file
+                                        // Reading the RAW TRACKS directly from the file
     virtual void    ReadRawTracks       ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )    = 0;
 
-                    // Reading the raw tracks then optionally filtering + reference + pseudo-tracks + rois
+                                        // Retrieving tracks with optional filter / re-reference / pseudo-tracks / ROIs computation
     virtual void    GetTracks           ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencesel = 0, TRois *rois = 0 );
 
 
@@ -276,7 +274,7 @@ protected:
                                         // Tracks parameters
     long            NumTimeFrames;      // Time Frames will be in the [0 .. NumTimeFrames - 1] range
     long            StartingTimeFrame;  // first "TF" value: 0 for actual EEG, or some Template index for segmentation f.ex.
-    int             Dim1Type;           // specifies first dimension
+    int             Dim2Type;           // specifies first dimension
 
     int             NumMinElectrodes;   // count of non-auxiliary electrodes
     int             NumAuxElectrodes;   // just the count of auxs
@@ -301,14 +299,16 @@ protected:
     bool                    FiltersActivated;   // applying or not said filters
 
     int             NumInverseSolutions;
+
                                                        // ignore No Reference and Average Reference, which is quite common
     bool            DirtyReference ()       { return  ! ( Reference == ReferenceAsInFile || Reference == ReferenceAverage ); }
     bool            DirtyBadTracks ()       { return  BadTracks.NumSet () > 0; }
     bool            DirtyAuxTracks ()       { return  AuxTracks.NumSet () > 0; }
     bool            DirtySamplingFrequency;
 
-
-    virtual void    ElectrodesNamesCleanUp ();
+                                        
+    virtual bool    SetArrays               () = 0;     // Initializing arrays at opening time
+    virtual void    ElectrodesNamesCleanUp  ();
 };
 
 

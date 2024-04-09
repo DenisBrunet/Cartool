@@ -99,7 +99,7 @@ CopyVirtualMemory ( ExtraContentTypeNames, TracksContentNames, NumTracksContentT
 
 NumTimeFrames       = 0;
 StartingTimeFrame   = 0;
-Dim1Type            = DimensionTypeUnknown;
+Dim2Type            = DimensionTypeUnknown;
 
 NumElectrodes       = 0;
 NumAuxElectrodes    = 0;
@@ -522,22 +522,23 @@ if      ( dynamic_cast< TFreqDoc* > ( this ) ) {
     ContentType         = ContentTypeFreq;
 
     if ( freqdoc->GetOriginalSamplingFrequency () )
-        Dim1Type            = freqdoc->GetSamplingFrequency () == freqdoc->GetOriginalSamplingFrequency () ? DimensionTypeTime : DimensionTypeWindow;
+        Dim2Type            = freqdoc->GetSamplingFrequency () == freqdoc->GetOriginalSamplingFrequency () ? DimensionTypeTime : DimensionTypeWindow;
     else {
-        Dim1Type            = freqdoc->GetSamplingFrequency () >= 250 ? DimensionTypeTime : DimensionTypeWindow;
+        Dim2Type            = freqdoc->GetSamplingFrequency () >= 250 ? DimensionTypeTime : DimensionTypeWindow;
         }
 
                                         // don't offset if there is a time origin set
-    if ( Dim1Type == DimensionTypeWindow && ! DateTime.IsOriginTimeAvailable ()  )
+    if ( Dim2Type == DimensionTypeWindow && ! DateTime.IsOriginTimeAvailable ()  )
         StartingTimeFrame   = 1;        // start from window "1"
 
-//    DBGV3 ( freqdoc->GetSamplingFrequency (), freqdoc->GetOriginalSamplingFrequency (), Dim1Type == DimensionTypeWindow, "SF,  Orig SF,  IsWindow" );
+//    DBGV3 ( freqdoc->GetSamplingFrequency (), freqdoc->GetOriginalSamplingFrequency (), Dim2Type == DimensionTypeWindow, "SF,  Orig SF,  IsWindow" );
     }
 
 
 else if ( dynamic_cast< TRisDoc * > ( this ) ) {
+
     ContentType         = ContentTypeRis;
-    Dim1Type            = DimensionTypeTime;
+    Dim2Type            = DimensionTypeTime;
 
     lookforcutpaste     = true;
     lookfortemplates    = true;
@@ -548,12 +549,12 @@ else if ( dynamic_cast< TSegDoc * > ( this ) ) {
 
     if      ( IsExtension ( GetTitle (), FILEEXT_SEG  ) ) {
         ContentType         = ContentTypeSeg;
-        Dim1Type            = DimensionTypeTime;
+        Dim2Type            = DimensionTypeTime;
         }
     else if ( IsExtension ( GetTitle (), FILEEXT_DATA ) ) {
         ContentType         = ContentTypeData;
 
-        Dim1Type            = StringIs ( ext2, InfixError ) ? DimensionTypeSegmentation : DimensionTypeTime;
+        Dim2Type            = StringIs ( ext2, InfixError ) ? DimensionTypeSegmentation : DimensionTypeTime;
         }
     }
 
@@ -561,7 +562,7 @@ else if ( dynamic_cast< TSegDoc * > ( this ) ) {
 else if ( dynamic_cast< TTracksDoc * > ( this ) ) {
                                         // all derived class have been tested above
     ContentType         = ContentTypeEeg;
-    Dim1Type            = DimensionTypeTime;
+    Dim2Type            = DimensionTypeTime;
 
                                         // refine the type of EEG
     if      ( dynamic_cast< TEegCartoolEpDoc  * > ( this ) ) {
@@ -591,7 +592,7 @@ else if ( dynamic_cast< TTracksDoc * > ( this ) ) {
 else {
     ContentType         = UnknownContentType;
     ExtraContentType    = TracksContentUnknown;
-    Dim1Type            = DimensionTypeUnknown;
+    Dim2Type            = DimensionTypeUnknown;
     }
 
 
@@ -612,7 +613,7 @@ if ( ( StringIs ( ext2, InfixSpectrum ) || StringContains ( (const char*) filena
   && IsPositive ( AtomTypeUseOriginal ) ) {
 
     ExtraContentType    = TracksContentSpectrum;
-    Dim1Type            = DimensionTypeFrequency;
+    Dim2Type            = DimensionTypeFrequency;
 
     if ( ! DateTime.IsOriginTimeAvailable () )
         StartingTimeFrame   = 1;
@@ -633,7 +634,7 @@ if ( ( StringIs ( ext2, InfixP       )
     ExtraContentType    = TracksContentPValues;
 
     if ( IsExtension ( GetTitle (), FILEEXT_DATA ) )
-        Dim1Type        = DimensionTypeTemplate;
+        Dim2Type        = DimensionTypeTemplate;
 
     lookforcutpaste     = false;
     lookfortemplates    = false;
@@ -643,9 +644,9 @@ if ( ( StringIs ( ext2, InfixP       )
 if ( StringIs ( ext2, InfixApproxEeg ) ) {
 
     ExtraContentType    = TracksContentUnknown; // not an ERP!
-    Dim1Type            = DimensionTypeWindow;
+    Dim2Type            = DimensionTypeWindow;
 
-    if ( Dim1Type == DimensionTypeWindow && ! DateTime.IsOriginTimeAvailable () )
+    if ( Dim2Type == DimensionTypeWindow && ! DateTime.IsOriginTimeAvailable () )
         StartingTimeFrame   = 1;            // start from window "1"
 
     lookforcutpaste     = false;
@@ -678,7 +679,7 @@ if ( StringGrep ( filename, InfixHistogramGrep, GrepOptionDefaultFiles ) ) {
 
     ContentType         = ContentTypeHistogram;
     ExtraContentType    = TracksContentUnknown; // not an ERP!
-    Dim1Type            = DimensionTypeValue;
+    Dim2Type            = DimensionTypeValue;
 
     lookforcutpaste     = false;
     lookfortemplates    = false;
@@ -761,7 +762,7 @@ if ( lookforcutpaste ) {
                                         // if very few TFs, then a collection
     if ( NumTimeFrames <= 50 ) {
         ExtraContentType    = TracksContentCollection;
-        Dim1Type            = DimensionTypeCollection;
+        Dim2Type            = DimensionTypeCollection;
 
         if ( ! DateTime.IsOriginTimeAvailable () )
             StartingTimeFrame   = 1;    // start from element "1"
@@ -804,7 +805,7 @@ if ( lookfortemplates && NumTimeFrames > 1 ) {
       ||           stats ( PseudoTrackOffsetAvg ).SNR     ()   > 1e1  ) {    // ESI Templates around 40, others around 4
 
         ExtraContentType    = TracksContentTemplates;
-        Dim1Type            = DimensionTypeTemplate;
+        Dim2Type            = DimensionTypeTemplate;
 
         if ( ! DateTime.IsOriginTimeAvailable () )
             StartingTimeFrame   = 1;    // start from template "1"
@@ -816,7 +817,7 @@ if ( lookfortemplates && NumTimeFrames > 1 ) {
 
 
 //char    buff[ 256 ];
-//DBGM3 ( GetContentTypeName ( buff ), GetDim1TypeName (), GetAtomTypeName ( AtomTypeUseOriginal ), "Content Type,  Dim 1 Type,  Atom Type" );
+//DBGM3 ( GetContentTypeName ( buff ), GetDim2TypeName (), GetAtomTypeName ( AtomTypeUseOriginal ), "Content Type,  Dim 1 Type,  Atom Type" );
 }
 
 
@@ -1045,12 +1046,12 @@ return  basefilename;
 
 
 //----------------------------------------------------------------------------
-const char* TTracksDoc::GetDim1TypeName ()  const
+const char* TTracksDoc::GetDim2TypeName ()  const
 {
-if ( Dim1Type < 0 || Dim1Type >= NumDimensionTypes )
+if ( Dim2Type < 0 || Dim2Type >= NumDimensionTypes )
     return  "";
 
-return  DimensionNames[ Dim1Type ];
+return  DimensionNames[ Dim2Type ];
 }
 
 

@@ -1190,7 +1190,7 @@ if ( stime ) {
 
         double      timeus      = TimeFrameToMicroseconds ( tf, EEGDoc->GetSamplingFrequency () );
 
-        if ( EEGDoc->GetDim1Type () == DimensionTypeFrequency )
+        if ( EEGDoc->GetDim2Type () == DimensionTypeFrequency )
 
             EEGDoc->DateTime.GetStringFrequency ( timeus, stime, interval );
 
@@ -1212,7 +1212,7 @@ if ( stime ) {
                                         // optionally format the date
 if ( sdate )
 
-    if ( interval || EEGDoc->GetDim1Type () == DimensionTypeFrequency )
+    if ( interval || EEGDoc->GetDim2Type () == DimensionTypeFrequency )
 
         ClearString ( sdate );
     else
@@ -1234,7 +1234,7 @@ if ( stime ) {
 
         double      timeus      = TimeFrameToMicroseconds ( dtf, EEGDoc->GetSamplingFrequency () );
                                         // keep into floating point
-        if ( EEGDoc->GetDim1Type () == DimensionTypeFrequency )
+        if ( EEGDoc->GetDim2Type () == DimensionTypeFrequency )
 
             EEGDoc->DateTime.GetStringFrequency ( timeus, stime, interval );
 
@@ -1272,8 +1272,8 @@ StringCopy ( title, (char *) EEGDoc->GetTitle (), "   " );
 
                                         // get the specific name of the X dimension
                                         // "Title   X="
-if ( EEGDoc->GetDim1Type () )
-    StringAppend ( title, EEGDoc->GetDim1TypeName (), "=" );
+if ( EEGDoc->GetDim2Type () )
+    StringAppend ( title, EEGDoc->GetDim2TypeName (), "=" );
 
 
                                         // get position
