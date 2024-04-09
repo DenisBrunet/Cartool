@@ -15,6 +15,8 @@ limitations under the License.
 \************************************************************************/
 
 #include    "TTracksDoc.h"
+#include    "TTracks.h"
+#include    "TExportTracks.h"
 
 using namespace std;
 using namespace crtl;
@@ -29,7 +31,8 @@ cout << fastendl;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           fileeeg         ( "E:\\Data\\Test Files\\Spontaneous\\cenbas.nsr" );
+TFileName           fileinput       ( "E:\\Data\\Test Files\\Spontaneous\\cenbas.nsr" );
+TFileName           fileoutput      ( "E:\\Data\\Test Files\\Spontaneous\\cenbas.Filtered.AvgRef." FILEEXT_BVEEG ); // BrainVision files can differentiate between triggers (recording) and markers (added)
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -37,7 +40,7 @@ TFileName           fileeeg         ( "E:\\Data\\Test Files\\Spontaneous\\cenbas
                                         // As all "doc" classes, they are handled by the application doc manager (opening, closing etc...)
                                         // The TOpenDoc class will nicely hide all the calls to said doc manager, though.
 
-TOpenDoc<TTracksDoc>    tracks  ( fileeeg, OpenDocHidden );     // there is no GUI, so open file hidden-style
+TOpenDoc<TTracksDoc>    tracks  ( fileinput, OpenDocHidden );     // there is no GUI, so open file hidden-style
 char                    buff[ KiloByte ];
 
                                         // Let's squeeze out some info...
@@ -74,6 +77,38 @@ cout << "Num trigger markers        = " << tracks->GetNumMarkers ( MarkerTypeTri
 cout << "Num manual markers         = " << tracks->GetNumMarkers ( MarkerTypeMarker  ) << fastendl;
 cout << "Total num markers          = " << tracks->GetNumMarkers () << fastendl;
 cout << fastendl;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Let's modify this data: band-pass filtering, Notch, and changing reference
+TTracksFilters<float>   filters;
+
+filters.Baseline                    = true;             // recommended with any high-pass filter
+
+filters.ButterworthHighRequested    = 1;                // these limits are a request, they will be checked and/or adjusted if out of range when calling SetFilters
+filters.ButterworthLowRequested     = 40;   
+filters.OrderHigh                   = 8;
+filters.OrderLow                    = 8;
+
+filters.Causal                      = FilterNonCausal;  // runs twice the filters: forward then backward
+
+filters.NumNotches                  = 1;
+filters.Notches[ 0 ]                = 50;
+filters.NotchesAutoHarmonics        = true;
+
+                                        // send to tracks, which will check and process user's request
+tracks->SetFilters      ( &filters, 0, true );
+                                        // activate filters
+tracks->ActivateFilters ( true );
+                                        // change to average reference
+tracks->SetReferenceType ( ReferenceAverage );
+
+                                        // write results to file
+cout << "Writing new file           = " << fileoutput << fastendl;
+                                        // change to new file name
+tracks->SetDocPath  ( fileoutput );
+                                        // then commit to disk
+tracks->Commit ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

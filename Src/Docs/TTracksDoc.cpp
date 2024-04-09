@@ -295,10 +295,10 @@ if ( ! ( IsDirty () || force ) )
     return  true;
 
 
-//DBGM3 ( GetDocPath (), GetAtomTypeName ( AtomTypeUseOriginal ), GetAtomTypeName ( AtomTypeUseCurrent ), "TTracksDoc::Commit" );
-
 if ( ! IsExtensionAmong ( GetDocPath (), AllCommitTracksExt ) ) {
-    ShowMessage ( "Can not save with this file extension!" "\n" "Try one of these extensions " AllCommitTracksExt, "Saving Tracks", ShowMessageWarning );
+    ShowMessage (   "Can not save with this file extension!" NewLine 
+                    "Try one of these extensions " AllCommitTracksExt, 
+                    "Saving Tracks", ShowMessageWarning );
     return  false;
     }
 
@@ -310,7 +310,11 @@ TRisDoc*            RISDoc          = dynamic_cast< TRisDoc* > ( this );
                                         // We need to disambiguate how to write vectorial data: either as vectors or as norm
 if ( RISDoc && ExtensionIs ( FILEEXT_RIS ) && IsVector ( AtomTypeUseOriginal ) )
                                         // we could also suggest Scalar without filtering
-    if ( GetOptionFromUser ( "Saving Vectorial RIS file as:\n\n\t(V)ectorial, with the original un-filtered data\n\t(S)calar, with the current filters", "Saving Tracks", "V S", 0 ) == 'V' )
+    if ( GetOptionFromUser (    "Saving Vectorial RIS file as:" NewLine 
+                                NewLine 
+                                Tab "(V)ectorial, with the original un-filtered data" NewLine 
+                                Tab "(S)calar, with the current filters", 
+                                "Saving Tracks", "V S", 0 ) == 'V' )
                                         // vectorial writing is done there
         return  RISDoc->CommitRis ( force );
 
@@ -346,13 +350,6 @@ expfile.Markers             = *this;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-//TSuperGauge         gauge;
-//gauge.Set ( "Saving Tracks" );
-//gauge.AddPart ( 0,  NumTimeFrames,              100 );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 int                 numdim          = atomdim * NumElectrodes;
 TTracks<float>      EegBuff         ( numdim, NumTimeFrames );
 
@@ -366,9 +363,6 @@ GetTracks   (   0,              NumTimeFrames - 1,
 
                                         // works for both scalar and 3D vectorial data (x0,y0,z0,x1,y1,z1...)
 expfile.Write ( EegBuff, Transposed );
-
-
-//gauge.HappyEnd ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

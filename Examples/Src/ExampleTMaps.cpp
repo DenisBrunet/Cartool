@@ -82,7 +82,10 @@ cout << "Average Norm               = " << norm.Average () << fastendl;
 cout << "Average GFP                = " << gfp .Average () << fastendl;
 
                                         // Write them to files
+cout << "Writing new file           = " << filemapsnorm << fastendl;
 norm.WriteFile ( filemapsnorm );
+
+cout << "Writing new file           = " << filemapsgfp << fastendl;
 gfp .WriteFile ( filemapsgfp  );
 
 
@@ -95,19 +98,23 @@ TMaps               corr;
 
                                         // Correlations across templates
 corr.Correlate  (   templates,  templates,  CorrelateTypeLinearLinear,  polarity, refcorr );
+cout << "Writing new file           = " << filetemplatescorr << fastendl;
 corr.WriteFile  ( filetemplatescorr );
 
                                         // Correlations across data
 corr.Correlate  (   maps,       maps,       CorrelateTypeLinearLinear,  polarity, refcorr );
+cout << "Writing new file           = " << filemapscorr << fastendl;
 corr.WriteFile  ( filemapscorr      );
 
                                         // Correlations between data and templates
 corr.Correlate  (   maps,       templates,  CorrelateTypeLinearLinear,  polarity, refcorr );
+cout << "Writing new file           = " << filemapstemplcorr << fastendl;
 corr.WriteFile  ( filemapstemplcorr );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Operating on files - same results as above:
+cout << "Writing new file           = " << "Correlation between 2 files" << fastendl;
 CorrelateFiles (    TGoF ( filemaps ),  TGoF ( filetemplates ), // single file is converted to a group of files (TGoF) on the fly
                     CorrelateTypeSpatialCorrelation, 
                     polarity,

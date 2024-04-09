@@ -57,10 +57,11 @@ p ( FilterParamDiameter )   = 7;
                                         // Filtering dimension 2, i.e. "tracks"
 tracks.FilterDim2 ( FilterTypeFastGaussian, p );
 
+cout << "Writing new file           = " << fileoutput << fastendl;
 tracks.WriteFile ( fileoutput );
 
 tracks.ComputeGFP ( gfp );
-cout << "Average GFP after Gaussin  = " << gfp.Average () << fastendl;
+cout << "Average GFP after Gaussian = " << gfp.Average () << fastendl;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
