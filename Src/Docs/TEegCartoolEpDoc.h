@@ -26,20 +26,20 @@ namespace crtl {
 class   TEegCartoolEpDoc    :   public  TTracksDoc
 {
 public:
-                    TEegCartoolEpDoc ( owl::TDocument *parent = 0 );
+                    TEegCartoolEpDoc    ( owl::TDocument *parent = 0 );
 
 
     bool            CanClose            ();
     bool            Close	            ();
     bool            IsOpen              ()  const           { return NumElectrodes > 0; }
     bool            Open 	            ( int mode, const char* path = 0 );
+
+
     static bool     ReadFromHeader      ( const char* file, ReadFromHeaderType what, void* answer );
-                                            // overriding virtual functions
-    bool            SetArrays           ();
-    void            ReadRawTracks       ( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0 );
-    void            GetStandDev         ( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0, TRois* rois = 0 );
-    bool            IsStandDevAvail     ();
-    void            SetReferenceType    ( ReferenceType ref, char *tracks = 0, const TStrings* elnames = 0 );
+    void            ReadRawTracks       ( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0 )                                  final;
+    void            GetStandDev         ( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0, TRois* rois = 0 )                 final;
+    bool            IsStandDevAvail     ()                                                                                              final;
+    void            SetReferenceType    ( ReferenceType ref, const char* tracks = 0, const TStrings* elnames = 0, bool verbose = true ) final;
 
 
 protected:
@@ -49,6 +49,8 @@ protected:
     TTracks<float>  Tracks;
     bool            CreatingEP;
 
+
+    bool            SetArrays           ()  override;
 };
 
 

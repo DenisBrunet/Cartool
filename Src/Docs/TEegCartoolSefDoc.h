@@ -83,11 +83,11 @@ public:
     bool            Close           ();
     bool            IsOpen          ()  const           { return NumElectrodes > 0; }
     bool            Open            ( int mode, const char *path = 0 );
-    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
 
-                                            // overriding virtual functions
-    bool            SetArrays       ();
-    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 );
+
+    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
+    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
+
 
 protected:
 
@@ -95,6 +95,9 @@ protected:
 
     TArray1<float>  Tracks;
     long            BuffSize;
+
+
+    bool            SetArrays       ()  final;
 };
 
 

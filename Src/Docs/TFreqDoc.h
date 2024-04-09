@@ -93,53 +93,52 @@ FrequencyAnalysisType   StringToFreqType    ( const char* freqtypestring );
 class   TFreqDoc    :   public  TTracksDoc
 {
 public:
-                    TFreqDoc ( owl::TDocument *parent = 0 );
+                    TFreqDoc                    ( owl::TDocument *parent = 0 );
 
                                         // owl::TDocument
-    bool            InitDoc         ();
-    bool            IsOpen	        ()  const           { return  NumFrequencies > 0; }
+    bool            InitDoc                     ();
+    bool            IsOpen	                    ()              const       { return  NumFrequencies > 0; }
 
                                         // TLimits
-    void            InitLimits ( bool precise = false );
+    void            InitLimits                  ( bool precise = false )    override;
 
                                         // TTracksDoc
-    void            SetReferenceType( ReferenceType, char* = 0, const TStrings* =0 ){ Reference     = ReferenceAsInFile; }    // re-referencing not allowed
-    bool            CanFilter       ()                                      const   { return false; }                   // filtering not allowed
-    bool            SetFiltersActivated ( bool state, bool silent = false )         { FiltersActivated = false; return FiltersActivated; }
-
-    void            GetTracks       ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencesel = 0, TRois *rois = 0 );
+    void            SetReferenceType            ( ReferenceType ref, const char* tracks = 0, const TStrings* elnames = 0, bool verbose = true ) final   { Reference = ReferenceAsInFile; }  // re-referencing not allowed
+    bool            CanFilter                   ()              const               final   { return false; }                   // filtering not allowed
+    bool            SetFiltersActivated         ( bool state, bool silent = false ) final   { FiltersActivated = false; return FiltersActivated; }
+    void            GetTracks                   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencesel = 0, TRois *rois = 0 )  override;
 
                                         // TFreqDoc
-    virtual int     GetNumFrequencies            ()                 const   { return NumFrequencies; }
-    virtual double  GetOriginalSamplingFrequency ()                 const   { return OriginalSamplingFrequency; }
+    virtual int     GetNumFrequencies           ()              const   { return NumFrequencies; }
+    virtual double  GetOriginalSamplingFrequency()              const   { return OriginalSamplingFrequency; }
 
-    virtual const char*     GetFrequencyName    ( int f = 0 )       const   { return  FrequenciesNames[ f ]; }
-    virtual const TStrings* GetFrequenciesNames ()                  const   { return &FrequenciesNames; }
+    virtual const char*     GetFrequencyName    ( int f = 0 )   const   { return  FrequenciesNames[ f ]; }
+    virtual const TStrings* GetFrequenciesNames ()              const   { return &FrequenciesNames; }
 
-    void            SetCurrentFrequency ( int f, bool notifyviews = false );   // if called by a view, prevent a call back
-    int             GetCurrentFrequency ()                          const   { return CurrentFrequency; }
-    int             GetFrequencyOffset  ()                          const   { return CurrentFrequency * TotalElectrodes; }
+    void            SetCurrentFrequency         ( int f, bool notifyviews = false );   // if called by a view, prevent a call back
+    int             GetCurrentFrequency         ()              const   { return CurrentFrequency; }
+    int             GetFrequencyOffset          ()              const   { return CurrentFrequency * TotalElectrodes; }
 
-    FrequencyAnalysisType   GetFreqType         ()      { return  IsInsideLimits ( FreqType, FreqUnknown, (FrequencyAnalysisType) ( NumFrequencyAnalysisTypes - 1 ) ) ? FreqType : FreqUnknown; }
-    const char*     GetFreqTypeName             ()      { return  FrequencyAnalysisNames[ GetFreqType () ]; }
-    bool            IsFreqTypeFFT               ()      { return  crtl::IsFreqTypeFFT               ( GetFreqType () ); }
-    bool            IsFreqTypeFFTApproximation  ()      { return  crtl::IsFreqTypeFFTApproximation  ( GetFreqType () ); }
-    bool            IsFreqTypeSTransform        ()      { return  crtl::IsFreqTypeSTransform        ( GetFreqType () ); }
-    bool            IsFreqTypeButterworthBank   ()      { return  crtl::IsFreqTypeButterworthBank   ( GetFreqType () ); }
-    bool            IsFreqTypeESI               ()      { return  crtl::IsFreqTypeESI               ( GetFreqType () ); }
-    bool            IsFreqTypeReal              ()      { return  crtl::IsFreqTypeReal              ( GetFreqType () ); }
-    bool            IsFreqTypeComplex           ()      { return  crtl::IsFreqTypeComplex           ( GetFreqType () ); }
-    bool            IsFreqTypePhase             ()      { return  crtl::IsFreqTypePhase             ( GetFreqType () ); }
-    bool            IsFreqTypePositive          ()      { return  crtl::IsFreqTypePositive          ( GetFreqType () ); }
+    FrequencyAnalysisType   GetFreqType         ()              const   { return  IsInsideLimits ( FreqType, FreqUnknown, (FrequencyAnalysisType) ( NumFrequencyAnalysisTypes - 1 ) ) ? FreqType : FreqUnknown; }
+    const char*     GetFreqTypeName             ()              const   { return  FrequencyAnalysisNames[ GetFreqType () ]; }
+    bool            IsFreqTypeFFT               ()              const   { return  crtl::IsFreqTypeFFT               ( GetFreqType () ); }
+    bool            IsFreqTypeFFTApproximation  ()              const   { return  crtl::IsFreqTypeFFTApproximation  ( GetFreqType () ); }
+    bool            IsFreqTypeSTransform        ()              const   { return  crtl::IsFreqTypeSTransform        ( GetFreqType () ); }
+    bool            IsFreqTypeButterworthBank   ()              const   { return  crtl::IsFreqTypeButterworthBank   ( GetFreqType () ); }
+    bool            IsFreqTypeESI               ()              const   { return  crtl::IsFreqTypeESI               ( GetFreqType () ); }
+    bool            IsFreqTypeReal              ()              const   { return  crtl::IsFreqTypeReal              ( GetFreqType () ); }
+    bool            IsFreqTypeComplex           ()              const   { return  crtl::IsFreqTypeComplex           ( GetFreqType () ); }
+    bool            IsFreqTypePhase             ()              const   { return  crtl::IsFreqTypePhase             ( GetFreqType () ); }
+    bool            IsFreqTypePositive          ()              const   { return  crtl::IsFreqTypePositive          ( GetFreqType () ); }
 
                                         // get all tracks (but no pseudos), all freqs, as they read from the file
-    virtual void    ReadFrequencies ( long tf1, long tf2, TSetArray2<float> &buff, int tfoffset = 0 ) = 0;
+    virtual void    ReadFrequencies             ( long tf1, long tf2, TSetArray2<float> &buff, int tfoffset = 0 ) = 0;
                                         // same as above, but can return real and imaginary parts
-    virtual void    ReadFrequencies ( long tf1, long tf2, TSetArray2<float> &realpart, TSetArray2<float> &imagpart, int tfoffset = 0 ) = 0;
+    virtual void    ReadFrequencies             ( long tf1, long tf2, TSetArray2<float> &realpart, TSetArray2<float> &imagpart, int tfoffset = 0 ) = 0;
                                         // get all tracks (pseudos optionals), all freqs
-    virtual void    GetFrequencies  ( long tf1, long tf2, TSetArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencesel = 0, TRois *rois = 0 );
+    virtual void    GetFrequencies              ( long tf1, long tf2, TSetArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencesel = 0, TRois *rois = 0 );
                                         // handy function to just retrieve data on-demands
-    virtual double  GetFreqValue    ( long el, long tf, long f ) = 0;
+    virtual double  GetFreqValue                ( long el, long tf, long f ) = 0;
 
                                         // process the file to have nicely ordered polarities
     void            SortFFTApproximation ();
@@ -147,11 +146,11 @@ public:
 
 protected:
 
-    int             NumFrequencies;
-    double          OriginalSamplingFrequency;  // the SamplingFrequency in the original file
-    TStrings        FrequenciesNames;           // frequency names
-    FrequencyAnalysisType   FreqType;           // type of analysis
-    int             CurrentFrequency;
+    int                     NumFrequencies;
+    double                  OriginalSamplingFrequency;  // the SamplingFrequency in the original file
+    TStrings                FrequenciesNames;           // frequency names
+    FrequencyAnalysisType   FreqType;                   // type of analysis that produced this frequency data
+    int                     CurrentFrequency;
 };
 
 
