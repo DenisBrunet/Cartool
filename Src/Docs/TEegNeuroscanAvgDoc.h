@@ -33,10 +33,9 @@ public:
 
     bool            CanClose        ();
     bool            Open            ( int mode, const char *path = 0 );
-    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
 
-                                            // overriding virtual functions
-    bool            SetArrays       ();
+
+    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
 
 
 protected:
@@ -44,6 +43,9 @@ protected:
     long            DataOrg;
     TArray1<double> Gains;
     TArray1<double> Zeros;
+
+
+    bool            SetArrays       ()  final;
 };
 
 

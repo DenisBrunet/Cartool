@@ -123,17 +123,14 @@ public:
     bool            Close           ();
     bool            Commit          ( bool force = false );
     bool            IsOpen          ()      const           { return  NumElectrodes > 0; }
-;
     bool            Open            ( int mode, const char *path = 0 );
+
+
     static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
-
-                                            // overriding virtual functions
-    bool            SetArrays       ();
-
-    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float>    &buff,                                  int tfoffset = 0 );
-    void            ReadFrequencies ( long tf1, long tf2, TSetArray2<float> &buff,                                  int tfoffset = 0 );
-    void            ReadFrequencies ( long tf1, long tf2, TSetArray2<float> &realpart, TSetArray2<float> &imagpart, int tfoffset = 0 );
-    double          GetFreqValue    ( long el, long tf, long f );
+    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float>    &buff,                                  int tfoffset = 0 )  final;
+    void            ReadFrequencies ( long tf1, long tf2, TSetArray2<float> &buff,                                  int tfoffset = 0 )  final;
+    void            ReadFrequencies ( long tf1, long tf2, TSetArray2<float> &realpart, TSetArray2<float> &imagpart, int tfoffset = 0 )  final;
+    double          GetFreqValue    ( long el, long tf, long f )                                                                        final;
 
 
 protected:
@@ -146,6 +143,9 @@ protected:
     TArray1<float>  Spectrum;
     size_t          SpectrumSize;
     size_t          AtomSize;
+
+
+    bool            SetArrays       ()  final;
 };
 
 

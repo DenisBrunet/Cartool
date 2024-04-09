@@ -86,20 +86,18 @@ EndBytePacking
 class   TEegMIDDoc  :   public  TTracksDoc
 {
 public:
-                    TEegMIDDoc ( owl::TDocument *parent = 0 );
+                    TEegMIDDoc      ( owl::TDocument *parent = 0 );
 
 
     bool            CanClose        ();
     bool            Close           ();
     bool            IsOpen          ()  const           { return NumElectrodes > 0; }
     bool            Open            ( int mode, const char *path = 0 );
+
+
     static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
+    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
 
-                                            // overriding virtual functions
-    bool            SetArrays       ();
-    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 );
-
-                                            // non-virtual functions
     bool            IsDataCalibrated()  const           { return DataCalibrated; }
     bool            IsXHCalibration ()  const           { return XHCalibration; }
     void            UseCalibration  ( TDFileExtHeaderCI *ci = 0 ); // used in ReadRawTracks only
@@ -108,27 +106,29 @@ public:
 
 protected:
 
-    owl::TInStream* InputStream;
-    int             BuffTFSize;
+    owl::TInStream*     InputStream;
+    int                 BuffTFSize;
 
-    bool            DataCalibrated;
-    bool            Polarity;
-    bool            BlockStructure;
-    bool            PackedDatas;
-    double          Zero;
-    double          Unit;
-    long            DataOrg;
-    long            ExtHeaderOrg;
-    bool            XHCalibration;
+    bool                DataCalibrated;
+    bool                Polarity;
+    bool                BlockStructure;
+    bool                PackedDatas;
+    double              Zero;
+    double              Unit;
+    long                DataOrg;
+    long                ExtHeaderOrg;
+    bool                XHCalibration;
 
     TDFileExtHeaderCI   XHCI;
     TDFileExtHeaderCI*  forceCI;
     TArray1<char>       DataInfo;
 
-    TArray1<float>  Tracks;
-    TArray1<short>  FileBuff;
-                                        // virtual TMarkers
-    void            ReadNativeMarkers ();
+    TArray1<float>      Tracks;
+    TArray1<short>      FileBuff;
+
+
+    bool            SetArrays           ()  final;
+    void            ReadNativeMarkers   ()  final;
 
     void            FileDataToMicroVolts ( const TDFileExtHeaderCI* ci = 0 );
 };

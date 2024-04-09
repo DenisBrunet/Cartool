@@ -104,7 +104,7 @@ EndBytePacking
 class   TEegEgiMffDoc   :   public  TTracksDoc
 {
 public:
-                    TEegEgiMffDoc ( owl::TDocument *parent = 0 );
+                    TEegEgiMffDoc   ( owl::TDocument *parent = 0 );
 
 
     bool            CanClose        ();
@@ -112,16 +112,16 @@ public:
     bool            IsOpen          ()  const           { return NumElectrodes > 0; }
     bool            Open            ( int mode, const char *path = 0 );
 
-                                            // overriding virtual functions
-    bool            SetArrays       ();
-    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 );
-    bool            UpdateSession   ( int newsession );
-    void            UpdateTitle     ();
+
+    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
+    bool            UpdateSession   ( int newsession )                                              final;
+    void            UpdateTitle     ()                                                              final;
 
     bool            IsNanoSecondsPrecision ()       { return Version == 0; }    // else micro-seconds (!)
 
 
 protected:
+
     owl::TInStream* InputStream;
 
     std::vector<UCHAR>                  Tracks;
@@ -134,8 +134,9 @@ protected:
     ULONG           MaxSamplesPerBlock;
     bool            EqualTracks;
 
-                                        // virtual TMarkers
-    void            ReadNativeMarkers ();
+
+    bool            SetArrays           ()  final;
+    void            ReadNativeMarkers   ()  final;
 
     void            DateTimeStringToFields          ( char *datetime, int &year, int &month, int &day, int &hour, int &minute, double &second );
     double          DurationStringToMicroseconds    ( char *duration );

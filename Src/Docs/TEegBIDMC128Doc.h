@@ -88,18 +88,18 @@ EndBytePacking
 class   TEegBIDMC128Doc :   public  TTracksDoc
 {
 public:
-                    TEegBIDMC128Doc (owl::TDocument *parent = 0);
+                    TEegBIDMC128Doc ( owl::TDocument *parent = 0 );
 
                    
     bool            CanClose    ();
     bool            Close       ();
     bool            IsOpen      ()  const       { return NumElectrodes > 0; }
     bool            Open        ( int mode, const char *path = 0 );
-    static bool     ReadFromHeader ( const char* file, ReadFromHeaderType what, void* answer );
 
-                                            // overriding virtual functions
-    bool            SetArrays ();
-    void            ReadRawTracks ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 );
+
+    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
+    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
+
 
 protected:
 
@@ -112,8 +112,10 @@ protected:
     int             Offset;
     TSelection      ValidElectrodes;
     int             MarkerIndex;
-                                        // virtual TMarkers
-    void            ReadNativeMarkers   ();
+
+
+    bool            SetArrays           ()  final;
+    void            ReadNativeMarkers   ()  final;
     inline void     TfToBlockOffset     ( const int& tf, int& block, int& offset )  const;
 
 };

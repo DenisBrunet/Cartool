@@ -45,7 +45,7 @@ class   TRisDoc :   public  TTracksDoc,     // tracks content
                     public  TInverseResults // can produce Inverse Solution results
 {
 public:
-                    TRisDoc ( owl::TDocument *parent = 0 );
+                    TRisDoc         ( owl::TDocument *parent = 0 );
 
 
     bool            Open            ( int mode, const char* path = 0 );
@@ -54,16 +54,15 @@ public:
     bool            IsOpen          ()  const               { return  NumElectrodes > 0; }
     bool            CommitRis       ( bool force = false );
 
-    static bool     ReadFromHeader ( const char* file, ReadFromHeaderType what, void* answer );
 
-    bool            SetArrays       ();
-    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 );
+    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
+    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
 
 
-    const char*     GetInverseTitle ()  const               { return owl::TFileDocument::GetTitle (); }
+    const char*     GetInverseTitle ()  const final         { return owl::TFileDocument::GetTitle (); } 
 
-    void            GetInvSol       ( int reg, long tf1, long tf2, TArray1< float         >& inv, TTracksView *eegview, TRois *rois = 0 )     const;
-    void            GetInvSol       ( int reg, long tf1, long tf2, TArray1< TVector3Float >& inv, TTracksView *eegview, TRois *rois = 0 )     const;
+    void            GetInvSol       ( int reg, long tf1, long tf2, TArray1< float         >& inv, TTracksView *eegview, TRois *rois = 0 )     const final;
+    void            GetInvSol       ( int reg, long tf1, long tf2, TArray1< TVector3Float >& inv, TTracksView *eegview, TRois *rois = 0 )     const final;
 
 
 protected:
@@ -72,6 +71,9 @@ protected:
 
     int             NumTracks;          // 1 or 3 * NumElectrodes, in the case of vectorial data
     int             TotalTracks;
+
+
+    bool            SetArrays       ()  final;
 };
 
 

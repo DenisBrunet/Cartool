@@ -52,35 +52,37 @@ EndBytePacking
 class   TEegEgiRawDoc   :   public  TTracksDoc
 {
 public:
-                    TEegEgiRawDoc ( owl::TDocument *parent = 0 );
+                    TEegEgiRawDoc   ( owl::TDocument *parent = 0 );
 
 
     bool            CanClose        ();
     bool            Close           ();
     bool            IsOpen          ()  const           { return NumElectrodes > 0; }
     bool            Open            ( int mode, const char *path = 0 );
-    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
 
-                                            // overriding virtual functions
-    bool            SetArrays       ();
-    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 );
+
+    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
+    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
+
 
 protected:
-    owl::TInStream* InputStream;
+    owl::TInStream*     InputStream;
 
-    long            DataOrg;
+    long                DataOrg;
 
-    int             NumElectrodesInFile;
+    int                 NumElectrodesInFile;
     std::vector<float>  Tracks;
     std::vector<char>   FileBuff;
-    int             BuffSize;
-    int             NumEvents;
-    double          ScaleData;
-    double          ScaleDataCalibrated;
+    int                 BuffSize;
+    int                 NumEvents;
+    double              ScaleData;
+    double              ScaleDataCalibrated;
     std::vector<double> Gains;
     std::vector<double> Zeros;
-                                        // virtual TMarkers
-    void            ReadNativeMarkers ();
+
+
+    bool            SetArrays           ()  final;
+    void            ReadNativeMarkers   ()  final;
 };
 
 

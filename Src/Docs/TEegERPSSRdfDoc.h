@@ -145,18 +145,17 @@ EndBytePacking
 class   TEegERPSSRdfDoc :   public  TTracksDoc
 {
 public:
-                    TEegERPSSRdfDoc (owl::TDocument *parent = 0);
+                    TEegERPSSRdfDoc ( owl::TDocument *parent = 0 );
 
 
     bool            CanClose        ();
     bool            Close           ();
     bool            IsOpen          ()  const           { return NumElectrodes > 0; }
     bool            Open            ( int mode, const char *path = 0 );
-    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
 
-                                            // overriding virtual functions
-    bool            SetArrays       ();
-    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 );
+
+    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
+    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
 
 
 protected:
@@ -173,8 +172,9 @@ protected:
     TArray1<int>    RecordSize;
     TArray1<int>    RemappingIndex;
 
-                                        // virtual TMarkers
-    void            ReadNativeMarkers   ();
+
+    bool            SetArrays           ()  final;
+    void            ReadNativeMarkers   ()  final;
     void            ProcessTracks       ( long reltf, bool firsttrack );
     inline void     TfToBlockOffset     ( const int& tf, int& block, long& offset )     const;
 

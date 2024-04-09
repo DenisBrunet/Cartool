@@ -76,11 +76,10 @@ public:
     bool            Close           ();
     bool            IsOpen          ()  const           { return NumElectrodes > 0; }
     bool            Open            ( int mode, const char *path = 0 );
+
+
     static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
-
-
-    bool            SetArrays       ();
-    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 );
+    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
 
 
 protected:
@@ -98,8 +97,9 @@ protected:
     TArray1<char>   Tracks;
     TArray1<double> Gain;
 
-                                        // virtual TMarkers
-    void            ReadNativeMarkers ();
+
+    bool            SetArrays           ()  final;
+    void            ReadNativeMarkers   ()  final;
 };
 
 

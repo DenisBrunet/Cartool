@@ -34,9 +34,11 @@ public:
     bool            Revert	        ( bool force = false );
     bool            IsOpen	        ()  const                   { return  NumElectrodes > 0; }
     bool            Open 	        ( int mode, const char *path = 0 );
-    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
 
-    void            ExtractToFile   ( const char* xyzfile, TSelection selection, bool removeselection )   const;
+
+    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
+    void            ExtractToFile   ( const char* xyzfile, TSelection selection, bool removeselection )   const final;
+
 
 protected:
 

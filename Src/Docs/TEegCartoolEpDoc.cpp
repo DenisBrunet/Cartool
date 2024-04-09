@@ -285,14 +285,14 @@ return true;
 
 
 //----------------------------------------------------------------------------
-void        TEegCartoolEpDoc::SetReferenceType ( ReferenceType ref, char *tracks, const TStrings* elnames )
+void        TEegCartoolEpDoc::SetReferenceType ( ReferenceType ref, const char* tracks, const TStrings* elnames, bool verbose )
 {
 if ( ExtensionIs ( FILEEXT_EEGEPSD )
   || ExtensionIs ( FILEEXT_EEGEPSE ) )  // stand. err.: no average reference
 
     TTracksDoc::SetReferenceType ( ReferenceAsInFile );
 else
-    TTracksDoc::SetReferenceType ( ref, tracks, elnames );
+    TTracksDoc::SetReferenceType ( ref, tracks, elnames, verbose );
 }
 
 

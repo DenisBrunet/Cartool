@@ -236,7 +236,7 @@ constexpr char* EgiEventCodes           = "SESS CELL bgin TRSP DIN resp fbck";
 class   TEegEgiNsrDoc   :   public  TTracksDoc
 {
 public:
-                    TEegEgiNsrDoc (owl::TDocument *parent = 0);
+                    TEegEgiNsrDoc   ( owl::TDocument *parent = 0 );
 
 
     bool            CanClose        ();
@@ -244,14 +244,13 @@ public:
     bool            IsOpen          ()  const           { return NumElectrodes > 0; }
     bool            Open            ( int mode, const char *path = 0 );
 
-                                            // overriding virtual functions
-    void            SetScaling      ( bool force = false, double mean = 0, TSelection* tos = 0 );
-    bool            SetArrays       ();
-    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 );
-    bool            UpdateSession   ( int newsession );
+
+    void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
+    bool            UpdateSession   ( int newsession )                                              final;
 
 
 protected:
+
     owl::TInStream*         InputStream;
 
     std::vector<float>      Tracks;
@@ -268,8 +267,9 @@ protected:
     unsigned long           Block;
     unsigned long           Offset;
 
-                                        // virtual TMarkers
-    void            ReadNativeMarkers   ();
+
+    bool            SetArrays           ()  final;
+    void            ReadNativeMarkers   ()  final;
     bool            SetGainsZeros       ( TEegEgiNsrMainHeader &mainheader, int session );
 };
 
