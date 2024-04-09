@@ -25,11 +25,12 @@ void    ExampleTEasyStats ()
 cout << fastendl;
 cout << "--------------------------------------------------------------------------------" << fastendl;
 cout << "ExampleTEasyStats:" << fastendl;
+cout << fastendl;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Create a Normal random generator object
-double              center          = 0;
+double              center          = 10;
 double              spread          = 1;
 TRandNormal         randnormal ( center, spread );
 
@@ -44,24 +45,23 @@ for ( int i = 0; i < numdata; i++ )
     statna.Add ( randnormal (), ThreadSafetyIgnore );
 
 
-cout << fastendl;
 cout << "TEasyStats, non-allocated:" << fastendl;
 
 cout << "Picking " << numdata << " random Gaussian data N(" << center << "," << spread << ")" << fastendl;
                                         // Parametric stats - these do not need any allocation
-cout << "Min            = " << statna.Min     ()                    << fastendl;
-cout << "Max            = " << statna.Max     ()                    << fastendl;
-cout << "Range          = " << statna.Range   ()                    << fastendl;
-cout << "AbsoluteMax    = " << statna.AbsoluteMax   ()              << fastendl;
-cout << "Mean           = " << statna.Mean    ()                    << fastendl;
-cout << "Variance       = " << statna.Variance()                    << fastendl;
-cout << "SD             = " << statna.SD      ()                    << fastendl;
-cout << "CoV            = " << statna.CoV     ()                    << fastendl;
-cout << "SNR            = " << statna.SNR     ()                    << fastendl;
-cout << "Sum            = " << statna.Sum     ()                    << fastendl;
-cout << "Sum2           = " << statna.Sum2    ()                    << fastendl;
+cout << "Min                    = " << statna.Min     ()                    << fastendl;
+cout << "Max                    = " << statna.Max     ()                    << fastendl;
+cout << "Range                  = " << statna.Range   ()                    << fastendl;
+cout << "AbsoluteMax            = " << statna.AbsoluteMax   ()              << fastendl;
+cout << "Mean                   = " << statna.Mean    ()                    << fastendl;
+cout << "Variance               = " << statna.Variance()                    << fastendl;
+cout << "SD                     = " << statna.SD      ()                    << fastendl;
+cout << "CoV                    = " << statna.CoV     ()                    << fastendl;
+cout << "SNR                    = " << statna.SNR     ()                    << fastendl;
+cout << "Sum                    = " << statna.Sum     ()                    << fastendl;
+cout << "Sum2                   = " << statna.Sum2    ()                    << fastendl;
 
-cout << fastendl << flush;
+cout << fastendl;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -72,16 +72,17 @@ cout << fastendl << flush;
                                         // needed, although it will gracefully resize itself if caller requests more
 TEasyStats          stata ( numdata );   
 
+TRandChiSquare      randchisquare ( 3 );
+
 for ( int i = 0; i < numdata; i++ )
-    stata.Add ( randnormal (), ThreadSafetyIgnore );
+    stata.Add ( randchisquare (), ThreadSafetyIgnore );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-cout << fastendl;
 cout << "TEasyStats, allocated:" << fastendl;
 
-cout << "Picking " << numdata << " random Gaussian data N(" << center << "," << spread << ")" << fastendl;
+cout << "Picking " << numdata << " random Chi Square data of degree " << 3 << fastendl;
 
                                         // Parametric stats - these do not need any allocation
 cout << "Min                    = " << stata.Min    ()                      << fastendl;
@@ -121,5 +122,5 @@ cout << "RobustSkewnessPearson  = " << statna.RobustSkewnessPearson ()      << f
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-cout << fastendl << flush;
+cout << fastendl;
 }

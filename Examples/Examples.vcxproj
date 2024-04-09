@@ -132,6 +132,7 @@
     <ClCompile Include="Src\ExampleTEasyStats.cpp" />
     <ClCompile Include="Src\ExampleTMaps.cpp" />
     <ClCompile Include="Src\ExampleTTracks.cpp" />
+    <ClCompile Include="Src\ExampleTTracksDoc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CartoolVS2019\CartoolVS2019.vcxproj">

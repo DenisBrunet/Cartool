@@ -26,6 +26,7 @@ void    ExampleTMaps ()
 cout << fastendl;
 cout << "--------------------------------------------------------------------------------" << fastendl;
 cout << "ExampleTMaps:" << fastendl;
+cout << fastendl;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -119,5 +120,5 @@ CorrelateFiles (    TGoF ( filemaps ),  TGoF ( filetemplates ), // single file i
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-cout << fastendl << flush;
+cout << fastendl;
 }

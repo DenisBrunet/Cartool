@@ -27,6 +27,7 @@ void    ExampleTTracks ()
 cout << fastendl;
 cout << "--------------------------------------------------------------------------------" << fastendl;
 cout << "ExampleTTracks:" << fastendl;
+cout << fastendl;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -64,5 +65,5 @@ cout << "Average GFP after Gaussin  = " << gfp.Average () << fastendl;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-cout << fastendl << flush;
+cout << fastendl;
 }
