@@ -107,7 +107,7 @@ tracks->SetReferenceType ( ReferenceAverage );
 cout << "Writing new file           = " << fileoutput << fastendl;
                                         // change to new file name
 tracks->SetDocPath  ( fileoutput );
-                                        // then commit to disk
+                                        // then commit to disk - for more control and options, use a TExportTracks class
 tracks->Commit ();
 
 
