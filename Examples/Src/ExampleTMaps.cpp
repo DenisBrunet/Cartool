@@ -29,13 +29,37 @@ cout << "ExampleTMaps:" << fastendl;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // TMaps class is relevant to work with the topographic approach, as it contains a lot of dedicated methods
-                                        // Maps[ t ] points to a vector of e contiguous values, corresponding to the e electrodes at time point t
+                                        // 2 input files
 TFileName           filemaps        ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE1.V1.Recut.Spatial.sef" );
 TFileName           filetemplates   ( "E:\\Data\\Test Files\\ERPs\\Faces.Templates.08.ep" );
 
-TMaps               maps        ( filemaps,      AtomTypeScalar, ReferenceAverage );
-TMaps               templates   ( filetemplates, AtomTypeScalar, ReferenceAverage );
+                                        // output files for norm and gfp lines
+TFileName           filemapsnorm    = filemaps;
+TFileName           filemapsgfp     = filemaps;
+
+PostfixFilename ( filemapsnorm, ".Norm" );
+PostfixFilename ( filemapsgfp,  ".Gfp"  );
+
+                                        // output files for correlations
+TFileName           filetemplatescorr   = filetemplates;
+TFileName           filemapscorr        = filemaps;
+TFileName           filemapstemplcorr   = filemaps;
+
+PostfixFilename ( filetemplatescorr, ".Correlations" );
+PostfixFilename ( filemapscorr,      ".Correlations" );
+PostfixFilename ( filemapstemplcorr, ".Correlations.Templates" );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // TMaps class is relevant when working with the topographic approach, as it contains a lot of dedicated methods
+                                        // Maps[ t ] points to a vector of e contiguous values, corresponding to the e electrodes at time point t
+
+AtomType            datatype        = AtomTypeScalar;   // EEG is signed, scalar data
+ReferenceType       ref             = ReferenceAverage; // Data will be read and averaged reference'd straight away
+
+                                        // Read the maps with proper data type and reference set
+TMaps               maps        ( filemaps,      datatype, ref );
+TMaps               templates   ( filetemplates, datatype, ref );
 
 
 cout << "Num tracks                 = " << maps.GetDimension () << fastendl;
@@ -44,42 +68,48 @@ cout << "Sampling Frequency         = " << maps.GetSamplingFrequency ()   << fas
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+                                        // Compute a single track that holds the norm of each map for each time point
 TVector<double>     norm;
 maps.ComputeNorm ( norm, ReferenceAverage );
 
+                                        // Compute a single track that holds the GFP of each map for each time point
 TVector<double>     gfp;
-maps.ComputeGFP ( gfp, ReferenceAverage, AtomTypeScalar );
+maps.ComputeGFP ( gfp, ReferenceAverage, datatype );
 
+                                        // Show the average norm and GFP
 cout << "Average Norm               = " << norm.Average () << fastendl;
-cout << "Average GFP                = " << gfp.Average () << fastendl;
+cout << "Average GFP                = " << gfp .Average () << fastendl;
 
-norm.WriteFile ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE1.V1.Recut.Spatial.Norm.sef" );
-gfp .WriteFile ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE1.V1.Recut.Spatial.Gfp.sef" );
+                                        // Write them to files
+norm.WriteFile ( filemapsnorm );
+gfp .WriteFile ( filemapsgfp  );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Computing some spatial correlations
-TMaps           corr;
-
-                                        // Operating on objects in memory
+PolarityType        polarity        = PolarityDirect;   // used for ERP cases, i.e. the sign of Correlation is relevant
+ReferenceType       refcorr         = ReferenceNone;    // we don't need to recompute the average reference here, as data has been re-referenced when read
+TMaps               corr;
+                                        // Operating on objects in memory:
 
                                         // Correlations across templates
-corr.Correlate  (   templates,  templates,  CorrelateTypeLinearLinear,  PolarityDirect, ReferenceNone );
-corr.WriteFile ( "E:\\Data\\Test Files\\ERPs\\Faces.Templates.08.Correlations.sef" );
+corr.Correlate  (   templates,  templates,  CorrelateTypeLinearLinear,  polarity, refcorr );
+corr.WriteFile  ( filetemplatescorr );
 
                                         // Correlations across data
-corr.Correlate  (   maps,       maps,       CorrelateTypeLinearLinear,  PolarityDirect, ReferenceNone );
-corr.WriteFile ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE1.V1.Recut.Spatial.Correlations.sef" );
+corr.Correlate  (   maps,       maps,       CorrelateTypeLinearLinear,  polarity, refcorr );
+corr.WriteFile  ( filemapscorr      );
 
                                         // Correlations between data and templates
-corr.Correlate  (   maps,       templates,  CorrelateTypeLinearLinear,  PolarityDirect, ReferenceNone );
-corr.WriteFile ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE1.V1.Recut.Spatial.Corr.Templates.sef" );
+corr.Correlate  (   maps,       templates,  CorrelateTypeLinearLinear,  polarity, refcorr );
+corr.WriteFile  ( filemapstemplcorr );
 
-                                        // Operating on files - same results as above
-CorrelateFiles (    TGoF ( filemaps ),           TGoF ( filetemplates ), 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Operating on files - same results as above:
+CorrelateFiles (    TGoF ( filemaps ),  TGoF ( filetemplates ), // single file is converted to a group of files (TGoF) on the fly
                     CorrelateTypeSpatialCorrelation, 
-                    PolarityDirect,
+                    polarity,
                     false, false, 0,
                     0,
                     0,

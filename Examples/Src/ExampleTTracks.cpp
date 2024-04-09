@@ -30,9 +30,9 @@ cout << "ExampleTTracks:" << fastendl;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // TTracks is quite minimalistic, and used as a 2D array with a few more properties
+                                        // TTracks class is quite minimalistic, and is used as a 2D array with a few more properties
                                         // Useful when time series are needed:
-                                        //  - Data is contiguous in the second dimension ("time")
+                                        //  - Data is stored as row-major, contiguous in the second dimension ("time")
                                         //  - Data[ 0 ] hence points to the time series of first track, Data[ 1 ] of second track etc..
 TTracks<float>      tracks;
 TFileName           fileinput   ( "E:\\Data\\Test Files\\Spontaneous\\cenbas.sef" );
