@@ -29,10 +29,7 @@ void    ExampleTTracksDoc   ();
 int     main ()
 {
 ExampleTEasyStats   ();
-
 ExampleTTracks      ();
-
 ExampleTMaps        ();
-
 ExampleTTracksDoc   ();
 }
