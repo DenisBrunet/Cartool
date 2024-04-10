@@ -54,8 +54,9 @@ cout << "IsTemplates                = " << BoolToString ( tracks->IsTemplates ()
 cout << fastendl;
 
 cout << "Num electrodes             = " << tracks->GetNumElectrodes () << fastendl;
-cout << "Num aux electrodes         = " << tracks->GetNumAuxElectrodes () << fastendl;
 cout << "Num bad electrodes         = " << tracks->GetNumBadElectrodes () << fastendl;
+cout << "Num aux electrodes         = " << tracks->GetNumAuxElectrodes () << fastendl;
+cout << "Num regular electrodes     = " << tracks->GetNumRegularElectrodes () << fastendl;
 cout << "Num valid electrodes       = " << tracks->GetNumValidElectrodes () << fastendl;
 cout << "Num pseudo electrodes      = " << tracks->GetNumPseudoElectrodes () << fastendl;
 cout << "Total electrodes           = " << tracks->GetTotalElectrodes () << fastendl;
@@ -72,10 +73,10 @@ cout << "Num sessions               = " << AtLeast ( 1, tracks->GetNumSessions (
 cout << "Can use filters            = " << BoolToString ( tracks->CanFilter () ) << fastendl;
 cout << fastendl;
 
-cout << "Num event markers          = " << tracks->GetNumMarkers ( MarkerTypeEvent   ) << fastendl;
-cout << "Num trigger markers        = " << tracks->GetNumMarkers ( MarkerTypeTrigger ) << fastendl;
-cout << "Num manual markers         = " << tracks->GetNumMarkers ( MarkerTypeMarker  ) << fastendl;
-cout << "Total num markers          = " << tracks->GetNumMarkers () << fastendl;
+cout << "Num events                 = " << tracks->GetNumMarkers ( MarkerTypeEvent   ) << fastendl;
+cout << "Num trigger                = " << tracks->GetNumMarkers ( MarkerTypeTrigger ) << fastendl;
+cout << "Num markers                = " << tracks->GetNumMarkers ( MarkerTypeMarker  ) << fastendl;
+cout << "Total markers              = " << tracks->GetNumMarkers () << fastendl;
 cout << fastendl;
 
 
