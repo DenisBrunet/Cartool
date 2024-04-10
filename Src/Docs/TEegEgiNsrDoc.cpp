@@ -1480,11 +1480,10 @@ if ( GetDocPath () ) {
                                         // ask the registry, or scan electrode names
     InitAuxiliaries ();
 
-/*    if ( ! (bool) AuxTracks ) {
-        mainheader.SetAuxElectrodes ( AuxTracks );
-        NumAuxElectrodes    = AuxTracks.NumSet ();
-        NumMinElectrodes    = NumElectrodes - NumAuxElectrodes;
-        }*/
+//  if ( ! (bool) AuxTracks ) {
+//      mainheader.SetAuxElectrodes ( AuxTracks );
+//      NumMinElectrodes    = NumElectrodes - GetNumAuxElectrodes ();
+//      }
 
     UpdateTitle ();
 

@@ -385,8 +385,7 @@ if ( GetDocPath () ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     NumElectrodes       = header.Num_Chan;
-    NumAuxElectrodes    = 0;                    // checked later
-    NumMinElectrodes    = NumElectrodes - NumAuxElectrodes;
+    NumMinElectrodes    = NumElectrodes;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
     SamplingFrequency   = header.Rate_Min;      // this can be multiplied by 2/4/8 factors for each track - not supported for the moment
 
@@ -487,11 +486,8 @@ if ( GetDocPath () ) {
                                         // 2                        Oxym.
                                         // 3                        16DC
                                         // 4                        bip2eeg
-        if ( toel->Type & 0x1E ) {
+        if ( toel->Type & 0x1E )
             AuxTracks.Set ( el );
-            NumAuxElectrodes++;
-            NumMinElectrodes--;
-            }
 
                                         // check multipliers of the base sampling frequency
         if ( ratecoeff == 0 )
@@ -628,10 +624,8 @@ Gain  .Resize ( NumElectrodes );
 ElectrodesNames.Set ( TotalElectrodes, ElectrodeNameSize );
 
 
-BadTracks           = TSelection ( TotalElectrodes, OrderSorted );
-BadTracks.Reset();
-AuxTracks           = TSelection ( TotalElectrodes, OrderSorted );
-AuxTracks.Reset();
+BadTracks       = TSelection ( TotalElectrodes, OrderSorted );
+AuxTracks       = TSelection ( TotalElectrodes, OrderSorted );
 
 return true;
 }

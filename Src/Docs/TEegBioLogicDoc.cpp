@@ -299,6 +299,7 @@ if ( path )
 SetDirty ( false );
 
 if ( GetDocPath () ) {
+
     TEBMarker       mrk;
 
     ifstream    ifseeg ( TFileName ( GetDocPath (), TFilenameExtendedPath ), ios::binary );
@@ -316,7 +317,10 @@ if ( GetDocPath () ) {
             continue;
             }
 
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
         switch ( mrk.marker_data_type ) {
+
             case    MARKER_FILE_ID :
 
                 TEBFileID   datafid;
@@ -330,6 +334,7 @@ if ( GetDocPath () ) {
                 StringCopy ( ProductName, FILEEXT_EEGBIO );
                 break;
 
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             case    MARKER_HEADER :
 
                 TEBHeader   datah;
@@ -349,6 +354,7 @@ if ( GetDocPath () ) {
                 Version     = datah.mrk_header_version;
                 break;
 
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             case    MARKER_XL_COLLECT_MONTAGE :
 
                 TEBCMontMap         cmm;
@@ -358,7 +364,6 @@ if ( GetDocPath () ) {
 
                 NumElectrodes       = datacm.mrk_cmont_num_chan;
                 NumMinElectrodes    = NumElectrodes;
-                NumAuxElectrodes    = 0;
                 TotalElectrodes     = NumElectrodes + NumPseudoTracks;
 
                 if ( NumElectrodes == 0 ) {
@@ -387,6 +392,7 @@ if ( GetDocPath () ) {
 
                 break;
 
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             case    MARKER_AD_PARMS_NEW :
 
                 TEBADParms   dataadp;
@@ -395,6 +401,7 @@ if ( GetDocPath () ) {
                 SamplingFrequency   = dataadp.mrk_ad_point_float_rate;
                 break;
 
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             case    MARKER_XL_SW_ADRES :
                                         // Signal Window Resolution
                 TEBSWADRes  dataswa;
@@ -406,12 +413,14 @@ if ( GetDocPath () ) {
                     }
                 break;
 
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             case    MARKER_XL_DISPLAY_MONTAGE :
 
 //                TEBDispMont datadm;
 //                ifseeg.read ( (char *) &datadm, sizeof ( datadm ) );
                 break;
 
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             case    MARKER_FILE_SEQ :
 
 //                TEBFileSeq  datafs;
@@ -419,6 +428,7 @@ if ( GetDocPath () ) {
 //                datfs.seq_number
                 break;
 
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             case    MARKER_DATA_START :
 
                 TEBDataStart    datads;
@@ -450,8 +460,10 @@ if ( GetDocPath () ) {
 
         } while ( (long) mrk.marker_next_offset != MARKER_TERMINATOR && ifseeg.good() );
 
-    ifseeg.close();
+    ifseeg.close ();
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // in case we attempt to open a DeltaMed file
     if ( DataOrg == 0 || NumElectrodes == 0 )
         return false;
@@ -461,6 +473,7 @@ if ( GetDocPath () ) {
     Subversion          = NumElectrodes;
 
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // open EEG file
     InputStream     = InStream ( ofRead | ofBinary );
     if ( !InputStream ) return false;
@@ -470,6 +483,8 @@ if ( GetDocPath () ) {
 
     UpdateTitle ();
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // open marker file
     StringCopy ( fm, GetDocPath() );
     ReplaceExtension ( fm, FILEEXT_BIOMRK );
@@ -477,7 +492,6 @@ if ( GetDocPath () ) {
                                         // if can not read the marker file, no problem, get out
     if ( ifsmrk.fail () )
         return true;
-
 
                                         // count the number of appended sequences in file
                                         // and check the file is OK
@@ -607,6 +621,7 @@ if ( GetDocPath () ) {
     ifsmrk.close();
 
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // using the first sequence at opening time, or the next one if it appears to be too short
     CurrSequence        = 0;
 
@@ -626,6 +641,8 @@ if ( GetDocPath () ) {
         ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
         }
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // again update, in case of some sequences were read
     UpdateTitle ();
 

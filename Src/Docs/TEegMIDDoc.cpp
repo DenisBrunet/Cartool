@@ -42,7 +42,6 @@ BuffTFSize          = 0;
 
 NumTimeFrames       = 0;
 NumElectrodes       = 0;
-NumAuxElectrodes    = 0;
 NumMinElectrodes    = 0;
 TotalElectrodes     = 0;
 DataCalibrated      = false;
@@ -260,8 +259,8 @@ if ( GetDocPath () ) {
 
                                         // decipher the header + type conversion
     NumElectrodes       = header.nchan;
-    NumAuxElectrodes    = header.naux;
-    NumMinElectrodes    = NumElectrodes - NumAuxElectrodes;
+    int NumAux          = header.naux;
+    NumMinElectrodes    = NumElectrodes - NumAux;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
     SamplingFrequency   = header.fsamp;
     NumTimeFrames       = header.nsamp;
@@ -376,6 +375,14 @@ if ( GetDocPath () ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check for auxilliary
     InitAuxiliaries ();
+
+                                        // if auto-detect failed, force auxiliary channels at the end
+    if ( AuxTracks.NumSet () != NumAux ) {
+        
+        if ( NumAux )   AuxTracks.Set ( NumElectrodes - NumAux, NumElectrodes - 1 );
+        else            AuxTracks.Reset ();
+        }
+
     }
 else {                                  // can not create
     return false;

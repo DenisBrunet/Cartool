@@ -516,8 +516,7 @@ if ( GetDocPath() ) {
 //  NumElectrodes       = NumElectrodesInFile; // uncomment to actually see the Status
 
                                         // we can then set all the others
-    NumAuxElectrodes    = 0;
-    NumMinElectrodes    = NumElectrodes - NumAuxElectrodes;
+    NumMinElectrodes    = NumElectrodes;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
 
                                         // fill product info

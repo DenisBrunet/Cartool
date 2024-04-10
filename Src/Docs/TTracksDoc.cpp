@@ -102,7 +102,6 @@ StartingTimeFrame   = 0;
 Dim2Type            = DimensionTypeUnknown;
 
 NumElectrodes       = 0;
-NumAuxElectrodes    = 0;
 NumMinElectrodes    = 0;
 TotalElectrodes     = 0;
 
@@ -139,15 +138,14 @@ if ( ! IsOpen () ) {
         BuffDiss.Resize ( 1, TotalElectrodes, 1 );
 
 
-    if ( BadTracks.IsNotAllocated () ) {
+    if ( BadTracks.IsNotAllocated () )
         BadTracks       = TSelection ( TotalElectrodes, OrderSorted );
-        BadTracks.Reset ();
-        }
 
-    if ( AuxTracks.IsNotAllocated () ) {
+    if ( AuxTracks.IsNotAllocated () )
         AuxTracks       = TSelection ( TotalElectrodes, OrderSorted );
-        AuxTracks.Reset ();
-        }
+                                        // we take care about valid tracks
+    ValidTracks     = TSelection ( TotalElectrodes, OrderSorted );
+    SetValidTracks ();
 
     if ( ReferenceTracks.IsNotAllocated () ) {
         ReferenceTracks = TSelection ( TotalElectrodes, OrderSorted );
@@ -155,25 +153,18 @@ if ( ! IsOpen () ) {
         }
 
     
-//  DBGM ( "InitMarkers", "TTracksDoc::InitDoc" );
     InitMarkers     ();
 
-//  DBGM ( "InitLimits", "TTracksDoc::InitDoc" );
     InitLimits      ( true );
 
-//  DBGM ( "InitAtomType", "TTracksDoc::InitDoc" );
 //  InitAtomType    ();
 
-//  DBGM ( "InitContentType", "TTracksDoc::InitDoc" );
     InitContentType ();
 
-//  DBGM ( "InitReference", "TTracksDoc::InitDoc" );
     InitReference   ();
 
-//  DBGM ( "InitFilters", "TTracksDoc::InitDoc" );
     InitFilters     ();
 
-//  DBGM ( "InitDateTime", "TTracksDoc::InitDoc" );
     InitDateTime    ();
 
                                         // safety: check offsets are not null
@@ -183,48 +174,7 @@ if ( ! IsOpen () ) {
         OffAvg              = NumElectrodes + PseudoTrackOffsetAvg;
         }
 
-                                        // No more, we always use centered SD even for positive data
-//                                      // check on the late, and replace GFP & Dis by RMS and Dis+
-//  if ( IsAbsolute () && HasPseudoElectrodes () ) {
-//      if ( StringIs ( ElectrodesNames[ OffGfp ], TrackNameGFP ) )
-//          StringCopy ( ElectrodesNames[ OffGfp ], TrackNameRMS );
-//
-//      if ( StringIs ( ElectrodesNames[ OffDis ], TrackNameDIS ) )
-//          StringCopy ( ElectrodesNames[ OffDis ], TrackNameDISPlus );
-//      }
-
     } // ! IsOpen
-
-
-/*                                      // generating random data
-TRandUniform        randunif;
-
-for ( tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++ )
-    for ( el = 0; el < NumElectrodes; el++ )
-        buff[ el ][ tf ] = randunif ( -1.0, 1.0 );
-return;
-*/
-
-/*                                        // Transpose and write to file
-TExportTracks       expfile;
-StringCopy      ( expfile.Filename, GetDocPath () );
-PostfixFilename ( expfile.Filename, ".Transpose" );
-
-expfile.SetAtomType ( AtomTypeScalar );
-
-expfile.NumTracks           =  GetNumTimeFrames ();
-expfile.NumTime             =  GetNumElectrodes ();
-
-TTracks<float>      eegbuff ( GetNumElectrodes (), GetNumTimeFrames () );
-                                        // get whole data set
-ReadRawTracks ( 0, GetNumTimeFrames () - 1, eegbuff );
-
-//expfile.Write ( eegbuff, false );
-
-for ( int tf = 0; tf < expfile.NumTime; tf++ )
-for ( int e  = 0; e  < expfile.NumTracks; e++  )
-    expfile.Write ( eegbuff[ tf ][ e ] );
-*/
 
 
 return  true;
@@ -237,8 +187,8 @@ bool    TTracksDoc::IsDirty	()
 {
 return  FiltersActivated
     ||  DirtyReference ()
-    ||  DirtyBadTracks ()
-    ||  DirtyAuxTracks ()
+//  ||  DirtyBadTracks ()
+//  ||  DirtyAuxTracks ()
     ||  DirtySamplingFrequency
     ||  TBaseDoc::IsDirty ();
 }
@@ -250,18 +200,18 @@ bool    TTracksDoc::Revert	( bool clear )
 if ( ! TFileDocument::Revert ( clear ) )
     return false;
 
-//DBGM3 ( GetDocPath (), GetAtomTypeName ( AtomTypeUseOriginal ), GetAtomTypeName ( AtomTypeUseCurrent ), "TTracksDoc::Revert" );
-
-                                        // Reloading data
-Close   ();                             // correctly closing streams
-
 //InitDoc ();                           // should do all needed setup, but crashes later on upon closing document
+
+                                        // Kind of manual resetting, to avoid calling multiple times InitLimits and stuff
+
+Close   ();                             // first, close any opened stream
+
+BadTracks.Reset ();                     // reset these guys
+AuxTracks.Reset ();
+
 Open    ( ofRead, 0 );                  // this seems to be doing the trick
 
-                                        // kind of manual resetting, to avoid calling multiple times InitLimits and stuff
-BadTracks.Reset ();
-
-AuxTracks.Reset ();
+SetValidTracks ();                      // update the remaining valid tracks
 
 Reference       = ReferenceAsInFile;
 ReferenceTracks.Reset ();
@@ -339,7 +289,7 @@ expfile.NumTracks           = NumElectrodes;
 expfile.NumTime             = NumTimeFrames;
 expfile.SamplingFrequency   = SamplingFrequency;
                                         // more info
-expfile.NumAuxTracks        = NumAuxElectrodes;
+expfile.NumAuxTracks        = GetNumAuxElectrodes ();
 expfile.DateTime            = DateTime;
 expfile.ElectrodesNames     = *GetElectrodesNames ();
 expfile.MaxValue            = GetMaxValue ();
@@ -425,7 +375,7 @@ for ( long tf = downtf.From; tf <= downtf.To; tf += downtf.Step ) {
 
     for ( int e = 0; e < NumElectrodes; e++ ) {
                                         // skip bads for min / max
-        if ( BadTracks[ e ] /*|| AuxTracks[ e ]*/ )
+        if ( BadTracks[ e ] /* ! ValidTracks[ e ] */ )
             continue;
 
         v   = EegBuff ( e, 0 );
@@ -860,7 +810,7 @@ for ( long tf = downtf.From; tf <= downtf.To; tf += downtf.Step ) {
 
     for ( int e = 0; e < NumElectrodes; e++ ) {
 
-        if ( AuxTracks[ e ] || BadTracks[ e ] )
+        if ( ! ValidTracks[ e ] )
             continue;
                                         // compute the baseline of each tracks
         EegAvg[ e ]        += EegBuff ( e, 0 );
@@ -894,7 +844,7 @@ if ( ! needshighpass ) {
 //  stats.Add ( EegAvg );
 
     for ( int e = 0; e < NumElectrodes; e++ )
-        if ( ! AuxTracks[ e ] && ! BadTracks[ e ] && TrackNonNull[ e ] )
+        if ( ValidTracks[ e ] && TrackNonNull[ e ] )
             stats.Add ( EegAvg[ e ] );
 
                                         // very high difference between channels? (normal max: 1800, no DC min: 38'000)
@@ -1165,11 +1115,9 @@ Reference   = ref;
                                         // Allow any sort of re-referencing
 //CheckReference ( ReferenceType, OriginalAtomType );
 
-                                        // init?
-if ( ReferenceTracks.IsNotAllocated () ) {
-    ReferenceTracks = TSelection ( TotalElectrodes, OrderSorted );
-    ReferenceTracks.Reset();
-    }
+
+if ( ReferenceTracks.IsNotAllocated () )
+    ReferenceTracks     = TSelection ( TotalElectrodes, OrderSorted );
 
 
 switch ( Reference ) {
@@ -1186,19 +1134,18 @@ switch ( Reference ) {
                                         // use the selection to get the tracks #
     ReferenceTracks.Reset ();
 
-    if ( elnames )                      // use the names provided
-        ReferenceTracks.Set ( tracks, elnames, verbose );
-    else
-        ReferenceTracks.Set ( tracks, GetElectrodesNames(), verbose );
-
+    ReferenceTracks.Set ( tracks, elnames ? elnames : GetElectrodesNames (), verbose );
                                         // remove aux tracks
 //  ReferenceTracks -= AuxTracks;
 
     if      ( (int) ReferenceTracks == 0 ) {// cancel if no tracks
+
         SetReferenceType ( ReferenceAsInFile );
         return;
         }
-    else if ( (int) ReferenceTracks == 1 )  // modify if only 1 track
+
+    else if ( (int) ReferenceTracks == 1 )  // update type
+
         Reference = ReferenceSingleTrack;
     else
         Reference = ReferenceMultipleTracks;
@@ -1212,8 +1159,7 @@ switch ( Reference ) {
                                         // use all real tracks
     SetRegular ( ReferenceTracks );
                                         // but remove auxs and bads
-    ReferenceTracks -= AuxTracks;
-    ReferenceTracks -= BadTracks;
+    ReferenceTracks &= ValidTracks;
 
     break;
     };
@@ -1255,8 +1201,6 @@ char                auxnames[ RegistryMaxDataLength ];
 if ( GetRegistryName ( UptoSubversion, regname )
   && *CartoolApplication->GetPreference ( regname, PrefAuxiliaries, auxnames ) ) {
 
-//    DBGM2 ( regname, auxnames, "regname, auxnames" );
-
     AuxTracks.Reset ();                 // force to set ONLY what is found in the registry
 
     if ( StringIsNot ( auxnames, TracksPreferenceNoAuxs ) )   // this string tells that no auxiliaries are to be done
@@ -1269,12 +1213,12 @@ else {                                  // scan all electrodes names
         AuxTracks.Set ( e, IsElectrodeNameAux ( ElectrodesNames[ e ] ) );
     }
 
-                                        // security check
+                                        // safety check
 ClearPseudo ( AuxTracks );
-
+                                        // update the remaining valid tracks
+SetValidTracks ();
                                         // set consistent new values
-NumAuxElectrodes = (int) AuxTracks;
-NumMinElectrodes = NumElectrodes - NumAuxElectrodes;
+NumMinElectrodes = NumElectrodes - GetNumAuxElectrodes ();
 }
 
 
@@ -1579,7 +1523,7 @@ if ( reference != ReferenceAsInFile ) {
             refvalue    = 0;
 
             for ( int el = 0; el < NumElectrodes; el++ ) 
-                if ( ! ( BadTracks[ el ] || AuxTracks[ el ] ) )
+                if ( ValidTracks[ el ] )
                     refvalue   += buff ( el, tfo );
                 
             refvalue   /= numt;
@@ -1683,7 +1627,7 @@ if ( pseudotracks ) {
         sum     = 0;
 
         for ( int el = 0; el < NumElectrodes; el++ ) 
-            if ( ! ( BadTracks[ el ] || AuxTracks[ el ] ) )
+            if ( ValidTracks[ el ] )
                 sum     += buff ( el, tfo );
                 
         buff ( OffAvg, tfo )   = avg   = sum / numt;
@@ -1696,7 +1640,7 @@ if ( pseudotracks ) {
         sumsqr  = 0;
 
         for ( int el = 0; el < NumElectrodes; el++ ) 
-            if ( ! ( BadTracks[ el ] || AuxTracks[ el ] ) )
+            if ( ValidTracks[ el ] )
                 sumsqr += Square ( buff ( el, tfo ) - avg );
             
         buff ( OffGfp, tfo )   = gfp   = sqrt ( sumsqr / numt * rescalevector );
@@ -1716,7 +1660,7 @@ if ( pseudotracks ) {
                 sum     = 0;
 
                 for ( int el = 0; el < NumElectrodes; el++ ) 
-                    if ( ! ( BadTracks[ el ] || AuxTracks[ el ] ) )
+                    if ( ValidTracks[ el ] )
                         sum    += BuffDiss ( el, 0 );
                 
 //              avg2  = pseudonoavgref ? 0 : sum / numt;
@@ -1726,7 +1670,7 @@ if ( pseudotracks ) {
                 sumsqr  = 0;
 
                 for ( int el = 0; el < NumElectrodes; el++ ) 
-                    if ( ! ( BadTracks[ el ] || AuxTracks[ el ] ) )
+                    if ( ValidTracks[ el ] )
                         sumsqr += Square ( BuffDiss ( el, 0 ) - avg2 );
 
                 gfp2 = sqrt ( sumsqr / numt * rescalevector );
@@ -1738,7 +1682,7 @@ if ( pseudotracks ) {
                 sumsqr  = 0;
 
                 for ( int el = 0; el < NumElectrodes; el++ ) 
-                    if ( ! ( BadTracks[ el ] || AuxTracks[ el ] ) )
+                    if ( ValidTracks[ el ] )
                         sumsqr += Square ( ( buff     ( el, tfo  ) - avg  ) / gfp
                                          - ( BuffDiss ( el, 0    ) - avg2 ) / gfp2 );
 
@@ -1752,7 +1696,7 @@ if ( pseudotracks ) {
             sumsqr  = 0;
                                         // avg2 and gfp2 exist!
             for ( int el = 0; el < NumElectrodes; el++ ) 
-                if ( ! ( BadTracks[ el ] || AuxTracks[ el ] ) )
+                if ( ValidTracks[ el ] )
                     sumsqr += Square ( ( buff ( el, tfo  ) - avg  ) / gfp
                                      - ( buff ( el, tfo1 ) - avg2 ) / gfp2 );
 
@@ -1780,6 +1724,8 @@ void    TTracksDoc::SetBadTracks ( TSelection *bad, bool notify )
 if ( *bad != BadTracks ) {
                                         // copy new bad electrodes
     BadTracks = *bad;
+                                        // update the remaining valid tracks
+    SetValidTracks ();
                                         // update in case of average reference
     if ( Reference == ReferenceAverage )
         SetReferenceType ( Reference );
@@ -1791,11 +1737,14 @@ if ( *bad != BadTracks ) {
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksDoc::SetAuxTracks ( TSelection *aux, bool notify )
 {
 if ( *aux != AuxTracks ) {
                                         // copy new bad electrodes
     AuxTracks = *aux;
+                                        // update the remaining valid tracks
+    SetValidTracks ();
                                         // update in case of average reference
     if ( Reference == ReferenceAverage )
         SetReferenceType ( Reference );
@@ -1849,8 +1798,22 @@ else
 
 
 InitAuxiliaries ();
+                                        // update the remaining valid tracks
+SetValidTracks ();
 
 NotifyViews ( vnNewAuxSelection, (TParam2) &AuxTracks );
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Valid tracks are non-bads, non-auxiliaries regular tracks
+void    TTracksDoc::SetValidTracks ()
+{
+ValidTracks.Set (); 
+
+ClearBads   ( ValidTracks ); 
+ClearAuxs   ( ValidTracks ); 
+ClearPseudo ( ValidTracks ); 
 }
 
 

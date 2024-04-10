@@ -41,7 +41,6 @@ BuffSize            = 0;
 NumElectrodesInFile = 0;
 NumTimeFrames       = 0;
 NumElectrodes       = 0;
-NumAuxElectrodes    = 0;
 NumMinElectrodes    = 0;
 TotalElectrodes     = 0;
 DataOrg             = 0;
@@ -294,8 +293,7 @@ if ( GetDocPath () ) {
 
     NumElectrodesInFile = setup.nchannels + ( setup.ContinousType == ContinousType2ExtraChannels ? 2 : 0 );
     NumElectrodes       = setup.nchannels;
-    NumAuxElectrodes    = 0;
-    NumMinElectrodes    = NumElectrodes - NumAuxElectrodes;
+    NumMinElectrodes    = NumElectrodes;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
     SamplingFrequency   = setup.rate;
     NumTimeFrames       = ( setup.EventTablePos - ( sizeof ( setup ) + NumElectrodes * sizeof ( TNsElectLoc ) ) ) / ( sizeof ( short ) * NumElectrodesInFile );

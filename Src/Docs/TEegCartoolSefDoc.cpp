@@ -131,11 +131,12 @@ if ( GetDocPath () ) {
 
 
     NumElectrodes       = sefheader.NumElectrodes;
-    NumAuxElectrodes    = sefheader.NumAuxElectrodes;
-    NumMinElectrodes    = NumElectrodes - NumAuxElectrodes;
+    int NumAux          = sefheader.NumAuxElectrodes;
+    NumMinElectrodes    = NumElectrodes - NumAux;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
     SamplingFrequency   = sefheader.SamplingFrequency;
     NumTimeFrames       = sefheader.NumTimeFrames;
+
 
     BuffSize            = sizeof ( float ) * NumElectrodes;
 
@@ -169,7 +170,7 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // search for actual auxiliary channels, which could be anywhere
-    int             oldnumaux       = NumAuxElectrodes;
+    int             oldnumaux       = NumAux;
                                         // smart scan
     InitAuxiliaries ();
 
@@ -180,13 +181,13 @@ if ( GetDocPath () ) {
                                         // re-check & re-count
         InitAuxiliaries ();
                                         // set again more smartly from last known auxiliary
-        if ( (int) AuxTracks == 0 && NumAuxElectrodes != oldnumaux ) {
+        if ( (int) AuxTracks == 0 && NumAux != oldnumaux ) {
             int i = AuxTracks.LastSelected ();
             AuxTracks.Set ( i - oldnumaux + 1, i );
             }
         }
 
-    if ( NumAuxElectrodes != oldnumaux )
+    if ( NumAux != oldnumaux )
         SetDirty ( true );
     }
 
