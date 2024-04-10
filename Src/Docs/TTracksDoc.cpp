@@ -102,7 +102,6 @@ StartingTimeFrame   = 0;
 Dim2Type            = DimensionTypeUnknown;
 
 NumElectrodes       = 0;
-NumMinElectrodes    = 0;
 TotalElectrodes     = 0;
 
 SamplingFrequency   = 0;
@@ -1106,7 +1105,7 @@ SetTitle ( buff );
 void    TTracksDoc::SetReferenceType ( ReferenceType ref, const char* tracks, const TStrings* elnames, bool verbose )
 {
                                         // do we forbid re-referencing a single track?
-//if ( NumMinElectrodes <= 1 && ref != ReferenceAsInFile )
+//if ( GetNumRegularElectrodes () <= 1 && ref != ReferenceAsInFile )
 //    return;
 
 
@@ -1217,8 +1216,6 @@ else {                                  // scan all electrodes names
 ClearPseudo ( AuxTracks );
                                         // update the remaining valid tracks
 SetValidTracks ();
-                                        // set consistent new values
-NumMinElectrodes = NumElectrodes - GetNumAuxElectrodes ();
 }
 
 

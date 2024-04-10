@@ -187,7 +187,6 @@ if ( GetDocPath() ) {
 
     Compressed          = rawheader.rh_flags & RH_F_RCOMP;
     NumElectrodes       = rawheader.rh_nchans;
-    NumMinElectrodes    = NumElectrodes;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
     SamplingFrequency   = (double) 1000000 / rawheader.rh_speriod;
 

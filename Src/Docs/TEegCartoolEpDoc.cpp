@@ -261,7 +261,6 @@ bool    TEegCartoolEpDoc::SetArrays ()
 {
                                         // add the computed tracks to list of tracks
 TotalElectrodes     = NumElectrodes + NumPseudoTracks;
-NumMinElectrodes    = NumElectrodes;
 OffGfp              = NumElectrodes + PseudoTrackOffsetGfp;
 OffDis              = NumElectrodes + PseudoTrackOffsetDis;
 OffAvg              = NumElectrodes + PseudoTrackOffsetAvg;

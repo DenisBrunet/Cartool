@@ -512,7 +512,6 @@ if ( GetDocPath () ) {
 
                 SamplingFrequency   = MicrosecondsToFrequency ( samplint );
                 NumElectrodes       = numchannels;
-                NumMinElectrodes    = NumElectrodes;
                 TotalElectrodes     = NumElectrodes + NumPseudoTracks;
 
 

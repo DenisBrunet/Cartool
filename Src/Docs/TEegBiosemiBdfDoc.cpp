@@ -199,7 +199,6 @@ if ( ifs.fail() ) return false;
 char            buff[ 256 ];
 EdfType         FileType;
 int             NumElectrodesInFile;
-int             NumMinElectrodes;
 int             NumAuxElectrodes;
 int             NumElectrodes;   
 int             TotalElectrodes; 
@@ -275,7 +274,6 @@ else
 
                                         // we can then set all the others
 NumAuxElectrodes    = 0;
-NumMinElectrodes    = NumElectrodes - NumAuxElectrodes;
 TotalElectrodes     = NumElectrodes + NumPseudoTracks;
 
 
@@ -516,7 +514,6 @@ if ( GetDocPath() ) {
 //  NumElectrodes       = NumElectrodesInFile; // uncomment to actually see the Status
 
                                         // we can then set all the others
-    NumMinElectrodes    = NumElectrodes;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
 
                                         // fill product info

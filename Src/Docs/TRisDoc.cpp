@@ -305,7 +305,6 @@ return true;
 bool    TRisDoc::SetArrays ()
 {
                                         // add the computed tracks to list of tracks
-NumMinElectrodes= NumElectrodes;
 TotalElectrodes = NumElectrodes + NumPseudoTracks;
 TotalTracks     = NumTracks     + NumPseudoTracks;
 

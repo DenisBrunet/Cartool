@@ -269,9 +269,9 @@ TTracksView::EvKillFocus ( hwnd );
 //----------------------------------------------------------------------------
 const char* TFrequenciesView::GetElectrodeName     (   int     eli,    bool    mtg )   const
 {
-return  Montage && mtg && eli < FreqDoc->GetNumMinElectrodes () ?   Montage[ eli ].Name 
-      : XYZDoc         && eli < FreqDoc->GetNumMinElectrodes () ?   XYZDoc ->GetElectrodeName ( eli ) 
-      :                                                             FreqDoc->GetElectrodeName ( eli );
+return  Montage && mtg && eli < FreqDoc->GetNumRegularElectrodes () ?   Montage[ eli ].Name 
+      : XYZDoc         && eli < FreqDoc->GetNumRegularElectrodes () ?   XYZDoc ->GetElectrodeName ( eli ) 
+      :                                                                 FreqDoc->GetElectrodeName ( eli );
 }
 
 

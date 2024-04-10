@@ -96,7 +96,6 @@ if ( GetDocPath () ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     NumElectrodes       = setup.nchannels;
-    NumMinElectrodes    = NumElectrodes;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
     SamplingFrequency   = setup.rate;
     DataOrg             = sizeof ( setup ) + NumElectrodes * sizeof ( TNsElectLoc );

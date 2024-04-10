@@ -192,7 +192,6 @@ TEBMarker       mrk;
                                     // and get infos as a startup
 ULONG           DataOrg         = 0;
 int             NumElectrodes;
-int             NumMinElectrodes;
 int             NumAuxElectrodes;
 int             TotalElectrodes;
 double          SamplingFrequency;
@@ -242,7 +241,6 @@ do {
             ifs.read ( (char *) &datacm, sizeof ( datacm ) );
 
             NumElectrodes       = datacm.mrk_cmont_num_chan;
-            NumMinElectrodes    = NumElectrodes;
             NumAuxElectrodes    = 0;
             TotalElectrodes     = NumElectrodes + NumPseudoTracks;
 
@@ -363,7 +361,6 @@ if ( GetDocPath () ) {
                 ifseeg.read ( (char *) &datacm, sizeof ( datacm ) );
 
                 NumElectrodes       = datacm.mrk_cmont_num_chan;
-                NumMinElectrodes    = NumElectrodes;
                 TotalElectrodes     = NumElectrodes + NumPseudoTracks;
 
                 if ( NumElectrodes == 0 ) {
