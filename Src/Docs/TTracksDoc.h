@@ -279,7 +279,7 @@ protected:
     int             Dim2Type;           // specifies first dimension
 
     int             NumElectrodes;      // = Valids + Bads + Auxs
-    int             TotalElectrodes;    // = NumElectrodes + Pseudos (Gfp, Dis, Avg)
+    int             TotalElectrodes;    // = NumElectrodes + optional Pseudos (Gfp, Dis, Avg)
 
     double          SamplingFrequency;  // in Hertz
 
