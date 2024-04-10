@@ -865,9 +865,8 @@ if ( GetDocPath () ) {
     if ( ispns ) {
                                         // set all electrodes to auxs
         NumMinElectrodes    = 0;
-        NumAuxElectrodes    = NumElectrodes;
 
-        AuxTracks.Reset ();
+        AuxTracks   = TSelection ( TotalElectrodes, OrderSorted );
         AuxTracks.Set ( 0, NumElectrodes - 1 );
         }
 

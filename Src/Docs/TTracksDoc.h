@@ -183,6 +183,7 @@ public:
     virtual const TSelection&   GetAuxTracks()          const   { return AuxTracks; }
     virtual void                SetAuxTracks( TSelection *aux, bool notify = true );
     virtual void                ResetAuxTracks ();
+    virtual void                SetValidTracks ();      // Update ValidTracks from BadTracks and AuxTracks
 
 
     virtual double  GetSamplingFrequency    ()          const   { return SamplingFrequency; }
@@ -197,7 +198,7 @@ public:
                                         // Channels / electrodes need to be differientiated
     virtual int     GetNumElectrodes        ()          const   { return NumElectrodes;                     }           // Number of electrodes / tracks
     virtual int     GetNumMinElectrodes     ()          const   { return NumMinElectrodes;                  }           // Number of electrodes minus auxiliaries
-    virtual int     GetNumAuxElectrodes     ()          const   { return NumAuxElectrodes;                  }           // Number of auxiliary channels
+    virtual int     GetNumAuxElectrodes     ()          const   { return AuxTracks.NumSet ();               }           // Number of auxiliary channels
     virtual int     GetNumPseudoElectrodes  ()          const   { return TotalElectrodes - NumElectrodes;   }           // Number of channels added by Cartool
     virtual int     GetTotalElectrodes      ()          const   { return TotalElectrodes;                   }           // Grand total of all channels, i.e. size for arrays
     virtual int     GetNumBadElectrodes     ()          const   { return BadTracks.NumSet ();               }           // Number of bad channels
@@ -268,8 +269,10 @@ protected:
                                         // Typology of tracks
     ReferenceType   Reference;          // current reference
     TSelection      ReferenceTracks;    // in case of single track / multiple tracks / average
-    TSelection      BadTracks;          // Tracks known to be bad
-    TSelection      AuxTracks;          // Aux tracks, can be anywhere
+
+    TSelection      BadTracks;          // Broken channels
+    TSelection      AuxTracks;          // Auxiliary channels - BadTracks and AuxTracks should not have common elements
+    TSelection      ValidTracks;        // Channels NOT Bad, NOT auxiliaries and NOR pseudo
 
                                         // Tracks parameters
     long            NumTimeFrames;      // Time Frames will be in the [0 .. NumTimeFrames - 1] range
@@ -277,7 +280,6 @@ protected:
     int             Dim2Type;           // specifies first dimension
 
     int             NumMinElectrodes;   // count of non-auxiliary electrodes
-    int             NumAuxElectrodes;   // just the count of auxs
     int             NumElectrodes;      // = NumMin + NumAux
     int             TotalElectrodes;    // = Num    + NumPseudo
 
@@ -302,8 +304,8 @@ protected:
 
                                                        // ignore No Reference and Average Reference, which is quite common
     bool            DirtyReference ()       { return  ! ( Reference == ReferenceAsInFile || Reference == ReferenceAverage ); }
-    bool            DirtyBadTracks ()       { return  BadTracks.NumSet () > 0; }
-    bool            DirtyAuxTracks ()       { return  AuxTracks.NumSet () > 0; }
+//  bool            DirtyBadTracks ()       { return  BadTracks.NumSet () > 0; }    // it rather needs a bool flag to track any change
+//  bool            DirtyAuxTracks ()       { return  AuxTracks.NumSet () > 0; }
     bool            DirtySamplingFrequency;
 
                                         

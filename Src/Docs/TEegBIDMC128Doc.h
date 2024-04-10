@@ -110,7 +110,7 @@ protected:
     T128FileRec     FileBuff;
     int             Block;
     int             Offset;
-    TSelection      ValidElectrodes;
+    TSelection      ValidElectrodes;    // some channels are turned off
     int             MarkerIndex;
 
 

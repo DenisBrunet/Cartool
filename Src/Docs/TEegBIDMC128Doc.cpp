@@ -46,7 +46,6 @@ offset  =             tf % EEG128DOC_NUMCHANNELS;
 {
 NumTimeFrames       = 0;
 NumElectrodes       = 0;
-NumAuxElectrodes    = 0;
 NumMinElectrodes    = 0;
 TotalElectrodes     = 0;
 SamplingFrequency   = 0;
@@ -209,16 +208,16 @@ switch ( what ) {
 
         while ( StringIs ( channelline, "Channel" ) ) {
 
-            if ( StringIs ( elname, "/off/" ) ||
-                 StringIs ( elname, "ecg" ) )
+            if      ( StringIs ( elname, "/off/" ) )
+
                 ValidElectrodes->Reset ( e );
 
-            if ( StringIs ( elname, EEG128DOC_TAGNAME ) ) {
-                ValidElectrodes->Reset ( e );
-                }
+            else if ( StringIs ( elname, EEG128DOC_TAGNAME ) )
 
-            if ( StringIs ( elname, "eog1" ) ||  // should be at the end
-                 StringIs ( elname, "eog2" ) )
+                ValidElectrodes->Reset ( e );
+
+            else if ( IsElectrodeNameAux ( elname ) )
+
                 NumAuxElectrodes++;
 
             ifs.getline ( buff, 256 );
@@ -226,15 +225,16 @@ switch ( what ) {
             e++;
             }
 
-        NumElectrodes       = ValidElectrodes->NumSet();
+        NumElectrodes       = ValidElectrodes->NumSet ();
 
         if ( what == ReadNumElectrodes )
             *((int *) answer)   = NumElectrodes;
+
         else if ( what == ReadNumAuxElectrodes )
             *((int *) answer)   = NumAuxElectrodes;
 
         delete  ValidElectrodes;
-        return  true ;
+        return  true;
 
     case ReadSamplingFrequency :
         *((double *) answer)= EEG128DOC_SAMPLFREQUENCY;
@@ -259,6 +259,9 @@ if ( GetDocPath () ) {
     InputStream     = InStream ( ofRead );
     if ( !InputStream ) return false;
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     char        buff       [ 256 ];
     char        ver        [  16 ];
     char        channelline[  33 ];
@@ -270,15 +273,26 @@ if ( GetDocPath () ) {
     sscanf ( buff, "%*s %*s %s %ld", ver, &DataOrg );
 
     if ( StringIsNot ( ver, EEG128DOC_FILEVERSION ) ) {
+
         ShowMessage ("Unrecognized file format!", "Open File", ShowMessageWarning );
         delete  InputStream; InputStream = 0;
         return false;
         }
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     InputStream->getline ( buff, 256 );
     InputStream->getline ( buff, 256 );
     InputStream->getline ( buff, 256 );
+
     sscanf ( buff, "%*s %*s %*[A-Za-z0-9].%d", &NumElectrodes );
+    TotalElectrodes     = NumElectrodes + NumPseudoTracks;
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    AuxTracks       = TSelection ( TotalElectrodes, OrderSorted );
 
     ValidElectrodes = TSelection ( NumElectrodes, OrderSorted );
     ValidElectrodes.Set ();
@@ -297,52 +311,55 @@ if ( GetDocPath () ) {
 
     TStrings            allnames ( NumElectrodes, ElectrodeNameSize );
 
-    NumAuxElectrodes    = 0;
-
     while ( StringIs ( channelline, "Channel" ) ) {
 
         StringCopy ( allnames[ e ], elname );     // save the name
 
-        if ( StringIs ( elname, "/off/" ) ||
-             StringIs ( elname, "ecg" ) )
+        if      ( StringIs ( elname, "/off/" ) )
+
             ValidElectrodes.Reset ( e );
 
-        if ( StringIs ( elname, EEG128DOC_TAGNAME ) ) {
+        else if ( StringIs ( elname, EEG128DOC_TAGNAME ) ) {
+
             ValidElectrodes.Reset ( e );
-//            NumAuxElectrodes++; // remove this
             MarkerIndex     = e;
             }
-
-        if ( StringIs ( elname, "eog1" ) ||  // should be at the end
-             StringIs ( elname, "eog2" ) )
-            NumAuxElectrodes++;
 
         InputStream->getline ( buff, 256 );
         sscanf ( buff, "%s %*s %s", channelline, elname );
         e++;
         }
 
-    NumElectrodes       = ValidElectrodes.NumSet();
-    NumMinElectrodes    = NumElectrodes - NumAuxElectrodes;
-    TotalElectrodes     = NumElectrodes + NumPseudoTracks;
+    NumElectrodes       = ValidElectrodes.NumSet ();
+    NumMinElectrodes    = NumElectrodes - GetNumAuxElectrodes ();
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // fill product info
     StringCopy ( CompanyName, "Beth Israel Deaconess Medical Center" );
     StringCopy ( ProductName, FILEEXT_EEG128 );
     StringCopy ( VersionName, ver );
     Subversion          = NumElectrodes;
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // space allocation + default names
     if ( ! SetArrays () ) {
         delete  InputStream; InputStream = 0;
         return false;
         }
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // copy only the names to keep
     for ( TIteratorSelectedForward seli ( ValidElectrodes ); (bool) seli && seli.GetIndex () < NumElectrodes; ++seli )
         StringCopy ( ElectrodesNames[ seli.GetIndex () ], allnames[ seli() ] );
+
                                         // check for auxilliary
     InitAuxiliaries ();
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compute the # of TF
     InputStream->seekg ( 0, ios::end );
     NumTimeFrames       = ((int) ( (ulong) InputStream->tellg() - DataOrg ) / sizeof ( T128FileRec ) ) * EEG128DOC_TFPERRECORD ;

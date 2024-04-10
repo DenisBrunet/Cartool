@@ -168,8 +168,7 @@ if ( GetDocPath () ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     NumElectrodes       = freqheader.NumChannels;
-    NumAuxElectrodes    = 0;
-    NumMinElectrodes    = NumElectrodes - NumAuxElectrodes;
+    NumMinElectrodes    = NumElectrodes;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
     SamplingFrequency   = freqheader.BlockFrequency;
     NumTimeFrames       = freqheader.NumBlocks;
