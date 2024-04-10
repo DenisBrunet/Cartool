@@ -385,7 +385,6 @@ if ( GetDocPath () ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     NumElectrodes       = header.Num_Chan;
-    NumMinElectrodes    = NumElectrodes;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
     SamplingFrequency   = header.Rate_Min;      // this can be multiplied by 2/4/8 factors for each track - not supported for the moment
 

@@ -173,19 +173,12 @@ public:
     bool            IsSpectrum      ()                  const   { return IsExtraContentType ( TracksContentSpectrum     ); }
     bool            IsSpecialInfix  ()                  const   { return IsExtraContentType ( TracksContentSpecialInfix ); }
 
-                                        // TTracksDoc
+                                        // Reference
     virtual ReferenceType       GetReferenceType    ()  const   { return Reference; }
     virtual const TSelection&   GetReferenceTracks  ()  const   { return ReferenceTracks; }
     virtual void                SetReferenceType    ( ReferenceType ref, const char* tracks = 0, const TStrings* elnames = 0, bool verbose = true );
 
-    virtual const TSelection&   GetBadTracks()          const   { return BadTracks; }
-    virtual void                SetBadTracks( TSelection *bad, bool notify = true );
-    virtual const TSelection&   GetAuxTracks()          const   { return AuxTracks; }
-    virtual void                SetAuxTracks( TSelection *aux, bool notify = true );
-    virtual void                ResetAuxTracks ();
-    virtual void                SetValidTracks ();      // Update ValidTracks from BadTracks and AuxTracks
-
-
+                                        // Time and frequency
     virtual double  GetSamplingFrequency    ()          const   { return SamplingFrequency; }
     virtual void    SetSamplingFrequency    ( double sf )       { Maxed ( sf, 0.0 ); if ( sf != SamplingFrequency ) { SamplingFrequency = sf; DirtySamplingFrequency = true; } }  // !caller is accountable for correct check & call!
     virtual long    GetNumTimeFrames        ()          const   { return NumTimeFrames;          }
@@ -195,40 +188,46 @@ public:
     int             GetDim2Type             ()          const   { return Dim2Type; }
     const char*     GetDim2TypeName         ()          const;
 
-                                        // Channels / electrodes need to be differientiated
-    virtual int     GetNumElectrodes        ()          const   { return NumElectrodes;                     }           // Number of electrodes / tracks
-    virtual int     GetNumMinElectrodes     ()          const   { return NumMinElectrodes;                  }           // Number of electrodes minus auxiliaries
-    virtual int     GetNumAuxElectrodes     ()          const   { return AuxTracks.NumSet ();               }           // Number of auxiliary channels
-    virtual int     GetNumPseudoElectrodes  ()          const   { return TotalElectrodes - NumElectrodes;   }           // Number of channels added by Cartool
-    virtual int     GetTotalElectrodes      ()          const   { return TotalElectrodes;                   }           // Grand total of all channels, i.e. size for arrays
-    virtual int     GetNumBadElectrodes     ()          const   { return BadTracks.NumSet ();               }           // Number of bad channels
-    virtual int     GetNumInvalidElectrodes ()          const   { return BadTracks.NumSetOr ( AuxTracks );  }           // Number of bad or auxiliary channels
-    virtual int     GetNumValidElectrodes   ()          const   { return NumElectrodes - GetNumInvalidElectrodes (); }  // Number of valid channels
-    bool            HasPseudoElectrodes     ()          const   { return TotalElectrodes > NumElectrodes;   }
-    virtual const char*         GetElectrodeName    ( int e = 0 )   const   { return  ElectrodesNames[ e ]; }
-    virtual const TStrings*     GetElectrodesNames  ()              const   { return &ElectrodesNames;      }
-
+                                        // Channels / electrodes precise desciption
+    virtual int     GetTotalElectrodes      ()          const   { return TotalElectrodes;                       }   // Grand total of all channels          Total       = Electrodes + Pseudos      = Valids + Bads + Auxs + Pseudos
+    virtual int     GetNumElectrodes        ()          const   { return NumElectrodes;                         }   // Number of channels in file           Electrodes  = Regulars + Auxs           = Valids + Bads + Auxs
+    virtual int     GetNumRegularElectrodes ()          const   { return NumElectrodes - AuxTracks.NumSet ();   }   // Number of channels without the auxs  Regulars    = Valids   + Bads
+    virtual int     GetNumValidElectrodes   ()          const   { return ValidTracks.NumSet ();                 }   // Number of valid channels             Valids      = Electrodes - Bads - Auxs
+    virtual int     GetNumBadElectrodes     ()          const   { return BadTracks  .NumSet ();                 }   // Number of bad channels
+    virtual int     GetNumAuxElectrodes     ()          const   { return AuxTracks  .NumSet ();                 }   // Number of auxiliary channels
+    bool            HasPseudoElectrodes     ()          const   { return TotalElectrodes > NumElectrodes;       }   // Not all files have the pseudo tracks
+    virtual int     GetNumPseudoElectrodes  ()          const   { return TotalElectrodes - NumElectrodes;       }   // Number of tracks added by Cartool
                                         // Wrapping all sorts of handy channel indexes functions
+    virtual int     GetFirstRegularIndex    ()          const   { return 0;                 }
+    virtual int     GetLastRegularIndex     ()          const   { return NumElectrodes - 1; }
+    virtual int     GetFirstPseudoIndex     ()          const   { return HasPseudoElectrodes () ? NumElectrodes       : -1; }
+    virtual int     GetLastPseudoIndex      ()          const   { return HasPseudoElectrodes () ? TotalElectrodes - 1 : -1; }
     virtual int     GetGfpIndex             ()          const   { return OffGfp; }
     virtual int     GetDisIndex             ()          const   { return OffDis; }
     virtual int     GetAvgIndex             ()          const   { return OffAvg; }
 
-    virtual int     GetFirstRegularIndex    ()          const   { return 0;                 }
-    virtual int     GetLastRegularIndex     ()          const   { return NumElectrodes - 1; }
-    virtual int     GetFirstPseudoIndex     ()          const   { return GetNumPseudoElectrodes() ? NumElectrodes       : -1; }
-    virtual int     GetLastPseudoIndex      ()          const   { return GetNumPseudoElectrodes() ? TotalElectrodes - 1 : -1; }
-
     int             GetNumSelectedRegular ( const TSelection& sel ) const   { return sel.NumSet ( GetFirstRegularIndex(), GetLastRegularIndex() ); }
-    int             GetNumSelectedPseudo  ( const TSelection& sel ) const   { return GetNumPseudoElectrodes() ? sel.NumSet ( GetFirstPseudoIndex(),  GetLastPseudoIndex()  ) : 0; }
+    int             GetNumSelectedPseudo  ( const TSelection& sel ) const   { return HasPseudoElectrodes () ? sel.NumSet ( GetFirstPseudoIndex(),  GetLastPseudoIndex()  ) : 0; }
 
     void            SetRegular      ( TSelection& sel ) const   { sel.Set   ( GetFirstRegularIndex(), GetLastRegularIndex() ); }
     void            ClearRegular    ( TSelection& sel ) const   { sel.Reset ( GetFirstRegularIndex(), GetLastRegularIndex() ); }
-    void            SetPseudo       ( TSelection& sel ) const   { if ( GetNumPseudoElectrodes() ) sel.Set   ( GetFirstPseudoIndex(),  GetLastPseudoIndex()  ); }
-    void            ClearPseudo     ( TSelection& sel ) const   { if ( GetNumPseudoElectrodes() ) sel.Reset ( GetFirstPseudoIndex(),  GetLastPseudoIndex()  ); }
+    void            SetPseudo       ( TSelection& sel ) const   { if ( HasPseudoElectrodes () ) sel.Set   ( GetFirstPseudoIndex(),  GetLastPseudoIndex()  ); }
+    void            ClearPseudo     ( TSelection& sel ) const   { if ( HasPseudoElectrodes () ) sel.Reset ( GetFirstPseudoIndex(),  GetLastPseudoIndex()  ); }
     void            SetAuxs         ( TSelection& sel ) const   { sel  += AuxTracks; }
     void            ClearAuxs       ( TSelection& sel ) const   { sel  -= AuxTracks; }
     void            SetBads         ( TSelection& sel ) const   { sel  += BadTracks; }
     void            ClearBads       ( TSelection& sel ) const   { sel  -= BadTracks; }
+
+    virtual const TSelection&   GetBadTracks    ()      const   { return BadTracks; }
+    virtual void                SetBadTracks    ( TSelection *bad, bool notify = true );
+    virtual const TSelection&   GetAuxTracks    ()      const   { return AuxTracks; }
+    virtual void                SetAuxTracks    ( TSelection *aux, bool notify = true );
+    virtual void                ResetAuxTracks ();
+    virtual void                SetValidTracks ();      // Update ValidTracks from BadTracks and AuxTracks
+
+
+    virtual const char*         GetElectrodeName    ( int e = 0 )   const   { return  ElectrodesNames[ e ]; }
+    virtual const TStrings*     GetElectrodesNames  ()              const   { return &ElectrodesNames;      }
 
                                         // Recordings can store multiple blocks / sessions within the same file(!)
     int             GetNumSessions      ()              const   { return NumSequences; }
@@ -279,9 +278,8 @@ protected:
     long            StartingTimeFrame;  // first "TF" value: 0 for actual EEG, or some Template index for segmentation f.ex.
     int             Dim2Type;           // specifies first dimension
 
-    int             NumMinElectrodes;   // count of non-auxiliary electrodes
-    int             NumElectrodes;      // = NumMin + NumAux
-    int             TotalElectrodes;    // = Num    + NumPseudo
+    int             NumElectrodes;      // = Valids + Bads + Auxs
+    int             TotalElectrodes;    // = NumElectrodes + Pseudos (Gfp, Dis, Avg)
 
     double          SamplingFrequency;  // in Hertz
 

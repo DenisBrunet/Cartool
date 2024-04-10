@@ -46,7 +46,6 @@ offset  =             tf % EEG128DOC_NUMCHANNELS;
 {
 NumTimeFrames       = 0;
 NumElectrodes       = 0;
-NumMinElectrodes    = 0;
 TotalElectrodes     = 0;
 SamplingFrequency   = 0;
 Reference           = ReferenceAsInFile;
@@ -331,7 +330,6 @@ if ( GetDocPath () ) {
         }
 
     NumElectrodes       = ValidElectrodes.NumSet ();
-    NumMinElectrodes    = NumElectrodes - GetNumAuxElectrodes ();
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

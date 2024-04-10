@@ -220,7 +220,6 @@ bool    TSegDoc::SetArrays ()
 {
                                         // no computed tracks, no aux tracks
 TotalElectrodes     = NumElectrodes;
-NumMinElectrodes    = NumElectrodes;
 
                                         // do all allocations stuff
 Tracks.Resize ( TotalElectrodes, NumTimeFrames );

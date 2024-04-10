@@ -42,7 +42,6 @@ BuffTFSize          = 0;
 
 NumTimeFrames       = 0;
 NumElectrodes       = 0;
-NumMinElectrodes    = 0;
 TotalElectrodes     = 0;
 DataCalibrated      = false;
 Polarity            = false;
@@ -260,7 +259,6 @@ if ( GetDocPath () ) {
                                         // decipher the header + type conversion
     NumElectrodes       = header.nchan;
     int NumAux          = header.naux;
-    NumMinElectrodes    = NumElectrodes - NumAux;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
     SamplingFrequency   = header.fsamp;
     NumTimeFrames       = header.nsamp;

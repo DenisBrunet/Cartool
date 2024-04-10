@@ -132,7 +132,6 @@ if ( GetDocPath () ) {
 
     NumElectrodes       = sefheader.NumElectrodes;
     int NumAux          = sefheader.NumAuxElectrodes;
-    NumMinElectrodes    = NumElectrodes - NumAux;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
     SamplingFrequency   = sefheader.SamplingFrequency;
     NumTimeFrames       = sefheader.NumTimeFrames;

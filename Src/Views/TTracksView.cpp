@@ -584,16 +584,14 @@ TFCursor.SentFrom          = GetViewId ();
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // all TSelection should be of the same type, as we can pick either one of them f.ex. to copy values
                                         // init as sorted, can be switched to other type later on
-#define     selectiontype       OrderSorted
-
-SelTracks           = TSelection ( EEGDoc->GetTotalElectrodes (), selectiontype );
+SelTracks           = TSelection ( EEGDoc->GetTotalElectrodes (), OrderSorted );
 SelTracks.Set ();
 
 if ( EEGDoc->HasPseudoElectrodes () ) {
 
     EEGDoc->ClearPseudo ( SelTracks );
 
-    if ( EEGDoc->GetNumMinElectrodes() > 1 ) {
+    if ( EEGDoc->GetNumRegularElectrodes () > 1 ) {
         SelTracks.Set ( EEGDoc->GetGfpIndex () );
         SelTracks.Set ( EEGDoc->GetDisIndex () );
         }
@@ -602,13 +600,13 @@ if ( EEGDoc->HasPseudoElectrodes () ) {
     }
 
 
-Highlighted         = TSelection ( EEGDoc->GetTotalElectrodes (), selectiontype );
+Highlighted         = TSelection ( EEGDoc->GetTotalElectrodes (), OrderSorted );
 Highlighted.Reset ();
 Highlighted.SentTo  = 0;
 Highlighted.SentFrom= GetViewId ();
 
 
-BadTracks           = TSelection ( EEGDoc->GetTotalElectrodes (), selectiontype );
+BadTracks           = TSelection ( EEGDoc->GetTotalElectrodes (), OrderSorted );
 BadTracks.Reset ();
 BadTracks.SentTo    = 0;
 BadTracks.SentFrom  = GetViewId ();
@@ -920,7 +918,7 @@ else if ( EEGDoc->IsContentType ( ContentTypeHistogram ) ) {
 else {
 
     if ( IsExtensionAmong ( EEGDoc->GetTitle (), FILEEXT_EEGEP " " FILEEXT_EEGEPH " " FILEEXT_EEGSEF " " FILEEXT_RIS )
-      && EEGDoc->GetNumMinElectrodes () < 32 )
+      && EEGDoc->GetNumRegularElectrodes () < 32 )
 
         EEGDoc->ClearPseudo ( SelTracks );
 
@@ -1677,7 +1675,7 @@ if ( renderingmode == LayoutOneTrackOneBox
         TVector3Double      toupproj;
         TVector3Double      toright;
         double              projlength;
-        double              numaftermin     = EEGDoc->GetNumPseudoElectrodes();
+        double              numaftermin     = EEGDoc->GetNumPseudoElectrodes ();
         double              regrescale;
 
 
@@ -11207,7 +11205,7 @@ if ( ! ( pertrack || pertf ) )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TSelection          elsel ( EEGDoc->GetTotalElectrodes (), selectiontype );
+TSelection          elsel ( EEGDoc->GetTotalElectrodes (), OrderSorted );
 
                                         // as a good starting point, use the highlighted, or the currently displayed tracks
 if ( (bool) Highlighted )   elsel   = Highlighted;
@@ -11633,7 +11631,7 @@ Gauge.Finished ();
 //----------------------------------------------------------------------------
 void    TTracksView::CmAnalyzeTracks ( owlwparam w )
 {
-if ( EEGDoc->GetNumMinElectrodes () <= 1 ) {
+if ( EEGDoc->GetNumRegularElectrodes () <= 1 ) {
     ShowMessage ( "Not enough real tracks to perform this analysis!", "Analyzing Tracks", ShowMessageWarning );
     return;
     }
