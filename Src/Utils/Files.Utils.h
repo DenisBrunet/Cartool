@@ -247,6 +247,9 @@ public:
     bool            operator    ==          ( const TFileName &op  )    const   { return  StringIs    ( FileName, op.FileName ); }
     bool            operator    !=          ( const TFileName &op  )    const   { return  StringIsNot ( FileName, op.FileName ); }
 
+    TFileName       operator    +=          ( const char*      op2 )            { StringAppend ( FileName, op2 );                               return *this; }
+    TFileName       operator    +           ( const char*      op2 )    const   { TFileName temp; StringCopy ( temp.FileName, FileName, op2 );  return temp; }
+
 
 //                  operator    bool        ()  const               { return IsNotEmpty (); }
                     operator    char*       ()                      { return FileName; }
