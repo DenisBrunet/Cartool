@@ -408,7 +408,7 @@ enum                ProcessingReferenceType
                     };
 
 
-ReferenceType       SetProcessingRef          ( ProcessingReferenceType how /*, AtomType datatype*/ );
+ReferenceType       GetProcessingRef          ( ProcessingReferenceType how /*, AtomType datatype*/ );
 
 
 //----------------------------------------------------------------------------

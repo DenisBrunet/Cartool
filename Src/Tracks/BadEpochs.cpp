@@ -683,7 +683,7 @@ bool                isesi               = IsExtensionAmong ( filename, AllRisFil
 
 AtomType            datatype            = isesi ? AtomTypePositive : AtomTypeScalar;
                                                                                        // no ref for ESI
-ReferenceType       dataref             = ReferenceNone; // SetProcessingRef ( isesi ? ProcessingReferenceESI : ProcessingReferenceNone );
+ReferenceType       dataref             = ReferenceNone; // GetProcessingRef ( isesi ? ProcessingReferenceESI : ProcessingReferenceNone );
 
 const TMaps*        tomapsin            = mapsin    ? mapsin
                                                     : new TMaps ( filename, datatype, dataref );

@@ -61,10 +61,8 @@ for ( int nc2 = 0; nc2 < ordering.GetDim1 (); nc2++ )
 
 
 //----------------------------------------------------------------------------
-void    TMicroStates::GetTemporalOrdering   (   long                tfmax, 
-                                                int                 nclusters,  
+void    TMicroStates::GetTemporalOrdering   (   int                 nclusters,  
                                                 const TLabeling&    labels,  
-                                                const TArray1<int>& numtf,
                                                 TArray2<int>&       ordering    
                                             )   const
 {
@@ -75,9 +73,9 @@ PreProcOrdering ( nclusters, ordering );
 int                 curreeg         = 0;
 
                                         // scan all beginnings of segments, relatively to each file
-for ( long tf = 0, tf0 = 0; tf <= tfmax; tf++, tf0++ ) {
+for ( long tf = 0, tf0 = 0; tf < NumTimeFrames; tf++, tf0++ ) {
 
-    if ( tf0 == numtf[ curreeg ] ) {
+    if ( tf0 == NumTF[ curreeg ] ) {
         tf0     = 0;
         curreeg++;
         }

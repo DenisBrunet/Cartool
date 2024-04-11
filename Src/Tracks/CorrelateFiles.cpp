@@ -111,7 +111,7 @@ PolarityType        polarity        = ( alleeg1 || alleeg2 )
                                         // - Spatial Correlation     : regular way - Note that the ref could be updated for each file...
                                         // - Time-course Correlation : always average reference IN TIME, once the data have been read and transposed
                                         // - Phase-Intensity coupling: always average reference IN TIME, once the data have been read and transposed
-ReferenceType       processingref   = correlate == CorrelateTypeSpatialCorrelation  ? SetProcessingRef ( allris1 && allris2 ? ProcessingReferenceESI : ProcessingReferenceEEG ) 
+ReferenceType       processingref   = correlate == CorrelateTypeSpatialCorrelation  ? GetProcessingRef ( allris1 && allris2 ? ProcessingReferenceESI : ProcessingReferenceEEG ) 
                                     : correlate == CorrelateTypeTimeCorrelation     ? ReferenceAverage
                                     : correlate == CorrelateTypePhaseIntCoupling    ? ReferenceAverage
                                                                                     : ReferenceAverage;
@@ -258,7 +258,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
                                  dim1goes1, dim2goes1, dim3goes1 );
 
 
-                processingref1  = SetProcessingRef ( allris1 ? ProcessingReferenceESI : ProcessingReferenceEEG );
+                processingref1  = GetProcessingRef ( allris1 ? ProcessingReferenceESI : ProcessingReferenceEEG );
 
                                         // !works only on non-transposed data - we can add a parameter if needed!
                 if ( spatialfilter1 )   mapsi.FilterSpatial ( SpatialFilterDefault, xyzfile );
@@ -280,7 +280,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
                              dim1goes2, dim2goes2, dim3goes2 );
 
 
-            processingref2  = SetProcessingRef ( allris2 ? ProcessingReferenceESI : ProcessingReferenceEEG );
+            processingref2  = GetProcessingRef ( allris2 ? ProcessingReferenceESI : ProcessingReferenceEEG );
 
                                         // !works only on non-transposed data - we can add a parameter if needed!
             if ( spatialfilter2 )   mapsj.FilterSpatial ( SpatialFilterDefault, xyzfile );
