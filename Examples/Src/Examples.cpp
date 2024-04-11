@@ -24,6 +24,7 @@ void    ExampleTEasyStats   ();
 void    ExampleTTracks      ();
 void    ExampleTMaps        ();
 void    ExampleTTracksDoc   ();
+void    ExampleSegmentation   ();
 
 
 int     main ()
@@ -32,4 +33,5 @@ ExampleTEasyStats   ();
 ExampleTTracks      ();
 ExampleTMaps        ();
 ExampleTTracksDoc   ();
+ExampleSegmentation ();
 }
