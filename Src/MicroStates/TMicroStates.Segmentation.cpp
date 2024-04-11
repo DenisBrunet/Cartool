@@ -314,7 +314,7 @@ bool                toabszscore         =   isesipreset                         
 bool                ranking             = isesipreset;    // was used for ESI RS
 
                                         // Processing type and reference
-ReferenceType       processingref       = SetProcessingRef ( isesipreset ? ProcessingReferenceESI : ProcessingReferenceEEG );
+ReferenceType       processingref       = GetProcessingRef ( isesipreset ? ProcessingReferenceESI : ProcessingReferenceEEG );
 
 
 PreprocessMaps  (   Data,
@@ -344,7 +344,7 @@ if      ( dualdata == DualRis ) {
 
     dualpolarity        = PolarityDirect;   // NO polarity for ESI
     dualdatatype        = DualDataPresets[ dualdata ].DataType;
-    dualdataref         = ReferenceNone; // SetProcessingRef ( ProcessingReferenceESI );
+    dualdataref         = ReferenceNone; // GetProcessingRef ( ProcessingReferenceESI );
     dualtoabszscore     = ! IsVector ( dualdatatype );
     dualranking         = true;
     dualcentroid        = MedianCentroid;
@@ -365,7 +365,7 @@ else if ( dualdata == DualEeg ) {
 
     dualpolarity        = isrestingstates ? PolarityEvaluate : PolarityDirect;
     dualdatatype        = DualDataPresets[ dualdata ].DataType;
-    dualdataref         = SetProcessingRef ( ProcessingReferenceEEG ); // or ReferenceNone?
+    dualdataref         = GetProcessingRef ( ProcessingReferenceEEG ); // or ReferenceNone?
     dualtoabszscore     = false;
     dualranking         = false;        // shouldn't
     dualcentroid        = MeanCentroid;
@@ -386,7 +386,7 @@ else if ( dualdata == DualMeg ) {
 
     dualpolarity        = PolarityDirect;
     dualdatatype        = DualDataPresets[ dualdata ].DataType;
-    dualdataref         = ReferenceNone; // SetProcessingRef ( ProcessingRefMEG );
+    dualdataref         = ReferenceNone; // GetProcessingRef ( ProcessingRefMEG );
     dualtoabszscore     = false;
     dualranking         = true;
     dualcentroid        = MeanCentroid;
@@ -1400,7 +1400,7 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
         switch ( mapordering ) {
 
             case   MapOrderingTemporally:       // by time appearance
-                GetTemporalOrdering         ( NumTimeFrames - 1, nummaps, labels, NumTF, ordering );
+                GetTemporalOrdering         ( nummaps, labels, ordering );
                 break;
 
 

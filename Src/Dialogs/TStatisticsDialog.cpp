@@ -2784,7 +2784,7 @@ CheckReference ( dataref, datatype );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Processing reference for TAnova           not actually needed, as dataref should be avg ref already, but still
-ReferenceType       processingref   = SetProcessingRef ( allris ? ProcessingReferenceESI : ProcessingReferenceEEG );
+ReferenceType       processingref   = GetProcessingRef ( allris ? ProcessingReferenceESI : ProcessingReferenceEEG );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -495,10 +495,10 @@ public:
                                         );
 
                                         // Segments post-processing
-    void            GetTemporalOrdering     ( long tfmax, int nclusters, const TLabeling& labels, const TArray1<int>& numtf, TArray2<int>& ordering )        const;
-    void            GetOrderingFromTemplates( int nclusters, const TMaps& maps, const TMaps& templatesmaps, PolarityType polarity, TArray2<int>& ordering )                        const;
-    void            GetTopographicalOrdering( int nclusters, const TMaps& maps, const TElectrodesDoc* xyzdoc, TArray2<int>& ordering )                      const;
-    void            GetAnatomicalOrdering   ( int nclusters, const TMaps& maps, const TSolutionPointsDoc* spdoc, const TVolumeDoc* mridoc, TArray2<int>& ordering )   const;
+    void            GetTemporalOrdering     ( int nclusters, const TLabeling& labels, TArray2<int>& ordering )                                                      const;
+    void            GetOrderingFromTemplates( int nclusters, const TMaps& maps, const TMaps& templatesmaps, PolarityType polarity, TArray2<int>& ordering )         const;
+    void            GetTopographicalOrdering( int nclusters, const TMaps& maps, const TElectrodesDoc* xyzdoc, TArray2<int>& ordering )                              const;
+    void            GetAnatomicalOrdering   ( int nclusters, const TMaps& maps, const TSolutionPointsDoc* spdoc, const TVolumeDoc* mridoc, TArray2<int>& ordering ) const;
 
 
     void            WriteSegFile        (   int nclusters, const TMaps& maps, const TLabeling& labels, PolarityType polarity, const char*  filename  )   const;

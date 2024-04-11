@@ -370,7 +370,7 @@ return  datatype;
                                         // the template matching, no reference or average reference.
                                         // This can depend on the preprocessing, like ESI or Z-Score, and the type of data,
                                         // signed, positive, vectorial or norm of vectors.
-ReferenceType   SetProcessingRef ( ProcessingReferenceType how /*, AtomType datatype*/ )
+ReferenceType   GetProcessingRef ( ProcessingReferenceType how /*, AtomType datatype*/ )
 {
 ReferenceType       processingref;
 

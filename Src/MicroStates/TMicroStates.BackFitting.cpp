@@ -480,7 +480,7 @@ bool                toabszscore         =   isesipreset                         
 bool                ranking             = isesipreset;
 
                                         // Processing type and reference
-ReferenceType       processingref       = SetProcessingRef ( isesipreset ? ProcessingReferenceESI : ProcessingReferenceEEG );
+ReferenceType       processingref       = GetProcessingRef ( isesipreset ? ProcessingReferenceESI : ProcessingReferenceEEG );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -696,7 +696,7 @@ Gauge.Next ( gaugefitglobal, SuperGaugeUpdateTitle );
 
 TMaps               templatemaps;
 TLabeling           labels;
-ReferenceType       templateref         = SetProcessingRef ( isesipreset ? ProcessingReferenceESI : ProcessingReferenceEEG );
+ReferenceType       templateref         = GetProcessingRef ( isesipreset ? ProcessingReferenceESI : ProcessingReferenceEEG );
 
 
 templatemaps.ReadFile   (   TemplateFileName,   
