@@ -31,10 +31,10 @@ cout << fastendl;
                                         // Data
 TGoF                gofdata;
                                         // 4 conditions ERPs
-gofdata.Add ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE1.V1.Recut.Spatial.sef"     );
-gofdata.Add ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE2pv.V2pv.Recut.Spatial.sef" );
-gofdata.Add ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE2vu.V2vu.Recut.Spatial.sef" );
-gofdata.Add ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE3.V3.Recut.Spatial.sef"     );
+gofdata.Add ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE1.V1.Recut.sef"     );
+gofdata.Add ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE2pv.V2pv.Recut.sef" );
+gofdata.Add ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE2vu.V2vu.Recut.sef" );
+gofdata.Add ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE3.V3.Recut.sef"     );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -195,7 +195,7 @@ for ( int numclusters = 2; numclusters <= maxseg; numclusters++ ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                            // Re-ordering clusters for the sake of comparison
+                                        // Re-ordering clusters for the sake of comparison
     TArray2<int>        ordering;
 
     ms.GetTemporalOrdering  ( numclusters, labels, ordering );
@@ -204,7 +204,7 @@ for ( int numclusters = 2; numclusters <= maxseg; numclusters++ ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                            // Write segmentation & templates
+                                        // Write segmentation & templates
     TFileName           segtemplatesfile    = basefilename + "." + IntegerToString ( numclusters, 2 ) + ".Segmentation.Templates.sef";
     TFileName           segfile             = basefilename + "." + IntegerToString ( numclusters, 2 ) + ".Segmentation.seg";
 

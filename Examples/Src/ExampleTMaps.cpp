@@ -31,7 +31,7 @@ cout << fastendl;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 2 input files
-TFileName           filemaps        ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE1.V1.Recut.Spatial.sef" );
+TFileName           filemaps        ( "E:\\Data\\Test Files\\ERPs\\Face.Avg RISE1.V1.Recut.sef" );
 TFileName           filetemplates   ( "E:\\Data\\Test Files\\ERPs\\Faces.Templates.08.ep" );
 
                                         // output files for norm and gfp lines

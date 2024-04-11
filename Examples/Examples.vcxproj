@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\ExampleBackFitting.cpp" />
     <ClCompile Include="Src\Examples.cpp" />
     <ClCompile Include="Src\ExampleTEasyStats.cpp" />
     <ClCompile Include="Src\ExampleTMaps.cpp" />
