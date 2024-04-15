@@ -588,12 +588,14 @@ for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () 
     if ( cmd.GetTokenKind () == TCmdLine::Option && options ) {
 
         if      ( StringStartsWith ( cmd.GetToken ().c_str (), CmdLineRegister ) ) {
+
             RegisterInfo ();
             ::exit ( 0 );
             return;
             }
 
         else if ( StringStartsWith ( cmd.GetToken ().c_str (), CmdLineUnregister ) ) {
+
             UnRegisterInfo ();
             ::exit ( 0 );
             return;
@@ -604,69 +606,27 @@ for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () 
 //          }
 
         else if ( StringStartsWith ( cmd.GetToken ().c_str (), CmdLineResetRegister ) ) {
+
             ResetRegisterInfo ();
             ::exit ( 0 );
             return;
             }
 
-/*        else if ( StringStartsWith ( cmd.GetToken ().c_str (), "uninstall" ) ) {
-            char    bunin[512];
-            GetWindowsDirectory ( bunin, 512 );
-            StringAppend ( bunin, "\\rundll32.exe shell32.dll,Control_RunDLL " );
-            GetSystemDirectory ( buff, 256 );
-            StringAppend ( bunin, buff, "\\AppWiz.cpl" );
-
-            system ( bunin );
-            ::exit ( 0 );
-            return;
-            }
-*/
-/*
-        else if ( StringStartsWith ( cmd.GetToken ().c_str (), "uninstall" ) ) {
-            UnRegisterInfo();
-
-            TFileName           dirpath;
-            TFileName           dirpathsearch;
-            StringCopy      ( dirpath, ApplicationFullPath );
-            RemoveFilename  ( dirpath );
-
-            StringCopy ( buff, "Do you want to remove  ", dirpath, "  directory and all its content ? " );
-            if ( GetAnswerFromUser ( buff, ProdName ) ) {
-                WIN32_FIND_DATA     wfd;
-                HANDLE              hfs;
-
-                StringCopy ( dirpathsearch, dirpath, "\\*.*" );
-                // !use FindFiles or NukeDir!
-                hfs = FindFirstFile ( dirpathsearch, &wfd );
-                if ( hfs != INVALID_HANDLE_VALUE ) {
-                    do {
-                        if ( ! ( wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) ) {
-                            StringCopy ( buff, dirpath, "\\", wfd.cFileName );
-//                            ShowMessage ( buff, "delete" );
-                            DeleteFileExtended ( buff );
-                            }
-                        } while ( FindNextFile ( hfs, &wfd ) );
-
-                    FindClose ( hfs );  // give back the find handle
-                    RemoveDirectory ( dirpath ) ;   // try to remove the dir. Fails if not empty
-                    }
-                }
-
-            ::exit ( 0 );
-            return;
-            }
-*/
         } // if kind == option
+
 //  else if ( doregister && ! options ) {
 
     else if ( ! options ) {
 
         if ( cmd.GetToken ().c_str ()[ 0 ] == '\"' ) {     // if open a quote, read once the full line and extract
-            const char *tob = StringContains ( cmd.GetLine(), '\"', StringContainsForward  ) + 1;
-            const char *toe = StringContains ( cmd.GetLine(), '\"', StringContainsBackward ) - 1;
-            int   len = toe - tob + 1;
+
+            const char*     tob     = StringContains ( cmd.GetLine(), '\"', StringContainsForward  ) + 1;
+            const char*     toe     = StringContains ( cmd.GetLine(), '\"', StringContainsBackward ) - 1;
+            int             len     = toe - tob + 1;
+
             StringCopy ( buff, tob, len );
-            do cmd.NextToken(); while ( cmd.GetTokenKind () != TCmdLine::Done );
+
+            do cmd.NextToken (); while ( cmd.GetTokenKind () != TCmdLine::Done );
             }
         else
             StringCopy ( buff, cmd.GetToken ().c_str () );
@@ -676,6 +636,7 @@ for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () 
 
         CartoolDocManager->OpenDoc ( buff, dtOpenOptions );
         }
+
     } // for cmd
 
 
@@ -840,49 +801,12 @@ QueryDefValue   ( TRegKey::GetClassesRoot (), "CarTool.Application\\DefaultIcon"
 
 //touchedreg  |= StringIsEmpty ( buff );    // key already exist?
 
-SetDefValue ( TRegKey::GetClassesRoot (), "CarTool.Application\\DefaultIcon", ApplicationFullPath ); 
+if ( ! SetDefValue ( TRegKey::GetClassesRoot (), "CarTool.Application\\DefaultIcon", ApplicationFullPath ) ) {
+                                        // it seems we do not have the proper rights, just get out now
+    ShowMessage ( "Can not register Cartool!" NewLine NewLine "Try again by running Cartool with Admin rights.", "Registering Cartool", ShowMessageWarning );
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/*                                        // add to the uninstall
-StringCopy ( b2, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\uninstall\\", ProdName, ProdVersion );
-QueryValue  ( TRegKey::GetLocalMachine (), b2, 0, "UninstallString2", b1 );
-
-                                        // clean old uninstall that spams the registry
-StringCopy ( b2, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\uninstall" );
-int  numuninst = TRegKey ( TRegKey::GetLocalMachine (), b2 ).GetSubkeyCount();
-
-for ( int i=0; i < numuninst; i++ ) {
-
-    TRegKey ( TRegKey::GetLocalMachine (), b2 ).EnumKey ( i, b1, 512 );
-
-    if ( StringStartsWith ( b1, ProdName, StringLength ( ProdName ) ) )
-
-        if ( StringIsNot ( StringEnd ( b1 ) - StringLength ( ProdVersion ), ProdVersion ) ) {
-            StringCopy ( b3, "%s\\%s", b2, "\\", b1 );
-            TRegKey::GetLocalMachine ().NukeKey ( b3 );
-//            DBGM ( b3, "Nuke key" );
-            }
-    }
-
-
-if ( StringIsEmpty ( b1 ) ) {                          // second string does not exist -> look for install shield uninstall
-
-    QueryValue  ( TRegKey::GetLocalMachine (), b2, 0, "UninstallString", b1 );
-
-    if ( StringIsNotEmpty ( b1 ) && ! StringStartsWith ( b1, ApplicationFullPath, StringLength ( ApplicationFullPath ) ) ) { // an uninstall that is not mine -> save it
-        TRegKey ( TRegKey::GetLocalMachine (), b2 ).SetValue ( "UninstallString2", REG_SZ, (const uint8 *) b1, StringLength ( b1 ) );
-        }
-                                        // now I can put my uninstall
-    StringCopy ( b1, ProdName, ProdVersion );
-    StringCopy ( b2, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\uninstall\\", b1 );
-    SetValue ( TRegKey::GetLocalMachine (), b2, 0, "DisplayName", b1 );
-
-    StringCopy ( b1, ApplicationFullPath, " /unregister" );
-    SetValue ( TRegKey::GetLocalMachine (), b2, 0, "UninstallString", b1 );
-    }
-// else: nothing: if second string exist, everything has been done already
-*/
+    return;
+    } 
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1004,7 +928,13 @@ void    TCartoolApp::UnRegisterInfo ()
 #if !defined (_DEBUG)
 
                                         // recursively destroy all these keys
-TRegKey::GetClassesRoot ().NukeKey ( "CarTool.Application" );
+if ( ! NukeKey ( TRegKey::GetClassesRoot (), "CarTool.Application" ) ) {
+                                        // it seems we do not have the proper rights, just get out now
+    ShowMessage ( "Can not un-register Cartool!" NewLine NewLine "Try again by running Cartool with Admin rights.", "Un-registering Cartool", ShowMessageWarning );
+
+    return;
+    }
+
 
 //uint32            type;
 //uint32            size;
@@ -1025,7 +955,7 @@ if ( *b1 ) {                            // second string exist -> perform the 2 
                                         // remove from the uninstall
 StringCopy ( b1, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\uninstall\\", ProdName, ProdVersion );
 
-TRegKey::GetLocalMachine ().NukeKey ( b1 );
+NukeKey ( TRegKey::GetLocalMachine (), b1 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1033,10 +963,10 @@ TRegKey::GetLocalMachine ().NukeKey ( b1 );
 for ( int i=0; i < NumExtensionRegistrations; i++ ) {
                                         // extension
     StringCopy ( b1, ".", ExtReg[ i ].Extension );
-    TRegKey::GetClassesRoot ().NukeKey ( b1 );
+    NukeKey ( TRegKey::GetClassesRoot (), b1 );
 
     StringCopy ( b1, ExtReg[ i ].Extension, "file" );
-    TRegKey::GetClassesRoot ().NukeKey ( b1 );
+    NukeKey ( TRegKey::GetClassesRoot (), b1 );
     }
 
 
@@ -1054,29 +984,43 @@ if ( *buninst )                         // only now, run the uninstallhield
                                         // Reset registry
 void    TCartoolApp::ResetRegisterInfo ()
 {
-UnRegisterInfo ();                      // simply reset
-RegisterInfo   ();                      // then set again
+#if !defined (_DEBUG)
+
+UnRegisterInfo ();
+RegisterInfo   ();
+
+#endif
 }
 
 
 void    TCartoolApp::CmPrefsRegistry ( owlwparam w )
 {
+#if !defined (_DEBUG)
+
 if      ( w == CM_RESETREGISTRY ) {
 
-    if ( ! GetAnswerFromUser ( "Do you want to associate files (.xyz .hdr etc...) with Cartool?", "Files Preferences" ) )
+    if ( ! GetAnswerFromUser (  "Do you want to associate all known files (.xyz .hdr etc...) with Cartool?"   NewLine
+                                NewLine
+                                "This will re-register Cartool, so you need the program to run with administrator rights...",
+                                "Files Preferences" ) )
         return;
 
     ResetRegisterInfo ();
     }
+
 else if ( w == CM_CLEARREGISTRY ) {
 
-    if ( ! GetAnswerFromUser ( "Do you want to remove the files association of Cartool?", "Files Preferences" ) )
-        return;
+    if ( ! GetAnswerFromUser (  "Do you want to remove all known files associations of Cartool?"   NewLine
+                                NewLine
+                                "This will un-register Cartool, so you need the program to run with administrator rights...",
+                                "Files Preferences" ) )
 
     UnRegisterInfo ();
     }
 
 ShowMessage ( "Please restart your machine to apply these changes!", "Files Preferences", ShowMessageWarning );
+
+#endif
 }
 
 

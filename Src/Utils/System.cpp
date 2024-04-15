@@ -82,37 +82,61 @@ return  GetEnvironmentVariable ( variable, result, result.Size () ) != 0;
 }
 
 
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+void    ConcatKeys      (   const char*             keynamestart,   const char*     keynameend,
+                            char*                   keyname
+                        ) 
+{
+StringCopy  ( keyname, keynamestart );
+                                        // don't concat anything if second part is empty...
+if ( StringIsNotEmpty ( keynameend ) )
+                                        // add a proper separator
+    StringAppend    ( keyname, *keynameend != '\\' ? "\\" : "", keynameend );
+}
+
 
 //----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-void    ConcatKeys  (   const char*             keystart,   const char*         keyend,
-                        char*                   key
-                    ) 
+bool    NukeKey         (   owl::TRegKey&           hive,
+                            const char*             keyname
+                        ) 
 {
-StringCopy  ( key, keystart );
-                                        // don't concat anything if second part is empty...
-if ( StringIsNotEmpty ( keyend ) )
-                                        // add a proper separator
-    StringAppend    ( key, *keyend != '\\' ? "\\" : "", keyend );
+if ( hive == 0 || StringIsEmpty ( keyname ) )
+    return  false;
+
+//DBGM2 ( hive.GetName (), keyname, "NukeKey: hive, key" );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+try
+{
+                                        // Because it uses KEY_ALL_ACCESS, OwlNext will raise an exception if process does not have admin rights
+return  hive.NukeKey ( keyname ) == ERROR_SUCCESS;
+}
+
+catch ( const std::exception&     ex )  { /*DBGM ( ex.what(), "NukeKey exception error"   );*/  return false;  }
+catch (...)                             { /*DBGM ( "Error",   "NukeKey error"             );*/  return false;  }
 }
 
 
 //----------------------------------------------------------------------------
                                         // Re-create the old QueryDefValue function
 bool    QueryDefValue   (   const owl::TRegKey&     hive,
-                            const char*             key, 
+                            const char*             keyname, 
                             char*                   data 
                         ) 
 {
 ClearString ( data );
 
-if ( hive == 0 || StringIsEmpty ( key ) )
+if ( hive == 0 || StringIsEmpty ( keyname ) )
     return  false;
 
-//DBGM ( key, "QueryDefValue: key" );
+//DBGM2 ( hive.GetName (), keyname, "QueryDefValue: hive, key" );
 
-if ( ! hive.HasSubkey ( key ) )
+if ( ! hive.HasSubkey ( keyname ) )
     return  false;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -122,7 +146,7 @@ long                size            = RegistryMaxDataLength;
 
 long                error           =
 
-::RegQueryValue (   owl::TRegKey ( hive, key, KEY_READ, owl::TRegKey::NoCreate ),
+::RegQueryValue (   owl::TRegKey ( hive, keyname, KEY_READ, owl::TRegKey::NoCreate ),
                     0,                          // subkey
                     buff,   &size
                 );
@@ -132,7 +156,7 @@ if ( error == ERROR_SUCCESS )
     StringCopy  ( data, buff );
 //else
 //    DBGV ( error, "QueryValue error" );
-//DBGM2 ( key, data, "QueryDefValue: key -> data" );
+//DBGM2 ( keyname, data, "QueryDefValue: key -> data" );
 
 return  error == ERROR_SUCCESS;
 }
@@ -140,17 +164,20 @@ return  error == ERROR_SUCCESS;
 
 //----------------------------------------------------------------------------
 bool    SetDefValue     (   const owl::TRegKey&     hive,
-                            const char*             key, 
+                            const char*             keyname, 
                             const char*             data 
                         ) 
 {
-if ( hive == 0 || StringIsEmpty ( key ) )
+if ( hive == 0 || StringIsEmpty ( keyname ) )
     return  false;
 
 
+try
+{
+                                        // Because it uses KEY_ALL_ACCESS, OwlNext will raise an exception if process does not have admin rights
 long                error           =
 
-::RegSetValue   (   owl::TRegKey ( hive, key, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ),
+::RegSetValue   (   owl::TRegKey ( hive, keyname, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ),
                     0,                          // subkey
                     REG_SZ, 
                     data,   StringLength ( data )
@@ -159,30 +186,36 @@ long                error           =
 return  error == ERROR_SUCCESS;
 }
 
+catch ( const std::exception&     ex )  { /*DBGM ( ex.what(), "SetDefValue exception error"   );*/  return false;  }
+catch (...)                             { /*DBGM ( "Error",   "SetDefValue error"             );*/  return false;  }
+}
+
 
 //----------------------------------------------------------------------------
                                         // Getting string
 bool    QueryValue      (   const owl::TRegKey&     hive,
-                            const char*             keystart,   const char*         keyend,
+                            const char*             keynamestart,   const char*     keynameend,
                             const char*             varname, 
                             char*                   data 
                         ) 
 {
 ClearString ( data );
 
-if ( hive == 0 || StringIsEmpty ( keystart ) )
+if ( hive == 0 || StringIsEmpty ( keynamestart ) )
     return  false;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // concatenate the key
-char                key  [ RegistryMaxKeyLength ];
+char                keyname  [ RegistryMaxKeyLength ];
 
-ConcatKeys  ( keystart, keyend, key );
+ConcatKeys  ( keynamestart, keynameend, keyname );
 
-//DBGM2 ( key, varname, "QueryValue: key, var" );
+//DBGM3 ( hive.GetName (), keyname, varname, "QueryValue: hive, key, var" );
 
-if ( ! hive.HasSubkey ( key ) )
+if ( ! hive.HasSubkey ( keyname ) )
     return  false;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -193,17 +226,16 @@ owl::uint32         type            = REG_SZ;               // UNICODE string, n
 
 long                error           =
 
-owl::TRegKey ( hive, (LPCSTR) key, KEY_READ, owl::TRegKey::NoCreate ).QueryValue    (   varname, 
+owl::TRegKey ( hive, (LPCSTR) keyname, KEY_READ, owl::TRegKey::NoCreate ).QueryValue(   varname, 
                                                                                         &type, 
                                                                                         (owl::uint8 *) buff,     &size   // not sure about that conversion - function wants uchar
                                                                                     );
-
                                         // no checks if receiving string is big enough...
 if ( error == ERROR_SUCCESS )
     StringCopy  ( data, (char*) buff );
 //else
 //    DBGV ( error, "QueryValue error" );
-//DBGM3 ( key, varname, data, "QueryValue: key, var -> data" );
+//DBGM3 ( keyname, varname, data, "QueryValue: key, var -> data" );
 
 return  error == ERROR_SUCCESS;
 }
@@ -212,26 +244,28 @@ return  error == ERROR_SUCCESS;
 //----------------------------------------------------------------------------
                                         // Getting DWORD
 bool    QueryValue      (   const owl::TRegKey&     hive,
-                            const char*             keystart,   const char*         keyend,
+                            const char*             keynamestart,   const char*     keynameend,
                             const char*             varname, 
                             DWORD&                  data 
                         ) 
 {
 data    = 0;
 
-if ( hive == 0 || StringIsEmpty ( keystart ) )
+if ( hive == 0 || StringIsEmpty ( keynamestart ) )
     return  false;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // concatenate the key
-char                key  [ RegistryMaxKeyLength ];
+char                keyname  [ RegistryMaxKeyLength ];
 
-ConcatKeys  ( keystart, keyend, key );
+ConcatKeys  ( keynamestart, keynameend, keyname );
 
-//DBGM2 ( key, varname, "QueryValue: key, var" );
+//DBGM3 ( hive.GetName (), keyname, varname, "QueryValue: hive, key, var" );
 
-if ( ! hive.HasSubkey ( key ) )
+if ( ! hive.HasSubkey ( keyname ) )
     return  false;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -241,7 +275,7 @@ owl::uint32         type            = REG_DWORD;        // DWORD
 
 long                error           =
 
-owl::TRegKey ( hive, (LPCSTR) key, KEY_READ, owl::TRegKey::NoCreate ).QueryValue    (   varname, 
+owl::TRegKey ( hive, (LPCSTR) keyname, KEY_READ, owl::TRegKey::NoCreate ).QueryValue(   varname, 
                                                                                         &type, 
                                                                                         (owl::uint8 *) &data,       &size
                                                                                     );
@@ -257,90 +291,117 @@ return  error == ERROR_SUCCESS;
 //----------------------------------------------------------------------------
                                         // Setting string
 bool    SetValue        (   const owl::TRegKey&     hive,
-                            const char*             keystart,   const char*         keyend,
+                            const char*             keynamestart,   const char*     keynameend,
                             const char*             varname, 
                             const char*             data
                         )
 {
-if ( hive == 0 || StringIsEmpty ( keystart ) )
+if ( hive == 0 || StringIsEmpty ( keynamestart ) )
     return  false;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // concatenate the key
-char                key  [ RegistryMaxKeyLength ];
+char                keyname  [ RegistryMaxKeyLength ];
 
-ConcatKeys  ( keystart, keyend, key );
+ConcatKeys  ( keynamestart, keynameend, keyname );
 
-//DBGM3 ( key, varname, data, "SetValue: key, var, data" );
+//DBGM4 ( hive.GetName (), keyname, varname, data, "SetValue: hive, key, var, data" );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+try
+{
+                                        // Because it uses KEY_ALL_ACCESS, OwlNext will raise an exception if process does not have admin rights
 long                error           =
 
-owl::TRegKey ( hive, (LPCSTR) key, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ).SetValue    (   varname,
+owl::TRegKey ( hive, (LPCSTR) keyname, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ).SetValue(   varname,
                                                                                             REG_SZ, 
                                                                                             (const UINT8 *) data,   StringLength ( data ) 
                                                                                         );
 return  error == ERROR_SUCCESS;
 }
 
+catch ( const std::exception&     ex )  { /*DBGM ( ex.what(), "SetValue exception error"   );*/  return false;  }
+catch (...)                             { /*DBGM ( "Error",   "SetValue error"             );*/  return false;  }
+}
+
 
 //----------------------------------------------------------------------------
                                         // Setting DWORD
 bool    SetValue        (   const owl::TRegKey&     hive,
-                            const char*             keystart,   const char*         keyend,
+                            const char*             keynamestart,   const char*     keynameend,
                             const char*             varname, 
                             DWORD                   data
                         )
 {
-if ( hive == 0 || StringIsEmpty ( keystart ) )
+if ( hive == 0 || StringIsEmpty ( keynamestart ) )
     return  false;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // concatenate the key
-char                key  [ RegistryMaxKeyLength ];
+char                keyname  [ RegistryMaxKeyLength ];
 
-ConcatKeys  ( keystart, keyend, key );
+ConcatKeys  ( keynamestart, keynameend, keyname );
 
-//DBGM3 ( key, varname, (char*) IntegerToString ( data ), "SetValue: key, var, data" );
+//DBGM4 ( hive.GetName (), keyname, varname, (char*) IntegerToString ( data ), "SetValue: hive, key, var, data" );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+try
+{
+                                        // Because it uses KEY_ALL_ACCESS, OwlNext will raise an exception if process does not have admin rights
 long                error           =
 
-owl::TRegKey ( hive, (LPCSTR) key, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ).SetValue    (   varname,
+owl::TRegKey ( hive, (LPCSTR) keyname, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ).SetValue(   varname,
                                                                                             data
                                                                                         );
 return  error == ERROR_SUCCESS;
+}
+
+catch ( const std::exception&     ex )  { /*DBGM ( ex.what(), "SetValue exception error"   );*/  return false;  }
+catch (...)                             { /*DBGM ( "Error",   "SetValue error"             );*/  return false;  }
 }
 
 
 //----------------------------------------------------------------------------
                                         // Deleting variable of any type
 bool    DeleteValue     (   const owl::TRegKey&     hive,
-                            const char*             keystart,   const char*         keyend,
+                            const char*             keynamestart,   const char*     keynameend,
                             const char*             varname
                         )
 {
-if ( hive == 0 || StringIsEmpty ( keystart ) )
+if ( hive == 0 || StringIsEmpty ( keynamestart ) )
     return  false;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // concatenate the key
-char                key  [ RegistryMaxKeyLength ];
+char                keyname  [ RegistryMaxKeyLength ];
 
-ConcatKeys  ( keystart, keyend, key );
+ConcatKeys  ( keynamestart, keynameend, keyname );
 
-if ( ! hive.HasSubkey ( key ) )
+if ( ! hive.HasSubkey ( keyname ) )
     return  false;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+try
+{
+                                        // Because it uses KEY_ALL_ACCESS, OwlNext will raise an exception if process does not have admin rights
 long                error           =
 
-owl::TRegKey ( hive, (LPCSTR) key, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ).DeleteValue ( varname );
+owl::TRegKey ( hive, (LPCSTR) keyname, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ).DeleteValue ( varname );
 
 return  error == ERROR_SUCCESS;
+}
+
+catch ( const std::exception&     ex )  { /*DBGM ( ex.what(), "DeleteValue exception error"   );*/  return false;  }
+catch (...)                             { /*DBGM ( "Error",   "DeleteValue error"             );*/  return false;  }
 }
 
 
@@ -359,79 +420,79 @@ ClearString ( KeyStart );
 }
 
 
-        TPreferences::TPreferences ( const owl::TRegKey& hive, const char *keystart )
+        TPreferences::TPreferences  (   const owl::TRegKey&     hive,   const char*     keynamestart    )
 {
 Reset ();
 
-if ( StringIsEmpty ( keystart ) )
+if ( StringIsEmpty ( keynamestart ) )
     return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 Hive    = &hive;
-                                        // keystart contains all the string to the mother key - could be technically empty, but this is not allowed here
-StringCopy ( KeyStart, keystart );
+                                        // keynamestart contains all the string to the mother key - could be technically empty, but this is not allowed here
+StringCopy ( KeyStart, keynamestart );
 }
 
 
 //----------------------------------------------------------------------------
-char*   TPreferences::GetPreference ( const char *keyend, const char *varname, char *data )
+char*   TPreferences::GetPreference ( const char *keynameend, const char *varname, char *data )
 {
 ClearString ( data );
 
 if ( IsNotOpen () )
     return  data;
 
-QueryValue  ( *Hive, KeyStart, keyend, varname, data );
+QueryValue  ( *Hive, KeyStart, keynameend, varname, data );
 
-//DBGM4 ( KeyStart, keyend, varname, StringIsEmpty ( data ) ? "<empty>" : data, "GetPreference: KeyStart keyend varname data");
+//DBGM4 ( KeyStart, keynameend, varname, StringIsEmpty ( data ) ? "<empty>" : data, "GetPreference: KeyStart keynameend varname data");
 
 return  data;
 }
 
 
-void    TPreferences::SetPreference ( const char *keyend, const char *varname, char *data )
+void    TPreferences::SetPreference ( const char *keynameend, const char *varname, char *data )
 {
 if ( IsNotOpen () )
     return;
 
-SetValue    ( *Hive, KeyStart, keyend, varname, data );
+SetValue    ( *Hive, KeyStart, keynameend, varname, data );
 }
 
 
 //----------------------------------------------------------------------------
-DWORD   TPreferences::GetPreference ( const char *keyend, const char *varname, DWORD &data )
+DWORD   TPreferences::GetPreference ( const char *keynameend, const char *varname, DWORD &data )
 {
 data    = 0;
 
 if ( IsNotOpen () )
     return  0;
 
-QueryValue  ( *Hive, KeyStart, keyend, varname, data );
+QueryValue  ( *Hive, KeyStart, keynameend, varname, data );
 
-//DBGM4 ( KeyStart, keyend, varname, (char*) IntegerToString ( data ), "GetPreference: KeyStart keyend varname data" );
+//DBGM4 ( KeyStart, keynameend, varname, (char*) IntegerToString ( data ), "GetPreference: KeyStart keynameend varname data" );
 
 return  data;
 }
 
 
-void    TPreferences::SetPreference ( const char *keyend, const char *varname, UINT32 &data )
+void    TPreferences::SetPreference ( const char *keynameend, const char *varname, UINT32 &data )
 {
 if ( IsNotOpen () )
     return;
 
-SetValue    ( *Hive, KeyStart, keyend, varname, data );
+SetValue    ( *Hive, KeyStart, keynameend, varname, data );
 }
 
 
 //----------------------------------------------------------------------------
-void    TPreferences::DeletePreference ( const char *keyend, const char *varname )
+void    TPreferences::DeletePreference ( const char *keynameend, const char *varname )
 {
 if ( IsNotOpen () )
     return;
 
-DeleteValue     ( *Hive, KeyStart, keyend, varname );
+DeleteValue     ( *Hive, KeyStart, keynameend, varname );
 }
 
 
