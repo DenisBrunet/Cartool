@@ -226,46 +226,48 @@ constexpr int   RegistryMaxVarLength    = 1 * KiloByte;
 constexpr int   RegistryMaxDataLength   = 1 * KiloByte;
 
                                         // Wrapper functions
+bool    NukeKey         (   owl::TRegKey&           hive,
+                            const char*             keyname
+                        );
                                         // Re-create the old QueryDefValue function
 bool    QueryDefValue   (   const owl::TRegKey&     hive,
-                            const char*             key, 
+                            const char*             keyname, 
                             char*                   data 
                         );
 
 bool    SetDefValue     (   const owl::TRegKey&     hive,
-                            const char*             key, 
+                            const char*             keyname, 
                             const char*             data 
                         );
 
 bool    QueryValue      (   const owl::TRegKey&     hive,
-                            const char*             keystart,   const char*         keyend,
+                            const char*             keynamestart,   const char*     keynameend,
                             const char*             varname, 
                             char*                   data 
                         );
 bool    QueryValue      (   const owl::TRegKey&     hive,
-                            const char*             keystart,   const char*         keyend,
+                            const char*             keynamestart,   const char*     keynameend,
                             const char*             varname, 
                             DWORD&                  data 
                         );
 bool    SetValue        (   const owl::TRegKey&     hive,
-                            const char*             keystart,   const char*         keyend,
+                            const char*             keynamestart,   const char*     keynameend,
                             const char*             varname, 
                             const char*             data
                         );
 bool    SetValue        (   const owl::TRegKey&     hive,
-                            const char*             keystart,   const char*         keyend,
+                            const char*             keynamestart,   const char*     keynameend,
                             const char*             varname, 
                             DWORD                   data
                         );
 bool    DeleteValue     (   const owl::TRegKey&     hive,
-                            const char*             keystart,   const char*         keyend,
+                            const char*             keynamestart,   const char*     keynameend,
                             const char*             varname
                         );
 
-                                        // More to wrap:
-//TRegKey ( TRegKey::GetLocalMachine (), b2 ).GetSubkeyCount();
-//TRegKey ( TRegKey::GetLocalMachine (), b2 ).EnumKey ( i, b1, 512 );
-//TRegKey::GetLocalMachine ().NukeKey ( b3 );
+                                        // More wrappers for:
+//TRegKey::GetSubkeyCount();
+//TRegKey::EnumKey (..);
 
 
 //----------------------------------------------------------------------------
@@ -274,19 +276,19 @@ class   TPreferences
 {
 public:
                     TPreferences        ();
-                    TPreferences        ( const owl::TRegKey& hive, const char *keystart );
+                    TPreferences        ( const owl::TRegKey& hive, const char *keynamestart );
 
     bool            IsOpen              ()  const       { return  Hive != 0; }
     bool            IsNotOpen           ()  const       { return  Hive == 0; }
 
     void            Reset               ();
 
-    char*           GetPreference       ( const char *keyend, const char *varname, char   *data );
-    void            SetPreference       ( const char *keyend, const char *varname, char   *data );
-    DWORD           GetPreference       ( const char *keyend, const char *varname, DWORD  &data );
-    void            SetPreference       ( const char *keyend, const char *varname, UINT32 &data );
+    char*           GetPreference       ( const char *keynameend, const char *varname, char   *data );
+    void            SetPreference       ( const char *keynameend, const char *varname, char   *data );
+    DWORD           GetPreference       ( const char *keynameend, const char *varname, DWORD  &data );
+    void            SetPreference       ( const char *keynameend, const char *varname, UINT32 &data );
 
-    void            DeletePreference    ( const char *keyend, const char *value );
+    void            DeletePreference    ( const char *keynameend, const char *value );
 
 protected:
 
