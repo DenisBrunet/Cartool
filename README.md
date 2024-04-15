@@ -3,7 +3,7 @@
 
 It enables seamless real-time integration of diverse modalities such as EEG, electrodes, and MRI. Offering an array of tools, including preprocessing for EEG, electrodes, and MRI, as well as frequency and micro-states analysis, and electrical source imaging.
 
-Developed in C++ for Windows, Cartool is highly optimized for parallel processing, has a very small memory print, and very few dependencies. It has been undergoing continuous development since 1996, thanks to the [_Functional Brain Mapping_](https://neurocenter-unige.ch/research-groups/christoph-michel/), Geneva, and [_CIBM_](https://www.cibm.ch), Lausanne.
+Developed in C++ for Windows, Cartool is highly optimized for parallel processing, has a very small memory footprint, and very few dependencies. It has been undergoing continuous development since 1996, thanks to the [_Functional Brain Mapping_](https://neurocenter-unige.ch/research-groups/christoph-michel/), Geneva, and [_CIBM_](https://www.cibm.ch), Lausanne.
 
 ## Prerequisites
 - Windows 7 and above
