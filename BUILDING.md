@@ -4,6 +4,12 @@ Cartool currently builds for **Windows 64bit platform** only.
 
 There are very few dependencies: some are directly included within this repo, some can be set from the Visual Studio project property pages, and some need to be downloaded, either manually or through *vcpkg*.
 
+## Prerequisites
+- _Windows 7 64bit_ and above
+- At least 8 CPU cores
+- At least 8 GB of RAM
+- SSD disks recommended
+
 ## Compiler
 **Visual Studio 2019** is the current compiler for dev.
 
