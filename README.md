@@ -3,31 +3,18 @@
 
 It enables seamless real-time integration of diverse modalities such as EEG, electrodes, and MRI. Offering an array of tools, including preprocessing for EEG, electrodes, and MRI, as well as frequency and micro-states analysis, and electrical source imaging.
 
-Developed in C++ for Windows, Cartool is highly optimized for parallel processing, has a very small memory footprint, and very few dependencies. It has been undergoing continuous development since 1996, thanks to the [_Functional Brain Mapping_](https://neurocenter-unige.ch/research-groups/christoph-michel/), Geneva, and [_CIBM_](https://www.cibm.ch), Lausanne.
+Developed in C++ for _Windows_, Cartool is highly optimized for parallel processing, has a very small memory footprint, and very few dependencies. It has been undergoing continuous development since 1996, thanks to the [_Functional Brain Mapping_](https://neurocenter-unige.ch/research-groups/christoph-michel/), Geneva, and [_CIBM_](https://www.cibm.ch), Lausanne.
 
-## Prerequisites
-- Windows 7 and above
-- Recommended 8 CPU cores or above
-- Recommended 8 GB of RAM or above
-- SSD disks recommended
+## Compiling from sources
+The [BUILDING](https://github.com/DenisBrunet/Cartool/blob/main/BUILDING.md) page describes all the steps and the necessary tools needed to fully compile Cartool from the source code.
 
-## Installation
-To compile Cartool from the source code, you will need:
-- Visual Studio 2019
-- OwlNext library (Windows MDI Application)
-- Armadillo library (Linear Algebra)
-- Intel OneMKL library (accelerated BLAS and LAPACK packages)
-- pcre (regular expressions evaluation)
-- OpenGL headers (graphics)
-
-You can also find the latest stable release already compiled here:
-- [Cartool Community Downloads](https://sites.google.com/site/cartoolcommunity/downloads)
+You can also find the latest stable release already compiled here: [_Cartool Community Downloads_](https://sites.google.com/site/cartoolcommunity/downloads).
 
 ## Contributing
-See CONTRIBUTING.txt file.
+Our contribution policy is specified in the [CONTRIBUTING](https://github.com/DenisBrunet/Cartool/blob/main/CONTRIBUTING.md) page.
 
 ## Citation
-See CITATION.txt file.
+We have some citations policy, please visit the [CITATION](https://github.com/DenisBrunet/Cartool/blob/main/CITATION.md) page.
 
 ## Community
 There are a few resources to gather knowledge and get some help:
@@ -37,4 +24,4 @@ There are a few resources to gather knowledge and get some help:
 - [CIBM](https://cibm.ch/)
 
 ## License
-This project is licensed under the Apache License Version 2.0 - see the LICENSE.txt file for details.
+This project is licensed under the _Apache License Version 2.0_ - see the [LICENSE.txt](https://github.com/DenisBrunet/Cartool/blob/main/LICENSE.txt) file for details.
