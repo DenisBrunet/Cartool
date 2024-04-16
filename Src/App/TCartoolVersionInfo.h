@@ -27,22 +27,22 @@ class   owl::TModule;
 class   TCartoolVersionInfo
 {
 public:
-                    TCartoolVersionInfo ( owl::TModule* module );
+                    TCartoolVersionInfo ( owl::TModule* module = 0 );
                    ~TCartoolVersionInfo ();
 
 
-    bool            GetProductName      ( LPSTR &s );
-    bool            GetBranchName       ( LPSTR &s );
-    bool            GetProductVersion   ( LPSTR &s );
-    bool            GetProductRevision  ( LPSTR &s );
-    bool            GetProductDate      ( LPSTR &s );
-    bool            GetCopyright        ( LPSTR &s );
-    bool            GetBuild            ( LPSTR &s );
-    bool            GetArchitecture     ( LPSTR &s );
-    bool            GetOpenMP           ( LPSTR &s );
-    bool            GetRunTimeLibrary   ( LPSTR &s );
-    bool            GetInstructionSet   ( LPSTR &s );
-    bool            GetMKL              ( LPSTR &s );
+    bool            GetProductName      ( LPSTR& s );
+    bool            GetBranchName       ( LPSTR& s );
+    bool            GetProductVersion   ( LPSTR& s );
+    bool            GetProductRevision  ( LPSTR& s );
+    bool            GetProductDate      ( LPSTR& s );
+    bool            GetCopyright        ( LPSTR& s );
+    bool            GetBuild            ( LPSTR& s );
+    bool            GetArchitecture     ( LPSTR& s );
+    bool            GetOpenMP           ( LPSTR& s );
+    bool            GetRunTimeLibrary   ( LPSTR& s );
+    bool            GetInstructionSet   ( LPSTR& s );
+    bool            GetMKL              ( LPSTR& s );
 
 
 protected:
@@ -50,6 +50,8 @@ protected:
     UCHAR*          TransBlock;
     void*           FVData;
     char            Revision[ 8 ];
+
+    bool            HasFileVersionInfo  ()  const   { return FVData != 0; }
 
 
 private:
