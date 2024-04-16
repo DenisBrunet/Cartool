@@ -97,6 +97,13 @@ if ( StringIsNotEmpty ( keynameend ) )
 
 
 //----------------------------------------------------------------------------
+                                        // Creating registry keys with correct editable attributes (using defines, as lambda do not seem to work properly here)
+#define TRegKeyRead(HIVE,KEYNAME)       owl::TRegKey ( HIVE, KEYNAME, KEY_READ,       owl::TRegKey::NoCreate )
+#define TRegKeyReadWrite(HIVE,KEYNAME)  owl::TRegKey ( HIVE, KEYNAME, KEY_ALL_ACCESS, owl::TRegKey::CreateOK )
+
+
+
+//----------------------------------------------------------------------------
 bool    NukeKey         (   owl::TRegKey&           hive,
                             const char*             keyname
                         ) 
@@ -111,7 +118,6 @@ if ( hive == 0 || StringIsEmpty ( keyname ) )
 
 try
 {
-                                        // Because it uses KEY_ALL_ACCESS, OwlNext will raise an exception if process does not have admin rights
 return  hive.NukeKey ( keyname ) == ERROR_SUCCESS;
 }
 
@@ -143,22 +149,17 @@ if ( ! hive.HasSubkey ( keyname ) )
 char                buff  [ RegistryMaxDataLength ];
 long                size            = RegistryMaxDataLength;
 
+                                                   // subkey
+if ( ::RegQueryValue ( TRegKeyRead ( hive, keyname ), 0, buff, &size ) == ERROR_SUCCESS ) {
 
-long                error           =
-
-::RegQueryValue (   owl::TRegKey ( hive, keyname, KEY_READ, owl::TRegKey::NoCreate ),
-                    0,                          // subkey
-                    buff,   &size
-                );
-
-
-if ( error == ERROR_SUCCESS )
     StringCopy  ( data, buff );
-//else
-//    DBGV ( error, "QueryValue error" );
-//DBGM2 ( keyname, data, "QueryDefValue: key -> data" );
-
-return  error == ERROR_SUCCESS;
+//  DBGM3 ( hive.GetName (), keyname, data, "QueryDefValue: hive, key -> data" );
+    return  true;
+    }
+else {
+//  DBGV ( error, "QueryValue error" );
+    return  false;
+    }
 }
 
 
@@ -173,17 +174,8 @@ if ( hive == 0 || StringIsEmpty ( keyname ) )
 
 
 try
-{
-                                        // Because it uses KEY_ALL_ACCESS, OwlNext will raise an exception if process does not have admin rights
-long                error           =
-
-::RegSetValue   (   owl::TRegKey ( hive, keyname, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ),
-                    0,                          // subkey
-                    REG_SZ, 
-                    data,   StringLength ( data )
-                );
-
-return  error == ERROR_SUCCESS;
+{                                                        // subkey
+return  ::RegSetValue ( TRegKeyReadWrite ( hive, keyname ), 0, REG_SZ, data, StringLength ( data ) ) == ERROR_SUCCESS;
 }
 
 catch ( const std::exception&     ex )  { /*DBGM ( ex.what(), "SetDefValue exception error"   );*/  return false;  }
@@ -224,20 +216,16 @@ owl::uint32         size            = RegistryMaxDataLength;
 owl::uint32         type            = REG_SZ;               // UNICODE string, null terminated - but here we are currently in ASCII
 
 
-long                error           =
-
-owl::TRegKey ( hive, (LPCSTR) keyname, KEY_READ, owl::TRegKey::NoCreate ).QueryValue(   varname, 
-                                                                                        &type, 
-                                                                                        (owl::uint8 *) buff,     &size   // not sure about that conversion - function wants uchar
-                                                                                    );
+if ( TRegKeyRead ( hive, keyname ).QueryValue ( varname, &type, (owl::uint8*) buff, &size ) == ERROR_SUCCESS ) {
                                         // no checks if receiving string is big enough...
-if ( error == ERROR_SUCCESS )
     StringCopy  ( data, (char*) buff );
-//else
-//    DBGV ( error, "QueryValue error" );
-//DBGM3 ( keyname, varname, data, "QueryValue: key, var -> data" );
-
-return  error == ERROR_SUCCESS;
+//  DBGM4 ( hive.GetName (), keyname, varname, data, "QueryValue: hive, key, var -> data" );
+    return  true;
+    }
+else {
+//  DBGV ( error, "QueryValue error" );
+    return  false;
+    }
 }
 
 
@@ -273,18 +261,7 @@ owl::uint32         size            = sizeof ( DWORD ); // this function wants u
 owl::uint32         type            = REG_DWORD;        // DWORD
 
 
-long                error           =
-
-owl::TRegKey ( hive, (LPCSTR) keyname, KEY_READ, owl::TRegKey::NoCreate ).QueryValue(   varname, 
-                                                                                        &type, 
-                                                                                        (owl::uint8 *) &data,       &size
-                                                                                    );
-//if ( error == ERROR_SUCCESS )
-//    DBGV ( data, "QueryValue" )
-//else
-//    DBGV ( error, "QueryValue error" );
-
-return  error == ERROR_SUCCESS;
+return  TRegKeyRead ( hive, keyname ).QueryValue ( varname, &type, (owl::uint8*) &data, &size ) == ERROR_SUCCESS;
 }
 
 
@@ -313,14 +290,7 @@ ConcatKeys  ( keynamestart, keynameend, keyname );
 
 try
 {
-                                        // Because it uses KEY_ALL_ACCESS, OwlNext will raise an exception if process does not have admin rights
-long                error           =
-
-owl::TRegKey ( hive, (LPCSTR) keyname, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ).SetValue(   varname,
-                                                                                            REG_SZ, 
-                                                                                            (const UINT8 *) data,   StringLength ( data ) 
-                                                                                        );
-return  error == ERROR_SUCCESS;
+return  TRegKeyReadWrite ( hive, keyname ).SetValue ( varname, REG_SZ, (const owl::uint8*) data, StringLength ( data ) ) == ERROR_SUCCESS;
 }
 
 catch ( const std::exception&     ex )  { /*DBGM ( ex.what(), "SetValue exception error"   );*/  return false;  }
@@ -353,13 +323,7 @@ ConcatKeys  ( keynamestart, keynameend, keyname );
 
 try
 {
-                                        // Because it uses KEY_ALL_ACCESS, OwlNext will raise an exception if process does not have admin rights
-long                error           =
-
-owl::TRegKey ( hive, (LPCSTR) keyname, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ).SetValue(   varname,
-                                                                                            data
-                                                                                        );
-return  error == ERROR_SUCCESS;
+return  TRegKeyReadWrite ( hive, keyname ).SetValue ( varname, data ) == ERROR_SUCCESS;
 }
 
 catch ( const std::exception&     ex )  { /*DBGM ( ex.what(), "SetValue exception error"   );*/  return false;  }
@@ -392,12 +356,7 @@ if ( ! hive.HasSubkey ( keyname ) )
 
 try
 {
-                                        // Because it uses KEY_ALL_ACCESS, OwlNext will raise an exception if process does not have admin rights
-long                error           =
-
-owl::TRegKey ( hive, (LPCSTR) keyname, KEY_ALL_ACCESS, owl::TRegKey::CreateOK ).DeleteValue ( varname );
-
-return  error == ERROR_SUCCESS;
+return  TRegKeyReadWrite ( hive, keyname ).DeleteValue ( varname ) == ERROR_SUCCESS;
 }
 
 catch ( const std::exception&     ex )  { /*DBGM ( ex.what(), "DeleteValue exception error"   );*/  return false;  }
