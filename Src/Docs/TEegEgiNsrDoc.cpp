@@ -1393,8 +1393,8 @@ if ( GetDocPath () ) {
                                         // fill product info
     StringCopy ( CompanyName, "Electrical Geodesics" );
     StringCopy ( ProductName, FILEEXT_EEGNSR );
-    Version             = mainheader.GetVersion();
-    Subversion          = mainheader.GetNumElectrodes();
+    Version             = mainheader.GetVersion ();
+    Subversion          = mainheader.GetNumElectrodes ();
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1408,12 +1408,12 @@ if ( GetDocPath () ) {
 
     NumSequences        = mainheader.GetNumSessions();
     if ( NumSequences == 0 ) {
-        sprintf ( buff, "There is no session in this file,\ncan not open file!" );
+        StringCopy  ( buff, "There is no session in this file," NewLine "can not open file!" );
         ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
         return false;
         }
     else if ( NumSequences > 1 && VkQuery () ) {
-        sprintf ( buff, "There are %0d sessions in this file,\nonly one can be used at a time.", NumSequences );
+        StringCopy  ( buff, "There are ", IntegerToString ( NumSequences )," sessions in this file," NewLine "only one can be used at a time." );
         ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
         }
 
@@ -1422,7 +1422,7 @@ if ( GetDocPath () ) {
     TimeFrames.resize ( NumSequences );
 
     if ( ! mainheader.GetDataBlocks ( DataBlocks, TimeFrames.data (), TFPerBlock ) ) {
-        sprintf ( buff, "An error occured while reading the data." );
+        StringCopy  ( buff, "An error occured while reading the data." );
         ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
         return false;
         }
@@ -1447,7 +1447,7 @@ if ( GetDocPath () ) {
                                         // length of current session, only
     NumTimeFrames       = TimeFrames[ CurrSequence ];
     if ( NumTimeFrames <= 0 ) {
-        sprintf ( buff, "An error occured while reading session length,\nfound %0d TF.", NumTimeFrames );
+        StringCopy  ( buff, "An error occured while reading session length," NewLine "found ", IntegerToString ( NumTimeFrames ), "%0d TF." );
         ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
         return false;
         }
@@ -1485,6 +1485,16 @@ if ( GetDocPath () ) {
 
     UpdateTitle ();
 
+                                        // warn user about the additional line?
+//  if ( Version == NsrVersion1 ) {
+//      StringCopy  ( buff, "An additional 0 line has been added to NetStation1 file" NewLine
+//                          NewLine
+//                          Tab "Original number of electrodes= ", IntegerToString ( NumElectrodes - 1 ), NewLine 
+//                          NewLine,
+//                          Tab "New number of electrodes      = ", IntegerToString ( NumElectrodes )
+//                  );
+//      ShowMessage ( buff, ToFileName ( GetDocPath () ), ShowMessageWarning );
+//      }
     }
 else {                                  // can not create
     return false;
@@ -1672,7 +1682,7 @@ NumTimeFrames       = TimeFrames[ newsession ];
 
 if ( NumTimeFrames <= 0 ) {
     char                buff[256];
-    sprintf ( buff, "An error occured while reading session length,\nfound %0d TF.", NumTimeFrames );
+    StringCopy  ( buff, "An error occured while reading session length," NewLine "found ", IntegerToString ( NumTimeFrames ), "%0d TF." );
     ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
 
     NumTimeFrames   = TimeFrames[ CurrSequence ];
