@@ -200,6 +200,7 @@ END_RESPONSE_TABLE;
 //----------------------------------------------------------------------------
                                         // tomodule is 0 for non-interactive application, f.ex. when running tests
                                         // Expected files at root directory: HelpShortFileName, TalairachOracleFileName
+                                        // 'name' will be overridden with actual exe file name + revision + optional debug/console flag
         TCartoolApp::TCartoolApp ( LPCTSTR name, TModule*& tomodule, TAppDictionary* appdir )
       : TApplication ( name, tomodule, appdir ),
         TRecentFiles ( ".\\Cartool.ini", 9 ),
@@ -247,9 +248,10 @@ ClearString ( TitlePrefix, MaxAppTitleLength );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // not interactive / no main window -> get out now
-if ( *tomodule == 0 )
-    return;                             // init has done enough here
+                                        // not interactive mode (console, stand-alone app, unit tests)
+//bool                isinteractrive  = *tomodule != 0;
+                                        // we can actually retrieve caller module this way, though:
+//HMODULE             moduleh         = GetModuleHandle ( 0 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -259,7 +261,7 @@ RetrievePreferences ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // retrieve and save full path to executable
-GetModuleFileName   ( ApplicationFullPath, ApplicationFullPath.Size () );
+::GetModuleFileName ( 0, ApplicationFullPath, ApplicationFullPath.Size () );
 
                                         // extract executable file name
 StringCopy          ( ApplicationFileName, ApplicationFullPath );
@@ -299,7 +301,14 @@ applVersion.GetProductRevision ( tostr );
 StringCopy      ( ProdRevision,  tostr );
 
                                         // Compose default title: real file name + version + revision
-StringCopy      ( DefaultTitle, /*GetName ()*/ ApplicationFileName, "  ", ProdVersion, "  (", ProdRevision, ")" );
+StringCopy      ( DefaultTitle, ApplicationFileName );
+
+if ( StringIsNotEmpty ( ProdVersion ) )
+    StringAppend    ( DefaultTitle, "  ", ProdVersion );
+
+if ( StringIsNotEmpty ( ProdRevision ) )
+    StringAppend    ( DefaultTitle, "  (", ProdRevision, ")" );
+
 
 #if defined (_CONSOLE)
 StringAppend    ( DefaultTitle, "  " "CONSOLE" );

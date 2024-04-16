@@ -41,12 +41,6 @@ namespace crtl {
 //----------------------------------------------------------------------------
         TCartoolVersionInfo::TCartoolVersionInfo ( TModule* module )
 {
-DWORD               fvHandle;
-uint                vSize;
-char                appFName    [ CartoolMaxExtendedPath ];
-char				subBlockName[ CartoolMaxExtendedPath ];
-
-
 TransBlock  = 0;
 FVData      = 0;
 
@@ -54,38 +48,50 @@ StringCopy          ( Revision, GitRevision7, 7 );
 StringToUppercase   ( Revision );
 
 
-module->GetModuleFileName ( (LPTSTR) appFName, sizeof appFName );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-OemToCharBuffA ( (LPCSTR) appFName, (LPSTR) appFName, sizeof appFName );
+TFileName           appfilename;
+                                        // call the one function that does not crash
+if ( module && module->GetHandle () != 0 )  module->GetModuleFileName (    appfilename, appfilename.Size () );
+else                                              ::GetModuleFileName ( 0, appfilename, appfilename.Size () );
+
+OemToCharBuffA      ( appfilename, appfilename, appfilename.Size () );
 
 
-uint32              dwSize          = ::GetFileVersionInfoSize ( (LPTSTR) appFName, &fvHandle );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( dwSize ) {
+DWORD               fvh;
+uint32              fvsize          = ::GetFileVersionInfoSize ( appfilename, &fvh );
 
-    FVData  = (void *) new char [ (uint) dwSize ];
 
-    if ( ::GetFileVersionInfo ( (LPTSTR) appFName, 0, dwSize, FVData ) ) {
+if ( fvsize ) {
+
+    FVData  = (void *) new char [ (uint) fvsize ];
+
+    if ( ::GetFileVersionInfo ( appfilename, 0, fvsize, FVData ) ) {
 
         // Copy string to buffer so if the -dc compiler switch(Put constant strings in code segments)
         // is on VerQueryValue will work under Win16.  This works around a problem in Microsoft's ver.dll
-        // which writes to the string pointed to by subBlockName.
+        // which writes to the string pointed to by subblockname.
 
-        StringCopy ( subBlockName, "\\VarFileInfo\\Translation" );
+        TFileName       subblockname    = "\\VarFileInfo\\Translation";
+        uint            blocksize;
 
-        if ( ! ::VerQueryValue  (   (LPTSTR) FVData,    (LPTSTR) subBlockName,  (void**) &TransBlock,   &vSize ) ) {
+        if ( ! ::VerQueryValue  ( FVData, subblockname, (void**) &TransBlock, &blocksize ) ) {
 
             delete[] FVData;
             FVData  = 0;
             }
-        else
+        else {
             // Swap the words so sprintf will print the lang-charset in the correct format.
             *(uint32 *)TransBlock = MAKELONG(HIWORD(*(uint32 *)TransBlock), LOWORD(*(uint32 *)TransBlock));
-        }
-    }
+            }
+        } // if GetFileVersionInfo
+    } // if GetFileVersionInfoSize
 }
 
 
+//----------------------------------------------------------------------------
         TCartoolVersionInfo::~TCartoolVersionInfo ()
 {
 if ( FVData ) {
@@ -97,9 +103,9 @@ if ( FVData ) {
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetProductName ( LPSTR &s )
+bool    TCartoolVersionInfo::GetProductName ( LPSTR& s )
 {
-if ( FVData == 0 )
+if ( ! HasFileVersionInfo () )
     return  false;
 
 uint                vSize;
@@ -107,14 +113,14 @@ char				subBlockName[ KiloByte ];
 
 sprintf ( subBlockName, "\\StringFileInfo\\%08lx\\%s", *(uint32 *)TransBlock, "ProductName" );
 
-return ::VerQueryValue (    (LPTSTR) FVData,    (LPTSTR) subBlockName,  (void**) &s,     &vSize );
+return ::VerQueryValue ( FVData, subBlockName, (void**) &s, &vSize );
 }
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetProductVersion ( LPSTR &s )
+bool    TCartoolVersionInfo::GetProductVersion ( LPSTR& s )
 {
-if ( FVData == 0 )
+if ( ! HasFileVersionInfo () )
     return  false;
 
 uint                vSize;
@@ -122,12 +128,12 @@ char				subBlockName[ KiloByte ];
 
 sprintf ( subBlockName, "\\StringFileInfo\\%08lx\\%s", *(uint32 *)TransBlock, "ProductVersion" );
 
-return ::VerQueryValue (   (LPTSTR) FVData,    (LPTSTR) subBlockName,  (void**) &s,  &vSize );
+return ::VerQueryValue ( FVData, subBlockName, (void**) &s, &vSize );
 }
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetBranchName ( LPSTR &s )
+bool    TCartoolVersionInfo::GetBranchName ( LPSTR& s )
 {
 s   = GitBranchName;
 return true;
@@ -135,7 +141,7 @@ return true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetProductRevision ( LPSTR &s )
+bool    TCartoolVersionInfo::GetProductRevision ( LPSTR& s )
 {
 s   = Revision;
 return true;
@@ -143,7 +149,7 @@ return true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetProductDate ( LPSTR &s )
+bool    TCartoolVersionInfo::GetProductDate ( LPSTR& s )
 {
 s   = GitDateNow;
 return true;
@@ -151,9 +157,9 @@ return true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetCopyright ( LPSTR &copyright )
+bool    TCartoolVersionInfo::GetCopyright ( LPSTR& copyright )
 {
-if ( FVData == 0 )
+if ( ! HasFileVersionInfo () )
     return  false;
 
 uint                vSize;
@@ -161,12 +167,12 @@ char				subBlockName[ KiloByte ];
 
 sprintf ( subBlockName, "\\StringFileInfo\\%08lx\\%s", *(uint32 *)TransBlock, "LegalCopyright" );
 
-return ::VerQueryValue (   (LPTSTR) FVData,    (LPTSTR) subBlockName,  (void**) &copyright,    &vSize );
+return ::VerQueryValue ( FVData, subBlockName, (void**) &copyright, &vSize );
 }
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetBuild ( LPSTR &s )
+bool    TCartoolVersionInfo::GetBuild ( LPSTR& s )
 {
 #if defined (_CONSOLE)
 s   = "Console";
@@ -181,7 +187,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetArchitecture ( LPSTR &s )
+bool    TCartoolVersionInfo::GetArchitecture ( LPSTR& s )
 {
 #if defined (_WIN64)
 s   = "64-bit";
@@ -194,7 +200,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetOpenMP ( LPSTR &s )
+bool    TCartoolVersionInfo::GetOpenMP ( LPSTR& s )
 {
 #if defined (_OPENMP)
 s   = "OpenMP";
@@ -206,7 +212,7 @@ return  false;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetRunTimeLibrary ( LPSTR &s )
+bool    TCartoolVersionInfo::GetRunTimeLibrary ( LPSTR& s )
 {
 #if defined (_MT)
 s   = "Multi-thread";
@@ -219,7 +225,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetInstructionSet ( LPSTR &s )
+bool    TCartoolVersionInfo::GetInstructionSet ( LPSTR& s )
 {
 #if defined (__AVX512BW__)
 s   = "AVX512";
@@ -241,7 +247,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetMKL ( LPSTR &s )
+bool    TCartoolVersionInfo::GetMKL ( LPSTR& s )
 {
                                         // or _MKL_SERVICE_H_
 #if defined (_MKL_TYPES_H_)
