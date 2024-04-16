@@ -797,11 +797,11 @@ regexplorer.SetPreference ( "Advanced", "HideFileExt", value );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // register application
-QueryDefValue   ( TRegKey::GetClassesRoot (), "CarTool.Application\\DefaultIcon", buff );
+QueryDefValue   ( TRegKey::GetClassesRoot (), "Cartool.Application\\DefaultIcon", buff );
 
 //touchedreg  |= StringIsEmpty ( buff );    // key already exist?
 
-if ( ! SetDefValue ( TRegKey::GetClassesRoot (), "CarTool.Application\\DefaultIcon", ApplicationFullPath ) ) {
+if ( ! SetDefValue ( TRegKey::GetClassesRoot (), "Cartool.Application\\DefaultIcon", ApplicationFullPath ) ) {
                                         // it seems we do not have the proper rights, just get out now
     ShowMessage ( "Can not register Cartool!" NewLine NewLine "Try again by running Cartool with Admin rights.", "Registering Cartool", ShowMessageWarning );
 
@@ -867,7 +867,7 @@ for ( int i=0; i < NumExtensionRegistrations; i++ ) {
         StringCopy  ( b1, (char *) ApplicationFullPath, " \"%1\"" );
 
         if ( opennotcartool )
-            StringCopy  ( b2, ExtReg[ i ].Extension, "file\\Shell\\CarTool\\command" );
+            StringCopy  ( b2, ExtReg[ i ].Extension, "file\\Shell\\Cartool\\command" );
         else
             StringCopy  ( b2, ExtReg[ i ].Extension, "file\\Shell\\Open\\command" );
 
@@ -928,7 +928,7 @@ void    TCartoolApp::UnRegisterInfo ()
 #if !defined (_DEBUG)
 
                                         // recursively destroy all these keys
-if ( ! NukeKey ( TRegKey::GetClassesRoot (), "CarTool.Application" ) ) {
+if ( ! NukeKey ( TRegKey::GetClassesRoot (), "Cartool.Application" ) ) {
                                         // it seems we do not have the proper rights, just get out now
     ShowMessage ( "Can not un-register Cartool!" NewLine NewLine "Try again by running Cartool with Admin rights.", "Un-registering Cartool", ShowMessageWarning );
 
