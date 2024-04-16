@@ -1095,9 +1095,9 @@ char*               toc             = StringContains ( oldtitle, ':', StringCont
 
 if ( toc )  ClearString ( toc );
 
-sprintf ( buff, "%s:%0d", oldtitle, GetCurrentSession () );
+StringCopy  ( buff, oldtitle, ":", IntegerToString ( GetCurrentSession () ) );
 
-SetTitle ( buff );
+SetTitle    ( buff );
 }
 
 
