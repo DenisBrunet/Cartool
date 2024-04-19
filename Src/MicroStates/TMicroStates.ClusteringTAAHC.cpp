@@ -166,12 +166,11 @@ do {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 0.3) Recompute all maps, as we have pairs now
-                                        // We don't really need a weighted sum for 2 maps!
 maps.LabelingToCentroids    ( 
                             Data,       &ToData, 
                             nclusters, 
                             labels, 
-                            polarity,   MeanCentroid /*centroid*/,  ranking 
+                            polarity,   MeanCentroid /*centroid*/,  ranking     // mean centroid is enough for 2 maps!
                             );
 
 return  nclusters;

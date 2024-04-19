@@ -103,7 +103,7 @@ for ( int kmi = 0; kmi < KMeansMaxIter; kmi++ ) {
                                 Data,       &ToData, 
                                 nclusters, 
                                 labels, 
-                                polarity,   MeanCentroid /*centroid*/,  ranking     // internally, we use the Mean for speed reasons
+                                polarity,   MeanCentroid /*centroid*/,  ranking     // for the inner loop, use a plain Mean Centroid to improve speed
                                 );
 
                                         // lost some maps for some weird reasons? this is an unrecoverable problem, quit now!
@@ -141,7 +141,7 @@ for ( int kmi = 0; kmi < KMeansMaxIter; kmi++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // If caller requested a better centroid than the Mean
+                                        // If caller requested a better centroid than the Mean Centroid
 if ( centroid != MeanCentroid ) {
                                         // Use final labeling for this more costly operation
     maps.LabelingToCentroids    ( 

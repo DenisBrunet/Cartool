@@ -1572,9 +1572,9 @@ if ( IsVector ( datatype ) )
     return  ComputeCloudsFolding      ( allmaps,                   ReferenceNumSamplesSP, labels, l );
 
 else
-                                        // Global Medoid will do the job and is way faster than Eigenvector
+                                        // Global Medoid will do the job pretty well while being way faster than Eigenvector
     return  ComputeMedoidCentroid     ( allmaps, datatype, PolarityEvaluate, ReferenceNumSamplesMap, labels, l );
-                                        // Officially, this is the best solution
+                                        // Officially the best solution
 //  return  ComputeEigenvectorCentroid ( allmaps, refmap, polarity );
 }
 
@@ -1584,10 +1584,9 @@ else
                                         // !Does NOT normalize anymore, caller has to do that explicitly!
 TMap    ComputeCentroid     (   const TArray1<TMap*>&   allmaps,
                                 CentroidType            centroid,
-                                AtomType                datatype,
-                                PolarityType            polarity,
+                                AtomType                datatype,       PolarityType            polarity,
                                 int                     maxsamples,
-                                TLabeling*              labels,         int             l
+                                TLabeling*              labels,         int                     l,      const TMap*             ref
                             )
 {
 TMap                map;
@@ -1609,12 +1608,12 @@ else { // NumMaps >= 2
                                         // Some functions will may need to estimate the best referential maps in case of evaluating polarities
     switch ( centroid ) {
 
-        case    MeanCentroid:           return  ComputeMeanCentroid           (   allmaps, datatype,   polarity,               labels,  l );
-//      case    WeightedCentroid:       return  ComputeWeightedCentroid       (   allmaps, datatype,   polarity,               labels,  l );
-        case    MedianCentroid:         return  ComputeMedianCentroid         (   allmaps, datatype,   polarity,               labels,  l );
-        case    MedoidCentroid:         return  ComputeMedoidCentroid         (   allmaps, datatype,   polarity,   maxsamples, labels,  l );
-        case    EigenVectorCentroid:    return  ComputeEigenvectorCentroid    (   allmaps, datatype,   polarity,   maxsamples, labels,  l );
-        case    MaxCentroid:            return  ComputeMaxCentroid            (   allmaps, datatype,   polarity,               labels,  l );
+        case    MeanCentroid:           return  ComputeMeanCentroid         (   allmaps, datatype,   polarity,               labels,  l       );
+        case    WeightedMeanCentroid:   return  ComputeWeightedMeanCentroid (   allmaps, datatype,   polarity,               labels,  l,  ref );
+        case    MedianCentroid:         return  ComputeMedianCentroid       (   allmaps, datatype,   polarity,               labels,  l       );
+        case    MedoidCentroid:         return  ComputeMedoidCentroid       (   allmaps, datatype,   polarity,   maxsamples, labels,  l       );
+        case    EigenVectorCentroid:    return  ComputeEigenvectorCentroid  (   allmaps, datatype,   polarity,   maxsamples, labels,  l       );
+        case    MaxCentroid:            return  ComputeMaxCentroid          (   allmaps, datatype,   polarity,               labels,  l       );
         default:                        return  map;            // null map
         }
     }
@@ -1622,17 +1621,16 @@ else { // NumMaps >= 2
 
                                         // Slight overhead to extract the indexes
 TMap    TMaps::ComputeCentroid  (   CentroidType        centroid,
-                                    AtomType            datatype,
-                                    PolarityType        polarity,
+                                    AtomType            datatype,       PolarityType        polarity,
                                     int                 maxsamples,
-                                    TLabeling*          labels,         int             l
+                                    TLabeling*          labels,         int                 l,      const TMap*             ref
                                 )   const
 {
 TArray1<TMap *>     allmaps;
 
 GetIndexes ( allmaps );
 
-return  crtl::ComputeCentroid ( allmaps, centroid, datatype, polarity, maxsamples, labels, l );
+return  crtl::ComputeCentroid ( allmaps, centroid, datatype, polarity, maxsamples, labels, l, ref );
 }
 
 
@@ -1640,9 +1638,8 @@ return  crtl::ComputeCentroid ( allmaps, centroid, datatype, polarity, maxsample
                                         // Average of the maps
                                         // Parallel version is pretty much the same as Median, so maybe merge the 2 at some point?
 TMap    ComputeMeanCentroid             (   const TArray1<TMap*>&    allmaps,
-                                            AtomType            datatype,
-                                            PolarityType        polarity,
-                                            TLabeling*          labels,     int         l
+                                            AtomType            datatype,       PolarityType        polarity,
+                                            TLabeling*          labels,         int                 l
                                         )
 {
 TMap                map;
@@ -1763,9 +1760,8 @@ return  map;
                                         // Max of each component, across all maps
 TMap    ComputeMaxCentroid              (
                                         const TArray1<TMap*>&    allmaps,
-                                        AtomType            datatype,
-                                        PolarityType        polarity,
-                                        TLabeling*          labels,     int         l
+                                        AtomType            datatype,       PolarityType        polarity,
+                                        TLabeling*          labels,         int                 l
                                         )
 {
 TMap                map;
@@ -1875,9 +1871,8 @@ return  map;
                                         // Median of each track
 TMap    ComputeMedianCentroid           (
                                         const TArray1<TMap*>&    allmaps,
-                                        AtomType            datatype,
-                                        PolarityType        polarity,
-                                        TLabeling*          labels,     int         l
+                                        AtomType            datatype,       PolarityType        polarity,
+                                        TLabeling*          labels,         int                 l
                                         )
 {
 TMap                map;
@@ -1998,10 +1993,9 @@ return  map;
                                         // Most topographically central map of the whole cluster, the one that maximizes the sum of correlations
 TMap    ComputeMedoidCentroid           (
                                         const TArray1<TMap*>&    allmaps,
-                                        AtomType            datatype,
-                                        PolarityType        polarity,
+                                        AtomType            datatype,       PolarityType        polarity,
                                         int                 maxsamples,
-                                        TLabeling*          labels,     int         l
+                                        TLabeling*          labels,         int                 l
                                         )
 {
 TMap                map;
@@ -2035,7 +2029,6 @@ if ( nummaps == 0 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-double              sumcorr;
 double              maxcorr         = Lowest ( maxcorr );
 int                 bestindex       = 0;
 int                 step            = AtLeast ( 1, nummaps / maxsamples );
@@ -2059,7 +2052,7 @@ for ( int mi1 = 0, mri1 = 0; mi1 < NumMaps; mi1++ ) {
         continue;
 
 
-    sumcorr = 0;
+    double      sumcorr     = 0;
 
     for ( int mi2 = offset2, mri2 = 0; mi2 < NumMaps; mi2++ ) {
 
@@ -2271,12 +2264,9 @@ TDownsampling       downcand    ( (int) points, numcandidates );
 TDownsampling       downtest    ( (int) points, numtests      );
 TEasyStats          blob;
 double              crit;
-double              mincrit;
-int                 bestindex;
+double              mincrit         = Highest ( mincrit );
+int                 bestindex       = 0;
 TVector3Float       v1;
-
-
-mincrit     = DBL_MAX;
 
 
 for ( int mi1 = downcand.From; mi1 <= downcand.To; mi1 += downcand.Step ) {
@@ -2458,7 +2448,6 @@ TPoints             centroid    ( Dimension );
 TPoints             meancentroid( Dimension );
 
 
-
 int                 mi1;
 TVector3Float*      v1;
 TVector3Float*      v2;
@@ -2547,134 +2536,159 @@ return  map;
 */
 
 //----------------------------------------------------------------------------
-                                        // Eigenvector -> Weighted average of the whole cluster
-/*void    TMaps::ComputeWeightedCentroid (    TMap&           map, 
-                                                PolarityType      polarity )
+                                        // 2 stages computation:
+                                        //  - Get a good centroid: either optionally provided, or using the Medoid
+                                        //  - Compute the weight from the correlation to this centroid
+TMap    ComputeWeightedMeanCentroid     (   const TArray1<TMap*>&    allmaps,
+                                            AtomType            datatype,       PolarityType        polarity,
+                                            TLabeling*          labels,         int                 l,      const TMap*         ref
+                                        )
 {
-//map.ResetMemory ();
-map     = 0;
+TMap                map;
 
-                                        // First, get the (best) regular centroid
-map     = ComputeEigenvectorCentroid ( polarity );
+if ( allmaps.IsNotAllocated () )
+    return  map;
+
+
+int                 Dimension       = allmaps[ 0 ]->GetDim ();
+int                 DimensionSP     = Dimension / 3;
+int                 NumMaps         = allmaps     . GetDim ();
+
+map.Resize ( Dimension );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Now iteratively improve the template
-//double              diff;
-double              corr;
-PolarityType        pol;
-double              w;
-//double            sumw            = 0;
-double              error;
-TMap                tempmap ( Dimension );
+                                        // Get some reference map: per solution point for vectorial data, or the Medoid for scalar data
+TMap                refmap;
+
+if      ( ref != 0 )
+                                        // reference could be provided by caller, like a known template map - saves quite some computation
+    refmap  = *ref;
+
+else if ( IsVector ( datatype ) )
+                                        // Best orientation per SP
+    refmap  = ComputeCloudsFolding      ( allmaps, ReferenceNumSamplesSP, labels, l );
+
+else
+                                        // Global Medoid
+    refmap  = ComputeMedoidCentroid     ( allmaps, datatype, polarity, /*ReferenceNumSamplesMap*/ MedoidNumSamples, labels, l );
 
 
-                                        // repeat a few times to make it better, until variance is below threshold (about 3 iterations)
-for ( int mi = 0; mi < WeightedCentroidMaxIter; mi++ ) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Weighting function: the closer maps are to the centroid map, the higher the weight
+                                        // Results in [-1..1]
+
+                                        // Map version
+auto    GetMapWeight    = [ &refmap ] ( const TMap& map, const PolarityType& polarity = PolarityDirect )
+{
+                                        // De-skewing Correlation with Kendall Tau formula
+return  PearsonToKendall ( refmap.Correlation ( map, polarity ) );
+};
+
+                                        // Dipole version
+auto    GetDipoleWeight = [] ( const TVector3Float& dipole, const TVector3Float& dipoleref, const PolarityType& polarity = PolarityDirect )
+{
+                                        // Cosine == Correlation
+double              corr            = polarity == PolarityDirect ?       dipoleref.Cosine ( dipole )
+                                                                 : abs ( dipoleref.Cosine ( dipole ) );
+                                        // De-skewing Correlation with Kendall Tau formula
+return  PearsonToKendall ( corr );
+};
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+double              sumw            = 0;
+TMap                sumvw ( polarity == PolarityEvaluate && IsVector ( datatype ) ? Dimension : 0 );
+constexpr double    thresholdw      = 0.75; // 0; // always >= 0
+
+
+for ( int mi = 0; mi < NumMaps; mi++ ) {
 
     UpdateApplication;
 
-
-    tempmap.ResetMemory ();
-
-                                        // use distance from template to data as a weighting factor
-    for ( int nc = 0; nc < NumMaps; nc++ ) {
-
-                                        // we need to reevaluate the polarity for each iteration, because new templates might change the polarity with members of the cluster
-        pol     = polarity == PolarityEvaluate && Maps[ nc ].IsOppositeDirection ( map ) ? PolarityInvert : PolarityDirect;
-
-                                        // look at distance from data to template - accounts for polarity
-//      diff    = sqrt ( NormalizedDifference ( Maps[ nc ], map, pol ) );
-        corr    = Correlation          ( Maps[ nc ], map, pol );
-
-                                        
-//      w       = PolarityToSign ( pol ) * Norm[ tf ];      // old way, using the norm as a weight
-//      w       = ( 1 - diff / 2 );                         // just invert the distance
-//      w       = AtLeast ( 0.0, 1 - diff / SqrtTwo );      // 1 for aligned, 0 for orthogonal, then also 0 from orthogonal up to opposite
-        w       = AtLeast ( 0.0, corr );                    // 1 for aligned down to 0 for orthogonal, then 0 from orthogonal to opposite
-
-//      w      *= Norm[ tf ];                               // optionally adding the norm as weight
+                                        // labeling provided?
+    if ( labels && (*labels)[ mi ] != l )
+        continue;
+                                        // getting a handy reference to current map
+    const TMap&         mapi            = *allmaps[ mi ];
+                                        // skipping null maps - these might come from empty clusters files which contain a null map
+    if ( mapi.IsNull () )
+        continue;
 
 
-        tempmap.Cumulate ( Maps[ nc ], w );                       
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Evaluate some polarity?
+    if ( polarity == PolarityEvaluate ) {
 
-//      sumw   += w;
+        if ( IsVector ( datatype ) ) {
+                                        // !POLARITY EVALUATED INDEPENDENTLY FOR EACH SOLUTION POINT!
+                                        // !labels case not handled, segmentation does not work on the SP level!
+            OmpParallelFor
+
+            for ( int spi = 0; spi < DimensionSP; spi++ ) {
+                                        // per dipole polarity check
+                double          w       = GetDipoleWeight ( mapi.Get3DVector ( spi ), refmap.Get3DVector ( spi ), PolarityEvaluate );
+
+                if ( w <= thresholdw )  // too far from reference?
+                    continue;
+                                        // per dipole weights
+                map  [ 3 * spi     ]   += w * mapi[ 3 * spi     ];
+                map  [ 3 * spi + 1 ]   += w * mapi[ 3 * spi + 1 ];
+                map  [ 3 * spi + 2 ]   += w * mapi[ 3 * spi + 2 ];
+
+                sumvw[ 3 * spi     ]    = w;
+                sumvw[ 3 * spi + 1 ]    = w;
+                sumvw[ 3 * spi + 2 ]    = w;
+                } // for dimi
+
+            } // IsVector
+
+        else {                          // Scalar data
+
+            PolarityType    pol     = labels ? labels->GetPolarity ( mi )       // labeling provides the polarity
+                                             : PolarityEvaluate;                // will locally evaluate polarity to refmap
+
+            double          w       = GetMapWeight ( mapi, pol );
+
+            if ( w <= thresholdw )      // too far from centroid?
+                continue;
+
+            map.Cumulate ( mapi, w );                       
+            sumw   += w;
+            } // Norm
+
+        } // PolarityEvaluate
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    else {
+                                        // no polarity evaluation, use data as is for both Scalar and Vectorial
+        double          w       = GetMapWeight ( mapi );
+
+        if ( w <= thresholdw )          // too far from centroid?
+            continue;
+
+        map.Cumulate ( mapi, w );                       
+        sumw   += w;
         }
-
-                                        // !!!!! handling the averaging or the normalization !!!!!!
-    tempmap    /= sumw;
-
-    tempmap.Normalize ( -1, dataref );
-
-                                        // look at variance     re-evaluate polarity, just in case
-//  error       =          NormalizedDifference ( tempmap, map, polarity ); 
-                                        // look at distance     re-evaluate polarity, just in case
-    error       = sqrt   ( NormalizedDifference ( tempmap, map, polarity ) ); 
-
-                                        // copy new map
-    map     = tempmap;
-
-
-//    if ( VkQuery () )  DBGV2 ( mi, error / WeightedCentroidMinError, "ComputeWeightedCentroid: mi, error" );
-
-    if ( error < WeightedCentroidMinError /* * WeightedCentroidMinError* / )
-        break;
 
     } // for mi
 
-}
-*/
-                                        // Medoid -> Weighted average of the whole cluster
-/*void    TMaps::ComputeWeightedCentroid (  TMap&           map, 
-                                            PolarityType      polarity )
-{
-//map.ResetMemory ();
-map     = 0;
 
-                                        // First, get the Medoid
-medoid  = ComputeMedoidCentroid ( polarity );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        
+if ( sumvw.IsAllocated () )
+    map /= sumvw;
+else
+    map /= sumw;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Then compute the weights from the medoid
-//double              diff;
-double              corr;
-PolarityType        pol;
-double              w;
-//double            sumw            = 0;
-TMap                map ( Dimension );
 
-
-                                        // use distance from template to data as a weighting factor
-for ( int nc = 0; nc < NumMaps; nc++ ) {
-
-                                        
-    pol     = polarity == PolarityEvaluate && Maps[ nc ].IsOppositeDirection ( medoid ) ? PolarityInvert : PolarityDirect;
-
-                                        // look at distance from data to template - accounts for polarity
-//  diff    = sqrt ( NormalizedDifference ( Maps[ nc ], medoid, pol ) );
-    corr    = Correlation          ( Maps[ nc ], medoid, pol );
-
-                                        
-//  w       = PolarityToSign ( pol ) * Norm[ tf ];      // old way, using the norm as a weight
-//  w       = ( 1 - diff / 2 );                         // just invert the distance
-//  w       = AtLeast ( 0.0, 1 - diff / SqrtTwo );      // 1 for aligned, 0 for orthogonal, then also 0 from orthogonal up to opposite
-    w       = AtLeast ( 0.0, corr );                    // 1 for aligned down to 0 for orthogonal, then 0 from orthogonal to opposite
-
-//  w      *= Norm[ tf ];                               // optionally adding the norm as weight
-
-
-    map.Cumulate ( Maps[ nc ], w );                       
-
-//  sumw   += w;
-    }
-
-
-tempmap    /= sumw;
-
-map.Normalize ( -1, dataref );
+return  map;
 }
-*/
+
 
 //----------------------------------------------------------------------------
                                         // Computing the centroid "from scratch" is more difficult than within the clustering:
@@ -2759,10 +2773,9 @@ if ( polarity == PolarityDirect ) {
                                         // NOT working on vectorial data
 TMap    ComputeEigenvectorCentroid      (
                                         const TArray1<TMap*>&    allmaps,
-                                        AtomType            datatype,
-                                        PolarityType        polarity,
+                                        AtomType            datatype,       PolarityType        polarity,
                                         int                 maxsamples,
-                                        TLabeling*          labels,     int         l
+                                        TLabeling*          labels,         int                 l
                                         )
 {
 TMap                map;
@@ -2936,17 +2949,27 @@ if ( todata )
 
     for ( int nc = 0; nc < nclusters; nc++ )
 
-        Maps[ nc ]  = crtl::ComputeCentroid ( *todata, centroid, AtomTypeScalar, polarity, LabelingNumSamples, &labels, nc );
+        Maps[ nc ]  = crtl::ComputeCentroid (   *todata,
+                                                centroid, 
+                                                AtomTypeScalar,     polarity, 
+                                                LabelingNumSamples,
+                                                &labels,            nc,         &Maps[ nc ]     // we have the template to be used as centroid
+                                            );
 else {
                                         // slower as it needs to compute the pointers to maps - still handy if called only a few times...
-    TArray1<TMap *>     allmaps;
+    TArray1<TMap*>      allmaps;
 
     data.GetIndexes ( allmaps );
 
 
     for ( int nc = 0; nc < nclusters; nc++ )
 
-        Maps[ nc ]  = crtl::ComputeCentroid ( allmaps, centroid, AtomTypeScalar, polarity, LabelingNumSamples, &labels, nc );
+        Maps[ nc ]  = crtl::ComputeCentroid (   allmaps,
+                                                centroid, 
+                                                AtomTypeScalar,     polarity, 
+                                                LabelingNumSamples, 
+                                                &labels,            nc,         &Maps[ nc ]     // we have the template to be used as centroid
+                                            );
     }
 
 
