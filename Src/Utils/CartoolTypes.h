@@ -554,7 +554,7 @@ extern  const char  BackgroundNormalizationNames[ NumBackgroundNormalization ][ 
 enum        CentroidType
             {
             MeanCentroid,               // Average of cluster
-//          WeightedCentroid,           // Weighted average of cluster
+            WeightedMeanCentroid,       // Weighted average of cluster
             MedianCentroid,             // Median of cluster
             MedoidCentroid,             // Central element of cluster
             EigenVectorCentroid,        // Eigenvector of cluster

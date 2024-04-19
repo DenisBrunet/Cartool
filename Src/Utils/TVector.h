@@ -163,8 +163,7 @@ public:
     double          CrossCorrelation    ( const TVector<TypeD> &v, int T )                                                                          const;  // with v shifted by T
     double          CorrelationToP      ( const TVector<TypeD> &v, bool centeraverage = true )                                                      const;  // Pearson Correlation to Significance p value (how much that correlation is meaningful)
     double          CorrelationToZ      ( const TVector<TypeD> &v, bool centeraverage = true )                                                      const;  // Pearson Correlation to Z Normal value (Fisher transformation)
-//  void            Cumulate            ( const TVector<TypeD> &v, double weight );             // weighted sum, weight could be negative
-//  void            Cumulate            ( const TVector<TypeD> &v, const TVector<TypeD> &refv );// sum by testing polarity
+    void            Cumulate            ( const TVector<TypeD> &v, double weight );             // weighted sum, weight could be negative
     void            Cumulate            ( const TVector<TypeD> &v, bool invert );               // signed sum
     void            Cumulate            ( const TVector<TypeD> &v, PolarityType polarity );
     void            Clipped             ( TypeD minv, TypeD maxv );
@@ -172,6 +171,7 @@ public:
     double          Dissimilarity       ( const TVector<TypeD> &v, bool centeraverage = true, bool vectorial = false )  const;
     double          Dissimilarity       ( const TVector<TypeD> &v, PolarityType polarity, bool centeraverage = true )   const;  // testing for polarity inversion, if requested and if needed
     double          ExpVar              ( const TVector<TypeD> &v, bool centeraverage = true )                          const;
+    PolarityType    GetPolarity         ( const TVector<TypeD> &op2 )       const;                                              // returns either PolarityInvert or PolarityDirect
     double          GlobalFieldPower    ( bool centeraverage = true, bool vectorial = false )                       const;
     double          GlobalFieldPower    ( TSelection &subset, bool centeraverage = true, bool vectorial = false )   const;
     void            Invert              ();
@@ -2306,10 +2306,7 @@ filterrank.Apply ( map1, RankingOptions ( RankingAccountNulls | RankingMergeIden
 filterrank.Apply ( map2, RankingOptions ( RankingAccountNulls | RankingMergeIdenticals ) );
 
 
-double              corrs           = map1.Correlation ( map2, centeraverage );
-
-
-return  corrs;
+return  map1.Correlation ( map2, centeraverage );
 }
 
 
@@ -2330,7 +2327,7 @@ return  polarity == PolarityDirect ? corr : fabs ( corr );
 template <class TypeD>
 double  TVector<TypeD>::CorrelationKendall ( const TVector<TypeD> &v, bool centeraverage )    const
 {
-return      PearsonToKendall ( Correlation ( v, centeraverage ) );
+return  PearsonToKendall ( Correlation ( v, centeraverage ) );
 }
 
 
@@ -2339,7 +2336,7 @@ return      PearsonToKendall ( Correlation ( v, centeraverage ) );
 template <class TypeD>
 double  TVector<TypeD>::CorrelationFisher ( const TVector<TypeD> &v, bool centeraverage )    const
 {
-return      PearsonToFisher ( Correlation ( v, centeraverage ) );
+return  PearsonToFisher ( Correlation ( v, centeraverage ) );
 }
 
 
@@ -2997,6 +2994,13 @@ return  ScalarProduct ( op2 ) < 0;
 }
 
 
+template <class TypeD>
+PolarityType    TVector<TypeD>::GetPolarity ( const TVector<TypeD> &op2 )   const
+{
+return  IsOppositeDirection ( op2 ) ? PolarityInvert : PolarityDirect;
+}
+
+
 //----------------------------------------------------------------------------
 template <class TypeD>
 void    TVector<TypeD>::MapFromDipole   (   double          centerx,        double  centery,    double  centerz,
@@ -3488,28 +3492,16 @@ return  SquaredDifference ( v, PolarityInvertToBool ( polarity ) );
 
 
 //----------------------------------------------------------------------------
-/*template <class TypeD>
-void    TVector<TypeD>::Cumulate ( const TVector<TypeD> &v, double weight )
+template <class TypeD>
+void    TVector<TypeD>::Cumulate ( const TVector<TypeD>& v, double weight )
 {
 for ( int i = 0; i < Dim1; i++ )
     Array[ i ]  += weight * v.Array[ i ];
 }
-*/
-/*
-template <class TypeD>
-void    TVector<TypeD>::Cumulate ( const TVector<TypeD> &v, const TVector<TypeD> &refv )
-{
-                                        // test against a preferred direction, which BTW doesn't need to be normalized
 
-                                        // ????? can we just test against itself?????
-//if ( IsOppositeDirection ( refv ) )
-if ( v.IsOppositeDirection ( refv ) )   (*this)    -= v;
-else                                    (*this)    += v;
-}
-*/
 
 template <class TypeD>
-void    TVector<TypeD>::Cumulate ( const TVector<TypeD> &v, bool invert )
+void    TVector<TypeD>::Cumulate ( const TVector<TypeD>& v, bool invert )
 {
 if ( invert )   (*this)    -= v;
 else            (*this)    += v;
@@ -3517,7 +3509,7 @@ else            (*this)    += v;
 
 
 template <class TypeD>
-void    TVector<TypeD>::Cumulate ( const TVector<TypeD> &v, PolarityType polarity )
+void    TVector<TypeD>::Cumulate ( const TVector<TypeD>& v, PolarityType polarity )
 {
                                         // test direction against itself - still OK if it is 0
 if ( polarity == PolarityEvaluate && IsOppositeDirection ( v ) )    (*this)    -= v;

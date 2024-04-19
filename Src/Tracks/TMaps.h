@@ -51,40 +51,39 @@ constexpr int       LabelingNumSamples          =  599;
 
 TMap        ComputeCentroid             (   const TArray1<TMap*>&   allmaps,
                                             CentroidType        centroid,
-                                            AtomType            datatype,
-                                            PolarityType        polarity,
+                                            AtomType            datatype,           PolarityType        polarity,
                                             int                 maxsamples  = MedoidNumSamples,
-                                            TLabeling*          labels      = 0,    int         l   = UndefinedLabel
+                                            TLabeling*          labels      = 0,    int         l   = UndefinedLabel,   const TMap*         ref         = 0
                                         );
 
 TMap        ComputeMeanCentroid         (   const TArray1<TMap*>&    allmaps,
-                                            AtomType            datatype,
-                                            PolarityType        polarity,
+                                            AtomType            datatype,           PolarityType        polarity,
                                             TLabeling*          labels      = 0,    int         l   = UndefinedLabel
                                         );
 
+TMap        ComputeWeightedMeanCentroid (   const TArray1<TMap*>&    allmaps,
+                                            AtomType            datatype,           PolarityType        polarity,
+                                            TLabeling*          labels      = 0,    int         l   = UndefinedLabel,   const TMap*         ref         = 0
+                                        );
+
 TMap        ComputeMaxCentroid          (   const TArray1<TMap*>&    allmaps,
-                                            AtomType            datatype,
-                                            PolarityType        polarity,
+                                            AtomType            datatype,           PolarityType        polarity,
                                             TLabeling*          labels      = 0,    int         l   = UndefinedLabel
                                         );
 
 TMap        ComputeMedianCentroid       (   const TArray1<TMap*>&    allmaps,
-                                            AtomType            datatype,
-                                            PolarityType        polarity,
+                                            AtomType            datatype,           PolarityType        polarity,
                                             TLabeling*          labels      = 0,    int         l   = UndefinedLabel
                                         );
 
 TMap        ComputeMedoidCentroid       (   const TArray1<TMap*>&    allmaps,
-                                            AtomType            datatype,
-                                            PolarityType        polarity,
+                                            AtomType            datatype,           PolarityType        polarity,
                                             int                 maxsamples,
                                             TLabeling*          labels      = 0,    int         l   = UndefinedLabel
                                         );
 
 TMap        ComputeEigenvectorCentroid  (   const TArray1<TMap*>&    allmaps,
-                                            AtomType            datatype,
-                                            PolarityType        polarity,
+                                            AtomType            datatype,           PolarityType        polarity,
                                             int                 maxsamples,
                                             TLabeling*          labels      = 0,    int         l   = UndefinedLabel
                                         );
@@ -232,7 +231,7 @@ public:
     void            CentroidsToLabeling         ( const TMaps& data, long tfmin, long tfmax, int nclusters, const TSelection *mapsel, TLabeling& labels, PolarityType polarity, double limitcorr )   const;
     void            LabelingToCentroids         ( const TMaps& data, const TArray1<TMap *>* todata, int nclusters, TLabeling& labels, PolarityType polarity, CentroidType centroid, bool ranking, bool updatepolarity = true );
 
-    TMap            ComputeCentroid             ( CentroidType centroid, AtomType datatype, PolarityType polarity, int maxsamples = MedoidNumSamples, TLabeling* labels = 0, int l = UndefinedLabel )    const;
+    TMap            ComputeCentroid             ( CentroidType centroid, AtomType datatype, PolarityType polarity, int maxsamples = MedoidNumSamples, TLabeling* labels = 0, int l = UndefinedLabel, const TMap* ref = 0 )    const;
 
     double          GetClosestPair              ( int nclusters, PolarityType polarity, LabelType &index1, LabelType &index2 );
     

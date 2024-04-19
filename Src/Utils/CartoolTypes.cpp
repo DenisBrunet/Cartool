@@ -222,7 +222,7 @@ const char  BackgroundNormalizationNames[ NumBackgroundNormalization ][ 64 ] =
 
 const char  CentroidNames[ NumCentroidTypes ][ 32 ] = {
             "Mean Centroid",
-//          "Weighted Centroid",
+            "Weighted Mean Centroid",
             "Median Centroid",
             "Medoid Centroid",
             "Eigenvector Centroid",
