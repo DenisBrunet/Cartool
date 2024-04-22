@@ -153,6 +153,7 @@ public:
     void            AddGaussianNoise    ( TVector<TypeD> &sigmadata, double percentsnr );       // sigmadata is the SD for each dimension
     double          Correlation         ( const TVector<TypeD> &v, bool centeraverage = true )                                                      const;  // Pearson Correlation
     double          Correlation         ( const TVector<TypeD> &v, PolarityType polarity, bool centeraverage = true )                               const;  // testing for polarity inversion, if requested and if needed
+    double          CorrelationDipoles  ( const TVector<TypeD> &v, PolarityType polarity, TVector<TypeD>* signs = 0 )                               const;
     double          Correlation         ( const TVector<TypeD> &v, TSelection &subset, bool centeraverage = true )                                  const;  // avoid parameter TSelection*, which could be cast to a bool!
     double          CorrelationLinearCircular       ( const TVector<TypeD>& mapcirc, bool centeraverage, TVector<TypeD>& mapcos, TVector<TypeD>& mapsin ) const;
     double          CorrelationLinearCircularRobust ( const TVector<TypeD>& mapcirc )                                                               const;
@@ -2257,6 +2258,58 @@ double  TVector<TypeD>::Correlation ( const TVector<TypeD> &v, PolarityType pola
 double              corr            = Correlation ( v, centeraverage );
 
 return  polarity == PolarityDirect ? corr : fabs ( corr );
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Special correlation, when vector is composed of series of 3D vectors
+                                        // No average reference in this case
+                                        // Can optionally return a vector of the 3D vectors signs
+template <class TypeD>
+double  TVector<TypeD>::CorrelationDipoles  ( const TVector<TypeD> &v, PolarityType polarity, TVector<TypeD>* signs )  const
+{
+double              sum             = 0;
+double              norm1           = 0;
+double              norm2           = 0;
+
+OmpParallelForSum ( sum, norm1, norm2 )
+
+for ( int spi = 0; spi < Dim1 / 3; spi++ ) {
+                                        // per dipole polarity check
+    bool        opposite    = polarity == PolarityEvaluate  ? Get3DVector ( spi ).IsOppositeDirection ( v.Get3DVector ( spi ) )
+                            : polarity == PolarityInvert    ? true
+                            :                                 false;
+
+    double      t1x     =   Array[ 3 * spi     ];
+    double      t1y     =   Array[ 3 * spi + 1 ];
+    double      t1z     =   Array[ 3 * spi + 2 ];
+    double      t2x     = v.Array[ 3 * spi     ];
+    double      t2y     = v.Array[ 3 * spi + 1 ];
+    double      t2z     = v.Array[ 3 * spi + 2 ];
+
+    if ( opposite ) {
+        sum    -= t1x * t2x;
+        sum    -= t1y * t2y;
+        sum    -= t1z * t2z;
+                                        // !signs dimension!
+        if ( signs )
+            (*signs)[ spi ] = -1;
+        }
+    else {
+        sum    += t1x * t2x;
+        sum    += t1y * t2y;
+        sum    += t1z * t2z;
+                                        // !signs dimension!
+        if ( signs )
+            (*signs)[ spi ] =  1;
+        }
+
+    norm1  += t1x * t1x + t1y * t1y + t1z * t1z;
+    norm2  += t2x * t2x + t2y * t2y + t2z * t2z;
+    }
+
+
+return  sum == 0 || norm1 == 0 || norm2 == 0 ? 0 : Clip ( sum / sqrt ( norm1 * norm2 ), -1.0, 1.0 );
 }
 
 

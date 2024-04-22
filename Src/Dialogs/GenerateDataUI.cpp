@@ -267,7 +267,7 @@ bool                ignorepolarity  = true;
 
 if ( what == GenerateEeg )
 
-    ignorepolarity      = GetAnswerFromUser (   "Ignore polarity results, like spontaneous data?", 
+    ignorepolarity      = GetAnswerFromUser (   "Alternating polarities, as per spontaneous data?", 
                                                 GenerateDataTitle );
 
 
