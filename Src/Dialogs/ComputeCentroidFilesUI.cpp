@@ -115,13 +115,20 @@ if      ( tc.SamplingFrequency == CompatibilityNotConsistent ) {
                                         // From here, files are assumed to be compatibles
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Ask first for the type of centroid                                        
-char                answer          = GetOptionFromUser ( "Type of Centroid: (M)ean, Me(D)ian, Med(O)id, (E)igenvector, ma(X)", 
-                                                          CentroidTitle, "M D O E X", "M", this );
+char                answer          = GetOptionFromUser (   "Type of Centroid:"     NewLine 
+                                                            Tab "(M)ean"            NewLine 
+                                                            Tab "(W)eighted Mean"   NewLine 
+                                                            Tab "Me(D)ian"          NewLine 
+                                                            Tab "Med(O)id"          NewLine 
+                                                            Tab "(E)igenvector"     NewLine 
+                                                            Tab "Ma(X)", 
+                                                          CentroidTitle, "M W D O E X", "M", this );
 
 if ( answer == EOS )   return;
 
 
 CentroidType        centroidflag    = answer == 'M' ? MeanCentroid
+                                    : answer == 'W' ? WeightedMeanCentroid
                                     : answer == 'D' ? MedianCentroid
                                     : answer == 'O' ? MedoidCentroid
                                     : answer == 'E' ? EigenVectorCentroid
