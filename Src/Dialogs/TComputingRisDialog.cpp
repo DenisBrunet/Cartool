@@ -2203,8 +2203,9 @@ double              keepingtopdata  = 0.10;
                                         // Centroids parameters
 
                                         // Null maps within the cluster of files (f.ex. coming from the Fitting) will be ignored
-//CentroidType      centroidsmethod     = MedianCentroid;   // Median gives sharper shapes/contours, counterpart is it basically forces to store all the data, and is more time-consuming to compute
-CentroidType        centroidsmethod     = MeanCentroid;     // maps can be quite empty after optional thresholding, a Median might be too radical while a Mean will still output something
+//CentroidType      centroidsmethod     = MedianCentroid;       // Median gives sharper shapes/contours, counterpart is it basically forces to store all the data, and is more time-consuming to compute
+//CentroidType      centroidsmethod     = MeanCentroid;         // maps can be quite empty after optional thresholding, a Median might be too radical while a Mean will still output something
+CentroidType        centroidsmethod     = WeightedMeanCentroid; // Weighted Mean centroid gives slightly better templates
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

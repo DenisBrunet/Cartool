@@ -2539,6 +2539,8 @@ return  map;
                                         // 2 stages computation:
                                         //  - Get a good centroid: either optionally provided, or using the Medoid
                                         //  - Compute the weight from the correlation to this centroid
+
+                                        // Ranked weights version:
 TMap    ComputeWeightedMeanCentroid     (   const TArray1<TMap*>&    allmaps,
                                             AtomType            datatype,       PolarityType        polarity,
                                             TLabeling*          labels,         int                 l,      const TMap*         ref
@@ -2571,7 +2573,7 @@ else if ( IsVector ( datatype ) )
 
 else
                                         // Global Medoid
-    refmap  = ComputeMedoidCentroid     ( allmaps, datatype, polarity, /*ReferenceNumSamplesMap*/ MedoidNumSamples, labels, l );
+    refmap  = ComputeMedoidCentroid     ( allmaps, datatype, polarity, MedoidNumSamples, labels, l );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2613,7 +2615,12 @@ for ( int mi = 0; mi < NumMaps; mi++ ) {
         if ( IsVector ( datatype ) ) {
                                         // !POLARITY EVALUATED INDEPENDENTLY FOR EACH SOLUTION POINT!
                                         // !labels case not handled, segmentation does not work on the SP level!
-            weights ( numweigths, WeightIndex   )   = refmap.CorrelationDipoles  ( mapi, PolarityEvaluate, &signs );
+            double      corr    = refmap.CorrelationDipoles  ( mapi, PolarityEvaluate, &signs );
+
+            if ( corr <= 0 )
+                continue;
+
+            weights ( numweigths, WeightIndex   )   = corr;
             weights ( numweigths, MapIndex      )   = mi;
                                         // copy the per-dipole signs factors, which saves computing again dipoles opposite directions
             for ( int spi = 0; spi < DimensionSP; spi++ )
@@ -2625,7 +2632,12 @@ for ( int mi = 0; mi < NumMaps; mi++ ) {
             PolarityType    pol     = labels ? labels->GetPolarity ( mi )       // labeling provides the polarity
                                              : PolarityEvaluate;                // will locally evaluate polarity to refmap
 
-            weights ( numweigths, WeightIndex   )   = refmap.Correlation ( mapi, pol );
+            double      corr    = refmap.Correlation ( mapi, pol );
+
+            if ( corr <= 0 )
+                continue;
+
+            weights ( numweigths, WeightIndex   )   = corr;
             weights ( numweigths, MapIndex      )   = mi;
             weights ( numweigths, SignIndex     )   = labels ? PolarityToSign ( labels->GetPolarity ( mi ) )            // store global map sign
                                                              : TrueToMinus    ( refmap.IsOppositeDirection ( mapi ) );
@@ -2639,13 +2651,23 @@ for ( int mi = 0; mi < NumMaps; mi++ ) {
 
         if ( IsVector ( datatype ) ) {
                                         // formula is actually a tiny bit different than the scalar correlation - also, we don't need to store the signs
-            weights ( numweigths, WeightIndex   )   = refmap.CorrelationDipoles  ( mapi, polarity );
+            double      corr    = refmap.CorrelationDipoles  ( mapi, polarity );
+
+            if ( corr <= 0 )
+                continue;
+
+            weights ( numweigths, WeightIndex   )   = corr;
             weights ( numweigths, MapIndex      )   = mi;
             } // IsVector
 
         else {                          // Scalar data
                                         // no polarity evaluation, use data as is for both Scalar and Vectorial
-            weights ( numweigths, WeightIndex   )   = refmap.Correlation ( mapi, polarity );
+            double      corr    = refmap.Correlation ( mapi, polarity );
+
+            if ( corr <= 0 )
+                continue;
+
+            weights ( numweigths, WeightIndex   )   = corr;
             weights ( numweigths, MapIndex      )   = mi;
             } // Scalar
         }
@@ -2656,21 +2678,28 @@ for ( int mi = 0; mi < NumMaps; mi++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Safety check
+if ( numweigths == 0 )
+    return  refmap;
+
                                         // We are interested in the top-most correlated maps to the referential one
 weights.SortRows ( WeightIndex, Descending, numweigths );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-constexpr double    toppercentilecut= 0.25;
-int                 maxcutindex     = AtLeast ( 1, Round ( numweigths * toppercentilecut ) );
+//constexpr double  toppercentilecut= 0.25;     // Using only the top Quartile of data closest to the centroid
+constexpr double    toppercentilecut= 1.0;      // Using ALL data positively correlated to the centroid, but weighted by proximity
+constexpr int       minmaps         = 1;
+constexpr int       maxmaps         = Highest ( maxmaps );  // Limiting number of closest maps(?)
+int                 nummaps         = Clip ( Round ( numweigths * toppercentilecut ), minmaps, maxmaps );
 double              sumw            = 0;
 
 
-for ( int wi = 0; wi < maxcutindex; wi++ ) {
+for ( int wi = 0; wi < nummaps; wi++ ) {
 
   //double              w           = PearsonToKendall ( weights ( wi, WeightIndex ) ); // de-skewed distance weight
-    double              w           = maxcutindex - wi;                                 // rank weight - no need to make it in (0..1]..
+    double              w           = nummaps - wi;                                     // rank weight - no need to normalize..
                         sumw       += w;                                                // ..as we cumulate the total sum of weights for normalization anyway
     int                 mi          = weights ( wi, MapIndex    );
     const TMap&         mapi        = *allmaps[ mi ];
@@ -2681,7 +2710,7 @@ for ( int wi = 0; wi < maxcutindex; wi++ ) {
         if ( IsVector ( datatype ) ) {
 
             for ( int spi = 0; spi < DimensionSP; spi++ ) {
-                                            // sign has to be per-dipole evaluated
+                                        // sign is evaluated per-dipole 
                 double      sign    = weights ( wi, SignIndex + spi );
 
                 map  [ 3 * spi     ]   += sign * w * mapi[ 3 * spi     ];
@@ -2703,15 +2732,164 @@ for ( int wi = 0; wi < maxcutindex; wi++ ) {
         map.Cumulate ( mapi, w );
     }
 
-                                        // rescale by total sum of weights                                        
-map    /= sumw;
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // rescale by total sum of weights                                        
+map    /= sumw;
 
 return  map;
 }
 
+/*                                      // Top correlation version
+TMap    ComputeWeightedMeanCentroid     (   const TArray1<TMap*>&    allmaps,
+                                            AtomType            datatype,       PolarityType        polarity,
+                                            TLabeling*          labels,         int                 l,      const TMap*         ref
+                                        )
+{
+TMap                map;
+
+if ( allmaps.IsNotAllocated () )
+    return  map;
+
+
+int                 Dimension       = allmaps[ 0 ]->GetDim ();
+int                 DimensionSP     = Dimension / 3;
+int                 NumMaps         = allmaps     . GetDim ();
+
+map.Resize ( Dimension );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Get some reference map: per solution point for vectorial data, or the Medoid for scalar data
+TMap                refmap;
+
+if      ( ref != 0 )
+                                        // reference could be provided by caller, like a known template map - saves quite some computation
+    refmap  = *ref;
+
+else if ( IsVector ( datatype ) )
+                                        // Best orientation per SP
+    refmap  = ComputeCloudsFolding      ( allmaps, ReferenceNumSamplesSP, labels, l );
+
+else
+                                        // Global Medoid
+    refmap  = ComputeMedoidCentroid     ( allmaps, datatype, polarity, MedoidNumSamples, labels, l );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Taking the maps that correlated the most to the template
+constexpr double    limittau        = 0.75;// 0.5;
+
+auto    CorrelationToWeight = [ limittau ] ( double corr )
+{
+              // De-skewing Correlation with Kendall Tau formula
+                                          // then rescaling to [0..1]
+return  Clip ( ( PearsonToKendall ( corr ) - limittau ) / ( 1 - limittau ), 0.0, 1.0 );
+};
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // we might also need to store per-dipole signs
+TMap                dipolesign ( polarity == PolarityEvaluate && IsVector ( datatype ) ? DimensionSP : 0 );
+double              sumw            = 0;
+
+
+for ( int mi = 0; mi < NumMaps; mi++ ) {
+
+    UpdateApplication;
+
+                                        // labeling provided?
+    if ( labels && (*labels)[ mi ] != l )
+        continue;
+                                        // getting a handy reference to current map
+    const TMap&         mapi            = *allmaps[ mi ];
+                                        // skipping null maps - these might come from empty clusters files which contain a null map
+    if ( mapi.IsNull () )
+        continue;
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Evaluate some polarity?
+    if ( polarity == PolarityEvaluate ) {
+
+        if ( IsVector ( datatype ) ) {
+                                        // !POLARITY EVALUATED INDEPENDENTLY FOR EACH SOLUTION POINT!
+                                        // !labels case not handled, segmentation does not work on the SP level!
+            double      w       = CorrelationToWeight ( refmap.CorrelationDipoles  ( mapi, PolarityEvaluate, &dipolesign ) );
+
+            if ( w <= 0 )
+                continue;
+
+
+//          OmpParallelFor
+            for ( int spi = 0; spi < DimensionSP; spi++ ) {
+                                        // sign is evaluated per-dipole 
+                double      sign    = dipolesign ( spi );
+
+                map  [ 3 * spi     ]   += sign * w * mapi[ 3 * spi     ];
+                map  [ 3 * spi + 1 ]   += sign * w * mapi[ 3 * spi + 1 ];
+                map  [ 3 * spi + 2 ]   += sign * w * mapi[ 3 * spi + 2 ];
+                } // for spi
+
+            sumw   += w;
+            } // IsVector
+
+        else {                          // Scalar data
+
+            PolarityType    pol     = labels ? labels->GetPolarity ( mi )       // labeling provides the polarity
+                                             : PolarityEvaluate;                // will locally evaluate polarity to refmap
+
+            double      w       = CorrelationToWeight ( refmap.Correlation ( mapi, pol ) );
+
+            if ( w <= 0 )
+                continue;
+
+            map.Cumulate ( mapi, w );                       
+            sumw   += w;
+            } // Scalar
+
+        } // PolarityEvaluate
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    else {                              // Direct polarities
+
+        if ( IsVector ( datatype ) ) {
+                                        // formula is actually a tiny bit different than the scalar correlation - also, we don't need to store the signs
+            double      w       = CorrelationToWeight ( refmap.CorrelationDipoles  ( mapi, polarity ) );
+
+            if ( w <= 0 )
+                continue;
+
+            map.Cumulate ( mapi, w );                       
+            sumw   += w;
+            } // IsVector
+
+        else {                          // Scalar data
+                                        // no polarity evaluation, use data as is for both Scalar and Vectorial
+            double      w       = CorrelationToWeight ( refmap.Correlation ( mapi, polarity ) );
+
+            if ( w <= 0 )
+                continue;
+
+            map.Cumulate ( mapi, w );                       
+            sumw   += w;
+            } // Scalar
+        }
+
+    } // for mi
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // rescale by total sum of weights                                        
+if ( sumw != 0 )
+    map    /= sumw;
+else
+    map     = refmap;   // by safety
+
+return  map;
+}
+*/
 
 //----------------------------------------------------------------------------
                                         // Computing the centroid "from scratch" is more difficult than within the clustering:
