@@ -144,6 +144,7 @@ public:
 
 
                                         // Vectorial functions    
+    void            AtLeast             ( TypeD minv );
     double          Average             ()                          const;
     double          Average             ( TSelection &subset )      const;
     void            Absolute            ();
@@ -180,6 +181,7 @@ public:
     double          MaxCrossCorrelation ( const TVector<TypeD> &v, int &T ) const;              // return the max and shift
     void            Maxed               ( const TVector<TypeD> &v );
     void            Mined               ( const TVector<TypeD> &v );
+    void            NoMore              ( TypeD maxv );
     double          Norm                ( bool centeraverage = false )  const;
     double          Norm2               ( bool centeraverage = false )  const;
     void            Normalize           ( bool centeraverage = false );
@@ -1569,7 +1571,7 @@ for ( int x = 0; x < Dim1; x++ ) {
     else if ( filtertype == FilterTypeMedian            )   v   = stat.Median ();
     else if ( filtertype == FilterTypeInterquartileMean )   v   = stat.InterQuartileMean ();
     else if ( filtertype == FilterTypeSD                )   v   = stat.SD ();
-    else if ( filtertype == FilterTypeSDInv             )   v   = ( v = stat.SD () ) != 0 ? NoMore ( 1e10, 1 / v ) : 0; // capping the max(?)
+    else if ( filtertype == FilterTypeSDInv             )   v   = ( v = stat.SD () ) != 0 ? crtl::NoMore ( 1e10, 1 / v ) : 0; // capping the max(?)
                                         // give more resolution to lower values (Gamma in option?)
     else if ( filtertype == FilterTypeCoV               )   v   = stat.CoefficientOfVariation (); //  * covrescale;
 //  else if ( filtertype == FilterTypeSNR               )   v   = stat.SNR ();
@@ -1947,7 +1949,7 @@ if ( /*IsNotAllocated () ||*/ StringIsEmpty ( file ) )
     return;
 
 
-numpoints   = numpoints < 0 ? Dim1 : NoMore ( (int) Dim1, numpoints );
+numpoints   = numpoints < 0 ? Dim1 : crtl::NoMore ( (int) Dim1, numpoints );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2669,6 +2671,22 @@ for ( int i = 0; i < Dim1; i++ )
 
 
 template <class TypeD>
+void    TVector<TypeD>::AtLeast ( TypeD minv )
+{
+for ( int i = 0; i < Dim1; i++ )
+    crtl::Maxed ( Array[ i ], minv );
+}
+
+
+template <class TypeD>
+void    TVector<TypeD>::NoMore ( TypeD maxv )
+{
+for ( int i = 0; i < Dim1; i++ )
+    crtl::Mined ( Array[ i ], maxv );
+}
+
+
+template <class TypeD>
 void    TVector<TypeD>::Normalize ( bool centeraverage )
 {
 if ( centeraverage )
@@ -2897,7 +2915,7 @@ void    TVector<TypeD>::RandomSeries    (
                                         )
 {
                                         // safety allocation
-Resize ( AtLeast ( Dim1, maxseries ), ResizeNoReset );
+Resize ( crtl::AtLeast ( Dim1, maxseries ), ResizeNoReset );
 
 ResetMemory ();
 

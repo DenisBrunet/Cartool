@@ -1057,7 +1057,7 @@ if ( ! IsAllocated () )
 avgmap.Resize ( Dimension );
 
 
-Clipped ( frommap, tomap, 0, NumMaps - 1 );
+crtl::Clipped ( frommap, tomap, 0, NumMaps - 1 );
 
 if ( frommap == tomap ) {
     avgmap  = Maps[ frommap ];
@@ -1089,7 +1089,7 @@ if ( ! IsAllocated () )
 avgmap.Resize ( Dimension );
 
 
-Clipped ( frommap, tomap, 0, NumMaps - 1 );
+crtl::Clipped ( frommap, tomap, 0, NumMaps - 1 );
 
                                         // nothing to do?
 if ( frommap == tomap ) {
@@ -1130,7 +1130,7 @@ if ( ! IsAllocated () )
 sdmap.Resize ( Dimension );
 
 
-Clipped ( frommap, tomap, 0, NumMaps - 1 );
+crtl::Clipped ( frommap, tomap, 0, NumMaps - 1 );
 
 if ( frommap == tomap ) {
     sdmap  = Maps[ frommap ];
@@ -1172,7 +1172,7 @@ sel     = TSelection ( Dimension, OrderSorted );
 sel.Set ();
 
                                         // a few maps are just enough(?)
-int                 step            = 1; // AtLeast ( 1, NumMaps / 10 );
+int                 step            = 1; // crtl::AtLeast ( 1, NumMaps / 10 );
 
 
 for ( int dim = 0; dim < Dimension; dim++ )
@@ -3820,7 +3820,7 @@ for ( int e = 0; e < dimensionsp; e++ ) {
 
     else if ( how & ZScorePositive_CenterScalePlus )
                                         // data is positive
-        Maps[ nc ][ e ]     = AtLeast ( 0.0, crtl::ZScore ( normal, center, sd ) );    // keeps only significant (above noise) responses
+        Maps[ nc ][ e ]     = crtl::AtLeast ( 0.0, crtl::ZScore ( normal, center, sd ) );    // keeps only significant (above noise) responses
 
 
     else {
@@ -4291,6 +4291,37 @@ for ( int nc = 0; nc < NumMaps; nc++ )
 
 
 //----------------------------------------------------------------------------
+void    TMaps::Clipped  ( TMapAtomType minv, TMapAtomType maxv )
+{
+OmpParallelFor
+
+for ( int nc = 0; nc < NumMaps; nc++ )
+
+    Maps[ nc ].Clipped ( minv, maxv );
+}
+
+
+void    TMaps::AtLeast ( TMapAtomType minv )
+{
+OmpParallelFor
+
+for ( int nc = 0; nc < NumMaps; nc++ )
+
+    Maps[ nc ].AtLeast ( minv );
+}
+
+
+void    TMaps::NoMore  ( TMapAtomType maxv )
+{
+OmpParallelFor
+
+for ( int nc = 0; nc < NumMaps; nc++ )
+
+    Maps[ nc ].NoMore ( maxv );
+}
+
+
+//----------------------------------------------------------------------------
 void    TMaps::AlignSuccessivePolarities ()
 {
 if ( NumMaps <= 1 )
@@ -4518,8 +4549,10 @@ for ( int mi = 0; mi < nummaps; mi++ ) {
 
     }
 
-//WriteFile ( "E:\\Data\\RisFromSolutionPoints.2.Orthogonal.ris" );
+                                        // Make sure we have only positive data in the end, even if this interferes with the correlation
+AtLeast ( 0 );
 
+//WriteFile ( "E:\\Data\\RisFromSolutionPoints.2.Orthogonal.ris" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -5004,15 +5037,15 @@ if ( IsNotAllocated () || StringIsEmpty ( filename ) )
                                         // set output file dimensions according to dispatch parameters
 int                 numtf           = dim2gets == ReadGoMapsToNumMaps   ? NumMaps
                                     : dim2gets == ReadGoMapsToDimension ? Dimension
-                                                                        : AtLeast ( 0, dimsize );  // additional size provided as option
+                                                                        : crtl::AtLeast ( 0, dimsize );  // additional size provided as option
 
 int                 numel           = dim1gets == ReadGoMapsToNumMaps   ? NumMaps 
                                     : dim1gets == ReadGoMapsToDimension ? Dimension 
-                                                                        : AtLeast ( 0, dimsize );  // additional size provided as option
+                                                                        : crtl::AtLeast ( 0, dimsize );  // additional size provided as option
 
 int                 numfreq         = dim3gets == ReadGoMapsToNumMaps   ? NumMaps 
                                     : dim3gets == ReadGoMapsToDimension ? Dimension 
-                                                                        : AtLeast ( 0, dimsize );  // additional size provided as option
+                                                                        : crtl::AtLeast ( 0, dimsize );  // additional size provided as option
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
