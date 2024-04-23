@@ -263,10 +263,10 @@ Clipped     ( numsources, 1, 10 );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // actually a flag for spontaneous vs ERP
-bool                ignorepolarity  = true;
+bool                ignorepolarity  = false;
 
 if ( what == GenerateEeg )
-
+                                        // RIS are only norms, so can not change signs
     ignorepolarity      = GetAnswerFromUser (   "Alternating polarities, as per spontaneous data?", 
                                                 GenerateDataTitle );
 

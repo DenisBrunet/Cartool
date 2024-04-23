@@ -117,7 +117,9 @@ TRandUniform        randunif;
 double              powermin        = 1.0;  // don't use a too wide of a range, otherwise SD of global data will be weird
 double              powermax        = 3.0;
                                         // constraining map polarity flipping
-bool                alternatesign   = what == GenerateEeg && ignorepolarity && typesegment != SeedMaps;
+bool                alternatesign   = ignorepolarity 
+                                   && what == GenerateEeg       // currently, RIS maps are only norms, and not dipoles
+                                   && typesegment != SeedMaps;
 TArray1<double>     mapsign ( nummapsmax );
 
 
@@ -213,20 +215,22 @@ for ( int    filei   = 0;                filei   <  numfiles;        filei++ ) {
 
         if      ( what == GenerateEeg ) {
                                         // Returned maps are always centered and normalized
-            if ( ! seedmaps.MapsFromLeadField ( nummaps, 
-                                                corr, corr,
-                                                false, // ! ignorepolarity,
-                                                leadfield, K, numsources, 
-                                                savetemplateris ? &seedris : 0 ) )
+            if ( ! seedmaps.MapsFromLeadField       (   nummaps, 
+                                                        corr,       corr,
+                                                        false, // ! ignorepolarity,
+                                                        leadfield,  K,      numsources, 
+                                                        savetemplateris ? &seedris : 0 
+                                                    ) )
                 return;
             }
 
         else if ( what == GenerateRis ) {
 
-            if ( ! seedmaps.RisFromSolutionPoints ( nummaps, 
-                                                    corr, corr,
-                                                    solp,  numsources,
-                                                    30, 0.20 ) )
+            if ( ! seedmaps.RisFromSolutionPoints   (   nummaps, 
+                                                        corr,       corr,
+                                                        solp,       numsources,
+                                                        30,         0.20 
+                                                    ) )
                 return;
             }
 
@@ -367,7 +371,16 @@ for ( int    filei   = 0;                filei   <  numfiles;        filei++ ) {
             }
 
                                         // add noise on the final data
-        data.AddGaussianNoise ( sigmadata, noise );
+        if      ( what == GenerateEeg )
+
+            data.AddGaussianNoise ( sigmadata, noise );
+
+        else if ( what == GenerateRis ) {
+                                        // should rather be a Chi distribution
+            data.AddGaussianNoise ( sigmadata, noise );
+                                        // no negative values!
+            data.AtLeast ( 0 );
+            }
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -391,7 +404,7 @@ for ( int    filei   = 0;                filei   <  numfiles;        filei++ ) {
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // saving maps
-        if ( savemaps )             data.WriteFile      ( mapsfile );
+        if ( savemaps )             data    .WriteFile  ( mapsfile );
                                         // saving root maps
         if ( savetemplatemaps )     seedmaps.WriteFile  ( seedsfile );
                                         // saving the root maps' sources only

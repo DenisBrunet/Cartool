@@ -42,7 +42,7 @@ Reset ();
 {
 Reset ();
 
-Set ( AtLeast ( 1, numbins ) );
+Set ( crtl::AtLeast ( 1, numbins ) );
 }
 
 
@@ -720,7 +720,7 @@ void    THistogram::Erode ( int nbins )
 {
 for ( int b = 0; b < Dim1; b++ )
 
-    Array[ b ]  = AtLeast ( 0.0, Array[ b ] - nbins );
+    Array[ b ]  = crtl::AtLeast ( 0.0, Array[ b ] - nbins );
 }
 
                                         // remove % of max bins everywhere
@@ -1801,7 +1801,7 @@ back    = Clip ( stat.Average () * 1.10, 0.0, maxstat );
                                         // give more weight to the min, if the quality seems bad (high CoV)
 //double              wmin            = Clip ( stat.CoV (), (double) 0, (double) 1 );
 //double              wavg            = 1 - wmin;
-//back    = AtLeast ( 0.0, wavg * stat.Average () + wmin * stat.Min () );
+//back    = crtl::AtLeast ( 0.0, wavg * stat.Average () + wmin * stat.Min () );
 
 
 //stat.Show ( "Estimators" );
@@ -2231,9 +2231,9 @@ for ( int si = minscale; si <= maxscale; si += scalestep ) {
 
     for ( int i = 0; i < Dim1; i++ ) {
 
-        w1  = LoG[ AtLeast ( 0, i - minscale / 2 )        ];
+        w1  = LoG[ crtl::AtLeast ( 0, i - minscale / 2 )        ];
         w2  = LoG[ i                                      ];
-        w3  = LoG[ AtMost  ( Dim1 - 1, i + minscale / 2 ) ];
+        w3  = LoG[ Crtl::NoMore  ( Dim1 - 1, i + minscale / 2 ) ];
 
         d1  = w1 - w2;
         d2  = w2 - w3;

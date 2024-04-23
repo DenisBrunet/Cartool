@@ -161,7 +161,7 @@ public:
     bool            IsAllocated                 ()                      const   { return NumMaps != 0; }
     bool            IsNotAllocated              ()                      const   { return NumMaps == 0; }
     bool            SomeNullMaps                ( int nummaps = -1 )    const;
-    int             CheckNumMaps                ( int& nummaps )        const   { nummaps = nummaps < 0 ? NumMaps : NoMore ( NumMaps, (const int) nummaps ); return nummaps; }  // passing -1 for all maps, otherwise doing a safe range clipping
+    int             CheckNumMaps                ( int& nummaps )        const   { nummaps = nummaps < 0 ? NumMaps : crtl::NoMore ( NumMaps, (const int) nummaps ); return nummaps; }  // passing -1 for all maps, otherwise doing a safe range clipping
 
 
     void            DeallocateMemory            ();                         // delete
@@ -175,7 +175,7 @@ public:
     void            GetIndexes                  ( TArray1<TMap *> &indexes, const TSelection* tfok = 0 )    const;  // returns a linear index structure so we can iterate through all data at once
     TArray1<TMap *> GetIndexes                  ()                              const;
     double          GetSamplingFrequency        ()                      const   { return SamplingFrequency; }
-    void            SetSamplingFrequency        ( double sf )                   { SamplingFrequency = AtLeast ( 0.0, sf ); }
+    void            SetSamplingFrequency        ( double sf )                   { SamplingFrequency = crtl::AtLeast ( 0.0, sf ); }
 
 
     void            Add                         ( const TMap&    map      );
@@ -190,7 +190,9 @@ public:
     void            ApplyZScoreSigned           ( ZScoreType how, const TArray2<float>& zscorevalues );
     void            ApplyZScorePositive         ( ZScoreType how, const TArray2<float>& zscorevalues );
     void            ApplyZScoreVectorial        ( ZScoreType how, const TArray2<float>& zscorevalues );
+    void            AtLeast                     ( TMapAtomType minv );
     void            AverageReference            ( AtomType datatype );
+    void            Clipped                     ( TMapAtomType minv, TMapAtomType maxv );
     void            ComputeDissimilarity        ( TArray1<double> &dis, PolarityType polarity, ReferenceType reference ) const;
     RegularizationType  ComputeESI              ( const TInverseMatrixDoc* ISDoc, RegularizationType regularization, bool vectorial, TMaps& ESI )    const;
     void            ComputeGFP                  ( TArray1<double> &gfp,  ReferenceType reference, AtomType datatype ) const;
@@ -212,6 +214,7 @@ public:
     void            Mean                        ( int frommap, int tomap, TMap& avgmap )    const;
     void            Median                      ( int frommap, int tomap, TMap& avgmap )    const;
     void            Multiply                    ( const AMatrix& T, TMaps& results )        const;
+    void            NoMore                      ( TMapAtomType maxv );
     void            Normalize                   ( AtomType datatype, int nummaps = -1, bool centeraverage = false );
     void            NormalizeSolutionPoints     ( AtomType datatype, int nummaps = -1 );
     void            Orthogonalize               ( int nummaps = -1 );
@@ -242,8 +245,8 @@ public:
     bool            MapsFromLeadField           ( int nummaps, double correlationmin, double correlationmax, bool ignorepolarity, TLeadField& leadfield, TTracks<float>& K, int numsources, TMaps* sourcemaps = 0 );
     bool            RisFromSolutionPoints       ( int nummaps, double correlationmin, double correlationmax, TPoints solp, int numsources, double spreadmax, double axisvariability );
     double          EstimateSigmaData           ();                                             // SD of all dimensions
-    void            AddGaussianNoise            ( double          sigmadata, double percentsnr );
-    void            AddGaussianNoise            ( double          sigmadata, double percentsnr1, double percentsnr2 );
+    void            AddGaussianNoise            ( double sigmadata, double percentsnr );
+    void            AddGaussianNoise            ( double sigmadata, double percentsnr1, double percentsnr2 );
 
 
     void            ReadFile                    ( const char* filename, AtomType datatype, ReferenceType reference, TStrings*    tracksnames = 0, TStrings*    freqsnames = 0, int dim1goes = ReadGoMapsToDimension, int dim2goes = ReadGoMapsToNumMaps, int dim3goes = ReadGoMapsIgnore, int dimmargin = 0 );
