@@ -590,8 +590,9 @@ else if ( IsPositive ( datatype ) ) {
                                                                 NewLine 
                                                                 Tab "(O)ffseted Z-Score   which remain positive" NewLine 
                                                                 Tab "(S)igned Z-Score   OK but results are not positive anymore" NewLine 
+                                                                Tab "(A)bsolute Z-Score" NewLine 
                                                                 Tab "(R)escaling only without centering", 
-                                                                "Tracks Standardization", "O S R", "O" );
+                                                                "Tracks Standardization", "O S A R", "O" );
 
             if ( answer == EOS )   return;
 
@@ -599,7 +600,7 @@ else if ( IsPositive ( datatype ) ) {
             zsp     = answer == 'S' ? ZScorePositive_CenterScale
                     : answer == 'O' ? ZScorePositive_CenterScaleOffset
 //                  : answer == 'P' ? ZScorePositive_CenterScalePlus
-//                  : answer == 'A' ? ZScorePositive_CenterScaleAbs
+                    : answer == 'A' ? ZScorePositive_CenterScaleAbs
 //                  : answer == 'I' ? ZScorePositive_CenterScaleInvertOffset
                     : answer == 'R' ? ZScorePositive_NocenterScale
                     :                 ZScoreNone;
