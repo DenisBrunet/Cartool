@@ -2563,7 +2563,7 @@ map.Resize ( Dimension );
                                         // Get some reference map: per solution point for vectorial data, or the Medoid for scalar data
 TMap                refmap;
 
-if      ( ref != 0 )
+if      ( ref != 0 && ref->IsNonNull () )
                                         // reference could be provided by caller, like a known template map - saves quite some computation
     refmap  = *ref;
 
@@ -4276,6 +4276,17 @@ for ( int nc  = 0; nc  < NumMaps;   nc++  )
 for ( int dim = 0; dim < Dimension; dim++ )
                                                                    // Our Z-Scoring is using 3 SD between 0 and 1
     Maps[ nc ][ dim ]   = ( Maps[ nc ][ dim ] - center ) / spread; // * MinSDToKeep;
+}
+
+
+void    TMaps::ZPositiveAuto ()
+{
+                                        // Automatic re-centering, signed results
+ZPositiveToZSignedAuto ();
+                                        // re-shift to 1
+(*this)    += 1;
+
+//AtLeast ( 0 );
 }
 
 
