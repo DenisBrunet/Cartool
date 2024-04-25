@@ -2184,9 +2184,8 @@ bool                radiusok    =
 
     EstimateTissuesRadii_Segmentation (
                                 xyzpoints,
-                                SpatialFilterNone,                      0,                  // smoothing off
-//                              SpatialFilterInterseptileWeightedMean,  Xyz,                // heavy filter
-//                              SpatialFilterOutlier,                   Xyz,                // light filter to simply remove outliers - no big change in shape
+                              //SpatialFilterNone,                      0,                  // smoothing off
+                                SpatialFilterInterquartileMean,         xyzdoc,             // heavy filter (actually applied only to the CSF tissue)
                                 *mritissues->GetData (),                mritissues->GetOrigin (),
                                 mricenter,                              mrihead->GetVoxelSize (),
                                 inversecenter,
