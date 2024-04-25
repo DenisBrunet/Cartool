@@ -474,9 +474,6 @@ if ( owningfiles ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Parameters for ESI data & templates
-bool                toabszscore         =   isesipreset                         // ESI case only
-                                       && ! IsVector ( datatype );              // by safety, shouldn't happen as data is not vectorial here
-
 bool                ranking             = isesipreset;
 
                                         // Processing type and reference
@@ -704,7 +701,7 @@ templatemaps.ReadFile   (   TemplateFileName,
                         );
 
 PreprocessMaps          (   templatemaps,
-                            false,      false,      // No need to convert from ZScorePO to ZScorePA, this has already been done before the templates
+                            false,
                             datatype,   polarity,   dataref,
                             ranking,
                             templateref,
@@ -1268,7 +1265,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
                         );
 
         PreprocessMaps  (   Data,
-                            toabszscore,    analysis == AnalysisERP,
+                            false,
                             datatype,       polarity,       dataref,
                             ranking,
                             processingref,

@@ -469,11 +469,11 @@ ReadData    (   gogof, gofi1, gofi2,
 
 
 //----------------------------------------------------------------------------
-                                        // Getting maps ready for internal use, basically centered and normalized by with some other fancy options, too
+                                        // Getting maps ready for INTERNAL use, basically centered and normalized by with some other fancy options, too
                                         // !dataref being use to save the optional  Norm, Gfp and Dis  arrays, and is useless in all other cases!
                                         // !processingref is the final ref applied, used for processing!
 void    TMicroStates::PreprocessMaps(   TMaps&          maps,
-                                        bool            esizscored,     bool            esizscoreshift1,
+                                        bool            forcezscorepos,
                                         AtomType        datatype,       PolarityType    polarity,       ReferenceType   dataref,
                                         bool            ranking,
                                         ReferenceType   processingref,
@@ -481,39 +481,26 @@ void    TMicroStates::PreprocessMaps(   TMaps&          maps,
                                         bool            computeandsavenorm
                                     )
 {
-//#define     TrackingPreprocData
+//#define     TracingPreprocessMaps
 
-#if defined(TrackingPreprocData)
-TFileName           basefilename ( "E:\\Data\\TMicroStates.PreprocessMaps" );
+#if defined(TracingPreprocessMaps)
+char                buff[ 256 ];
+TFileName           basefilename = TFileName ( "E:\\Data\\TMicroStates.PreprocessMaps" ) + TFileName ( "." ) + TFileName ( StringRandom ( buff, 6 ) );
 TFileName           _file;
 StringCopy      ( _file, basefilename, ".1.Original.ris" );
 maps.WriteFile  ( _file );
 #endif
 
-                                        // Optional Inverse preprocessing
-if ( esizscored ) {
-                                        // Getting rid of any existing biased ZScore, usually shifting background values from 1 back to 0
-                                        // If data are ranked later, this has basically no impact for ERP case - For RS it does anyway due to the Absolute folding
-                                        // However, it changes the global curves Norm and GFP, which has some small effect on the Smoothing and GEV
-                                        // Removing the bias is more optimal, as the background is now 0
+                                        // Optional Inverse preprocessing - not really used anymore
+if ( forcezscorepos ) {
+                                        // Automatic positive Z-Score
+    maps.ZPositiveAuto ();
 
-                                        // Center data back to 0 + NOT folding values below 0 - low values are not oscillations but ERP convergence
-//  maps.ZPositiveToZSigned     ();
-                                        // Same, BUT average of vectorial Z-Score'd are NOT centered around 1, so this correction will not be applied, which is correct
-    maps.ZPositiveToZSignedAuto ();
-
-    if ( esizscoreshift1 )
-                                        // re-shift to 1
-        maps    += 1;
-    else
-                                        // After the removing the ZScore bias, fold Z values below 0 - oscillating dipoles close to 0 ARE meaningful
-        maps.Absolute ();
-
-    #if defined(TrackingPreprocData)
-    StringCopy      ( _file, basefilename, esizscoreshift1 ? ".2.ZScorePO.ris" : ".2.ZScorePA.ris" );
+    #if defined(TracingPreprocessMaps)
+    StringCopy      ( _file, basefilename, ".2.ZScorePO.ris" );
     maps.WriteFile  ( _file );
     #endif
-    } // esizscored
+    } // forcezscorepos
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -526,7 +513,7 @@ if ( computeandsavenorm ) {
 
     maps.ComputeDissimilarity   ( Dis,  polarity, dataref );
                                         // clearing-up dissimilarity array at files junctions
-    ClearDisJunctions ();
+    ResetDissimilarityJunctions ();
     }
 
 
@@ -536,7 +523,7 @@ if ( ranking ) {
 
     maps.ToRank ( datatype, RankingOptions ( RankingAccountNulls | RankingMergeIdenticals ) );
 
-    #if defined(TrackingPreprocData)
+    #if defined(TracingPreprocessMaps)
     StringCopy      ( _file, basefilename, ".3.Rank.ris" );
     maps.WriteFile  ( _file );
     #endif
@@ -547,7 +534,7 @@ if ( ranking ) {
                                         // processing reference might be different than data reference
 maps.SetReference ( processingref, datatype );
 
-#if defined(TrackingPreprocData)
+#if defined(TracingPreprocessMaps)
 StringCopy      ( _file, basefilename, ".4.Reference.ris" );
 maps.WriteFile  ( _file );
 #endif
@@ -559,7 +546,7 @@ if ( normalizing ) {
 
     maps.Normalize ( datatype );
 
-    #if defined(TrackingPreprocData)
+    #if defined(TracingPreprocessMaps)
     StringCopy      ( _file, basefilename, ".5.Normalized.ris" );
     maps.WriteFile  ( _file );
     #endif
@@ -683,7 +670,7 @@ tfmax   = IntervalTF[ filei ].GetMax ();
 
 //----------------------------------------------------------------------------
                                         // Update dissimilarity at files' junction - not really used, as it is dealt when writing files
-void    TMicroStates::ClearDisJunctions ()
+void    TMicroStates::ResetDissimilarityJunctions ()
 {
 for ( int i = 0; i < NumFiles; i++ ) {
                                         // this one is enough for the regular Dis(n,n-1) formula

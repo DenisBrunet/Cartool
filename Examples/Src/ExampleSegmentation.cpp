@@ -164,7 +164,7 @@ cout << "Microstates segmentation   : " << "Manually running k-means clustering.
 ms.ReadData         ( gofdata, atomtype, ReferenceAsInFile, false );
 
 ms.PreprocessMaps   (   ms.Data,
-                        false,              false,
+                        false,
                         atomtype,           polarity,           dataref,
                         false,
                         GetProcessingRef ( ProcessingReferenceEEG ),

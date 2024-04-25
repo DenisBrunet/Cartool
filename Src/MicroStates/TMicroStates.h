@@ -400,7 +400,7 @@ public:
     void            ReadData                ( const TGoF& gof, AtomType datatype, ReferenceType dataref, bool showprogress );
     void            ReadData                ( const TGoGoF& gogof, int gofi1, int gofi2, int filei, AtomType datatype, ReferenceType dataref, bool showprogress );
     void            ReadData                ( const TGoGoF& gogof, int gofi1, int gofi2, int filei1, int filei2, AtomType datatype, ReferenceType dataref, bool showprogress );
-    void            PreprocessMaps          ( TMaps& maps, bool esizscored, bool esizscoreshift1, AtomType datatype, PolarityType polarity, ReferenceType dataref, bool ranking, ReferenceType processingref, bool normalizing, bool computeandsavenorm = false );
+    void            PreprocessMaps          ( TMaps& maps, bool forcezscorepos, AtomType datatype, PolarityType polarity, ReferenceType dataref, bool ranking, ReferenceType processingref, bool normalizing, bool computeandsavenorm = false );
 
                                         // Clustering methods themselves:
     int             SegmentKMeans           ( int nclusters, TMaps& maps, TLabeling& labels, PolarityType polarity, int numrandomruns, CentroidType centroid, bool ranking );
@@ -537,7 +537,7 @@ protected:
 
                                         // Data handling
     void            TimeRangeToDataRange    ( int filei, long fromtf, long totf, long &tfmin, long &tfmax );
-    void            ClearDisJunctions       ();
+    void            ResetDissimilarityJunctions ();
 
                                         // sigmamu2 sigmad2 utilities
     double          ComputeSigmaMu2         ( int numelectrodes, const TMaps& maps, const TLabeling& labels, PolarityType polarity, long tfmin, long tfmax );

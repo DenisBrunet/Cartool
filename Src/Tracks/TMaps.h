@@ -228,6 +228,7 @@ public:
     void            ToRank                      ( AtomType datatype, RankingOptions options, int nummaps = -1 );
     void            ZPositiveToZSigned          ();
     void            ZPositiveToZSignedAuto      ();
+    void            ZPositiveAuto               ();
     void            ZScore                      ( ZScoreType how, TArray2<float>* tozscorevalues = 0 );
 
                                         // Functions used during segmentation / fitting

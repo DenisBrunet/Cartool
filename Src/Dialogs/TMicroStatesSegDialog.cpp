@@ -1660,6 +1660,10 @@ if ( preset.CorrelationThreshold > -100 ) {
     }
 else
     ClipCorrelation ->SetCheck ( BoolToCheck ( false ) );
+
+
+if ( IsSegESIPreset ( presetparam ) )
+    DualDataset->SetCheck ( BoolToCheck ( true ) );
 }
 
 
@@ -2395,7 +2399,8 @@ int                 reqmaxclusters      = StringToInteger ( SegTransfer.MaxClust
 
 
 int                 numrandomtrials     = StringToInteger ( SegTransfer.RandomTrials );
-CentroidType        centroid            = isesipreset ? MedianCentroid : MeanCentroid;  // keeping best resolution for ESI - especially after 2 stages of template-ing
+CentroidType        centroid            = isesipreset ? MedianCentroid      // keeping the best spatial resolution - especially after 2 stages of template-ing
+                                                      : MeanCentroid;       // fastest for EEG
 
 
 bool                dolimitcorr         = CheckToBool ( SegTransfer.ClipCorrelation );

@@ -305,11 +305,6 @@ if ( NumTimeFrames == 0 ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Parameters for ESI data & templates
 
-                                        // Optionally removing ZScore bias
-bool                toabszscore         =   isesipreset                             // ESI case only
-                                       && ! IsVector ( datatype )                   // by safety, shouldn't happen as data is not vectorial here
-                                       && analysis != AnalysisRestingStatesGroup;   // Not needed for Grand Clustering, as templates are already coming from converted data
-
                                         // Seems to improve things in the ESI space - ?also done for Grand Clustering?
 bool                ranking             = isesipreset;    // was used for ESI RS
 
@@ -318,12 +313,12 @@ ReferenceType       processingref       = GetProcessingRef ( isesipreset ? Proce
 
 
 PreprocessMaps  (   Data,
-                    toabszscore,    analysis == AnalysisERP,
+                    false,
                     datatype,       polarity,       dataref,
                     ranking,
                     processingref,
-                    true,           // always normalized
-                    true            // compute Norm Gfp Dis arrays
+                    true,               // always normalized
+                    true                // compute Norm Gfp Dis arrays
                 );
 
 
@@ -335,7 +330,6 @@ TMaps               DualMaps;
 PolarityType        dualpolarity;
 AtomType            dualdatatype;
 ReferenceType       dualdataref;
-bool                dualtoabszscore;
 bool                dualranking;
 CentroidType        dualcentroid;
 
@@ -345,7 +339,6 @@ if      ( dualdata == DualRis ) {
     dualpolarity        = PolarityDirect;   // NO polarity for ESI
     dualdatatype        = DualDataPresets[ dualdata ].DataType;
     dualdataref         = ReferenceNone; // GetProcessingRef ( ProcessingReferenceESI );
-    dualtoabszscore     = ! IsVector ( dualdatatype );
     dualranking         = true;
     dualcentroid        = MedianCentroid;
 
@@ -353,7 +346,7 @@ if      ( dualdata == DualRis ) {
     DualData.ReadFiles  (   *gofalt, dualdatatype, ReferenceNone );
 
     PreprocessMaps      (   DualData,
-                            dualtoabszscore,    analysis == AnalysisERP,
+                            false,
                             dualdatatype,       dualpolarity,       ReferenceNone,
                             dualranking,
                             dualdataref,
@@ -366,7 +359,6 @@ else if ( dualdata == DualEeg ) {
     dualpolarity        = isrestingstates ? PolarityEvaluate : PolarityDirect;
     dualdatatype        = DualDataPresets[ dualdata ].DataType;
     dualdataref         = GetProcessingRef ( ProcessingReferenceEEG ); // or ReferenceNone?
-    dualtoabszscore     = false;
     dualranking         = false;        // shouldn't
     dualcentroid        = MeanCentroid;
 
@@ -374,7 +366,7 @@ else if ( dualdata == DualEeg ) {
     DualData.ReadFiles  (   *gofalt, dualdatatype, ReferenceNone );
 
     PreprocessMaps      (   DualData,
-                            false,              false,
+                            false,
                             dualdatatype,       dualpolarity,       ReferenceNone,
                             dualranking,
                             dualdataref,
@@ -387,15 +379,14 @@ else if ( dualdata == DualMeg ) {
     dualpolarity        = PolarityDirect;
     dualdatatype        = DualDataPresets[ dualdata ].DataType;
     dualdataref         = ReferenceNone; // GetProcessingRef ( ProcessingRefMEG );
-    dualtoabszscore     = false;
-    dualranking         = true;
+    dualranking         = false;
     dualcentroid        = MeanCentroid;
 
                                         // load & concatenate all files
     DualData.ReadFiles  (   *gofalt, dualdatatype, ReferenceNone );
 
     PreprocessMaps      (   DualData,
-                            false,              false,
+                            false,
                             dualdatatype,       dualpolarity,       ReferenceNone,
                             dualranking,
                             dualdataref,
@@ -455,10 +446,6 @@ if ( dualversions ) {
 TFileName           SPFile;
 TFileName           GreyFile;
 bool                HasEsiFiles     = false;
-
-ClearString ( SPFile    );
-ClearString ( GreyFile  );
-
 
 //  GetFileFromUser     getmrifile ( "MRI Mask:", AllMriFilesFilter,       1, GetFileRead );
 //  GetFileFromUser     getspifile ( "SPI Mask:", AllSolPointsFilesFilter, 0, GetFileRead );
@@ -679,7 +666,7 @@ if ( mapordering == MapOrderingFromTemplates ) {
                             );
 
     PreprocessMaps          (   templatemaps,
-                                false /*toabszscore*/,  false,  // No need to convert from ZScorePO to ZScorePA, this has already been done before the templates
+                                false,
                                 datatype,       polarity,       dataref,
                                 ranking,
                                 processingref,
