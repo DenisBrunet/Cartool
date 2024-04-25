@@ -1554,27 +1554,27 @@ for ( int ei = 0; ei < numel; ei++ ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/*                                        // Scanning for spongy skull, within the skull limits above
-    bool        spongyok    =   ScanTissuesMaxInterval  (   tissues,            inversecenter,
-                                                            center0,            points[ ei ],
-                                                            tissuesradii ( ei, SkullIndex,InnerAbs ), tissuesradii ( ei, SkullIndex,OuterAbs ),
-                                                            SkullSpongyIndex,   SkullSpongyIndex,
-                                                            tissuesradii ( ei, SkullSpongyIndex,InnerAbs ), tissuesradii ( ei, SkullSpongyIndex,OuterAbs ) 
-                                                        );
+                                        // Scanning for spongy skull, within the skull limits above
+//  bool        spongyok    =   ScanTissuesMaxInterval  (   tissues,            inversecenter,
+//                                                          center0,            points[ ei ],
+//                                                          tissuesradii ( ei, SkullIndex,InnerAbs ), tissuesradii ( ei, SkullIndex,OuterAbs ),
+//                                                          SkullSpongyIndex,   SkullSpongyIndex,
+//                                                          tissuesradii ( ei, SkullSpongyIndex,InnerAbs ), tissuesradii ( ei, SkullSpongyIndex,OuterAbs ) 
+//                                                      );
+//
+//  if ( spongyok )
+//
+//      tissuesradii ( ei, SkullSpongyIndex,ThickAbs )    = tissuesradii ( ei, SkullSpongyIndex,OuterAbs ) - tissuesradii ( ei, SkullSpongyIndex,InnerAbs );
+//
+//  else {
+//                                      // provide for default minimal spongy skull thickness
+//      double          midskull    = ( tissuesradii ( ei, SkullIndex,InnerAbs ) + tissuesradii ( ei, SkullIndex,OuterAbs ) ) / 2;
+//
+//      tissuesradii ( ei, SkullSpongyIndex,ThickAbs )    = MinSpongySkullThickness;
+//      tissuesradii ( ei, SkullSpongyIndex,InnerAbs )    = midskull - tissuesradii ( ei, SkullSpongyIndex,ThickAbs ) / 2;
+//      tissuesradii ( ei, SkullSpongyIndex,OuterAbs )    = midskull + tissuesradii ( ei, SkullSpongyIndex,ThickAbs ) / 2;
+//      }
 
-    if ( spongyok )
-
-        tissuesradii ( ei, SkullSpongyIndex,ThickAbs )    = tissuesradii ( ei, SkullSpongyIndex,OuterAbs ) - tissuesradii ( ei, SkullSpongyIndex,InnerAbs );
-
-    else {
-                                        // provide for default minimal spongy skull thickness
-        double          midskull    = ( tissuesradii ( ei, SkullIndex,InnerAbs ) + tissuesradii ( ei, SkullIndex,OuterAbs ) ) / 2;
-
-        tissuesradii ( ei, SkullSpongyIndex,ThickAbs )    = MinSpongySkullThickness;
-        tissuesradii ( ei, SkullSpongyIndex,InnerAbs )    = midskull - tissuesradii ( ei, SkullSpongyIndex,ThickAbs ) / 2;
-        tissuesradii ( ei, SkullSpongyIndex,OuterAbs )    = midskull + tissuesradii ( ei, SkullSpongyIndex,ThickAbs ) / 2;
-        }
-*/
 
     double          midskull    = ( tissuesradii ( ei, SkullIndex,InnerAbs ) + tissuesradii ( ei, SkullIndex,OuterAbs ) ) / 2;
                                         // Skip scanning, and estimate the spongy part from the whole skull thickness
@@ -1587,27 +1587,25 @@ for ( int ei = 0; ei < numel; ei++ ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Scanning for CSF & blood, but only next below the skull
                                         // Problem is going deep into "CSF holes" below the brain surface, which is not desirable for a spherical model
-/*
-    tissuesradii ( ei, CsfIndex,OuterAbs )  = tissuesradii ( ei, SkullIndex,InnerAbs );
-
-    bool        csfok       =   ScanTissuesNextBelow    (   tissues,            inversecenter,
-                                                            center0,            points[ ei ],
-                                                            CsfIndex,           BloodIndex, 
-                                                            tissuesradii ( ei, CsfIndex,InnerAbs ), tissuesradii ( ei, CsfIndex,OuterAbs ) 
-                                                        );
-
-                                        // if CSF exists
-    if ( csfok )
-                                        // compute CSF thickness - distance are quantified in voxels, so add 1 to include border
-        tissuesradii ( ei, CsfIndex,ThickAbs )    = tissuesradii ( ei, CsfIndex,OuterAbs ) - tissuesradii ( ei, CsfIndex,InnerAbs );
-
-    else {
-                                        // provide for default minimal CSF thickness
-        tissuesradii ( ei, CsfIndex,ThickAbs )    = MinCsfThickness;
-        tissuesradii ( ei, CsfIndex,OuterAbs )    = tissuesradii ( ei, SkullIndex,InnerAbs );
-        tissuesradii ( ei, CsfIndex,InnerAbs )    = tissuesradii ( ei, CsfIndex,OuterAbs ) - tissuesradii ( ei, CsfIndex,ThickAbs );
-        }
-*/
+//  tissuesradii ( ei, CsfIndex,OuterAbs )  = tissuesradii ( ei, SkullIndex,InnerAbs );
+//
+//  bool        csfok       =   ScanTissuesNextBelow    (   tissues,            inversecenter,
+//                                                          center0,            points[ ei ],
+//                                                          CsfIndex,           BloodIndex, 
+//                                                          tissuesradii ( ei, CsfIndex,InnerAbs ), tissuesradii ( ei, CsfIndex,OuterAbs ) 
+//                                                      );
+//
+//                                      // if CSF exists
+//  if ( csfok )
+//                                      // compute CSF thickness - distance are quantified in voxels, so add 1 to include border
+//      tissuesradii ( ei, CsfIndex,ThickAbs )    = tissuesradii ( ei, CsfIndex,OuterAbs ) - tissuesradii ( ei, CsfIndex,InnerAbs );
+//
+//  else {
+//                                      // provide for default minimal CSF thickness
+//      tissuesradii ( ei, CsfIndex,ThickAbs )    = MinCsfThickness;
+//      tissuesradii ( ei, CsfIndex,OuterAbs )    = tissuesradii ( ei, SkullIndex,InnerAbs );
+//      tissuesradii ( ei, CsfIndex,InnerAbs )    = tissuesradii ( ei, CsfIndex,OuterAbs ) - tissuesradii ( ei, CsfIndex,ThickAbs );
+//      }
 
                                         // Just landing to the smoothed-out brain surface - Closer to the EstimateTissuesRadii_T1 method
                                         // This ensures to keep the CSF layer above the brain, and NOT deep into it!
@@ -1619,10 +1617,14 @@ for ( int ei = 0; ei < numel; ei++ ) {
     tissuesradii ( ei, CsfIndex,OuterAbs )    = tissuesradii ( ei, SkullIndex,InnerAbs );
     tissuesradii ( ei, CsfIndex,ThickAbs )    = tissuesradii ( ei, CsfIndex,OuterAbs ) - tissuesradii ( ei, CsfIndex,InnerAbs );
 
-    if ( tissuesradii ( ei, CsfIndex,ThickAbs ) < MinCsfThickness ) {
-                                        // provide for default minimal CSF thickness
+    if      ( tissuesradii ( ei, CsfIndex,ThickAbs ) < MinCsfThickness ) {
+
         tissuesradii ( ei, CsfIndex,ThickAbs )    = MinCsfThickness;
-        tissuesradii ( ei, CsfIndex,OuterAbs )    = tissuesradii ( ei, SkullIndex,InnerAbs );
+        tissuesradii ( ei, CsfIndex,InnerAbs )    = tissuesradii ( ei, CsfIndex,OuterAbs ) - tissuesradii ( ei, CsfIndex,ThickAbs );
+        }
+    else if ( tissuesradii ( ei, CsfIndex,ThickAbs ) > MaxCsfThickness ) {
+
+        tissuesradii ( ei, CsfIndex,ThickAbs )    = MaxCsfThickness;
         tissuesradii ( ei, CsfIndex,InnerAbs )    = tissuesradii ( ei, CsfIndex,OuterAbs ) - tissuesradii ( ei, CsfIndex,ThickAbs );
         }
     } // for electrode
@@ -1643,8 +1645,6 @@ if ( smoothing && xyzdoc ) {
                                         // update inner part
     for ( int ei = 0; ei < numel; ei++ )
         tissuesradii ( ei, CsfIndex,InnerAbs )    = tissuesradii ( ei, CsfIndex,OuterAbs ) - tissuesradii ( ei, CsfIndex,ThickAbs );
-
-//    DBGV3 ( skullfilterratio, skullspongyfilterratio, csffilterratio, "skullfilterratio, skullspongyfilterratio, csffilterratio" );
     }
 
 

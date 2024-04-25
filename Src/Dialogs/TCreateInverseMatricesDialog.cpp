@@ -4592,9 +4592,8 @@ if ( leadfieldprocessing ) {
 
                 EstimateTissuesRadii_Segmentation (
                                             xyzpoints,
-                                            SpatialFilterNone,                      0,              // smoothing off
-    //                                      SpatialFilterInterseptileWeightedMean,  Xyz,            // heavy filter
-    //                                      SpatialFilterOutlier,                   Xyz,            // light filter to simply remove outliers - no big change in shape
+                                          //SpatialFilterNone,                      0,              // smoothing off
+                                            SpatialFilterInterquartileMean,         Xyz,            // heavy filter (actually applied only to the CSF tissue)
                                             *MriTissues->GetData (),                MriTissues->GetOrigin (),
                                             MriCenter,                              MriHead->GetVoxelSize (),
                                             TPointFloat ( InverseCenter ),

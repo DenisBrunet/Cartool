@@ -62,8 +62,9 @@ constexpr double    SkullCompactThickness       = 1.7;
 constexpr double    SkullCompactMinThickness    = 1.0;
 constexpr double    SkullCompactMaxThickness    = 2.4;
 
-                                        // Minimum CSF thickness - made quite small but not 0
+                                        // Minimum tissues thickness - could be small, but not 0
 constexpr double    MinCsfThickness             = 0.1;
+constexpr double    MaxCsfThickness             = 4.0;  // will actually go up to 5
 constexpr double    MinSpongySkullThickness     = 0.1;
 constexpr double    MinSkullThickness           = 0.1;
 constexpr double    MinScalpThickness           = 1.0;
