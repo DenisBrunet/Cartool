@@ -803,89 +803,55 @@ var.ResetMemory ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Set which criteria will be used, depending on the type of processing
-//#define     criteriaevaluation
-
+                                        // We manage to have the same criteria for both  ( EEG / ESI ) x ( ERPs / Resting States ) cases
 TSelection          critselrank ( segnumvar, OrderSorted );     // criteria used for ranking
 TSelection          critselmax  ( segnumvar, OrderSorted );     // criteria used for arg max
 TSelection          critsel     ( segnumvar, OrderSorted );     // both criteria merged together
 
-                                        // Same criteria for both EEG and ESI cases - for the moment
-//if ( ! isesipreset ) { // EEG / MEG cases
-
                                         // Best criteria for RankAveraging
-                                        // Best
-    critselrank.Set ( isrestingstates   ? segGammaDeriv         // this criterion deteriorates a lot for RS, but its second derivative is quite OK      
-                                        : segGamma      );
-    critselrank.Set ( segSilhouettes                );
-    critselrank.Set ( segDaviesBouldin              );
-    critselrank.Set ( segPointBiserial              );
-    critselrank.Set ( isrestingstates   ? segDunnRobustDeriv    // this criterion deteriorates a lot for RS, but its second derivative is quite OK  
-                                        : segDunnRobust );
+                                        // Criteria 2024
+critselrank.Set ( segDunnRobust                  );
+critselrank.Set ( segGamma                       );
+critselrank.Set ( segPointBiserial               );
+critselrank.Set ( segSilhouettes                 );
+                                        // too "spiky"(?)
+critselrank.Set ( segGammaDerivRobust            );
+critselrank.Set ( segKrzanowskiLai               );
+critselrank.Set ( segKrzanowskiLaiC              );
+critselrank.Set ( isesipreset ? segPointBiserialDerivRobust : segPointBiserialDeriv );   // these variations seems slightly better for EEG vs ESI
+critselrank.Set ( segSilhouettesDeriv            );
 
-//  critselrank.Set ( segDunnRobustDerivRobust      );          // too spiky, not suitable for an average
-//  critselrank.Set ( segKrzanowskiLaiC             );          // too spiky, not suitable for an average
-                                        // Good
-//  critselrank.Set ( segKrzanowskiLai              );          // too spiky, not suitable for an average
-                                        // OK
-//  critselrank.Set ( segGammaDerivRobust           );          // too spiky, not suitable for an average
-//  critselrank.Set ( segCrossValidationDeriv       );          // too spiky, not suitable for an average
-                                        // Not that great
-//  critselrank.Set ( segPointBiserialDerivRobust   );
-//  critselrank.Set ( segDaviesBouldinDeriv         );
-  
-                                        // Best criteria for ArgMax
-                                        // Best
-    critselmax.Set ( isrestingstates   ? segGammaDeriv          // this criterion deteriorates a lot for RS, but its second derivative is quite OK      
-                                       : segGamma       );
-    critselmax.Set ( segSilhouettes                 );
-    critselmax.Set ( segDaviesBouldin               );
-    critselmax.Set ( segPointBiserial               );
-    critselmax.Set ( isrestingstates   ? segDunnRobustDeriv     // this criterion deteriorates a lot for RS, but its second derivative is quite OK  
-                                       : segDunnRobust );
 
-//  critselmax.Set ( segDunnRobustDerivRobust       );          // not OK with ESI
-    critselmax.Set ( segKrzanowskiLaiC              );          // better than the official KL
-                                        // OK
-//  critselmax.Set ( segKrzanowskiLai               );          // actually not as good as the KL-Cartool - undershoots a lot
-//  critselmax.Set ( segGammaDerivRobust            );          // not OK with ESI
-//  critselmax.Set ( segCrossValidationDeriv        );          // although an historical actor, it is really not that good - undershoots a lot
-                                        // Not that great
-//  critselmax.Set ( segPointBiserialDerivRobust    );
-//  critselmax.Set ( segDaviesBouldinDeriv          );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Best criteria for ArgMax;
 
-    if ( IsEven ( (int) critselmax ) )
-        critselmax.Set ( segMeanRanks );                        // make the count odd by adding this guy
+                                        // Criteria 2024 after re-test
+                                        // EEG & ESI - 9 Criteria 2024
+critselmax.Set ( segDunnRobust                  );
+critselmax.Set ( segGamma                       );
+critselmax.Set ( segGammaDerivRobust            );
+critselmax.Set ( segKrzanowskiLai               );
+critselmax.Set ( segKrzanowskiLaiC              );
+critselmax.Set ( segPointBiserial               );
+critselmax.Set ( isesipreset ? segPointBiserialDerivRobust : segPointBiserialDeriv );   // these variations seems slightly better for EEG vs ESI
+critselmax.Set ( segSilhouettes                 );
+critselmax.Set ( segSilhouettesDeriv            );
 
-/*  }
-else { // isesipreset
-                                        // Note: tests have not been fully run for the ESI case, but the tendency is quite obvious and consistent with the EEG case
 
-                                        // 4 most common best criteria to merge Ranks
-    critselrank.Reset ();
-    critselrank.Set ( segGamma                      );
-    critselrank.Set ( segSilhouettes                );
-    critselrank.Set ( segPointBiserial              );
-    critselrank.Set ( segDunnRobust                 );
-//  critselrank.Set ( segDunn                       );  // quite the same as DunnRobust, is it worth adding?
+if ( IsEven ( (int) critselmax ) )
+    critselmax.Set ( segMeanRanks );    // force an odd count by adding this guy
 
-                                        // 5 most common best criteria, only for ArgMax
-    critselmax .Reset ();
-    critselmax .Set ( segGamma                      );
-    critselmax .Set ( segSilhouettes                );
-    critselmax .Set ( segPointBiserial              );
-    critselmax .Set ( segDunnRobust                 );
-    critselmax .Set ( segKrzanowskiLai              );
-    }
-*/
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Merged set of best criteria
 critsel     = critselrank;
 critsel    += critselmax;
 
 
-#if defined(criteriaevaluation)
-                                        // bypass previous choices, opt for all criteria
+#if defined(UseAllCriteria)
+                                        // bypass previous choices, select all criteria, usually for tests
 critsel.Set     ( segCritMin, segCritMax );
+
 #endif
 
                                         // make a copy of original criteria
@@ -893,7 +859,7 @@ TSelection          critselout ( critsel );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // a few more variables for AAHC
+                                        // Needs a few more variables for the AAHC / T-AAHC methods
 TMaps               TAAHCSavedMaps;
 TMaps               TAAHCTempMaps;
 TLabeling           TAAHCSavedLabels;

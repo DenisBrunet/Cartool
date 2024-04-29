@@ -33,39 +33,23 @@ int     TMicroStates::ComputeMetaCriterion  (   TSelection&         critsel,    
                                                 TArray2<double>&    var
                                             )
 {
-                                        // Clip the lowest number of clusters to some no non-sensical value
+                                        // Clip the lowest number of clusters to some reasonable value
+#if defined(UseAllCriteria)
+                                                // 3: a posteriori knowledge that 2 is very spurrious, plus we don't care for 2 clusters
+int                 minrankcluster      = 3;    // assuming well-behaved criteria in both EEG and ESI
 
-                                        // 2: is more liberal, but do we really care for 2 clusters? that can weaken the SNR of all ranking - Last update: by excluding the worst criteria, starting from 2 doesn't seem to be problematic. The good point is we see better a trend when with more data points...
-//int               minrankcluster      = 2;    // when testing criteria
-//int               minderivativecluster= 2;    // when testing criteria
-
-                                        // 3: a posteriori knowledge that 2 is very spurrious, plus we don't care for 2 clusters
-//int               minrankcluster      = 3;    // assuming well-behaved criteria in both EEG and ESI
-//int               minbestcluster      = 3;
-
-                                        // 4: we actually don't care for 2 & 3 clusters, as there are often peaks at 2 and 3, we improve the criteria by skipping this first hill
+#else
+                                                // 4: we actually don't care for 2 & 3 clusters, as there are often peaks at 2 and 3, we improve the criteria by skipping this first hill
 int                 minrankcluster      = 4;    // ESI cases can have a lot of criteria popping out at 3, which is weird;
-//int               minbestcluster      = 4;    // EEG cases, most of the time (95%), don't ever show anything interesting at 3 - So let's globally skip 3 clusters...
 
-//int               minrankcluster      = isesipreset ? 4 : 3;  // ESI cases can have a lot on 3 (KL, CV...) which look like outliers when compared to other epochs of the same subject
-//int               minbestcluster      = isesipreset ? 4 : 3;  // Maybe, when all parameters have been correctly tuned, this constraint could be lifted?
-
+#endif
                                         // Where to start considering criterion which includes some derivatives in their formula
                                         // This is some additional heuristic - Turn this off (= 2) when testing criteria
 int                 minderivativecluster= 3;    // assuming well-behaved criteria in both EEG and ESI
-//int               minderivativecluster= 4;    // in prod
 
-
-//#define     criteriaevaluation
-
-#if defined(criteriaevaluation)
-                    minrankcluster      = 3;    // see the AnalyzeGeneratedDataUI function
-//                  minbestcluster      = 3;
-#endif
 
 int                 minclustercrit      = AtLeast ( minrankcluster, reqminclusters );
 int                 maxclustercrit      =                           reqmaxclusters;
-//int               searchmaxfrom       = AtLeast ( minbestcluster, minclustercrit );    
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -334,26 +318,15 @@ critselmax     &= critsel;
 
 RankCriterionFlag   rankstylecrit   = RankCriterionLinear;      // we prefer criterion to be ranked linearly, to avoid the SD to artificially prefer low values which will appear closer to each others than the higher values
 //RankCriterionFlag rankstylemeta   = RankCriterionInverse;     // just to rescale the final criterion more nicely with the best answers being 1, 0.5 0.333 etc..
-//bool              smoothcrit      = false;                    // smoothing the curve
-//bool              smoothstat      = false;                    // smoothing the stats
 
 //TArray2<double>     ranks ( var );
 
 p ( FilterParamDiameter )     = 3;
 
 
-for ( int ci = segCritMin; ci <= segCritMax; ci++ ) {
+for ( int ci = segCritMin; ci <= segCritMax; ci++ )
 
     RankCriterion       ( var [ ci ], var [ ci ] /*ranks [ ci ]*/, minclustercrit, maxclustercrit, rankstylecrit );
-
-
-//  if ( smoothcrit ) {
-//                                      // smooth ranking
-//      SmoothCurve         ( var [ ci ], minclustercrit, maxclustercrit, FilterTypeGaussian, p );
-//                                      // rescale max to compensate the "max erosion"
-//      NormalizeCriterion  ( var [ ci ], minclustercrit, maxclustercrit, NormalizeTo0, NormalizeTo1, false );
-//      }
-    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -384,25 +357,13 @@ for ( int ncl = reqminclusters; ncl <= reqmaxclusters; ncl++ ) {
                                         // merge all ranks
     critstat.Reset ();
 
-    for ( TIteratorSelectedForward ci ( critselrank ); (bool) ci; ++ci ) {
+    for ( TIteratorSelectedForward ci ( critselrank ); (bool) ci; ++ci )
+                                        
+      //critstat.Add ( var ( ci(), ncl ),         ThreadSafetyIgnore ); // artihmetic mean
+        critstat.Add ( log ( var ( ci(), ncl ) ), ThreadSafetyIgnore ); // geometrical mean
 
-        critstat.Add ( var ( ci(),                           ncl       ), ThreadSafetyIgnore );
-
-                                        // Here we assume a sort of coherence across the number of  clusters: an outlier clustering is not considered normal
-//      if ( smoothstat ) {
-//                                      // Best Gaussian smoothing: 4 times central value + 1 time each side values (next is 3 times central value)
-//          critstat.Add ( var ( ci(),                           ncl       ), ThreadSafetyIgnore );
-//          critstat.Add ( var ( ci(),                           ncl       ), ThreadSafetyIgnore );
-//          critstat.Add ( var ( ci(),                           ncl       ), ThreadSafetyIgnore );
-//          critstat.Add ( var ( ci(), AtLeast ( reqminclusters, ncl - 1 ) ), ThreadSafetyIgnore );
-//          critstat.Add ( var ( ci(), AtMost  ( reqmaxclusters, ncl + 1 ) ), ThreadSafetyIgnore );
-//          } // smoothrank        
-
-        }
-
-//  var ( segMeanRanks, ncl )   = critstat.Median ( false );
-//  var ( segMeanRanks, ncl )   = critstat.InterQuartileMean  ();   // robust + a bit of smoothing
-    var ( segMeanRanks, ncl )   = critstat.Mean  ();                // actually not that bad...
+//  var ( segMeanRanks, ncl )   = critstat.Mean  ();
+    var ( segMeanRanks, ncl )   = exp ( critstat.Mean () );
     }
 
 
@@ -501,7 +462,7 @@ for ( int ncl = reqminclusters; ncl <= reqmaxclusters; ncl++ ) {
 RankCriterion       ( var [ segMerge3Curves  ], var [ segMerge3Curves  ], minclustercrit, maxclustercrit, rankstylecrit );
 
                                         // Retrieve max of meta-criterion
-int                 argmerge3curves     = ArgMax ( &var ( segMerge3Curves, 0 ), searchmaxfrom, maxclustercrit );
+int                 argmerge3curves     = ArgMax ( &var ( segMerge3Curves, 0 ), minclustercrit, maxclustercrit );
 */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
