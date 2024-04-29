@@ -41,6 +41,9 @@ constexpr bool      AllowEmptyClusterFiles      = true;     // Choosing how to w
                                         
 constexpr bool      SavingNormalizedClusters    = false;    // Controlling if data clusters are written normalized or with original power
 
+                                        // Flag used to generate all known criteria for tests
+//#define             UseAllCriteria
+
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
