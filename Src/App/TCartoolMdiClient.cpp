@@ -703,9 +703,14 @@ for ( TBaseDoc* doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = Cart
                                                 " " AllInverseFilesExt 
                                                 " " AllRoisFilesExt         ) ) {
                                         // hide these guys
-        doc->MinimizeViews ();
+        doc  ->MinimizeViews ();
+
         lmdoc->RefreshWindows ( false );
         }
+
+    if ( IsExtensionAmong ( doc->GetDocPath (), AllLmFilesExt ) )
+                                        // minimize already opened .lm files, which will interfere with the forthcoming retiling
+        doc  ->MinimizeViews ();
     }
 
 
@@ -714,6 +719,8 @@ for ( TBaseDoc* doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = Cart
 lmdoc->RefreshWindows ( false );
 
 lmdoc->NotifyDocViews ( vnViewUpdated );
+
+lmdoc->SyncUtility ( CM_SYNCALL );
 
 CmGroupWinAction ( IDB_GTVFIT );
 }

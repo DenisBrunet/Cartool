@@ -1225,13 +1225,13 @@ if ( ! ( IsExtensionAmong ( doc->GetDocPath (), AllEegFreqFilesExt     )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // doc already in this group ?
-if ( ListEegDoc .IsInside ( (void *) doc ) )    return false; // true;
-if ( ListXyzDoc .IsInside ( (void *) doc ) )    return false; // true;
-if ( ListSpDoc.  IsInside ( (void *) doc ) )    return false; // true;
-if ( ListIsDoc.  IsInside ( (void *) doc ) )    return false; // true;
-if ( ListRisDoc .IsInside ( (void *) doc ) )    return false; // true;
-if ( ListRoisDoc.IsInside ( (void *) doc ) )    return false; // true;
-if ( ListMriDoc .IsInside ( (void *) doc ) )    return false; // true;
+if ( ListEegDoc .IsInside ( (void *) doc ) )    return  false;
+if ( ListXyzDoc .IsInside ( (void *) doc ) )    return  false;
+if ( ListSpDoc.  IsInside ( (void *) doc ) )    return  false;
+if ( ListIsDoc.  IsInside ( (void *) doc ) )    return  false;
+if ( ListRisDoc .IsInside ( (void *) doc ) )    return  false;
+if ( ListRoisDoc.IsInside ( (void *) doc ) )    return  false;
+if ( ListMriDoc .IsInside ( (void *) doc ) )    return  false;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1297,15 +1297,6 @@ else if ( IsExtensionAmong ( buff, AllMriFilesExt ) ) {
     lmri.Add ( buff );
     }
 
-                                        // sort all updated file lists - maybe not
-//leeg  .Sort ();
-//lxyz  .Sort ();
-//lsp   .Sort ();
-//lis   .Sort ();
-//lris  .Sort ();
-//lmri  .Sort ();
-//lrois .Sort ();
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // now, are all these files matching ?
@@ -1315,6 +1306,8 @@ if ( ! Compatibility ( leeg, lrois, lxyz, lsp, lis, lris ) ) {
     return false;
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // put to the right list
 if      ( adding == addeeg 
        || adding == addfreq  ) { 
@@ -1341,7 +1334,7 @@ else if ( adding == addmri   )   ListMriDoc .Append ( (TVolumeDoc        *) doc 
 doc->AddLink ( this );
 
 
-TBaseView          *view;
+TBaseView*          view;
 bool                newview         = false;
 
 /*
