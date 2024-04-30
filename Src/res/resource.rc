@@ -147,7 +147,7 @@ BEGIN
             MENUITEM "Fi&tting templates to EEG files", CM_FITTING
             MENUITEM "&Correlation/Coherence betwen files", CM_CORRELATEFILES
             MENUITEM "Computing Te&mplates / Centroids from Cluster Files", CM_COMPUTECENTROIDEEG
-            MENUITEM "A&veraging special Error.Data files\tBatch", CM_BATCHAVERAGEERRORDATA
+            MENUITEM "Averaging Error.&Data files\tBatch", CM_BATCHAVERAGEERRORDATA
             MENUITEM SEPARATOR
             MENUITEM "Creating &ROIs for Tracks",   CM_CREATEROIS
             MENUITEM "&Statistics on Tracks",       CM_STATISTICSTRACKS
@@ -222,8 +222,10 @@ BEGIN
             MENUITEM "Results of Inverse Solutions To &Clouds of Vectors", CM_RISTOPOINTS
             MENUITEM SEPARATOR
             MENUITEM "Computing &Templates / Centroids from Cluster Files", CM_COMPUTECENTROIDRIS
-            MENUITEM "&Statistics on RIS files",    CM_STATISTICSRIS
             MENUITEM "Averaging RIS files\t&Batch", CM_BATCHAVERAGERIS
+            MENUITEM "Averaging Error.&Data files\tBatch", CM_BATCHAVERAGEERRORDATA
+            MENUITEM SEPARATOR
+            MENUITEM "&Statistics on RIS files",    CM_STATISTICSRIS
         END
         POPUP "&Generating Synthetic Data"
         BEGIN
