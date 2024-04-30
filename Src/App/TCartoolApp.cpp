@@ -1350,8 +1350,8 @@ for ( int fi = 0; fi < (int) files; fi++ ) {
 
                                         // dropping a lm into a lm -> close the dropped one
             if ( IsExtensionAmong ( basedoc->GetDocPath (), AllLmFilesExt ) )
-                CartoolDocManager->CloseDoc ( basedoc );
 
+                CartoolDocManager->CloseDoc ( basedoc );
             }
         } // doc template exists
     else                                // unknown file type?
