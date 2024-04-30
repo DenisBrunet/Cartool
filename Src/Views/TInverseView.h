@@ -90,6 +90,7 @@ enum    {
 enum    InverseRendering2D
         {
         InverseRendering2DNone,
+        InverseRendering2DTransparent,
         InverseRendering2DOvercast,
         InverseRendering2DOpaque,
 

@@ -694,7 +694,7 @@ bool    TInverseView::IsRenderingMode ( int renderingmode )
 {
 if      ( renderingmode == RenderingOpaque )
 
-    return Show3DIs      != InverseRendering3DNone      ?   Show3DIs == InverseRendering3DSolPoints || Show3DIs == InverseRendering3DIsosurface
+    return Show3DIs      != InverseRendering3DNone      ?   Show3DIs == InverseRendering3DSolPoints   || Show3DIs == InverseRendering3DIsosurface
          : Show2DIs      != InverseRendering2DNone      ?   Show2DIs == InverseRendering2DOpaque
          : ShowVectorsIs != InverseRenderingVectorsNone ?   true
          :                                                  false;
@@ -702,7 +702,7 @@ if      ( renderingmode == RenderingOpaque )
 else if ( renderingmode == RenderingTransparent )
 
     return Show3DIs      != InverseRendering3DNone      ?   Show3DIs == InverseRendering3DIsoOnion
-         : Show2DIs      != InverseRendering2DNone      ?   Show2DIs == InverseRendering2DOvercast
+         : Show2DIs      != InverseRendering2DNone      ?   Show2DIs == InverseRendering2DTransparent || Show2DIs == InverseRendering2DOvercast
          :                                                  false;
 else
 
@@ -1278,12 +1278,17 @@ for ( int itf = 0; tf < MRCNumTF; tf += MRCStepTF, itf++ ) {
 
                                         // colortable with new limits, for visual comfort
     ColorTable.SetParameters ( maxvol, minvol, contrast, Show2DIs == InverseRendering2DOvercast ? AlphaLinearSaturated
-                                                                                  : AlphaBool );
+                                                                                                : AlphaBool );
 */
                                         // ?Note: there is a slight glitch if data is signed, in opaque 2D slices, then the real values at 0 will be clipped out. It shows as small dots near 0?
-    if ( Show2DIs == InverseRendering2DOvercast )
+    if      ( Show2DIs == InverseRendering2DOvercast )
 
         ColorTable.SetParameters ( scalingpmax, scalingnmax, contrast, AlphaTable /*AlphaLinear*/ /*AlphaLinearSaturated*/ );
+
+    else if ( Show2DIs == InverseRendering2DTransparent )
+
+        ColorTable.SetParameters ( scalingpmax, scalingnmax, contrast, AlphaGreater, 1e-100 );
+
     else
 
         ColorTable.SetParameters ( scalingpmax, scalingnmax, contrast, AlphaBool );
@@ -1958,8 +1963,10 @@ for ( int itf = 0; tf < MRCNumTF; tf += MRCStepTF, itf++ ) {
                                         // the IS is drawn in transparency, but always on top of an opaque background
 //    if ( ncutplanes && ( Show2DIs ) && ( how & GLPaintOpaque ) ) {
     if ( ! SliceMode && ncutplanes
-       && (    ( Show2DIs == InverseRendering2DOpaque   && ( how & GLPaintOpaque      ) )
-            || ( Show2DIs == InverseRendering2DOvercast && ( how & GLPaintTransparent ) ) ) ) {
+       && (    ( Show2DIs == InverseRendering2DOpaque      && ( how & GLPaintOpaque      ) )
+            || ( Show2DIs == InverseRendering2DOvercast    && ( how & GLPaintTransparent ) )
+            || ( Show2DIs == InverseRendering2DTransparent && ( how & GLPaintTransparent ) ) ) ) {
+
 
         GLColoringOn        ();
         GLAlphaAboveOn      ( MRIDoc->GetBackthresholdAlpha () );

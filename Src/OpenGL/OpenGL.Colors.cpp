@@ -453,8 +453,6 @@ else if ( Alpha == AlphaGreater         )   glcol.Alpha = fabs ( value ) >= MaxV
 
 else                                        glcol.Alpha = 1.0;
 
-//if ( VkQuery () ) DBGV4 ( value, palindex, Alpha, glcol.Alpha, "value, palindex, Alpha, glcol.Alpha" );
-
 
 return palindex;
 }
