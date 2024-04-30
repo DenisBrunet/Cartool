@@ -1149,9 +1149,6 @@ if ( doc == 0 || doc == this )
     return false;
 
 
-//DBGM ( doc->GetTitle (), "Adding to LM" );
-
-
  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                        // is it a link? then copy all its content
 if ( dynamic_cast<TLinkManyDoc*> ( doc ) ) {
@@ -1642,16 +1639,18 @@ if ( refresh ) {
         view->WindowMinimize ();
     }
 
-
 SetDirty ( true );
+
 return  true;
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // common exit, if anything fails
 AbortAddToGroup:
 
 SetDirty ( false );
-return false;
+
+return  false;
 }
 
 
