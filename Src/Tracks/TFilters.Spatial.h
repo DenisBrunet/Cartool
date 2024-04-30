@@ -143,13 +143,14 @@ public:
     void            Set     ( SpatialFilterType how, const char* filexyz, int maxnumneigh, double maxnumdist );
 
 
-    bool            IsAllocated     ()                              const   { return  NeighDist.IsAllocated    (); }
-    bool            IsNotAllocated  ()                              const   { return  NeighDist.IsNotAllocated (); }
-    bool            IsDimensionOK   ( const TVector<TypeD>& map  )  const   { return  map .GetDim1 ()       == GetNumElectrodes (); }   // exact dimensions
-    bool            IsDimensionOK   ( const TArray2<TypeD>& data )  const   { return  data.GetDim1 ()       >= GetNumElectrodes (); }   // more liberal, array can hold pseuo-tracks
-    inline  bool    IsDimensionOK   ( const TMaps&          maps )  const;                                                              // exact dimensions
+    bool            IsAllocated     ()                              const   { return  NeighDist.IsAllocated    ();              }
+    bool            IsNotAllocated  ()                              const   { return  NeighDist.IsNotAllocated ();              }
+    bool            IsDimensionOK   ( const TVector<TypeD>& map  )  const   { return  map .GetDim1 ()       == GetNumPoints (); }   // exact dimensions
+    bool            IsDimensionOK   ( const TMaps&          maps )  const   { return  maps.GetDimension ()  == GetNumPoints (); }   // exact dimensions
+    bool            IsDimensionOK   ( const TArray2<TypeD>& data )  const   { return  data.GetDim1 ()       == GetNumPoints () 
+                                                                                   || data.GetDim1 ()       == GetNumPoints () + NumPseudoTracks; } // can account for array with pseudo-tracks
 
-    int             GetNumElectrodes()                              const   { return  NeighDist.GetDim1 (); }
+    int             GetNumPoints    ()                              const   { return  NeighDist.GetDim1 (); }
 
 
 //  void            Apply                               ( TypeD*          data, int numpts ) {}             // to shut-up compiler
@@ -272,18 +273,6 @@ else if ( SPDoc ) {
     SPDoc->GetNeighborhoodDistances ( NeighDist, MaxNumNeigh );
     }
 
-/*
-TArray2<double>         slice1 ( NeighDist.GetDim1 (), NeighDist.GetDim2 () );
-TArray2<double>         slice2 ( NeighDist.GetDim1 (), NeighDist.GetDim2 () );
-NeighDist.ExtractFromZ ( 0, slice1 );
-NeighDist.ExtractFromZ ( 1, slice2 );
-TFileName               _file1 ( "E:\\Data\\NeighDist.Index.sef" );
-TFileName               _file2 ( "E:\\Data\\NeighDist.Distance.sef" );
-CheckNoOverwrite ( _file1 );
-CheckNoOverwrite ( _file2 );
-slice1.WriteFile ( _file1 );
-slice2.WriteFile ( _file2 );
-*/
                                         // If it still doesn't work, revoke the spatial filter
 //if ( NeighDist.IsNotAllocated () )
 //    Reset ();
@@ -295,13 +284,13 @@ slice2.WriteFile ( _file2 );
 template <class TypeD>
 bool    TFilterSpatial<TypeD>::Apply ( TVector<TypeD>& map )
 {
-                                        // !Subtle difference here compared to the specialized functions: no filtering returns true here, while the wrong filter type to the specialized functions will return false!
+                                        // !Subtle difference here compared to the specialized functions: NO filtering will return TRUE, while the WRONG filter type will return FALSE!
 if ( How == SpatialFilterNone )
     return  true;
 
-                                        // !not tested as it is usually deep in nested loops!
-//if ( ! IsDimensionOK ( map ) )
-//    return  false;
+
+if ( ! IsDimensionOK ( map ) )
+    return  false;
 
 
 if      ( How == SpatialFilterInterseptileWeightedMean
@@ -331,7 +320,7 @@ if ( ! IsDimensionOK ( data )
     return;
 
 
-int                 numel           = GetNumElectrodes ();
+int                 numel           = GetNumPoints ();
 TVector<TypeD>      temp ( numel );
 
 
@@ -348,14 +337,6 @@ for ( int tf0 = 0, tf = tfoffset; tf0 < numtf; tf0++, tf++ ) {
         data ( i, tf )  = temp[ i ];
     }
 }
-
-
-//----------------------------------------------------------------------------
-
-bool    TFilterSpatial<TMapAtomType>::IsDimensionOK ( const TMaps& maps )   const   
-{
-return  maps.GetDimension ()  == GetNumElectrodes ();
-}   
 
 
 //----------------------------------------------------------------------------
