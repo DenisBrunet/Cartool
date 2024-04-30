@@ -9495,17 +9495,31 @@ if ( ! EEGDoc->CanFilter () )
     return;
 
 
-if ( IsCommandSender () )
-                                        // Optionally provide a .xyz file name if it is already available from a link many file
-    EEGDoc->SetFilters   ( 0, (char *) ( GODoc && GODoc->GetNumXyzDoc () ? GODoc->GetXyzDoc ( CurrXyz )->GetDocPath () : 0 ) );
+if ( IsCommandSender () ) {
+                                        // Optionally provide a .xyz or .spi file name if it is already available from a link many file
+    bool            senderris       = dynamic_cast<TRisDoc*> ( CartoolApplication->LastActiveBaseView->BaseDoc );
 
-else {                                  // commands cloning AND a receiving cloned view -> forward the parameters set by caller view
-                                                                                           // view should be TTracksView
-    TTracksDoc*         orgeeg      = dynamic_cast<TTracksDoc*> ( CartoolApplication->LastActiveBaseView->BaseDoc );
+                                        // pick the one coordinate file relevant to current file type
+    if      (   senderris && GODoc && GODoc->GetNumSpDoc  () )  EEGDoc->SetFilters   ( 0, GODoc->GetSpDoc  ( CurrSp  )->GetDocPath () );
+    else if ( ! senderris && GODoc && GODoc->GetNumXyzDoc () )  EEGDoc->SetFilters   ( 0, GODoc->GetXyzDoc ( CurrXyz )->GetDocPath () );
+    else                                                        EEGDoc->SetFilters   ( 0 );
+    }
 
-    if ( orgeeg )
+else { // IsCommandReceiver ()          // commands cloning AND a receiving cloned view -> forward the parameters set by caller view
+                                                                                   // view should be TTracksView
+    TTracksDoc*         sendereeg   = dynamic_cast<TTracksDoc*> ( CartoolApplication->LastActiveBaseView->BaseDoc );
+
+    if ( sendereeg ) {
+
+        bool            senderris       = dynamic_cast<TRisDoc*> ( CartoolApplication->LastActiveBaseView->BaseDoc );
+        bool            receiverris     = dynamic_cast<TRisDoc*> ( EEGDoc );
+
+                                        // do not mix filters between EEG and RIS
+        if ( senderris ^ receiverris )   return;
+
                                         // we can already forward some  TTracksFilters*
-        EEGDoc->SetFilters   ( orgeeg->GetFilters (), 0 );
+        EEGDoc->SetFilters   ( sendereeg->GetFilters (), 0 );
+        }
     }
 
                                         // activate filters
@@ -9526,6 +9540,7 @@ tce.Enable ( EEGDoc->CanFilter () );
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksView::CmShowSD ()
 {
 ShowSD      = NextState ( ShowSD, NumSDMode, ShiftKey );
@@ -9549,6 +9564,7 @@ tce.Enable ( EEGDoc->IsStandDevAvail() );
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksView::RenderingModeToCurrent3DSet ()
 {
                                         // choose 3D set here
@@ -9597,6 +9613,7 @@ CmSetRenderingMode ();
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksView::CmBaseline ()
 {
 ShowBaseline= ! ShowBaseline;
@@ -9607,6 +9624,7 @@ RefreshLinkedWindow () ;
 }
 
 
+//----------------------------------------------------------------------------
 /*
 void    TTracksView::CmResetFilling ()
 {
@@ -9631,6 +9649,7 @@ Invalidate ( false );
 }
 */
 
+//----------------------------------------------------------------------------
 void    TTracksView::CmVoidFilling ()
 {
 if ( ! HasFilling )
@@ -9648,6 +9667,7 @@ tce.Enable ( HasFilling );
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksView::CmPenSize ()
 {
 
@@ -9668,6 +9688,7 @@ RefreshLinkedWindow () ;
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksView::CmSelection ( owlwparam w )
 {
 char                buff[ 4 * KiloByte ];

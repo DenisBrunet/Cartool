@@ -115,6 +115,7 @@ public:
     void            SetSamplingFrequency( double fsamp );                           // tries to update its SamplingFrequency
     int             GetSafeMargin       ()  const;                                  // returns the necessary margin for filtering
     int             GetOrder            ()  const;
+    int             GetSpatialFilterDim ()  const       { return FilterSpatial.IsAllocated () ? FilterSpatial.GetNumPoints () : 0; }
 
 
     char*           ParametersToText    (       char* text )                const;
@@ -434,6 +435,7 @@ void    TTracksFilters<TypeD>::SetFilters ( double fsamp, bool silent )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Non temporal / frequency filters
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 if ( Rectification )
 
     FilterRectification.Set ( Rectification == IDC_RECTIFICATIONABS     ?   FilterRectifyAbs

@@ -340,9 +340,9 @@ DEFINE_RESPONSE_TABLE1 (TTracksFiltersDialog, TBaseDialog)
     EV_BN_CLICKED	            ( IDC_THRESHOLDBELOW,       EvThresholdBelowChanged ),
     EV_BN_CLICKED	            ( IDC_FILTERSOFF,           CmMyOk ),
 
-    EV_COMMAND                  ( IDC_BROWSEXYZFILE,        CmBrowseXyzFile ),
-    EV_COMMAND_ENABLE           ( IDC_BROWSEXYZFILE,        CmXyzEnable ),
-    EV_COMMAND_ENABLE           ( IDC_XYZFILE,              CmXyzEnable ),
+    EV_COMMAND                  ( IDC_BROWSEXYZFILE,        CmBrowseCoordinatesFile ),
+    EV_COMMAND_ENABLE           ( IDC_BROWSEXYZFILE,        CmBrowseCoordinatesEnable ),
+    EV_COMMAND_ENABLE           ( IDC_XYZFILE,              CmBrowseCoordinatesEnable ),
 
     EV_COMMAND_ENABLE           ( IDC_RECTIFICATIONABS,     CmRectificationEnable ),
     EV_COMMAND_ENABLE           ( IDC_RECTIFICATIONPOWER,   CmRectificationEnable ),
@@ -797,15 +797,15 @@ if ( CheckToBool ( Ranking->GetCheck () ) )
 }
 
 
-void    TTracksFiltersDialog::CmBrowseXyzFile ()
+void    TTracksFiltersDialog::CmBrowseCoordinatesFile ()
 {
-SetXyzFile ( 0 );
+SetCoordinatesFile ( 0 );
 }
 
 
-void    TTracksFiltersDialog::SetXyzFile ( char *file )
+void    TTracksFiltersDialog::SetCoordinatesFile ( char *file )
 {
-static GetFileFromUser  getfile ( "Electrodes Coordinates File", AllCoordinatesFilesFilter, 1, GetFileRead );
+static GetFileFromUser  getfile ( "Electrodes or Solution Points Coordinates File", AllPointsFilesFilter, 1, GetFileRead );
 
 
 TransferData ( tdGetData );
@@ -831,7 +831,7 @@ TransferData ( tdSetData );
 }
 
 
-void    TTracksFiltersDialog::CmXyzEnable ( TCommandEnabler &tce )
+void    TTracksFiltersDialog::CmBrowseCoordinatesEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( CheckToBool ( On->GetCheck () ) && CheckToBool ( SpatialFilter->GetCheck () ) );
 }
@@ -841,7 +841,8 @@ tce.Enable ( CheckToBool ( On->GetCheck () ) && CheckToBool ( SpatialFilter->Get
 void    TTracksFiltersDialog::EvDropFiles ( TDropInfo drop )
 {
 TGoF                xyzfiles        ( drop, AllCoordinatesFilesExt );
-TGoF                remainingfiles  ( drop, AllCoordinatesFilesExt, 0, true );
+TGoF                spfiles         ( drop, AllSolPointsFilesExt   );
+TGoF                remainingfiles  ( drop, AllCoordinatesFilesExt " " AllSolPointsFilesExt, 0, true );
 
 drop.DragFinish ();
 
@@ -852,7 +853,17 @@ TTracksFiltersStruct*   transfer    = (TTracksFiltersStruct *) GetTransferBuffer
 
 for ( int i = 0; i < (int) xyzfiles; i++ ) {
 
-    SetXyzFile ( xyzfiles[ i ] );
+    SetCoordinatesFile ( xyzfiles[ i ] );
+
+    SpatialFilter->SetCheck ( BoolToCheck ( StringIsNotEmpty ( transfer->XyzFile ) /*XyzAndEegMatch*/ ) );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+for ( int i = 0; i < (int) spfiles; i++ ) {
+
+    SetCoordinatesFile ( spfiles[ i ] );
 
     SpatialFilter->SetCheck ( BoolToCheck ( StringIsNotEmpty ( transfer->XyzFile ) /*XyzAndEegMatch*/ ) );
     }

@@ -230,9 +230,9 @@ protected:
 
     void                EvSpatialFilteringChanged   ();
     void                EvRankingChanged            ();
-    void                CmBrowseXyzFile             ();
-    void                SetXyzFile                  ( char *file );
-    void                CmXyzEnable                 ( owl::TCommandEnabler &tce );
+    void                CmBrowseCoordinatesFile     ();
+    void                SetCoordinatesFile          ( char *file );
+    void                CmBrowseCoordinatesEnable   ( owl::TCommandEnabler &tce );
 
     void                EvThresholdAboveChanged     ();
     void                EvThresholdBelowChanged     ();

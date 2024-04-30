@@ -565,7 +565,7 @@ if ( GetCommandsCloning ()
         TResult     senderresult    = TWindowView::EvCommand ( id, hWndCtl, notifyCode );
 
                                         // spread to windows of same group, same type
-        for ( TBaseDoc* doc = CartoolDocManager->DocListNext ( 0 ); doc; doc = CartoolDocManager->DocListNext ( doc ) )
+        for ( TBaseDoc*  doc  = CartoolDocManager->DocListNext ( 0 ); doc; doc = CartoolDocManager->DocListNext ( doc ) )
         for ( TBaseView* view = doc->GetViewList ( GODoc ); view; view = doc->NextView ( view, GODoc ) )
 
             if ( view != this
@@ -637,7 +637,7 @@ if ( GetCommandsCloning ()
             TResult     senderresult    = TWindowView::WindowProc ( msg, p1, p2 );
 
                                         // THEN spreading to other windows of the same group & same type
-            for ( TBaseDoc* doc = CartoolDocManager->DocListNext ( 0 ); doc; doc = CartoolDocManager->DocListNext ( doc ) )
+            for ( TBaseDoc*  doc  = CartoolDocManager->DocListNext ( 0 ); doc; doc = CartoolDocManager->DocListNext ( doc ) )
             for ( TBaseView* view = doc->GetViewList ( GODoc ); view; view = doc->NextView ( view, GODoc ) )
 
                 if ( view != this
