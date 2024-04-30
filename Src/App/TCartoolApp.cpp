@@ -1294,14 +1294,9 @@ drop.DragFinish ();
                                         // optionally supplied with a group doc
 void    TCartoolApp::OpenDroppedFiles ( TGoF &files, TBaseView *view )
 {
-TDocument*          doc;
-TBaseDoc*           basedoc;
-TDocTemplate*       tpl;
-int                 numfiles        = 0;
-
                                         // dropped into a LM doc?
                                         // !This should actually be in TLinkManyView::EvDropFiles, like for dropping in Tracks Display!
-TLinkManyDoc*       lmdoc           = view ? dynamic_cast<TLinkManyDoc *> ( view->BaseDoc ) : 0;
+TLinkManyDoc*       intolmdoc       = view ? dynamic_cast<TLinkManyDoc*> ( view->BaseDoc ) : 0;
 
                                         // disabling animations?
 bool                oldav           = AnimateViews;
@@ -1309,39 +1304,35 @@ AnimateViews        =    AnimateViews                                           
                       && IsInteractive ()                                           // must be interactive
                       && (int) files                      <= AnimationMaxDocDropped // only few files dropped
                       && CartoolDocManager->NumDocOpen () <  AnimationMaxDocOpen    // and not already crowded
-                      && ! lmdoc                                                    // and not dropping into lm view
+                      && ! intolmdoc                                                    // and not dropping into lm view
                       && ! files.SomeExtensionsAre ( AllLmFilesExt );               // and not dropping a lm file either
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+std::list<TBaseDoc*>    docstosync;
 
 
 for ( int fi = 0; fi < (int) files; fi++ ) {
 
-    tpl     = CartoolDocManager->MatchTemplate ( files[ fi ] );
-
-//  DBGM3 ( tpl->GetDescription (), tpl->GetDefaultExt (), tpl->GetViewName (), "Open with template" );
+    TDocTemplate*   tpl     = CartoolDocManager->MatchTemplate ( files[ fi ] );
 
     if ( tpl ) {
 
-        doc         = CartoolDocManager->IsOpen ( files[ fi ] );
-
+        TDocument*      doc         = CartoolDocManager->IsOpen ( files[ fi ] );
 
         if ( doc == 0 || doc->GetViewList () == 0 )
 
             doc     = CartoolDocManager->CreateDoc ( tpl, files[ fi ] );
 
-        basedoc     = dynamic_cast<TBaseDoc *> ( doc );
 
+        TBaseDoc*       basedoc     = dynamic_cast<TBaseDoc*> ( doc );
 
-        if ( lmdoc && basedoc ) {
-                                        // refresh only once in a while: more than ~10 without refresh seems to crash things
-//          lmdoc->AddToGroup ( basedoc, ! ( ++numfiles % 6 ) );
-//          lmdoc->RefreshWindows ();   // ?maybe not a good idea, it retiles everything at each time?
-// 
+        if ( intolmdoc && basedoc ) {
                                         // don't update the added windows intermediate steps
-            lmdoc->AddToGroup ( basedoc, false );
-                                        // but update the tiny .lm window
-            lmdoc->GetViewList()->Invalidate ( false );
-
-//          UpdateApplication;
+            intolmdoc->AddToGroup ( basedoc, false );
+                                        // instead, update the tiny .lm window
+            intolmdoc->GetViewList()->Invalidate ( false );
 
 
             if ( IsExtensionAmong ( basedoc->GetDocPath (),     AllCoordinatesFilesExt 
@@ -1349,15 +1340,20 @@ for ( int fi = 0; fi < (int) files; fi++ ) {
                                                             " " AllMriFilesExt 
                                                             " " AllInverseFilesExt 
                                                             " " AllRoisFilesExt         ) )
-                                        // hide these guys
+                                        // we can hide these guys
                 basedoc->MinimizeViews ();
+
+
+            if ( IsExtensionAmong ( basedoc->GetDocPath (),     AllTracksFilesExt ) )
+                                        // for later use
+                docstosync.push_back ( basedoc );
 
                                         // dropping a lm into a lm -> close the dropped one
             if ( IsExtensionAmong ( basedoc->GetDocPath (), AllLmFilesExt ) )
                 CartoolDocManager->CloseDoc ( basedoc );
 
             }
-        }
+        } // doc template exists
     else                                // unknown file type?
 
         CartoolDocManager->OpenUnknownFile ( files[ fi ] );
@@ -1365,8 +1361,37 @@ for ( int fi = 0; fi < (int) files; fi++ ) {
     } // for file
 
 
-if ( lmdoc )                            // force retile any .lm windows
-    lmdoc->RefreshWindows ( true );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Dropped files into a .lm file
+if ( intolmdoc ) {
+                                        // force sync everything - a bit indiscriminate
+//  intolmdoc->SyncUtility ( CM_SYNCALL /*CM_SYNCBETWEENEEG*/ );
+// 
+                                        // Only sync the dropped EEG / RIS together - but NOT with other existing ones
+    TBaseView*      firstview   = 0;
+
+    for ( auto doctosync = docstosync.cbegin (); doctosync != docstosync.cend (); doctosync++ ) {
+                                        // loop through all views
+        for ( TBaseView* view = (*doctosync)->GetViewList ( intolmdoc ); view != 0; view = (*doctosync)->NextView (view, intolmdoc) ) {
+
+            if ( firstview == 0 ) {
+                firstview = view;
+                continue;
+                }
+
+            if ( view->GODoc == firstview->GODoc ) {
+                view->SetFriendView ( firstview );
+                view->GetParentO ()->SetFocus ();
+                }
+            }
+        }
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( intolmdoc )                            // force retile any .lm windows
+    intolmdoc->RefreshWindows ( true );
 
 
 AnimateViews        = oldav;
