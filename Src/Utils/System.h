@@ -158,8 +158,8 @@ return  li;
 inline LARGE_INTEGER    LONGLONGTOLARGEINT  ( const LONGLONG& ll )  { return  *( (LARGE_INTEGER*) (&ll) ); }
 
                                         // Extracting the low and high ulong's from a 64 bits pointer - Inspired from LOWORD / HIWORD macros
-inline ULONG            LOULONG             ( void* ll )            { return (ULONG) ( (   (ULONG_PTR)(ll) )         & 0xffffffff ); }
-inline ULONG            HIULONG             ( void* ll )            { return (ULONG) ( ( ( (ULONG_PTR)(ll) ) >> 32 ) & 0xffffffff ); }
+inline ULONG            LOULONG             ( const void* ll )      { return (ULONG) ( (   (ULONG_PTR)(ll) )         & 0xffffffff ); }
+inline ULONG            HIULONG             ( const void* ll )      { return (ULONG) ( ( ( (ULONG_PTR)(ll) ) >> 32 ) & 0xffffffff ); }
 
                                         // Converting 2 ULONG / DWORD to ULONGLONG / size_t / unsigned int64
 inline size_t           DWORDs_to_size_t    ( const DWORD& hdw, const DWORD& ldw )  { return ( ( (size_t) (hdw) ) << 32 ) | ( ( (size_t) (ldw) ) & 0xffffffff ); }

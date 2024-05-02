@@ -720,109 +720,6 @@ else
 
 
 //----------------------------------------------------------------------------
-/*
-// filter a volume of IS, having care of ignoring non-mask area
-void    TInverseView::FilterIs ()
-{
-Volume&                     spvol       = *SPDoc->GetVolume   ();
-TArray3<TWeightedPoints4>&  ip          = *SPDoc->GetInterpol4NN ();
-
-MriType*            Array   = spvol.GetArray ();
-
-int     Dim1    = spvol.GetDim1 ();
-int     Dim2    = spvol.GetDim2 ();
-int     Dim3    = spvol.GetDim3 ();
-
-int     i1,  i2,  i3;
-int     index;
-int     sum;
-int     Dim23 = Dim2 * Dim3;
-int     w[27];
-int     sumw;
-//int     sumw2;
-int     iplane;
-
-
-w[XmYmZm] = w[XmYmZp] = w[XmYpZm] = w[XmYpZp] = w[XpYmZm] = w[XpYmZp] = w[XpYpZm] = w[XpYpZp] = 1;
-w[XmYmZ0] = w[XmY0Zm] = w[XmY0Zp] = w[XmYpZ0] = w[X0YmZm] = w[X0YmZp] = w[X0YpZm] = w[X0YpZp] = w[XpYmZ0] = w[XpY0Zm] = w[XpY0Zp] = w[XpYpZ0] = 2;
-w[XmY0Z0] = w[X0YmZ0] = w[X0Y0Zm] = w[X0Y0Zp] = w[X0YpZ0] = w[XpY0Z0] = 4;
-w[X0Y0Z0] = 8;
-//sumw    = 64;
-//sumw2   = 32;
-
-                                        // copy first 2 planes for x=0 and x=1
-CopyVirtualMemory ( &spvol ( Dim1    , 0, 0 ), &spvol ( 0, 0, 0 ), Dim23 );
-CopyVirtualMemory ( &spvol ( Dim1 + 1, 0, 0 ), &spvol ( 1, 0, 0 ), Dim23 );
-
-
-
-                                        // scan within safe limits
-for ( i1 = 1; i1 < Dim1 - 1; i1++ ) {
-
-    iplane  = ( i1 + 1 ) % 3;       // next plane to load - the one at x + 1
-    CopyVirtualMemory ( &spvol ( Dim1 + iplane, 0, 0 ), &spvol ( i1 + 1, 0, 0 ), Dim23 );
-
-    for ( i2 = 1; i2 < Dim2 - 1; i2++ )
-        for ( i3 = 1; i3 < Dim3 - 1; i3++ ) {
-
-
-            if ( ip ( i1, i2, i3 ).IsNotAllocated () )
-                continue;
-
-                                    // x - 1
-            index = spvol.IndexesToLinearIndex ( Dim1 + ( iplane + 1 ) % 3, i2, i3 );
-
-            sum     = 0;
-            sumw    = 0;
-
-                                    // look for the 26 neighbors
-            if ( ip ( i1 - 1, i2 - 1, i3 - 1 ).w1 )     { sum  +=   w[XmYmZm] * Array[ index - Dim3 - 1 ];  sumw   += w[XmYmZm]; }
-            if ( ip ( i1 - 1, i2 - 1, i3     ).w1 )     { sum  +=   w[XmYmZ0] * Array[ index - Dim3     ];  sumw   += w[XmYmZ0]; }
-            if ( ip ( i1 - 1, i2 - 1, i3 + 1 ).w1 )     { sum  +=   w[XmYmZp] * Array[ index - Dim3 + 1 ];  sumw   += w[XmYmZp]; }
-            if ( ip ( i1 - 1, i2    , i3 - 1 ).w1 )     { sum  +=   w[XmY0Zm] * Array[ index        - 1 ];  sumw   += w[XmY0Zm]; }
-            if ( ip ( i1 - 1, i2    , i3     ).w1 )     { sum  +=   w[XmY0Z0] * Array[ index            ];  sumw   += w[XmY0Z0]; }
-            if ( ip ( i1 - 1, i2    , i3 + 1 ).w1 )     { sum  +=   w[XmY0Zp] * Array[ index        + 1 ];  sumw   += w[XmY0Zp]; }
-            if ( ip ( i1 - 1, i2 + 1, i3 - 1 ).w1 )     { sum  +=   w[XmYpZm] * Array[ index + Dim3 - 1 ];  sumw   += w[XmYpZm]; }
-            if ( ip ( i1 - 1, i2 + 1, i3     ).w1 )     { sum  +=   w[XmYpZ0] * Array[ index + Dim3     ];  sumw   += w[XmYpZ0]; }
-            if ( ip ( i1 - 1, i2 - 1, i3 + 1 ).w1 )     { sum  +=   w[XmYpZp] * Array[ index + Dim3 + 1 ];  sumw   += w[XmYpZp]; }
-
-                                    // x
-            index = spvol.IndexesToLinearIndex ( Dim1 + ( iplane + 2 ) % 3, i2, i3 );
-
-            if ( ip ( i1    , i2 - 1, i3 - 1 ).w1 )     { sum  +=   w[X0YmZm] * Array[ index - Dim3 - 1 ];  sumw   += w[X0YmZm]; }
-            if ( ip ( i1    , i2 - 1, i3     ).w1 )     { sum  +=   w[X0YmZ0] * Array[ index - Dim3     ];  sumw   += w[X0YmZ0]; }
-            if ( ip ( i1    , i2 - 1, i3 + 1 ).w1 )     { sum  +=   w[X0YmZp] * Array[ index - Dim3 + 1 ];  sumw   += w[X0YmZp]; }
-            if ( ip ( i1    , i2    , i3 - 1 ).w1 )     { sum  +=   w[X0Y0Zm] * Array[ index        - 1 ];  sumw   += w[X0Y0Zm]; }
-            if ( ip ( i1    , i2    , i3     ).w1 )     { sum  +=   w[X0Y0Z0] * Array[ index            ];  sumw   += w[X0Y0Z0]; }
-            if ( ip ( i1    , i2    , i3 + 1 ).w1 )     { sum  +=   w[X0Y0Zp] * Array[ index        + 1 ];  sumw   += w[X0Y0Zp]; }
-            if ( ip ( i1    , i2 + 1, i3 - 1 ).w1 )     { sum  +=   w[X0YpZm] * Array[ index + Dim3 - 1 ];  sumw   += w[X0YpZm]; }
-            if ( ip ( i1    , i2 + 1, i3     ).w1 )     { sum  +=   w[X0YpZ0] * Array[ index + Dim3     ];  sumw   += w[X0YpZ0]; }
-            if ( ip ( i1    , i2 + 1, i3 + 1 ).w1 )     { sum  +=   w[X0YpZp] * Array[ index + Dim3 + 1 ];  sumw   += w[X0YpZp]; }
-
-                                    // x + 1
-            index = spvol.IndexesToLinearIndex ( Dim1 + iplane, i2, i3 );
-
-            if ( ip ( i1 + 1, i2 - 1, i3 - 1 ).w1 )     { sum  +=   w[XpYmZm] * Array[ index - Dim3 - 1 ];  sumw   += w[XpYmZm]; }
-            if ( ip ( i1 + 1, i2 - 1, i3     ).w1 )     { sum  +=   w[XpYmZ0] * Array[ index - Dim3     ];  sumw   += w[XpYmZ0]; }
-            if ( ip ( i1 + 1, i2 - 1, i3 + 1 ).w1 )     { sum  +=   w[XpYmZp] * Array[ index - Dim3 + 1 ];  sumw   += w[XpYmZp]; }
-            if ( ip ( i1 + 1, i2    , i3 - 1 ).w1 )     { sum  +=   w[XpY0Zm] * Array[ index        - 1 ];  sumw   += w[XpY0Zm]; }
-            if ( ip ( i1 + 1, i2    , i3     ).w1 )     { sum  +=   w[XpY0Z0] * Array[ index            ];  sumw   += w[XpY0Z0]; }
-            if ( ip ( i1 + 1, i2    , i3 + 1 ).w1 )     { sum  +=   w[XpY0Zp] * Array[ index        + 1 ];  sumw   += w[XpY0Zp]; }
-            if ( ip ( i1 + 1, i2 + 1, i3 - 1 ).w1 )     { sum  +=   w[XpYpZm] * Array[ index + Dim3 - 1 ];  sumw   += w[XpYpZm]; }
-            if ( ip ( i1 + 1, i2 + 1, i3     ).w1 )     { sum  +=   w[XpYpZ0] * Array[ index + Dim3     ];  sumw   += w[XpYpZ0]; }
-            if ( ip ( i1 + 1, i2 + 1, i3 + 1 ).w1 )     { sum  +=   w[XpYpZp] * Array[ index + Dim3 + 1 ];  sumw   += w[XpYpZp]; }
-
-
-            if ( sumw == 0 )
-                continue;
-
-            spvol ( i1, i2, i3 ) = (MriType) ( (double) sum / sumw + 0.5 );
-            }
-    }
-}
-*/
-
-//----------------------------------------------------------------------------
 void    TInverseView::DrawMinMax ( TPointFloat& pos, bool colormin, bool showminmaxcircle, double scale )
 {
 if ( showminmaxcircle ) {
@@ -889,10 +786,10 @@ int                 ncutplanes      = (bool) clipplane[ 0 ] + (bool) clipplane[ 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TVolumeDoc*                 MRIDoc          = MRIDocBackg;
+const TVolumeDoc*           MRIDoc          = MRIDocBackg;
                                         // catch the first view of each doc - should test for returned value 0
-TVolumeView*                MRIView         = dynamic_cast< TVolumeView*        > ( MRIDocBackg->GetViewList () );
-TSolutionPointsView*        SPView          = dynamic_cast< TSolutionPointsView*> ( SPDoc      ->GetViewList () );
+TVolumeView*                MRIView         = dynamic_cast<TVolumeView*        > ( MRIDocBackg->GetViewList () );
+TSolutionPointsView*        SPView          = dynamic_cast<TSolutionPointsView*> ( SPDoc      ->GetViewList () );
 
 TGLColorTable*              mricolortable   = MRIView ? MRIView->GetColorTable () : 0;
 
@@ -973,7 +870,7 @@ MRIDoc->ToAbs ( mrimin );
 MRIDoc->ToAbs ( mrimax );
 
 
-Volume&           			mribackgdata    = *MRIDoc->GetData ();
+const Volume&               mribackgdata    = *MRIDoc->GetData ();
 
 
 #if defined(DisplayInverseInterpolation4NN)
@@ -1004,8 +901,8 @@ timepos     = GetCurrentWindowSize ( how & GLPaintOwner )           // global wi
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-GalMaxValue = -DBL_MAX;
-GalMinValue =  DBL_MAX;
+GalMaxValue = Lowest  ( GalMaxValue );
+GalMinValue = Highest ( GalMaxValue );
 
 
 if ( Outputing () ) {
@@ -1054,8 +951,8 @@ for ( int itf = 0; tf < MRCNumTF; tf += MRCStepTF, itf++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // find min / max values & positions
-    maxValue    = -DBL_MAX;
-    minValue    =  DBL_MAX;
+    maxValue    = Lowest  ( maxValue );
+    minValue    = Highest ( minValue );
     meanValue   =  0;
 
 
@@ -1169,33 +1066,33 @@ for ( int itf = 0; tf < MRCNumTF; tf += MRCStepTF, itf++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // looks like ranking?
-    bool        isranked    = RelativeDifference ( maxValue, 1 ) < 1e-3 /* && RelativeDifference ( 1 / minValue, SPDoc->GetNumSolPoints () ) < 0.01 */;
+    bool        istemplate  = RelativeDifference ( maxValue, 1 ) < 1e-3 /* && RelativeDifference ( 1 / minValue, SPDoc->GetNumSolPoints () ) < 0.01 */
+                           || ( CurrRis >= 0 && GODoc->GetRisDoc ( CurrRis )->IsTemplates () );
 
                                         // compute scaling factors
-    if ( ScalingAuto != ScalingAutoOff && ! ( RButtonDown && ! ControlKey && MouseAxis == MouseAxisHorizontal ) ) {
+    if ( ScalingAuto != ScalingAutoOff
+      && ! ( RButtonDown && ! ControlKey && MouseAxis == MouseAxisHorizontal ) ) {  // not in force manual bypass
 
         if ( minValue == 0 )    minValue    = -1e-12;
         if ( maxValue == 0 )    maxValue    =  1e-12;
 
-        #define         ESISaturate     0.95
 
-        if ( isranked )
+        if ( istemplate )
 
-            SetScaling ( minValue, maxValue, ScalingAuto == ScalingAutoSymmetric );
+            SetScaling ( minValue - ( minValue - meanValue ) * 0.005, 
+                         maxValue - ( maxValue - meanValue ) * 0.005,
+                         ScalingAuto == ScalingAutoSymmetric );
 
         else
 
-//          SetScaling ( minValue * ( ESISaturate + ScalingContrast * ( 1 - ESISaturate ) ), 
-//                       maxValue * ( ESISaturate + ScalingContrast * ( 1 - ESISaturate ) ), 
-
             SetScaling ( minValue - ( minValue - meanValue ) * 0.10, 
-                         maxValue - ( maxValue - meanValue ) * 0.10,    // not bad
+                         maxValue - ( maxValue - meanValue ) * 0.10,
                          ScalingAuto == ScalingAutoSymmetric );
         }
 
                                         // contrast factor for the color computation
                                         // give a little more contrast for ranked data, for easier comparison to regular inverse - this is a trade-off, though
-    contrast    = 0.1 + 10000 * Cube ( isranked ? 2 * ScalingContrast : ScalingContrast );
+    contrast    = 0.1 + 10000 * Cube ( istemplate ? 2 * ScalingContrast : ScalingContrast );
 
                                         // new contrast formula with color table with cut-off slope
 //    contrast    = ScalingContrast;
@@ -1252,34 +1149,6 @@ for ( int itf = 0; tf < MRCNumTF; tf += MRCStepTF, itf++ ) {
 
 #endif
 
-
-/*
-                                        // with volume filled with 4NN stuff, plus more resolution in Regular grid, it is visually better to smooth out
-//  spvol.Filter ( FilterGaussian, 3 ); // too blind
-    FilterIs ();                        // smarter
-
-                                        // re-scan the volume
-    toi4            = toip4nn->GetArray ();
-    tovol           = spvol.GetArray ();
-    int     maxvol  = 0;
-    int     minvol  = INT_MAX;
-
-    for ( int i = 0; i < spvol.GetLinearDim (); i++, toi4++, tovol++ ) {
-
-//      if ( toi4->IsNotAllocated () )
-//          *tovol  = 0;
-                                        // also get the new min & max
-        if ( *tovol > maxvol )  maxvol = *tovol;
-        if ( *tovol < minvol )  minvol = *tovol;
-        }
-
-    if ( maxvol == 0 )  maxvol =  colordelta;
-    if ( minvol == 0 )  minvol = -colordelta;
-
-                                        // colortable with new limits, for visual comfort
-    ColorTable.SetParameters ( maxvol, minvol, contrast, Show2DIs == InverseRendering2DOvercast ? AlphaLinearSaturated
-                                                                                                : AlphaBool );
-*/
                                         // ?Note: there is a slight glitch if data is signed, in opaque 2D slices, then the real values at 0 will be clipped out. It shows as small dots near 0?
     if      ( Show2DIs == InverseRendering2DOvercast )
 
@@ -1287,7 +1156,7 @@ for ( int itf = 0; tf < MRCNumTF; tf += MRCStepTF, itf++ ) {
 
     else if ( Show2DIs == InverseRendering2DTransparent )
 
-        ColorTable.SetParameters ( scalingpmax, scalingnmax, contrast, AlphaGreater, 1e-100 );
+        ColorTable.SetParameters ( scalingpmax, scalingnmax, contrast, AlphaBool, 0.75 );
 
     else
 

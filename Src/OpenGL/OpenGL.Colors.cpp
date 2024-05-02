@@ -345,10 +345,11 @@ PMax        = pmax ? pmax :  1;
 NMax        = nmax ? nmax : -1;
 Contrast    = contrast;
 Alpha       = alpha;
-MaxValue    = fabs ( maxvalue );
+MaxValue    = abs ( maxvalue );
 
                                         // avoiding / 0 in this mode, otherwise we allow MaxValue of 0
-if ( Alpha == AlphaValueLinear && MaxValue == 0 )   
+if      ( Alpha == AlphaValueLinear && MaxValue == 0
+       || Alpha == AlphaBool        && MaxValue == 0 )   
     MaxValue = 1;
 }
 
@@ -447,7 +448,7 @@ else if ( Alpha == AlphaSquare          )   glcol.Alpha  = Square ( ( palindex -
 
 else if ( Alpha == AlphaValueLinear     )   glcol.Alpha = fabs ( value ) / MaxValue;
 
-else if ( Alpha == AlphaBool            )   glcol.Alpha = (bool) value;
+else if ( Alpha == AlphaBool            )   glcol.Alpha = (bool) value ? MaxValue : 0;
 
 else if ( Alpha == AlphaGreater         )   glcol.Alpha = fabs ( value ) >= MaxValue ? 0.45 : 0;                        // alpha value could be given somehow...
 

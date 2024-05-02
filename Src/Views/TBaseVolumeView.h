@@ -142,7 +142,7 @@ public:
 
     inline int              CtsToXyz        ( int cts )     const   { return SliceModeToXYZ[ cts + 1 ]; }
 
-    inline void             GetSliceSize    ( TVolumeDoc* MRIDoc, double &x, double &y )   const;
+    inline void             GetSliceSize    ( const TVolumeDoc* MRIDoc, double &x, double &y )   const;
     inline bool             SetNumSlices    ( owlwparam w, bool ShiftKey );
     inline void             MoveSlice       ( TBaseDoc *BaseDoc, owlwparam w, bool ShiftKey );
 };
@@ -373,7 +373,7 @@ SlicesSummaryMatrix[ 2 ].Translate ( - modelcenter.X, - modelcenter.Y, - modelce
 }
 
 
-void    TBaseVolumeView::GetSliceSize ( TVolumeDoc* MRIDoc, double &x, double &y ) const
+void    TBaseVolumeView::GetSliceSize ( const TVolumeDoc* MRIDoc, double &x, double &y ) const
 {
 /*
 TOrientationType*       boxsides    = MRIDoc->GetBoxSides ();

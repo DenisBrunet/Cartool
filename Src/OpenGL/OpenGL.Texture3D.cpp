@@ -281,7 +281,7 @@ return  0;
 
 
 //----------------------------------------------------------------------------
-void    TGLVolume::GLize ( Volume* data, TGLColorTable* colortable, bool interpolate, const double* origin )
+void    TGLVolume::GLize ( const Volume* data, TGLColorTable* colortable, bool interpolate, const double* origin )
 {
                                         // never enter!
 if ( data == 0 || data->IsNotAllocated () )

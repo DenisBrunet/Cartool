@@ -103,7 +103,7 @@ public:
     TGLTexture3D    Texture[ GLTextureMaxNames ];
 
 
-    void            GLize ( Volume* data, TGLColorTable* colortable, bool interpolate, const double* origin = 0 );
+    void            GLize ( const Volume* data, TGLColorTable* colortable, bool interpolate, const double* origin = 0 );
     void            unGLize ();
 
 
@@ -117,7 +117,7 @@ public:
 
 
 protected:
-    Volume*         Data;
+    const Volume*   Data;
     int             Dim1;
     int             Dim2;
     int             Dim3;
