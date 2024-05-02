@@ -199,7 +199,7 @@ public:
     void            Reset ();
 
 
-    void            Begin ( int rowsize, int quality, TGLColorTable &colormap );    // rowsize can vary for each call, though it should remain < maxrowsize
+    void            Begin ( int rowsize, int quality, TGLColorTable& colormap );    // rowsize can vary for each call, though it should remain < maxrowsize
     void            NextVertex ( GLfloat v[ 3 ], float val );
 
 
