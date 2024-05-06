@@ -354,6 +354,20 @@ else if ( IsFlag ( presetf.FilesFlags, SegPresetPriorityNumResampling ) )   Upda
 
 init            = false;
 LockResampling  = false;
+
+
+auto&               tooltip         = *TTooltip::Make ( this );
+
+tooltip.AddTool (   GetHandle (),   IDC_GROUPSSUMMARY,          "Summary of all groups of files" );
+tooltip.AddTool (   GetHandle (),   IDC_NOEPOCHS,               "Use all data at once" );
+tooltip.AddTool (   GetHandle (),   IDC_MANUALEPOCHS,           "Segmentation will run sequentially on each epoch" );
+tooltip.AddTool (   GetHandle (),   IDC_RESAMPLINGEPOCHS,       "Epochs will be randomly generated" );
+//tooltip.AddTool (   GetHandle (),   IDC_NUMRESAMPLINGEPOCHS,    "Changing the number of epochs will update the percentage of Coverage" ); // TEdit fields kind of "blinks"?
+//tooltip.AddTool (   GetHandle (),   IDC_RESAMPLINGEPOCHSSIZE,   "Changing the epochs' size will update the percentage of Coverage" );
+//tooltip.AddTool (   GetHandle (),   IDC_RESAMPLINGCOVERAGE,     "Changing the percentage of Coverage will update the number of epochs" );
+tooltip.AddTool (   GetHandle (),   IDC_FORCESINGLEFILES,       "Ignoring the groups of files structure, files will be processed 1 by 1" );
+tooltip.AddTool (   GetHandle (),   IDC_BESTTODIR,              "The optimal number of maps will be saved into a single common directory" );
+tooltip.AddTool (   GetHandle (),   IDC_DELINDIVDIRS,           "Available with 'Best Clustering Directory' option, force delete the intermediate results" );
 }
 
 
@@ -1477,6 +1491,21 @@ if ( preset.RandomTrials > 0 ) {
     RandomTrials->SetIntValue ( Round ( preset.RandomTrials * resamplingratio ) );
     }
 
+
+auto&               tooltip         = *TTooltip::Make ( this );
+
+tooltip.AddTool (   GetHandle (),   IDC_KMEANS,                 "Well-known clusering method, but will return different results on each run" );
+tooltip.AddTool (   GetHandle (),   IDC_TAAHC,                  "Dedicated Hierarchical Clustering that will always return the same results on each run" );
+tooltip.AddTool (   GetHandle (),   IDC_ALLTFS,                 "Using all data provided" );
+tooltip.AddTool (   GetHandle (),   IDC_ONLYGFPPEAKS,           "We can shrink the data 6 fold by using only the GFP peaks data points" );
+tooltip.AddTool (   GetHandle (),   IDC_SKIPBADEPOCHS,          "Skipping artefacted time periods is definitely a good idea!" );
+tooltip.AddTool (   GetHandle (),   IDC_SPATIALFILTER,          "Spatial filter is recommended no matter what - just make sure you apply it only once, though..." );
+tooltip.AddTool (   GetHandle (),   IDC_CLIPCORRELATION,        "Data which don't fit well to any cluster will be unlabelled" );
+tooltip.AddTool (   GetHandle (),   IDC_DUALDATASET,            "For EEG clustering, computes the corresponding RIS templates; for RIS clustering, computes the corresponding EEG templates" );
+tooltip.AddTool (   GetHandle (),   IDC_SEQUENTIALIZE,          "For ERP, force split clusters that span over disjointed time epochs" );
+tooltip.AddTool (   GetHandle (),   IDC_MERGECORR,              "Force merge correlated clusters - Do NOT use unless you know what you are doing!" );
+tooltip.AddTool (   GetHandle (),   IDC_SMOOTHING,              "Remove small segments, the gentle way" );
+tooltip.AddTool (   GetHandle (),   IDC_REJECTSMALL,            "Remove small segments, the hard way" );
 }
 
 
