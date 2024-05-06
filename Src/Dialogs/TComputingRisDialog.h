@@ -151,7 +151,6 @@ public:
     TRadioButtonData    LoadZScoreFile;
 
     TCheckBoxData       Rank;
-    TCheckBoxData       Threshold;
 
     TCheckBoxData       Envelope;
     TEditData           EnvelopeLowFreq     [ EditSizeValue ];
@@ -240,7 +239,6 @@ protected:
     owl::TRadioButton   *LoadZScoreFile;
 
     owl::TCheckBox      *Rank;
-    owl::TCheckBox      *Threshold;
 
     owl::TCheckBox      *Envelope;
     owl::TEdit          *EnvelopeLowFreq;
