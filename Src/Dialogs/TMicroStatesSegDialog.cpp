@@ -150,9 +150,6 @@ WriteSynth          = BoolToCheck ( false );
 ForceSingleFiles    = BoolToCheck ( false );
 BestDir             = BoolToCheck ( false );
 DeleteIndivDirs     = BestDir;
-IncludeFileName     = BoolToCheck ( false );
-StringCopy ( FromChars,  "1" );
-StringCopy ( ToChars,   "15" );
 }
 
 
@@ -256,9 +253,6 @@ DEFINE_RESPONSE_TABLE1 ( TMicroStatesSegFilesDialog, TMicroStatesSegDialog )
 
     EV_COMMAND_ENABLE           ( IDC_DELINDIVDIRS,             CmDeleteIndivDirsEnable ),
 
-    EV_COMMAND_ENABLE           ( IDC_FROMCHARS,                CmFileNameEnable ),
-    EV_COMMAND_ENABLE           ( IDC_TOCHARS,                  CmFileNameEnable ),
-
     EV_COMMAND_ENABLE           ( IDOK,                         CmOkEnable ),
 
 END_RESPONSE_TABLE;
@@ -298,9 +292,6 @@ WriteSynth          = new TCheckBox     ( this, IDC_WRITESYNTH );
 ForceSingleFiles    = new TCheckBox     ( this, IDC_FORCESINGLEFILES );
 BestDir             = new TCheckBox     ( this, IDC_BESTTODIR );
 DeleteIndivDirs     = new TCheckBox     ( this, IDC_DELINDIVDIRS );
-IncludeFileName     = new TCheckBox     ( this, IDC_INCLUDEFILENAME );
-FromChars           = new TEdit         ( this, IDC_FROMCHARS, EditSizeValue );
-ToChars             = new TEdit         ( this, IDC_TOCHARS, EditSizeValue );
 
 
 SetTransferBuffer ( dynamic_cast <TMicroStatesSegFilesStruct*> ( &SegTransfer ) );
@@ -322,7 +313,6 @@ delete  WriteSeg;               delete  WriteMaps;
 delete  WriteClusters;          delete  WriteSynth;
 delete  ForceSingleFiles;
 delete  BestDir;                delete  DeleteIndivDirs;
-delete  IncludeFileName;        delete  FromChars;              delete  ToChars;
 }
 
 
@@ -404,7 +394,6 @@ switch ( presetfile ) {
     ForceSingleFiles->SetCheck ( BoolToCheck ( false ) );
     BestDir         ->SetCheck ( BoolToCheck ( false ) );
     DeleteIndivDirs ->SetCheck ( BestDir->GetCheck ()  );
-    IncludeFileName ->SetCheck ( BoolToCheck ( false ) );
     break;
 
 
@@ -416,7 +405,6 @@ switch ( presetfile ) {
     ForceSingleFiles->SetCheck ( BoolToCheck ( true  ) );
     BestDir         ->SetCheck ( BoolToCheck ( true  ) );
     DeleteIndivDirs ->SetCheck ( BestDir->GetCheck ()  );
-    IncludeFileName ->SetCheck ( BoolToCheck ( true  ) );
     break;
 
 
@@ -427,7 +415,6 @@ switch ( presetfile ) {
     ForceSingleFiles->SetCheck ( BoolToCheck ( false ) );
     BestDir         ->SetCheck ( BoolToCheck ( false ) );
     DeleteIndivDirs ->SetCheck ( BestDir->GetCheck ()  );
-    IncludeFileName ->SetCheck ( BoolToCheck ( false ) );
     break;
 
   case  SegPresetFilesRestingStatesGroupResampling:
@@ -437,7 +424,6 @@ switch ( presetfile ) {
     ForceSingleFiles->SetCheck ( BoolToCheck ( false ) );
     BestDir         ->SetCheck ( BoolToCheck ( true  ) );
     DeleteIndivDirs ->SetCheck ( BestDir->GetCheck ()  );
-    IncludeFileName ->SetCheck ( BoolToCheck ( false ) );
     break;
 
     }
@@ -472,12 +458,6 @@ SetBaseFilename       ();
 void    TMicroStatesSegFilesDialog::CmDeleteIndivDirsEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( CheckToBool ( BestDir->GetCheck () ) );
-}
-
-
-void    TMicroStatesSegFilesDialog::CmFileNameEnable ( TCommandEnabler &tce )
-{
-tce.Enable ( CheckToBool ( IncludeFileName->GetCheck () ) );
 }
 
 
@@ -913,84 +893,10 @@ PrefixFilename ( match, prefix );
 BaseFileName->SetText ( match );
 
 BaseFileName->ResetCaret;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // estimate the best file names part to discriminate against all files
-if ( GoGoF.NumFiles () > 1 ) {
-
-                                        // concatenate all GoF's
-    TGoF                filenames ( GoGoF );
-
-    filenames.RemoveDir ();
-                                            // get the constant parts from the file name parts only
-    TFileName           commonstart;
-
-    filenames.GetCommonParts    (   0,  commonstart,    0,  0   );
-
-
-    long                from            = StringLength ( commonstart );         // could be 0
-    long                to;
-    long                maxto           = filenames.GetMaxStringLength () - 1;  // max of all strings
-
-    TGoF                clipped;
-    TFileName           buff;
-
-
-    for ( to = from; to <= maxto; to++ ) {
-
-        clipped.Reset ();
-
-        for ( int fi = 0; fi < (int) filenames; fi++ ) {
-                                                    // check locally for each file name's length
-            StringCopy ( buff, filenames[ fi ] + from, min ( to, (long) StringLength ( filenames[ fi ] ) - 1 ) - from + 1 );
-            clipped.AddNoDuplicates ( buff );
-            }
-                                        // no duplicates with the current from..to range means we can discriminate all files
-        if ( (int) clipped == (int) filenames )
-            break;
-        }
-                                        // problem if we passed maxto, that means there are not enough length for discrimination
-    to  = NoMore ( maxto, to );
-
-
-                                        // try to complete backward any partial numbering, for a more intuitive result
-//  if ( isdigit ( commonstart[ from ] ) )
-        while ( from > 0 )
-            if ( isdigit ( commonstart[ from - 1 ] ) )  from--;
-            else                                        break;
-
-
-    int                 minto = filenames.GetMinStringLength() - 1;  // can't go beyond the shortest file name
-
-                                        // try completing any partial numbering, forward
-//  if ( isdigit ( filenames[ 0 ][ to ] ) )
-//      while ( to < minto /*maxto*/ )
-//          if ( isdigit ( filenames[ 0 ][ to + 1 ] ) ) to++;   // should loop through all files...
-//          else                                        break;
-
-    bool                anydigit;
-
-    while ( to < minto /*maxto*/ ) {
-
-        anydigit    = false;
-
-        for ( int fi = 0; fi < (int) filenames && ! anydigit; fi++ )
-            anydigit   |= (bool) isdigit ( filenames[ fi ][ to + 1 ] );
-
-        if ( anydigit )     to++;
-        else                break;
-        }
-
-
-                                        // starting from 1 from the user point of view
-    FromChars->SetText ( IntegerToString ( SegTransfer.FromChars, from + 1 ) );
-    ToChars  ->SetText ( IntegerToString ( SegTransfer.ToChars,   to   + 1 ) );
-    }
-
 }
 
 
+//----------------------------------------------------------------------------
 void    TMicroStatesSegFilesDialog::CmUpOneDirectory ()
 {
 RemoveLastDir ( SegTransfer.BaseFileName );
@@ -2019,15 +1925,6 @@ if ( GoGoF.IsEmpty () ) {
     }
 
 
-int                 fnc             = StringToInteger ( SegTransfer.FromChars ) - 1;
-int                 tnc             = StringToInteger ( SegTransfer.ToChars   ) - 1;
-
-if ( CheckToBool ( SegTransfer.IncludeFileName ) && ! ( fnc >= 0 && tnc >= 0 && fnc <= tnc ) ) {
-    tce.Enable ( false );
-    return;
-    }
-
-
 int                 min             = StringToInteger ( SegTransfer.MinClusters );
 int                 max             = StringToInteger ( SegTransfer.MaxClusters );
 
@@ -2469,9 +2366,20 @@ if ( IsFlag ( outputflags, CommonDirectory ) ) {
     }
 
 
-bool                includefilename     = CheckToBool ( SegTransfer.IncludeFileName );
-int                 fromchars           = StringToInteger ( SegTransfer.FromChars ) - 1;
-int                 tochars             = StringToInteger ( SegTransfer.ToChars   ) - 1;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // extract min substrings range needed to discriminate of file names
+bool                includefilename     = presetfile == SegPresetFilesRestingStatesSubjAllData
+                                       || presetfile == SegPresetFilesRestingStatesSubjResampling;
+int                 fromchars           = 0;
+int                 tochars             = 0;
+
+
+if ( includefilename ) {
+
+    GoGoF.GetFilenamesSubRange ( fromchars, tochars );
+                                        // this looks more user-friendly
+    fromchars   = 0;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
