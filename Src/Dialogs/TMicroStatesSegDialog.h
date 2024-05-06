@@ -282,9 +282,6 @@ public:
     TCheckBoxData       ForceSingleFiles;
     TCheckBoxData       BestDir;
     TCheckBoxData       DeleteIndivDirs;
-    TCheckBoxData       IncludeFileName;
-    TEditData           FromChars       [ EditSizeValue ];
-    TEditData           ToChars         [ EditSizeValue ];
     };
 
 
@@ -436,9 +433,6 @@ protected:
     owl::TCheckBox      *ForceSingleFiles;
     owl::TCheckBox      *BestDir;
     owl::TCheckBox      *DeleteIndivDirs;
-    owl::TCheckBox      *IncludeFileName;
-    owl::TEdit          *FromChars;
-    owl::TEdit          *ToChars;
 
 
     bool                LockResampling;
@@ -478,7 +472,6 @@ protected:
     void                CmListEpochsEnable      ( owl::TCommandEnabler &tce );
     void                CmResamplingEpochsEnable( owl::TCommandEnabler &tce );
     
-    void                CmFileNameEnable        ( owl::TCommandEnabler &tce );
     void                CmDeleteIndivDirsEnable ( owl::TCommandEnabler &tce );
 
     DECLARE_RESPONSE_TABLE ( TMicroStatesSegFilesDialog );

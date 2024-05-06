@@ -3462,6 +3462,108 @@ return  found && StringLength ( match ) > 0;
 
 
 //----------------------------------------------------------------------------
+                                        // compute the sub-strings range that will discriminate all files
+void    TGoF::GetFilenamesSubRange ( int& fromchars, int& tochars )     const
+{
+if ( IsEmpty () ) {
+    fromchars   = 0;
+    tochars     = 0;
+    return;
+    }
+
+if ( NumFiles () == 1 ) {
+    fromchars   = 0;
+    tochars     = AtLeast ( (long) 0, StringLength ( Strings[ 0 ] ) - 1 );
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // estimate the best file names part to discriminate against all files
+TGoF                filenames       = *this;
+
+filenames.RemoveDir ();
+                                        // get the constant parts from the file name parts only
+TFileName           commonstart;
+
+filenames.GetCommonParts    (   0,  commonstart,    0,  0   );
+
+
+long                from            = StringLength ( commonstart );         // could be 0
+long                to;
+long                maxto           = filenames.GetMaxStringLength () - 1;  // max of all strings
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TGoF                clipped;
+TFileName           buff;
+
+
+for ( to = from; to <= maxto; to++ ) {
+
+    clipped.Reset ();
+
+    for ( int fi = 0; fi < (int) filenames; fi++ ) {
+                                                // check locally for each file name's length
+        StringCopy ( buff, filenames[ fi ] + from, min ( to, (long) StringLength ( filenames[ fi ] ) - 1 ) - from + 1 );
+        clipped.AddNoDuplicates ( buff );
+        }
+                                    // no duplicates with the current from..to range means we can discriminate all files
+    if ( (int) clipped == (int) filenames )
+        break;
+    }
+
+                                    // problem if we passed maxto, that means there are not enough length for discrimination
+to  = NoMore ( maxto, to );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                    // try to complete backward any partial numbering, for a more intuitive result
+//  if ( isdigit ( commonstart[ from ] ) )
+    while ( from > 0 )
+        if ( isdigit ( commonstart[ from - 1 ] ) )  from--;
+        else                                        break;
+
+
+int                 minto = filenames.GetMinStringLength() - 1;  // can't go beyond the shortest file name
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                    // try completing any partial numbering, forward
+//  if ( isdigit ( filenames[ 0 ][ to ] ) )
+//      while ( to < minto /*maxto*/ )
+//          if ( isdigit ( filenames[ 0 ][ to + 1 ] ) ) to++;   // should loop through all files...
+//          else                                        break;
+
+bool                anydigit;
+
+while ( to < minto /*maxto*/ ) {
+
+    anydigit    = false;
+
+    for ( int fi = 0; fi < (int) filenames && ! anydigit; fi++ )
+        anydigit   |= (bool) isdigit ( filenames[ fi ][ to + 1 ] );
+
+    if ( anydigit )     to++;
+    else                break;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+fromchars   = from;
+tochars     = to;
+}
+
+
+void    TGoGoF::GetFilenamesSubRange ( int& fromchars, int& tochars )   const
+{
+return  TGoF ( *this ).GetFilenamesSubRange ( fromchars, tochars );
+}
+
+
+//----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
         TGoGoF::TGoGoF ()
 {

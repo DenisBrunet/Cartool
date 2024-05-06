@@ -216,13 +216,14 @@ public:
     void            KeepLatestFile  ();
     void            ReplaceExtension( const char* newext );
     void            GetCommonParts  ( char* commondir, char* commonstart, char* commonend, TStrings*    diffs ) const;
-    bool            GetCommonString ( char* base, bool includedir = true, bool includedifference = false )  const;
+    bool            GetCommonString ( char* base, bool includedir = true, bool includedifference = false )      const;
+    void            GetFilenamesSubRange    ( int& fromchars, int& tochars )                                    const;
 
     void            Sort            (); // overriding TStrings::Sort
 
     void            SplitFreqFiles  ( SplitFreqFlags how, TGoGoF *gogofout = 0, bool showgauge = true );
     void            Resample        ( ResamplingType resampling, int numresamples, int resamplingsize, const TGoF* gofalt, TGoGoF& resgogof, TGoGoF* resgogofalt );  // resampling into anoth group of files
-    int             SplitByNames    ( const char* splitwith, TGoGoF& gogofout, TStrings*    groupnames = 0 )    const;
+    int             SplitByNames    ( const char* splitwith, TGoGoF& gogofout, TStrings*    groupnames = 0 )        const;
     void            SplitByEpochs   ( const char* greppedwith, int maxepochs, const char* dirprefix, TGoF& gofout ) const;
 
 
@@ -278,7 +279,8 @@ public:
 
 
     bool            AllStringsGrep          ( const char* regexp, GrepOption options, int gofi1 = -1, int gofi2 = -1 )  const;  // true if all files of all groups Grep to true
-    bool            SimplifyFilenames       ( int gofi1, int gofi2, TGoF& gof )     const;
+    bool            SimplifyFilenames       ( int gofi1, int gofi2, TGoF& gof )         const;
+    void            GetFilenamesSubRange    ( int& fromchars, int& tochars )            const;
 
 
     void            Reset           ();
