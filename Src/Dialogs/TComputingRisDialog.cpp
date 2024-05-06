@@ -113,7 +113,6 @@ ComputeZScore   = BoolToCheck ( true  );
 LoadZScoreFile  = BoolToCheck ( false );
 
 Rank            = BoolToCheck ( false );
-Threshold       = BoolToCheck ( false );
 
 Envelope        = BoolToCheck ( false );
 ClearString     ( EnvelopeLowFreq );
@@ -233,7 +232,6 @@ ComputeZScore           = new TRadioButton ( this, IDC_COMPUTEZSCORE );
 LoadZScoreFile          = new TRadioButton ( this, IDC_LOADZSCOREFILE );
 
 Rank                    = new TCheckBox ( this, IDC_RANKRIS );
-Threshold               = new TCheckBox ( this, IDC_THRESHOLDRIS );
 
 Envelope                = new TRadioButton ( this, IDC_ENVELOPE );
 EnvelopeLowFreq         = new TEdit ( this, IDC_ENVELOPELOWFREQ, EditSizeValue );
@@ -276,7 +274,7 @@ delete  InverseFile;
 delete  PositiveData;           delete  VectorData;
 delete  RegAuto;                delete  RegFixed;               delete  RegFixedEdit;
 delete  TimeZScore;             delete  ComputeZScore;          delete  LoadZScoreFile;
-delete  Rank;                   delete  Threshold;
+delete  Rank;
 delete  Envelope;               delete  EnvelopeLowFreq;
 delete  ApplyRois;              delete  RoisFile;
 delete  BaseFileName;
@@ -311,7 +309,6 @@ if ( CRISPresets[ esicase ].Flags == CRISPresetNone )
 //SpatialFilter           ->SetCheck ( BoolToCheck ( false ) );
 
 Rank                    ->SetCheck ( BoolToCheck ( false ) );
-Threshold               ->SetCheck ( BoolToCheck ( false ) );
 
 PositiveData            ->SetCheck ( BoolToCheck ( CRISPresets[ esicase ].IsNorm () ) );
 VectorData              ->SetCheck ( BoolToCheck ( CRISPresets[ esicase ].IsVect () ) );
@@ -2193,8 +2190,7 @@ if ( ! IsVector ( datatypeproc ) && IsVector ( datatypefinal ) )
                                         // epochs / subjects initial ranking
 bool                ranking         = CheckToBool ( ComputingRisTransfer.Rank      );
 
-bool                thresholding    = ranking   // currently only the combo ranking + thresholding is allowed - might change if needed, though
-                                   && CheckToBool ( ComputingRisTransfer.Threshold );
+bool                thresholding    = false;    // note that only the combo ranking + thresholding is currently allowed
                                         // Using a fixed threshold at each step
 double              keepingtopdata  = 0.10;
 

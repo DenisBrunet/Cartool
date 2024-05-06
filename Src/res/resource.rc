@@ -2506,7 +2506,6 @@ BEGIN
     CTEXT           "Templatize  (per Map):",-1,12,316,120,9,NOT WS_GROUP
     GROUPBOX        "",102,129,309,243,21,NOT WS_VISIBLE | WS_GROUP
     CONTROL         "Ran&king",IDC_RANKRIS,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,132,313,120,14
-    CONTROL         "+ T&hresholding",IDC_THRESHOLDRIS,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,252,313,120,14
     CONTROL         "Envelope  &(Gap Bridging, in Time):",IDC_ENVELOPE,
                     "Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,12,327,120,14
     LTEXT           "Lowest Band-Pass Fre&quency:",-1,134,330,118,10,NOT WS_GROUP
