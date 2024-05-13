@@ -2533,26 +2533,20 @@ if      ( dualdata == DualRis ) {
     char                postfilename[ 256 ];
     bool                someretrieved   = false;
 
-
+                                        // First case is working on the original files, so we need to account for any potential ZScore postfix
     StringCopy          ( postfilename, ".", ZScoreEnumToInfix ( ZScorePositive_CenterScaleOffset ) );
     StringGrepNeutral   ( postfilename );
     StringPrepend       ( postfilename, ".*" );
-    StringAppend        ( postfilename, ".*" );
-
                                         // retrieve all files, so that in case of ambiguities / duplicates, the number of files test will likely fail
     gogofalt.GrepGoF    ( gogof, ".*", postfilename, AllRisFilesExt, true );
+
     someretrieved   |= gogofalt.NumFiles () > 0;
 
-
-//  DBGV3 ( gogof.NumFiles (), gogofalt.NumFiles (), gogofalt.NumFiles () == gogof.NumFiles (), "gogof gogofalt -> OK?" );
-//  gogof.Show ( 0, (int) gogof - 1, "Original gofs" );
-//  gogofalt.Show ( 0, (int) gogofalt - 1, "Found ESI gofs" );
-//  exit ( 0 );
-
-                                        // if failed, try our chance on exact file names
+                                        // Second case is working on resampled results - in that case there are no ZScore postfixes
     if ( gogofalt.NumFiles () != gogof.NumFiles () ) {
 
         gogofalt.GrepGoF ( gogof, "", "", AllRisFilesExt, true );
+
         someretrieved   |= gogofalt.NumFiles () > 0;
         }
 
@@ -2578,26 +2572,20 @@ else if ( dualdata == DualEeg ) {
     char                postfilename[ 256 ];
     bool                someretrieved   = false;
 
+                                        // First case is working on resampled results - in that case there are no ZScore postfixes, which is less tricky
+    gogofalt.GrepGoF ( gogof, "", "", AllEegFilesExt, true );
 
-    StringCopy          ( postfilename, ".", ZScoreEnumToInfix ( ZScorePositive_CenterScaleOffset ) );
-    StringGrepNeutral   ( postfilename );
-    StringPrepend       ( postfilename, ".*" );
-    StringAppend        ( postfilename, ".*" );
-
-
-    gogofalt.RevertGrepGoF  ( gogof, ".*", postfilename, AllEegFilesExt );
     someretrieved   |= gogofalt.NumFiles () > 0;
 
-
-//  DBGV3 ( gogof.NumFiles (), gogofalt.NumFiles (), gogofalt.NumFiles () == gogof.NumFiles (), "gogof gogofalt -> OK?" );
-//  gogof.Show ( 0, (int) gogof - 1, "Original gofs" );
-//  gogofalt.Show ( 0, (int) gogofalt - 1, "Found EEG gofs" );
-//  exit ( 0 );
-
-                                        // if failed, try our chance on exact file names
+                                        // Second case is working on the original files, so we need to account for any potential ZScore postfix
     if ( gogofalt.NumFiles () != gogof.NumFiles () ) {
 
-        gogofalt.RevertGrepGoF ( gogof, "", "", AllEegFilesExt );
+        StringCopy          ( postfilename, ".", ZScoreEnumToInfix ( ZScorePositive_CenterScaleOffset ) );
+        StringGrepNeutral   ( postfilename );
+        StringPrepend       ( postfilename, ".*" );
+
+        gogofalt.RevertGrepGoF  ( gogof, ".*", postfilename, AllEegFilesExt );
+
         someretrieved   |= gogofalt.NumFiles () > 0;
         }
 
