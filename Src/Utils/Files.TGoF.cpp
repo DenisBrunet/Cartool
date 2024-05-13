@@ -942,7 +942,7 @@ for ( int i = 0; i < (int) gof; i++ ) {
 
                                         // take the path from each input file, in case it is heterogeneous
     StringCopy          ( path, gof[ i ] );
-    crtl::RemoveFilename    ( path );
+    crtl::RemoveFilename( path );
 
     StringCopy          ( file, gof[ i ] );
     GetFilename         ( file );
@@ -1047,6 +1047,7 @@ for ( int i = 0; i < (int) Strings; i++ )
                                         // Here, the input gof is the one with the biggest strings
                                         // Things are therefore more tricky, as it is not possible to grep shorter strings
                                         // Solution is to get all possible candidates first, the Grep every of these candidates to the input GoF
+                                        // Works across multiple directories
 
 /*
                                         Method needs to go back and forth between the EEGs and the RIS:
@@ -1076,25 +1077,34 @@ if ( gof.IsEmpty () || StringIsEmpty ( newexts ) )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TFileName           path;
-char                grepnewexts[ 256 ];
+                                        // extract all existing paths in case files span across multiple directories
+TGoF                paths ( gof );
 
-                                        // take the path from the first file - will fail if files span across multiple directories
-StringCopy          ( path,      gof[ 0 ] );
-crtl::RemoveFilename    ( path );
+paths.RemoveFilename ();
 
-                                        // convert parameter to Grep syntax
-ExtensionsToGrep    ( grepnewexts, newexts );
+paths.RemoveDuplicates ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Retrieve all files with the given extensions
-TGoF                gofshortcandidate;
-TFileName           grepshort;
 
+char                grepnewexts[ 256 ];
+TFileName           grepshort;
+                                        // convert parameter to Grep syntax
+ExtensionsToGrep    ( grepnewexts, newexts );
+                                        // Retrieve all files with the given extensions
 StringCopy          ( grepshort, ".+", grepnewexts );
 
-gofshortcandidate.GrepFiles  ( path, grepshort, GrepOptionDefaultFiles );
+
+TGoF                gofshortcandidate;
+                                        // cumulate all possible files across all possible directories first
+for ( int pathi = 0; pathi < (int) paths; pathi++ ) {
+    
+    TGoF            gofsc;
+    
+    gofsc.GrepFiles  ( paths[ pathi ], grepshort, GrepOptionDefaultFiles );
+    
+    gofshortcandidate.Add ( gofsc );
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
