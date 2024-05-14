@@ -206,6 +206,8 @@ public:
     void            RemoveDir       ();
     void            RemoveFilename  ();
     void            RemoveExtension ();
+    TGoF            GetPaths        ()  const;
+
 
     void            SetTempFileNames( int numfiles, const char* ext );  // generates only the file names
 
