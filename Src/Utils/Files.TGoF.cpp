@@ -814,6 +814,24 @@ for ( int i = 0; i < (int) Strings; i++ )
 }
 
 
+TGoF    TGoF::GetPaths ()   const
+{
+TGoF                paths;
+TFileName           dir;
+
+for ( int i = 0; i < (int) Strings; i++ ) {
+
+    dir     = Strings[ i ];
+
+    crtl::RemoveFilename    ( dir, false );
+
+    paths.AddNoDuplicates   ( dir );
+    }
+
+return  paths;
+}
+
+
 //----------------------------------------------------------------------------
 void    TGoF::SetTempFileNames ( int numfiles, const char* ext )
 {
@@ -1078,20 +1096,16 @@ if ( gof.IsEmpty () || StringIsEmpty ( newexts ) )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // extract all existing paths in case files span across multiple directories
-TGoF                paths ( gof );
-
-paths.RemoveFilename ();
-
-paths.RemoveDuplicates ();
+TGoF                paths           = gof.GetPaths ();
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-char                grepnewexts[ 256 ];
-TFileName           grepshort;
+char                grepnewexts[ KiloByte ];
                                         // convert parameter to Grep syntax
 ExtensionsToGrep    ( grepnewexts, newexts );
+
                                         // Retrieve all files with the given extensions
+TFileName           grepshort;
+
 StringCopy          ( grepshort, ".+", grepnewexts );
 
 
