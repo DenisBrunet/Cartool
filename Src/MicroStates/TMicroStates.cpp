@@ -638,15 +638,13 @@ for ( long tf = 0; tf < MaxNumTF; tf++ ) {
 
         if ( tf < NumTF[ fi ] ) {
 
-            double      corr    = maps[ labels[ tf2 ] ].Correlation ( Data[ tf2 ], labels.GetPolarity ( tf2 ), false /*processingref == ReferenceAverage*/ );
-
             expseg.Write ( (float) ( Gfp[ tf2 ] / gfpscale ) );
-            expseg.Write ( (float)   labels.GetSign ( tf2 ) );
+            expseg.Write ( (float) ( labels.GetSign     ( tf2 ) ) );
             expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 :                labels[ tf2 ] + 1 ) );
             expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 : gevpercluster[ labels[ tf2 ] ]   ) );
-            expseg.Write ( (float)   corr );
+            expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 : maps         [ labels[ tf2 ] ].Correlation ( Data[ tf2 ], labels.GetPolarity ( tf2 ), false /*processingref == ReferenceAverage*/ ) ) );
             }
-        else {                      // pad current file with 0's
+        else {                      // pad trailing time points with 0's
             for ( int vari = 0; vari < NumSegVariables; vari++ )
                 expseg.Write ( (float) 0 );
             }
