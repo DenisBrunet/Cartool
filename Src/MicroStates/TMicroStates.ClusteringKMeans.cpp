@@ -129,7 +129,7 @@ for ( int kmi = 0; kmi < KMeansMaxIter; kmi++ ) {
                                         // 3) Compute new error from new templates & labeling
     gevbefore   = gev;
 
-    gev         = ComputeGEV ( maps, labels, polarity, 0, NumTimeFrames - 1 );
+    gev         = ComputeGEV ( maps, labels, 0, NumTimeFrames - 1 );
 
 
     if ( RelativeDifference ( gev, gevbefore ) < LabelingConvergence    // reached convergence?
@@ -161,7 +161,7 @@ if ( centroid != MeanCentroid ) {
                                 );
 
                                         // Final error
-    gev         = ComputeGEV ( maps, labels, polarity, 0, NumTimeFrames - 1 );
+    gev         = ComputeGEV ( maps, labels, 0, NumTimeFrames - 1 );
     }
 
 

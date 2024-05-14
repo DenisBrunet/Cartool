@@ -560,31 +560,34 @@ if ( normalizing ) {
 void    TMicroStates::ComputeGevPerCluster  (   int                 nclusters,  
                                                 const TMaps&        maps,  
                                                 const TLabeling&    labels,  
-                                                PolarityType        polarity,
-                                                TVector<double>&    gevperclusterrel,
-                                                TVector<double>&    gevperclusterabs
+                                                TVector<double>&    gevpercluster
                                             )   const
 {
-gevperclusterrel.Resize ( nclusters + 1 );
+                                        // 1 more slot for the grand total, i.e. the full GEV    
+gevpercluster.Resize ( nclusters + 1 );
+
+double              sigmad          = 0;
+
 
 for ( long tf = 0; tf < NumTimeFrames; tf++ )
 
     if ( labels.IsDefined ( tf ) ) {
-                                                // both Norm and Data accounted here
-        double          gc              = Square ( Norm[ tf ] * Project ( maps[ labels[ tf ] ], Data[ tf ], labels.GetPolarity ( tf ) ) );
 
-        gevperclusterrel[ labels[ tf ] ] += gc;  // per cluster
-        gevperclusterrel[ nclusters    ] += gc;  // total
+        double          sigma2          = Square ( Norm[ tf ] * Project ( maps[ labels[ tf ] ], Data[ tf ], PolarityDirect ) );
 
-//      gevperclusterrel[ labels[ tf ] ] += Square ( projection[ tf ] );
+        gevpercluster[ labels[ tf ] ]  += sigma2;   // GEV per cluster
+        gevpercluster[ nclusters    ]  += sigma2;   // GEV
+
+        sigmad                         += Square ( Norm[ tf ] );
         }
 
-gevperclusterrel   /= NonNull ( gevperclusterrel[ nclusters ] );    // normalize by the total numerator
 
-                                                // compute the absolute distribution of GEV
-double              gev             = ComputeGEV ( maps, labels, polarity, 0, NumTimeFrames - 1 );
+if ( sigmad != 0 ) {
 
-gevperclusterabs    = gevperclusterrel * gev;
+    gevpercluster   /= sigmad;
+
+    gevpercluster.Clipped ( 0.0, 1.0 );
+    }
 }
 
 
@@ -593,7 +596,6 @@ gevperclusterabs    = gevperclusterrel * gev;
 void    TMicroStates::WriteSegFile  (   int                 nclusters,  
                                         const TMaps&        maps,  
                                         const TLabeling&    labels,  
-                                        PolarityType        polarity,
                                         const char*         filename 
                                     )   const
 {
@@ -606,15 +608,12 @@ if ( StringIsEmpty ( filename ) || NumFiles == 0 || MaxNumTF == 0 )
 double              gfpscale        = NonNull ( Gfp.GetMeanValue () );  // synth file are text files, magnetometer values can be very small and don't fit into the fixed space allocated
 
 
-TVector<double>     gevperclusterrel;
-TVector<double>     gevperclusterabs;
+TVector<double>     gevpercluster;
 
 ComputeGevPerCluster    (   nclusters,  
                             maps,  
                             labels,  
-                            polarity,
-                            gevperclusterrel,
-                            gevperclusterabs
+                            gevpercluster
                         );
 
 
@@ -643,8 +642,8 @@ for ( long tf = 0; tf < MaxNumTF; tf++ ) {
 
             expseg.Write ( (float) ( Gfp[ tf2 ] / gfpscale ) );
             expseg.Write ( (float)   labels.GetSign ( tf2 ) );
-            expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 :                   labels[ tf2 ] + 1 ) );
-            expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 : gevperclusterabs[ labels[ tf2 ] ]   ) );
+            expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 :                labels[ tf2 ] + 1 ) );
+            expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 : gevpercluster[ labels[ tf2 ] ]   ) );
             expseg.Write ( (float)   corr );
             }
         else {                      // pad current file with 0's
@@ -686,7 +685,6 @@ for ( int i = 0; i < NumFiles; i++ ) {
 double  TMicroStates::ComputeSigmaMu2   (   int                 numelectrodes,
                                             const TMaps&        maps,           
                                             const TLabeling&    labels,
-                                            PolarityType        polarity,
                                             long                tfmin,          long            tfmax 
                                         )
 {
@@ -699,9 +697,9 @@ for ( long tf = tfmin; tf <= tfmax; tf++ ) {
 
     if ( labels.IsUndefined ( tf ) )
         continue;
-
                                                                 // maps are already centered and normalized
-    sigma2     += Square ( Norm[ tf ] ) * ( 1 - Square ( Project ( maps[ labels[ tf ] ], Data[ tf ], polarity ) ) );
+                                                                // polarity is not actually needed, as result is squared
+    sigma2     += Square ( Norm[ tf ] ) * ( 1 - Square ( Project ( maps[ labels[ tf ] ], Data[ tf ], PolarityDirect ) ) );
 
     numtf++;
     }
@@ -745,16 +743,15 @@ return  sigma2 / (double) NonNull ( numtf * ( numelectrodes - 1 ) );
 /*
 double  TMicroStates::ComputeGEV    (   const TMaps&        maps,       
                                         const TLabeling&    labels,
-                                        PolarityType        polarity,
                                         long                tfmin,      long            tfmax 
                                     )
 {
 double              gev;
 
                                  // !we don't actually care for NumElectrodes, as a the ratio will cancel it up!
-double              sigmamu2        = ComputeSigmaMu2 ( /*NumElectrodes* / 2, maps, labels, polarity, tfmin, tfmax );     // residual variance
+double              sigmamu2        = ComputeSigmaMu2 ( /*NumElectrodes* / 2, maps, labels, tfmin, tfmax ); // residual variance
 
-double              sigmad2         = ComputeSigmaD2  ( /*NumElectrodes* / 2,       labels,           tfmin, tfmax );     // scaling to square of data
+double              sigmad2         = ComputeSigmaD2  ( /*NumElectrodes* / 2,       labels, tfmin, tfmax ); // scaling to square of data
 
 
                                         // This is equivalent to Sum Square ( Norm * Project ( Data ) ) / Sum Squares data
@@ -771,7 +768,6 @@ return  Clip ( gev, 0.0, 1.0 );
                                         // Simplified formula, more direct without computing Sigma2 (Version 4489)
 double  TMicroStates::ComputeGEV    (   const TMaps&        maps,       
                                         const TLabeling&    labels,
-                                        PolarityType        polarity,
                                         long                tfmin,      long            tfmax 
                                     )   const
 {
@@ -785,14 +781,14 @@ for ( long tf = tfmin; tf <= tfmax; tf++ ) {
 
     if ( labels.IsUndefined ( tf ) )
         continue;
-    
                                         // not the full sigma2 formula here, but simplified to: Sum sigma2 / Sum sigmad
-    sigma2     += Square ( Norm[ tf ] * maps[ labels[ tf ] ].Correlation ( Data[ tf ], polarity, false ) );
+                                        // also calling Project/ScalarProductr instead of Correlation, as data is normalized
+                                        // polarity is not actually needed, as result is squared
+    sigma2     += Square ( Norm[ tf ] * Project ( maps[ labels[ tf ] ], Data[ tf ], PolarityDirect ) );
     sigmad     += Square ( Norm[ tf ] );
     }
-
                                         // GEV actually boils down to this
-return  sigma2 / NonNull ( sigmad );
+return  sigmad == 0 ? 0 : Clip ( sigma2 / sigmad, 0.0, 1.0 );
 }
 
 

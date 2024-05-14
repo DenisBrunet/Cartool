@@ -350,7 +350,8 @@ if      ( dualdata == DualRis ) {
                             dualdatatype,       dualpolarity,       ReferenceNone,
                             dualranking,
                             dualdataref,
-                            ! dualranking && writenormalizedclusters
+                            ! dualranking && writenormalizedclusters,
+                            false
                         );
     } // if DualRis
 
@@ -370,7 +371,8 @@ else if ( dualdata == DualEeg ) {
                             dualdatatype,       dualpolarity,       ReferenceNone,
                             dualranking,
                             dualdataref,
-                            ! dualranking && writenormalizedclusters
+                            ! dualranking && writenormalizedclusters,
+                            false
                         );
     } // if DualEeg
                                         // !NOT tested!
@@ -390,7 +392,8 @@ else if ( dualdata == DualMeg ) {
                             dualdatatype,       dualpolarity,       ReferenceNone,
                             dualranking,
                             dualdataref,
-                            ! dualranking && writenormalizedclusters
+                            ! dualranking && writenormalizedclusters,
+                            false
                         );
     } // if DualMeg
 
@@ -670,7 +673,8 @@ if ( mapordering == MapOrderingFromTemplates ) {
                                 datatype,       polarity,       dataref,
                                 ranking,
                                 processingref,
-                                true
+                                true,
+                                false
                             );
     }
 
@@ -1390,7 +1394,7 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
     labels.UpdatePolarities ( Data, 0, NumTimeFrames - 1, maps, polarity );
 
                                         // Finally compute the Global Explained Variance
-    gev         = ComputeGEV ( maps, labels, polarity, 0, NumTimeFrames - 1 );
+    gev         = ComputeGEV ( maps, labels, 0, NumTimeFrames - 1 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2185,15 +2189,12 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Compute the relative contribution to the GEV for each cluster, using only the numerator part (we know the total GEV already)
-    TVector<double>         gevperclusterrel;
-    TVector<double>         gevperclusterabs;
+    TVector<double>         gevpercluster;
 
     ComputeGevPerCluster    (   nummaps /*nclusters*/,  
                                 maps,  
                                 labels,  
-                                polarity,
-                                gevperclusterrel,
-                                gevperclusterabs
+                                gevpercluster
                             );
 
 
@@ -2221,12 +2222,12 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
 
 
     for ( int nc = 0; nc < nummaps; nc++ )
-        detailverb.PutTable ( 100 * gevperclusterabs[ nc ], 1 );
+        detailverb.PutTable ( 100 * gevpercluster[ nc ], 1 );
     detailverb.PutTable ( 100 * gev, 1 );
 
 
     for ( int nc = 0; nc < nummaps; nc++ )
-        detailverb.PutTable ( 100 * gevperclusterrel[ nc ], 1 );
+        detailverb.PutTable ( 100 * gevpercluster[ nc ] / NonNull ( gevpercluster[ nummaps ] ), 1 );    // relative share
     detailverb.PutTable ( 100, 1 );
 
 
@@ -2560,7 +2561,6 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
         WriteSegFile    (   nummaps /*nclusters*/,
                             maps,
                             labels,
-                            polarity,
                             SegFile
                         );
 

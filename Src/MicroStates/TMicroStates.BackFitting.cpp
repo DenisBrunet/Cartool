@@ -705,7 +705,8 @@ PreprocessMaps          (   templatemaps,
                             datatype,   polarity,   dataref,
                             ranking,
                             templateref,
-                            true
+                            true,
+                            false
                         );
 
 
@@ -1508,7 +1509,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
                                         // recompute a global GEV across all conditions of the same subject - actually gev is not used here
 //      if ( numwithinsubjects > 1 )
 //
-//          gev     = ComputeGEV ( templatemaps, labels, polarity, 0, NumTimeFrames - 1 );
+//          gev     = ComputeGEV ( templatemaps, labels, 0, NumTimeFrames - 1 );
 
 
                                         // cumulate the denominator part of the GEV, for ALL epochs time AND across ALL files (of the same subject)

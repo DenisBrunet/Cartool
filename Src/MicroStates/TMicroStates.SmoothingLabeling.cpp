@@ -70,14 +70,14 @@ void    TMicroStates::SmoothingLabeling     (
 {
                                         // !labeling must have been done at that point!
 
-double              origsigma2      = ComputeSigmaMu2 ( NumElectrodes, maps, labels, polarity, tfmin, tfmax );     // explicitly used in the formula
+double              origsigma2      = ComputeSigmaMu2 ( NumElectrodes, maps, labels, tfmin, tfmax );     // explicitly used in the formula
 
                                         // empty labeling (degenerate cases) or perfect labeling (very likely synthetic data)?
 if ( origsigma2 == 0 )
     return;                             // either way, smoothing can not improve things...
 
 
-double              gev             = ComputeGEV ( maps, labels, polarity, tfmin, tfmax );   // for convergence
+double              gev             = ComputeGEV ( maps, labels, tfmin, tfmax );   // for convergence
 
                                         // same as above: nothing explained -> return
 //if ( gev == 0 )
@@ -221,7 +221,7 @@ for ( int smoothi = 0; smoothi < SmoothingMaxIter; smoothi++ ) {
                                         // 3) Compute new error from new templates & labeling
     gevbefore   = gev;
 
-    gev         = ComputeGEV ( maps, labels, polarity, tfmin, tfmax );
+    gev         = ComputeGEV ( maps, labels, tfmin, tfmax );
 
     if ( gev > gevbefore                                                // new GEV is above the previous one? it actually shouldn't (smoothing degrades the labeling) so that means we are in a oscillating state
       || gev == 0                                                       // nothing explained?

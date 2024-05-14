@@ -212,7 +212,6 @@ for ( int numclusters = 2; numclusters <= maxseg; numclusters++ ) {
     ms.WriteSegFile (   numsegments,
                         templates,
                         labels,
-                        polarity,
                         segfile
                     );
 

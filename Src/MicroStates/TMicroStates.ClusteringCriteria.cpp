@@ -609,7 +609,7 @@ if ( denom <= 0 )
 
                                         // Original formula
                                         // With Difference, we need the polarity flag
-double              sigma2          = ComputeSigmaMu2 ( numelectrodes, maps, labels, polarity, tfmin, tfmax );
+double              sigma2          = ComputeSigmaMu2 ( numelectrodes, maps, labels, tfmin, tfmax );
 
 double              cv              = sigma2 * Square ( ( numelectrodes - 1 ) / (double) denom );
 

@@ -403,7 +403,7 @@ public:
     void            ReadData                ( const TGoF& gof, AtomType datatype, ReferenceType dataref, bool showprogress );
     void            ReadData                ( const TGoGoF& gogof, int gofi1, int gofi2, int filei, AtomType datatype, ReferenceType dataref, bool showprogress );
     void            ReadData                ( const TGoGoF& gogof, int gofi1, int gofi2, int filei1, int filei2, AtomType datatype, ReferenceType dataref, bool showprogress );
-    void            PreprocessMaps          ( TMaps& maps, bool forcezscorepos, AtomType datatype, PolarityType polarity, ReferenceType dataref, bool ranking, ReferenceType processingref, bool normalizing, bool computeandsavenorm = false );
+    void            PreprocessMaps          ( TMaps& maps, bool forcezscorepos, AtomType datatype, PolarityType polarity, ReferenceType dataref, bool ranking, ReferenceType processingref, bool normalizing, bool computeandsavenorm );
 
                                         // Clustering methods themselves:
     int             SegmentKMeans           ( int nclusters, TMaps& maps, TLabeling& labels, PolarityType polarity, int numrandomruns, CentroidType centroid, bool ranking );
@@ -504,7 +504,7 @@ public:
     void            GetAnatomicalOrdering   ( int nclusters, const TMaps& maps, const TSolutionPointsDoc* spdoc, const TVolumeDoc* mridoc, TArray2<int>& ordering ) const;
 
 
-    void            WriteSegFile        (   int nclusters, const TMaps& maps, const TLabeling& labels, PolarityType polarity, const char*  filename  )   const;
+    void            WriteSegFile        (   int nclusters, const TMaps& maps, const TLabeling& labels, const char*  filename  )   const;
 
 
 protected:
@@ -543,10 +543,10 @@ protected:
     void            ResetDissimilarityJunctions ();
 
                                         // sigmamu2 sigmad2 utilities
-    double          ComputeSigmaMu2         ( int numelectrodes, const TMaps& maps, const TLabeling& labels, PolarityType polarity, long tfmin, long tfmax );
+    double          ComputeSigmaMu2         ( int numelectrodes, const TMaps& maps, const TLabeling& labels, long tfmin, long tfmax );
     double          ComputeSigmaD2          ( int numelectrodes, const TLabeling& labels, long tfmin, long tfmax );
-    double          ComputeGEV              ( const TMaps& maps, const TLabeling& labels, PolarityType polarity, long tfmin, long tfmax ) const;
-    void            ComputeGevPerCluster    ( int nclusters, const TMaps& maps, const TLabeling& labels, PolarityType polarity, TVector<double>& gevperclusterrel, TVector<double>& gevperclusterabs ) const;
+    double          ComputeGEV              ( const TMaps& maps, const TLabeling& labels, long tfmin, long tfmax ) const;
+    void            ComputeGevPerCluster    ( int nclusters, const TMaps& maps, const TLabeling& labels, TVector<double>& gevpercluster ) const;
 
                                         // Clustering methods
     bool            SegmentKMeans_Once      ( int nclusters, TMaps& maps, TLabeling& labels, PolarityType polarity, double &gev, CentroidType centroid, bool ranking /*, TArray1<double> dispersion*/ );
