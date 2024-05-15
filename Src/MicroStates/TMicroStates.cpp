@@ -556,104 +556,6 @@ if ( normalizing ) {
 
 
 //----------------------------------------------------------------------------
-                                        // From labeling, comput the GEV per cluster
-void    TMicroStates::ComputeGevPerCluster  (   int                 nclusters,  
-                                                const TMaps&        maps,  
-                                                const TLabeling&    labels,  
-                                                TVector<double>&    gevpercluster
-                                            )   const
-{
-                                        // 1 more slot for the grand total, i.e. the full GEV    
-gevpercluster.Resize ( nclusters + 1 );
-
-double              sigmad          = 0;
-
-
-for ( long tf = 0; tf < NumTimeFrames; tf++ )
-
-    if ( labels.IsDefined ( tf ) ) {
-
-        double          sigma2          = Square ( Norm[ tf ] * Project ( maps[ labels[ tf ] ], Data[ tf ], PolarityDirect ) );
-
-        gevpercluster[ labels[ tf ] ]  += sigma2;   // GEV per cluster
-        gevpercluster[ nclusters    ]  += sigma2;   // GEV
-
-        sigmad                         += Square ( Norm[ tf ] );
-        }
-
-
-if ( sigmad != 0 ) {
-
-    gevpercluster   /= sigmad;
-
-    gevpercluster.Clipped ( 0.0, 1.0 );
-    }
-}
-
-
-//----------------------------------------------------------------------------
-
-void    TMicroStates::WriteSegFile  (   int                 nclusters,  
-                                        const TMaps&        maps,  
-                                        const TLabeling&    labels,  
-                                        const char*         filename 
-                                    )   const
-{
-if ( StringIsEmpty ( filename ) || NumFiles == 0 || MaxNumTF == 0 )
-    return;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-double              gfpscale        = NonNull ( Gfp.GetMeanValue () );  // synth file are text files, magnetometer values can be very small and don't fit into the fixed space allocated
-
-
-TVector<double>     gevpercluster;
-
-ComputeGevPerCluster    (   nclusters,  
-                            maps,  
-                            labels,  
-                            gevpercluster
-                        );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TExportTracks       expseg;
-
-StringCopy ( expseg.Filename, filename );
-
-expseg.NumClusters        = nclusters;
-expseg.NumFiles           = NumFiles;
-expseg.NumTime            = MaxNumTF;
-expseg.NumTracks          = NumSegVariables;
-expseg.VariableNames.Set ( SegFile_VariableNames_Signed, " " Tab );
-
-
-for ( long tf = 0; tf < MaxNumTF; tf++ ) {
-                                        // segment output
-    for ( int fi = 0; fi < NumFiles; fi++ ) {
-
-        long        tf2     = OffsetTF[ fi ] + tf;
-
-        if ( tf < NumTF[ fi ] ) {
-
-            expseg.Write ( (float) ( Gfp[ tf2 ] / gfpscale ) );
-            expseg.Write ( (float) ( labels.GetSign     ( tf2 ) ) );
-            expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 :                labels[ tf2 ] + 1 ) );
-            expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 : gevpercluster[ labels[ tf2 ] ]   ) );
-            expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 : maps         [ labels[ tf2 ] ].Correlation ( Data[ tf2 ], labels.GetPolarity ( tf2 ), false /*processingref == ReferenceAverage*/ ) ) );
-            }
-        else {                      // pad trailing time points with 0's
-            for ( int vari = 0; vari < NumSegVariables; vari++ )
-                expseg.Write ( (float) 0 );
-            }
-        }
-    }
-}
-
-
-//----------------------------------------------------------------------------
 void    TMicroStates::TimeRangeToDataRange ( int filei, long fromtf, long totf, long &tfmin, long &tfmax )
 {
                                         // time window
@@ -787,6 +689,42 @@ for ( long tf = tfmin; tf <= tfmax; tf++ ) {
     }
                                         // GEV actually boils down to this
 return  sigmad == 0 ? 0 : Clip ( sigma2 / sigmad, 0.0, 1.0 );
+}
+
+
+//----------------------------------------------------------------------------
+                                        // From labeling, comput the GEV per cluster
+void    TMicroStates::ComputeGevPerCluster  (   int                 nclusters,  
+                                                const TMaps&        maps,  
+                                                const TLabeling&    labels,  
+                                                TVector<double>&    gevpercluster
+                                            )   const
+{
+                                        // 1 more slot for the grand total, i.e. the full GEV    
+gevpercluster.Resize ( nclusters + 1 );
+
+double              sigmad          = 0;
+
+
+for ( long tf = 0; tf < NumTimeFrames; tf++ )
+
+    if ( labels.IsDefined ( tf ) ) {
+
+        double          sigma2          = Square ( Norm[ tf ] * Project ( maps[ labels[ tf ] ], Data[ tf ], PolarityDirect ) );
+
+        gevpercluster[ labels[ tf ] ]  += sigma2;   // GEV per cluster
+        gevpercluster[ nclusters    ]  += sigma2;   // GEV
+
+        sigmad                         += Square ( Norm[ tf ] );
+        }
+
+
+if ( sigmad != 0 ) {
+
+    gevpercluster   /= sigmad;
+
+    gevpercluster.Clipped ( 0.0, 1.0 );
+    }
 }
 
 
@@ -967,6 +905,67 @@ for ( int i = 0; i < (int) rejectmarkers; i++ ) {
 
     }
 
+}
+
+
+//----------------------------------------------------------------------------
+void    TMicroStates::WriteSegFile  (   int                 nclusters,  
+                                        const TMaps&        maps,  
+                                        const TLabeling&    labels,  
+                                        const char*         filename 
+                                    )   const
+{
+if ( StringIsEmpty ( filename ) || NumFiles == 0 || MaxNumTF == 0 )
+    return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+double              gfpscale        = NonNull ( Gfp.GetMeanValue () );  // synth file are text files, magnetometer values can be very small and don't fit into the fixed space allocated
+
+
+TVector<double>     gevpercluster;
+
+ComputeGevPerCluster    (   nclusters,  
+                            maps,  
+                            labels,  
+                            gevpercluster
+                        );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TExportTracks       expseg;
+
+StringCopy ( expseg.Filename, filename );
+
+expseg.NumClusters        = nclusters;
+expseg.NumFiles           = NumFiles;
+expseg.NumTime            = MaxNumTF;
+expseg.NumTracks          = NumSegVariables;
+expseg.VariableNames.Set ( SegFile_VariableNames_Signed, " " Tab );
+
+
+for ( long tf = 0; tf < MaxNumTF; tf++ ) {
+                                        // segment output
+    for ( int fi = 0; fi < NumFiles; fi++ ) {
+
+        long        tf2     = OffsetTF[ fi ] + tf;
+
+        if ( tf < NumTF[ fi ] ) {
+
+            expseg.Write ( (float) ( Gfp[ tf2 ] / gfpscale ) );
+            expseg.Write ( (float) ( labels.GetSign     ( tf2 ) ) );
+            expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 :                labels[ tf2 ] + 1 ) );
+            expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 : gevpercluster[ labels[ tf2 ] ]   ) );
+            expseg.Write ( (float) ( labels.IsUndefined ( tf2 ) ? 0 : maps         [ labels[ tf2 ] ].Correlation ( Data[ tf2 ], labels.GetPolarity ( tf2 ), false /*processingref == ReferenceAverage*/ ) ) );
+            }
+        else {                      // pad trailing time points with 0's
+            for ( int vari = 0; vari < NumSegVariables; vari++ )
+                expseg.Write ( (float) 0 );
+            }
+        }
+    }
 }
 
 
