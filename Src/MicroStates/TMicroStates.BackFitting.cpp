@@ -1112,6 +1112,9 @@ enum                SubjTimeFramesEnum
                                         // Conditions x Subjects x TimeVariables
 TArray3<int>        SubjTimeFrames;
 
+                                        // GEV per subject
+TArray2<double>     SubjGEV;
+
 
 TArray4<float>      alldurationsraw;
 TArray4<float>      alldurationssmooth;
@@ -1153,14 +1156,17 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
     verbose.NextTopic ( "Processing Group(s):" );
     {
                                         // output all file names, too?
+    TFileName           buffgroup;
+
     for ( int gofi = gofi1; gofi <= gofi2; gofi++ ) {
 
-        StringCopy ( buff, IntegerToString ( gofi + 1 ), " (", IntegerToString ( gogof[ gofi ].NumFiles () ), " files)" );
+        StringCopy ( buffgroup,  "Group ", IntegerToString ( gofi + 1 ), ":" );
+        StringCopy ( buff, IntegerToString ( gogof[ gofi ].NumFiles () ), " file", StringPlural ( gogof[ gofi ].NumFiles () ) );
 
-        verbose.Put ( gofi == gofi1 ? "Group #:" : "", buff );
+        verbose.Put ( buffgroup, buff );
         }
 
-    verbose.NextLine ();
+    verbose.Flush ();
     }
 
 
@@ -1247,6 +1253,9 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 
                                         // Important, must be 0
     SubjTimeFrames.ResetMemory ();
+
+
+    SubjGEV.Resize ( maxfilespergroup, noncompetitive ? nclusters : 1 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1685,7 +1694,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 
                                         // it's valid for GEV to be 0
             for ( TIteratorSelectedForward si    ( mapsel );   (bool) si;    ++si    ) {
-                var ( f, fitmeancorr,   si() ) = 0;    // prepare for the sum
+                var ( f, fitmeancorr,   si() ) = 0;
                 var ( f, fitgev,        si() ) = 0;
                 }
                                         // simplified formula that can be applied to either the competitive or non-competitive cases
@@ -1700,9 +1709,10 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
                             continue;
 
                         double      corr    = Project ( templatemaps[ si() ], Data[ tf ], polarity );  // pick the right polarity for each map
+                        double      gevc    = Square ( Norm[ tf ] * corr );
 
                         var ( f, fitmeancorr, si() )  += corr;
-                        var ( f, fitgev,      si() )  += Square ( Norm[ tf ] * corr );
+                        var ( f, fitgev,      si() )  += gevc;
                         } // for tf
 
                                         // normalize
@@ -1721,9 +1731,10 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
                     LabelType   l       = labels[ tf ];
 
                     double      corr    = Project ( templatemaps[ l ], Data[ tf ], polarity /*labels.GetPolarity ( tf )*/ );
+                    double      gevc    = Square ( Norm[ tf ] * corr );
 
                     var ( f, fitmeancorr,   l )    += corr;
-                    var ( f, fitgev,        l )    += Square ( Norm[ tf ] * corr );
+                    var ( f, fitgev,        l )    += gevc;
                     } // for tf
 
                                         // normalize
@@ -2029,6 +2040,29 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
             //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
             } // for f/relg, variables extraction
+
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // sum up all GEV contributions to get the per subject grand total
+        if ( noncompetitive ) {
+
+            for ( int nc = 0; nc < nclusters; nc++ ) {
+
+                SubjGEV ( subji, nc )   = 0;
+
+                for ( int relg = 0; relg < NumFiles; relg++ )
+                                        // !each map has its own GEV!
+                    SubjGEV ( subji, nc )  += var ( relg, fitgev, nc );
+                }
+            }
+        else {
+            SubjGEV ( subji, 0 )        = 0;
+
+            for ( int relg = 0; relg < NumFiles; relg++ )
+            for ( int nc = 0; nc < nclusters; nc++ )
+
+                SubjGEV ( subji, 0 )   += var ( relg, fitgev, nc );
+            }
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2878,7 +2912,6 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 
     verbose.NextTopic ( "Labeled vs Unlabeled TFs:" );
     {
-    verbose.NextLine ();
     verbose.Put ( "Force minimum Correlation:", dolimitcorr );
     if ( dolimitcorr )
         verbose.Put ( "Min Correlation allowed for Labeling:", limitcorr * 100, 2, " [%]" );
@@ -2910,15 +2943,90 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
         verbose.PutTable ( SubjTimeFrames ( numwithinsubjects, subji, EpochsDuration          ) );
         verbose.PutTable ( SubjTimeFrames ( numwithinsubjects, subji, EpochsDurationLabeled   ) );
         verbose.PutTable ( SubjTimeFrames ( numwithinsubjects, subji, EpochsDurationUnlabeled ) );
-        verbose.PutTable ( SubjTimeFrames ( numwithinsubjects, subji, EpochsDurationLabeled   ) / NonNull ( SubjTimeFrames ( numwithinsubjects, subji, EpochsDuration ) ) * 100, 2 );
-        verbose.PutTable ( SubjTimeFrames ( numwithinsubjects, subji, EpochsDurationUnlabeled ) / NonNull ( SubjTimeFrames ( numwithinsubjects, subji, EpochsDuration ) ) * 100, 2 );
+        verbose.PutTable ( SubjTimeFrames ( numwithinsubjects, subji, EpochsDurationLabeled   ) / (double) NonNull ( SubjTimeFrames ( numwithinsubjects, subji, EpochsDuration ) ) * 100, 2 );
+        verbose.PutTable ( SubjTimeFrames ( numwithinsubjects, subji, EpochsDurationUnlabeled ) / (double) NonNull ( SubjTimeFrames ( numwithinsubjects, subji, EpochsDuration ) ) * 100, 2 );
         } // for subji
 
 
     verbose.EndTable ();
 
-    verbose.NextLine ( 2 );
+    verbose.Flush ();
     }
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // GEV
+    verbose.NextTopic ( "GEV:" );
+    {
+    verbose.Put ( "GEV is computed:", noncompetitive ? "For each template, all conditions together" : "Globally, all conditions together" );
+
+    verbose.NextLine ( 2 );
+
+
+    if ( noncompetitive ) {
+
+        verbose.ResetTable ();
+
+        verbose.TableColNames.Add ( "File" );
+        for ( int nc = 0; nc < nclusters; nc++ )
+            verbose.TableColNames.Add ( StringCopy ( buff, "GEV", IntegerToString ( nc + 1 ), "%" ) );
+
+        for ( int subji = 0; subji < maxfilespergroup; subji++ )
+            verbose.TableRowNames.Add ( SubjectName[ subji ] );
+        verbose.TableRowNames.Add ( "Average" );
+
+        verbose.BeginTable ( 8 );
+
+
+        TGoEasyStats        stat ( nclusters );
+
+        for ( int subji = 0; subji < maxfilespergroup; subji++ )
+        for ( int nc = 0; nc < nclusters; nc++ ) {
+
+            verbose.PutTable ( SubjGEV ( subji, nc ) * 100, 2 );
+
+            stat[ nc ].Add   ( SubjGEV ( subji, nc ), ThreadSafetyIgnore );
+            }
+
+        for ( int nc = 0; nc < nclusters; nc++ )
+            verbose.PutTable ( stat[ nc ].Average () * 100, 2 );
+
+
+        verbose.EndTable ();
+        }
+    else {
+
+        verbose.ResetTable ();
+
+        verbose.TableColNames.Add ( "File" );
+        verbose.TableColNames.Add ( "GEV%" );
+
+        for ( int subji = 0; subji < maxfilespergroup; subji++ )
+            verbose.TableRowNames.Add ( SubjectName[ subji ] );
+        verbose.TableRowNames.Add ( "Average" );
+
+        verbose.BeginTable ( 8 );
+
+
+        TEasyStats          stat;
+
+        for ( int subji = 0; subji < maxfilespergroup; subji++ ) {
+
+            verbose.PutTable ( SubjGEV ( subji, 0 ) * 100, 2 );
+
+            stat.Add ( SubjGEV ( subji, 0 ), ThreadSafetyIgnore );
+            }
+
+        verbose.PutTable ( stat.Average () * 100, 2 );
+
+
+        verbose.EndTable ();
+        }
+
+    verbose.Flush ();
+    }
+
+    verbose.NextLine ( 2 );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

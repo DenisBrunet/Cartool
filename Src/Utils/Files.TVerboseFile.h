@@ -431,7 +431,8 @@ if ( TableCurrCol == 0 && TableColSize0 != 0 ) {
 (*ofv) << text;
 
                                         // next column
-TableCurrCol    = ++TableCurrCol % ( (int) TableColNames - 1 );
+if ( (int) TableColNames > 1 )
+    TableCurrCol    = ++TableCurrCol % ( (int) TableColNames - 1 );
 
                                         // next row?
 if ( TableCurrCol == 0 ) {
