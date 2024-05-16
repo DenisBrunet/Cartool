@@ -43,24 +43,24 @@ namespace crtl {
 
 const TissuesSpec       TissuesSpecs[ NumTissuesIndex ] =
             {
-            {   NoTissueIndex       , "No tissue",      0           },
+            {   NoTissueIndex       , "No tissue",      "Empty",            0           },
 
-            {   ScalpIndex          , "Scalp",          0.4137      },  // McCann 2021 Weighted mean value
-            {   FatIndex            , "Fat",            0.0400      },
-            {   MuscleIndex         , "Muscle",         0.3243      },  // McCann 2021 Weighted mean value
-            {   CsfIndex            , "CSF",            1.7358      },  // McCann 2021 Weighted mean value
-            {   BloodIndex          , "Blood",          0.5737      },  // McCann 2021 Weighted mean value
-            {   EyeIndex            , "Eye",            1.5100      },
-            {   AirIndex            , "Air",            3e-15       },
+            {   ScalpIndex          , "Scalp",          "Scalp",            0.4137      },  // McCann 2021 Weighted mean value
+            {   FatIndex            , "Fat",            "Fat",              0.0400      },
+            {   MuscleIndex         , "Muscle",         "Muscle",           0.3243      },  // McCann 2021 Weighted mean value
+            {   CsfIndex            , "CSF",            "CSF",              1.7358      },  // McCann 2021 Weighted mean value
+            {   BloodIndex          , "Blood",          "Blood",            0.5737      },  // McCann 2021 Weighted mean value
+            {   EyeIndex            , "Eye",            "Eye",              1.5100      },
+            {   AirIndex            , "Air",            "Air",              3e-15       },
 
-            {   SkullIndex          , "Skull",          0.0160      },  // McCann 2021 Weighted mean value
-            {   SkullCompactIndex   , "Compact skull",  0.0046      },  // McCann 2021 Weighted mean value  ?doesn't match the 3.6 ratio between spongy and compact?
-            {   SkullSpongyIndex    , "Spongy skull",   0.0480      },  // McCann 2021 Weighted mean value
-            {   SkullSutureIndex    , "Skull suture",   0.0266      },  // McCann 2021 Weighted mean value
+            {   SkullIndex          , "Skull",          "Skull",            0.0160      },  // McCann 2021 Weighted mean value
+            {   SkullCompactIndex   , "Compact skull",  "SkullCompact",     0.0046      },  // McCann 2021 Weighted mean value  ?doesn't match the 3.6 ratio between spongy and compact?
+            {   SkullSpongyIndex    , "Spongy skull",   "SkullSpongy",      0.0480      },  // McCann 2021 Weighted mean value
+            {   SkullSutureIndex    , "Skull suture",   "SkullSuture",      0.0266      },  // McCann 2021 Weighted mean value
 
-            {   BrainIndex          , "Brain",          0.3841      },  // McCann 2021 Weighted mean value
-            {   GreyIndex           , "Grey Matter",    0.3787      },  // McCann 2021 Weighted mean value
-            {   WhiteIndex          , "White Matter",   0.1462      },  // McCann 2021 Weighted mean value
+            {   BrainIndex          , "Brain",          "Brain",            0.3841      },  // McCann 2021 Weighted mean value
+            {   GreyIndex           , "Grey Matter",    "Grey",             0.3787      },  // McCann 2021 Weighted mean value
+            {   WhiteIndex          , "White Matter",   "White",            0.1462      },  // McCann 2021 Weighted mean value
             };
 
                                         // Just for tests

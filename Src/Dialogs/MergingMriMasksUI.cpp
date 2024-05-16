@@ -52,7 +52,7 @@ static GetFileFromUser  getfileair      ( "Air sinus Mask (optional):",         
 static GetFileFromUser  getfileeyes     ( "Eyes Mask (optional):",                          AllMriFilesFilter, 1, GetFileRead );
 
                                         // !head should be a global mask that wraps all other tissues!
-ShowMessage (   "Attention:"    NewLine 
+ShowMessage (   "Warning:"                                              NewLine 
                 NewLine 
                 "Some input volumes should be MASKS,"                   NewLine
                 "while others should be PROBABILITIES in range [0..1]," NewLine

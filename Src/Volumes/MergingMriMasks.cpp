@@ -76,14 +76,20 @@ TSuperGauge         Gauge ( MergingMriMasksTitle, 23, SuperGaugeLevelBatch );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TFileName           FileMerged;
+TFileName           FileText;
 TFileName           VerboseFile;
 
 
 StringCopy          ( FileMerged, filehead      );
-PostfixFilename     ( FileMerged, "." "Merged"  );
-ReplaceExtension    ( FileMerged, FILEEXT_MRINII );
+RemoveExtension     ( FileMerged                );
+StringReplace       ( FileMerged, ".Mask", ""   );
+StringAppend        ( FileMerged, ".Merged"     );
+AddExtension        ( FileMerged, FILEEXT_MRINII );
 
 CheckNoOverwrite    ( FileMerged );
+
+StringCopy          ( FileText,                 FileMerged );
+ReplaceExtension    ( FileText,                 FILEEXT_TXT );
 
 StringCopy          ( VerboseFile,              FileMerged );
 ReplaceExtension    ( VerboseFile,              FILEEXT_VRB );
@@ -125,12 +131,12 @@ if ( createspongy ) {
 verbose.NextTopic ( "Output Files:" );
 {
 verbose.Put ( "Verbose file (this):", VerboseFile );
+verbose.Put ( "Merged volume:", FileMerged );
+verbose.Put ( "Tissue labels file:", FileText );
 
 verbose.NextLine ();
-verbose.Put ( "Merged volume:", FileMerged );
-
-for ( int  ti = 0; ti < NumTissuesIndex; ti++ )
-    verbose.Put ( ti ? "" : "Tissue labels:", TissuesSpecs[ ti ].Code, NumIntegerDigits ( NumTissuesIndex - 1 ), "\t", TissuesSpecs[ ti ].Text );
+for ( int  ti = NoTissueIndex + 1; ti < NumTissuesIndex; ti++ )
+    verbose.Put ( ti == 1 ? "Tissue labels:" : "", TissuesSpecs[ ti ].Code, NumIntegerDigits ( NumTissuesIndex - 1 ), Tab, TissuesSpecs[ ti ].Label );
 }
 
 
@@ -234,7 +240,7 @@ if ( air            )   insideskull    += *air;
 Gauge.Next ();
 
 p ( FilterParamThresholdMin )     = SingleFloatEpsilon;
-p ( FilterParamThresholdMax )     = FLT_MAX;
+p ( FilterParamThresholdMax )     = Highest<MriType> ();
 p ( FilterParamThresholdBin )     = 1;
 insideskull.Filter ( FilterTypeThresholdBinarize, p );
 
@@ -543,8 +549,20 @@ vol.WriteFile   (   FileMerged,
                     NiftiOrientation, niftitransform, NiftiIntentCodeLabels, NiftiIntentNameLabels
                 );
 
-FileMerged.Open ();
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Writing complimentary region names
+ofstream            of ( FileText );
+
+for ( int ti = NoTissueIndex + 1; ti < NumTissuesIndex; ti++ )
+    of << ti << Tab << TissuesSpecs[ ti ].Label << NewLine;
+
+of.close ();
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FileMerged.Open ();
 
 Gauge.HappyEnd ();
 }

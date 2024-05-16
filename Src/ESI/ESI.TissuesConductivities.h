@@ -63,7 +63,8 @@ class               TissuesSpec
 {
 public:
     TissuesIndex    Code;
-    char            Text [ 16 ];
+    char            Text [ 16 ];        // Textual version, can include space
+    char            Label[ 16 ];        // Label used for ROIs, no spaces allowed
     double          Conductivity;
 };
 
