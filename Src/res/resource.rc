@@ -153,17 +153,23 @@ BEGIN
             MENUITEM "&Statistics on Tracks",       CM_STATISTICSTRACKS
             POPUP "&Histograms"
             BEGIN
-                MENUITEM "Histograms Across Time",      1
+                MENUITEM "Histograms across Time, per Track",		1
                 MENUITEM "&Raw Histograms",             CM_HISTOTIMERAW
                 MENUITEM "&Smooth Histograms",          CM_HISTOTIMESMOOTH
                 MENUITEM "&Log Histograms",             CM_HISTOTIMELOG
                 MENUITEM "&Cumulated Density Function", CM_HISTOTIMECDF
                 MENUITEM SEPARATOR
-                MENUITEM "Histograms Across Tracks",    1
+                MENUITEM "Histograms across Tracks, per Time Point",	1
                 MENUITEM "R&aw Histograms",             CM_HISTOTRACKSRAW
                 MENUITEM "S&mooth Histograms",          CM_HISTOTRACKSSMOOTH
                 MENUITEM "L&og Histograms",             CM_HISTOTRACKSLOG
                 MENUITEM "C&umulated Density Function", CM_HISTOTRACKSCDF
+                MENUITEM SEPARATOR
+                MENUITEM "Histograms of block (Tracks x Time)",    1
+                MENUITEM "Ra&w Histograms",             CM_HISTOALLRAW
+                MENUITEM "Smoot&h Histograms",          CM_HISTOALLSMOOTH
+                MENUITEM "Lo&g Histograms",             CM_HISTOALLLOG
+                MENUITEM "Cumula&ted Density Function", CM_HISTOALLCDF
             END
         END
         POPUP "&Frequency"

@@ -378,14 +378,18 @@ DEFINE_RESPONSE_TABLE1(TTracksView, TBaseView)
 //  EV_COMMAND_AND_ID   ( CM_ANALYZESELNOISY,           CmAnalyzeTracks ),
     EV_COMMAND_AND_ID   ( CM_ANALYZESELARTEFACTS,       CmAnalyzeTracks ),
 
-    EV_COMMAND_AND_ID   ( CM_HISTOTIMERAW		,       CmHistogram ),
-    EV_COMMAND_AND_ID   ( CM_HISTOTIMESMOOTH	,       CmHistogram ),
-    EV_COMMAND_AND_ID   ( CM_HISTOTIMELOG		,       CmHistogram ),
-    EV_COMMAND_AND_ID   ( CM_HISTOTIMECDF		,       CmHistogram ),
-    EV_COMMAND_AND_ID   ( CM_HISTOTRACKSRAW	    ,       CmHistogram ),
-    EV_COMMAND_AND_ID   ( CM_HISTOTRACKSSMOOTH  ,       CmHistogram ),
-    EV_COMMAND_AND_ID   ( CM_HISTOTRACKSLOG	    ,       CmHistogram ),
-    EV_COMMAND_AND_ID   ( CM_HISTOTRACKSCDF	    ,       CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOTIMERAW,              CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOTIMESMOOTH,           CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOTIMELOG,              CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOTIMECDF,              CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOTRACKSRAW,            CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOTRACKSSMOOTH,         CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOTRACKSLOG,            CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOTRACKSCDF,            CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOALLRAW,               CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOALLSMOOTH,            CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOALLLOG,               CmHistogram ),
+    EV_COMMAND_AND_ID   ( CM_HISTOALLCDF,               CmHistogram ),
 
 END_RESPONSE_TABLE;
 
@@ -11217,11 +11221,67 @@ void    TTracksView::CmHistogram ( owlwparam w )
 {
 bool                pertrack        = IsInsideLimits ( w, (owlwparam) CM_HISTOTIMERAW,   (owlwparam) CM_HISTOTIMECDF   );
 bool                pertf           = IsInsideLimits ( w, (owlwparam) CM_HISTOTRACKSRAW, (owlwparam) CM_HISTOTRACKSCDF );
-bool                cdf             = w == CM_HISTOTIMECDF || w == CM_HISTOTRACKSCDF;
+bool                alldata         = IsInsideLimits ( w, (owlwparam) CM_HISTOALLRAW,    (owlwparam) CM_HISTOALLCDF    );
+
+if ( ! ( pertrack || pertf || alldata ) )
+    return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // More options here:
+//char                answer          = GetOptionFromUser ( "Output (A)ll tracks together, or (O)ne file per track:", 
+//                                                          "Tracks Histogram", "A O", "A", this );
+//
+//if ( answer == EOS )   return;
+//
+//bool                allvarstogether     = alldata || answer == 'A';
+
+bool                allvarstogether     = alldata || true;
+
+
+//answer  = GetOptionFromUser ( "De-skew the data: (N)o, (A)uto, (R)ight, (L)eft?", 
+//                              "Tracks Histogram", "N A R L", (int) elsel > 20 ? "N" : "A", this );
+//
+//if ( answer == EOS )   return;
+//
+//DeSkewType          deskewdata          = answer == 'A' ? DeSkewAuto
+//                                        : answer == 'R' ? DeSkewRight
+//                                        : answer == 'L' ? DeSkewLeft
+//                                        : answer == 'N' ? DeSkewNone
+//                                        :                 DeSkewNone;
+
+DeSkewType          deskewdata          = DeSkewNone;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool                cdf             = w == CM_HISTOTIMECDF 
+                                   || w == CM_HISTOTRACKSCDF
+                                   || w == CM_HISTOALLCDF;
 bool                pdf             = ! cdf;
 
-if ( ! ( pertrack || pertf ) )
-    return;
+
+bool                logoutput       = pdf
+                                &&  ( w == CM_HISTOTIMELOG 
+                                   || w == CM_HISTOTRACKSLOG
+                                   || w == CM_HISTOALLLOG    );
+
+                                    // spikey or smoothey?
+bool                curvesmooth     = w == CM_HISTOTIMESMOOTH 
+                                   || w == CM_HISTOTRACKSSMOOTH
+                                   || w == CM_HISTOALLSMOOTH
+                                   || cdf
+                                   || logoutput;
+
+                                    // makes max = 1, easier on the eyes but not mathematically correct
+bool                normalizemax    = false;
+
+                                    // cooking the whole option flags
+HistogramOptions    histooptions    = (HistogramOptions)
+                                    ( ( cdf             ? HistogramCDF      : HistogramPDF      )
+                                    | ( curvesmooth     ? HistogramSmooth   : HistogramRaw      )
+                                    | ( normalizemax    ? HistogramNormMax  : HistogramNormArea )
+                                    | ( logoutput       ? HistogramLog      : HistogramLinear   ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -11233,13 +11293,14 @@ if ( (bool) Highlighted )   elsel   = Highlighted;
 else                        elsel   = SelTracks; 
 
 
-if ( pertf                                      // histogram through tracks needs.. tracks, not pseudos
+if ( ( pertf || alldata )                       // histogram through tracks needs.. tracks, not pseudos
   || EEGDoc->GetNumSelectedRegular ( elsel ) )  // don't mix regular and pseudos
 
     EEGDoc->ClearPseudo ( elsel ); 
 
                                         // across tracks, if not explicitly specified by the user, we don't want outliers
-if ( pertf && ! (bool) Highlighted ) {
+if ( ( pertf || alldata )
+  && ! (bool) Highlighted ) {
     EEGDoc->ClearAuxs  ( elsel );
     EEGDoc->ClearBads  ( elsel );
     }
@@ -11253,51 +11314,6 @@ if ( elsel.IsNoneSet () ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Controlling parameters
-char                buff [ 256 ];
-char                buff2[ 256 ];
-
-
-//char                answer          = GetOptionFromUser ( "Output (A)ll tracks together, or (O)ne file per track:", 
-//                                                          "Tracks Histogram", "A O", "A", this );
-//
-//if ( answer == EOS )   return;
-
-bool                allvarstogether     = true; // answer == 'A';
-
-
-//answer  = GetOptionFromUser ( "De-skew the data: (N)o, (A)uto, (R)ight, (L)eft?", 
-//                              "Tracks Histogram", "N A R L", (int) elsel > 20 ? "N" : "A", this );
-//
-//if ( answer == EOS )   return;
-
-DeSkewType          deskewdata          = DeSkewNone;
-//DeSkewType          deskewdata          = answer == 'A' ? DeSkewAuto
-//                                        : answer == 'R' ? DeSkewRight
-//                                        : answer == 'L' ? DeSkewLeft
-//                                        : answer == 'N' ? DeSkewNone
-//                                        :                 DeSkewNone;
-
-
-bool                logoutput           = pdf
-                                    &&  ( w == CM_HISTOTIMELOG 
-                                       || w == CM_HISTOTRACKSLOG );
-
-                                        // spikey or smoothey?
-bool                curvesmooth         = w == CM_HISTOTIMESMOOTH 
-                                       || w == CM_HISTOTRACKSSMOOTH
-                                       || cdf
-                                       || logoutput;
-                                        // makes max = 1, easier on the eyes but not mathematically correct
-bool                normalizemax        = false;
-
-                                        // cooking the whole option flags
-HistogramOptions    histooptions        = (HistogramOptions)
-                                        ( ( cdf             ? HistogramCDF      : HistogramPDF      )
-                                        | ( curvesmooth     ? HistogramSmooth   : HistogramRaw      )
-                                        | ( normalizemax    ? HistogramNormMax  : HistogramNormArea )
-                                        | ( logoutput       ? HistogramLog      : HistogramLinear   ) );
-
 
 bool                autoopen            = allvarstogether || (int) elsel <= 2 * MaxFilesToOpen;
 
@@ -11320,64 +11336,29 @@ TDownsampling       downtf ( readfromtf, readtotf, NumScanHistogram );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+TGoEasyStats        stats;
+
+if      ( pertrack )    stats.Resize ( numel,               downtf.NumDownData          );
+else if ( pertf    )    stats.Resize ( downtf.NumDownData,  numel                       );
+else if ( alldata  )    stats.Resize ( 1,                   numel * downtf.NumDownData  );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 TSuperGauge     Gauge;
 
-Gauge.Set       ( "Tracks Histogram" );
+Gauge.Set       ( pertrack ? "Per Tracks Histogram" : pertf ? "Per Time Histogram" : "All Data Histogram" );
 
-Gauge.AddPart   ( 0,    1,                                              05 );
-Gauge.AddPart   ( 1,          downtf.NumDownData,                       30 );
-Gauge.AddPart   ( 2,    2 * ( pertrack ? numel : downtf.NumDownData ),  65 );
+Gauge.AddPart   ( 0,    2,                          05 );
+Gauge.AddPart   ( 1,    downtf.NumDownData,         30 );
+Gauge.AddPart   ( 2,    2 * stats.GetNumStats (),   65 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Read all at once (more memory but way faster!)
+
 Gauge.Next ( 0 );
 
-TTracks<float>      EegBuff  ( numtotalel, 1 /*readnumtf*/ /*numtotaltf*/ /*downtf.NumDownData*/ );
-
-/*
-EEGDoc->GetTracks ( readfromtf, readtotf, EegBuff, 0, &gtparams );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Feed these hungry stats
-
-TGoEasyStats        stats   ( pertrack ? numel              : downtf.NumDownData, 
-                              pertrack ? downtf.NumDownData : numel               );
-
-if ( pertrack )
-
-    for ( TIteratorSelectedForward eli ( elsel ); (bool) eli; ++eli ) {
-
-        Gauge.Next ( 1 );
-
-        for ( long tf0 = 0, tf = 0; tf0 < downtf.NumDownData;  tf0++, tf += downtf.Step ) {
-
-//          if ( EegBuff ( eli(), 0 ) != 0.0 )  // this is debatable - are they value to ignore, or real data to show in the histogram?
-
-                stats ( eli.GetIndex () ).Add ( EegBuff ( eli(), tf ) );
-            }
-        }
-
-else
-
-    for ( long tf0 = 0, tf = 0; tf0 < downtf.NumDownData;  tf0++, tf += downtf.Step ) {
-
-        Gauge.Next ( 1 );
-
-        for ( TIteratorSelectedForward eli ( elsel ); (bool) eli; ++eli ) {
-
-//          if ( EegBuff ( eli(), 0 ) != 0.0 )  // this is debatable - are they value to ignore, or real data to show in the histogram?
-
-                stats ( tf0 ).Add ( EegBuff ( eli(), tf ) );
-            }
-        }
-*/
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TGoEasyStats        stats   ( pertrack ? numel              : downtf.NumDownData, 
-                              pertrack ? downtf.NumDownData : numel               );
+TTracks<float>      EegBuff  ( numtotalel, 1 );
 
 
 for ( int tf = downtf.From, tf0 = 0; tf <= downtf.To; tf += downtf.Step, tf0++ ) {
@@ -11393,30 +11374,27 @@ for ( int tf = downtf.From, tf0 = 0; tf <= downtf.To; tf += downtf.Step, tf0++ )
                         );
 
                                         // Feed these hungry stats
-    if ( pertrack ) {
+    if      ( pertrack ) {
 
-        for ( TIteratorSelectedForward eli ( elsel ); (bool) eli; ++eli ) {
+        for ( TIteratorSelectedForward eli ( elsel ); (bool) eli; ++eli )
+            stats ( eli.GetIndex () ).Add ( EegBuff ( eli(), 0 ), ThreadSafetyIgnore );
 
-//          if ( EegBuff ( eli(), 0 ) != 0.0 )  // this is debatable - are they value to ignore, or real data to show in the histogram?
+        } // pertrack
 
-                stats ( eli.GetIndex () ).Add ( EegBuff ( eli(), 0 ) );
-            }
-        }
+    else if ( pertf ) {
 
-    else {
+        for ( TIteratorSelectedForward eli ( elsel ); (bool) eli; ++eli )
+            stats ( tf0 ).Add ( EegBuff ( eli(), 0 ), ThreadSafetyIgnore );
 
-        for ( TIteratorSelectedForward eli ( elsel ); (bool) eli; ++eli ) {
+        } // pertf
 
-//          if ( EegBuff ( eli(), 0 ) != 0.0 )  // this is debatable - are they value to ignore, or real data to show in the histogram?
+    else /*if ( alldata )*/ {
 
-                stats ( tf0 ).Add ( EegBuff ( eli(), 0 ) );
-            }
-        }
+        for ( TIteratorSelectedForward eli ( elsel ); (bool) eli; ++eli ) 
+            stats ( 0 ).Add ( EegBuff ( eli(), 0 ), ThreadSafetyIgnore );
+
+        } // alldata
     }
-
-
-                                        // done with that
-EegBuff.DeallocateMemory ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -11438,6 +11416,9 @@ double              curvesize           = 0;
 double              curvemin;
 double              curveratio;
 THistogram          curve_raw;
+
+char                buff [ 256 ];
+char                buff2[ 256 ];
 
 
 TExportTracks       expfile;
@@ -11480,19 +11461,20 @@ if ( allvarstogether ) {
 
     StringCopy          ( expfile.Filename, EEGDoc->GetDocPath () );
     RemoveExtension     ( expfile.Filename );
+    StringAppend        ( expfile.Filename, infix );
 
-    if ( pertrack ) {
+                                        // non-exclusive conditions, so alldata will run through both tests
+    if ( pertrack || alldata ) {
                                         // Testing for too long selection
-        if ( elselnames.Length () > 32 )
-            StringAppend        ( expfile.Filename, infix );
-        else
-            StringAppend        ( expfile.Filename, infix, " ", elselnames );
+        if ( elselnames.Length () > 32 )    StringAppend    ( expfile.Filename, " ", "Tracks"   );  // fallback
+        else                                StringAppend    ( expfile.Filename, " ", elselnames );
         }
-    else
-        if ( downtf.NumDownData == 1 )
-            StringAppend        ( expfile.Filename, infix, " TF ", IntegerToString ( buff, readfromtf, numtfdigits ) );
-        else
-            StringAppend        ( expfile.Filename, infix, " TF ", IntegerToString ( buff, readfromtf, numtfdigits ), "-", IntegerToString ( buff2, readtotf, numtfdigits ) );
+
+    if ( pertf || alldata ) {
+
+        if ( downtf.NumDownData == 1 )      StringAppend    ( expfile.Filename, " TF ", IntegerToString ( buff, readfromtf, numtfdigits ) );
+        else                                StringAppend    ( expfile.Filename, " TF ", IntegerToString ( buff, readfromtf, numtfdigits ), "-", IntegerToString ( buff2, readtotf, numtfdigits ) );
+        }
 
     AddExtension        ( expfile.Filename, FILEEXT_EEGSEF );
 
@@ -11507,15 +11489,21 @@ if ( allvarstogether ) {
 
     expfile.ElectrodesNames.Set ( expfile.NumTracks, 256 );
 
-    if ( pertrack ) {
+    if      ( pertrack ) {
 
         for ( TIteratorSelectedForward eli ( elsel ); (bool) eli; ++eli )
             StringCopy      ( expfile.ElectrodesNames[ eli.GetIndex() ], SkewnessToString ( skewness ( eli.GetIndex () ) ), GetElectrodeName ( eli() ) );
         }
-    else {
+
+    else if ( pertf ) {
 
         for ( long tf0 = 0, tf = readfromtf; tf0 < downtf.NumDownData;  tf0++, tf += downtf.Step )
             StringCopy      ( expfile.ElectrodesNames[ tf0 ], SkewnessToString ( skewness ( tf0 ) ), "TF", IntegerToString ( buff, tf, numtfdigits ) );
+        }
+
+    else if ( alldata ) {
+
+        elsel.ToText ( expfile.ElectrodesNames[ 0 ], GetElectrodesNames () );
         }
 
     
@@ -11562,7 +11550,7 @@ if ( allvarstogether ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-else { // ! allvarstogether
+else { // ! allvarstogether - alldata NOT a valid case here
 
     for ( int si = 0; si < stats.GetNumStats (); si++ ) {
 
@@ -11587,11 +11575,10 @@ else { // ! allvarstogether
 
         StringCopy          ( expfile.Filename, EEGDoc->GetDocPath () );
         RemoveExtension     ( expfile.Filename );
+        StringAppend        ( expfile.Filename, infix );
 
-        if ( pertrack )
-            StringAppend        ( expfile.Filename, infix, " ", SkewnessToString ( skewness ( si ) ), GetElectrodeName ( elsel.GetValue ( si ) ) );
-        else
-            StringAppend        ( expfile.Filename, infix, " TF ", IntegerToString ( buff, readfromtf + si, numtfdigits ) );
+        if ( pertrack ) StringAppend    ( expfile.Filename, " ", SkewnessToString ( skewness ( si ) ), GetElectrodeName ( elsel.GetValue ( si ) ) );
+        else            StringAppend    ( expfile.Filename, " TF ", IntegerToString ( buff, readfromtf + si, numtfdigits ) );
 
         AddExtension        ( expfile.Filename, FILEEXT_EEGSEF );
 
@@ -11606,10 +11593,8 @@ else { // ! allvarstogether
 
         expfile.ElectrodesNames.Set ( expfile.NumTracks, 256 );
 
-        if ( pertrack )
-            StringCopy      ( expfile.ElectrodesNames[ 0 ], SkewnessToString ( skewness ( si ) ), GetElectrodeName ( elsel.GetValue ( si ) ) );
-        else
-            StringCopy      ( expfile.ElectrodesNames[ 0 ], SkewnessToString ( skewness ( si ) ), "TF", IntegerToString ( buff, readfromtf + si, numtfdigits ) );
+        if ( pertrack ) StringCopy      ( expfile.ElectrodesNames[ 0 ], SkewnessToString ( skewness ( si ) ), GetElectrodeName ( elsel.GetValue ( si ) ) );
+        else            StringCopy      ( expfile.ElectrodesNames[ 0 ], SkewnessToString ( skewness ( si ) ), "TF", IntegerToString ( buff, readfromtf + si, numtfdigits ) );
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

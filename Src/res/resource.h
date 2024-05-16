@@ -366,6 +366,10 @@
 #define CM_HISTOTRACKSSMOOTH            2526
 #define CM_HISTOTRACKSLOG               2527
 #define CM_HISTOTRACKSCDF               2528
+#define CM_HISTOALLRAW                  2610
+#define CM_HISTOALLSMOOTH               2611
+#define CM_HISTOALLLOG                  2612
+#define CM_HISTOALLCDF                  2613
 #define CM_COMPUTECENTROIDEEG           2530
 #define CM_COMPUTECENTROIDRIS           2531
 #define CM_STANDARDIZETRACKS            2533
