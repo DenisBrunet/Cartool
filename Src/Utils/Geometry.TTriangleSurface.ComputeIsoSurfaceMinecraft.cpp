@@ -47,44 +47,33 @@ listvert[ currlistblock ] = new TVertex [ pointsperblock ];
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Optimizing access from 1 voxel to a few of its 7 meighbors by computing their linear memory distances
-int                 to8neigh[ 5 /*8*/ ];
-
-to8neigh[ 0 ]   = 0;
-to8neigh[ 1 ]   = data->IndexesToLinearIndex ( 1, 0, 0 ) - data->IndexesToLinearIndex ( 0, 0, 0 );
-to8neigh[ 3 ]   = data->IndexesToLinearIndex ( 0, 1, 0 ) - data->IndexesToLinearIndex ( 0, 0, 0 );
-to8neigh[ 4 ]   = data->IndexesToLinearIndex ( 0, 0, 1 ) - data->IndexesToLinearIndex ( 0, 0, 0 );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Parallel optimization is working fine - Problem is triangles will appear all mixed up in transparency, so until output triangles are properly sorted, it is turned off
 //OmpParallelFor
 
-for ( int xi = 0; xi < data->GetDim1() - 1; xi++ ) {
+for ( int xi = -1; xi < data->GetDim1(); xi++ ) {
 
     double              x               = xi - 0.5;
 
-    for ( int yi = 0; yi < data->GetDim2() - 1; yi++ ) {
+    for ( int yi = -1; yi < data->GetDim2(); yi++ ) {
 
         double              y               = yi - 0.5;
 
-        for ( int zi = 0; zi < data->GetDim3() - 1; zi++ ) {
+        for ( int zi = -1; zi < data->GetDim3(); zi++ ) {
 
             double              z               = zi - 0.5;
-                                        // Getting the 4 voxels' values
-            const MriType*      tovoxel         = & (*data) ( xi, yi, zi );
 
-            bool                v0              = *  tovoxel                   >= isovalue;
-            bool                v1              = *( tovoxel + to8neigh[ 1 ] ) >= isovalue;
-            bool                v3              = *( tovoxel + to8neigh[ 3 ] ) >= isovalue;
-            bool                v4              = *( tovoxel + to8neigh[ 4 ] ) >= isovalue;
+                                        // Testing the central voxel + 3 neighbors' values
+            bool                isvoxel         = data->GetValueChecked ( xi,     yi,     zi     ) >= isovalue;
+            bool                isnextx         = data->GetValueChecked ( xi + 1, yi,     zi     ) >= isovalue;
+            bool                isnexty         = data->GetValueChecked ( xi,     yi + 1, zi     ) >= isovalue;
+            bool                isnextz         = data->GetValueChecked ( xi,     yi,     zi + 1 ) >= isovalue;
 
             TVector3Double      normal;
 
 
-            if ( v0 ^ v1 ) {
+            if ( isvoxel ^ isnextx ) {
 
-                normal.X    = v0 ? 1 : -1;
+                normal.X    = isvoxel ? 1 : -1;
                 normal.Y    =
                 normal.Z    = 0;
                 normal.Normalize ();
@@ -92,8 +81,8 @@ for ( int xi = 0; xi < data->GetDim1() - 1; xi++ ) {
                                         // weight by # of neighbors
                 #define     shadecoeff      ( 0.333 / 26.0 )
 
-                auto    AdjustNormalX = [ data, isovalue, v0, xi, yi, zi ] ( TVector3Double& normal ) {
-                normal.X   *= 1 - data->GetNumNeighbors ( xi + ( v0 ? 2 : -1 ), yi, zi, Neighbors26 ) * shadecoeff;
+                auto    AdjustNormalX = [ data, isovalue, isvoxel, xi, yi, zi ] ( TVector3Double& normal ) {
+                normal.X   *= 1 - data->GetNumNeighbors ( xi + ( isvoxel ? 2 : -1 ), yi, zi, Neighbors26 ) * shadecoeff;
                 };
 
                 AdjustNormalX ( normal );
@@ -106,32 +95,32 @@ for ( int xi = 0; xi < data->GetDim1() - 1; xi++ ) {
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y;           tovn->Vertex.Z = z;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v0 ) tovn += 2; else tovn++;
+                if ( isvoxel ) tovn += 2; else tovn++;
 
 
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v0 ) tovn--; else tovn++;
+                if ( isvoxel ) tovn--; else tovn++;
 
 
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z + 1;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v0 ) tovn += 2; else tovn++;
+                if ( isvoxel ) tovn += 2; else tovn++;
 
 
 
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y;           tovn->Vertex.Z = z;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v0 ) tovn += 2; else tovn++;
+                if ( isvoxel ) tovn += 2; else tovn++;
 
 
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z + 1;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v0 ) tovn--; else tovn++;
+                if ( isvoxel ) tovn--; else tovn++;
 
 
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y;           tovn->Vertex.Z = z + 1;
@@ -162,15 +151,15 @@ for ( int xi = 0; xi < data->GetDim1() - 1; xi++ ) {
 
             //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-            if ( v0 ^ v3 ) {
+            if ( isvoxel ^ isnexty ) {
 
-                normal.Y    = v0 ? 1 : -1;
+                normal.Y    = isvoxel ? 1 : -1;
                 normal.X    =
                 normal.Z    = 0;
                 normal.Normalize ();
 
-                auto    AdjustNormalY = [ data, isovalue, v0, xi, yi, zi ] ( TVector3Double& normal ) {
-                normal.Y   *= 1 - data->GetNumNeighbors ( xi, yi + ( v0 ? 2 : -1 ), zi, Neighbors26 ) * shadecoeff;
+                auto    AdjustNormalY = [ data, isovalue, isvoxel, xi, yi, zi ] ( TVector3Double& normal ) {
+                normal.Y   *= 1 - data->GetNumNeighbors ( xi, yi + ( isvoxel ? 2 : -1 ), zi, Neighbors26 ) * shadecoeff;
                 };
 
                 AdjustNormalY ( normal );
@@ -184,32 +173,32 @@ for ( int xi = 0; xi < data->GetDim1() - 1; xi++ ) {
                 tovn->Vertex.X = x;           tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v3 ) tovn += 2; else tovn++;
+                if ( isnexty ) tovn += 2; else tovn++;
 
 
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v3 ) tovn--; else tovn++;
+                if ( isnexty ) tovn--; else tovn++;
 
 
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z + 1;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v3 ) tovn += 2; else tovn++;
+                if ( isnexty ) tovn += 2; else tovn++;
 
 
 
                 tovn->Vertex.X = x;           tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v3 ) tovn += 2; else tovn++;
+                if ( isnexty ) tovn += 2; else tovn++;
 
 
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z + 1;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v3 ) tovn--; else tovn++;
+                if ( isnexty ) tovn--; else tovn++;
 
 
                 tovn->Vertex.X = x;           tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z + 1;
@@ -240,15 +229,15 @@ for ( int xi = 0; xi < data->GetDim1() - 1; xi++ ) {
 
             //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-            if ( v0 ^ v4 ) {
+            if ( isvoxel ^ isnextz ) {
 
-                normal.Z    = v0 ? 1 : -1;
+                normal.Z    = isvoxel ? 1 : -1;
                 normal.X    =
                 normal.Y    = 0;
                 normal.Normalize ();
 
-                auto    AdjustNormalZ = [ data, isovalue, v0, xi, yi, zi ] ( TVector3Double& normal ) {
-                normal.Z   *= 1 - data->GetNumNeighbors ( xi, yi, zi + ( v0 ? 2 : -1 ), Neighbors26 ) * shadecoeff;
+                auto    AdjustNormalZ = [ data, isovalue, isvoxel, xi, yi, zi ] ( TVector3Double& normal ) {
+                normal.Z   *= 1 - data->GetNumNeighbors ( xi, yi, zi + ( isvoxel ? 2 : -1 ), Neighbors26 ) * shadecoeff;
                 };
 
                 AdjustNormalZ ( normal );
@@ -262,32 +251,32 @@ for ( int xi = 0; xi < data->GetDim1() - 1; xi++ ) {
                 tovn->Vertex.X = x;           tovn->Vertex.Y = y;           tovn->Vertex.Z = z + 1;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v4 ) tovn += 2; else tovn++;
+                if ( isnextz ) tovn += 2; else tovn++;
 
 
                 tovn->Vertex.X = x;           tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z + 1;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v4 ) tovn--; else tovn++;
+                if ( isnextz ) tovn--; else tovn++;
 
 
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z + 1;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v4 ) tovn += 2; else tovn++;
+                if ( isnextz ) tovn += 2; else tovn++;
 
 
 
                 tovn->Vertex.X = x;           tovn->Vertex.Y = y;           tovn->Vertex.Z = z + 1;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v4 ) tovn += 2; else tovn++;
+                if ( isnextz ) tovn += 2; else tovn++;
 
 
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y + 1;       tovn->Vertex.Z = z + 1;
                 tovn->Normal.X = normal.X;    tovn->Normal.Y = normal.Y;    tovn->Normal.Z = normal.Z;
                 currlistindex++; NumPoints++;
-                if ( v4 ) tovn--; else tovn++;
+                if ( isnextz ) tovn--; else tovn++;
 
 
                 tovn->Vertex.X = x + 1;       tovn->Vertex.Y = y;           tovn->Vertex.Z = z + 1;
