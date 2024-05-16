@@ -3914,9 +3914,9 @@ if ( ! ( SurfaceMode && MRIDoc->IsRoiMask () ) )
     return;
 
 
-Volume&             vol             = *MRIDoc->GetData ();
-//MriType             threshold       = ( MRIDoc->GetIsoSurfaceCut () + 1 - 1e-10 );
-MriType             threshold       = MRIDoc->GetIsoSurfaceCut () + SingleFloatEpsilon; // ?????
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+const Volume&       vol             = *MRIDoc->GetData ();
 
                                         // allocate (once) this global buffer, plus giving it a more texture-compatible size
 if ( SurfaceData.IsNotAllocated () )
@@ -3932,6 +3932,9 @@ if ( fast ) {
     }
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+MriType             threshold       = MRIDoc->GetIsoSurfaceCut ();
 
 SurfaceData.ResetMemory ();
 
@@ -3944,41 +3947,37 @@ for ( int z = 0; z < vol.GetDim3 (); z++ )
         SurfaceData ( x, y, z ) = vol ( x, y, z );
 
 
-                                        // ultra slow
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // inflate data
+
+                                        // too slow(?)
 //FctParams           p;
 //p ( FilterParamDiameter )     = 3;
 //SurfaceData.Filter ( FilterTypeMax, p, true );
-
 
                                         // "above" part - needs more inflation on this side
 for ( int y = 0; y < SurfaceData.GetDim2 (); y++ )
 for ( int z = 0; z < SurfaceData.GetDim3 (); z++ )
 for ( int x = SurfaceData.GetDim1 () - 1; x >= 2; x-- )
 
-    if      ( ! SurfaceData ( x, y, z ) && SurfaceData ( x - 1, y, z ) )
-        SurfaceData ( x, y, z ) = SurfaceData ( x - 1, y, z );
-    else if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x - 2, y, z ) )
-        SurfaceData ( x, y, z ) = SurfaceData ( x - 2, y, z );
+    if      ( ! SurfaceData ( x, y, z ) && SurfaceData ( x - 1, y, z ) )    SurfaceData ( x, y, z ) = SurfaceData ( x - 1, y, z );
+    else if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x - 2, y, z ) )    SurfaceData ( x, y, z ) = SurfaceData ( x - 2, y, z );
 
 
 for ( int x = 0; x < SurfaceData.GetDim1 (); x++ )
 for ( int z = 0; z < SurfaceData.GetDim3 (); z++ )
 for ( int y = SurfaceData.GetDim2 () - 1; y >= 2; y-- )
 
-    if      ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y - 1, z ) )
-        SurfaceData ( x, y, z ) = SurfaceData ( x, y - 1, z );
-    else if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y - 2, z ) )
-        SurfaceData ( x, y, z ) = SurfaceData ( x, y - 2, z );
+    if      ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y - 1, z ) )    SurfaceData ( x, y, z ) = SurfaceData ( x, y - 1, z );
+    else if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y - 2, z ) )    SurfaceData ( x, y, z ) = SurfaceData ( x, y - 2, z );
 
 
 for ( int x = 0; x < SurfaceData.GetDim1 (); x++ )
 for ( int y = 0; y < SurfaceData.GetDim2 (); y++ )
 for ( int z = SurfaceData.GetDim3 () - 1; z >= 2; z-- )
 
-    if      ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y, z - 1 ) )
-        SurfaceData ( x, y, z ) = SurfaceData ( x, y, z - 1 );
-    else if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y, z - 2 ) )
-        SurfaceData ( x, y, z ) = SurfaceData ( x, y, z - 2 );
+    if      ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y, z - 1 ) )    SurfaceData ( x, y, z ) = SurfaceData ( x, y, z - 1 );
+    else if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y, z - 2 ) )    SurfaceData ( x, y, z ) = SurfaceData ( x, y, z - 2 );
 
     
                                         // "below" part
@@ -3986,24 +3985,21 @@ for ( int y = 0; y < SurfaceData.GetDim2 (); y++ )
 for ( int z = 0; z < SurfaceData.GetDim3 (); z++ )
 for ( int x = 0; x <= SurfaceData.GetDim1 () - 2; x++ )
 
-    if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x + 1, y, z ) )
-        SurfaceData ( x, y, z ) = SurfaceData ( x + 1, y, z );
+    if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x + 1, y, z ) )         SurfaceData ( x, y, z ) = SurfaceData ( x + 1, y, z );
 
 
 for ( int x = 0; x < SurfaceData.GetDim1 (); x++ )
 for ( int z = 0; z < SurfaceData.GetDim3 (); z++ )
 for ( int y = 0; y <= SurfaceData.GetDim2 () - 2; y++ )
 
-    if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y + 1, z ) )
-        SurfaceData ( x, y, z ) = SurfaceData ( x, y + 1, z );
+    if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y + 1, z ) )         SurfaceData ( x, y, z ) = SurfaceData ( x, y + 1, z );
 
 
 for ( int x = 0; x < SurfaceData.GetDim1 (); x++ )
 for ( int y = 0; y < SurfaceData.GetDim2 (); y++ )
 for ( int z = 0; z <= SurfaceData.GetDim3 () - 2; z++ )
 
-    if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y, z + 1 ) )
-        SurfaceData ( x, y, z ) = SurfaceData ( x, y, z + 1 );
+    if ( ! SurfaceData ( x, y, z ) && SurfaceData ( x, y, z + 1 ) )         SurfaceData ( x, y, z ) = SurfaceData ( x, y, z + 1 );
 
 
 /*                                      // then inflate the mask obtained with MRI data
