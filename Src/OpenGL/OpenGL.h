@@ -172,10 +172,11 @@ void    GLDisplayVersion    ();
 void    GLDisplayError      ();
 
                                         // returns the screen coordinates of the point through current transformation
-void    GLGetScreenCoord ( GLfloat v[3] );
-bool    GLGetScreenCoord ( GLfloat v[3], GLint* viewp, GLdouble* proj = 0, GLdouble* model = 0 );
+void    GLGetScreenCoord ( GLfloat v[ 3 ] );
+bool    GLGetScreenCoord ( GLfloat v[ 3 ], GLint* viewp, GLdouble* proj = 0, GLdouble* model = 0 );
+
                                         // returns the object coordinates at window coordinates through current transformation
-bool    GLGetObjectCoord ( GLfloat v[3], GLint* viewp = 0, GLdouble* proj = 0, GLdouble* model = 0 );
+bool    GLGetObjectCoord ( GLfloat v[ 3 ], GLint* viewp = 0, GLdouble* proj = 0, GLdouble* model = 0 );
 
 
 //----------------------------------------------------------------------------

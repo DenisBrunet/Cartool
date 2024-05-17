@@ -759,7 +759,7 @@ bool    GLGetScreenCoord ( GLfloat v[ 3 ], GLint* viewp, GLdouble* proj, GLdoubl
 GLint               Viewport   [  4 ];
 GLdouble            ProjMatrix [ 16 ];
 GLdouble            ModelMatrix[ 16 ];
-GLdouble            screen[ 3 ];
+GLdouble            screen     [  3 ];
 
                                         // smartly retrieve all matrices
 if ( viewp )    CopyVirtualMemory ( Viewport,    viewp,  4 * sizeof ( *viewp ) );
@@ -773,30 +773,54 @@ else            glGetDoublev ( GL_MODELVIEW_MATRIX, ModelMatrix );
 
 
 if ( gluProject ( v[ 0 ], v[ 1 ], v[ 2 ], ModelMatrix, ProjMatrix, Viewport, screen, screen + 1, screen + 2 ) == GL_TRUE ) {
+
     v[ 0 ]  = screen[ 0 ];
     v[ 1 ]  = screen[ 1 ];
     v[ 2 ]  = screen[ 2 ];
+
     return true;
     }
 else {                                  // out of bounds
     v[ 0 ]  =
     v[ 1 ]  =
     v[ 2 ]  = 0;
+
     return false;
     }
 }
 
 
+//----------------------------------------------------------------------------
 bool    GLGetObjectCoord ( GLfloat v[ 3 ], GLint* viewp, GLdouble* proj, GLdouble* model )
 {
+                                        // retrieving only the non-provided info
 GLint               Viewport   [  4 ];
-GLdouble            ProjMatrix [ 16 ];
-GLdouble            ModelMatrix[ 16 ];
-GLdouble            obj[ 3 ];
 
-                                        // smartly retrieve all matrices
 if ( viewp )    CopyVirtualMemory ( Viewport,    viewp,  4 * sizeof ( *viewp ) );
 else            glGetIntegerv ( GL_VIEWPORT, Viewport );
+
+                                        // Windows coordinates to OpenGL Windows coordinates
+v[ 1 ]  = Viewport[ 3 ] - 1 - v[ 1 ];
+
+                                        // read missing Z position
+glReadPixels ( v[ 0 ], v[ 1 ], 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &v[ 2 ] );
+
+                                        // no objects encountered?
+if ( v[ 2 ] == 1.0 ) {
+
+    v[ 0 ]  =
+    v[ 1 ]  =
+    v[ 2 ]  = 0;
+
+    return  false;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+GLdouble            ProjMatrix [ 16 ];
+GLdouble            ModelMatrix[ 16 ];
+GLdouble            obj        [  3 ];
 
 if ( proj )     CopyVirtualMemory ( ProjMatrix,  proj,  16 * sizeof ( *proj ) );
 else            glGetDoublev ( GL_PROJECTION_MATRIX, ProjMatrix );
@@ -804,27 +828,21 @@ else            glGetDoublev ( GL_PROJECTION_MATRIX, ProjMatrix );
 if ( model )    CopyVirtualMemory ( ModelMatrix, model, 16 * sizeof ( *model ) );
 else            glGetDoublev ( GL_MODELVIEW_MATRIX, ModelMatrix );
 
-                                        // Windows coordinates to OpenGL Windows coordinates
-v [ 1]  = Viewport[3] - v[ 1 ] - 1;
+                                          // push an epsilon further in Z to be "inside" any object
+if ( gluUnProject ( v[ 0 ], v[ 1 ], v[ 2 ] + 1e-4, ModelMatrix, ProjMatrix, Viewport, obj, obj + 1, obj + 2 ) != GL_TRUE ) {
 
-                                        // read missing Z position
-glReadPixels ( v[ 0 ], v[ 1 ], 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &v[ 2 ] );
-                                        // nothing encountered?
-if ( v[ 2 ] == 1.0 ) {
-    v[ 0 ]  = v[ 1 ]  = v[ 2 ]  = 0;
-    return false;
-    }
+    v[ 0 ]  =
+    v[ 1 ]  =
+    v[ 2 ]  = 0;
 
-if ( gluUnProject ( v[ 0 ], v[ 1 ], v[ 2 ], ModelMatrix, ProjMatrix, Viewport, obj, obj + 1, obj + 2 ) != GL_TRUE ) {
-    v[ 0 ]  = v[ 1 ]  = v[ 2 ]  = 0;
-    return false;
+    return  false;
     }
 
 v[ 0 ]  = obj[ 0 ];
 v[ 1 ]  = obj[ 1 ];
 v[ 2 ]  = obj[ 2 ];
 
-return true;
+return  true;
 }
 
 

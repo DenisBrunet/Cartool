@@ -48,7 +48,7 @@ glVertex4dv ( (const GLdouble *) &X );
 
 
 template <class TypeD>
-void    TGLCoordinates<TypeD>::Show ( char *title )
+void    TGLCoordinates<TypeD>::Show ( char *title )     const
 {
 ShowValues ( B, "ffff", (double) X, (double) Y, (double) Z, (double) W, StringIsEmpty ( title ) ? "Point" : title );
 }

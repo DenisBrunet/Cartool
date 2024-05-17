@@ -40,22 +40,26 @@ public:
     TypeD           W;
 
 
+    bool            IsNull    ()                        const   { return ! ( X || Y || Z ); }
+    bool            IsNotNull ()                        const   { return     X || Y || Z; }
+
     void            Set ( TypeD x, TypeD y, TypeD z )           { X = x;    Y = y;    Z = z;    W = 1; }
     void            Set ( TypeD x, TypeD y, TypeD z, TypeD w )  { X = x;    Y = y;    Z = z;    W = w; }
     void            Set ( TPointDouble &p )                     { X = p.X;  Y = p.Y;  Z = p.Z;  W = 1; }
     void            Set ( TPointFloat  &p )                     { X = p.X;  Y = p.Y;  Z = p.Z;  W = 1; }
 
     void            Reset ()                                    { X = Y = Z = 0; W = 1; }
-    void            Show  ( char *title = 0 );
+    void            Show  ( char *title = 0 )           const;
 
-    double          Norm ()                                     { return sqrt ( X * X + Y * Y + Z * Z ); }
-    void            Normalize ()                                { double n = Norm (); if ( n != 0 ) { X /= n; Y /= n; Z /= n; } }
+    double          Norm        ()                      const   { return sqrt ( X * X + Y * Y + Z * Z ); }
+    void            Normalize   ()                              { double n = Norm (); if ( n != 0 ) { X /= n; Y /= n; Z /= n; } }
 
     void            GLize   ( int param = 0 );
 
 
-                    operator TypeD* ()      { return (TypeD *) &X; }    // cast
-                    operator bool   ()      { return X || Y || Z; }
+                    operator const TypeD*   ()          const   { return (TypeD*) &X; }
+                    operator       TypeD*   ()                  { return (TypeD*) &X; }
+                    operator       bool     ()                  { return X || Y || Z; }
 
 
     TGLCoordinates<TypeD>   operator    *=  ( const double          op2[] )     { X *= op2[0]; Y *= op2[1]; Z *= op2[2]; W *= op2[3];   return *this; }
