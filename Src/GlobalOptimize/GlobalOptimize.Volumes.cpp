@@ -2536,9 +2536,11 @@ if ( HasValue( FitVolumeNormCenterRotateX ) )   ToAbs_FromAbs.RotateX ( - GetVal
                                                                       HasValue( FitVolumeShearShiftY ) ? - GetValue ( FitVolumeShearShiftY ) : 0,
                                                                       HasValue( FitVolumeShearShiftZ ) ? - GetValue ( FitVolumeShearShiftZ ) : 0 , MultiplyLeft );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // make the transform relative, from voxel space to voxel space
 ToRel_FromRel   = FromAbs_FromRel * ToAbs_FromAbs * ToRel_ToAbs;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Set inverse transforms

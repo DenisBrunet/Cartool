@@ -1443,9 +1443,11 @@ if ( ( origin.X <= Size.XMin () || origin.X >= Size.XMax () )
   || ( origin.Z <= Size.ZMin () || origin.Z >= Size.ZMax () ) )
     return  false;
 
-                                        // excentricity on each axis
-#define             MinOriginExcentricity   0.50
+                                        // Heuristic test on origin being too off-center
+                                        // Coming from the old Analyze inconsistent format - we might phase out this part now?
+constexpr double    MinOriginExcentricity   = 0.90; // was 0.50, but we can push the limit now?
 
+                                        // excentricity on each axis
 //double              excx            = fabs ( 2 * origin.X - Size.XMax () ) / Size.XMax ();
 //double              excy            = fabs ( 2 * origin.Y - Size.YMax () ) / Size.YMax ();
 //double              excz            = fabs ( 2 * origin.Z - Size.ZMax () ) / Size.ZMax ();
@@ -1461,7 +1463,7 @@ double              exc             = sqrt (   Square ( ( 2 * origin.X - Size.XM
                                              + Square ( ( 2 * origin.Y - Size.YMax () ) / Size.YMax () )
                                              + Square ( ( 2 * origin.Z - Size.ZMax () ) / Size.ZMax () ) );
 
-                                        // not inside half size centered spher
+                                        // not inside half size centered sphere
 if ( exc > MinOriginExcentricity )
     return  false;
 
