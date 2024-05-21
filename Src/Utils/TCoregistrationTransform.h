@@ -22,12 +22,12 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-                                        // A global coregistration transform split into easiliy updatable components from a user perspective
+                                        // A global coregistration transform split into easily updatable components from a user perspective
                                         // Rotations, scaling and translations are assigned respectively to separate matrices, which are then 
-                                        // combined to provide for the final transform.
-                                        // This allows the user to update a single operation which is actually inside a series of nested operations,
-                                        // which is impossible to do with a single transform matrix which could be updated only from the left or from the right.
-                                        // It also wraps the gluing transform, which can not be modeled in a homogeneous transform matrix.
+                                        // combined to provide the final transform.
+                                        // This allows the user to update a single geometrical operation which is actually inside a series of nested operations,
+                                        // which is impossible to do with a single transform matrix, updated from the left or from the right only.
+                                        // It also conveniently wraps the Gluing transform, which can not be modeled as a homogeneous transform matrix.
 class   TCoregistrationTransform
 {
 public:
@@ -45,7 +45,7 @@ public:
                                         
     inline TMatrix44 ComposeTransform ()    const       { return TranslateMriOnly * RotateOnly * ScaleOnly * SourceToTargetOrientation; }   // !Transforms ordering matters!
 
-    inline void     Apply           ( TPoints &points, const Volume& mask, const Volume& gradient, const TPointDouble& origin, const TMatrix44& mriabstoguillotine ) const;
+    inline void     Apply           ( TPoints &points, const Volume& mask, const Volume& gradient, const TPointDouble& origin, const TMatrix44& mriabstoguillotine, double inflating = 0 )  const;
 
                                         // !Transforms are being applied on separate matrices!
     inline void     RotateX         ( double a )        { RotateOnly        .RotateX    ( a, MultiplyLeft ); }
@@ -87,12 +87,12 @@ Gluing          = false;
                                         // Input volumes are split into 2:
                                         //  - a mask for the geometrical boundaries
                                         //  - a smoothed gradient to compute some projection direction
-void    TCoregistrationTransform::Apply  (   TPoints&                points, 
-                                    const Volume&           mask,
-                                    const Volume&           gradient,
-                                    const TPointDouble&     origin, 
-                                    const TMatrix44&        mriabstoguillotine 
-                                )   const
+void    TCoregistrationTransform::Apply (   TPoints&                points, 
+                                            const Volume&           mask,               const Volume&           gradient,
+                                            const TPointDouble&     origin, 
+                                            const TMatrix44&        mriabstoguillotine,
+                                            double                  inflating
+                                        )   const
 {
 if ( points.IsEmpty () )
 
@@ -104,11 +104,10 @@ ComposeTransform ().Apply ( points );   // Results in Absolute MRI space
                                         // Then the optional non-linear gluing operation
 if ( Gluing )
 
-    points.ResurfacePoints  (   
-                            mask,
-                            gradient,
-                            origin,
-                            &mriabstoguillotine
+    points.ResurfacePoints  (   mask,       gradient,
+                                origin,
+                                &mriabstoguillotine,
+                                inflating
                             );
 }
 

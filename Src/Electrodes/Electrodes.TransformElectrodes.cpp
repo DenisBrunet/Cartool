@@ -42,10 +42,10 @@ bool    TransformElectrodes (   const char*             xyzsourcefile,
                                 const TCoregistrationTransform& transform,
                                 CoregistrationType      processing,
 
-                                const Volume&           mask,
-                                const Volume&           gradient,
+                                const Volume&           mask,                   const Volume&           gradient,
                                 const TPointDouble&     origin, 
                                 const TMatrix44&        mriabstoguillotine,
+                                double                  inflating,
 
                                 const char*             basefilename,
                                 char*                   xyztransfile,
@@ -82,7 +82,12 @@ CheckNoOverwrite ( xyztransfile );
 TStrings            pointsnames;
 TPoints             points ( xyzsourcefile, &pointsnames );
                                         // 4x4 transform + optional non-linear gluing operation
-transform.Apply ( points, mask, gradient, origin, mriabstoguillotine );
+transform.Apply (   points, 
+                    mask,       gradient, 
+                    origin, 
+                    mriabstoguillotine,
+                    inflating
+                );
 
 points.WriteFile ( xyztransfile, &pointsnames );
 

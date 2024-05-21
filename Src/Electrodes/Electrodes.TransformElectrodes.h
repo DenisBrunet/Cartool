@@ -34,10 +34,10 @@ bool    TransformElectrodes (   const char*             xyzsourcefile,
                                 const TCoregistrationTransform& transform,
                                 CoregistrationType      processing,
 
-                                const Volume&           mask,
-                                const Volume&           gradient,
+                                const Volume&           mask,                   const Volume&           gradient,
                                 const TPointDouble&     origin, 
                                 const TMatrix44&        mriabstoguillotine,
+                                double                  inflating,
 
                                 const char*             basefilename,
                                 char*                   xyztransfile,

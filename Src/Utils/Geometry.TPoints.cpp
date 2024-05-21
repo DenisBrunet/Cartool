@@ -2171,7 +2171,8 @@ for ( int i = 0; i < NumPoints; i++ ) {
                                                                : guillotinez <= guillotinemax;  // step function otherwise
                                         // linearly orthogonalize direction
                                         // bottom points get fully cylindrical; points higher & closer to the center gets more spherical
-                dir     = dir.OrthogonalTo ( guillotinedir ) * w + dir * ( 1 - w );
+                dir     = dir.OrthogonalTo ( guillotinedir ) *       w 
+                        + dir                                * ( 1 - w );
 
                 dir.Normalize ();
                 }

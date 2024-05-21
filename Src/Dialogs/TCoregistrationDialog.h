@@ -47,6 +47,9 @@ bool    CoregisterXyzToMriInteractive   (   TPoints&        xyzpoints,  TStrings
 
 #define         CoregistrationTitle     "Coregistration"
 
+                                        // Electrodes could be a tiny bit too inside scalp after Gluing, because we use a very smoothed out mask - Compensate by this amount
+constexpr double PostGluingInflate          = 0.5;
+
 
 enum            CoregistrationType
                 {

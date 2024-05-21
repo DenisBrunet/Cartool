@@ -591,15 +591,15 @@ if ( BaseView )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Update main input file in Dialog
-if ( BaseView )
+if ( BaseView && BaseView->BaseDoc )
     StringCopy ( CoregTransfer.InputSourceFile,  BaseView->BaseDoc->GetDocPath () );
 
-if ( MriView )
+if ( MriView  && MriView ->BaseDoc )
     StringCopy ( CoregTransfer.InputTargetFile,  MriView ->BaseDoc->GetDocPath () );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // some more consistency checkings
+                                        // some more consistency checks
 if ( Processing != CoregisterNone ) {
     
     TFileName       targetdir  ( CoregTransfer.InputTargetFile );
@@ -624,7 +624,7 @@ BaseFileName->ResetCaret;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // handy potential conversions of BaseView
 XyzView     = Processing == CoregisterXyzToMriScratch
-           || Processing == CoregisterXyzToMriReload    ? dynamic_cast< TElectrodesView* > ( BaseView ) : 0;
+           || Processing == CoregisterXyzToMriReload    ? dynamic_cast<TElectrodesView*> ( BaseView ) : 0;
 
 if ( ! ( XyzView && MriView ) )
     return;
@@ -683,9 +683,9 @@ VolumeMask.Filter ( FilterTypeRelax, p );
 
                                         // convert mask to "gradient-like" volume
 VolumeGradient  = VolumeMask;
-                                        // heavy smoothing
+                                        // HEAVY smoothing
 Gauge.Next ();
-p ( FilterParamDiameter )     = 30;
+p ( FilterParamDiameter )     = 30 / NonNull ( mridoc->GetVoxelSize ().Mean () );
 VolumeGradient.Filter ( FilterTypeFastGaussian, p );
 
 
@@ -889,10 +889,10 @@ if ( ! TransformElectrodes  (   CoregTransfer.InputSourceFile,
                                 Transform,
                                 Processing,                     // for information only
 
-                                VolumeMask, 
-                                VolumeGradient, 
+                                VolumeMask,         VolumeGradient, 
                                 MriCenterOrig, 
                                 MriAbsToGuillotine,
+                                PostGluingInflate,
 
                                 CoregTransfer.BaseFileName,
                                 xyztransfile,
@@ -1245,7 +1245,12 @@ switch ( op ) {
                                         // apply compound transform from original points, instead of incremental transforms!
 XyzCopy         = XyzOrig;
 
-Transform.Apply ( XyzCopy, VolumeMask, VolumeGradient, MriCenterOrig, MriAbsToGuillotine );
+Transform.Apply (   XyzCopy, 
+                    VolumeMask,     VolumeGradient, 
+                    MriCenterOrig, 
+                    MriAbsToGuillotine,
+                    PostGluingInflate
+                );
 
 XyzView->GetXYZDoc ()->SetPoints ( DisplaySpace3D, XyzCopy );
 
