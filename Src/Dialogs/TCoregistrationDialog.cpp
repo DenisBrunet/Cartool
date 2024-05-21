@@ -463,8 +463,8 @@ if ( ! CartoolApplication->Closing && MriView  && MriView ->BaseDoc )    // unlo
     MriView ->BaseDoc->AllowClosing ();
 
 
-                                        // optionally closing files
-if ( CanCloseBaseView && BaseView && BaseView->BaseDoc->CanClose ( true ) ) {
+                                        // force closing the electrodes file, so we can re-open it clean
+if ( /*CanCloseBaseView && */ BaseView && BaseView->BaseDoc->CanClose ( true ) ) {
 
     CartoolDocManager->CloseDoc ( BaseView->BaseDoc );
 
@@ -547,26 +547,12 @@ if ( BaseView == 0
 
     CartoolApplication->AnimateViews    = CartoolDocManager->IsOpen ( CoregTransfer.InputSourceFile );
 
-
                                         // open file & get view
     CanCloseBaseView    = ! CartoolDocManager->IsOpen ( CoregTransfer.InputSourceFile );
                                         // open doc
     TBaseDoc*   basedoc = CartoolDocManager->OpenDoc ( CoregTransfer.InputSourceFile, dtOpenOptions );
                                         // and get da view
     BaseView            = basedoc->GetViewList ();
-
-                                        // can tailor the view?
-//  XyzView     = Processing == CoregisterXyzToMriScratch
-//             || Processing == CoregisterXyzToMriReload    ? dynamic_cast< TElectrodesView* > ( BaseView ) : 0;
-//
-//  if ( XyzView ) {
-//                                      // set display to triangle wires
-//      XyzView->SendMessage ( WM_COMMAND, IDB_SURFACEMODE, 0 );
-//      XyzView->SendMessage ( WM_COMMAND, IDB_SURFACEMODE, 0 );
-//                                      // showing electrodes name
-//      XyzView->SendMessage ( WM_COMMAND, IDB_SHOWELNAMES, 0 );
-//      }
-
 
     SetFocus ();
 
@@ -580,7 +566,6 @@ if ( MriView == 0
     bool                oldav           = CartoolApplication->AnimateViews;
 
     CartoolApplication->AnimateViews    = CartoolDocManager->IsOpen ( CoregTransfer.InputTargetFile );
-
 
                                         // open file & get view
     CanCloseMriView     = ! CartoolDocManager->IsOpen ( CoregTransfer.InputTargetFile );
@@ -800,7 +785,8 @@ if      ( Processing == CoregisterXyzToMriScratch ) {
     }
 
 else if ( Processing == CoregisterXyzToMriReload )
-    ;                                   // all initial transforms are already identity
+    
+    Transform.Reset ();
 
 
 TransformInit   = Transform;
