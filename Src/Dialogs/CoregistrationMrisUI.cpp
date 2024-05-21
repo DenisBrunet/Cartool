@@ -44,19 +44,21 @@ OptimizeOff
 
 const CoregistrationSpecsType   CoregistrationSpecs[ NumCoregistrationTypes ] =
         {
-        {   CoregistrationRotTrans,                     "(R)igid body (3 translations + 3 rotations)",                                                  "R",    true,   3,  3,  0,  0 },
-        {   CoregistrationRotTransScale1,               "(G)lobal transform (3 translations + 3 rotations + 1 global scaling)",                         "G",    true,   3,  3,  1,  0 },
-        {   CoregistrationRotTransScale3,               "(E)lastic transform (3 translations + 3 rotations + 3 scalings)",                              "E",    true,   3,  3,  3,  0 },
-        {   CoregistrationRotTransScale3Shear2,         "Aff(I)ne transform (3 translations + 3 rotations + 3 scalings + 2 shearings)",                 "I",    true,   3,  3,  3,  2 },
-        {   CoregistrationRotTransScale3Shear3,         "A(F)fine transform (3 translations + 3 rotations + 3 scalings + 3 shearings)",                 "F",    true,   3,  3,  3,  3 },
-        {   CoregistrationRotTransScale3Shear6,         "(A)ffine transform (3 translations + 3 rotations + 3 scalings + 6 shearings)",                 "A",    true,   3,  3,  3,  6 },
+        {   CoregistrationTrans,                        "(O)rigin shift:"                    Tab Tab "3 translations",                                               "O",    true,   3,  0,  0,  0 },
+        {   CoregistrationRotTrans,                     "(R)igid body:"                      Tab Tab "3 translations + 3 rotations",                                 "R",    true,   3,  3,  0,  0 },
+        {   CoregistrationRotTransScale1,               "(G)lobal transform:"                    Tab "3 translations + 3 rotations + 1 global scaling",              "G",    true,   3,  3,  1,  0 },
+        {   CoregistrationRotTransScale3,               "(E)lastic transform:"                   Tab "3 translations + 3 rotations + 3 scalings",                    "E",    true,   3,  3,  3,  0 },
+        {   CoregistrationRotTransScale3Shear2,         "Aff(I)ne transform:"                    Tab "3 translations + 3 rotations + 3 scalings + 2 shearings",      "I",    true,   3,  3,  3,  2 },
+        {   CoregistrationRotTransScale3Shear3,         "A(F)fine transform:"                    Tab "3 translations + 3 rotations + 3 scalings + 3 shearings",      "F",    true,   3,  3,  3,  3 },
+        {   CoregistrationRotTransScale3Shear6,         "(A)ffine transform:"                    Tab "3 translations + 3 rotations + 3 scalings + 6 shearings",      "A",    true,   3,  3,  3,  6 },
 
-        {   CoregistrationBrainRotTrans,                "Brain to Brain, Rigid (B)ody (3 translations + 3 rotations)",                                  "B",    true,   3,  3,  0,  0 },
-        {   CoregistrationBrainRotTransScale1,          "Brain to Brain, Gl(O)bal transform (3 translations + 3 rotations + 1 global scaling)",         "O",    true,   3,  3,  1,  0 },
-        {   CoregistrationBrainRotTransScale3,          "Brain to Brain, E(L)astic transform (3 translations + 3 rotations + 3 scalings)",              "L",    true,   3,  3,  3,  0 },
-        {   CoregistrationBrainRotTransScale3Shear2,    "Brain to Brain, Affine transform (3 translations + 3 rotations + 3 scalings + (2) shearings)", "2",    true,   3,  3,  3,  2 },
-        {   CoregistrationBrainRotTransScale3Shear3,    "Brain to Brain, Affine transform (3 translations + 3 rotations + 3 scalings + (3) shearings)", "3",    true,   3,  3,  3,  3 },
-        {   CoregistrationBrainRotTransScale3Shear6,    "Brain to Brain, Affine transform (3 translations + 3 rotations + 3 scalings + (6) shearings)", "6",    true,   3,  3,  3,  6 },
+        {   CoregistrationBrainTrans,                   "Brain to Brain, Origin (S)hift:"   Tab Tab "3 translations",                                               "S",    true,   3,  0,  0,  0 },
+        {   CoregistrationBrainRotTrans,                "Brain to Brain, Rigid (B)ody:"     Tab Tab "3 translations + 3 rotations",                                 "B",    true,   3,  3,  0,  0 },
+        {   CoregistrationBrainRotTransScale1,          "Brain to Brain, Global (T)ransform:"   Tab "3 translations + 3 rotations + 1 global scaling",              "T",    true,   3,  3,  1,  0 },
+        {   CoregistrationBrainRotTransScale3,          "Brain to Brain, E(L)astic transform:"  Tab "3 translations + 3 rotations + 3 scalings",                    "L",    true,   3,  3,  3,  0 },
+        {   CoregistrationBrainRotTransScale3Shear2,    "Brain to Brain, Affine transform:"     Tab "3 translations + 3 rotations + 3 scalings + (2) shearings",    "2",    true,   3,  3,  3,  2 },
+        {   CoregistrationBrainRotTransScale3Shear3,    "Brain to Brain, Affine transform:"     Tab "3 translations + 3 rotations + 3 scalings + (3) shearings",    "3",    true,   3,  3,  3,  3 },
+        {   CoregistrationBrainRotTransScale3Shear6,    "Brain to Brain, Affine transform:"     Tab "3 translations + 3 rotations + 3 scalings + (6) shearings",    "6",    true,   3,  3,  3,  6 },
         };
 
 
@@ -219,6 +221,7 @@ sametypes   = StringToBool ( buff );
                                         // Not all coregistration are being offered to user's view
 TSelection          coregforuser ( NumCoregistrationTypes, OrderSorted );
 
+coregforuser.Set ( CoregistrationTrans                  );
 coregforuser.Set ( CoregistrationRotTrans               );
 coregforuser.Set ( CoregistrationRotTransScale1         );
 coregforuser.Set ( CoregistrationRotTransScale3         );

@@ -27,6 +27,7 @@ constexpr char*     MriCoregistrationTitle      = "MRI Coregistration";
 enum    CoregistrationTypes
         {
                                         // Regular, general prupose affine coregistration
+        CoregistrationTrans,
         CoregistrationRotTrans,
         CoregistrationRotTransScale1,
         CoregistrationRotTransScale3,
@@ -34,6 +35,7 @@ enum    CoregistrationTypes
         CoregistrationRotTransScale3Shear3,
         CoregistrationRotTransScale3Shear6,
                                         // Brain-specific affine coregistration
+        CoregistrationBrainTrans,
         CoregistrationBrainRotTrans,
         CoregistrationBrainRotTransScale1,
         CoregistrationBrainRotTransScale3,
@@ -43,9 +45,9 @@ enum    CoregistrationTypes
 
         NumCoregistrationTypes,
 
-        CoregistrationRegularMin= CoregistrationRotTrans,
+        CoregistrationRegularMin= CoregistrationTrans,
         CoregistrationRegularMax= CoregistrationRotTransScale3Shear6,
-        CoregistrationBrainMin  = CoregistrationBrainRotTrans,
+        CoregistrationBrainMin  = CoregistrationBrainTrans,
         CoregistrationBrainMax  = CoregistrationBrainRotTransScale3Shear6,
         };
 
