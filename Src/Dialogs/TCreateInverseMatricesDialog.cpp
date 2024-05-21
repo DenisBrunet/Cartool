@@ -1879,6 +1879,7 @@ TFileName           FileLocalXyz;
 TFileName           FileLocalXyzCoreg;
 TFileName           FileLocalXyzDisplay;
 TFileName           FileLocalSp;
+TFileName           FileLocalRadiiLayers;
 
                                         // Local copies are now in a sub-directory - we give them some consistent naming
 StringCopy  ( FileLocalMriHead,                 BaseFileNameLocal,  "." InfixHead,                                          "." DefaultMriExt       );
@@ -1889,6 +1890,7 @@ StringCopy  ( FileLocalXyz,                     BaseFileNameLocal,              
 StringCopy  ( FileLocalXyzCoreg,                BaseFileNameLocal,                                                          "." FILEEXT_XYZ         );
 StringCopy  ( FileLocalXyzDisplay,              BaseFileNameLocal,  "." InfixDisplay,                                       "." FILEEXT_XYZ         );
 StringCopy  ( FileLocalSp,                      BaseFileNameLocal,                                                          "." FILEEXT_SPIRR       );
+StringCopy  ( FileLocalRadiiLayers,             BaseFileNameLocal,  "." "Boundaries.All Layers",                            "." FILEEXT_ELS         );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1921,7 +1923,7 @@ TFileName           filesloretaresmat;
 TFileName           fileeloretaresmat;
 
 TFileName           fileradii;
-TFileName           filesurfaceall;
+TFileName           fileradiilayers;
 
 TFileName           filelmall;
 TFileName           filelmxyz;
@@ -1957,7 +1959,7 @@ StringCopy  ( filesloretaresmat,                BaseFileNameMore,   "." InfixInv
 StringCopy  ( fileeloretaresmat,                BaseFileNameMore,   "." InfixInverseELoreta,    "." InfixResMatrix "." InfixResMatrixPointSpread,   "." FILEEXT_RIS         );
 
 StringCopy  ( fileradii,                        BaseFileNameMore,   "." "Thicknesses"                                       "." FILEEXT_EEGSEF      );
-StringCopy  ( filesurfaceall,                   BaseFileNameMore,   "." "Boundaries.All Layers",                            "." FILEEXT_ELS         );
+StringCopy  ( fileradiilayers,                  BaseFileNameMore,   "." "Boundaries.All Layers",                            "." FILEEXT_ELS         );
 
 StringCopy  ( filelmall,                        BaseFileName,       "." "All",                                              "." FILEEXT_LM          );
 StringCopy  ( filelmxyz,                        BaseFileName,       "." "XYZ",                                              "." FILEEXT_LM          );
@@ -2503,7 +2505,7 @@ if ( isthicknessfrommri
 
     Verbose.NextLine ();
     Verbose.Put ( "Skull Thicknesses file:",     fileradii  );
-    Verbose.Put ( "All layers boundaries file:", filesurfaceall );
+    Verbose.Put ( "All layers boundaries file:", reorientmris ? FileLocalRadiiLayers : fileradiilayers );
     }
 
 
@@ -4761,7 +4763,7 @@ if ( leadfieldprocessing ) {
             WriteTissuesRadiiToFile (   TissuesRadii,       seltissues,
                                         xyzpoints,          xyznames,
                                         MriCenter,          InverseCenter,
-                                        filesurfaceall
+                                        reorientmris ? FileLocalRadiiLayers : fileradiilayers
                                     );
 
 
