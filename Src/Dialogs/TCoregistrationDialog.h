@@ -162,7 +162,7 @@ protected:
 
     void            CleanUp                 ( bool destroydialog );
 //  void            CmSetProcessing         ();
-    void            SetProcessing           ( bool docleanup );
+    void            SetProcessing           ( bool computemasks, bool docleanup );
 
     void            CmBrowseInputSourceFile ();
     void            SetInputSourceFile      ( char *file );

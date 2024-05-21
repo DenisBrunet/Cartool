@@ -55,14 +55,14 @@ extern  TCartoolObjects     CartoolObjects;
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
                                         // default opening flags
-#define     dtOpenOptions           ( owl::dtAutoDelete | owl::dtUpdateDir | owl::dtOverwritePrompt )
-                                        // hidden from the templates, as to avoid redudancy
-#define     dtOpenOptionsHidden     ( dtOpenOptions | owl::dtHidden )
-                                        // open without any view, just for requests to file & to save time
-#define     dtOpenOptionsNoView     ( dtOpenOptions | owl::dtNoAutoView )
+constexpr UINT  dtOpenOptions           = owl::dtAutoDelete | owl::dtUpdateDir | owl::dtOverwritePrompt;
+                                        // hidden from the templates, as to avoid confusing duplicates when creating new views
+constexpr UINT  dtOpenOptionsHidden     = dtOpenOptions | owl::dtHidden;
+                                        // when views are not needed, this is faster
+constexpr UINT  dtOpenOptionsNoView     = dtOpenOptions | owl::dtNoAutoView;
 
-#define     AnimationMaxDocOpen     50
-#define     AnimationMaxDocDropped  5
+constexpr int   AnimationMaxDocOpen     = 50;
+constexpr int   AnimationMaxDocDropped  = 5;
 
 
 //----------------------------------------------------------------------------

@@ -214,25 +214,53 @@ SavingAltElectrodes = new TEdit     ( this, IDC_SAVINGALTELEC, EditSizeText );
 SetTransferBuffer ( &CoregTransfer );
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Init electrodes and MRI views
 BaseView            = 0;
 MriView             = 0;
 
 if ( usingopenview ) {
-                                        // called from a view? get the pointer
+                                        // called from a view?
     BaseView            = CartoolDocManager->GetCurrentView ();
 
                                         // is it any sort of a legal view to call from?
-    if ( ! ( dynamic_cast< TElectrodesView* > ( BaseView )
-          || dynamic_cast< TVolumeView* >     ( BaseView ) ) )
+    if ( ! ( dynamic_cast<TElectrodesView*> ( BaseView )
+          || dynamic_cast<TVolumeView*>     ( BaseView ) ) )
         BaseView    = 0;
 
                                         // MRI case: transfer to another pointer
-    if ( BaseView &&  dynamic_cast< TVolumeView* > ( BaseView ) ) {
-        MriView     = dynamic_cast< TVolumeView* > ( BaseView );
+    if ( BaseView &&  dynamic_cast<TVolumeView*> ( BaseView ) ) {
+
+        MriView     = dynamic_cast<TVolumeView*> ( BaseView );
         BaseView    = 0;
         }
+
+                                        // Now look more thoroughly to all opened documents:
+    int             countxyzs       = 0;
+    TElectrodesDoc* lastxyzdoc      = 0;
+    int             countmris       = 0;
+    TVolumeDoc*     lastmridoc      = 0;
+
+    for ( TDocument* doc = CartoolDocManager->DocList.Next ( 0 ); doc != 0; doc = CartoolDocManager->DocList.Next ( doc ) ) {
+        
+        if      ( dynamic_cast<TElectrodesDoc*> ( doc ) ) {
+            countxyzs++;
+            lastxyzdoc  = dynamic_cast<TElectrodesDoc*> ( doc );
+            }
+        
+        else if ( dynamic_cast<TVolumeDoc*> ( doc ) ) {
+            countmris++;
+            lastmridoc  = dynamic_cast<TVolumeDoc*> ( doc );
+            }
+        }
+
+                                        // Try to fill the missing input field when it looks the less ambiguous
+    if ( BaseView == 0 && countxyzs == 1 )   BaseView    = lastxyzdoc->GetViewList ();
+    if ( MriView  == 0 && countmris == 1 )   MriView     = dynamic_cast<TVolumeView*> ( lastmridoc->GetViewList () );
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 XyzCoregToNorm      = xyzcoregtonorm;
 
@@ -282,7 +310,7 @@ CoregTransfer.Glue  = CheckToBool ( false );
 TransferData ( tdSetData );
 
 
-SetProcessing ( false );
+SetProcessing ( true, false );
 
 
 InputSourceFile     ->ResetCaret;
@@ -310,7 +338,7 @@ void    TCoregistrationDialog::EvPresetsChange ()
                                         // we need to reset so many locks
 CleanUp ( false );
 
-SetProcessing ( false );
+SetProcessing ( false, false );
 }
 
 
@@ -478,11 +506,11 @@ if ( destroydialog ) {
                                         // Always interactive for the moment
 //void    TCoregistrationDialog::CmSetProcessing ()
 //{
-//SetProcessing ( false );
+//SetProcessing ( true, false );
 //}
 
                                         // Setting the processing type from input; opening any needed files; setting display windows; setting needed working variables
-void    TCoregistrationDialog::SetProcessing ( bool docleanup )
+void    TCoregistrationDialog::SetProcessing ( bool computemasks, bool docleanup )
 {
 if ( docleanup )
     CleanUp ( false );
@@ -499,7 +527,7 @@ CoregistrationType  preset          = (CoregistrationType) Presets->GetSelIndex 
 
 if      ( BaseView ) {              // BaseView specified will force our choice
 
-    if      ( dynamic_cast< TElectrodesView* > ( BaseView ) )                               Processing  = preset;
+    if      ( dynamic_cast<TElectrodesView*> ( BaseView ) )                                 Processing  = preset;
                                     // file was open, don't close when done
     if ( docleanup )
         CanCloseBaseView    = false;
@@ -510,9 +538,10 @@ else {                              // no view given, guess from current entries
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                       // Open necessary files
-
-if ( BaseView == 0 && CanOpenFile ( CoregTransfer.InputSourceFile ) && Processing != CoregisterNone ) {
+                                       // Open all necessary files
+if ( BaseView == 0 
+  && CanOpenFile ( CoregTransfer.InputSourceFile ) 
+  && Processing != CoregisterNone ) {
 
     bool                oldav           = CartoolApplication->AnimateViews;
 
@@ -545,7 +574,8 @@ if ( BaseView == 0 && CanOpenFile ( CoregTransfer.InputSourceFile ) && Processin
     }
 
 
-if ( MriView  == 0 && CanOpenFile ( CoregTransfer.InputTargetFile ) ) {
+if ( MriView == 0 
+  && CanOpenFile ( CoregTransfer.InputTargetFile ) ) {
 
     bool                oldav           = CartoolApplication->AnimateViews;
 
@@ -557,7 +587,7 @@ if ( MriView  == 0 && CanOpenFile ( CoregTransfer.InputTargetFile ) ) {
                                         // open doc
     TBaseDoc*   basedoc = CartoolDocManager->OpenDoc ( CoregTransfer.InputTargetFile, dtOpenOptions );
                                         // and get da view
-    MriView             = dynamic_cast< TVolumeView * > ( basedoc->GetViewList () );
+    MriView             = dynamic_cast<TVolumeView*> ( basedoc->GetViewList () );
 
 
     SetFocus ();
@@ -567,7 +597,7 @@ if ( MriView  == 0 && CanOpenFile ( CoregTransfer.InputTargetFile ) ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Put locks on
+                                        // Lock documents, preventing them from closing
 if ( BaseView && BaseView->BaseDoc )
     BaseView->BaseDoc->PreventClosing ();
 
@@ -578,7 +608,7 @@ if ( MriView  && MriView->BaseDoc )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TSuperGauge         Gauge;
-Gauge.Set       ( CoregistrationTitle " Initialization" , BaseView ? 6 : 0, SuperGaugeLevelDefault );
+Gauge.Set       ( CoregistrationTitle " Init", BaseView ? 6 : 0, SuperGaugeLevelDefault );
 
 
 if ( BaseView )
@@ -658,40 +688,46 @@ GetNormalizationTransform   (   mridoc,         0,
                                 0 /*NormToMri*/,    0
                             );
 
+                                        // avoiding as possible these costly operations
+if ( computemasks ) {
 
-VolumeMask      = *mridoc->GetData ();
+    VolumeMask      = *mridoc->GetData ();
 
-FctParams           p;
+    FctParams           p;
 
                                         // make that a binary mask
-Gauge.Next ();
-p ( FilterParamToMaskThreshold )     = mridoc->GetBackgroundValue ();
-p ( FilterParamToMaskNewValue  )     = 1;
-p ( FilterParamToMaskCarveBack )     = true;
-VolumeMask.Filter ( FilterTypeToMask, p );
+    Gauge.Next ();
+    p ( FilterParamToMaskThreshold )     = mridoc->GetBackgroundValue ();
+    p ( FilterParamToMaskNewValue  )     = 1;
+    p ( FilterParamToMaskCarveBack )     = true;
+    VolumeMask.Filter ( FilterTypeToMask, p );
 
                                         // a bit of clean-up - this should be enough
-Gauge.Next ();
-p ( FilterParamDiameter )     = 1;
-VolumeMask.Filter ( FilterTypeOpen, p );
+    Gauge.Next ();
+    p ( FilterParamDiameter )     = 1;
+    VolumeMask.Filter ( FilterTypeOpen, p );
 
                                         // smooth out, too
-Gauge.Next ();
-p ( FilterParamDiameter )     = 10;
-p ( FilterParamNumRelax )     = 1;
-VolumeMask.Filter ( FilterTypeRelax, p );
+    Gauge.Next ();
+    p ( FilterParamDiameter )     = 10;
+    p ( FilterParamNumRelax )     = 1;
+    VolumeMask.Filter ( FilterTypeRelax, p );
 
                                         // convert mask to "gradient-like" volume
-VolumeGradient  = VolumeMask;
+    VolumeGradient  = VolumeMask;
                                         // HEAVY smoothing
-Gauge.Next ();
-p ( FilterParamDiameter )     = 30 / NonNull ( mridoc->GetVoxelSize ().Mean () );
-VolumeGradient.Filter ( FilterTypeFastGaussian, p );
+    Gauge.Next ();
+    p ( FilterParamDiameter )     = 30 / NonNull ( mridoc->GetVoxelSize ().Mean () );
+    VolumeGradient.Filter ( FilterTypeFastGaussian, p );
 
 
-//VolumeMask    .WriteFile ( "E:\\Data\\VolumeMask.nii",     &MriCenterOrig, &mridoc->GetVoxelSize (), &mridoc->GetRealSize () );
-//VolumeGradient.WriteFile ( "E:\\Data\\VolumeGradient.nii", &MriCenterOrig, &mridoc->GetVoxelSize (), &mridoc->GetRealSize () );
+    //VolumeMask    .WriteFile ( "E:\\Data\\VolumeMask.nii",     &MriCenterOrig, &mridoc->GetVoxelSize (), &mridoc->GetRealSize () );
+    //VolumeGradient.WriteFile ( "E:\\Data\\VolumeGradient.nii", &MriCenterOrig, &mridoc->GetVoxelSize (), &mridoc->GetRealSize () );
 
+    } // computemasks
+else
+    Gauge.Next ( 4 );
+    
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Setting xyz to RAS orientation
@@ -950,7 +986,7 @@ if ( StringIsEmpty ( file ) ) {
 
     TransferData ( tdSetData );
                                         // update available choices
-    SetProcessing ( true );
+    SetProcessing ( false, true );
     }
 else {
     StringCopy ( CoregTransfer.InputSourceFile, file );
@@ -985,7 +1021,7 @@ if ( StringIsEmpty ( file ) ) {
 
     TransferData ( tdSetData );
                                         // update available choices
-    SetProcessing ( true );
+    SetProcessing ( true, true );
     }
 else {
     StringCopy ( CoregTransfer.InputTargetFile, file );
@@ -1039,14 +1075,26 @@ drop.DragFinish ();
                                         // test legality to change some of the files
 if ( (bool) xyzfiles && ! CanCloseBaseView && BaseView ) {
 
-    sprintf ( buff, "You are already working with file:\n\n%s\n\nClose this Dialog, select another window (or none)\nif you want to work on another file.", BaseView->BaseDoc->GetTitle () );
+    StringCopy  ( buff, "You are already working with file:"                    NewLine
+                        NewLine, 
+                        BaseView->BaseDoc->GetTitle (),                         NewLine 
+                        NewLine
+                        "Close this Dialog, select another window (or none)"    NewLine
+                        "if you want to work on another file." );
+
     ShowMessage ( buff, "Coregistration", ShowMessageWarning );
     return;
     }
 
 if ( (bool) mrifiles && ! CanCloseMriView && MriView ) {
 
-    sprintf ( buff, "You are already working with file:\n\n%s\n\nClose this Dialog, select another window (or none)\nif you want to work on another file.", MriView ->BaseDoc->GetTitle () );
+    StringCopy  ( buff, "You are already working with file:"                    NewLine
+                        NewLine, 
+                        MriView->BaseDoc->GetTitle (),                          NewLine 
+                        NewLine
+                        "Close this Dialog, select another window (or none)"    NewLine
+                        "if you want to work on another file." );
+
     ShowMessage ( buff, "Coregistration", ShowMessageWarning );
     return;
     }
@@ -1070,7 +1118,7 @@ if ( (bool) remainingfiles )
 
                                         // update available choices
 if ( (bool) xyzfiles || (bool) mrifiles )
-    SetProcessing ( (bool) xyzfiles || (bool) mrifiles );
+    SetProcessing ( (bool) mrifiles, (bool) xyzfiles || (bool) mrifiles );
 }
 
 
