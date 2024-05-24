@@ -838,7 +838,7 @@ if ( ! CanOpenFile ( file ) )
 ifstream            is ( TFileName ( file, TFilenameExtendedPath ), ios::binary );
 int                 magic;
 TMarker             marker;
-char                buff[ 1024 ];
+char                buff[ KiloByte ];
 
 
 is.read ( (char *) &magic, sizeof ( magic ) );
@@ -856,12 +856,12 @@ if      ( IsMagicNumber ( magic, TLBIN_MAGICNUMBER2 ) ) {
     is.close ();
     is.open  ( file );
                                         // skip header
-    is.getline ( buff, 1024 );
+    is.getline ( buff, KiloByte );
 
 
     while ( ! is.eof () ) {
                                         // get next line
-        is.getline ( buff, 1024 );
+        is.getline ( buff, KiloByte );
 
                                         // be nice when encountering an empty line
         if ( StringIsEmpty ( buff ) )

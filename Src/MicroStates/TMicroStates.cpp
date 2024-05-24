@@ -469,7 +469,7 @@ ReadData    (   gogof, gofi1, gofi2,
 
 
 //----------------------------------------------------------------------------
-                                        // Getting maps ready for INTERNAL use, basically centered and normalized by with some other fancy options, too
+                                        // Getting maps ready for INTERNAL use, basically centered and normalized, but with some other fancy options, too
                                         // !dataref being use to save the optional  Norm, Gfp and Dis  arrays, and is useless in all other cases!
                                         // !processingref is the final ref applied, used for processing!
 void    TMicroStates::PreprocessMaps(   TMaps&          maps,

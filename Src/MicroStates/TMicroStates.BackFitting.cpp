@@ -749,7 +749,7 @@ verbose.NextLine ();
 verbose.Put ( "Data levels normalization:", gfpnormalize );
 if ( gfpnormalize ) {
 //  verbose.Put ( "Data level normalization formula:", IsAbsolute ( datatype ) ? "Mean RMS within subjects" : "Mean GFP within subjects" );
-    verbose.Put ( "Normalization computation:", "e ^ (Median log (GFP))" );
+    verbose.Put ( "Normalization computation:", "Re-centering on GFP Background / Mode" );
     }
 verbose.NextLine ();
 
@@ -1534,15 +1534,18 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // For array access reasons, we need to temporarily convert label values so to be all >= 0.
+                                        // Label values:        defined label values in [0 .. nclusters) / UndefinedLabel         = -1
+                                        // Temp label values:   defined label values in [0 .. nclusters) / UndefinedLabelPositive = nclusters
 
         #define     UndefinedLabelPositive      nclusters
 
-                                        // convert  UndefinedLabel/-1  into another, positive value
-                                        // clusters 0..(n-1) -> 0..(n-1), UndefinedLabel/-1 -> n
-        auto        SegToIndex  = [ & ] ( const LabelType& L )  { return L == UndefinedLabel ? UndefinedLabelPositive : L; };
+                                        // just convert UndefinedLabel to UndefinedLabelPositive
+        auto        SegToIndex  = [ &UndefinedLabelPositive ] ( const LabelType& L )    { return L == UndefinedLabel ? UndefinedLabelPositive : L; };
 
-                                        // test for legal segment, after UndefinedLabel fix
-        auto        IsSegOk     = [ & ] ( const LabelType& L ) { return L == UndefinedLabelPositive || ( IsInsideLimits ( L, 0, nclusters - 1 ) && mapsel[ L ] ); };
+                                        // convert back UndefinedLabelPositive to UndefinedLabel + test for map selection
+        auto        IsSegOk     = [ &nclusters, &mapsel ]     ( const LabelType& L )    { return L == UndefinedLabelPositive 
+                                                                                              || ( IsInsideLimits ( L, 0, nclusters - 1 ) && mapsel[ L ] ); };
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1578,9 +1581,9 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 
                                         // segments index starts from 0, n is for the UndefinedLabel
                     seglist.AppendMarker ( TMarker ( begintf, tf, 
-                                                  (MarkerCode) SegToIndex ( labels[ begintf ] ), 
-                                                  labels.IsUndefined ( begintf ) ? "Unlabeled" : IntegerToString ( buff, labels[ begintf ] + 1 ),
-                                                  MarkerTypeTemp ) );
+                                                     (MarkerCode) SegToIndex ( labels[ begintf ] ), 
+                                                     labels.IsUndefined ( begintf ) ? "Unlabeled" : IntegerToString ( buff, labels[ begintf ] + 1 ),
+                                                     MarkerTypeTemp ) );
 
                                         // next segment will begin after current TF
                     begintf     = tf + 1;
@@ -1588,7 +1591,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 
                                         // save segments as markers
 //              TFileName           FileSegToMarkers;
-//              StringCopy ( FileSegToMarkers, BaseFileName, "Seg To Markers.S", IntegerToString ( buff, subji + 1 ), ".C", IntegerToString ( buff, absg + 1 ), "."FILEEXT_MRK );
+//              StringCopy ( FileSegToMarkers, BaseFileName, "Seg To Markers.S", IntegerToString ( buff, subji + 1 ), ".C", IntegerToString ( buff, absg + 1 ), "." FILEEXT_MRK );
 //              seglist.WriteFile ( FileSegToMarkers, AllMarkerTypes );
                 } // if competitive
 

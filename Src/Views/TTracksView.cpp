@@ -8822,7 +8822,7 @@ bool            relativeindex   = CheckToBool ( transfer.TrackRelativeIndex );
 bool            mergedcount     = CheckToBool ( transfer.MergedCount        ) && mergemarkers;
 
 MarkerCode      markercode;
-char            markertext     [ 256 ];
+char            markertext  [ 256 ];
 char            prefix      [ 256 ];
 TFileName       templatename;
 
@@ -9071,9 +9071,9 @@ if ( scanstability || scanthreshold || scanextrema ) {
 
                                         // everything OK, add marker
                     EEGDoc->InsertMarker ( TMarker ( besttf, besttf,
-                                                  markercode,
-                                                  markertext,
-                                                  mergemarkers ? MarkerTypeTemp : MarkerTypeMarker ), false );
+                                                     markercode,
+                                                     markertext,
+                                                     mergemarkers ? MarkerTypeTemp : MarkerTypeMarker ), false );
 
                                         // set next possible onset, for this track
                     chan[ i ][ nextonset ]  = tf + mingap - 1;
@@ -9273,7 +9273,7 @@ if ( mergemarkers ) {
                 continue;
 
                                         // scan the range of markers
-            markercode         = 0;
+            markercode      = 0;
             position        = 0;
 
             for ( int markeri3 = markeri; markeri3 < markeri2; markeri3++ ) {

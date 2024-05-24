@@ -94,15 +94,8 @@ return  *this;
                                         // 3 different versions, some parallelized, some not
 void    TLabeling::Reset ()
 {
-if ( IsNotAllocated () )
-    return;
-
-OmpParallelFor
-
-for ( long tf = 0; tf < GetNumData (); tf++ ) {
-    Labels  [ tf ]  = UndefinedLabel;
-    Polarity[ tf ]  = PolarityDirect;
-    }
+Labels          = UndefinedLabel;
+Polarity        = PolarityDirect;
 }
 
 
@@ -124,8 +117,6 @@ if ( IsNotAllocated () )
 
 Clipped ( tfmin, tfmax, (long) 0, (long) GetNumData () - 1 );
 
-
-OmpParallelFor
 
 for ( long tf = tfmin; tf <= tfmax; tf++ ) {
     Labels  [ tf ]  = UndefinedLabel;

@@ -604,7 +604,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
 
         if ( istempfile )
-                                        // compute factor on the subsampled temp file
+                                        // compute factor on the subsampled temp file, using the BACKGROUND activity / Max Mode of distribution
             ToData->ComputeGfpNormalization ( datatypeout, gfpnorm );
         else
                                         // not the first file, apply factor we computed on the concatenated file
