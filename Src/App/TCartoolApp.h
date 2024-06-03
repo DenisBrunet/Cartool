@@ -219,7 +219,7 @@ private:
 
 
     void            SetupSpeedBar       ( owl::TDecoratedMDIFrame* frame );
-    void            ProcessCmdLine      ( const char* CmdLine, bool options );
+    void            ProcessCommandLine  ( const char* CmdLine, bool beforeinit );
     void            RegisterInfo        ();
 
 

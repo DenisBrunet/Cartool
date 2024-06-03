@@ -62,6 +62,10 @@ constexpr char*     CmdLineRegister         = "register";
 constexpr char*     CmdLineUnregister       = "unregister";
 constexpr char*     CmdLineNoRegister       = "noregister";
 constexpr char*     CmdLineResetRegister    = "resetregister";
+constexpr char*     CmdLineMainWindowWidth  = "mainwidth";
+constexpr char*     CmdLineMainWindowHeight = "mainheight";
+constexpr char*     CmdLineMainWindowTop    = "maintop";
+constexpr char*     CmdLineMainWindowLeft   = "mainleft";
 
 
 enum        RegistrationOpeningType
@@ -576,81 +580,172 @@ EnableMultiThreading ( true );
                                         // Called first
 void    TCartoolApp::InitInstance ()
 {
-ProcessCmdLine ( GetCmdLine ().c_str (), true );    // process early options, some will exit the app
+ProcessCommandLine ( GetCmdLine ().c_str (), true  );   // process early options, some might directly exit the app
 
-TApplication::InitInstance ();                      // then calls InitWindow
+TApplication::InitInstance ();                          // then calls InitWindow
 
-ProcessCmdLine ( GetCmdLine ().c_str (), false );   // process files to open
+ProcessCommandLine ( GetCmdLine ().c_str (), false );   // process files to open
 }
 
 
 //----------------------------------------------------------------------------
-void    TCartoolApp::ProcessCmdLine ( const char* CmdLine, bool options )
+void    TCartoolApp::ProcessCommandLine ( const char*   CmdLine,    bool    beforeinit )
 {
-TCmdLine        cmd ( CmdLine );
-char            buff[ MaxPathShort ];
-//static bool     doregister  = true;
+TCmdLine            cmd ( CmdLine );
+char                buff[ MaxPathShort ];
+
+                                        // get next value token and return it converted to integer
+auto    GetNextValue    = [] ( TCmdLine& cmd )
+{
+cmd.NextToken ();
+
+if ( cmd.GetTokenKind () != TCmdLine::Value )
+    return  -1;
+                
+return  StringToInteger ( cmd.GetToken ().c_str () );
+};
 
 
-for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () ) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // special registration options done early
+if ( beforeinit ) {
 
-    if ( cmd.GetTokenKind () == TCmdLine::Option && options ) {
+    for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () ) {
 
-        if      ( StringStartsWith ( cmd.GetToken ().c_str (), CmdLineRegister ) ) {
-
-            RegisterInfo ();
-            ::exit ( 0 );
-            return;
-            }
-
-        else if ( StringStartsWith ( cmd.GetToken ().c_str (), CmdLineUnregister ) ) {
-
-            UnRegisterInfo ();
-            ::exit ( 0 );
-            return;
-            }
-
-//      else if ( StringStartsWith ( cmd.GetToken ().c_str (), CmdLineNoRegister ) ) {
-//          doregister = false;
-//          }
-
-        else if ( StringStartsWith ( cmd.GetToken ().c_str (), CmdLineResetRegister ) ) {
-
-            ResetRegisterInfo ();
-            ::exit ( 0 );
-            return;
-            }
-
-        } // if kind == option
-
-//  else if ( doregister && ! options ) {
-
-    else if ( ! options ) {
-
-        if ( cmd.GetToken ().c_str ()[ 0 ] == '\"' ) {     // if open a quote, read once the full line and extract
-
-            const char*     tob     = StringContains ( cmd.GetLine(), '\"', StringContainsForward  ) + 1;
-            const char*     toe     = StringContains ( cmd.GetLine(), '\"', StringContainsBackward ) - 1;
-            int             len     = toe - tob + 1;
-
-            StringCopy ( buff, tob, len );
-
-            do cmd.NextToken (); while ( cmd.GetTokenKind () != TCmdLine::Done );
-            }
-        else
-            StringCopy ( buff, cmd.GetToken ().c_str () );
-
-        if ( StringIs ( buff, CmdLineNoRegister ) )
+        if ( cmd.GetTokenKind () != TCmdLine::Option )
             continue;
 
-        CartoolDocManager->OpenDoc ( buff, dtOpenOptions );
+
+        if      ( StringIs ( cmd.GetToken ().c_str (), CmdLineRegister ) ) {
+
+            RegisterInfo ();
+
+            ::exit ( 0 );
+            return;
+            }
+
+        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineUnregister ) ) {
+
+            UnRegisterInfo ();
+
+            ::exit ( 0 );
+            return;
+            }
+
+        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineResetRegister ) ) {
+
+            ResetRegisterInfo ();
+
+            ::exit ( 0 );
+            return;
+            }
         }
 
-    } // for cmd
+    return;
+    }
 
 
-//if ( ! options && doregister )
-//    RegisterInfo ();                    // InitWindow has been done
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // regular options processing, main window has been created
+else { // ! beforeinit
+
+    int             mainwidth       = -1;
+    int             mainheight      = -1;
+    int             maintop         = -1;
+    int             mainleft        = -1;
+     
+
+    for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () ) {
+
+        if      ( cmd.GetTokenKind () == TCmdLine::Option ) {
+
+            if      ( StringIs ( cmd.GetToken ().c_str (), CmdLineNoRegister ) ) 
+                                        // actually doing nothing
+                continue;
+
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowWidth ) )
+
+                mainwidth   = GetNextValue ( cmd );
+
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowHeight ) )
+
+                mainheight  = GetNextValue ( cmd );
+
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop ) )
+
+                maintop     = GetNextValue ( cmd );
+
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft ) )
+
+                mainleft    = GetNextValue ( cmd );
+
+            else {
+
+                if ( IsInteractive () )
+                    ShowMessage ( cmd.GetToken ().c_str (), "Unknown option:", ShowMessageWarning );
+                }
+
+            } // if Option
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // we have a "floating" value, certainly due to a prior bad option
+        else if ( cmd.GetTokenKind () == TCmdLine::Value ) {
+
+//          if ( IsInteractive () )
+//              ShowMessage ( cmd.GetToken ().c_str (), "Unknown option:", ShowMessageWarning );
+
+            } // if Value
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // file name -> open it
+        else if ( cmd.GetTokenKind () == TCmdLine::Name ) {
+
+            StringCopy  ( buff, cmd.GetToken ().c_str () );
+
+                                        // special handling for full quotes - shouldn't happen anymore(?)
+            if ( buff[ 0 ] == '\"' ) {
+
+                const char*     tob     = StringContains ( cmd.GetLine (), '\"', StringContainsForward  ) + 1;
+                const char*     toe     = StringContains ( cmd.GetLine (), '\"', StringContainsBackward ) - 1;
+                int             len     = toe - tob + 1;
+
+                StringCopy ( buff, tob, len );
+
+                do cmd.NextToken (); while ( cmd.GetTokenKind () != TCmdLine::Done );
+                }
+
+
+            CartoolDocManager->OpenDoc ( buff, dtOpenOptions );
+            } // if Name
+
+        } // for cmd
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // some main window size has been set?
+    if ( mainwidth > 0 || mainheight > 0 ) {
+                                        // one dimension is missing?
+        if ( mainwidth  <= 0 )  mainwidth   = CartoolMainWindow->Attr.W;
+        if ( mainheight <= 0 )  mainheight  = CartoolMainWindow->Attr.H;
+
+        WindowRestore   ();
+
+        WindowSetSize   ( mainwidth, mainheight );
+        }
+
+
+    if ( maintop > 0 || mainleft > 0 ) {
+                                        // one origin is missing?
+        if ( maintop    <= 0 )  maintop   = CartoolMainWindow->Attr.Y;
+        if ( mainleft   <= 0 )  mainleft  = CartoolMainWindow->Attr.X;
+
+        WindowRestore   ();
+
+        WindowSetOrigin ( mainleft, maintop );
+        }
+
+    } // regular parsing
+
 }
 
 
