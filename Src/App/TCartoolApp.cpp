@@ -66,6 +66,9 @@ constexpr char*     CmdLineMainWindowWidth  = "mainwidth";
 constexpr char*     CmdLineMainWindowHeight = "mainheight";
 constexpr char*     CmdLineMainWindowTop    = "maintop";
 constexpr char*     CmdLineMainWindowLeft   = "mainleft";
+constexpr char*     CmdLineMainWindowMax    = "mainmaximized";
+constexpr char*     CmdLineMainWindowMin    = "mainminimized";
+constexpr char*     CmdLineMainWindowRest   = "mainnormal";
 
 
 enum        RegistrationOpeningType
@@ -249,6 +252,8 @@ PrefGraphicAccel        = FormatDontUse;
 
 ClearString ( Title,       MaxAppTitleLength );
 ClearString ( TitlePrefix, MaxAppTitleLength );
+
+nCmdShow            = SW_SHOWMAXIMIZED; // default, which can be overriden with options
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -500,13 +505,13 @@ if ( Splash != 0 ) {
 //----------------------------------------------------------------------------
 void    TCartoolApp::InitMainWindow ()
 {
-CreateSplashScreen ();
+                                        // nCmdShow could be overriden in InitInstance
+if ( (   nCmdShow == SW_SHOWMAXIMIZED 
+      || nCmdShow == SW_SHOWNORMAL 
+      || nCmdShow == SW_SHOWDEFAULT   )
+  && IsInteractive () )
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-if ( nCmdShow != SW_HIDE )
-    nCmdShow    = (nCmdShow != SW_SHOWMINNOACTIVE) ? SW_SHOWMAXIMIZED : nCmdShow;
+    CreateSplashScreen ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -532,9 +537,6 @@ CartoolMainWindow->Attr.W       = (int) ( screenwidth  * 0.50 );
 CartoolMainWindow->Attr.H       = (int) ( screenheight * 0.75 );
 CartoolMainWindow->Attr.X       = AtLeast ( 0, ( screenwidth  - GetWindowWidth  ( CartoolMainWindow ) ) / 2 );
 CartoolMainWindow->Attr.Y       = AtLeast ( 0, ( screenheight - GetWindowHeight ( CartoolMainWindow ) ) / 2 );
-
-
-nCmdShow    = (nCmdShow != SW_SHOWMINNOACTIVE) ? SW_SHOWMAXIMIZED : nCmdShow;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -607,7 +609,7 @@ return  StringToInteger ( cmd.GetToken ().c_str () );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // special registration options done early
+                                        // early options, before main window has been created
 if ( beforeinit ) {
 
     for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () ) {
@@ -639,6 +641,15 @@ if ( beforeinit ) {
             ::exit ( 0 );
             return;
             }
+                                                                                     
+        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMax     ) )     nCmdShow    = SW_SHOWMAXIMIZED; // overriding main window state before creation
+        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMin     ) )     nCmdShow    = SW_SHOWMINIMIZED;
+        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowRest    ) )     nCmdShow    = SW_SHOWNORMAL;
+
+        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowWidth   )
+               || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowHeight  )
+               || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop     )
+               || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft    ) )     nCmdShow    = SW_SHOWNORMAL;    // using normal window if these were specified
         }
 
     return;
@@ -659,25 +670,14 @@ else { // ! beforeinit
 
         if      ( cmd.GetTokenKind () == TCmdLine::Option ) {
 
-            if      ( StringIs ( cmd.GetToken ().c_str (), CmdLineNoRegister ) ) 
-                                        // actually doing nothing
-                continue;
-
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowWidth ) )
-
-                mainwidth   = GetNextValue ( cmd );
-
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowHeight ) )
-
-                mainheight  = GetNextValue ( cmd );
-
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop ) )
-
-                maintop     = GetNextValue ( cmd );
-
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft ) )
-
-                mainleft    = GetNextValue ( cmd );
+            if      ( StringIs ( cmd.GetToken ().c_str (), CmdLineNoRegister        ) )     continue;   // actually doing nothing
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowWidth   ) )     mainwidth       = GetNextValue ( cmd );
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowHeight  ) )     mainheight      = GetNextValue ( cmd );
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop     ) )     maintop         = GetNextValue ( cmd );
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft    ) )     mainleft        = GetNextValue ( cmd );
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMax     ) )     continue;   // already parsed
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMin     ) )     continue;   // already parsed
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowRest    ) )     continue;   // already parsed
 
             else {
 
@@ -722,28 +722,28 @@ else { // ! beforeinit
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // some main window size has been set?
-    if ( mainwidth > 0 || mainheight > 0 ) {
-                                        // one dimension is missing?
+                                        // some main window size / origin has been set?
+    if ( mainwidth > 0 || mainheight > 0 || maintop > 0 || mainleft > 0 ) {
+                                        // some dimension is missing?
         if ( mainwidth  <= 0 )  mainwidth   = CartoolMainWindow->Attr.W;
         if ( mainheight <= 0 )  mainheight  = CartoolMainWindow->Attr.H;
+                                        // some origin is missing?
+        if ( maintop    <= 0 )  maintop     = CartoolMainWindow->Attr.Y;
+        if ( mainleft   <= 0 )  mainleft    = CartoolMainWindow->Attr.X;
 
+                                        // remember current window state
+        bool    wasmin  = IsWindowMinimized ( CartoolMainWindow );
+        bool    wasmax  = IsWindowMaximized ( CartoolMainWindow );
+
+                                        // this applies to the normal window state
         WindowRestore   ();
 
-        WindowSetSize   ( mainwidth, mainheight );
+        WindowSetPosition ( mainleft, maintop, mainwidth, mainheight );
+
+                                        // restore window state
+        if      ( wasmin )  WindowMinimize ();
+        else if ( wasmax )  WindowMaximize ();
         }
-
-
-    if ( maintop > 0 || mainleft > 0 ) {
-                                        // one origin is missing?
-        if ( maintop    <= 0 )  maintop   = CartoolMainWindow->Attr.Y;
-        if ( mainleft   <= 0 )  mainleft  = CartoolMainWindow->Attr.X;
-
-        WindowRestore   ();
-
-        WindowSetOrigin ( mainleft, maintop );
-        }
-
     } // regular parsing
 
 }
