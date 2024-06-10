@@ -71,11 +71,11 @@ cout << "Sampling Frequency         = " << maps.GetSamplingFrequency ()   << fas
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Compute a single track that holds the norm of each map for each time point
 TVector<double>     norm;
-maps.ComputeNorm ( norm, ReferenceAverage );
+maps.ComputeNorm ( norm, ref );
 
                                         // Compute a single track that holds the GFP of each map for each time point
 TVector<double>     gfp;
-maps.ComputeGFP ( gfp, ReferenceAverage, datatype );
+maps.ComputeGFP ( gfp, ref, datatype );
 
                                         // Show the average norm and GFP
 cout << "Average Norm               = " << norm.Average () << fastendl;

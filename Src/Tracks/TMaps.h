@@ -193,10 +193,10 @@ public:
     void            AtLeast                     ( TMapAtomType minv );
     void            AverageReference            ( AtomType datatype );
     void            Clipped                     ( TMapAtomType minv, TMapAtomType maxv );
-    void            ComputeDissimilarity        ( TArray1<double> &dis, PolarityType polarity, ReferenceType reference ) const;
-    RegularizationType  ComputeESI              ( const TInverseMatrixDoc* ISDoc, RegularizationType regularization, bool vectorial, TMaps& ESI )    const;
+    void            ComputeDissimilarity        ( TArray1<double> &dis, PolarityType polarity, ReferenceType reference, AtomType datatype )         const;
+    RegularizationType  ComputeESI              ( const TInverseMatrixDoc* ISDoc, RegularizationType regularization, bool vectorial, TMaps& ESI )   const;
     void            ComputeGFP                  ( TArray1<double> &gfp,  ReferenceType reference, AtomType datatype ) const;
-    double          ComputeGfpNormalization     ( AtomType datatype, double& gfpnorm );
+    double          ComputeGfpNormalization     ( AtomType datatype );
     void            ComputeNorm                 ( TArray1<double> &norm, ReferenceType reference );
     void            ComputeZScore               ( ZScoreType how, TArray2<float>& zscorevalues )    const;
     void            ComputeZScoreSigned         ( ZScoreType how, TArray2<float>& zscorevalues )    const;
@@ -342,7 +342,7 @@ public:
     void            SetReference                ( ReferenceType ref, AtomType datatype );
     bool            FilterSpatial               ( SpatialFilterType filtertype, const char *xyzfile );
     void            FilterTime                  ( FilterTypes filtertype, FctParams& params, bool showprogress = false );
-    double          ComputeGfpNormalization     ( AtomType datatype, double& gfpnorm );
+    double          ComputeGfpNormalization     ( AtomType datatype );
     void            ApplyGfpNormalization       ( double gfpnorm );
     TMaps           ComputeCentroids            ( CentroidType centroid, AtomType datatype, PolarityType polarity )    const;
 

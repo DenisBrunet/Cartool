@@ -1358,14 +1358,14 @@ if (         reference == ReferenceUsingCurrent
     referencesel    = &ReferenceTracks;
     }
 
-//                                        // To prevent average reference in case of positive data - Off now, always use the average ref
-//bool                pseudonoavgref  = IsAbsolute ( atomtype );
-//
-//                                        // assume the caller knows what he wants, even an average ref of Positive, Vector etc...
-//if ( pseudonoavgref && IsVector ( atomtype ) ) {
-//    reference     = ReferenceAsInFile;
-//    referencesel  = 0;
-//    }
+                                        // When data is positive, compute the RMS instead of the GFP by skipping the re-centering
+bool                gfpnotcentered  = IsAbsolute ( atomtype );
+
+                                        // assume the caller knows what he wants, even an average ref of Positive, Vector etc...
+if ( gfpnotcentered && IsVector ( atomtype ) ) {
+    reference     = ReferenceAsInFile;
+    referencesel  = 0;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1630,8 +1630,8 @@ if ( pseudotracks ) {
         buff ( OffAvg, tfo )   = avg   = sum / numt;
 
 
-//      if ( pseudonoavgref )
-//          avg   = 0;                  // don't center on the average
+        if ( gfpnotcentered )
+            avg   = 0;                  // don't center on the average - GFP actually becomes RMS
 
                                         // compute GFP with average ref
         sumsqr  = 0;
@@ -1660,8 +1660,7 @@ if ( pseudotracks ) {
                     if ( ValidTracks[ el ] )
                         sum    += BuffDiss ( el, 0 );
                 
-//              avg2  = pseudonoavgref ? 0 : sum / numt;
-                avg2  = sum / numt;
+                avg2  = gfpnotcentered ? 0 : sum / numt;
 
 
                 sumsqr  = 0;

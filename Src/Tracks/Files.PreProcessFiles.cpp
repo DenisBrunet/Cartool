@@ -605,7 +605,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
         if ( istempfile )
                                         // compute factor on the subsampled temp file, using the BACKGROUND activity / Max Mode of distribution
-            ToData->ComputeGfpNormalization ( datatypeout, gfpnorm );
+            gfpnorm     = ToData->ComputeGfpNormalization ( datatypeout );
         else
                                         // not the first file, apply factor we computed on the concatenated file
             ToData->ApplyGfpNormalization   ( gfpnorm );
@@ -764,7 +764,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
     if ( gfppeaks == GfpPeaksDetectionAuto )
 
-        ToData->ComputeGFP ( gfp, ReferenceAverage, datatypeout );
+        ToData->ComputeGFP ( gfp, IsAbsolute ( datatypeout ) ? ReferenceNone : ReferenceAverage, datatypeout );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

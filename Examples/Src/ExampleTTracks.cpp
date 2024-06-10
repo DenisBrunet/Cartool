@@ -48,7 +48,7 @@ cout << "Max Value                  = " << tracks.GetMaxValue () << fastendl;
 
 
 TVector<double>     gfp;
-tracks.ComputeGFP ( gfp );
+tracks.ComputeGFP ( gfp, AtomTypeScalar );
 cout << "Average GFP                = " << gfp.Average () << fastendl;
 
 
@@ -60,7 +60,7 @@ tracks.FilterDim2 ( FilterTypeFastGaussian, p );
 cout << "Writing new file           = " << fileoutput << fastendl;
 tracks.WriteFile ( fileoutput );
 
-tracks.ComputeGFP ( gfp );
+tracks.ComputeGFP ( gfp, AtomTypeScalar );
 cout << "Average GFP after Gaussian = " << gfp.Average () << fastendl;
 
 

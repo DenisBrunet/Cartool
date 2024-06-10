@@ -640,32 +640,32 @@ void    TMaps::ComputeGFP ( TArray1<double> &gfp, ReferenceType reference, AtomT
 gfp.Resize ( NumMaps );
 
 OmpParallelFor
-                                        // for all time frame
+
 for ( int nc = 0; nc < NumMaps; nc++ )
 
     gfp[ nc ]   = Maps[ nc ].GlobalFieldPower ( reference == ReferenceAverage, IsVector ( datatype ) );
 }
 
                                         // Assume a whole continuity in the data (which might not always be true, in case of concatenated files)
-void    TMaps::ComputeDissimilarity ( TArray1<double> &dis, PolarityType polarity, ReferenceType reference )    const
+void    TMaps::ComputeDissimilarity ( TArray1<double> &dis, PolarityType polarity, ReferenceType reference, AtomType datatype )     const
 {
                                         // also resets memory
 dis.Resize ( NumMaps );
 
-//OmpParallelFor
-//
-//                                        // historic method with a shift to the right, starting from time frame 1
-//for ( int nc = 1; nc < NumMaps; nc++ )
-//
-//    dis[ nc ]   = Maps[ nc ].Dissimilarity ( Maps[ nc - 1 ], reference == ReferenceAverage, IsVector ( datatype ) );
-
 
 OmpParallelFor
-                                        // correct method, centered
-for ( int nc = 1; nc < NumMaps - 1; nc++ )
+                                        // formula from publications - note that, by construct, is has a shift to the right of 0.5 TF
+for ( int nc = 1; nc < NumMaps; nc++ )
 
-    dis[ nc ]   = (  Maps[ nc ].Dissimilarity ( Maps[ nc - 1 ], polarity, reference == ReferenceAverage )
-                   + Maps[ nc ].Dissimilarity ( Maps[ nc + 1 ], polarity, reference == ReferenceAverage ) ) / 2;
+    dis[ nc ]   = Maps[ nc ].Dissimilarity ( Maps[ nc - 1 ], reference == ReferenceAverage, IsVector ( datatype ) );
+
+
+//OmpParallelFor
+//                                        // correctly centered formula
+//for ( int nc = 1; nc < NumMaps - 1; nc++ )
+//
+//    dis[ nc ]   = (  Maps[ nc ].Dissimilarity ( Maps[ nc - 1 ], polarity, reference == ReferenceAverage )
+//                   + Maps[ nc ].Dissimilarity ( Maps[ nc + 1 ], polarity, reference == ReferenceAverage ) ) / 2;
 }
 
 
@@ -726,7 +726,7 @@ double              rescalefactor;
                                         // sum all GFPs within specified time range
 for ( int nc = 0; nc < (int) allmaps; nc++ ) {
 
-    gfp     = allmaps[ nc ]->GlobalFieldPower ( true, IsVector ( datatype ) );
+    gfp     = allmaps[ nc ]->GlobalFieldPower ( ! IsAbsolute ( datatype ), IsVector ( datatype ) );
                                         
     if ( gfp > 0 )
         stat.Add ( gfp, ThreadSafetyIgnore );
@@ -758,19 +758,15 @@ return  rescalefactor;
 
 
 //----------------------------------------------------------------------------
-double  TMaps::ComputeGfpNormalization ( AtomType datatype, double& gfpnorm )
+double  TMaps::ComputeGfpNormalization ( AtomType datatype )
 {
-gfpnorm     = ComputeGfpNormalizationFactor ( GetIndexes (), datatype );
-
-return  gfpnorm;
+return  ComputeGfpNormalizationFactor ( GetIndexes (), datatype );
 }
 
 
-double  TGoMaps::ComputeGfpNormalization ( AtomType datatype, double& gfpnorm )
+double  TGoMaps::ComputeGfpNormalization ( AtomType datatype )
 {
-gfpnorm     = ComputeGfpNormalizationFactor ( GetIndexes (), datatype );
-
-return  gfpnorm;
+return  ComputeGfpNormalizationFactor ( GetIndexes (), datatype );
 }
 
 

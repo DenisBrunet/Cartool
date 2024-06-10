@@ -145,17 +145,17 @@ public:
 
                                         // Vectorial functions    
     void            AtLeast             ( TypeD minv );
-    double          Average             ()                          const;
-    double          Average             ( TSelection &subset )      const;
+    double          Average             ()                                  const;
+    double          Average             ( const TSelection& subset )        const;
     void            Absolute            ();
-    double          AbsSum              ()                          const;
+    double          AbsSum              ()                                  const;
     void            AverageReference    ();
     void            AddGaussianNoise    ( double          sigmadata, double percentsnr );       // sigmadata is the SD of all dimensions
-    void            AddGaussianNoise    ( TVector<TypeD> &sigmadata, double percentsnr );       // sigmadata is the SD for each dimension
+    void            AddGaussianNoise    ( TVector<TypeD>& sigmadata, double percentsnr );       // sigmadata is the SD for each dimension
     double          Correlation         ( const TVector<TypeD> &v, bool centeraverage = true )                                                      const;  // Pearson Correlation
     double          Correlation         ( const TVector<TypeD> &v, PolarityType polarity, bool centeraverage = true )                               const;  // testing for polarity inversion, if requested and if needed
     double          CorrelationDipoles  ( const TVector<TypeD> &v, PolarityType polarity, TVector<TypeD>* signs = 0 )                               const;
-    double          Correlation         ( const TVector<TypeD> &v, TSelection &subset, bool centeraverage = true )                                  const;  // avoid parameter TSelection*, which could be cast to a bool!
+    double          Correlation         ( const TVector<TypeD> &v, const TSelection& subset, bool centeraverage = true )                                  const;  // avoid parameter TSelection*, which could be cast to a bool!
     double          CorrelationLinearCircular       ( const TVector<TypeD>& mapcirc, bool centeraverage, TVector<TypeD>& mapcos, TVector<TypeD>& mapsin ) const;
     double          CorrelationLinearCircularRobust ( const TVector<TypeD>& mapcirc )                                                               const;
     double          CorrelationSpearman ( const TVector<TypeD> &v, bool centeraverage )                                                             const;  // Spearman Correlation
@@ -169,7 +169,7 @@ public:
     void            Cumulate            ( const TVector<TypeD> &v, bool invert );               // signed sum
     void            Cumulate            ( const TVector<TypeD> &v, PolarityType polarity );
     void            Clipped             ( TypeD minv, TypeD maxv );
-    double          Difference          ( const TVector<TypeD> &v, bool invert = false )                            const;
+    double          Difference          ( const TVector<TypeD> &v, bool invert = false )                                const;
     double          Dissimilarity       ( const TVector<TypeD> &v, bool centeraverage = true, bool vectorial = false )  const;
     double          Dissimilarity       ( const TVector<TypeD> &v, PolarityType polarity, bool centeraverage = true )   const;  // testing for polarity inversion, if requested and if needed
     double          ExpVar              ( const TVector<TypeD> &v, bool centeraverage = true )                          const;
@@ -182,20 +182,20 @@ public:
     void            Maxed               ( const TVector<TypeD> &v );
     void            Mined               ( const TVector<TypeD> &v );
     void            NoMore              ( TypeD maxv );
-    double          Norm                ( bool centeraverage = false )  const;
-    double          Norm2               ( bool centeraverage = false )  const;
+    double          Norm                ( bool centeraverage = false )      const;
+    double          Norm2               ( bool centeraverage = false )      const;
     void            Normalize           ( bool centeraverage = false );
     void            Normalize1          (); // make sum = 1 (norm 1)
     void            Random              ( double minv, double maxv, TRandUniform* randunif = 0 );       // all entries filled with random values in [min..max]
     void            RandomSeries        ( int numwished, int maxseries, TRandUniform* randunif = 0 );   // a series of n non-repeating indexes in [0..size)
-    double          ScalarProduct       ( const TVector<TypeD> &v )     const;
+    double          ScalarProduct       ( const TVector<TypeD> &v )         const;
     double          ScalarProduct       ( const TVector<TypeD> &v, PolarityType polarity )  const;
     void            Smooth              ();
     double          SquaredDifference   ( const TVector<TypeD> &v, bool invert = false )    const;
     double          SquaredDifference   ( const TVector<TypeD> &v, PolarityType polarity )  const;
     void            SquareRoot          ();
-    double          Sum                 ()                              const;
-    double          Sum                 ( TSelection &subset )          const;
+    double          Sum                 ()                                  const;
+    double          Sum                 ( const TSelection& subset )        const;
     void            ToRank              ( RankingOptions options );
     void            ThresholdAbove      ( TypeD t );
     void            ThresholdBelow      ( TypeD t );
@@ -261,7 +261,7 @@ public:
     TVector&        operator    *=      ( const TVector& op2 );       
     TVector&        operator    /=      ( const TVector& op2 );       
 
-    bool            operator    ==      ( TypeD   op2 ) const;              
+    bool            operator    ==      ( TypeD   op2 )         const;              
 
 
 protected:
@@ -2125,7 +2125,7 @@ return      sum;
 
 
 template <class TypeD>
-double  TVector<TypeD>::Sum ( TSelection &subset )  const
+double  TVector<TypeD>::Sum ( const TSelection& subset )    const
 {
 double              sum             = 0;
 
@@ -2147,7 +2147,7 @@ return      Sum () / NonNull ( Dim1 );
 
 
 template <class TypeD>
-double  TVector<TypeD>::Average ( TSelection &subset )  const
+double  TVector<TypeD>::Average ( const TSelection& subset )    const
 {
 return      Sum ( subset ) / NonNull ( subset.NumSet () );
 }
@@ -2317,7 +2317,7 @@ return  sum == 0 || norm1 == 0 || norm2 == 0 ? 0 : Clip ( sum / sqrt ( norm1 * n
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-double  TVector<TypeD>::Correlation ( const TVector<TypeD> &v, TSelection &subset, bool centeraverage )   const
+double  TVector<TypeD>::Correlation ( const TVector<TypeD> &v, const TSelection& subset, bool centeraverage )   const
 {
 double              avg1            = centeraverage ?   Average ( subset ) : 0;
 double              avg2            = centeraverage ? v.Average ( subset ) : 0;

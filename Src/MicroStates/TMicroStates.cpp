@@ -488,6 +488,7 @@ char                buff[ 256 ];
 TFileName           basefilename = TFileName ( "E:\\Data\\TMicroStates.PreprocessMaps" ) + TFileName ( "." ) + TFileName ( StringRandom ( buff, 6 ) );
 TFileName           _file;
 StringCopy      ( _file, basefilename, ".1.Original.ris" );
+CheckNoOverwrite( _file );
 maps.WriteFile  ( _file );
 #endif
 
@@ -498,6 +499,7 @@ if ( forcezscorepos ) {
 
     #if defined(TracingPreprocessMaps)
     StringCopy      ( _file, basefilename, ".2.ZScorePO.ris" );
+    CheckNoOverwrite( _file );
     maps.WriteFile  ( _file );
     #endif
     } // forcezscorepos
@@ -509,9 +511,9 @@ if ( computeandsavenorm ) {
                                         // Init these arrays before any normalization below
     maps.ComputeNorm            ( Norm, dataref );
 
-    maps.ComputeGFP             ( Gfp,  ReferenceAverage /*dataref*/, datatype );
+    maps.ComputeGFP             ( Gfp,  dataref, datatype );
 
-    maps.ComputeDissimilarity   ( Dis,  polarity, dataref );
+    maps.ComputeDissimilarity   ( Dis,  polarity, dataref, datatype );
                                         // clearing-up dissimilarity array at files junctions
     ResetDissimilarityJunctions ();
     }
@@ -525,6 +527,7 @@ if ( ranking ) {
 
     #if defined(TracingPreprocessMaps)
     StringCopy      ( _file, basefilename, ".3.Rank.ris" );
+    CheckNoOverwrite( _file );
     maps.WriteFile  ( _file );
     #endif
     } // ranking
@@ -536,6 +539,7 @@ maps.SetReference ( processingref, datatype );
 
 #if defined(TracingPreprocessMaps)
 StringCopy      ( _file, basefilename, ".4.Reference.ris" );
+CheckNoOverwrite( _file );
 maps.WriteFile  ( _file );
 #endif
 
@@ -548,6 +552,7 @@ if ( normalizing ) {
 
     #if defined(TracingPreprocessMaps)
     StringCopy      ( _file, basefilename, ".5.Normalized.ris" );
+    CheckNoOverwrite( _file );
     maps.WriteFile  ( _file );
     #endif
     }

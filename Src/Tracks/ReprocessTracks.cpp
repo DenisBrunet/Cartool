@@ -823,7 +823,7 @@ if ( rescalingoptions == GfpRescaling ) {
             if ( baselinecorr )
                 map    -= baseline;
                                         // get GFP
-            rescalingfactor    += map.GlobalFieldPower ( true, IsVector ( datatype ) );
+            rescalingfactor    += map.GlobalFieldPower ( ! IsAbsolute ( datatype ), IsVector ( datatype ) );
             }
 
         } // timechunks
@@ -1070,8 +1070,8 @@ for ( int i = 0; i < timechunks.GetNumMarkers (); i++ ) {
 
             map1.GetColumn ( eegb, tfi );
 
-            if ( dogfp )    eegb ( gfpoff , tfi )   = map1.GlobalFieldPower (       true, IsVector ( datatype ) );
-            if ( dodis )    eegb ( disoff , tfi )   = map1.Dissimilarity    ( map2, true, IsVector ( datatype ) );
+            if ( dogfp )    eegb ( gfpoff , tfi )   = map1.GlobalFieldPower (       ! IsAbsolute ( datatype ), IsVector ( datatype ) );
+            if ( dodis )    eegb ( disoff , tfi )   = map1.Dissimilarity    ( map2, ! IsAbsolute ( datatype ), IsVector ( datatype ) );
             if ( doavg )    eegb ( avgoff , tfi )   = map1.Average          ();
             }
 

@@ -63,7 +63,7 @@ public:
     void            NormalizeColsMax    ();
     void            NormalizeTemplates  ();     // Convert to template: centered and norm = 1
 
-    void            ComputeGFP          ( TArray1<double> &gfp );
+    void            ComputeGFP          ( TArray1<double>& gfp, AtomType datatype );
 
 
     void            AverageDim2         ( int n = 0 );
@@ -322,19 +322,18 @@ for ( int i2 = 0; i2 < Dim2; i2++ ) {
 //----------------------------------------------------------------------------
                                         // 
 template <class TypeD>
-void    TTracks<TypeD>::ComputeGFP ( TArray1<double> &gfp )
+void    TTracks<TypeD>::ComputeGFP ( TArray1<double>& gfp, AtomType datatype )
 {
 TVector<TypeD>      map ( Dim1 );
-//TMap                map ( Dim1 );
 
 gfp.Resize ( Dim2 );
 
-                                        // for all time frame
+
 for ( int i2 = 0; i2 < Dim2; i2++ ) {
 
     map.GetColumn ( *this, i2 );
 
-    gfp[ i2 ]   = map.GlobalFieldPower ( true, false /*IsVector ( datatype )*/ );
+    gfp[ i2 ]   = map.GlobalFieldPower ( ! IsAbsolute ( datatype ), IsVector ( datatype ) );
     }
 }
 
