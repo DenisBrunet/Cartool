@@ -506,9 +506,9 @@ if ( forcezscorepos ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Optional, should only be used when called with Data
+                                        // Computed from the original data, before we start pre-processing them
 if ( computeandsavenorm ) {
-                                        // Init these arrays before any normalization below
+
     maps.ComputeNorm            ( Norm, dataref );
 
     maps.ComputeGFP             ( Gfp,  dataref, datatype );
@@ -577,10 +577,10 @@ tfmax   = IntervalTF[ filei ].GetMax ();
 void    TMicroStates::ResetDissimilarityJunctions ()
 {
 for ( int i = 0; i < NumFiles; i++ ) {
-                                        // this one is enough for the regular Dis(n,n-1) formula
+                                        // this one is enough for the regular formula Dis(n,n-1)
     Dis[ OffsetTF[ i     ]     ]    = 0;
                                         // needed with improved formula (Dis(n,n-1)+Dis(n,n+1))/2
-    Dis[ OffsetTF[ i + 1 ] - 1 ]    = 0;
+//  Dis[ OffsetTF[ i + 1 ] - 1 ]    = 0;
     }
 }
 
