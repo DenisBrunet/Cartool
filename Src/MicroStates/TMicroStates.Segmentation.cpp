@@ -360,8 +360,8 @@ else if ( dualdata == DualEeg ) {
     dualpolarity        = isrestingstates ? PolarityEvaluate : PolarityDirect;
     dualdatatype        = DualDataPresets[ dualdata ].DataType;
     dualdataref         = GetProcessingRef ( ProcessingReferenceEEG ); // or ReferenceNone?
-    dualranking         = false;        // shouldn't
-    dualcentroid        = MeanCentroid;
+    dualranking         = false;            // shouldn't
+    dualcentroid        = MedoidCentroid;   // can not average maps from ESI with different vectorial orientations
 
                                         // load & concatenate all files
     DualData.ReadFiles  (   *gofalt, dualdatatype, ReferenceNone );
