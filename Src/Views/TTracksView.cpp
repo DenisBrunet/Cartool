@@ -245,8 +245,9 @@ DEFINE_RESPONSE_TABLE1(TTracksView, TBaseView)
     EV_COMMAND          ( CM_EEGMRKDELETENAME,          CmDeleteMarkersByName ),
     EV_COMMAND          ( CM_EEGMRKTRIGGERTOMARKER,     CmTriggerToMarker ),
     EV_COMMAND          ( CM_EEGMRKSPLIT,               CmSplitMarkers ),
-    EV_COMMAND          ( CM_EEGMRKRENAME,              CmRenameMarkers ),
-    EV_COMMAND          ( CM_EEGMRKRENAMECURRENT,       CmRenameCurrentMarker ),
+    EV_COMMAND          ( CM_EEGMRKOVERWRITENAMES,      CmRenameOverwriteMarker ),
+    EV_COMMAND          ( CM_EEGMRKSUBSTITUTENAMES,     CmRenameSubstringMarkers ),
+    EV_COMMAND          ( CM_EEGMRKREGEXPNAMES,         CmRenameRegexpMarkers ),
     EV_COMMAND          ( CM_EEGMRKMERGEOVERLAPPING,    CmMergeOverlappingMarkers ),
     EV_COMMAND          ( CM_EEGMRKMERGECONTIGUOUS,     CmMergeContiguousMarkers ),
     EV_COMMAND          ( CM_EEGMRKSELFILE,             CmSetMarkerFile ),
@@ -4379,7 +4380,7 @@ switch ( key ) {
 
     case    'R':
         if ( ControlKey )
-            CmRenameCurrentMarker ();
+            CmRenameOverwriteMarker ();
         else
             CmSetRenderingMode ();
         break;
@@ -8075,72 +8076,73 @@ if ( markersdirty ) {
 
 
 //----------------------------------------------------------------------------
-void    TTracksView::CmRenameMarkers ()
+void    TTracksView::CmRenameRegexpMarkers ()
 {
+constexpr char*     title           = "Regexp Renaming Markers";
+
 if ( EEGDoc->GetNumMarkers ( MarkerTypeUserCoded ) == 0 ) {
-    ShowMessage ( "There are no markers for you here!", "Renaming Markers", ShowMessageWarning );
+    ShowMessage ( "There are no markers for you here!", title, ShowMessageWarning );
     return;
     }
 
 
+bool                withintime      = TFCursor.IsSplitted ();
+//                                 || ! GetAnswerFromUser ( "Do you wish to modify ALL markers?", title, this );
+
+
+static char         search [ MarkerNameMaxLength ];
+static char         replace[ MarkerNameMaxLength ];
+
+if ( ! GetInputFromUser (   withintime ? "Regexp 'search' string, within current time range:" : "Regexp 'search' string, on the whole file:", 
+                            title, 
+                            search, search, 
+                            this ) )
+    return;
+
+if ( StringIsEmpty ( search ) )
+    return;
+
+if ( ! GetInputFromUser ( "Regexp 'replace' string:", title, replace, replace, this ) )
+    return;
+
+if ( /* StringIsEmpty ( to ) ||*/ StringIs ( replace, search ) )
+    return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Initialize grep search
+TStringGrep         greppy ( search, replace, GrepOptionDefault );
+
+if ( ! greppy.IsValid () )
+    return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 MarkersList&        markers         = EEGDoc->GetMarkersList ();
-TMarker*            tomarker;
-char                name   [ 256 ];
-char                from   [ MarkerNameMaxLength ];
-char                to     [ MarkerNameMaxLength ];
-char                before [ MarkerNameMaxLength ];
-char                after  [ MarkerNameMaxLength ];
-char*               toc;
-int                 db;
-int                 da;
-int                 index;
-bool                markersdirty       = false;
-
-
-if ( ! GetInputFromUser ( "Substring to replace (any chars, case sensitive):", "Renaming Markers", from, "", this ) )
-    return;
-
-if ( StringIsEmpty ( from ) )
-    return;
-
-if ( ! GetInputFromUser ( "New substring (or empty for deletion):", "Renaming Markers", to, "", this ) )
-    return;
-
-if ( /* StringIsEmpty ( to ) ||*/ StringIs ( to, from ) )
-    return;
-
+char                name   [ 2 * MarkerNameMaxLength ];
+bool                markersdirty    = false;
 
                                         // scan all triggers
 for ( int i = 0; i < markers.Num (); i++ ) {
 
-    tomarker          = markers[ i ];
+    TMarker*    tomarker    = markers[ i ];
 
     if ( ! IsFlag ( tomarker->Type, MarkerTypeUserCoded ) )
         continue;
 
+    if ( withintime && tomarker->From > TFCursor.GetPosMax () )
+        break;
+
+    if ( withintime && ! IsInsideLimits ( tomarker->From, tomarker->To, TFCursor.GetPosMin (), TFCursor.GetPosMax () ) )
+        continue;
+
+                                        // copy to bigger temp variable
     StringCopy ( name, tomarker->Name );
-    index   = 0;
+    
 
-
-    do {
-        if ( ( toc = StringContains ( name + index, from, StringContainsCase ) ) == 0 )
-            break;
-
-        db  = toc - name;
-        if ( db )       StringCopy  ( before, name, db );
-        else            ClearString ( before );
-
-        da  = StringLength ( name ) - ( ( toc - name ) + StringLength ( from ) );
-        if ( da )       StringCopy  ( after, toc + StringLength ( from ), da );
-        else            ClearString ( after );
-
-        sprintf ( name, "%s%s%s", before, to, after );
-        index = db + StringLength ( to );
-        } while ( true );
-
-                                        // update marker?
-    if ( StringIsNot ( tomarker->Name, name ) ) {
-                                        // directly poke into the marker
+    if ( greppy.SearchAndReplace ( name ) ) {
+                                        // safely clip result
         StringCopy ( tomarker->Name, name, MarkerNameMaxLength - 1 );
 
         markersdirty   = true;
@@ -8148,7 +8150,9 @@ for ( int i = 0; i < markers.Num (); i++ ) {
     } // for i
 
 
-if ( markersdirty ) {                       // some markers added?
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( markersdirty ) {                   // some markers changed?
 
     EEGDoc->CommitMarkers ( true );
                                         // assume we want to see the results!
@@ -8165,61 +8169,174 @@ if ( markersdirty ) {                       // some markers added?
 
 
 //----------------------------------------------------------------------------
-void    TTracksView::CmRenameCurrentMarker ()
+void    TTracksView::CmRenameSubstringMarkers ()
 {
-RenameCurrentMarker ();
-}
+constexpr char*     title           = "Substrings Renaming Markers";
 
-
-void    TTracksView::RenameCurrentMarker ( char *optionalname )
-{
 if ( EEGDoc->GetNumMarkers ( MarkerTypeUserCoded ) == 0 ) {
-    ShowMessage ( "There are no markers for you here!", "Renaming Markers", ShowMessageWarning );
+    ShowMessage ( "There are no markers for you here!", title, ShowMessageWarning );
     return;
     }
 
+
+bool                withintime      = TFCursor.IsSplitted ();
+//                                 || ! GetAnswerFromUser ( "Do you wish to modify ALL markers?", title, this );
+
+
+static char         from   [ MarkerNameMaxLength ];
+static char         to     [ MarkerNameMaxLength ];
+
+if ( ! GetInputFromUser (   withintime ? "Substring to be replaced (case sensitive), within current time range:" : "Substring to be replaced (case sensitive), on the whole file:", 
+                            title, 
+                            from, from, 
+                            this ) )
+    return;
+
+if ( StringIsEmpty ( from ) )
+    return;
+
+if ( ! GetInputFromUser ( "Replaced by new substring (empty for deletion):", title, to, to, this ) )
+    return;
+
+if ( /* StringIsEmpty ( to ) ||*/ StringIs ( to, from ) )
+    return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 MarkersList&        markers         = EEGDoc->GetMarkersList ();
-TMarker*            tomarker;
-static char         newname     [ 256 ];
-bool                markersdirty       = false;
-
-
-if ( StringIsEmpty ( optionalname ) ) {
-    if ( ! GetInputFromUser ( "Give the new name:", "Renaming Marker", newname, newname, this ) )
-        return;
-    }
-else
-    StringCopy ( newname, optionalname );
-
-
-if ( StringIsEmpty ( newname ) )
-    return;
-
-                                        // clip that guy
-newname[ MarkerNameMaxLength - 1 ] = 0;
+char                name   [ 2 * MarkerNameMaxLength ];
+char                before [ MarkerNameMaxLength ];
+char                after  [ MarkerNameMaxLength ];
+bool                markersdirty    = false;
 
                                         // scan all triggers
 for ( int i = 0; i < markers.Num (); i++ ) {
 
-    tomarker        = markers[ i ];
+    TMarker*    tomarker    = markers[ i ];
 
     if ( ! IsFlag ( tomarker->Type, MarkerTypeUserCoded ) )
         continue;
 
-    if ( tomarker->From > TFCursor.GetPosMax () )
+    if ( withintime && tomarker->From > TFCursor.GetPosMax () )
         break;
 
+    if ( withintime && ! IsInsideLimits ( tomarker->From, tomarker->To, TFCursor.GetPosMin (), TFCursor.GetPosMax () ) )
+        continue;
 
-    if ( tomarker->From >= TFCursor.GetPosMin () && tomarker->To <= TFCursor.GetPosMax () ) {
-        StringCopy ( tomarker->Name, newname );
+
+    StringCopy ( name, tomarker->Name );
+    int         index       = 0;
+
+
+    do {
+        char*       toc;
+
+        if ( ( toc = StringContains ( name + index, from, StringContainsCase ) ) == 0 )
+            break;
+
+        int         db  = toc - name;
+        if ( db )       StringCopy  ( before, name, db );
+        else            ClearString ( before );
+
+        int         da  = StringLength ( name ) - ( ( toc - name ) + StringLength ( from ) );
+        if ( da )       StringCopy  ( after, toc + StringLength ( from ), da );
+        else            ClearString ( after );
+
+        StringCopy  ( name, before, to, after );
+
+        index = db + StringLength ( to );
+        } while ( true );
+
+                                        // update marker?
+    if ( StringIsNot ( tomarker->Name, name ) ) {
+                                        // directly poke into the marker
+        StringCopy ( tomarker->Name, name, MarkerNameMaxLength - 1 );
+
         markersdirty   = true;
         }
+    } // for i
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( markersdirty ) {                   // some markers changed?
+
+    EEGDoc->CommitMarkers ( true );
+                                        // assume we want to see the results!
+    ShowTags    = true;
+
+    if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
+        CmSetMarkerDisplay ( CM_EEGMRKMARKER );
+
+    ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+
+    EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+    }
+}
+
+
+//----------------------------------------------------------------------------
+void    TTracksView::CmRenameOverwriteMarker ()
+{
+constexpr char*     title           = "Overwriting Marker Names";
+
+if ( EEGDoc->GetNumMarkers ( MarkerTypeUserCoded ) == 0 ) {
+    ShowMessage ( "There are no markers for you here!", title, ShowMessageWarning );
+    return;
+    }
+
+                                        // This could be quite brutal to overwrite all markers, better ask
+//bool                withintime      = TFCursor.IsSplitted () 
+//                                   || ! GetAnswerFromUser ( "Do you wish to modify ALL markers?", title, this );
+                                        // or just work within the current cursor range, all the time
+bool                withintime      = true;
+
+
+static char         newname[ 2 * MarkerNameMaxLength ];
+
+if ( ! GetInputFromUser (   "Give the new marker name, applied to current time range:", 
+                            title, 
+                            newname, newname, 
+                            this ) )
+    return;
+
+if ( StringIsEmpty ( newname ) )
+    return;
+
+                                        // clip that guy now
+newname[ MarkerNameMaxLength - 1 ] = 0;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+MarkersList&        markers         = EEGDoc->GetMarkersList ();
+bool                markersdirty    = false;
+
+                                        // scan all triggers
+for ( int i = 0; i < markers.Num (); i++ ) {
+
+    TMarker*    tomarker    = markers[ i ];
+
+    if ( ! IsFlag ( tomarker->Type, MarkerTypeUserCoded ) )
+        continue;
+
+    if ( withintime && tomarker->From > TFCursor.GetPosMax () )
+        break;
+
+    if ( withintime && ! IsInsideLimits ( tomarker->From, tomarker->To, TFCursor.GetPosMin (), TFCursor.GetPosMax () ) )
+        continue;
+
+
+    StringCopy ( tomarker->Name, newname );
+
+    markersdirty   = true;
     } // for markers
 
 
-if ( markersdirty ) {                       // some markers added?
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( markersdirty ) {                   // some markers added?
 
     EEGDoc->CommitMarkers ( true );
                                         // assume we want to see the results!
@@ -8246,6 +8363,8 @@ if ( EEGDoc->GetNumMarkers ( MarkerTypeUserCoded ) == 0 ) {
 if ( ! GetAnswerFromUser ( "Are you sure you want to merge exactly overlapping markers (no undo) ?", "Merging Overlapped Markers" ) )
     return;
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 MarkersList&        markers         = EEGDoc->GetMarkersList ();
 TMarker*            tomarker;
@@ -8305,8 +8424,9 @@ for ( int i = 0; i < markers.Num (); i++ ) {
     } // for markers
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( markersdirty ) {                       // some markers added?
+if ( markersdirty ) {                   // some markers added?
 
     EEGDoc->CommitMarkers ( true );
                                         // reloading everything will get rid of the duplicates!
@@ -8337,6 +8457,7 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to merge identical contiguous 
     return;
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compact identical markers, resulting markers could be of any length
 if ( EEGDoc->CompactConsecutiveMarkers ( true, Highest<long> (), false ) ) {
                                         // some markers added?

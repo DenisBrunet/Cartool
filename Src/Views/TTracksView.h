@@ -552,11 +552,11 @@ protected:
     void                CmSearchMarker          ( owlwparam w );
     void                CmTriggerToMarker       ();
     void                CmSplitMarkers          ();
-    void                CmRenameMarkers         ();
-    void                CmRenameCurrentMarker   ();
+    void                CmRenameOverwriteMarker ();
+    void                CmRenameSubstringMarkers();
+    void                CmRenameRegexpMarkers   ();
     void                CmMergeOverlappingMarkers ();
     void                CmMergeContiguousMarkers();
-    void                RenameCurrentMarker     ( char *optionalname = 0 );
     void                CmSetMarkerFilter       ();
     void                CmGenerateMarkers       ();
 

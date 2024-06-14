@@ -49,6 +49,16 @@ Set ( regexp, options );
 }
 
 
+        TStringGrep::TStringGrep ( const char* searchregexp, const char* replaceregexp, GrepOption options )
+{
+RegExpCompiled  = 0;
+
+Reset ();
+
+Set ( searchregexp, replaceregexp, options );
+}
+
+
         TStringGrep::~TStringGrep ()
 {
 Reset ();
@@ -66,6 +76,8 @@ if ( RegExpCompiled ) {
     RegExpCompiled  = 0;
     }
 
+ClearString ( ReplaceRegexp, PCRE_REPLACEDLENGTH );
+
 ResetResults ();
 }
 
@@ -80,7 +92,7 @@ for ( int i = 0; i < PCRE_MAXRETURNMATCHES; i++ )
 
 
 //----------------------------------------------------------------------------
-                                        // Transform a Shell synty wild-chars into equivalent Perl regexp
+                                        // Transform a Shell simpler wild-chars syntax into its Perl regexp equivalent
 void    TStringGrep::ShellToPerl ( char* regexp )   const
 {
 if ( StringIsEmpty ( regexp ) )
@@ -185,11 +197,28 @@ else { // if GrepOptionSyntaxPerl, or nothing specified (it shouldn't, but let i
 
 
 //----------------------------------------------------------------------------
+                                        // The searched and replaced string can use up to 9 capture groups
+                                        // search should have syntax like "My (\\w*)" to capture the next word
+                                        // replaced the can use group 1   "Is \\1"
+                                        // We allow group 0 \\0 as the whole match
+bool    TStringGrep::Set ( const char* searchregexp, const char* replaceregexp, GrepOption options )
+{
+Set ( searchregexp, options );
+
+StringCopy  ( ReplaceRegexp, replaceregexp, PCRE_REPLACEDLENGTH - 1 );
+
+return  IsValid ();
+}
+
+
+//----------------------------------------------------------------------------
                                         // Optionally returning all matches
                                         // matches ( 0 ) always contain the whole match
                                         // matches ( 1 ) is first group, matches ( 2 ) is second group, etc.. if syntax asked for groups
                                         // it seems it also return an additional group with the trail from the last group
-int     TStringGrep::Matched ( const char* s, TStrings*    matches )
+int     TStringGrep::Matched    (   const char*     s,  
+                                    TStrings*       matches
+                                )
 {
 ResetResults ();
 
@@ -262,7 +291,7 @@ else {                                  // 1 or more matches
 
     if ( matches ) {
                                         // loop through the matched substrings
-        char                substring[ 1024 ];
+        char                substring[ KiloByte ];
   
         for ( int i = 0; i < NumMatches; i++ ) {
                                         // first string is the full match; successive strings are optional groups retrieved from the expression
@@ -277,6 +306,36 @@ else {                                  // 1 or more matches
 
 
 return  NumMatches;
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Should have initialized with Set ( search, replace, options )
+bool    TStringGrep::SearchAndReplace   ( char* s )
+{
+TStrings            matches;
+
+if ( ! Matched  ( s, &matches ) )
+    return  false;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // starting from the replaced string
+StringCopy  ( s, ReplaceRegexp );
+
+                                        // now search for any capture group
+char                group[ 4 ];
+                                        // currently limited to 9 capture groups
+                                        // also allows \0 as whole capture
+for ( int groupi = 0; groupi <= NoMore ( 9, NumMatches - 1 ); groupi++ ) {
+    
+    StringCopy      ( group, "\\", IntegerToString ( groupi ) );
+                                        // replaces ALL instances of string group
+    StringReplace   ( s, group, matches[ groupi ] );
+    }
+
+
+return  true;
 }
 
 
@@ -296,7 +355,7 @@ void    StringGrepNeutral ( char* s )
 if ( s == 0 )
     return;
 
-                                        // is it exhaustive?
+                                        // exhaustive list(?)
 TSplitStrings       specialgrep ( "[ ] ( ) { } ^ $ . + * ? & -", UniqueStrings );
 char                newpart     [ 256 ];
 

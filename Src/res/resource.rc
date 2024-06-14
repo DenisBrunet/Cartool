@@ -431,8 +431,10 @@ BEGIN
         MENUITEM "Next hit\t(F3)",              CM_EEGMRKSEARCHNEXT
         MENUITEM "Previous hit\t(Shift + F3)",  CM_EEGMRKSEARCHPREVIOUS
         MENUITEM SEPARATOR
-        MENUITEM "R&Ename markers within cursor range\t(Ctrl + R)", CM_EEGMRKRENAMECURRENT
-        MENUITEM "&Rename all markers",         CM_EEGMRKRENAME
+        MENUITEM "Overwrite marker nam&es\t(Ctrl + R)", CM_EEGMRKOVERWRITENAMES
+        MENUITEM "Replace substr&ings in marker names", CM_EEGMRKSUBSTITUTENAMES
+        MENUITEM "Rege&xp marker names substitution",   CM_EEGMRKREGEXPNAMES
+        MENUITEM SEPARATOR
         MENUITEM "Mer&Ge exact overlapping markers", CM_EEGMRKMERGEOVERLAPPING
         MENUITEM "Merge identical contig&Uous markers", CM_EEGMRKMERGECONTIGUOUS
         MENUITEM SEPARATOR

@@ -75,6 +75,7 @@ enum    GrepOption  {
 
 constexpr int       PCRE_MAXRETURNMATCHES   = 50;
 constexpr int       PCRE_MAXOVECTOR         = 2 * PCRE_MAXRETURNMATCHES;
+constexpr int       PCRE_REPLACEDLENGTH     = KiloByte;
 
                                         // A few useful grep expressions
 constexpr char*     GrepEmptyString         = "^$";             // empty string - !will return true for "\n" string!
@@ -87,26 +88,29 @@ class               TStrings;
 class  TStringGrep
 {
 public:
-                    TStringGrep ();
-                    TStringGrep ( const char* regexp, GrepOption options );
-                   ~TStringGrep ();
+                    TStringGrep     ();
+                    TStringGrep     ( const char* regexp, GrepOption options );
+                    TStringGrep     ( const char* searchregexp, const char* replaceregexp, GrepOption options );
+                   ~TStringGrep     ();
 
 
-    void            Reset   ();
-    bool            Set     ( const char* regexp, GrepOption options );
+    void            Reset           ();
+    bool            Set             ( const char* regexp, GrepOption options );
+    bool            Set             ( const char* searchregexp, const char* replaceregexp, GrepOption options );
 
-    bool            IsValid         ()  const                   { return  RegExpCompiled != 0; }
-    bool            HasMatches      ()  const                   { return  NumMatches > 0; }
-    int             GetNumMatches   ()  const                   { return  NumMatches; }
+    bool            IsValid         ()          const           { return  RegExpCompiled != 0; }
+    bool            HasMatches      ()          const           { return  NumMatches > 0; }
+    int             GetNumMatches   ()          const           { return  NumMatches; }
 
-    int             Matched ( const char* s, TStrings*    matches = 0 );    // optional argument to return the match(es)
+    int             Matched         ( const char* s, TStrings* matches = 0 );   // optional argument to return the match(es)
+    bool            SearchAndReplace( char* s );
 
                                         // returns a pointer to beginning of a given match
 //  char*           GetMatchStart   ( int i )   const           { return  IsInsideLimits ( i, 0, NumMatches - 1 ) ? const_cast<char*> ( ToMatch[ i ] ) : 0; }
     const char*     GetMatchStart   ( int i )   const           { return  IsInsideLimits ( i, 0, NumMatches - 1 ) ? ToMatch[ i ] : 0; }
 
 
-                    operator    bool    ()  const               { return  IsValid (); }
+                    operator bool   ()          const           { return  IsValid (); }
 
 
 protected:
@@ -115,6 +119,7 @@ protected:
                                         // pcre variables
     ::pcre*         RegExpCompiled;
     int             pcreOutputVector[ PCRE_MAXOVECTOR ];        // could be static or global, but we maintain thread safe behavior by allocating it per obejct
+    char            ReplaceRegexp   [ PCRE_REPLACEDLENGTH   ];
 
     int             NumMatches;
     const char*     ToMatch         [ PCRE_MAXRETURNMATCHES ];  // pointers to sub-strings' matches

@@ -302,9 +302,7 @@
 #define CM_EEGMRKSCANEEG                1711
 #define CM_EEGMRKMANAGE                 1712
 #define CM_EEGMRKSPLIT                  1713
-#define CM_EEGMRKRENAME                 1714
 #define CM_EEGMRKDELETENAME             1715
-#define CM_EEGMRKRENAMECURRENT          1716
 #define CM_EEGMRKMERGEOVERLAPPING       1717
 #define CM_EEGMRKMERGECONTIGUOUS        1718
 #define CM_EEGMRKSEARCH                 1719
@@ -313,6 +311,9 @@
 #define CM_EEGMRKDISPLAYFILTER          1722
 #define CM_EEGMRKSCANBADEPOCHS          1723
 #define CM_EEGMRKGENERATE               1724
+#define CM_EEGMRKOVERWRITENAMES         1730
+#define CM_EEGMRKSUBSTITUTENAMES        1731
+#define CM_EEGMRKREGEXPNAMES            1732
 #define CM_SEARCHTFMAX                  1750
 #define CM_OPENSEG                      1751
 #define CM_OPENTEMPLATES                1752
