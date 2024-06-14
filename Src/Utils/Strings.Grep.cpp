@@ -310,7 +310,7 @@ return  NumMatches;
 
 
 //----------------------------------------------------------------------------
-                                        // Should have initialized with Set ( search, replace, options )
+                                        // Should have been initialized with Set ( search, replace, options )
 bool    TStringGrep::SearchAndReplace   ( char* s )
 {
 TStrings            matches;
@@ -320,8 +320,10 @@ if ( ! Matched  ( s, &matches ) )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // starting from the replaced string
-StringCopy  ( s, ReplaceRegexp );
+                                        // addressing the replaced string only
+char                replaced[ PCRE_REPLACEDLENGTH ];
+
+StringCopy  ( replaced, ReplaceRegexp, PCRE_REPLACEDLENGTH - 1 );
 
                                         // now search for any capture group
 char                group[ 4 ];
@@ -331,9 +333,30 @@ for ( int groupi = 0; groupi <= NoMore ( 9, NumMatches - 1 ); groupi++ ) {
     
     StringCopy      ( group, "\\", IntegerToString ( groupi ) );
                                         // replaces ALL instances of string group
-    StringReplace   ( s, group, matches[ groupi ] );
+    StringReplace   ( replaced, group, matches[ groupi ] );
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // addressing the whole resulting string
+size_t              searchlength    = StringLength ( matches[ 0 ] );
+size_t              replacelength   = StringLength ( replaced     );
+char*               startsearch     = s + pcreOutputVector[ 0 ];
+char*               postsearch      = startsearch + searchlength;
+char*               postreplace     = startsearch + replacelength;
+
+
+if ( searchlength != replacelength )
+                                        // will work for all cases - also moves the final EOS char
+    MoveVirtualMemory   ( postreplace, postsearch,  StringSize ( postsearch ) );
+
+
+if ( replacelength != 0 )
+                                        // poke new characters, without the EOS char
+    CopyVirtualMemory   ( startsearch, replaced,    replacelength );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 return  true;
 }
