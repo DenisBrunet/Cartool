@@ -10565,18 +10565,32 @@ void    TTracksView::CmTimeRef ( owlwparam w )
 
 if ( w == CM_EEGTIMERELATIVETO ) {
 
-    char                buff[ 256 ];
-    double              timeorigin;
+    char                message [ 256 ];
+    char                current [ 256 ];
+    char                buff    [ 256 ];
 
-    FloatToString   ( buff, TimeFrameToMilliseconds ( TFCursor.GetPosMin (), EEGDoc->GetSamplingFrequency () ) );
+    StringCopy  (   message, 
+                    "New time origin, with any of these syntaxes (strings in bracket are optional):" NewLine 
+                    Tab "XXXX [ TF ]"   NewLine 
+                    Tab "[ HH: ]MM:SS"  NewLine 
+                    Tab "[ HH hour ] [ MM min ] [ SS sec ] [ mm msec ]" );
 
-    if ( ! GetValueFromUser ( "Give the new time origin, starting from the beginning, in milliseconds:", "Set Relative Time", timeorigin, buff, this ) )
+
+    FloatToString   ( current, TimeFrameToMilliseconds ( TFCursor.GetPosMin (), EEGDoc->GetSamplingFrequency () ) );
+    StringAppend    ( current, " msec" );
+
+
+    if ( ! GetInputFromUser ( message, "Set Relative Time", buff, current, this ) )
         return;
 
+    double              timeorigin      = TimeFrameToMicroseconds ( StringToTimeFrame ( buff, EEGDoc->GetSamplingFrequency () ), EEGDoc->GetSamplingFrequency () );
+
+
     EEGDoc->DateTime.RelativeTime       = true;
-    EEGDoc->DateTime.RelativeTimeOffset = - timeorigin * 1000;
+    EEGDoc->DateTime.RelativeTimeOffset = - timeorigin;
     }
 else if ( w == CM_EEGTIMERELATIVE ) {
+
     EEGDoc->DateTime.RelativeTime       = true;
     EEGDoc->DateTime.RelativeTimeOffset = 0;
     }
@@ -10626,18 +10640,24 @@ long                gototf          = 0;
 
 if ( IsCommandSender () ) {
 
-    char                mess[ 256 ];
-    char                buff[ 256 ];
+    char                message [ 256 ];
+    char                buff    [ 256 ];
     bool                answerintf;
 
                                             // build a contextully dependent input message
-    StringCopy ( mess, "Go to absolute time position, with available syntax (strings in bracket are optional):\n\tXXXX [ TF ]\n\t[ HH: ]MM:SS\n\t[ HH hour ] [ MM min ] [ SS sec ] [ mm msec ]" );
+    StringCopy  (   message, 
+                    "Go to absolute time position, with any of these syntaxes (strings in bracket are optional):" NewLine 
+                    Tab "XXXX [ TF ]"   NewLine 
+                    Tab "[ HH: ]MM:SS"  NewLine 
+                    Tab "[ HH hour ] [ MM min ] [ SS sec ] [ mm msec ]" );
+
+
 
     if ( EEGDoc->DateTime.RelativeTime )
-        StringReplace ( mess, "absolute", "relative" );
+        StringReplace ( message, "absolute", "relative" );
 
 
-    if ( ! GetInputFromUser ( mess, "GoTo Time", buff, "", this ) )
+    if ( ! GetInputFromUser ( message, "GoTo Time", buff, "", this ) )
         return;
 
                                             // convert user input
@@ -10814,16 +10834,16 @@ long                tr              = 0;
                                         // build a contextully dependent input message
 if ( IsCommandSender () ) {
 
-    char                mess[ 256 ];
-    char                buff[ 256 ];
+    char                message [ 256 ];
+    char                buff    [ 256 ];
 
-    StringCopy  (   mess, 
+    StringCopy  (   message, 
                     "New time range per page, with any of these syntaxes (strings in bracket are optional):" NewLine 
                     Tab "XXXX [ TF ]"   NewLine 
                     Tab "[ HH: ]MM:SS"  NewLine 
                     Tab "[ HH hour ] [ MM min ] [ SS sec ] [ mm msec ]" );
 
-    if ( ! GetInputFromUser ( mess, "Set Time Window", buff, "", this ) )
+    if ( ! GetInputFromUser ( message, "Set Time Window", buff, "", this ) )
         return;
 
                                         // convert user input
