@@ -477,10 +477,10 @@ BEGIN
         MENUITEM "Relative time, origin at the &Beginning", CM_EEGTIMERELATIVE
         MENUITEM "Relative time, &Arbitrary origin", CM_EEGTIMERELATIVETO
         MENUITEM SEPARATOR
-        MENUITEM "Go to time &Origin",          CM_EEGTIME0
+        MENUITEM "Go to time &Origin\t(Numpad 0)",CM_EEGTIME0
         MENUITEM "Go to Specified Time\t(Ctrl + G)", CM_GOTOTIME
         MENUITEM "Select All Time\t(Ctrl + A)", CM_SELECTALLTIME
-        MENUITEM "Set Display Time Win&dow",    CM_SETTIMEWINDOW
+        MENUITEM "Set Display Time &Window",    CM_SETTIMEWINDOW
         MENUITEM SEPARATOR
         MENUITEM "Set new Sampling &Frequency", CM_EEGSAMPLINGFREQUENCY
     END

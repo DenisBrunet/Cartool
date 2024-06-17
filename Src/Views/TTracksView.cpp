@@ -481,15 +481,9 @@ ShowSD              = SDNone;
 
 ShowVertScale       = false;
 ShowHorizScale      = NoTimeDisplay;
-                                        // test to see if real value 0 is within display range
-                                        // !this could be put as a flag in TDateTime
-ShowHorizScaleLegal             =                                     EEGDoc->DateTime.RelativeTimeOffset != 0  // RelativeTimeOffset is 0 for real EEG
-                               && Round ( MicrosecondsToTimeFrame ( - EEGDoc->DateTime.RelativeTimeOffset, EEGDoc->GetSamplingFrequency () ) ) >= 0
-                               || EEGDoc->IsContentType ( ContentTypeHistogram )                                                                    ? TimeDisplayLinear
-                                                                                                                                                    : TimeDisplayTime;
-
-//ShowValues ( "RelativeTimeOffset  ToTF -> legal", "fisi", EEGDoc->DateTime.RelativeTimeOffset, Round ( MicrosecondsToTimeFrame ( - EEGDoc->DateTime.RelativeTimeOffset, EEGDoc->GetSamplingFrequency () ) ), ContentNames[ EEGDoc->GetContentType () ], (int) ShowHorizScaleLegal );
-
+                                        // Horizontal scale can be either time, or some linear transform
+ShowHorizScaleLegal = EEGDoc->IsContentType ( ContentTypeHistogram )    ? TimeDisplayLinear
+                                                                        : TimeDisplayTime;  // all recording, spontaneous EEG, ERPs, frequency files..
 
 ShowBaseline        = true;
 ShowDate            = EEGDoc->DateTime.IsOriginDateAvailable ();
@@ -1173,7 +1167,12 @@ Clipped ( TextMargin, (double) TextMarginMin, (double) TextMarginMax );
 //----------------------------------------------------------------------------
                                         // format to text a length in TF
                                         // and optionally format it to a time string, if Doc allows it
-void    TTracksView::TFToString ( long tf, char *stf, char *stime, char *sdate, bool interval )     const
+void    TTracksView::TFToString (   long        tf, 
+                                    char*       stf, 
+                                    char*       stime,  TimeDisplayEnum     horizscale, 
+                                    char*       sdate,
+                                    bool        interval 
+                                )   const
 {
 if ( ! interval /*&& ( EEGDoc->IsTemplates () || EEGDoc->IsContentType ( ContentTypeData ) )*/ )
     tf      = EEGDoc->RelToAbsTime ( tf );  // add first "TF" value
@@ -1199,12 +1198,11 @@ if ( stime ) {
 
         else {
 
-            if      ( ShowHorizScale == TimeDisplayTime 
-                 /*|| ShowHorizScale == NoTimeDisplay*/ )   // un-comment for old behavior (title always showing converted time), comment to sync with horizontal time
+            if      ( horizscale == TimeDisplayTime )
 
                 EEGDoc->DateTime.GetStringTime ( timeus, stime, interval );
 
-            else if ( ShowHorizScale == TimeDisplayLinear )
+            else if ( horizscale == TimeDisplayLinear )
 
                 EEGDoc->DateTime.GetStringData ( timeus, stime, interval );
 
@@ -1222,11 +1220,16 @@ if ( sdate )
         EEGDoc->DateTime.GetStringDate ( sdate );
 }
 
-                                        // a double version, for non-integer TFs steps in ms
-void    TTracksView::TFToString ( double dtf, char *stf, char *stime, char *sdate, bool interval )  const
+
+//----------------------------------------------------------------------------
+                                        // double version, for non-integer TFs steps used for horizontal grids
+void    TTracksView::TFToString (   double      dtf, 
+                                    char*       stf, 
+                                    char*       stime,  TimeDisplayEnum     horizscale 
+                                )   const
 {
                                         // doing the time frame part (stf)
-TFToString ( (long) dtf, stf, stime, sdate, interval );
+TFToString ( (long) dtf, stf );
 
 
 if ( stime ) {
@@ -1239,23 +1242,25 @@ if ( stime ) {
                                         // keep into floating point
         if ( EEGDoc->GetDim2Type () == DimensionTypeFrequency )
 
-            EEGDoc->DateTime.GetStringFrequency ( timeus, stime, interval );
+            EEGDoc->DateTime.GetStringFrequency ( timeus, stime, false );
 
         else {
 
-            if      ( ShowHorizScale == TimeDisplayTime )
+            if      ( horizscale == TimeDisplayTime )
 
-                EEGDoc->DateTime.GetStringTime ( timeus, stime, interval );
+                EEGDoc->DateTime.GetStringTime ( timeus, stime, false );
 
-            else if ( ShowHorizScale == TimeDisplayLinear )
+            else if ( horizscale == TimeDisplayLinear )
 
-                EEGDoc->DateTime.GetStringData ( timeus, stime, interval );
+                EEGDoc->DateTime.GetStringData ( timeus, stime, false );
 
             } // time axis
         } // sampling frequency
     }
 }
 
+
+//----------------------------------------------------------------------------
                                         // cooks an informative title from given cursor
 void    TTracksView::CursorToTitle ( TTFCursor *tfc, char *title )  const
 {
@@ -1288,11 +1293,11 @@ ClearString ( sdate    );
 ClearString ( stimemin );
 
 
-if ( tfc->IsSplitted() ) {
+if ( tfc->IsSplitted () ) {
 
-    TFToString ( tfmin,   stfmin,   ShowTime ? stimemin   : 0, ShowDate ? sdate : 0 );
-    TFToString ( tfmax,   stfmax,   ShowTime ? stimemax   : 0, 0 );
-    TFToString ( tfdelta, stfdelta, ShowTime ? stimedelta : 0, 0, true );
+    TFToString ( tfmin,   stfmin,   ShowTime ? stimemin   : 0, ShowHorizScaleLegal, ShowDate ? sdate : 0 );
+    TFToString ( tfmax,   stfmax,   ShowTime ? stimemax   : 0, ShowHorizScaleLegal, 0 );
+    TFToString ( tfdelta, stfdelta, ShowTime ? stimedelta : 0, ShowHorizScaleLegal, 0, true );
 
                                         // "Title   X=tf..tf (dtf) / ms..ms (dms)  date"
     if      ( *stimemin ) { StringAppend ( title, stfmin, "..", stfmax, " (", stfdelta, ") / " );
@@ -1306,7 +1311,7 @@ if ( tfc->IsSplitted() ) {
     }
 else {
 
-    TFToString ( tfmin,   stfmin,   ShowTime ? stimemin   : 0, ShowDate ? sdate : 0 );
+    TFToString ( tfmin,   stfmin,   ShowTime ? stimemin   : 0, ShowHorizScaleLegal, ShowDate ? sdate : 0 );
 
                                         // "Title   X=tf / ms  date"
     if      ( *stimemin )   StringAppend ( title, stfmin, " / ", stimemin, "  ", sdate );
@@ -1319,6 +1324,7 @@ else {
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksView::UpdateCaptionTracksValues ( char *buff )
 {
                                         // add min/max smart informations on current display ONLY
@@ -1431,6 +1437,7 @@ else if ( nhr || nsr ) {                // some regular tracks, ignoring pseudos
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksView::UpdateCaption ()
 {
 char                buff[ MaxViewTitleLength ];
@@ -1444,7 +1451,7 @@ CursorToTitle ( &TFCursor, Title );
     UpdateCaptionTracksValues ( buff );
 
     StringAppend ( Title, "  ", buff );
-//    }
+//  }
 
                                         // optionally display the current segments
 if ( EEGDoc->IsContentType ( ContentTypeSeg ) 
@@ -1472,6 +1479,8 @@ GetParentO()->SetCaption ( Title );
 ScrollBar->UpdateIt();
 }
 
+
+//----------------------------------------------------------------------------
                             // either highlights or draws to normal this track
 void    TTracksView::DrawHighlighted ( int /*i*/, bool /*highlight*/ )
 {
@@ -2413,7 +2422,9 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
             glEnd();
 
             for ( double g = hgridorg - CDPt.GetMin(); g < CDPt.GetLength(); g += hgridstep ) {
-                TFToString ( g + CDPt.GetMin(), stf, stime, 0 );
+
+                TFToString ( g + CDPt.GetMin(), stf, stime, ShowHorizScaleLegal );
+
                 SFont->Print ( trorg.X + ( g + ( OneMoreHoriz () ? 0.5 : 0 ) ) * scaleh + 3, y1, z, *stime ? stime : stf, TA_LEFT | TA_BOTTOM );
                 }
             } // drawhoriscale - pre
@@ -3498,7 +3509,9 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
             glEnd();
 
             for ( double g = hgridorg - CDPt.GetMin(); g < CDPt.GetLength(); g+= hgridstep ) {
-                TFToString ( g + CDPt.GetMin(), stf, stime, 0 );
+
+                TFToString ( g + CDPt.GetMin(), stf, stime, ShowHorizScaleLegal );
+
                 SFont->Print ( trorg.X + g / descalex + 3, y1, z, *stime ? stime : stf, TA_LEFT | TA_BOTTOM );
                 }
             } // drawhoriscale - post
@@ -10863,7 +10876,7 @@ if ( CDPt.GetLength () != ( tr | oddtf )
         }
     else {
 
-        TFToString ( (long) CDPt.GetLength (), StringEnd ( buff ), 0, 0, true );
+        TFToString ( (long) CDPt.GetLength (), StringEnd ( buff ), 0, ShowHorizScaleLegal, 0, true );
 
         StringAppend( buff, "[TF]" );
         }

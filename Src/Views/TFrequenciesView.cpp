@@ -1308,7 +1308,8 @@ if ( how & GLPaintOpaque ) {
 
                 for ( double g = hgridorg - CDPt.GetMin(); g < CDPt.GetLength(); g += hgridstep ) {
 
-                    TFToString ( g + CDPt.GetMin(), stf, stime, 0 );
+                    TFToString ( g + CDPt.GetMin(), stf, stime, ShowHorizScaleLegal );
+
                     SFont->Print ( trorg.X + ( g + ( IsBarsMode () ? 0.5 : 0 ) ) * scaleh + 3, y1, z, *stime ? stime : stf, TA_LEFT | TA_BOTTOM );
                     }
                 }
@@ -1666,14 +1667,14 @@ if ( how & GLPaintOpaque ) {
                             #define     stfmax      ( buff + 64 )
                             #define     stimemax    ( buff + 96 )
 
-                            TFToString ( CDPt.GetMin () + (long) toslot->UserData,   stfmin,   stimemin,   0 );
+                            TFToString ( CDPt.GetMin () + (long) toslot->UserData,   stfmin,   stimemin,    ShowHorizScaleLegal,   0 );
 
                             if ( *stimemin )    StringCopy  ( buff, stimemin );
                             else                StringCopy  ( buff, stfmin   );
                             }
                         else {
-                            TFToString ( TFCursor.GetPosMin (),   stfmin,   stimemin,   0 );
-                            TFToString ( TFCursor.GetPosMax (),   stfmax,   stimemax,   0 );
+                            TFToString ( TFCursor.GetPosMin (),   stfmin,   stimemin,    ShowHorizScaleLegal,   0 );
+                            TFToString ( TFCursor.GetPosMax (),   stfmax,   stimemax,    ShowHorizScaleLegal,   0 );
 
                             if ( *stimemin )    StringCopy  ( buff, stimemin, " - ", stimemax );
                             else                StringCopy  ( buff, stfmin,   " - ", stfmax   );
@@ -2653,7 +2654,9 @@ if ( how & GLPaintOpaque ) {
                 glEnd ();
 
                 for ( double g = hgridorg - CDPt.GetMin(); g < CDPt.GetLength(); g += hgridstep ) {
-                    TFToString ( g + CDPt.GetMin(), stf, stime, 0 );
+
+                    TFToString ( g + CDPt.GetMin(), stf, stime, ShowHorizScaleLegal );
+
                     SFont->Print ( trorg.X + g / descalex + 3, y1, z, *stime ? stime : stf, TA_LEFT | TA_BOTTOM );
                     }
                 }

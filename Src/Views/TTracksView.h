@@ -350,9 +350,9 @@ public:
     TDisplaySpaces&     GetDisplaySpaces        ()                                  { return ( XYZDoc ? XYZDoc : BaseDoc )->GetDisplaySpaces (); };
 
 
-    void                TFToString              ( long   tf, char *stf, char *stime = 0, char *sdate = 0, bool interval = false )   const;
-    void                TFToString              ( double tf, char *stf, char *stime = 0, char *sdate = 0, bool interval = false )   const;
-    void                CursorToTitle           ( TTFCursor *tfc, char *title )                                                     const;
+    void                TFToString              ( long   tf, char* stf, char* stime = 0, TimeDisplayEnum horizscale = NoTimeDisplay, char* sdate = 0, bool interval = false )   const;
+    void                TFToString              ( double tf, char* stf, char* stime = 0, TimeDisplayEnum horizscale = NoTimeDisplay )                                           const;
+    void                CursorToTitle           ( TTFCursor *tfc, char *title ) const;
 
 
     void                EvKeyDown               ( owl::uint key, owl::uint repeatCount, owl::uint flags );
