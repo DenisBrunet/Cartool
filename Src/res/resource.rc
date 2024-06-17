@@ -423,6 +423,7 @@ BEGIN
     POPUP "&Markers"
     BEGIN
         MENUITEM "&Add marker at current cursor position\t(M)", IDB_ADDMARKER
+        MENUITEM "Quick Add Markers\t(Ctrl + Numpad 1..9)", 12345, GRAYED
         MENUITEM "Delete markers within &Cursor range\t(Del)", CM_EEGMRKDELETE
         MENUITEM "Delete markers by &Names",    CM_EEGMRKDELETENAME
         MENUITEM "Delete all mar&kers",         CM_EEGMRKCLEARALL
