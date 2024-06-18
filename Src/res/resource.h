@@ -314,6 +314,16 @@
 #define CM_EEGMRKOVERWRITENAMES         1730
 #define CM_EEGMRKSUBSTITUTENAMES        1731
 #define CM_EEGMRKREGEXPNAMES            1732
+#define CM_EEGMRKQUICKRESET             1740
+#define CM_EEGMRKQUICK1                 1741
+#define CM_EEGMRKQUICK2                 1742
+#define CM_EEGMRKQUICK3                 1743
+#define CM_EEGMRKQUICK4                 1744
+#define CM_EEGMRKQUICK5                 1745
+#define CM_EEGMRKQUICK6                 1746
+#define CM_EEGMRKQUICK7                 1747
+#define CM_EEGMRKQUICK8                 1748
+#define CM_EEGMRKQUICK9                 1749
 #define CM_SEARCHTFMAX                  1750
 #define CM_OPENSEG                      1751
 #define CM_OPENTEMPLATES                1752

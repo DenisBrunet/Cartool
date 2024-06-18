@@ -220,6 +220,16 @@ DEFINE_RESPONSE_TABLE1(TTracksView, TBaseView)
     EV_COMMAND_ENABLE   ( IDB_PREVMARKER,               CmPrevNextTagEnable ),
     EV_COMMAND_ENABLE   ( IDB_NEXTMARKER,               CmPrevNextTagEnable ),
     EV_COMMAND          ( IDB_ADDMARKER,                CmAddMarker ),
+    EV_COMMAND_AND_ID   ( CM_EEGMRKQUICK1,              CmQuickMarkers ),
+    EV_COMMAND_AND_ID   ( CM_EEGMRKQUICK2,              CmQuickMarkers ),
+    EV_COMMAND_AND_ID   ( CM_EEGMRKQUICK3,              CmQuickMarkers ),
+    EV_COMMAND_AND_ID   ( CM_EEGMRKQUICK4,              CmQuickMarkers ),
+    EV_COMMAND_AND_ID   ( CM_EEGMRKQUICK5,              CmQuickMarkers ),
+    EV_COMMAND_AND_ID   ( CM_EEGMRKQUICK6,              CmQuickMarkers ),
+    EV_COMMAND_AND_ID   ( CM_EEGMRKQUICK7,              CmQuickMarkers ),
+    EV_COMMAND_AND_ID   ( CM_EEGMRKQUICK8,              CmQuickMarkers ),
+    EV_COMMAND_AND_ID   ( CM_EEGMRKQUICK9,              CmQuickMarkers ),
+    EV_COMMAND_AND_ID   ( CM_EEGMRKQUICKRESET,          CmQuickMarkers ),
 
     EV_COMMAND          ( IDB_FILTER,                   CmFilter ),
     EV_COMMAND_ENABLE   ( IDB_FILTER,                   CmFilterEnable ),
@@ -7869,22 +7879,23 @@ void    TTracksView::CmAddMarker ()
 AddMarker ();
 }
 
+                                        // static, so all windows share the user's predefined markers
+static char         QuickMarkerStrings[ 9 ][ MarkerNameMaxLength ];
 
 void    TTracksView::AddMarker ( int predefined )
 {
-static char         predefname[ 9 ][ MarkerNameMaxLength ];
 char                name    [ 256 ];
 
                                         // using some numpad shortcuts
-if ( predefined >= 1 && predefined <= 9 ) {
+if ( IsInsideLimits ( predefined, 1, 9 ) ) {
         // ShiftKey does not work with the numpad...
-    if ( /*ShiftKey ||*/ StringIsEmpty ( predefname[ predefined ] ) )
+    if ( /*ShiftKey ||*/ StringIsEmpty ( QuickMarkerStrings[ predefined ] ) )
 
-        if ( ! GetInputFromUser ( "Give the new name:", "Adding Marker", predefname[ predefined ], predefname[ predefined ], this ) )
+        if ( ! GetInputFromUser ( "Give the new name:", "Adding Marker", QuickMarkerStrings[ predefined ], QuickMarkerStrings[ predefined ], this ) )
 
             return;
 
-    StringCopy ( name, predefname[ predefined ] );
+    StringCopy ( name, QuickMarkerStrings[ predefined ], MarkerNameMaxLength - 1 );
     }
 
 else if ( (int) MarkerStrings == 1 )   // only 1 code available?
@@ -7919,6 +7930,21 @@ ShowTags    = true;
 ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
 
 EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+}
+
+
+//----------------------------------------------------------------------------
+void    TTracksView::CmQuickMarkers ( owlwparam w )
+{
+if ( IsInsideLimits ( (int) w, CM_EEGMRKQUICK1, CM_EEGMRKQUICK9 ) )
+
+    AddMarker ( w - CM_EEGMRKQUICK1 + 1);
+
+else if ( w == CM_EEGMRKQUICKRESET ) {
+    
+    for ( int i = 0; i < 9; i++ )
+        ClearString ( QuickMarkerStrings[ i ], MarkerNameMaxLength );
+    }
 }
 
 
@@ -9557,7 +9583,7 @@ Invalidate ( false );
 //----------------------------------------------------------------------------
 void    TTracksView::CmGenerateMarkers ()
 {
-#define             GenerateAutoEpochsTitle     "Generating Auto Markers"
+constexpr char*     GenerateAutoEpochsTitle     = "Generating Auto Markers";
 
 
 char                buff[ 256 ];

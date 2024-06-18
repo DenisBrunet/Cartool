@@ -559,6 +559,7 @@ protected:
     void                CmMergeContiguousMarkers();
     void                CmSetMarkerFilter       ();
     void                CmGenerateMarkers       ();
+    void                CmQuickMarkers          ( owlwparam w );
 
     void                CmShowSD                ();
     void                CmShowSDEnable          ( owl::TCommandEnabler &tce );

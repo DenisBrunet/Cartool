@@ -423,7 +423,19 @@ BEGIN
     POPUP "&Markers"
     BEGIN
         MENUITEM "&Add marker at current cursor position\t(M)", IDB_ADDMARKER
-        MENUITEM "Quick Add Markers\t(Ctrl + Numpad 1..9)", 12345, GRAYED
+        POPUP "Add &Quick Markers"
+        BEGIN
+            MENUITEM "Quick Marker &1\t(Ctrl + 1)", CM_EEGMRKQUICK1
+            MENUITEM "Quick Marker &2\t(Ctrl + 2)", CM_EEGMRKQUICK2
+            MENUITEM "Quick Marker &3\t(Ctrl + 3)", CM_EEGMRKQUICK3
+            MENUITEM "Quick Marker &4\t(Ctrl + 4)", CM_EEGMRKQUICK4
+            MENUITEM "Quick Marker &5\t(Ctrl + 5)", CM_EEGMRKQUICK5
+            MENUITEM "Quick Marker &6\t(Ctrl + 6)", CM_EEGMRKQUICK6
+            MENUITEM "Quick Marker &7\t(Ctrl + 7)", CM_EEGMRKQUICK7
+            MENUITEM "Quick Marker &8\t(Ctrl + 8)", CM_EEGMRKQUICK8
+            MENUITEM "Quick Marker &9\t(Ctrl + 9)", CM_EEGMRKQUICK9
+            MENUITEM "&Reset All Quick Markers",    CM_EEGMRKQUICKRESET
+        END
         MENUITEM "Delete markers within &Cursor range\t(Del)", CM_EEGMRKDELETE
         MENUITEM "Delete markers by &Names",    CM_EEGMRKDELETENAME
         MENUITEM "Delete all mar&kers",         CM_EEGMRKCLEARALL
