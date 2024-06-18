@@ -4982,9 +4982,6 @@ if ( RButtonDown ) {
             else            ScalingLevel /= 1 + (double) min ( adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 1.0 : 0.2 );
 
             CmZoomVert ( 0 );
-//          SetScaling ( ScalingLevel );
-
-            ShowNow ();
             }
 
         else if ( ShiftKey ) {
@@ -5064,12 +5061,7 @@ if ( RButtonDown ) {
                 if ( dy > 0 )   ScalingLevel /= 1 + (double) min ( ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 1.0 : 0.3 );
                 else            ScalingLevel *= 1 + (double) min ( ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 1.0 : 0.3 );
 
-//              SetScaling ( ScalingLevel );
                 CmZoomVert ( 0 );
-
-                if ( osl != ScalingLevel )
-                    //Invalidate ( false );
-                    ShowNow ();
                 } // ! ControlKey
             } // ShiftKey
 
@@ -5286,21 +5278,68 @@ CartoolApplication->OpenDroppedFiles ( remainingfiles );
                                         // modKeys: MK_CONTROL, MK_SHIFT, MK_LBUTTON etc...
 void    TTracksView::EvMouseWheel ( uint modKeys, int zDelta, const TPoint& )
 {
-if ( ControlKey ) {
-                                        // doing both horizontal AND vertical zoom
-                                        // calling CmZoomHorz & CmZoomVert in sequence should be OK, as they now use Invalidate, which messages should be consolidated together(?)
-
+                                        // simultaneous horizontal and vertical zoom
+if ( ControlKey && ShiftKey ) {
+                                        // code is a remix of CmZoomHorz & CmZoomVert
+    double              oldSTH          = STH;
     ulong               oldlength       = CDPt.GetLength ();
+    long                oldtfmin        = CDPt.GetMin ();
+    long                oldtfmax        = CDPt.GetMax ();
+    ulong               mintf           = oldlength < DisplayMinTF ? 2 : DisplayMinTF;
+    double              sthmin          = 1.0;
+    double              sthmax          = CDPt.GetLimitLength ();
 
-    if ( zDelta > 0 )       STH            *= SqrtTwo;
-    else                    STH            /= SqrtTwo;
+                                        // focus on horiztontal zoom first
+    if ( zDelta > 0 )   STH            *= SqrtTwo;
+    else                STH            /= SqrtTwo;
 
-    CmZoomHorz ( 0 );
+    Clipped ( STH, sthmin, sthmax );
 
-                                        // don't update vertical scaling if we are zoomed to the max, or in intensity mode
-    if ( IsIntensityModes () || CDPt.GetLength () == oldlength )
+                                            // force an odd interval, which remain nicely centered on cursor, except when zoom maxed in
+    ulong               oddtf           = mintf <= 1 || oldlength <= 11 ? 0 : 1;
+
+    ulong               newlength       = ( (int) ( ( CDPt.GetLimitLength () - mintf ) / STH + mintf ) ) | oddtf;
+
+                                            // recheck limits
+    if      ( newlength > CDPt.GetLimitLength () )      newlength = CDPt.GetLimitLength ();
+    else if ( newlength < mintf                  )      newlength = mintf | oddtf;
+
+                                        // leave now if we are already zoomed to the max
+    if ( newlength /*CDPt.GetLength ()*/ == oldlength ) {
+
+        STH     = oldSTH;
         return;
+        }
 
+                                        // don't update vertical scaling if in intensity mode
+    if ( ! IsIntensityModes ()  ) {
+
+        if ( zDelta > 0 )   ScalingLevel   *= SqrtTwo;
+        else                ScalingLevel   /= SqrtTwo;
+
+        SetScaling ( ScalingLevel );
+        }
+
+                                            // modify CDPt
+    CDPt.SetLength ( newlength, TFCursor.GetPosMiddle (), true );
+                                            // contaminate TFCursor
+    CheckCDPtAndTFCursor ( false );
+
+    RefreshLinkedWindow ();
+
+    UpdateBuffers ( oldtfmin, oldtfmax, CDPt.GetMin (), CDPt.GetMax () );
+                                            // ?Not sure if really needed?
+    //EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_EEG );
+
+    //Invalidate ( false );
+    ShowNow ();
+
+    ScrollBar->UpdateIt ();
+    }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // vertical zoom / brightness increase
+else if ( ControlKey && ! ShiftKey ) {
 
     if ( zDelta > 0 )   ScalingLevel   *= SqrtTwo;
     else                ScalingLevel   /= SqrtTwo;
@@ -5308,6 +5347,20 @@ if ( ControlKey ) {
     CmZoomVert ( 0 );
     }
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // horizontal zoom
+else if ( ! ControlKey && ShiftKey ) {
+
+    ulong               oldlength       = CDPt.GetLength ();
+
+    if ( zDelta > 0 )   STH            *= SqrtTwo;
+    else                STH            /= SqrtTwo;
+
+    CmZoomHorz ( 0 );
+    }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // panning
 else {
 
 /*                                        // using our own Acceleration object?
@@ -6606,7 +6659,7 @@ SetScaling ( ScalingLevel );
 
 RefreshLinkedWindow ();
 
-if ( osl == ScalingLevel )
+if ( w != 0 && osl == ScalingLevel )
     return;
 
 //Invalidate ( false );
