@@ -4485,6 +4485,8 @@ switch ( key ) {
     case VK_UP:
         if ( ControlKey )
             CmZoomVert ( IDB_EXTTRACKSV );
+        else if ( IsIntensityModes () )
+            CmSetContrast ( IDB_ISINCCONTRAST );
         else
             CmShiftTracks ( IDB_UP );
         break;
@@ -4492,6 +4494,8 @@ switch ( key ) {
     case VK_DOWN:
         if ( ControlKey )
             CmZoomVert ( IDB_COMPTRACKSV );
+        else if ( IsIntensityModes () )
+            CmSetContrast ( IDB_ISDECCONTRAST );
         else
             CmShiftTracks ( IDB_DOWN );
          break;
@@ -4969,7 +4973,8 @@ if ( RButtonDown ) {
         return;
 
 
-    if ( MouseAxis == MouseAxisHorizontal || MouseAxis == MouseAxisDiagonal ) {
+    if ( MouseAxis == MouseAxisHorizontal
+      || MouseAxis == MouseAxisDiagonal   ) {
 
         if ( IsIntensityModes () && IntensityOverride ) {
 
@@ -4983,6 +4988,7 @@ if ( RButtonDown ) {
             }
 
         else if ( ShiftKey ) {
+
             ulong       oldlen      = CDPt.GetLength();
 
             if ( dx > 0 )   STH *= 1 + (double) min ( adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.6 : 0.2 );
@@ -5021,12 +5027,15 @@ if ( RButtonDown ) {
             }
         }
 
-    /*else*/ if ( MouseAxis == MouseAxisVertical || MouseAxis == MouseAxisDiagonal ) {
+    /*else*/ if ( MouseAxis == MouseAxisVertical 
+               || MouseAxis == MouseAxisDiagonal ) {
 
         if ( IsIntensityModes () && IntensityOverride ) {
 
-//          ScalingContrast -= (double) dy / 500;
-            ScalingContrast -= (double) dy / 500 * ( ady > MouseMoveScaleFast ? 2 : 1 );
+            if ( dy > 0 )
+                ScalingContrast    *= 1 - (double) dy / 30;
+            else
+                ScalingContrast     = AtLeast ( 0.01, ScalingContrast ) * ( 1 - (double) dy / 30 );
 
             SetScalingContrast ( ScalingContrast );
 
@@ -7909,21 +7918,20 @@ else {                                  // ask user to choose in a list
 
         pickl.AddString ( MarkerStrings[ i ] );
 
-    UpdateApplication;                  // there might be keyboard inputs that interfere
+    UpdateApplication;                  // there could be some keyboard inputs that might interfere
 
     pickl.Execute ();
 
     if ( pickl.GetResult () < 0 )
         return;
-    else
-        StringCopy ( name, MarkerStrings[ pickl.GetResult () ] );
+
+    StringCopy ( name, MarkerStrings[ pickl.GetResult () ] );
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 EEGDoc->InsertMarker ( TMarker ( TFCursor.GetPosMin (), TFCursor.GetPosMax (), MarkerDefaultCode, name, MarkerTypeMarker ) );
-
 
 ShowTags    = true;
 
@@ -12672,8 +12680,8 @@ double              osc         = ScalingContrast;
 if ( EEGDoc->IsAngular ( AtomTypeUseCurrent ) )
                                         ScalingContrast     = ColorTableToScalingContrast ( 1 );
 else
-    if      ( w == IDB_ISINCCONTRAST )  ScalingContrast    += 0.05;
-    else if ( w == IDB_ISDECCONTRAST )  ScalingContrast    -= 0.05;
+    if      ( w == IDB_ISINCCONTRAST )  ScalingContrast     = AtLeast ( 0.01, ScalingContrast ) * 1.50;
+    else if ( w == IDB_ISDECCONTRAST )  ScalingContrast    /= 1.50;
 
 
 SetScalingContrast ( ScalingContrast );
