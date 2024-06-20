@@ -402,7 +402,7 @@ if ( GetDocPath () ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // fill product info
-    StringCopy ( CompanyName, "micromed" );
+    StringCopy ( CompanyName, "Micromed" );
     StringCopy ( ProductName, FILEEXT_EEGTRC );
                                         // extract version
     Version     = header.Header_Type;   // file format
@@ -621,6 +621,10 @@ Gain  .Resize ( NumElectrodes );
                                         // do all allocations stuff
 
 ElectrodesNames.Set ( TotalElectrodes, ElectrodeNameSize );
+
+StringCopy ( ElectrodesNames[ OffGfp ], TrackNameGFP );
+StringCopy ( ElectrodesNames[ OffDis ], TrackNameDIS );
+StringCopy ( ElectrodesNames[ OffAvg ], TrackNameAVG );
 
 
 BadTracks       = TSelection ( TotalElectrodes, OrderSorted );

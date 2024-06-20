@@ -114,7 +114,7 @@ FileRegistrationInfo    ExtReg[ NumExtensionRegistrations ] =
             { FILEEXT_EEGBDF,       "Biosemi BDF",                      IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },
             { FILEEXT_EEGEDF,       "EDF",                              IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },
             { FILEEXT_EEGRDF,       "ERPSS RDF",                        IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },
-            { FILEEXT_EEGTRC,       "micromed TRC",                     IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },
+            { FILEEXT_EEGTRC,       "Micromed TRC",                     IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },
 
 //          { FILEEXT_NSRRAWGAIN,   "NetStation Calibration",           IDI_CALIBRATION,                  OpenNotePad                                       },
 //          { FILEEXT_NSRRAWZERO,   "NetStation Calibration",           IDI_CALIBRATION,                  OpenNotePad                                       },
