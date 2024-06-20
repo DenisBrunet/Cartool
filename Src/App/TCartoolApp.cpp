@@ -660,10 +660,11 @@ if ( beforeinit ) {
                                         // regular options processing, main window has been created
 else { // ! beforeinit
 
-    int             mainwidth       = -1;
-    int             mainheight      = -1;
-    int             maintop         = -1;
-    int             mainleft        = -1;
+    constexpr int   undefined       = crtl::Lowest ( undefined );
+    int             mainwidth       = undefined;
+    int             mainheight      = undefined;
+    int             maintop         = undefined;
+    int             mainleft        = undefined;
      
 
     for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () ) {
@@ -671,10 +672,10 @@ else { // ! beforeinit
         if      ( cmd.GetTokenKind () == TCmdLine::Option ) {
 
             if      ( StringIs ( cmd.GetToken ().c_str (), CmdLineNoRegister        ) )     continue;   // actually doing nothing
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowWidth   ) )     mainwidth       = GetNextValue ( cmd );
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowHeight  ) )     mainheight      = GetNextValue ( cmd );
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowWidth   ) )     mainwidth       = GetNextValue ( cmd ) + 20;    // for unknown reasons, there appear to be some deltas here
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowHeight  ) )     mainheight      = GetNextValue ( cmd ) + 10;
             else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop     ) )     maintop         = GetNextValue ( cmd );
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft    ) )     mainleft        = GetNextValue ( cmd );
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft    ) )     mainleft        = GetNextValue ( cmd ) - 10;
             else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMax     ) )     continue;   // already parsed
             else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMin     ) )     continue;   // already parsed
             else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowRest    ) )     continue;   // already parsed
@@ -723,13 +724,16 @@ else { // ! beforeinit
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // some main window size / origin has been set?
-    if ( mainwidth > 0 || mainheight > 0 || maintop > 0 || mainleft > 0 ) {
+    if ( mainwidth  != undefined 
+      || mainheight != undefined 
+      || maintop    != undefined 
+      || mainleft   != undefined ) {
                                         // some dimension is missing?
-        if ( mainwidth  <= 0 )  mainwidth   = CartoolMainWindow->Attr.W;
-        if ( mainheight <= 0 )  mainheight  = CartoolMainWindow->Attr.H;
-                                        // some origin is missing?
-        if ( maintop    <= 0 )  maintop     = CartoolMainWindow->Attr.Y;
-        if ( mainleft   <= 0 )  mainleft    = CartoolMainWindow->Attr.X;
+        if ( mainwidth  == undefined )  mainwidth   = CartoolMainWindow->Attr.W;
+        if ( mainheight == undefined )  mainheight  = CartoolMainWindow->Attr.H;
+                                      // some origin is missing?
+        if ( maintop    == undefined )  maintop     = CartoolMainWindow->Attr.Y;
+        if ( mainleft   == undefined )  mainleft    = CartoolMainWindow->Attr.X;
 
                                         // remember current window state
         bool    wasmin  = IsWindowMinimized ( CartoolMainWindow );
