@@ -164,8 +164,6 @@ protected:
     bool            FreqNormalize;
     TVector<double> ScaleFreqs;         // used to normalize the power spectrum
     bool            Show3DText;
-    double          GalMinValue;
-    double          GalMaxValue;
 
     TInterval       CDPf;               // Current Displayed Page, in frequencies
     TInterval       SavedCDP;           // saved Current Displayed Page

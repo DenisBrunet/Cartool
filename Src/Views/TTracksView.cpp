@@ -2153,13 +2153,11 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compute scaling factors
     if ( IsIntensityModes () ) {
-
-//      GalMaxValue = -DBL_MAX;
-//      GalMinValue =  DBL_MAX;
-
-                                        // find min/max
-        minValue    =  DBL_MAX;
-        maxValue    = -DBL_MAX;
+                                        // find min max values in current page
+//      GalMinValue = Highest ( GalMinValue );
+//      GalMaxValue = Lowest  ( GalMaxValue );
+        minValue    = Highest ( minValue );
+        maxValue    = Lowest  ( maxValue );
 
                                         // scan only what is in the current display
                                         // Montage case is missing...
@@ -2167,15 +2165,15 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
 
             for ( t = minp; t <= maxp; t++ ) {
 
-                v =  EegBuff[ sti() ][ t ];
-
-                if ( v > maxValue )     maxValue    = v;
-                if ( v < minValue )     minValue    = v;
+                v   =  EegBuff[ sti() ][ t ];
+                                        // min max in display window
+                Maxed ( maxValue, v );
+                Mined ( minValue, v );
                 }
             }
 
-        if ( maxValue < 0 )     maxValue = 0;
-        if ( minValue > 0 )     minValue = 0;
+        Maxed ( maxValue,    0.0 );
+        Mined ( minValue,    0.0 );
 
                                         // to avoid some errors, just in case
         if ( maxValue == minValue ) {
@@ -2186,6 +2184,7 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
         if ( minValue == 0 )    minValue = -1e-12;
         if ( maxValue == 0 )    maxValue =  1e-12;
 
+                                        // if we want the color table to show the window min max
         GalMinValue = minValue;
         GalMaxValue = maxValue;
 
@@ -3019,13 +3018,13 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
 
             if      ( IsIntensityModes () ) {
 
+                constexpr double    ESaturate   = 0.90;
+
                 v1[ 2 ] = v2[ 2 ] = 0;
 
                                         // change the whole ColorTable once for each track, with all scalings inside it
                 if (   ScalingAuto != ScalingAutoOff 
                     && ! ( RButtonDown && IntensityOverride && MouseAxis == MouseAxisHorizontal ) ) {
-
-                    #define         ESaturate  0.90
 
                     double          absmax      = max ( maxValue, fabs ( minValue ) );
                     double          ctmin       = ScalingAuto == ScalingAutoAsymmetric ? minValue : - absmax;

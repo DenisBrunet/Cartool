@@ -885,7 +885,11 @@ if ( how & GLPaintOpaque ) {
     if ( IsModeSpectrum () )
         scalev *= 2.0;
 
-    #define Scaling(F)          ( FreqNormalize && notdiss ? ScaleFreqs[ F ] : 1 )
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // rescaling each frequency or not
+    auto    Scaling     = [ this, &notdiss ] ( int f ) { return FreqNormalize && notdiss ? ScaleFreqs[ f ] : 1; };
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // have to account for the number of subdivisions
@@ -948,20 +952,23 @@ if ( how & GLPaintOpaque ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compute scaling factors
+    constexpr double    FSaturate  = 0.75;
+
     if ( IsIntensityModes () ) {
                                         // contrast factor for the color computation
         contrast    = ScalingContrastToColorTable ( ScalingContrast );
 
         alpha       = (bool) Using ? 1.0 / ( 1 + (int) Using ) : 1.0;
 
-//      GalMaxValue = -DBL_MAX;
-//      GalMinValue =  DBL_MAX;
+//      GalMinValue = Highest ( GalMinValue );
+//      GalMaxValue = Lowest  ( GalMaxValue );
+
 
         if (       ScalingAuto == ScalingAutoSymmetric /*!= ScalingAutoOff*/ 
             && ! ( RButtonDown && IntensityOverride && MouseAxis == MouseAxisHorizontal ) ) {
-                                        // find min/max
-            minValue    =  DBL_MAX;
-            maxValue    = -DBL_MAX;
+                                        // find min max values in current page
+            minValue    = Highest ( minValue );
+            maxValue    = Lowest  ( maxValue );
 
                                         // scan only what is in the current display
             for ( TIteratorSelectedForward sti ( SelTracks ); (bool) sti; ++sti ) {
@@ -971,14 +978,15 @@ if ( how & GLPaintOpaque ) {
                 for ( int f = firstfreq; f <= lastfreq; f++ )
                 for ( int t = minp; t <= maxp; t++ ) {
 
-                    v =  Scaling ( f ) * EegBuff ( f, sti(), t );
+                    v   =  Scaling ( f ) * EegBuff ( f, sti(), t );
+                                        // min max in display window
                     Maxed ( maxValue, v );
                     Mined ( minValue, v );
                     }
                 }
 
-            if ( maxValue < 0 )     maxValue = 0;
-            if ( minValue > 0 )     minValue = 0;
+            Maxed ( maxValue,    0.0 );
+            Mined ( minValue,    0.0 );
 
                                         // to avoid some errors, just in case
             if ( maxValue == minValue ) {
@@ -989,12 +997,11 @@ if ( how & GLPaintOpaque ) {
 //          if ( minValue == 0 )    minValue = -1e-12;
 //          if ( maxValue == 0 )    maxValue =  1e-12;
 
+                                        // if we want the color table to show the window min max
             GalMinValue = minValue;
             GalMaxValue = maxValue;
 
                                         // saturate enough to see only the main blobs
-            #define         FSaturate  0.75
-
             double          absmax      = max ( maxValue, fabs ( minValue ) );
             double          ctmin       = ScalingAuto == ScalingAutoAsymmetric ? minValue : - absmax;
             double          ctmax       = ScalingAuto == ScalingAutoAsymmetric ? maxValue :   absmax;
@@ -1026,7 +1033,7 @@ if ( how & GLPaintOpaque ) {
             ColorTable.SetParameters ( maxValue * s, minValue * s, contrast, alpha );
 */
 
-            maxValue    = -DBL_MAX;
+            maxValue    = Lowest  ( maxValue );
 
             for ( TIteratorSelectedForward sti ( SelTracks ); (bool) sti; ++sti ) {
 
@@ -1052,8 +1059,10 @@ if ( how & GLPaintOpaque ) {
 //          if ( minValue == 0 )    minValue = -1e-12;
 //          if ( maxValue == 0 )    maxValue =  1e-12;
 
+                                        // if we want the color table to show the window min max
             GalMinValue = minValue;
             GalMaxValue = maxValue;
+
 
             minValue        = minValue / ScalingPMax * TrackHeightToIntensity * ( IsIntensityPrecise () ? 1 : FSaturate + ScalingContrast * ( 1 - FSaturate ) );
             maxValue        = maxValue / ScalingPMax * TrackHeightToIntensity * ( IsIntensityPrecise () ? 1 : FSaturate + ScalingContrast * ( 1 - FSaturate ) );
@@ -2819,7 +2828,7 @@ if ( NotSmallWindow () ) {
 */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+                                        // ?not sure why this part does not call ColorTable.Draw?
     if ( HasColorScale () ) {
                                         // ScaleTracks is not used in color mode, so the color scale is correct for all tracks here
 
