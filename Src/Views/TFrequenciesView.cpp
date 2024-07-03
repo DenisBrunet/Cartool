@@ -4643,20 +4643,7 @@ else if ( fe ) {
 //----------------------------------------------------------------------------
 void    TFrequenciesView::CmZoomVert ( owlwparam w )
 {
-double              osl             = ScalingLevel;
-
-if      ( w == IDB_COMPTRACKSV || w == IDB_ISDECBRIGHT )  ScalingLevel /= ShiftKey ? ScalingLevelBigStep : ScalingLevelSmallStep ;
-else if ( w == IDB_EXTTRACKSV  || w == IDB_ISINCBRIGHT )  ScalingLevel *= ShiftKey ? ScalingLevelBigStep : ScalingLevelSmallStep;
-
-SetScaling ( ScalingLevel );
-
-RefreshLinkedWindow () ;
-
-if ( osl == ScalingLevel )
-    return;
-
-//Invalidate ( false );
-ShowNow ();
+TTracksView::CmZoomVert ( w );
 }
 
 
