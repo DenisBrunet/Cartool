@@ -345,10 +345,8 @@ public:
     void                SetColoring             ( int which, int from, ColoringEnum how, TGLColor<GLfloat> cmin, TGLColor<GLfloat> cmax, double minv = 0, double maxv = 0 );
     void                Set3DMode               ( int current3dset );
 
+    const TBaseDoc*     GetGeometryDoc          ()                          const   { return XYZDoc ? XYZDoc : BaseDoc; }   // get geometrical info from XYZDoc
     TTracksDoc*         GetEEGDoc               ()                                  { return EEGDoc; }
-                                                                // get geometrical info from XYZDoc
-    const TDisplaySpaces&   GetDisplaySpaces    ()                          const   { return ( XYZDoc ? XYZDoc : BaseDoc )->GetDisplaySpaces (); };
-
 
     void                TFToString              ( long   tf, char* stf, char* stime = 0, TimeDisplayEnum horizscale = NoTimeDisplay, char* sdate = 0, bool interval = false )   const;
     void                TFToString              ( double tf, char* stf, char* stime = 0, TimeDisplayEnum horizscale = NoTimeDisplay )                                           const;
