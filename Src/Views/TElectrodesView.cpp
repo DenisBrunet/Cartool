@@ -311,7 +311,7 @@ if ( ! XYZDoc )
 double              nearlimit       = XYZDoc->GetMedianDistance ( CurrentDisplaySpace ) * PointNearFactor;
 int                 el              = XYZDoc->NearestElement ( Picking, CurrentDisplaySpace, nearlimit );
 
-                                        // close enough to an electrode?
+                                        // not close enough to an electrode?
 if ( el < 0 )
     return false;
 
@@ -326,7 +326,9 @@ XYZDoc->GetCoordinates ( el, Picking, CurrentDisplaySpace );
 
                                         // don't show the electrode name file(?)
 StringAppend    ( buff, "Electrode Name: " /*XYZDoc->GetTitle()*/, XYZDoc->GetElectrodeName ( el ) );
-StringAppend    ( buff, "\nElectrode Index: #" );
+StringAppend    ( buff, NewLine );
+
+StringAppend    ( buff, "Electrode Index: #" );
 IntegerToString ( StringEnd ( buff ), el + 1 );
 
 

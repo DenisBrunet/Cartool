@@ -197,12 +197,9 @@ public:
     void                    HintsPaint              ();
     bool                    IsRenderingMode         ( int renderingmode );
 
-    const TGeometryTransform*   GetGeometryTransform()  const;
-    bool                    ModifyPickingInfo       ( TPointFloat& Picking, char *buff );
 
-    const TVolumeDoc*       GetMRIDoc               ()  const   { return MRIDocBackg; };
-                                                                // get geometrical info from MRIDoc
-    const TDisplaySpaces&   GetDisplaySpaces        ()  const   { return ( MRIDocBackg ? MRIDocBackg : BaseDoc )->GetDisplaySpaces (); };
+    const TBaseDoc*         GetGeometryDoc          ()              const   { return MRIDocBackg ? MRIDocBackg : BaseDoc; }     // ESI has no geometry info in itself, let's delegate to the background MRI instead
+    bool                    ModifyPickingInfo       ( TPointFloat& Picking, char *buff );
 
 
 protected:

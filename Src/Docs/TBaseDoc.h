@@ -89,11 +89,8 @@ public:
     void                MinimizeViews       ();
 
 
-    const TDisplaySpaces&       GetDisplaySpaces     () const               { return DisplaySpaces;     }
-          TDisplaySpaces&       GetDisplaySpaces     ()                     { return DisplaySpaces;     }
-
     const TGeometryTransform*   GetGeometryTransform () const               { return GeometryTransform; }
-          TGeometryTransform*   GetGeometryTransform ()                     { return GeometryTransform; }
+    const TDisplaySpaces&       GetDisplaySpaces     () const               { return DisplaySpaces;     }
 
 
 protected:

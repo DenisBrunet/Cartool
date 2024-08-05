@@ -208,7 +208,7 @@ double              nearlimit       = Clip ( SPDoc->GetMedianDistance () * Point
                                              SPDoc->GetMedianDistance () * 0.49 );
 int                 sp              = SPDoc->GetNearestElementIndex ( Picking, nearlimit );
 
-                                        // close enough to a point?
+                                        // not close enough to a solution point?
 if ( sp < 0 )
     return false;
 
@@ -217,8 +217,9 @@ Picking     = SPDoc->GetPoints ()[ sp ];
 
                                         // could add the filename here, but most of the time, there is only one at a time...
 StringCopy      ( buff, "Solution Point Name: ", SPDoc->GetSPName ( sp ) );
-StringAppend    ( buff, NewLine 
-                        "Solution Point Index: #" );
+StringAppend    ( buff, NewLine );
+
+StringAppend    ( buff, "Solution Point Index: #" );
 IntegerToString ( StringEnd ( buff ), sp + 1 );
 
 

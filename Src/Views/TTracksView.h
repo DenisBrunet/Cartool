@@ -347,7 +347,7 @@ public:
 
     TTracksDoc*         GetEEGDoc               ()                                  { return EEGDoc; }
                                                                 // get geometrical info from XYZDoc
-    TDisplaySpaces&     GetDisplaySpaces        ()                                  { return ( XYZDoc ? XYZDoc : BaseDoc )->GetDisplaySpaces (); };
+    const TDisplaySpaces&   GetDisplaySpaces    ()                          const   { return ( XYZDoc ? XYZDoc : BaseDoc )->GetDisplaySpaces (); };
 
 
     void                TFToString              ( long   tf, char* stf, char* stime = 0, TimeDisplayEnum horizscale = NoTimeDisplay, char* sdate = 0, bool interval = false )   const;

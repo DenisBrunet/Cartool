@@ -428,7 +428,7 @@ public:
     bool                    Outputing           ()                      const   { return CartoolApplication->Bitmapping; }
     bool                    ShowNow             ( UINT redrawflags = RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_ALLCHILDREN ) { return RedrawWindow ( 0, 0, redrawflags ); }
     const char*             GetTitle            ()                      const   { return Title; }
-    virtual bool            ModifyPickingInfo   ( TPointFloat& Picking, char *buff )  { *buff = 0; return false; }
+    virtual bool            ModifyPickingInfo   ( TPointFloat& Picking, char* buff )    { ClearString ( buff ); return false; }
     TPointFloat             GetLastPick         ()                      const   { return Picking; }
     bool                    IsCommandSender     ()                      const   { return ! GetCommandsCloning () || CartoolApplication->LastActiveBaseView == this; } // regular case, or forwarded message to itself
     bool                    IsCommandReceiver   ()                      const   { return   GetCommandsCloning () && CartoolApplication->LastActiveBaseView != this; } // receiving message from another view via command cloning
@@ -456,9 +456,10 @@ public:
     TGLMatrix*              GetModelRotMatrix       ()                              { return &ModelRotMatrix; }
 
                                         // basically taking the Doc transform, but allows to branch to another docs/views
-    virtual TDisplaySpaces&     GetDisplaySpaces    ()                              { return BaseDoc->GetDisplaySpaces (); };
-    int                         GetCurrentSpace     ()                              { return CurrentDisplaySpace; };
-    virtual TGeometryTransform* GetGeometryTransform()                              { return BaseDoc->GetGeometryTransform(); }
+    virtual const TBaseDoc*             GetGeometryDoc      ()              const   { return BaseDoc; }
+    virtual const TGeometryTransform*   GetGeometryTransform()              const   { return GetGeometryDoc ()->GetGeometryTransform (); }
+    virtual const TDisplaySpaces&       GetDisplaySpaces    ()              const   { return GetGeometryDoc ()->GetDisplaySpaces     (); }
+    int                                 GetCurrentSpace     ()              const   { return CurrentDisplaySpace; };
 
 
 protected:

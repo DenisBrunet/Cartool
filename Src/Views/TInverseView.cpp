@@ -636,8 +636,14 @@ bool    TInverseView::ModifyPickingInfo ( TPointFloat& Picking, char *buff )
 {
 ClearString ( buff );
 
-if ( /*SliceMode ||*/ ! ( Show2DIs || ShowVectorsIs || ShowSp || Show3DIs == InverseRendering3DSolPoints || Show3DIs == InverseRendering3DIsoOnion ) )
-    return false;
+if ( /*SliceMode ||*/ 
+    ! (    Show2DIs 
+        || ShowVectorsIs 
+        || ShowSp 
+        || Show3DIs == InverseRendering3DSolPoints 
+        || Show3DIs == InverseRendering3DIsoOnion  ) )
+
+    return  false;
 
 
 double              nearlimit       = Clip ( SPDoc->GetMedianDistance () * PointNearFactor, 
@@ -645,7 +651,7 @@ double              nearlimit       = Clip ( SPDoc->GetMedianDistance () * Point
                                              SPDoc->GetMedianDistance () * 0.49 );
 int                 sp              = SPDoc->GetNearestElementIndex ( Picking, nearlimit );
 
-                                        // close enough to a point?
+                                        // not close enough to a solution point?
 if ( sp < 0 )
     return false;
 
@@ -654,10 +660,13 @@ Picking     = SPDoc->GetPoints ()[ sp ];
 
                                         // could add the filename here, but most of the time, there is only one at a time...
 StringCopy      ( buff, "Solution Point Name: ", SPDoc->GetSPName ( sp ) );
-StringAppend    ( buff, "\nSolution Point Index: #" );
+StringAppend    ( buff, NewLine );
+
+StringAppend    ( buff, "Solution Point Index: #" );
 IntegerToString ( StringEnd ( buff ), sp + 1 );
-                                        // could use the inverse name?
-StringAppend    ( buff, "\nValue                       = " /*ISDoc->GetInverseTitle ()*/ );
+StringAppend    ( buff, NewLine );
+                                    // could use the inverse name?
+StringAppend    ( buff, "Value                       = " /*ISDoc->GetInverseTitle ()*/ );
 FloatToString   ( StringEnd ( buff ), InvBuffS[ sp ] );
 
 
@@ -2226,6 +2235,7 @@ if ( NotSmallWindow () ) {
 //      TPointDouble       &spvoxsize       = SPDoc->GetVoxelSize ();
 
         if ( ! ( ManageRangeCursor & MRCAnySequence ) && ( FindMinMax || ShowMax ) ) {
+
             glColor4f ( 1.00, 0.00, 0.00, 1.00 );
             ypos   -= 1.5 * ydelta;
             SFont->Print ( xpos, ypos, zpos, "Max:", TA_LEFT | TA_TOP );
@@ -2270,6 +2280,7 @@ if ( NotSmallWindow () ) {
 
 
         if ( ! ( ManageRangeCursor & MRCAnySequence ) && ( FindMinMax && IsSignedData || ShowMin ) ) {
+
             glColor4f ( 0.00, 0.00, 1.00, 1.00 );
             ypos   -= 1.5 * ydelta;
             SFont->Print ( xpos, ypos, zpos, "Min:", TA_LEFT | TA_TOP );
@@ -3271,12 +3282,6 @@ ShowNow ();
 
 
 //----------------------------------------------------------------------------
-const TGeometryTransform*   TInverseView::GetGeometryTransform ()  const
-{                                       // borrow the transformation from current MRI
-return  MRIDocBackg ? MRIDocBackg->GetGeometryTransform () : 0;
-}
-
-
 void    TInverseView::CmNextRois ()
 {
 int     nextrois    = TBaseView::NextRois ( IsRoiMode ? CurrRois : -1, SPDoc->GetNumSolPoints () );

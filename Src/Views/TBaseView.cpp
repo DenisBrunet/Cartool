@@ -1308,7 +1308,7 @@ if ( LButtonDown || MButtonDown || RButtonDown ) {
 
                 for ( int i = 0; i < (int) Using; i++ ) {
                     Using[ i ]->ModifyPickingInfo ( Picking, buffusing );
-                    StringAppend ( buffmodif, "\n", buffusing );
+                    StringAppend ( buffmodif, NewLine, buffusing );
                     }
                 }
             else {
@@ -1319,16 +1319,16 @@ if ( LButtonDown || MButtonDown || RButtonDown ) {
 
 
                                         // 2) Print current coordinates from Picking
-            if ( BaseDoc->IsContentType ( ContentTypeVolume ) ) {
+            if ( GetGeometryDoc()->IsContentType ( ContentTypeVolume ) ) {
 
-                TVolumeDoc*     MRIDoc      = dynamic_cast< TVolumeDoc* > ( BaseDoc );
+                const TVolumeDoc*   MRIDoc      = dynamic_cast<const TVolumeDoc*> ( GetGeometryDoc () );
 
                 StringCopy      ( buff, "Coordinates [voxel]: ",            FloatToString ( Picking.X, 2 ), 
                                                                     ", ",   FloatToString ( Picking.Y, 2 ), 
                                                                     ", ",   FloatToString ( Picking.Z, 2 )
                                 );
 
-                StringAppend    ( buff, "\n" );
+                StringAppend    ( buff, NewLine );
 
                 StringAppend    ( buff, "Coordinates [mm]  : ",             FloatToString ( Picking.X * MRIDoc->GetVoxelSize ().X, 2 ), 
                                                                     ", ",   FloatToString ( Picking.Y * MRIDoc->GetVoxelSize ().Y, 2 ), 
@@ -1339,13 +1339,13 @@ if ( LButtonDown || MButtonDown || RButtonDown ) {
                 if ( (bool) clipboard ) {
 
                     StringCopy      ( clipboard,            FloatToString ( Picking.X, 2 ), 
-                                                    "\t",   FloatToString ( Picking.Y, 2 ), 
-                                                    "\t",   FloatToString ( Picking.Z, 2 )
+                                                    Tab,    FloatToString ( Picking.Y, 2 ), 
+                                                    Tab,    FloatToString ( Picking.Z, 2 )
                                     );
 
-                    StringAppend    ( clipboard,    "\t",   FloatToString ( Picking.X * MRIDoc->GetVoxelSize ().X, 2 ), 
-                                                    "\t",   FloatToString ( Picking.Y * MRIDoc->GetVoxelSize ().Y, 2 ), 
-                                                    "\t",   FloatToString ( Picking.Z * MRIDoc->GetVoxelSize ().Z, 2 ) 
+                    StringAppend    ( clipboard,    Tab,    FloatToString ( Picking.X * MRIDoc->GetVoxelSize ().X, 2 ), 
+                                                    Tab,    FloatToString ( Picking.Y * MRIDoc->GetVoxelSize ().Y, 2 ), 
+                                                    Tab,    FloatToString ( Picking.Z * MRIDoc->GetVoxelSize ().Z, 2 ) 
                                     );
                     }
                 }
@@ -1359,8 +1359,8 @@ if ( LButtonDown || MButtonDown || RButtonDown ) {
                 if ( (bool) clipboard )
 
                     StringCopy      ( clipboard,            FloatToString ( Picking.X, 2 ), 
-                                                    "\t",   FloatToString ( Picking.Y, 2 ), 
-                                                    "\t",   FloatToString ( Picking.Z, 2 )
+                                                    Tab,    FloatToString ( Picking.Y, 2 ), 
+                                                    Tab,    FloatToString ( Picking.Z, 2 )
                                     );
                 }
 
@@ -1386,7 +1386,7 @@ if ( LButtonDown || MButtonDown || RButtonDown ) {
 
                 if ( pick.IsNotNull () ) {  // not foolproof, but...
 
-                    StringAppend    ( buff, "\n" );
+                    StringAppend    ( buff, NewLine );
 
                     StringAppend    ( buff, "Coordinates [", GetGeometryTransform ()->Name, "]: " );
 
@@ -1398,21 +1398,21 @@ if ( LButtonDown || MButtonDown || RButtonDown ) {
 
                     if ( (bool) clipboard )
 
-                        StringAppend    ( clipboard,    "\t",   IntegerToString ( pick.X ),
-                                                        "\t",   IntegerToString ( pick.Y ), 
-                                                        "\t",   IntegerToString ( pick.Z )
+                        StringAppend    ( clipboard,    Tab,    IntegerToString ( pick.X ),
+                                                        Tab,    IntegerToString ( pick.Y ), 
+                                                        Tab,    IntegerToString ( pick.Z )
                                         );
 
                                         // special case for Talairach: add the labels
                     if ( StringIs ( GetGeometryTransform ()->Name, "Talairach" ) ) {
 
-                        StringAppend    ( buff, "\n" );
+                        StringAppend    ( buff, NewLine );
 
                         Taloracle.PositionToString ( pick, StringEnd ( buff ), true );
 
                         if ( (bool) clipboard ) {
 
-                            StringAppend    ( clipboard, "\t" );
+                            StringAppend    ( clipboard, Tab );
 
                             Taloracle.PositionToString ( pick, StringEnd ( clipboard ), false );
                             }
@@ -1421,39 +1421,39 @@ if ( LButtonDown || MButtonDown || RButtonDown ) {
 
                         if ( (bool) clipboard )
 
-                            StringAppend ( clipboard, "\t\t\t\t\t" );
+                            StringAppend ( clipboard, Tab Tab Tab Tab Tab );
                         }
                     }
                 else { // out of limits
 
-                    StringAppend    ( buff, "\n" );
+                    StringAppend    ( buff, NewLine );
 
                     StringAppend    ( buff, "Coordinates [", GetGeometryTransform ()->Name, "]: ", "Out of limits" );
 
 
                     if ( (bool) clipboard )
 
-                        StringAppend ( clipboard, "\t\t\t\t\t\t\t\t" );
+                        StringAppend ( clipboard, Tab Tab Tab Tab Tab Tab Tab Tab );
                     }
                 }
             else { // no geometry
 
                 if ( (bool) clipboard )
 
-                    StringAppend ( clipboard, "\t\t\t\t\t\t\t\t" );
+                    StringAppend ( clipboard, Tab Tab Tab Tab Tab Tab Tab Tab );
                 }
 
 
                                         // 4) Add additional information from 1) here
             if ( StringIsNotEmpty ( buffmodif ) ) {
 
-                StringAppend    ( buff, "\n", buffmodif );
+                StringAppend    ( buff, NewLine, buffmodif );
 
                 if ( (bool) clipboard && StringIsNotEmpty ( buffclip ) )
 
-                    StringAppend ( clipboard, "\t", buffclip );
+                    StringAppend ( clipboard, Tab, buffclip );
                 else
-                    StringAppend ( clipboard, "\t" );
+                    StringAppend ( clipboard, Tab );
                 }
 
                                         // Here, we are done with the string

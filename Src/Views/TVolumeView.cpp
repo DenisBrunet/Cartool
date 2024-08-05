@@ -747,15 +747,17 @@ TPointFloat     pickorg     = Picking + MRIDoc->GetOrigin ();
 MriType         value       = MRIDoc->GetData()->GetValueChecked ( pickorg.X, pickorg.Y, pickorg.Z, InterpolateNearestNeighbor );
 
 
-StringCopy  ( buff, "Value = " );
+StringCopy  ( buff, "Value                      = " );
 
 if ( IsInteger ( value ) )  IntegerToString ( StringEnd ( buff ), value );
 else                        FloatToString   ( StringEnd ( buff ), value, 2 );
 
                                         // any label corresponding to the value?
-if ( MRIDoc->HasLabels () )
+if ( MRIDoc->HasLabels () ) {
 
-    StringAppend    ( buff, NewLine "Label = ", MRIDoc->GetLabel ( value ) );
+    StringAppend    ( buff, NewLine );
+    StringAppend    ( buff, "Label                      = ", MRIDoc->GetLabel ( value ) );
+    }
 
 
 return true;
