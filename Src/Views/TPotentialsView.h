@@ -82,24 +82,21 @@ public:
                             TPotentialsView ( TTracksDoc& doc, owl::TWindow* parent = 0, TLinkManyDoc* group=0 );
 
 
-    static const char*      StaticName          ()              { return "&Potentials Display"; }
-    const char*             GetViewName         ()              { return StaticName(); }
+    static const char*      StaticName              ()                      { return "&Potentials Display"; }
+    const char*             GetViewName             ()                      { return StaticName(); }
 
 
-    bool                    VnNewTFCursor       ( TTFCursor *tfcursor );
-    bool                    VnReloadData        ( int what );
-    virtual bool            VnNewHighlighted    ( TSelection *sel );
+    bool                    VnNewTFCursor           ( TTFCursor *tfcursor );
+    bool                    VnReloadData            ( int what );
+    virtual bool            VnNewHighlighted        ( TSelection *sel );
 
-    void                    GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane );
-    bool                    IsRenderingMode     ( int renderingmode )   const;
+    void                    GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane );
+    bool                    IsRenderingMode         ( int renderingmode )   const;
 
-    bool                    ModifyPickingInfo   ( TPointFloat& Picking, char *buff )    const;
 
-    const TElectrodesDoc*   GetXYZDoc           ()  const       { return XYZDoc; };
-                                                                // get geometrical info from XYZDoc
-    const TDisplaySpaces&   GetDisplaySpaces    ()  const       { return ( XYZDoc ? XYZDoc : BaseDoc )->GetDisplaySpaces (); };
-
-    int                     GetCurrXyz          ()  const       { return CurrXyz; }
+    const TBaseDoc*         GetGeometryDoc          ()              const   { return XYZDoc ? XYZDoc : BaseDoc; }   // Potentials display has no geometry info in itself, let's delegate to the background XYZ instead
+    bool                    ModifyPickingInfo       ( TPointFloat& Picking, char *buff );
+    int                     GetCurrXyz              ()              const   { return CurrXyz; }
 
 
 protected:

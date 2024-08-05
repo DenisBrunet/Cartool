@@ -88,6 +88,7 @@ public:
     void                    GLPaint             ( int how, int renderingmode, TGLClipPlane* otherclipplane );
     bool                    IsRenderingMode     ( int renderingmode );
 
+
     bool                    ModifyPickingInfo   ( TPointFloat& Picking, char* buff );
     virtual bool            VnNewHighlighted    ( TSelection* sel );
 

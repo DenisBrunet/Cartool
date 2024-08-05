@@ -330,7 +330,7 @@ GetEegView ()->GetTracks ( tf1, tf2, EegBuff );
 
 
 //----------------------------------------------------------------------------
-bool    TPotentialsView::ModifyPickingInfo ( TPointFloat& Picking, char *buff )     const
+bool    TPotentialsView::ModifyPickingInfo ( TPointFloat& Picking, char *buff )
 {
 ClearString ( buff );
 
