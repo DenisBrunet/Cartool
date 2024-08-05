@@ -189,8 +189,8 @@ public:
                             TInverseView ( TTracksDoc &doc, owl::TWindow *parent = 0, TLinkManyDoc *group=0 );
 
 
-    static const char*      StaticName              ()          { return "&Inverse Solution"; }
-    const char*             GetViewName             ()          { return StaticName(); }
+    static const char*      StaticName              ()                      { return "&Sources Localization"; }
+    const char*             GetViewName             ()                      { return StaticName(); }
 
 
     void                    GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane );
