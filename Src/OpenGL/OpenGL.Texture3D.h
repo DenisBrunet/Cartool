@@ -30,10 +30,10 @@ constexpr int   GLTextureColorTableSize         = 256;
 constexpr int   GLTextureNumRGBA                = 4;
                                         // the absolute for OpenGL - well, that actually depends on the graphic card
 constexpr int   GLTextureOpenGLMaxTextureSize   = 512;
-                                        // the limit we set ourselves - safe one
-//constexpr int   GLTextureMaxTextureSize         = 256;
-                                        // the limit we set ourselves - give it a little more chance for 256 MRIs that get tilted
-constexpr int   GLTextureMaxTextureSize         = 384;
+                                        // the limit we set ourselves
+//constexpr int GLTextureMaxTextureSize         = 256;  // safe value, but high resolution volumes appearance will be degraded due to possible downsampling
+//constexpr int GLTextureMaxTextureSize         = 384;  // give it a little more chance for 256 MRIs that get tilted
+constexpr int   GLTextureMaxTextureSize         = 512;  // highest resolution limit - requires more memory, which might be a problem for some graphic cards
 
 
 class   TGLTexture3D :  public TGLObject

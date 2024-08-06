@@ -324,6 +324,7 @@ else
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // we need all these data to work with texture
 if ( ! ( Data && tex.ColorTable && tex.IsTexture3DEnable () ) ) {
+
     tex.Busy    = false;
     return;
     }
@@ -344,11 +345,11 @@ int                 texdownsampling = max ( 1,
                                             RoundAbove ( Dim2 / (double) ytex ), 
                                             RoundAbove ( Dim3 / (double) ztex ) );
 
-//if ( VkQuery () )  DBGV5 ( Dim1, Dim2, Dim3, texdownsampling, xtex, "Data: Dim1 Dim2 Dim3 -> texdownsampling, texsize" );
-
-                                        // test for null dimensions, too big dimensions, or too much memory to reserve
+                                        // test for null dimensions, or too big dimensions
 if ( xtex == 0 || xtex > GLTextureOpenGLMaxTextureSize
-  || ! tex.IsPalettedTextureEnable () && ( xtex * ytex * ztex * sizeof ( uint ) > 256 * MegaByte ) ) {
+//|| ! tex.IsPalettedTextureEnable () && ( xtex * ytex * ztex * sizeof ( uint ) > 1 * GigaByte )    // memory issues does not seem to be relevant anymore
+   ) {
+
     tex.Busy    = false;
     return;
     }
@@ -671,9 +672,12 @@ if ( ! tex.IsTextureLoaded ()
                                     GL_RGBA, GL_UNSIGNED_BYTE, datacache->GetArray () );
 
 //      } // no paletted texture
+
+
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // last OpenGL call is glTexImage3D
     if ( glGetError () ) {
+
         tex.Busy    = false;
 //      tex.Name    = 0;
         return;
@@ -682,16 +686,19 @@ if ( ! tex.IsTextureLoaded ()
                                         // create texture matrix
     tex.Matrix.SetIdentity ();
 
+                                        // texture downsampling
     tex.Matrix.Scale       ( 1.0 / ( texdownsampling * xtex ), 
                              1.0 / ( texdownsampling * ytex ), 
                              1.0 / ( texdownsampling * ztex ),  MultiplyRight );
 
+                                        // voxel re-centering
     tex.Matrix.Translate   ( 0.5,        0.5,        0.5,       MultiplyRight );
 
                                         // permutate X <-> Z (storage of TVolume)
-    TMatrix44       swap;
-    swap.Reset ();
-    swap[2] = swap[5] = swap[8] = swap[15] = 1;
+    TMatrix44       swap;               // identity
+    Permutate ( swap[  0 ], swap[  2 ] );
+    Permutate ( swap[ 10 ], swap[  8 ] );
+
 
     tex.Matrix *= swap;
     } // if ! tex.IsTextureLoaded ()
