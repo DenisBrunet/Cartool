@@ -2340,21 +2340,21 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
 
                                         // global window size
                 double  ws  = GetCurrentWindowSize ( how & GLPaintOwner );
-                linewidth *= NoMore ( CurrentDisplaySpace != DisplaySpace3D ? ( how & GLPaintOwner ) ? 0.25 : 0.35 : 0.75, ws * 0.0035 );
+                linewidth  *= NoMore ( CurrentDisplaySpace != DisplaySpace3D ? ( how & GLPaintOwner ) ? 0.25 : 0.35 : 0.75, ws * 0.0035 );
 
                                         // zoom factor
-                linewidth *= GetCurrentZoomFactor ( how & GLPaintOwner );
+                linewidth  *= GetCurrentZoomFactor ( how & GLPaintOwner );
 
                                         // object size factor
-                linewidth *= XYZDoc->GetBounding ( CurrentDisplaySpace )->Radius ();
+                linewidth  *= XYZDoc->GetBounding ( CurrentDisplaySpace )->Radius ();
                 }
 
             else { // CurrentDisplaySpace == DisplaySpaceNone
                                         // horizontal scaling
-                linewidth  = NoMore ( 1.5, scaleh * 0.15 );
+                linewidth   = NoMore ( 1.5, scaleh * 0.15 );
 
                                         // vertical scaling
-                linewidth *= NoMore ( 2.0, sqrt ( maxhpertrack ) * 0.15 );
+                linewidth  *= NoMore ( 2.0, sqrt ( maxhpertrack ) * 0.15 );
 
                                         // extra kick for average ROIs
                 if ( avgrois )
@@ -2362,11 +2362,11 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
 
                                         // intensity scaling - difficult to make it consistent, though
                 if ( scaleh > 1.0 )     // restrict to "zoom" view
-                    linewidth *= Clip ( sqrt ( scalev ) * 0.02, 0.75, 1.5 );
+                    linewidth  *= Clip ( sqrt ( scalev ) * 0.02, 0.75, 1.5 );
                 }
 
-                                        // finally clip to a global max
-            Clipped ( linewidth, GLLineWidthMin, (float) AutoLineWidthMax );
+                                        // resize with current DPI & clip to a global max
+            linewidth   = Clip ( (GLfloat) RescaleSizeDpi ( linewidth ), GLLineWidthMin, AutoLineWidthMax );
             }
         else
             linewidth = LineWidth;

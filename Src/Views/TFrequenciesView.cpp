@@ -1200,38 +1200,38 @@ if ( how & GLPaintOpaque ) {
 
             if ( CurrentDisplaySpace != DisplaySpaceNone ) {
                                         // horizontal scaling
-                linewidth = min ( scaleh * 2000, 3.0 );
+                linewidth   = min ( scaleh * 2000, 3.0 );
 
                                         // global window size
                 double  ws  = GetCurrentWindowSize ( how & GLPaintOwner );
-                linewidth *= min ( ws * 0.0035, 2.5 );
+                linewidth  *= min ( ws * 0.0035, 2.5 );
 
                                         // zoom factor
-                linewidth *= GetCurrentZoomFactor ( how & GLPaintOwner );
+                linewidth  *= GetCurrentZoomFactor ( how & GLPaintOwner );
 
                                         // object size factor
-                linewidth *= XYZDoc->GetBounding ( CurrentDisplaySpace )->Radius ();
+                linewidth  *= XYZDoc->GetBounding ( CurrentDisplaySpace )->Radius ();
 
                                         // more lines due to frequencies
-                linewidth /= ( IsEnumerateVertical () || IsModeFE () ? numfreq : 1 );
+                linewidth  /= ( IsEnumerateVertical () || IsModeFE () ? numfreq : 1 );
                 }
             else {
                                         // horizontal scaling
-//              linewidth = TracksSuper || trackssuper ? 0  // to have the same value, even with pseudos
-//                                                     : min ( scaleh * 0.15, 1.5 );
-                linewidth = min ( scaleh * 0.15, 1.5 );
+//              linewidth   = TracksSuper || trackssuper ? 0  // to have the same value, even with pseudos
+//                                                       : min ( scaleh * 0.15, 1.5 );
+                linewidth   = min ( scaleh * 0.15, 1.5 );
 
                                         // vertical scaling
-                linewidth *= min ( sqrt ( WindowSlots[0].ToUp.Norm() / ( IsModeFEAvg () ? numfreq : WindowSlots[ 0 ].SelTracks.NumSet () )
-                                                                     / ( IsEnumerateVertical () ? numfreq : 1 ) ) * 0.15, 2.0 );
+                linewidth  *= min ( sqrt ( WindowSlots[0].ToUp.Norm() / ( IsModeFEAvg () ? numfreq : WindowSlots[ 0 ].SelTracks.NumSet () )
+                                                                      / ( IsEnumerateVertical () ? numfreq : 1 ) ) * 0.15, 2.0 );
 
                                         // intensity scaling - difficult to make it consistent, though
                 if ( scaleh > 1.0 )     // restrict to "zoom" view
-                    linewidth *= min ( max ( sqrt ( scalev ) * 0.02, 0.75 ), 1.5 );
+                    linewidth  *= min ( max ( sqrt ( scalev ) * 0.02, 0.75 ), 1.5 );
                 }
 
-                                        // finally clip to a global max
-            Clipped ( linewidth, GLLineWidthMin, (GLfloat) AutoLineWidthMax );
+                                        // resize with current DPI & clip to a global max
+            linewidth   = Clip ( (GLfloat) RescaleSizeDpi ( linewidth ), GLLineWidthMin, AutoLineWidthMax );
             }
         else
             linewidth = LineWidth;

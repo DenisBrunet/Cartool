@@ -68,7 +68,7 @@ constexpr double    TracksAltitude3D            = 0.10;
 
 constexpr double    CursorHeightFactor3D        = 1.5;
 
-constexpr double    AutoLineWidthMax            = 3.0;
+constexpr GLfloat   AutoLineWidthMax            = 5.0;
 
 
 #define AxisColor                           (GLfloat) 0.00,   (GLfloat) 0.00,   (GLfloat) 0.00,   (GLfloat) 0.25
