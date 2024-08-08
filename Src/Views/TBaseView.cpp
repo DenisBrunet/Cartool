@@ -1719,6 +1719,8 @@ AxisToBorder ( dir, border1, textattr1, border2, textattr2 );
 
 if ( fabs ( dir.Z ) < SinMaxAngleProj ) {
                                         // make room for lowest flag
+    if ( ! border1.X )      border1.X  += 1;
+    if ( ! border2.X )      border2.X  += 1;
     if ( ! border1.Y )      border1.Y  += SFont->GetHeight ();
     if ( ! border2.Y )      border2.Y  += SFont->GetHeight ();
 
@@ -1740,6 +1742,8 @@ AxisToBorder ( dir, border1, textattr1, border2, textattr2 );
 
 if ( fabs ( dir.Z ) < SinMaxAngleProj ) {
                                         // make room for lowest flag
+    if ( ! border1.X )      border1.X  += 1;
+    if ( ! border2.X )      border2.X  += 1;
     if ( ! border1.Y )      border1.Y  += SFont->GetHeight ();
     if ( ! border2.Y )      border2.Y  += SFont->GetHeight ();
 
@@ -1761,6 +1765,8 @@ AxisToBorder ( dir, border1, textattr1, border2, textattr2 );
 
 if ( fabs ( dir.Z ) < SinMaxAngleProj ) {
                                         // make room for lowest flag
+    if ( ! border1.X )      border1.X  += 1;
+    if ( ! border2.X )      border2.X  += 1;
     if ( ! border1.Y )      border1.Y  += SFont->GetHeight ();
     if ( ! border2.Y )      border2.Y  += SFont->GetHeight ();
 
