@@ -87,6 +87,11 @@ constexpr int       TracksWindowSizeW           = TracksWindowSizeH / WindowHeig
 constexpr int       TracksBigWindowSizeH        = TracksWindowSizeH;
 constexpr int       TracksBigWindowSizeW        = 2 * TracksWindowSizeW;
 
+constexpr int       LMWindowSizeH               = DefaultWindowSize;
+constexpr int       LMWindowSizeW               = DefaultWindowSize;
+constexpr int       MinLMWindowWidth            = 300;
+constexpr int       MaxLMWindowWidth            = 600;
+
 
 //----------------------------------------------------------------------------
                                         // OpenGL colors (kept as defines, because they are lists)

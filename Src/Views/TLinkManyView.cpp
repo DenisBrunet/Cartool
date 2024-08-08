@@ -66,20 +66,20 @@ END_RESPONSE_TABLE;
       : TBaseView ( doc, parent )
 {
 GODoc       = &doc;
-StandSize   = TSize ( LMVIEW_WINSIZEH, LMVIEW_WINSIZEV );
 
-TSize   bs  = GetBestSize ();
-Attr.W      = bs.X ();
-Attr.H      = bs.Y ();
-
-StandSize   = TSize ( crtl::GetWindowWidth ( this ), crtl::GetWindowHeight ( this ) );
+StandSize   = GetBestSize ();
+Attr.W      = StandSize.X ();
+Attr.H      = StandSize.Y ();
 
 SetViewMenu ( new TMenuDescr ( IDM_LM ) );
 //GetViewMenu ()->CheckMenuItem ( CM_COMMANDSCLONING, MF_BYCOMMAND | MF_CHECKED );
 
+BackColor.Set ( 0, GLBASE_BACKCOLOR_PRINTING );
+BackColor.Set ( 1, GLBASE_BACKCOLOR_PRINTING );
+
 
 NumControlBarGadgets    = LMVIEW_CBG_NUM;
-ControlBarGadgets       = new TGadget * [ NumControlBarGadgets ];
+ControlBarGadgets       = new TGadget* [ NumControlBarGadgets ];
 
 CreateBaseGadgets ();
 
@@ -97,9 +97,6 @@ ControlBarGadgets[ LMVIEW_CBG_DESYNCBETWEENEEG  ]   = new TButtonGadget    ( CM_
 ControlBarGadgets[ LMVIEW_CBG_COMMANDSCLONING   ]   = new TButtonGadget    ( CM_COMMANDSCLONING,       CM_COMMANDSCLONING,     TButtonGadget::NonExclusive, true, GODoc->CommandsCloning ? TButtonGadget::Down : TButtonGadget::Up, false );
 ControlBarGadgets[ LMVIEW_CBG_SEP4              ]   = new TSeparatorGadget ( ButtonSeparatorWidth );
 ControlBarGadgets[ LMVIEW_CBG_SEGMENT           ]   = new TButtonGadget    ( IDB_SEGMENT,              IDB_SEGMENT,            TButtonGadget::Command );
-
-BackColor.Set ( 0, GLBASE_BACKCOLOR_PRINTING );
-BackColor.Set ( 1, GLBASE_BACKCOLOR_PRINTING );
 }
 
 
@@ -172,8 +169,8 @@ if ( GODoc->GetViewList() == this ) {
                                         // and max string length
 TSize   TLinkManyView::GetBestSize ()
 {
-float               width           = 0;
-float               height;
+GLfloat             width           = 0;
+GLfloat             height;
 
 
 for ( int i=0; i < GODoc->GetNumEegDoc(); i++ )
@@ -200,7 +197,7 @@ for ( int i=0; i < GODoc->GetNumMriDoc(); i++ )
 
 width  += 4 * BFont->GetAvgWidth ();
 
-Clipped ( width, (float) 300 /*200*/, (float) 400 );
+Clipped ( width, (GLfloat) RescaleSizeDpi ( MinLMWindowWidth ), (GLfloat) RescaleSizeDpi ( MaxLMWindowWidth ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -218,30 +215,25 @@ else {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-StandSize      = TSize ( width, height );
-
-return StandSize;
+return TSize ( width, height );
 }
 
 
 //----------------------------------------------------------------------------
-                                        // Resizing is NOT allowed, and is overriden by current content
-void    TLinkManyView::EvSize ( uint /*sizeType*/, const TSize &/*size*/ )
+                                        // Resizing is mostly constrained to show at least all the lines
+void    TLinkManyView::EvSize ( uint sizetype, const TSize &size )
 {
-GetBestSize ();
-
-
 if ( ! IsWindowMaximized () ) {
 
-    TBaseView::EvSize ( 0, StandSize );
+    TSize               bestsize        = GetBestSize ();
+                                        // only allowing the actual width to be smaller than the optimal
+    TSize               safesize        = TSize ( NoMore ( bestsize.X (), size.X() ), bestsize.Y () );
+
+    TBaseView::EvSize ( sizetype, safesize );
                                         // setting the parent
-    WindowSetSize ( StandSize.X() + WindowClientOffset.X(), StandSize.Y() + WindowClientOffset.Y() );
+    WindowSetSize ( safesize.X() + WindowClientOffset.X(), safesize.Y() + WindowClientOffset.Y() );
                                         // setting the child, too
-    crtl::WindowSetSize ( this,  StandSize.X(), StandSize.Y() );
-
-//  Invalidate ( false );
-
-//  SetStandSize ();
+    crtl::WindowSetSize ( this,  safesize.X(), safesize.Y() );
     }
 }
 
@@ -478,8 +470,9 @@ if ( CaptureMode == CaptureAddToGroup ) {
 
     if ( GODoc->AddToGroup ( view->BaseDoc ) ) {
 
-        EvSize ( 0, TSize ( 0, 0 ) );
-//      ShowNow ();
+        StandSize   = GetBestSize ();
+
+        EvSize ( 0, StandSize );
 
 //      EEGDoc->NotifyFriendViews ( TFCursor->SentTo, vnNewTFCursor, (TParam2) TFCursor, this );
 

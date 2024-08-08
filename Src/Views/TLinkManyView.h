@@ -24,10 +24,6 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-constexpr int       LMVIEW_WINSIZEH             = 200;
-constexpr int       LMVIEW_WINSIZEV             = 200;
-
-
 enum    {
         LMVIEW_CBG_SEP1          = NumBaseViewButtons,
         LMVIEW_CBG_GTVKEEPSIZE,

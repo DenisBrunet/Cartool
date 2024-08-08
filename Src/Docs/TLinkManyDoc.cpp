@@ -1653,9 +1653,14 @@ TBaseView*          view;
 
 for ( view = GetViewList (); view != 0; view = NextView ( view ) ) {
 
-    ((TLinkManyView *) view)->GetBestSize ();
+    TLinkManyView*  lmview  = dynamic_cast<TLinkManyView*> ( view );
 
-    view->EvSize ( 0, view->StandSize ); // just to enter this procedure
+    if ( lmview ) {
+
+        lmview->StandSize   = lmview->GetBestSize ();
+
+        view->EvSize ( 0, view->StandSize );
+        }
     }
 
                                         // do a nice tiling
