@@ -156,18 +156,19 @@ Center.Y    = GetWindowMiddleVert  ( windowparent );
 Center.Z    = level;                    // 0 being visually the highest
 
                                         // fixed extent for now
-Extent.Set ( GaugeWidth, GaugeHeight, 0 );
+Extent.Set ( RescaleSizeDpi ( CartoolMainWindow, GaugeWidth ), RescaleSizeDpi ( CartoolMainWindow, GaugeHeight ), 0 );
 
                                         // create this gauge, which could be replaced later
-Gauge       = new owl::TGauge (  windowparent,
-                            Title,
-                            GaugeId++,      // bumps to the next Id
-                            GetWindowLeft (),
-                            GetWindowTop  (),
-                            Extent.X,
-                            Extent.Y,
-                            true            // horizontal
-                           );
+                                        // note that the font is not rescaled properly...
+Gauge       = new owl::TGauge   (   windowparent,
+                                    Title,
+                                    GaugeId++,      // bumps to the next Id
+                                    GetWindowLeft (),
+                                    GetWindowTop  (),
+                                    Extent.X,
+                                    Extent.Y,
+                                    true            // horizontal
+                                );
 
 
 UpdateVariables ();
