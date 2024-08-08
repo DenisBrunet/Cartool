@@ -438,9 +438,9 @@ Markers.ReadFile ( markerfilename );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), MinWindowHeight, MaxWindowHeight );
+Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), RescaleSizeDpi ( MinWindowHeight ), RescaleSizeDpi ( MaxWindowHeight ) );
 Attr.W      = Attr.H /** WindowHeightToWidthRatio*/;
-StandSize   = TSize ( MRIWindowSizeW, MRIWindowSizeH );
+StandSize   = TSize ( RescaleSizeDpi ( MRIWindowSizeW ), RescaleSizeDpi ( MRIWindowSizeH ) );
 
 
 SetViewMenu ( new TMenuDescr ( IDM_MRI ) );

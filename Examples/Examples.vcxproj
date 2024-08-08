@@ -82,7 +82,7 @@
       <WarningLevel>Level1</WarningLevel>
       <SDLCheck>
       </SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;ARMA_USE_LAPACK;ARMA_USE_BLAS;ARMA_BLAS_LONG_LONG;STRICT;NOMINMAX;_HAS_AUTO_PTR_ETC=1;_HAS_STD_BYTE=0;_OWLPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINVER=0x0A00;_WIN32_WINNT=0x0A00;_DEBUG;_CONSOLE;ARMA_USE_LAPACK;ARMA_USE_BLAS;ARMA_BLAS_LONG_LONG;STRICT;NOMINMAX;_HAS_AUTO_PTR_ETC=1;_HAS_STD_BYTE=0;_OWLPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <OpenMPSupport>true</OpenMPSupport>
@@ -105,7 +105,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>
       </SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;ARMA_NO_DEBUG;ARMA_USE_LAPACK;ARMA_USE_BLAS;ARMA_BLAS_LONG_LONG;STRICT;NOMINMAX;_HAS_AUTO_PTR_ETC=1;_HAS_STD_BYTE=0;_OWLPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINVER=0x0A00;_WIN32_WINNT=0x0A00;NDEBUG;_CONSOLE;ARMA_NO_DEBUG;ARMA_USE_LAPACK;ARMA_USE_BLAS;ARMA_BLAS_LONG_LONG;STRICT;NOMINMAX;_HAS_AUTO_PTR_ETC=1;_HAS_STD_BYTE=0;_OWLPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <OpenMPSupport>true</OpenMPSupport>

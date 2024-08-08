@@ -1817,4 +1817,7 @@
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="..\Bin\Cartool64.manifest" />
+  </ItemGroup>
 </Project>

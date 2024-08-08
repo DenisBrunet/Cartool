@@ -245,9 +245,9 @@ Zaxis       = TGLArrow<GLfloat>   ( 0, 0, 0,
 OriginRadius    = 0.20 * XYZDoc->GetPointRadius ( CurrentDisplaySpace );
 
 
-Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), MinWindowHeight, MaxWindowHeight );
-Attr.W      = Attr.H /** WindowHeightToWidthRatio*/;
-StandSize   = TSize ( XYZWindowSize, XYZWindowSize );
+Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), RescaleSizeDpi ( MinWindowHeight ), RescaleSizeDpi ( MaxWindowHeight ) );
+Attr.W      = Attr.H /* * WindowHeightToWidthRatio*/;
+StandSize   = TSize ( RescaleSizeDpi ( XYZWindowSize ), RescaleSizeDpi ( XYZWindowSize ) );
 
 
 SetViewMenu ( new TMenuDescr (IDM_XYZ) );

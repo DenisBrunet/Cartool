@@ -81,7 +81,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>NDEBUG;ARMA_NO_DEBUG;ARMA_USE_LAPACK;ARMA_USE_BLAS;ARMA_BLAS_LONG_LONG;STRICT;NOMINMAX;_HAS_AUTO_PTR_ETC=1;_HAS_STD_BYTE=0;_OWLPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINVER=0x0A00;_WIN32_WINNT=0x0A00;NDEBUG;ARMA_NO_DEBUG;ARMA_USE_LAPACK;ARMA_USE_BLAS;ARMA_BLAS_LONG_LONG;STRICT;NOMINMAX;_HAS_AUTO_PTR_ETC=1;_HAS_STD_BYTE=0;_OWLPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <WarningLevel>Level1</WarningLevel>
@@ -127,7 +127,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>ARMA_USE_LAPACK;ARMA_USE_BLAS;ARMA_BLAS_LONG_LONG;STRICT;NOMINMAX;_HAS_AUTO_PTR_ETC=1;_HAS_STD_BYTE=0;_OWLPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINVER=0x0A00;_WIN32_WINNT=0x0A00;ARMA_USE_LAPACK;ARMA_USE_BLAS;ARMA_BLAS_LONG_LONG;STRICT;NOMINMAX;_HAS_AUTO_PTR_ETC=1;_HAS_STD_BYTE=0;_OWLPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -773,6 +773,9 @@
     <Image Include="..\Src\res\ico\tva.ico" />
     <Image Include="..\Src\res\ico\verbose.ico" />
     <Image Include="..\Src\res\ico\xyzcoord.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="..\Bin\Cartool64.manifest" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

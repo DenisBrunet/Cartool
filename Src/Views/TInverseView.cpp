@@ -374,9 +374,9 @@ MaterialIs  = TGLMaterial<GLfloat> ( GL_FRONT_AND_BACK,
                                      20.00 );
 
 
-Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), MinWindowHeight, MaxWindowHeight );
+Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), RescaleSizeDpi ( MinWindowHeight ), RescaleSizeDpi ( MaxWindowHeight ) );
 Attr.W      = Attr.H * MoreWidthRatio;
-StandSize   = TSize ( InverseWindowSizeW, InverseWindowSizeH );
+StandSize   = TSize ( RescaleSizeDpi ( InverseWindowSizeW ), RescaleSizeDpi ( InverseWindowSizeH ) );
 
 
 SetViewMenu ( new TMenuDescr ( IDM_INVERSE ) );

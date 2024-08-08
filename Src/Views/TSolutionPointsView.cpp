@@ -164,9 +164,9 @@ SetScalingContrast ( 0.00 );
 SetScaling ( maxValue );
 
 
-Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), MinWindowHeight, MaxWindowHeight );
+Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), RescaleSizeDpi ( MinWindowHeight ), RescaleSizeDpi ( MaxWindowHeight ) );
 Attr.W      = Attr.H /** WindowHeightToWidthRatio*/;
-StandSize   = TSize ( SolPointsWindowSize, SolPointsWindowSize );
+StandSize   = TSize ( RescaleSizeDpi ( SolPointsWindowSize ), RescaleSizeDpi ( SolPointsWindowSize ) );
 
 
 SetViewMenu ( new TMenuDescr ( IDM_SP ) );

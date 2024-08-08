@@ -476,6 +476,7 @@ ApxHarbor->Insert ( *ControlBar, alTop );
 //----------------------------------------------------------------------------
 void    TCartoolApp::CreateSplashScreen ()
 {
+#if !defined (_DEBUG)
                                         // Splash screen will delete itlsef when timer runs off - no need to keep track of it
 Splash  = new TCartoolSplashWindow  (   *unique_ptr<TDib> ( new TDib ( 0, TResId ( IDB_SPLASH ) ) ),  // get resource bitmap
                                         800, 640, TSplashWindow::None,
@@ -488,17 +489,23 @@ Splash->Create ();
 Splash->SetWindowPos ( HWND_TOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE );
                                         // force redraw now (when busy opening file & starting) (?)
 //Splash->RedrawWindow ( 0, 0, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_ALLCHILDREN );
+
+#endif
 }
 
                                         // !Something is not correct here!
 void    TCartoolApp::DestroySplashScreen ()
 {
+#if !defined (_DEBUG)
+
 if ( Splash != 0 ) {
 
     if ( Splash->IsActive () )  delete  Splash;
 
     Splash  = 0;
     }
+
+#endif
 }
 
 
@@ -532,6 +539,9 @@ CartoolMainWindow->Attr.ExStyle |= WS_EX_ACCEPTFILES;
                                         // Full HD outer window size - Note it is not aware of any screen rescaling, which didn't exist back in the day
 int             screenwidth     = GetSystemMetrics ( SM_CXSCREEN );
 int             screenheight    = GetSystemMetrics ( SM_CYSCREEN );
+//int           screenwidthdpi  = GetSystemMetricsForDpi ( SM_CXSCREEN, GetWindowDpi () );
+//int           screenheightdpi = GetSystemMetricsForDpi ( SM_CYSCREEN, GetWindowDpi () );
+
 
 CartoolMainWindow->Attr.W       = (int) ( screenwidth  * 0.50 );
 CartoolMainWindow->Attr.H       = (int) ( screenheight * 0.75 );

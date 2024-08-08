@@ -46,7 +46,7 @@ using               UseThisDC                   = owl::TPaintDC;    // owl::TWin
                                         // Max message ID used in Cartool
 constexpr UINT      MaxUserCommandId            = 20000;
 
-constexpr int       MaxViewTitleLength            = 2 * KiloByte;
+constexpr int       MaxViewTitleLength          = 2 * KiloByte;
 
 
 //----------------------------------------------------------------------------
@@ -397,14 +397,14 @@ public:
     bool                    IsWindowMinimized   ()                                          const   { return crtl::IsWindowMinimized ( GetParentO () ); }
     bool                    IsWindowMaximized   ()                                          const   { return crtl::IsWindowMaximized ( GetParentO () ); }
 
-    void                    WindowMinimize      ()                                          const   { crtl::WindowMinimize    ( GetParentO () ); }
-    void                    WindowMaximize      ()                                          const   { crtl::WindowMaximize    ( GetParentO () ); }
-    void                    WindowRestore       ()                                          const   { crtl::WindowRestore     ( GetParentO () ); }
-    void                    WindowHide          ()                                          const   { crtl::WindowHide        ( GetParentO () ); }
+    void                    WindowMinimize      ()                                          const   { crtl::WindowMinimize          ( GetParentO () ); }
+    void                    WindowMaximize      ()                                          const   { crtl::WindowMaximize          ( GetParentO () ); }
+    void                    WindowRestore       ()                                          const   { crtl::WindowRestore           ( GetParentO () ); }
+    void                    WindowHide          ()                                          const   { crtl::WindowHide              ( GetParentO () ); }
 
-    void                    WindowSetOrigin     ( int left, int top )                       const   { crtl::WindowSetOrigin   ( GetParentO (), left, top );                }
-    void                    WindowSetSize       ( int width, int height )                   const   { crtl::WindowSetSize     ( GetParentO (), width, height );            }
-    void                    WindowSetPosition   ( int left, int top, int width, int height )const   { crtl::WindowSetPosition ( GetParentO (), left, top, width, height ); }
+    void                    WindowSetOrigin     ( int left, int top )                       const   { crtl::WindowSetOrigin         ( GetParentO (), left,  top );                  }
+    void                    WindowSetSize       ( int width, int height )                   const   { crtl::WindowSetSize           ( GetParentO (), width, height );               }
+    void                    WindowSetPosition   ( int left, int top, int width, int height )const   { crtl::WindowSetPosition       ( GetParentO (), left,  top,   width, height ); }
 
     int                     GetWindowLeft       ()                                          const   { return crtl::GetWindowLeft    ( GetParentO () ); }
     int                     GetWindowRight      ()                                          const   { return crtl::GetWindowRight   ( GetParentO () ); }
@@ -412,6 +412,9 @@ public:
     int                     GetWindowBottom     ()                                          const   { return crtl::GetWindowBottom  ( GetParentO () ); }
     int                     GetWindowWidth      ()                                          const   { return crtl::GetWindowWidth   ( GetParentO () ); }
     int                     GetWindowHeight     ()                                          const   { return crtl::GetWindowHeight  ( GetParentO () ); }
+
+    int                     GetWindowDpi        ()                                          const   { return crtl::GetWindowDpi     ( GetParentO () ); }
+    int                     RescaleSizeDpi      ( int size96 )                              const   { return crtl::RescaleSizeDpi   ( GetParentO (), size96 ); }
 
 
     void                    CaptureMouse        ( CaptureMouseEnum how );
@@ -593,7 +596,7 @@ protected:
     virtual void            CmSetShiftDepthRange    ( owlwparam w );
     int                     NextRois                ( int currrois, int dimrois );
 
-    virtual bool            NotSmallWindow          ()                      { return PaintRect.Height() >= SmallWindowHeight && PaintRect.Width() >= SmallWindowWidth; }
+    virtual bool            NotSmallWindow          ()                      { return PaintRect.Height () >= RescaleSizeDpi ( SmallWindowHeight ) && PaintRect.Width () >= RescaleSizeDpi ( SmallWindowWidth ); }
     void                    AxisToBorder            ( TGLCoordinates<GLfloat>& dir, TGLCoordinates<GLfloat>& border1, int& textattr1, TGLCoordinates<GLfloat>& border2, int& textattr2 );
     void                    DrawOrientation         ( const TOrientationType* boxsides = 0 );
     void                    DrawAxis                ();

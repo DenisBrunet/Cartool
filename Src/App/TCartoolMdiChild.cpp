@@ -37,8 +37,8 @@ END_RESPONSE_TABLE;
         TCartoolMdiChild::TCartoolMdiChild ( TMDIClient& parent, const char* title, TWindow* clientWnd, bool shrinkToClient, TModule* module )
       : TMDIChild ( parent, title, clientWnd, shrinkToClient, module )
 {
-Attr.W  = DefaultWindowSize;
-Attr.H  = DefaultWindowSize;
+Attr.W  = crtl::RescaleSizeDpi ( this, DefaultWindowSize );
+Attr.H  = crtl::RescaleSizeDpi ( this, DefaultWindowSize );
 }
 
 

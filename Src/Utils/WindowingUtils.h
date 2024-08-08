@@ -38,6 +38,10 @@ inline  int     GetWindowWidth      ( const owl::TWindow* window )              
 inline  int     GetWindowHeight     ( const owl::TWindow* window )                                              { return  window ? window->Attr.H                       : 0; }
 inline  int     GetWindowMinSide    ( const owl::TWindow* window )                                              { return  window ? min ( GetWindowWidth ( window ), GetWindowHeight ( window ) ) : 0; }
 
+                                                                                                                                                  // from current window state            system value as a fallback
+inline  int     GetWindowDpi        ( const owl::TWindow* window = 0 )                                          { return  window && window->Handle ? GetDpiForWindow ( window->Handle ) : GetDpiForSystem () /*96*/; }
+inline  int     RescaleSizeDpi      ( const owl::TWindow* window, int size96 )                                  { return MulDiv ( size96, crtl::GetWindowDpi ( window ), USER_DEFAULT_SCREEN_DPI ); }
+
                                         // Setting position and size                                            
 inline  void    WindowMinimize      ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_SHOWMINIMIZED ); }
 inline  void    WindowMaximize      ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_SHOWMAXIMIZED ); }
