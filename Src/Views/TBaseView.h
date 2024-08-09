@@ -419,8 +419,8 @@ public:
     int                     GetWindowHeight     ()                                          const   { return crtl::GetWindowHeight  ( GetParentO () ); }
 
     int                     GetWindowDpi        ()                                          const   { return crtl::GetWindowDpi     ( GetParentO () ); }
-    int                     RescaleSizeDpi      ( int    size96 )                           const   { return crtl::RescaleSizeDpi   ( GetParentO (), size96 ); }
     double                  RescaleSizeDpi      ( double size96 )                           const   { return crtl::RescaleSizeDpi   ( GetParentO (), size96 ); }
+    int                     RescaleSizeDpi      ( int    size96 )                           const   { return crtl::RescaleSizeDpi   ( GetParentO (), size96 ); }
 
 
     void                    CaptureMouse        ( CaptureMouseEnum how );

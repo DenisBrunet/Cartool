@@ -40,8 +40,9 @@ inline  int     GetWindowMinSide    ( const owl::TWindow* window )              
 
                                                                                                                                                   // from current window state            system value as a fallback
 inline  int     GetWindowDpi        ( const owl::TWindow* window = 0 )                                          { return  window && window->Handle ? GetDpiForWindow ( window->Handle ) : GetDpiForSystem () /*96*/; }
-inline  int     RescaleSizeDpi      ( const owl::TWindow* window, int    size96 )                               { return MulDiv ( size96, crtl::GetWindowDpi ( window ), USER_DEFAULT_SCREEN_DPI ); }
-inline  double  RescaleSizeDpi      ( const owl::TWindow* window, double size96 )                               { return size96 * crtl::GetWindowDpi ( window ) / (double) USER_DEFAULT_SCREEN_DPI; }
+                                        // Rescale default 96 dpi pixel size into an equivalent pixel size of any arbitrary dpi
+inline  double  RescaleSizeDpi      ( const owl::TWindow* window, double size96 )                               { return  size96 * ( ( crtl::GetWindowDpi ( window ) / (double) USER_DEFAULT_SCREEN_DPI - 1 ) * 0.9 + 1 ); }    // slight decrease: higher dpi's are more legible, and need a little less space than an exact rescaling
+inline  int     RescaleSizeDpi      ( const owl::TWindow* window, int    size96 )                               { return  Round ( RescaleSizeDpi ( window, (double) size96 ) ); }
 
                                         // Setting position and size                                            
 inline  void    WindowMinimize      ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_SHOWMINIMIZED ); }
