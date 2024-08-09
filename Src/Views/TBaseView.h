@@ -419,6 +419,7 @@ public:
     int                     GetWindowHeight     ()                                          const   { return crtl::GetWindowHeight  ( GetParentO () ); }
 
     int                     GetWindowDpi        ()                                          const   { return crtl::GetWindowDpi     ( GetParentO () ); }
+    double                  RescaleSizeDpi      ()                                          const   { return crtl::RescaleSizeDpi   ( GetParentO () ); }
     double                  RescaleSizeDpi      ( double size96 )                           const   { return crtl::RescaleSizeDpi   ( GetParentO (), size96 ); }
     int                     RescaleSizeDpi      ( int    size96 )                           const   { return crtl::RescaleSizeDpi   ( GetParentO (), size96 ); }
 

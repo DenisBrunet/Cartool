@@ -476,10 +476,13 @@ ApxHarbor->Insert ( *ControlBar, alTop );
 //----------------------------------------------------------------------------
 void    TCartoolApp::CreateSplashScreen ()
 {
-#if !defined (_DEBUG)
-                                        // Splash screen will delete itlsef when timer runs off - no need to keep track of it
-Splash  = new TCartoolSplashWindow  (   *unique_ptr<TDib> ( new TDib ( 0, TResId ( IDB_SPLASH ) ) ),  // get resource bitmap
-                                        800, 640, TSplashWindow::None,
+                                        // Splash screen will delete itself when timer runs off - no need to keep track of it
+Splash  = new TCartoolSplashWindow  (   *unique_ptr<TDib>   (   RescaleDIB  (   CartoolMdiClient, 
+                                                                                IDB_SPLASH, 
+                                                                                RescaleSizeDpi ( CartoolMdiClient ) 
+                                                                            )
+                                                            ),
+                                        0,  0,  TSplashWindow::ShrinkToFit,
                                         2.5 * 1000,
                                         0 /*DefaultTitle*/, // putting a title will mess up with the whole size...
                                         this 
@@ -489,40 +492,23 @@ Splash->Create ();
 Splash->SetWindowPos ( HWND_TOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE );
                                         // force redraw now (when busy opening file & starting) (?)
 //Splash->RedrawWindow ( 0, 0, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_ALLCHILDREN );
-
-#endif
 }
 
                                         // !Something is not correct here!
 void    TCartoolApp::DestroySplashScreen ()
 {
-#if !defined (_DEBUG)
-
 if ( Splash != 0 ) {
 
     if ( Splash->IsActive () )  delete  Splash;
 
     Splash  = 0;
     }
-
-#endif
 }
 
 
 //----------------------------------------------------------------------------
 void    TCartoolApp::InitMainWindow ()
 {
-                                        // nCmdShow could be overriden in InitInstance
-if ( (   nCmdShow == SW_SHOWMAXIMIZED 
-      || nCmdShow == SW_SHOWNORMAL 
-      || nCmdShow == SW_SHOWDEFAULT   )
-  && IsInteractive () )
-
-    CreateSplashScreen ();
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 CartoolMdiClient    = new TCartoolMdiClient ( this );
 
 CartoolMainWindow   = new TDecoratedMDIFrame ( Name, IDM_MDI, std::unique_ptr<TMDIClient> ( CartoolMdiClient ), true, this );
@@ -585,6 +571,16 @@ CursorOperation     = make_unique<TCursor> ( CartoolMainWindow->GetModule()->Get
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Message queue threading
 EnableMultiThreading ( true );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // nCmdShow could be overriden in InitInstance
+if ( (   nCmdShow == SW_SHOWMAXIMIZED 
+      || nCmdShow == SW_SHOWNORMAL 
+      || nCmdShow == SW_SHOWDEFAULT   )
+  && IsInteractive () )
+
+    CreateSplashScreen ();
 }
 
 

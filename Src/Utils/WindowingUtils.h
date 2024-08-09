@@ -17,6 +17,7 @@ limitations under the License.
 #pragma once
 
 #include    <owl/window.h>              // TWindow
+#include    <owl/gdiobjec.h>            // TDib
 
 namespace crtl {
 
@@ -41,8 +42,11 @@ inline  int     GetWindowMinSide    ( const owl::TWindow* window )              
                                                                                                                                                   // from current window state            system value as a fallback
 inline  int     GetWindowDpi        ( const owl::TWindow* window = 0 )                                          { return  window && window->Handle ? GetDpiForWindow ( window->Handle ) : GetDpiForSystem () /*96*/; }
                                         // Rescale default 96 dpi pixel size into an equivalent pixel size of any arbitrary dpi
-inline  double  RescaleSizeDpi      ( const owl::TWindow* window, double size96 )                               { return  size96 * ( ( crtl::GetWindowDpi ( window ) / (double) USER_DEFAULT_SCREEN_DPI - 1 ) * 0.9 + 1 ); }    // slight decrease: higher dpi's are more legible, and need a little less space than an exact rescaling
-inline  int     RescaleSizeDpi      ( const owl::TWindow* window, int    size96 )                               { return  Round ( RescaleSizeDpi ( window, (double) size96 ) ); }
+inline  double  RescaleSizeDpi      ( const owl::TWindow* window )                                              { return  ( crtl::GetWindowDpi ( window ) / (double) USER_DEFAULT_SCREEN_DPI - 1 ) * 0.9 + 1; }    // slight decrease: higher dpi's are more legible, and need a little less space than an exact rescaling
+inline  double  RescaleSizeDpi      ( const owl::TWindow* window, double size96 )                               { return          size96 * RescaleSizeDpi ( window );   }
+inline  int     RescaleSizeDpi      ( const owl::TWindow* window, int    size96 )                               { return  Round ( size96 * RescaleSizeDpi ( window ) ); }
+
+inline owl::TDib*   RescaleDIB      ( const owl::TWindow* window, int resid, double scalingfactor );
 
                                         // Setting position and size                                            
 inline  void    WindowMinimize      ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_SHOWMINIMIZED ); }
@@ -54,6 +58,61 @@ inline  void    WindowSetOrigin     ( owl::TWindow* window,   int left,   int to
 inline  void    WindowSetSize       ( owl::TWindow* window,   int width,  int height )                          { if ( window ) window->SetWindowPos ( 0, 0,    0,   width, height, SWP_NOCOPYBITS   | SWP_SHOWWINDOW | SWP_NOMOVE ); }
 inline  void    WindowSetPosition   ( owl::TWindow* window,   int left,   int top,    int width,  int height )  { if ( window ) window->SetWindowPos ( 0, left, top, width, height, SWP_NOCOPYBITS   | SWP_SHOWWINDOW              ); }
 inline  void    WindowSetFrameOrigin( owl::TWindow* window,   int left,   int top )                             { if ( window ) window->SetWindowPos ( 0, left, top, 0,     0,      SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOSIZE ); }
+
+
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+                                        // Load and rescale a resource bitmap
+                                        // There are a lot of hoops to jump through to be able to use Win32 / GDI functions
+owl::TDib*  RescaleDIB  ( const owl::TWindow* window, int resid, double scalingfactor )
+{
+using namespace owl;
+
+if ( scalingfactor == 1 )
+
+    return  new TDib ( 0, TResId ( resid ) );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // We need device contexts all along
+TClientDC           dc          ( window->GetHandle () );
+                                        // Create dib from resource
+TDib                srcdib      ( 0, TResId ( resid ) );
+                                        // Get the bitmap data
+TBitmap             srcbitmap   ( srcdib );
+                                        // We need a memory dc context for source bitmap
+TMemoryDC           srcdc       ( dc );
+                                        // Load source bitmap to context
+srcdc.SelectObject ( srcbitmap );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                
+int                 destwidth       = Round ( scalingfactor * srcbitmap.Width  () );
+int                 destheight      = Round ( scalingfactor * srcbitmap.Height () );
+                                        // Create new destination bitmap
+TBitmap             destbitmap  ( dc, destwidth, destheight );
+                                        // We need a memory dc context for destination bitmap
+TMemoryDC           destdc      ( dc );
+                                        // Load source bitmap to context
+destdc.SelectObject ( destbitmap );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Set the stretch mode to high-quality scaling
+destdc.SetStretchBltMode ( HALFTONE );
+                                        // Rescale the DIB image using StretchBlt
+StretchBlt  (   destdc,     0,  0,  destwidth,          destheight, 
+                srcdc,      0,  0,  srcbitmap.Width (), srcbitmap.Height (), 
+                SRCCOPY
+            );
+
+return  new TDib ( destbitmap );
+
+                                        // In theory, we should clean after ourselves, but these dc are temps, aren't they?
+//srcdc. RestoreBitmap ();
+//destdc.RestoreBitmap ();
+}
 
 
 //----------------------------------------------------------------------------
