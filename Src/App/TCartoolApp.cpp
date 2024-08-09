@@ -479,7 +479,7 @@ void    TCartoolApp::CreateSplashScreen ()
                                         // Splash screen will delete itself when timer runs off - no need to keep track of it
 Splash  = new TCartoolSplashWindow  (   *unique_ptr<TDib>   (   RescaleDIB  (   CartoolMdiClient, 
                                                                                 IDB_SPLASH, 
-                                                                                RescaleSizeDpi ( CartoolMdiClient ) 
+                                                                                1 /*RescaleSizeDpi ( CartoolMdiClient )*/   // not sure we really want to rescale the Splash Screen?
                                                                             )
                                                             ),
                                         0,  0,  TSplashWindow::ShrinkToFit,
