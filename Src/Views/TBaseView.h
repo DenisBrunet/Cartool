@@ -119,13 +119,13 @@ constexpr double    MoreWidthRatio              = 1.20;
 constexpr double    RotationStep                = 2.5;
 
 constexpr double    MaxShiftDepthRange          = 0.15;
-                                        // minimum mouse move in pixels to initiate the direction detection
-constexpr int       MinMouseMove                = 5;
-                                        // a common scale, in pixels, for many mouse displacement
-constexpr int       MouseMoveScale              = 20;
-                                        // another one, for fast movemements
-constexpr int       MouseMoveScaleFast          = 33;
-//constexpr int     MouseMoveScaleUltraFast     = 60;
+
+                                        // minimum mouse move, in some distance units, to initiate the direction detection
+#define             MinMouseMove                RescaleSizeDpi ( 5 )
+                                        // a common scale, in some distance units, for many mouse displacement
+#define             MouseMoveScale              RescaleSizeDpi ( 20 )
+                                        // another one, but for faster movemements
+#define             MouseMoveScaleFast          RescaleSizeDpi ( 33 )
 
 constexpr ULONG     MouseMoveHitDelay           = 500;
 constexpr char      MouseMiddeClicksurrogate    = ' ';
@@ -135,7 +135,7 @@ constexpr char      MouseMiddeClicksurrogate    = ' ';
                                         // give some space from AbsRadius, for extra depth
 constexpr double    DepthPositionRatio          = 3.0;
 constexpr double    ExtraSize3D                 = 1.25;
-constexpr double    SpaceBetweenTextLines       = 2;
+#define             SpaceBetweenTextLines       RescaleSizeDpi ( 2 )
 
 constexpr double    FogDefaultNear              = 0.95;
 constexpr double    FogDefaultFar               = 1.25;
