@@ -159,8 +159,9 @@ constexpr double    CursorHintSize              = 18;
 #define             GLBASE_MINCOLOR             (GLfloat) 0.00, (GLfloat) 0.40, (GLfloat) 1.00
 #define             GLBASE_MAXCOLOR             (GLfloat) 1.00, (GLfloat) 0.20, (GLfloat) 0.20
 
-constexpr int       ColorMapWidth               = 15;
-constexpr int       ColorMapHeight              = 200;
+                                        // Using defines on purpose, as this should evaluate at each call - 'this' is a TWindow*
+#define             ColorMapWidth               RescaleFontDpi ( this,  15 )
+#define             ColorMapHeight              RescaleFontDpi ( this, 200 )
 
 
 //----------------------------------------------------------------------------
