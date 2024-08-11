@@ -173,8 +173,8 @@ constexpr int       BbSphereHighNumSlices       = 40;
 
 //----------------------------------------------------------------------------
                                         // Cartool makes use of 2 different fonts
-#define             SmallFontParameters         "Tahoma",  RescaleSizeDpi ( 0, 13 ), 0, 0, 0, FW_BOLD
-#define             BigFontParameters           "Verdana", RescaleSizeDpi ( 0, 17 ), 0, 0, 0, FW_NORMAL
+#define             SmallFontParameters         "Tahoma",  RescaleFontDpi ( 0, 13 ), 0, 0, 0, FW_BOLD
+#define             BigFontParameters           "Verdana", RescaleFontDpi ( 0, 17 ), 0, 0, 0, FW_NORMAL
 
 
 //----------------------------------------------------------------------------

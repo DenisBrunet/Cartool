@@ -477,11 +477,7 @@ ApxHarbor->Insert ( *ControlBar, alTop );
 void    TCartoolApp::CreateSplashScreen ()
 {
                                         // Splash screen will delete itself when timer runs off - no need to keep track of it
-Splash  = new TCartoolSplashWindow  (   *unique_ptr<TDib>   (   RescaleDIB  (   CartoolMdiClient, 
-                                                                                IDB_SPLASH, 
-                                                                                1 /*RescaleSizeDpi ( CartoolMdiClient )*/   // not sure we really want to rescale the Splash Screen?
-                                                                            )
-                                                            ),
+Splash  = new TCartoolSplashWindow  (   *unique_ptr<TDib> ( new TDib ( 0, TResId ( IDB_SPLASH ) ) ),
                                         0,  0,  TSplashWindow::ShrinkToFit,
                                         2.5 * 1000,
                                         0 /*DefaultTitle*/, // putting a title will mess up with the whole size...
@@ -490,8 +486,6 @@ Splash  = new TCartoolSplashWindow  (   *unique_ptr<TDib>   (   RescaleDIB  (   
 Splash->Create ();
                                         // force to top
 Splash->SetWindowPos ( HWND_TOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE );
-                                        // force redraw now (when busy opening file & starting) (?)
-//Splash->RedrawWindow ( 0, 0, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_ALLCHILDREN );
 }
 
                                         // !Something is not correct here!

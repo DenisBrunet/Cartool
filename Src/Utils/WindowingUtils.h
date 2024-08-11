@@ -39,12 +39,14 @@ inline  int     GetWindowWidth      ( const owl::TWindow* window )              
 inline  int     GetWindowHeight     ( const owl::TWindow* window )                                              { return  window ? window->Attr.H                       : 0; }
 inline  int     GetWindowMinSide    ( const owl::TWindow* window )                                              { return  window ? min ( GetWindowWidth ( window ), GetWindowHeight ( window ) ) : 0; }
 
-                                                                                                                                                  // from current window state            system value as a fallback
-inline  int     GetWindowDpi        ( const owl::TWindow* window = 0 )                                          { return  window && window->Handle ? GetDpiForWindow ( window->Handle ) : GetDpiForSystem () /*96*/; }
+                                                                                                                                                  
+inline  int     GetWindowDpi        ( const owl::TWindow* window = 0 )                                          { return  window && window->Handle  ? GetDpiForWindow ( window->Handle )    // from current window state
+                                                                                                                                                    : GetDpiForSystem ();               }   // system value as a fallback
                                         // Rescale default 96 dpi pixel size into an equivalent pixel size of any arbitrary dpi
-inline  double  RescaleSizeDpi      ( const owl::TWindow* window )                                              { return  ( crtl::GetWindowDpi ( window ) / (double) USER_DEFAULT_SCREEN_DPI - 1 ) * 0.9 + 1; }    // slight decrease: higher dpi's are more legible, and need a little less space than an exact rescaling
-inline  double  RescaleSizeDpi      ( const owl::TWindow* window, double size96 )                               { return          size96 * RescaleSizeDpi ( window );   }
-inline  int     RescaleSizeDpi      ( const owl::TWindow* window, int    size96 )                               { return  Round ( size96 * RescaleSizeDpi ( window ) ); }
+inline  double  RescaleSizeDpi      ( const owl::TWindow* window )                                              { return  crtl::GetWindowDpi ( window ) / (double) USER_DEFAULT_SCREEN_DPI;     }
+inline  double  RescaleSizeDpi      ( const owl::TWindow* window, double size96 )                               { return          size96 *     RescaleSizeDpi ( window );                       }
+inline  int     RescaleSizeDpi      ( const owl::TWindow* window, int    size96 )                               { return  Round ( size96 *     RescaleSizeDpi ( window ) );                     }
+inline  int     RescaleFontDpi      ( const owl::TWindow* window, int    size96 )                               { return  Round ( size96 * ( ( RescaleSizeDpi ( window ) - 1 ) * 0.9 + 1 ) );   }   // slight decrease: higher dpi's are more legible, and need a little less space than an exact rescaling
 
 inline owl::TDib*   RescaleDIB      ( const owl::TWindow* window, int resid, double scalingfactor );
 
@@ -68,7 +70,7 @@ owl::TDib*  RescaleDIB  ( const owl::TWindow* window, int resid, double scalingf
 {
 using namespace owl;
 
-if ( scalingfactor == 1 )
+if ( scalingfactor <= 0 || scalingfactor == 1 )
 
     return  new TDib ( 0, TResId ( resid ) );
 
