@@ -650,7 +650,7 @@ if ( BuffSize > EegMaxPointsDisplay / 2
   || ( EEGDoc->GetSamplingFrequency () && TimeFrameToSeconds ( EEGDoc->GetNumTimeFrames (), EEGDoc->GetSamplingFrequency () ) > 50 )
   || EEGDoc->IsSpontaneous () ) {
                                         // Wider size
-    Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), RescaleSizeDpi ( MinWindowHeight ), RescaleSizeDpi ( MaxWindowHeightLarge ) );
+    Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), MinWindowHeight, MaxWindowHeightLarge );
 
     Attr.W      = Attr.H / WindowHeightToWidthRatio * 2;
 
@@ -660,13 +660,13 @@ if ( BuffSize > EegMaxPointsDisplay / 2
         Attr.W  = crtl::GetWindowWidth ( CartoolMdiClient );
         }
 
-    StandSize   = TSize ( RescaleSizeDpi ( TracksBigWindowSizeW ), RescaleSizeDpi ( TracksBigWindowSizeH ) );
+    StandSize   = TSize ( TracksBigWindowSizeW, TracksBigWindowSizeH );
 //  Attr.H      = StandSize.Y ();
 //  Attr.W      = StandSize.X ();
     }
 else {
                                         // Regular size
-    Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), RescaleSizeDpi ( MinWindowHeight ), RescaleSizeDpi ( MaxWindowHeight ) );
+    Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), MinWindowHeight, MaxWindowHeight );
 
     Attr.W      = EEGDoc->GetNumElectrodes () == EEGDoc->GetNumTimeFrames () ? Attr.H / 1.10    // if squared array of data, we might be looking at a kind of matrix, switch to a square display
                                                                              : Attr.H / WindowHeightToWidthRatio;
@@ -677,7 +677,7 @@ else {
         Attr.W  = crtl::GetWindowWidth ( CartoolMdiClient );
         }
 
-    StandSize   = TSize ( RescaleSizeDpi ( TracksWindowSizeW ), RescaleSizeDpi ( TracksWindowSizeH ) );
+    StandSize   = TSize ( TracksWindowSizeW, TracksWindowSizeH );
 //  Attr.H      = StandSize.Y ();
 //  Attr.W      = StandSize.X ();
     }
@@ -805,7 +805,7 @@ else if ( EEGDoc->IsContentType ( ContentTypeSeg ) ) {
         }
 
 
-    Attr.H      = NoMore ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), RescaleSizeDpi ( MaxWindowHeightLarge ) );
+    Attr.H      = NoMore ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), MaxWindowHeightLarge );
 
     Attr.W      = Attr.H / WindowHeightToWidthRatio;
                                         // relatively adjust height to # of tracks
@@ -914,12 +914,12 @@ else if ( EEGDoc->IsContentType ( ContentTypeHistogram ) ) {
         SetBarsMode ();
 
 
-    Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), RescaleSizeDpi ( MinWindowHeight ), RescaleSizeDpi ( MaxWindowHeight ) );
+    Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), MinWindowHeight, MaxWindowHeight );
 
     Attr.W      = Attr.H / WindowHeightToWidthRatio * 1.5;
                                         // relatively adjust height to # of tracks
     Attr.H     *= Clip ( sqrt ( (double) SelTracks.NumSet () ) + 1, 1.0, 10.0 ) / 4.0;
-    Mined ( Attr.H, RescaleSizeDpi ( MaxWindowHeight ) );
+    Mined ( Attr.H, MaxWindowHeight );
 
 
     SetScaling ( EEGGLVIEW_STVINIT * 0.030 * Attr.H / (double) NonNull ( NoMore ( 50, (int) SelTracks ) ) );

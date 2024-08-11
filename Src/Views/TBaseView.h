@@ -59,38 +59,39 @@ constexpr double    WindowHeightToWidthRatio    = SqrtTwo;
                                         // secondary windows need a little more space horizontally, for gadgets
 constexpr double    MoreWidthRatio              = 1.20;
 
+                                        // Using defines as values need to be evaluated at each call, in case dpi has changed during process lifetime
                                         // For very big screen, it is a bit useless to have windows opening bigger than that:
-constexpr int       MinWindowHeight             = 300;
-constexpr int       MaxWindowHeight             = 800;
-constexpr int       MaxWindowHeightLarge        = 1200;
+#define             MinWindowHeight             RescaleSizeDpi (  300 )
+#define             MaxWindowHeight             RescaleSizeDpi (  800 )
+#define             MaxWindowHeightLarge        RescaleSizeDpi ( 1200 )
 
                                         // what is a small window?
-constexpr int       SmallWindowHeight           = 150;
-constexpr int       SmallWindowWidth            = 150;
+#define             SmallWindowHeight           RescaleSizeDpi ( 150 )
+#define             SmallWindowWidth            RescaleSizeDpi ( 150 )
 
                                         // Common scale from which all window sizes will be derived
-constexpr int       DefaultWindowSize           = 400;
+#define             DefaultWindowSize           crtl::RescaleSizeDpi ( this, 400 )
 
-constexpr int       MRIWindowSizeW              = DefaultWindowSize;
-constexpr int       MRIWindowSizeH              = DefaultWindowSize;
+#define             MRIWindowSizeW              DefaultWindowSize
+#define             MRIWindowSizeH              DefaultWindowSize
 
-constexpr int       XYZWindowSize               = DefaultWindowSize;
-constexpr int       MapsWindowSizeH             = XYZWindowSize;
-constexpr int       MapsWindowSizeW             = XYZWindowSize * MoreWidthRatio;
-constexpr int       InverseWindowSizeH          = XYZWindowSize;
-constexpr int       InverseWindowSizeW          = XYZWindowSize * MoreWidthRatio;
+#define             XYZWindowSize               DefaultWindowSize
+#define             MapsWindowSizeH             XYZWindowSize
+#define             MapsWindowSizeW             Round ( XYZWindowSize * MoreWidthRatio )
+#define             InverseWindowSizeH          XYZWindowSize
+#define             InverseWindowSizeW          Round ( XYZWindowSize * MoreWidthRatio )
 
-constexpr int       SolPointsWindowSize         = DefaultWindowSize;
+#define             SolPointsWindowSize         DefaultWindowSize
                                         // set default height the same height as pot maps / inverse
-constexpr int       TracksWindowSizeH           = DefaultWindowSize;
-constexpr int       TracksWindowSizeW           = TracksWindowSizeH / WindowHeightToWidthRatio;
-constexpr int       TracksBigWindowSizeH        = TracksWindowSizeH;
-constexpr int       TracksBigWindowSizeW        = 2 * TracksWindowSizeW;
+#define             TracksWindowSizeH           DefaultWindowSize
+#define             TracksWindowSizeW           Round ( TracksWindowSizeH / WindowHeightToWidthRatio )
+#define             TracksBigWindowSizeH        TracksWindowSizeH
+#define             TracksBigWindowSizeW        Round ( 2 * TracksWindowSizeW )
 
-constexpr int       LMWindowSizeH               = DefaultWindowSize;
-constexpr int       LMWindowSizeW               = DefaultWindowSize;
-constexpr int       MinLMWindowWidth            = 300;
-constexpr int       MaxLMWindowWidth            = 600;
+#define             LMWindowSizeH               DefaultWindowSize
+#define             LMWindowSizeW               DefaultWindowSize
+#define             MinLMWindowWidth            RescaleSizeDpi ( 300 )
+#define             MaxLMWindowWidth            RescaleSizeDpi ( 600 )
 
 
 //----------------------------------------------------------------------------
@@ -159,9 +160,9 @@ constexpr double    CursorHintSize              = 18;
 #define             GLBASE_MINCOLOR             (GLfloat) 0.00, (GLfloat) 0.40, (GLfloat) 1.00
 #define             GLBASE_MAXCOLOR             (GLfloat) 1.00, (GLfloat) 0.20, (GLfloat) 0.20
 
-                                        // Using defines on purpose, as this should evaluate at each call - 'this' is a TWindow*
-#define             ColorMapWidth               RescaleFontDpi ( this,  15 )
-#define             ColorMapHeight              RescaleFontDpi ( this, 200 )
+                                        // Using defines on purpose, as this should evaluate at each call
+#define             ColorMapWidth               RescaleSizeDpi (  15 )
+#define             ColorMapHeight              RescaleSizeDpi ( 200 )
 
 
 //----------------------------------------------------------------------------
@@ -423,6 +424,7 @@ public:
     double                  RescaleSizeDpi      ()                                          const   { return crtl::RescaleSizeDpi   ( GetParentO () ); }
     double                  RescaleSizeDpi      ( double size96 )                           const   { return crtl::RescaleSizeDpi   ( GetParentO (), size96 ); }
     int                     RescaleSizeDpi      ( int    size96 )                           const   { return crtl::RescaleSizeDpi   ( GetParentO (), size96 ); }
+    int                     RescaleFontDpi      ( int    size96 )                           const   { return crtl::RescaleFontDpi   ( GetParentO (), size96 ); }
 
 
     void                    CaptureMouse        ( CaptureMouseEnum how );
@@ -604,7 +606,7 @@ protected:
     virtual void            CmSetShiftDepthRange    ( owlwparam w );
     int                     NextRois                ( int currrois, int dimrois );
 
-    virtual bool            NotSmallWindow          ()                      { return PaintRect.Height () >= RescaleSizeDpi ( SmallWindowHeight ) && PaintRect.Width () >= RescaleSizeDpi ( SmallWindowWidth ); }
+    virtual bool            NotSmallWindow          ()                      { return PaintRect.Height () >= SmallWindowHeight && PaintRect.Width () >= SmallWindowWidth; }
     void                    AxisToBorder            ( TGLCoordinates<GLfloat>& dir, TGLCoordinates<GLfloat>& border1, int& textattr1, TGLCoordinates<GLfloat>& border2, int& textattr2 );
     void                    DrawOrientation         ( const TOrientationType* boxsides = 0 );
     void                    DrawAxis                ();

@@ -212,9 +212,9 @@ MaterialElSel = TGLMaterial<GLfloat> ( GL_FRONT_AND_BACK,
 SetColorTable ( EEGDoc->GetAtomType ( AtomTypeUseCurrent ) );
 
 
-Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), RescaleSizeDpi ( MinWindowHeight ), RescaleSizeDpi ( MaxWindowHeight ) );
+Attr.H      = Clip ( Round ( GetWindowMinSide ( CartoolMdiClient ) * WindowHeightRatio ), MinWindowHeight, MaxWindowHeight );
 Attr.W      = Attr.H * MoreWidthRatio;
-StandSize   = TSize ( RescaleSizeDpi ( MapsWindowSizeW ), RescaleSizeDpi ( MapsWindowSizeH ) );
+StandSize   = TSize ( MapsWindowSizeW, MapsWindowSizeH );
 
 
 SetViewMenu ( new TMenuDescr ( IDM_POTENTIALS ) );

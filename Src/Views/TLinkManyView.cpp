@@ -197,7 +197,7 @@ for ( int i=0; i < GODoc->GetNumMriDoc(); i++ )
 
 width  += 4 * BFont->GetAvgWidth ();
 
-Clipped ( width, (GLfloat) RescaleSizeDpi ( MinLMWindowWidth ), (GLfloat) RescaleSizeDpi ( MaxLMWindowWidth ) );
+Clipped ( width, (GLfloat) MinLMWindowWidth, (GLfloat) MaxLMWindowWidth );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
