@@ -152,7 +152,7 @@ constexpr OrientEnum    DefaultVolumeOrientation    = OrientSagittalLeft;
 
 //----------------------------------------------------------------------------
                                         // Hints are glyphs / text that pop-out when controlling some operations with the mouse, like brightness or contrast
-constexpr double    CursorHintSize              = 18;
+#define             CursorHintSize              RescaleSizeDpi ( 18 )
 
 #define             GLBASE_CURSORHINTCOLOR      (GLfloat) 1.00, (GLfloat) 1.00, (GLfloat) 0.00, (GLfloat) 0.80
 #define             GLBASE_CURSORHINTBACKCOLOR  (GLfloat) 0.00, (GLfloat) 0.00, (GLfloat) 0.00, (GLfloat) 0.60
@@ -175,8 +175,8 @@ constexpr int       BbSphereHighNumSlices       = 40;
 
 //----------------------------------------------------------------------------
                                         // Cartool makes use of 2 different fonts
-#define             SmallFontParameters         "Tahoma",  RescaleFontDpi ( 0, 13 ), 0, 0, 0, FW_BOLD
-#define             BigFontParameters           "Verdana", RescaleFontDpi ( 0, 17 ), 0, 0, 0, FW_NORMAL
+#define             SmallFontParameters         "Tahoma",  crtl::RescaleFontDpi ( 0, 13 ), 0, 0, 0, FW_BOLD
+#define             BigFontParameters           "Verdana", crtl::RescaleFontDpi ( 0, 17 ), 0, 0, 0, FW_NORMAL
 
 
 //----------------------------------------------------------------------------
@@ -357,7 +357,8 @@ enum    {
         NumBaseViewButtons
         };
 
-constexpr int       ButtonSeparatorWidth        = 6;
+                                        // Buttons does not scale yet, but we can still make the separators dpi-aware
+#define             ButtonSeparatorWidth        crtl::RescaleSizeDpi ( 0, 6 )
 
 
 //----------------------------------------------------------------------------
