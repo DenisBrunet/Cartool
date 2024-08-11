@@ -41,7 +41,8 @@ constexpr double    RegularTracksVerticalRatio  = 0.80;
                                         // setting a limit to the number of window slots - it can be very big, though
 constexpr int       MaxWindowSlots              = 10000;
                                         // optional color scaling width on the right - enough space for floatting point values
-constexpr int       ColorScaleWidth             = 75;
+#define             ColorScaleWidth             RescaleSizeDpi ( 75 )
+
                                         // text margin on the left for track names has to be limited - though we give some very liberal limits here
 constexpr int       TextMarginMin               =  50;
 constexpr int       TextMarginMax               = 500;
@@ -49,11 +50,11 @@ constexpr int       TextMarginMax               = 500;
 
 constexpr double    EEGGLVIEW_STVMIN            = DBL_MIN;
 constexpr double    EEGGLVIEW_STVMAX            = DBL_MAX;
-constexpr double    EEGGLVIEW_STVINIT           = 30;
-constexpr double    EEGGLVIEW_STVSMALLSTEP      = 1.1;
-constexpr double    EEGGLVIEW_STVBIGSTEP        = 1.3;
+#define             EEGGLVIEW_STVINIT           RescaleSizeDpi ( 30 )
 
-constexpr double    EEGGLVIEW_STHSMALLSTEP      = 1.2;
+#define             EEGGLVIEW_ENOUGHWHORIZGRID  RescaleSizeDpi ( 200 )
+
+constexpr double    EEGGLVIEW_STHSMALLSTEP      = 1.2;  // also rescale to dpi?
 constexpr double    EEGGLVIEW_STHBIGSTEP        = 1.4;
 constexpr double    EEGGLVIEW_STHMINTF          = 5;
 

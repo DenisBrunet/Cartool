@@ -24,15 +24,10 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-                                        // Default window size
-constexpr int       FREQGLVIEW_WINSIZEW         = 640;
-constexpr int       FREQGLVIEW_WINSIZEH         = 400;
 
-constexpr double    FREQGLVIEW_ENOUGHW          = 100;
-constexpr double    FREQGLVIEW_ENOUGHWHORIZGRID = 200;
-constexpr double    FREQGLVIEW_EF_MINSIZECURSOR = 100;
+constexpr double    FREQGLVIEW_EF_MINSIZECURSOR = 100;  // make dpi-aware?
 
-                                        // handy constant to visually convert tracks'height to a intuitively corresponding intensity
+                                        // handy constant to visually convert tracks' heights into an intuitively equivalent intensity
 constexpr double    TrackHeightToIntensity      = 1;
 
                                         // bright blue

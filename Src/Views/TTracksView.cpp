@@ -2322,7 +2322,7 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                                                     && numTracks 
                                                     && CurrentDisplaySpace == DisplaySpaceNone 
                                                  // && enoughw
-                                                    && ( toslot->ToRight.Norm() >= 200 ); 
+                                                    && ( toslot->ToRight.Norm() >= EEGGLVIEW_ENOUGHWHORIZGRID ); 
 
                                         // save current settings for outer/later use
         toslot->TrOrg   = trorg;

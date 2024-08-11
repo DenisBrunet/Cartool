@@ -1183,7 +1183,7 @@ if ( how & GLPaintOpaque ) {
 
         drawhoriscale   = ShowHorizScale && numTracks
                        && CurrentDisplaySpace == DisplaySpaceNone 
-                       && ( toslot->ToRight.Norm() >= FREQGLVIEW_ENOUGHWHORIZGRID ) 
+                       && ( toslot->ToRight.Norm() >= EEGGLVIEW_ENOUGHWHORIZGRID ) 
                        && enoughwdeco1 
                     // && enoughh && enoughw
                        && ( how & GLPaintOwner );
@@ -2969,7 +2969,12 @@ UpdateCaption ();
 void    TFrequenciesView::DrawTFCursor ( bool undrawold, bool localhdc )
 {
                                         // no cursors in these modes
-if ( ( IsModeSpectrumEnum () && ! ( HasWindowSlots () && CurrentDisplaySpace == DisplaySpaceNone && WindowSlots[ 0 ].ToRight.Norm () >= FREQGLVIEW_EF_MINSIZECURSOR ) ) )
+if ( IsModeSpectrumEnum () 
+  && ! (    HasWindowSlots () 
+         && CurrentDisplaySpace == DisplaySpaceNone 
+         && WindowSlots[ 0 ].ToRight.Norm () >= FREQGLVIEW_EF_MINSIZECURSOR 
+        ) )
+
     return;
 
 
