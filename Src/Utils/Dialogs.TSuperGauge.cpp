@@ -156,7 +156,7 @@ Center.Y    = GetWindowMiddleVert  ( windowparent );
 Center.Z    = level;                    // 0 being visually the highest
 
                                         // fixed extent for now
-Extent.Set ( RescaleSizeDpi ( CartoolMainWindow, GaugeWidth ), RescaleSizeDpi ( CartoolMainWindow, GaugeHeight ), 0 );
+Extent.Set ( GaugeWidth, GaugeHeight, 0 );
 
                                         // create this gauge, which could be replaced later
                                         // note that the font is not rescaled properly...

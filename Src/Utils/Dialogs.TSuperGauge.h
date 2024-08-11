@@ -28,8 +28,8 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
                                         // Gauge made easier, even without access to application / main windows
-constexpr int       GaugeWidth                  = 240;
-constexpr int       GaugeHeight                 = 32;
+#define             GaugeWidth                  RescaleSizeDpi ( CartoolMainWindow, 240 )
+#define             GaugeHeight                 RescaleSizeDpi ( CartoolMainWindow,  32 )
 
                                         // Barely used anymore
 void                SetGaugeRel ( owl::TGauge &G, int N, int D );
