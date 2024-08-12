@@ -82,12 +82,13 @@ public:
                                     DWORD   pitchandfamily      = DEFAULT_PITCH | FF_DONTCARE );
 
 
-	GLfloat         GetHeight       ()                  const                       { return FontHeight;   }
-	GLfloat         GetMaxWidth     ()                  const                       { return FontMaxWidth; }
-	GLfloat         GetAvgWidth     ()                  const                       { return FontAveWidth; }
+	GLfloat         GetHeight       ()                  const                       { return FontHeight;            }
+	GLfloat         GetLineSpacing  ()                  const                       { return FontHeight * 0.25;     }
+	GLfloat         GetMaxWidth     ()                  const                       { return FontMaxWidth;          }
+	GLfloat         GetAvgWidth     ()                  const                       { return FontAveWidth;          }
 	GLfloat         GetStringWidth  ( const char *s )   const;
 
-    void            SetBoxColor     ( GLfloat r, GLfloat g, GLfloat b, GLfloat a )  { BoxColor.Set ( r, g, b, a ); }
+    void            SetBoxColor     ( GLfloat r, GLfloat g, GLfloat b, GLfloat a )  { BoxColor.Set ( r, g, b, a );  }
 
 	void            Print           ( float         x,      float           y,      float       z, 
                                       const char*   text,   UINT            textalign = TA_LEFT | TA_BASELINE, 

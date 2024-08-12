@@ -451,39 +451,39 @@ ControlBarGadgets       = new TGadget * [MRIGLVIEW_CBG_NUM];
 
 CreateBaseGadgets ();
 
-ControlBarGadgets[MRIGLVIEW_CBG_SEP1]       = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[MRIGLVIEW_CBG_ISOMANUAL]  = new TButtonGadget(IDB_ISOMANUAL, IDB_ISOMANUAL, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
-ControlBarGadgets[MRIGLVIEW_CBG_COLORIZESURFACE]    = new TButtonGadget(IDB_COLORIZESURFACE, IDB_COLORIZESURFACE, TButtonGadget::NonExclusive, true, SurfaceMode ? TButtonGadget::Down : TButtonGadget::Up, false);
-ControlBarGadgets[MRIGLVIEW_CBG_EDITING]    = new TButtonGadget(IDB_EDITING, IDB_EDITING, TButtonGadget::NonExclusive, true, Editing ? TButtonGadget::Down : TButtonGadget::Up, false);
+ControlBarGadgets[MRIGLVIEW_CBG_SEP1                ]   = new TSeparatorGadget( ButtonSeparatorWidth );
+ControlBarGadgets[MRIGLVIEW_CBG_ISOMANUAL           ]   = new TButtonGadget(IDB_ISOMANUAL, IDB_ISOMANUAL, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
+ControlBarGadgets[MRIGLVIEW_CBG_COLORIZESURFACE     ]   = new TButtonGadget(IDB_COLORIZESURFACE, IDB_COLORIZESURFACE, TButtonGadget::NonExclusive, true, SurfaceMode ? TButtonGadget::Down : TButtonGadget::Up, false);
+ControlBarGadgets[MRIGLVIEW_CBG_EDITING             ]   = new TButtonGadget(IDB_EDITING, IDB_EDITING, TButtonGadget::NonExclusive, true, Editing ? TButtonGadget::Down : TButtonGadget::Up, false);
 
-ControlBarGadgets[MRIGLVIEW_CBG_SEP1A]      = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[MRIGLVIEW_CBG_CUTPLANECORONAL]    = new TButtonGadget(IDB_CUTPLANECORONAL, IDB_CUTPLANECORONAL, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
-ControlBarGadgets[MRIGLVIEW_CBG_CUTPLANETRANSVERSE] = new TButtonGadget(IDB_CUTPLANETRANSVERSE, IDB_CUTPLANETRANSVERSE, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
-ControlBarGadgets[MRIGLVIEW_CBG_CUTPLANESAGITTAL]   = new TButtonGadget(IDB_CUTPLANESAGITTAL, IDB_CUTPLANESAGITTAL, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
+ControlBarGadgets[MRIGLVIEW_CBG_SEP1A               ]   = new TSeparatorGadget( ButtonSeparatorWidth );
+ControlBarGadgets[MRIGLVIEW_CBG_CUTPLANECORONAL     ]   = new TButtonGadget(IDB_CUTPLANECORONAL, IDB_CUTPLANECORONAL, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
+ControlBarGadgets[MRIGLVIEW_CBG_CUTPLANETRANSVERSE  ]   = new TButtonGadget(IDB_CUTPLANETRANSVERSE, IDB_CUTPLANETRANSVERSE, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
+ControlBarGadgets[MRIGLVIEW_CBG_CUTPLANESAGITTAL    ]   = new TButtonGadget(IDB_CUTPLANESAGITTAL, IDB_CUTPLANESAGITTAL, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
 
-ControlBarGadgets[MRIGLVIEW_CBG_SEP2]       = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[MRIGLVIEW_CBG_PLANEMODE]     = new TButtonGadget(IDB_PLANEMODE, IDB_PLANEMODE, TButtonGadget::NonExclusive, false, TButtonGadget::Up );
-ControlBarGadgets[MRIGLVIEW_CBG_LESSSLICES]    = new TButtonGadget(IDB_LESSSLICES,   IDB_LESSSLICES,     TButtonGadget::Command);
-ControlBarGadgets[MRIGLVIEW_CBG_MORESLICES]    = new TButtonGadget(IDB_MORESLICES,   IDB_MORESLICES,     TButtonGadget::Command);
-ControlBarGadgets[MRIGLVIEW_CBG_FIRSTSLICEBWD] = new TButtonGadget(IDB_FIRSTSLICEBWD,IDB_FIRSTSLICEBWD,  TButtonGadget::Command);
-ControlBarGadgets[MRIGLVIEW_CBG_FIRSTSLICEFWD] = new TButtonGadget(IDB_FIRSTSLICEFWD,IDB_FIRSTSLICEFWD,  TButtonGadget::Command);
-ControlBarGadgets[MRIGLVIEW_CBG_LASTSLICEBWD]  = new TButtonGadget(IDB_LASTSLICEBWD, IDB_LASTSLICEBWD,   TButtonGadget::Command);
-ControlBarGadgets[MRIGLVIEW_CBG_LASTSLICEFWD]  = new TButtonGadget(IDB_LASTSLICEFWD, IDB_LASTSLICEFWD,   TButtonGadget::Command);
+ControlBarGadgets[MRIGLVIEW_CBG_SEP2                ]   = new TSeparatorGadget( ButtonSeparatorWidth );
+ControlBarGadgets[MRIGLVIEW_CBG_PLANEMODE           ]   = new TButtonGadget(IDB_PLANEMODE, IDB_PLANEMODE, TButtonGadget::NonExclusive, false, TButtonGadget::Up );
+ControlBarGadgets[MRIGLVIEW_CBG_LESSSLICES          ]   = new TButtonGadget(IDB_LESSSLICES,   IDB_LESSSLICES,     TButtonGadget::Command);
+ControlBarGadgets[MRIGLVIEW_CBG_MORESLICES          ]   = new TButtonGadget(IDB_MORESLICES,   IDB_MORESLICES,     TButtonGadget::Command);
+ControlBarGadgets[MRIGLVIEW_CBG_FIRSTSLICEBWD       ]   = new TButtonGadget(IDB_FIRSTSLICEBWD,IDB_FIRSTSLICEBWD,  TButtonGadget::Command);
+ControlBarGadgets[MRIGLVIEW_CBG_FIRSTSLICEFWD       ]   = new TButtonGadget(IDB_FIRSTSLICEFWD,IDB_FIRSTSLICEFWD,  TButtonGadget::Command);
+ControlBarGadgets[MRIGLVIEW_CBG_LASTSLICEBWD        ]   = new TButtonGadget(IDB_LASTSLICEBWD, IDB_LASTSLICEBWD,   TButtonGadget::Command);
+ControlBarGadgets[MRIGLVIEW_CBG_LASTSLICEFWD        ]   = new TButtonGadget(IDB_LASTSLICEFWD, IDB_LASTSLICEFWD,   TButtonGadget::Command);
 
-ControlBarGadgets[MRIGLVIEW_CBG_SEP3]          = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[MRIGLVIEW_CBG_SHMIN]         = new TButtonGadget(IDB_SHOWMIN,      IDB_SHOWMIN,        TButtonGadget::NonExclusive);
-ControlBarGadgets[MRIGLVIEW_CBG_SHMAX]         = new TButtonGadget(IDB_SHOWMAX,      IDB_SHOWMAX,        TButtonGadget::NonExclusive);
-ControlBarGadgets[MRIGLVIEW_CBG_FINDMINMAX]    = new TButtonGadget(IDB_FINDMINMAX,   IDB_FINDMINMAX,     TButtonGadget::NonExclusive);
+ControlBarGadgets[MRIGLVIEW_CBG_SEP3                ]   = new TSeparatorGadget( ButtonSeparatorWidth );
+ControlBarGadgets[MRIGLVIEW_CBG_SHMIN               ]   = new TButtonGadget(IDB_SHOWMIN,      IDB_SHOWMIN,        TButtonGadget::NonExclusive);
+ControlBarGadgets[MRIGLVIEW_CBG_SHMAX               ]   = new TButtonGadget(IDB_SHOWMAX,      IDB_SHOWMAX,        TButtonGadget::NonExclusive);
+ControlBarGadgets[MRIGLVIEW_CBG_FINDMINMAX          ]   = new TButtonGadget(IDB_FINDMINMAX,   IDB_FINDMINMAX,     TButtonGadget::NonExclusive);
 
-ControlBarGadgets[MRIGLVIEW_CBG_SEP4]       = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[MRIGLVIEW_CBG_DECBR]      = new TButtonGadget(IDB_ISDECBRIGHT,  IDB_ISDECBRIGHT,    TButtonGadget::Command);
-ControlBarGadgets[MRIGLVIEW_CBG_INCBR]      = new TButtonGadget(IDB_ISINCBRIGHT,  IDB_ISINCBRIGHT,    TButtonGadget::Command);
-ControlBarGadgets[MRIGLVIEW_CBG_DECCR]      = new TButtonGadget(IDB_ISDECCONTRAST,IDB_ISDECCONTRAST,  TButtonGadget::Command);
-ControlBarGadgets[MRIGLVIEW_CBG_INCCR]      = new TButtonGadget(IDB_ISINCCONTRAST,IDB_ISINCCONTRAST,  TButtonGadget::Command);
+ControlBarGadgets[MRIGLVIEW_CBG_SEP4                ]   = new TSeparatorGadget( ButtonSeparatorWidth );
+ControlBarGadgets[MRIGLVIEW_CBG_DECBR               ]   = new TButtonGadget(IDB_ISDECBRIGHT,  IDB_ISDECBRIGHT,    TButtonGadget::Command);
+ControlBarGadgets[MRIGLVIEW_CBG_INCBR               ]   = new TButtonGadget(IDB_ISINCBRIGHT,  IDB_ISINCBRIGHT,    TButtonGadget::Command);
+ControlBarGadgets[MRIGLVIEW_CBG_DECCR               ]   = new TButtonGadget(IDB_ISDECCONTRAST,IDB_ISDECCONTRAST,  TButtonGadget::Command);
+ControlBarGadgets[MRIGLVIEW_CBG_INCCR               ]   = new TButtonGadget(IDB_ISINCCONTRAST,IDB_ISINCCONTRAST,  TButtonGadget::Command);
 
-ControlBarGadgets[MRIGLVIEW_CBG_SEP5]       = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[MRIGLVIEW_CBG_FXDSCL]     = new TButtonGadget(IDB_FIXEDSCALE,   IDB_FIXEDSCALE,     TButtonGadget::NonExclusive);
-ControlBarGadgets[MRIGLVIEW_CBG_COLOR]      = new TButtonGadget(IDB_SPCOLOR,      IDB_SPCOLOR,        TButtonGadget::Command);
+ControlBarGadgets[MRIGLVIEW_CBG_SEP5                ]   = new TSeparatorGadget( ButtonSeparatorWidth );
+ControlBarGadgets[MRIGLVIEW_CBG_FXDSCL              ]   = new TButtonGadget(IDB_FIXEDSCALE,   IDB_FIXEDSCALE,     TButtonGadget::NonExclusive);
+ControlBarGadgets[MRIGLVIEW_CBG_COLOR               ]   = new TButtonGadget(IDB_SPCOLOR,      IDB_SPCOLOR,        TButtonGadget::Command);
 
 
 if ( ! ValidView () )
@@ -2909,16 +2909,16 @@ if ( RButtonDown ) {
                || Editing == EditingToolSphereSurface
                || Editing == EditingToolCylinder      && adx > ady ) {
 
-            if ( dx > 0 )   EditingRadius *= 1 + (double) min ( adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
-            else            EditingRadius /= 1 + (double) min ( adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
+            if ( dx > 0 )   EditingRadius *= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
+            else            EditingRadius /= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
 
             Clipped ( EditingRadius, (double) 0.5, (double) MRIDoc->GetSize ()->MaxSize () / 2 );
             }
 
         else if ( Editing == EditingToolCylinder && adx < ady ) {
 
-            if ( dy > 0 )   EditingDepth /= 1 + (double) 2 * min ( ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 0.5 : 0.1 );
-            else            EditingDepth *= 1 + (double) 2 * min ( ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 0.5 : 0.1 );
+            if ( dy > 0 )   EditingDepth /= 1 + (double) 2 * min ( (double) ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 0.5 : 0.1 );
+            else            EditingDepth *= 1 + (double) 2 * min ( (double) ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 0.5 : 0.1 );
 
             Clipped ( EditingDepth, (double) 0.5, (double) MRIDoc->GetSize ()->MaxSize () );
             }
@@ -2955,8 +2955,8 @@ if ( RButtonDown ) {
             }
         else if ( MouseAxis == MouseAxisHorizontal ) {
                                         // brightness & contrast
-            if ( dx > 0 )   ScalingLevel /= 1 + (double) min ( adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
-            else            ScalingLevel *= 1 + (double) min ( adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
+            if ( dx > 0 )   ScalingLevel /= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
+            else            ScalingLevel *= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
 
             CmSetBrightness ( 0 );
             }

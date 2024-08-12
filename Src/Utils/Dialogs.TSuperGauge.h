@@ -27,16 +27,17 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-                                        // Gauge made easier, even without access to application / main windows
-#define             GaugeWidth                  RescaleSizeDpi ( CartoolMainWindow, 240 )
-#define             GaugeHeight                 RescaleSizeDpi ( CartoolMainWindow,  32 )
+                                        // Progress Bars made easier, even without access to application / main windows
+
+#define             GaugeWidth                  Round ( MmToPixels ( CartoolMainWindow, 60 ) )
+#define             GaugeHeight                 Round ( MmToPixels ( CartoolMainWindow,  8 ) )
 
                                         // Barely used anymore
 void                SetGaugeRel ( owl::TGauge &G, int N, int D );
 
 
 //----------------------------------------------------------------------------
-                                        // Smoother operation with this class
+
 enum                SuperGaugeStyle
                     {
                     SuperGaugeCount             = 0x01,
@@ -73,7 +74,9 @@ enum                SuperGaugeUpdate
                     SuperGaugeUpdateTitle,
                     };
 
-
+                                        // Class that encapsulates all the nitty-gritty parts of progress bar handling.
+                                        // It also offers an optional level value, which allows to stack multiple progress bars
+                                        // for nested processings.
 class   TSuperGauge :   public  TCartoolObjects
 {
 public:

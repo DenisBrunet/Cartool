@@ -1200,11 +1200,11 @@ if ( how & GLPaintOpaque ) {
 
             if ( CurrentDisplaySpace != DisplaySpaceNone ) {
                                         // horizontal scaling
-                linewidth   = min ( scaleh * 2000, 3.0 );
+                linewidth   = NoMore ( 1.0, scaleh * 500 );
 
                                         // global window size
                 double  ws  = GetCurrentWindowSize ( how & GLPaintOwner );
-                linewidth  *= min ( ws * 0.0035, 2.5 );
+                linewidth  *= NoMore ( 2.5, ws * 0.0035 );
 
                                         // zoom factor
                 linewidth  *= GetCurrentZoomFactor ( how & GLPaintOwner );
@@ -1218,20 +1218,21 @@ if ( how & GLPaintOpaque ) {
             else {
                                         // horizontal scaling
 //              linewidth   = TracksSuper || trackssuper ? 0  // to have the same value, even with pseudos
-//                                                       : min ( scaleh * 0.15, 1.5 );
-                linewidth   = min ( scaleh * 0.15, 1.5 );
+//                                                       : NoMore ( 0.5, scaleh * 0.04 );
+                linewidth   = NoMore ( 0.5, scaleh * 0.04 );
 
                                         // vertical scaling
-                linewidth  *= min ( sqrt ( WindowSlots[0].ToUp.Norm() / ( IsModeFEAvg () ? numfreq : WindowSlots[ 0 ].SelTracks.NumSet () )
-                                                                      / ( IsEnumerateVertical () ? numfreq : 1 ) ) * 0.15, 2.0 );
+                linewidth  *= NoMore ( 2.0,
+                                       sqrt ( WindowSlots[0].ToUp.Norm() / ( IsModeFEAvg () ? numfreq : WindowSlots[ 0 ].SelTracks.NumSet () )
+                                                                         / ( IsEnumerateVertical () ? numfreq : 1 ) ) * 0.15 );
 
                                         // intensity scaling - difficult to make it consistent, though
                 if ( scaleh > 1.0 )     // restrict to "zoom" view
-                    linewidth  *= min ( max ( sqrt ( scalev ) * 0.02, 0.75 ), 1.5 );
+                    linewidth  *= Clip ( sqrt ( scalev ) * 0.02, 0.75, 1.5 );
                 }
 
                                         // resize with current DPI & clip to a global max
-            linewidth   = Clip ( (GLfloat) RescaleSizeDpi ( linewidth ), GLLineWidthMin, AutoLineWidthMax );
+            linewidth   = Clip ( (GLfloat) MmToPixels ( linewidth ), GLLineWidthMin, AutoLineWidthMax );
             }
         else
             linewidth = LineWidth;
@@ -2833,19 +2834,18 @@ if ( NotSmallWindow () ) {
                                         // ScaleTracks is not used in color mode, so the color scale is correct for all tracks here
 
         TGLColor<GLfloat>   glcol;
-        int     colormax    = ColorTable.GetMaxIndex ();
-        int     color0      = ColorTable.GetZeroIndex ();
-    //  int     colordelta  = ColorTable.GetDeltaIndex ();
-        int     GalMinIndex, GalMaxIndex;
+        int                 colormax        = ColorTable.GetMaxIndex ();
+        int                 color0          = ColorTable.GetZeroIndex ();
+    //  int                 colordelta      = ColorTable.GetDeltaIndex ();
+        int                 GalMinIndex;
+        int                 GalMaxIndex;
 
-        GLfloat     scaleh  = (int) ( (double) PaintRect.Height() / 2 );
-        GLfloat     scalew  = 15;
-        if ( scaleh > 200 )
-            scaleh = 200;
+        GLfloat             scaleh          = NoMore ( (int) ( (double) PaintRect.Height() / 2 ), ColorMapHeight );
+        GLfloat             scalew          = ColorMapWidth;
 
-        GLfloat     scaleox = (int) ( (double) PaintRect.Width() - scalew );
-        GLfloat     scaleoy = (int) ( (double) PaintRect.Height() / 2 - scaleh / 2 );
-        GLfloat     scaleoz =  -0.5;        // furthest back
+        GLfloat             scaleox         = (int) ( (double) PaintRect.Width() - scalew );
+        GLfloat             scaleoy         = (int) ( (double) PaintRect.Height() / 2 - scaleh / 2 );
+        GLfloat             scaleoz         =  -0.5;        // furthest back
 
                                             // draw background
         glBegin ( GL_QUADS );
@@ -2908,10 +2908,10 @@ if ( NotSmallWindow () ) {
             glEnd();
 
                                             // print the min/max values
-            char    mindata[16];
-            char    maxdata[16];
-            char    mindisplay[16];
-            char    maxdisplay[16];
+            char                mindata     [ 16 ];
+            char                maxdata     [ 16 ];
+            char                mindisplay  [ 16 ];
+            char                maxdisplay  [ 16 ];
 
             FloatToString   ( mindata, GalMinValue );
             FloatToString   ( maxdata, GalMaxValue );
@@ -3589,7 +3589,7 @@ if ( RButtonDown && ! ShiftKey ) { // && !ControlKey ) {
         if ( ady > MinMouseMove ) {
 
 //          FCursor.ShiftPos ( ( dy < 0 ? -1 : 1 ) * (double) min ( ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 6.0 : 1.0 ) );
-            FCursor.ShiftPos ( ( dy < 0 ? -1 : 1 ) * (double) min ( ady, MinMouseMove ) / MinMouseMove * ( ady > MouseMoveScaleFast ? 6.0 : 1.0 ) );
+            FCursor.ShiftPos ( ( dy < 0 ? -1 : 1 ) * (double) min ( (double) ady, MinMouseMove ) / MinMouseMove * ( ady > MouseMoveScaleFast ? 6.0 : 1.0 ) );
 
             CmNextFrequency ( 0 );
 

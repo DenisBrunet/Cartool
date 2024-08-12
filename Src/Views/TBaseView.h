@@ -61,16 +61,16 @@ constexpr double    MoreWidthRatio              = 1.20;
 
                                         // Using defines as values need to be evaluated at each call, in case dpi has changed during process lifetime
                                         // For very big screen, it is a bit useless to have windows opening bigger than that:
-#define             MinWindowHeight             RescaleSizeDpi (  300 )
-#define             MaxWindowHeight             RescaleSizeDpi (  800 )
-#define             MaxWindowHeightLarge        RescaleSizeDpi ( 1200 )
+#define             MinWindowHeight             Round ( MmToPixels (  80 ) )
+#define             MaxWindowHeight             Round ( MmToPixels ( 200 ) )
+#define             MaxWindowHeightLarge        Round ( MmToPixels ( 300 ) )
 
                                         // what is a small window?
-#define             SmallWindowHeight           RescaleSizeDpi ( 150 )
-#define             SmallWindowWidth            RescaleSizeDpi ( 150 )
+#define             SmallWindowHeight           Round ( MmToPixels ( 40 ) )
+#define             SmallWindowWidth            Round ( MmToPixels ( 40 ) )
 
                                         // Common scale from which all window sizes will be derived
-#define             DefaultWindowSize           crtl::RescaleSizeDpi ( this, 400 )
+#define             DefaultWindowSize           Round ( crtl::MmToPixels ( this, 100 ) )
 
 #define             MRIWindowSizeW              DefaultWindowSize
 #define             MRIWindowSizeH              DefaultWindowSize
@@ -90,8 +90,8 @@ constexpr double    MoreWidthRatio              = 1.20;
 
 #define             LMWindowSizeH               DefaultWindowSize
 #define             LMWindowSizeW               DefaultWindowSize
-#define             MinLMWindowWidth            RescaleSizeDpi ( 300 )
-#define             MaxLMWindowWidth            RescaleSizeDpi ( 600 )
+#define             MinLMWindowWidth            MmToPixels (  80 )
+#define             MaxLMWindowWidth            MmToPixels ( 160 )
 
 
 //----------------------------------------------------------------------------
@@ -121,11 +121,14 @@ constexpr double    RotationStep                = 2.5;
 constexpr double    MaxShiftDepthRange          = 0.15;
 
                                         // minimum mouse move, in some distance units, to initiate the direction detection
-#define             MinMouseMove                RescaleSizeDpi ( 5 )
+//#define           MinMouseMovePixels          5
+#define             MinMouseMove                MmToPixels ( 1.5 )
                                         // a common scale, in some distance units, for many mouse displacement
-#define             MouseMoveScale              RescaleSizeDpi ( 20 )
+//#define           MouseMoveScalePixels        20
+#define             MouseMoveScale              MmToPixels ( 5 )
                                         // another one, but for faster movemements
-#define             MouseMoveScaleFast          RescaleSizeDpi ( 33 )
+//#define           MouseMoveScaleFastPixels    33
+#define             MouseMoveScaleFast          MmToPixels ( 8.5 )
 
 constexpr ULONG     MouseMoveHitDelay           = 500;
 constexpr char      MouseMiddeClicksurrogate    = ' ';
@@ -135,7 +138,6 @@ constexpr char      MouseMiddeClicksurrogate    = ' ';
                                         // give some space from AbsRadius, for extra depth
 constexpr double    DepthPositionRatio          = 3.0;
 constexpr double    ExtraSize3D                 = 1.25;
-#define             SpaceBetweenTextLines       RescaleSizeDpi ( 2 )
 
 constexpr double    FogDefaultNear              = 0.95;
 constexpr double    FogDefaultFar               = 1.25;
@@ -152,7 +154,7 @@ constexpr OrientEnum    DefaultVolumeOrientation    = OrientSagittalLeft;
 
 //----------------------------------------------------------------------------
                                         // Hints are glyphs / text that pop-out when controlling some operations with the mouse, like brightness or contrast
-#define             CursorHintSize              RescaleSizeDpi ( 18 )
+#define             CursorHintSize              MmToPixels ( 5 )
 
 #define             GLBASE_CURSORHINTCOLOR      (GLfloat) 1.00, (GLfloat) 1.00, (GLfloat) 0.00, (GLfloat) 0.80
 #define             GLBASE_CURSORHINTBACKCOLOR  (GLfloat) 0.00, (GLfloat) 0.00, (GLfloat) 0.00, (GLfloat) 0.60
@@ -161,8 +163,8 @@ constexpr OrientEnum    DefaultVolumeOrientation    = OrientSagittalLeft;
 #define             GLBASE_MAXCOLOR             (GLfloat) 1.00, (GLfloat) 0.20, (GLfloat) 0.20
 
                                         // Using defines on purpose, as this should evaluate at each call
-#define             ColorMapWidth               RescaleSizeDpi (  15 )
-#define             ColorMapHeight              RescaleSizeDpi ( 200 )
+#define             ColorMapWidth               Round ( MmToPixels (  4 ) )
+#define             ColorMapHeight              Round ( MmToPixels ( 53 ) )
 
 
 //----------------------------------------------------------------------------
@@ -175,8 +177,8 @@ constexpr int       BbSphereHighNumSlices       = 40;
 
 //----------------------------------------------------------------------------
                                         // Cartool makes use of 2 different fonts
-#define             SmallFontParameters         "Tahoma",  crtl::RescaleFontDpi ( 0, 13 ), 0, 0, 0, FW_BOLD
-#define             BigFontParameters           "Verdana", crtl::RescaleFontDpi ( 0, 17 ), 0, 0, 0, FW_NORMAL
+#define             SmallFontParameters         "Tahoma",  Round ( crtl::MmToPixels ( 0, 3.4 ) ), 0, 0, 0, FW_BOLD
+#define             BigFontParameters           "Verdana", Round ( crtl::MmToPixels ( 0, 4.6 ) ), 0, 0, 0, FW_NORMAL
 
 
 //----------------------------------------------------------------------------
@@ -358,7 +360,7 @@ enum    {
         };
 
                                         // Buttons does not scale yet, but we can still make the separators dpi-aware
-#define             ButtonSeparatorWidth        crtl::RescaleSizeDpi ( 0, 6 )
+#define             ButtonSeparatorWidth        crtl::MmToPixels ( 0, 1.6 )
 
 
 //----------------------------------------------------------------------------
@@ -422,10 +424,8 @@ public:
     int                     GetWindowHeight     ()                                          const   { return crtl::GetWindowHeight  ( GetParentO () ); }
 
     int                     GetWindowDpi        ()                                          const   { return crtl::GetWindowDpi     ( GetParentO () ); }
-    double                  RescaleSizeDpi      ()                                          const   { return crtl::RescaleSizeDpi   ( GetParentO () ); }
-    double                  RescaleSizeDpi      ( double size96 )                           const   { return crtl::RescaleSizeDpi   ( GetParentO (), size96 ); }
-    int                     RescaleSizeDpi      ( int    size96 )                           const   { return crtl::RescaleSizeDpi   ( GetParentO (), size96 ); }
-    int                     RescaleFontDpi      ( int    size96 )                           const   { return crtl::RescaleFontDpi   ( GetParentO (), size96 ); }
+    double                  MmToPixels          ( double mm     )                           const   { return crtl::MmToPixels       ( GetParentO (), mm     );  }
+    double                  PixelsToMm          ( int    pixels )                           const   { return crtl::PixelsToMm       ( GetParentO (), pixels );  }
 
 
     void                    CaptureMouse        ( CaptureMouseEnum how );

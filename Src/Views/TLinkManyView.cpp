@@ -207,7 +207,7 @@ if ( GetNumLines () == 0 )
     height  = 3 * BFont->GetHeight ();
 
 else {
-    height  =  ( GetNumLines () + 1 ) * ( BFont->GetHeight () + SpaceBetweenTextLines );
+    height  =  ( GetNumLines () + 1 ) * ( BFont->GetHeight () + BFont->GetLineSpacing () );
 
     height  = AtLeast ( 2 * BFont->GetHeight (), height );
     }
@@ -255,14 +255,14 @@ return  GODoc->GetNumEegDoc ()
 void    TLinkManyView::ViewIndexToPosition ( int i, TGLCoordinates<float> &p )
 {
 p.X     = 2 * BFont->GetAvgWidth ();
-p.Y     = PaintRect.Height() - ( i + 1 ) * ( BFont->GetHeight () + SpaceBetweenTextLines );
+p.Y     = PaintRect.Height() - ( i + 1 ) * ( BFont->GetHeight () + BFont->GetLineSpacing () );
 p.Z     = -0.5;
 }
 
 
 TBaseDoc*   TLinkManyView::PositionToDoc ( const TPoint &p )
 {
-int                 viewindex       = (double) p.Y () / ( BFont->GetHeight () + SpaceBetweenTextLines ) - 0.5;
+int                 viewindex       = (double) p.Y () / ( BFont->GetHeight () + BFont->GetLineSpacing () ) - 0.5;
 
 if ( viewindex < 0 || viewindex >= GetNumLines () )
     return 0;

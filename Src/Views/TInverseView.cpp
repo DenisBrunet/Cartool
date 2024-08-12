@@ -2831,8 +2831,8 @@ if ( RButtonDown ) {
 
         if ( MouseAxis == MouseAxisHorizontal ) {
 
-            if ( dx > 0 )   ScalingLevel /= 1 + (double) min ( adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 1.0 : 0.3 );
-            else            ScalingLevel *= 1 + (double) min ( adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 1.0 : 0.3 );
+            if ( dx > 0 )   ScalingLevel /= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 1.0 : 0.3 );
+            else            ScalingLevel *= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 1.0 : 0.3 );
 
             SetScaling ( ScalingLevel );
             }
