@@ -224,29 +224,29 @@ ControlBarGadgets   = new TGadget * [ POTENTIALS_CBG_NUM ];
 
 CreateBaseGadgets ();
 
-ControlBarGadgets[ POTENTIALS_CBG_SEP1A         ]   = new TSeparatorGadget ( ButtonSeparatorWidth );
-ControlBarGadgets[ POTENTIALS_CBG_SHOWELEC      ]   = new TButtonGadget ( IDB_SHOWELEC,     IDB_SHOWELEC,       TButtonGadget::NonExclusive );
-//ControlBarGadgets[ POTENTIALS_CBG_SHOWTRI     ]   = new TButtonGadget ( IDB_SHOWTRIANGLES,IDB_SHOWTRIANGLES,  TButtonGadget::NonExclusive );
-ControlBarGadgets[ POTENTIALS_CBG_SHOWELNAMES   ]   = new TButtonGadget ( IDB_SHOWELNAMES,  IDB_SHOWELNAMES,    TButtonGadget::NonExclusive, true, ShowLabels ? TButtonGadget::Down : TButtonGadget::Up, false );
-ControlBarGadgets[ POTENTIALS_CBG_SHOWTRACKS    ]   = new TButtonGadget ( IDB_SHOWTRACKS,   IDB_SHOWTRACKS,     TButtonGadget::NonExclusive );
+ControlBarGadgets[ POTENTIALS_CBG_SEP1A         ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ POTENTIALS_CBG_SHOWELEC      ]   = new TButtonGadgetDpi ( IDB_SHOWELEC,      IDB_SHOWELEC,       TButtonGadget::NonExclusive );
+//ControlBarGadgets[ POTENTIALS_CBG_SHOWTRI     ]   = new TButtonGadgetDpi ( IDB_SHOWTRIANGLES, IDB_SHOWTRIANGLES,  TButtonGadget::NonExclusive );
+ControlBarGadgets[ POTENTIALS_CBG_SHOWELNAMES   ]   = new TButtonGadgetDpi ( IDB_SHOWELNAMES,   IDB_SHOWELNAMES,    TButtonGadget::NonExclusive, true, ShowLabels ? TButtonGadget::Down : TButtonGadget::Up, false );
+ControlBarGadgets[ POTENTIALS_CBG_SHOWTRACKS    ]   = new TButtonGadgetDpi ( IDB_SHOWTRACKS,    IDB_SHOWTRACKS,     TButtonGadget::NonExclusive );
 
-ControlBarGadgets[ POTENTIALS_CBG_SEP2          ]   = new TSeparatorGadget ( ButtonSeparatorWidth );
-ControlBarGadgets[ POTENTIALS_CBG_FLATVIEW      ]   = new TButtonGadget ( IDB_FLATVIEW,     IDB_FLATVIEW,       TButtonGadget::NonExclusive, true, TButtonGadget::Up, false );
-//ControlBarGadgets[ POTENTIALS_CBG_SHOWZERO    ]   = new TButtonGadget ( IDB_SHOWZERO,     IDB_SHOWZERO,       TButtonGadget::NonExclusive );
-ControlBarGadgets[ POTENTIALS_CBG_SHOWPMMINMAX  ]   = new TButtonGadget ( IDB_SHOWPMMINMAX, IDB_SHOWPMMINMAX,   TButtonGadget::NonExclusive );
+ControlBarGadgets[ POTENTIALS_CBG_SEP2          ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ POTENTIALS_CBG_FLATVIEW      ]   = new TButtonGadgetDpi ( IDB_FLATVIEW,      IDB_FLATVIEW,       TButtonGadget::NonExclusive, true, TButtonGadget::Up, false );
+//ControlBarGadgets[ POTENTIALS_CBG_SHOWZERO    ]   = new TButtonGadgetDpi ( IDB_SHOWZERO,      IDB_SHOWZERO,       TButtonGadget::NonExclusive );
+ControlBarGadgets[ POTENTIALS_CBG_SHOWPMMINMAX  ]   = new TButtonGadgetDpi ( IDB_SHOWPMMINMAX,  IDB_SHOWPMMINMAX,   TButtonGadget::NonExclusive );
 
-ControlBarGadgets[ POTENTIALS_CBG_SEP3          ]   = new TSeparatorGadget ( ButtonSeparatorWidth );
-ControlBarGadgets[ POTENTIALS_CBG_DECBR         ]   = new TButtonGadget ( IDB_ISDECBRIGHT,  IDB_SPDECBRIGHT,    TButtonGadget::Command );
-ControlBarGadgets[ POTENTIALS_CBG_INCBR         ]   = new TButtonGadget ( IDB_ISINCBRIGHT,  IDB_SPINCBRIGHT,    TButtonGadget::Command );
-ControlBarGadgets[ POTENTIALS_CBG_DECCR         ]   = new TButtonGadget ( IDB_ISDECCONTRAST,IDB_SPDECCONTRAST,  TButtonGadget::Command );
-ControlBarGadgets[ POTENTIALS_CBG_INCCR         ]   = new TButtonGadget ( IDB_ISINCCONTRAST,IDB_SPINCCONTRAST,  TButtonGadget::Command );
+ControlBarGadgets[ POTENTIALS_CBG_SEP3          ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ POTENTIALS_CBG_DECBR         ]   = new TButtonGadgetDpi ( IDB_ISDECBRIGHT,   IDB_SPDECBRIGHT,    TButtonGadget::Command );
+ControlBarGadgets[ POTENTIALS_CBG_INCBR         ]   = new TButtonGadgetDpi ( IDB_ISINCBRIGHT,   IDB_SPINCBRIGHT,    TButtonGadget::Command );
+ControlBarGadgets[ POTENTIALS_CBG_DECCR         ]   = new TButtonGadgetDpi ( IDB_ISDECCONTRAST, IDB_SPDECCONTRAST,  TButtonGadget::Command );
+ControlBarGadgets[ POTENTIALS_CBG_INCCR         ]   = new TButtonGadgetDpi ( IDB_ISINCCONTRAST, IDB_SPINCCONTRAST,  TButtonGadget::Command );
 
-ControlBarGadgets[ POTENTIALS_CBG_SEP4          ]   = new TSeparatorGadget ( ButtonSeparatorWidth );
-ControlBarGadgets[ POTENTIALS_CBG_FXDSCL        ]   = new TButtonGadget ( IDB_FIXEDSCALE,   IDB_FIXEDSCALE,     TButtonGadget::NonExclusive );
-ControlBarGadgets[ POTENTIALS_CBG_SPCOLOR       ]   = new TButtonGadget ( IDB_SPCOLOR,      IDB_SPCOLOR,        TButtonGadget::Command );
+ControlBarGadgets[ POTENTIALS_CBG_SEP4          ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ POTENTIALS_CBG_FXDSCL        ]   = new TButtonGadgetDpi ( IDB_FIXEDSCALE,    IDB_FIXEDSCALE,     TButtonGadget::NonExclusive );
+ControlBarGadgets[ POTENTIALS_CBG_SPCOLOR       ]   = new TButtonGadgetDpi ( IDB_SPCOLOR,       IDB_SPCOLOR,        TButtonGadget::Command );
 
-ControlBarGadgets[ POTENTIALS_CBG_SEP5          ]   = new TSeparatorGadget ( ButtonSeparatorWidth );
-ControlBarGadgets[ POTENTIALS_CBG_NEXTXYZ       ]   = new TButtonGadget ( IDB_NEXTXYZ,      IDB_NEXTXYZ,        TButtonGadget::Command );
+ControlBarGadgets[ POTENTIALS_CBG_SEP5          ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ POTENTIALS_CBG_NEXTXYZ       ]   = new TButtonGadgetDpi ( IDB_NEXTXYZ,       IDB_NEXTXYZ,        TButtonGadget::Command );
 }
 
 

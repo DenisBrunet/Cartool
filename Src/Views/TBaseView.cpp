@@ -82,6 +82,31 @@ const double    HighlightRadiusBoost[ PointsNumRendering ]  = {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
+                                        // Overriding this function seems to do the trick
+TDib*   TButtonGadgetDpi::GetGlyphDib ()
+{
+PRECONDITION(GetGadgetWindow());
+
+if ( ResId ) {
+                                        // Flat rendering looks less cluttered
+    GetGadgetWindow ()->EnableFlatStyle ();
+
+    TDib*               glyph           = crtl::RescaleDIB ( GetGadgetWindow (), ResId.GetInt (), RescaleButtonDpi ( GetGadgetWindow () ) );
+
+    glyph->MapUIColors  ( TDib::MapFace 
+                        | TDib::MapText 
+                        | TDib::MapShadow 
+                        | TDib::MapHighlight );
+
+    return glyph;
+    }
+  
+return 0;
+}
+
+
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
                                         // Only one window can capture the mouse, which should be the original message sender
 void        TBaseView::CaptureMouse     (   CaptureMouseEnum    how     )
 {
@@ -348,11 +373,11 @@ return false;
                                         // Common buttons on the left side
 void    TBaseView::CreateBaseGadgets ()
 {
-ControlBarGadgets[ BaseViewButtonSeparatorA     ]   = new TSeparatorGadget ( ButtonSeparatorWidth );
-ControlBarGadgets[ BaseViewButtonToObject       ]   = new TButtonGadget ( IDB_2OBJECT,        IDB_2OBJECT,        TButtonGadget::NonExclusive, true, TButtonGadget::Up, false );
-ControlBarGadgets[ BaseViewButtonRendering      ]   = new TButtonGadget ( IDB_SURFACEMODE,    IDB_SURFACEMODE,    TButtonGadget::Command );
-ControlBarGadgets[ BaseViewButtonOrientation    ]   = new TButtonGadget ( IDB_ORIENT,         IDB_ORIENT,         TButtonGadget::Command );
-ControlBarGadgets[ BaseViewButtonMagnifier      ]   = new TButtonGadget ( IDB_MAGNIFIER,      IDB_MAGNIFIER,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false );
+ControlBarGadgets[ BaseViewButtonSeparatorA     ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ BaseViewButtonToObject       ]   = new TButtonGadgetDpi ( IDB_2OBJECT,        IDB_2OBJECT,        TButtonGadget::NonExclusive, true, TButtonGadget::Up, false );
+ControlBarGadgets[ BaseViewButtonRendering      ]   = new TButtonGadgetDpi ( IDB_SURFACEMODE,    IDB_SURFACEMODE,    TButtonGadget::Command );
+ControlBarGadgets[ BaseViewButtonOrientation    ]   = new TButtonGadgetDpi ( IDB_ORIENT,         IDB_ORIENT,         TButtonGadget::Command );
+ControlBarGadgets[ BaseViewButtonMagnifier      ]   = new TButtonGadgetDpi ( IDB_MAGNIFIER,      IDB_MAGNIFIER,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false );
 }
 
 

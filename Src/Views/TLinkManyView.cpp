@@ -83,20 +83,23 @@ ControlBarGadgets       = new TGadget* [ NumControlBarGadgets ];
 
 CreateBaseGadgets ();
 
-ControlBarGadgets[ LMVIEW_CBG_SEP1              ]   = new TSeparatorGadget ( ButtonSeparatorWidth );
-ControlBarGadgets[ LMVIEW_CBG_GTVKEEPSIZE       ]   = new TButtonGadget    ( IDB_GTVKEEPSIZE,          IDB_GTVKEEPSIZE,        TButtonGadget::Command );
-ControlBarGadgets[ LMVIEW_CBG_GTVSTANDSIZE      ]   = new TButtonGadget    ( IDB_GTVSTANDSIZE,         IDB_GTVSTANDSIZE,       TButtonGadget::Command );
-ControlBarGadgets[ LMVIEW_CBG_GTVFIT            ]   = new TButtonGadget    ( IDB_GTVFIT,               IDB_GTVFIT,             TButtonGadget::Command );
-ControlBarGadgets[ LMVIEW_CBG_SEP2              ]   = new TSeparatorGadget ( ButtonSeparatorWidth );
-ControlBarGadgets[ LMVIEW_CBG_ADDTOGROUP        ]   = new TButtonGadget    ( IDB_ADDTOGROUP,           IDB_ADDTOGROUP,         TButtonGadget::Command );
-ControlBarGadgets[ LMVIEW_CBG_SEP3              ]   = new TSeparatorGadget ( ButtonSeparatorWidth );
-ControlBarGadgets[ LMVIEW_CBG_SYNCALL           ]   = new TButtonGadget    ( CM_SYNCALL,               CM_SYNCALL,             TButtonGadget::Command );
-ControlBarGadgets[ LMVIEW_CBG_DESYNCALL         ]   = new TButtonGadget    ( CM_DESYNCALL,             CM_DESYNCALL,           TButtonGadget::Command );
-ControlBarGadgets[ LMVIEW_CBG_SYNCBETWEENEEG    ]   = new TButtonGadget    ( CM_SYNCBETWEENEEG,        CM_SYNCBETWEENEEG,      TButtonGadget::Command );
-ControlBarGadgets[ LMVIEW_CBG_DESYNCBETWEENEEG  ]   = new TButtonGadget    ( CM_DESYNCBETWEENEEG,      CM_DESYNCBETWEENEEG,    TButtonGadget::Command );
-ControlBarGadgets[ LMVIEW_CBG_COMMANDSCLONING   ]   = new TButtonGadget    ( CM_COMMANDSCLONING,       CM_COMMANDSCLONING,     TButtonGadget::NonExclusive, true, GODoc->CommandsCloning ? TButtonGadget::Down : TButtonGadget::Up, false );
-ControlBarGadgets[ LMVIEW_CBG_SEP4              ]   = new TSeparatorGadget ( ButtonSeparatorWidth );
-ControlBarGadgets[ LMVIEW_CBG_SEGMENT           ]   = new TButtonGadget    ( IDB_SEGMENT,              IDB_SEGMENT,            TButtonGadget::Command );
+ControlBarGadgets[ LMVIEW_CBG_SEP1              ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ LMVIEW_CBG_GTVKEEPSIZE       ]   = new TButtonGadgetDpi ( IDB_GTVKEEPSIZE,       IDB_GTVKEEPSIZE,        TButtonGadget::Command );
+ControlBarGadgets[ LMVIEW_CBG_GTVSTANDSIZE      ]   = new TButtonGadgetDpi ( IDB_GTVSTANDSIZE,      IDB_GTVSTANDSIZE,       TButtonGadget::Command );
+ControlBarGadgets[ LMVIEW_CBG_GTVFIT            ]   = new TButtonGadgetDpi ( IDB_GTVFIT,            IDB_GTVFIT,             TButtonGadget::Command );
+
+ControlBarGadgets[ LMVIEW_CBG_SEP2              ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ LMVIEW_CBG_ADDTOGROUP        ]   = new TButtonGadgetDpi ( IDB_ADDTOGROUP,        IDB_ADDTOGROUP,         TButtonGadget::Command );
+
+ControlBarGadgets[ LMVIEW_CBG_SEP3              ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ LMVIEW_CBG_SYNCALL           ]   = new TButtonGadgetDpi ( CM_SYNCALL,            CM_SYNCALL,             TButtonGadget::Command );
+ControlBarGadgets[ LMVIEW_CBG_DESYNCALL         ]   = new TButtonGadgetDpi ( CM_DESYNCALL,          CM_DESYNCALL,           TButtonGadget::Command );
+ControlBarGadgets[ LMVIEW_CBG_SYNCBETWEENEEG    ]   = new TButtonGadgetDpi ( CM_SYNCBETWEENEEG,     CM_SYNCBETWEENEEG,      TButtonGadget::Command );
+ControlBarGadgets[ LMVIEW_CBG_DESYNCBETWEENEEG  ]   = new TButtonGadgetDpi ( CM_DESYNCBETWEENEEG,   CM_DESYNCBETWEENEEG,    TButtonGadget::Command );
+ControlBarGadgets[ LMVIEW_CBG_COMMANDSCLONING   ]   = new TButtonGadgetDpi ( CM_COMMANDSCLONING,    CM_COMMANDSCLONING,     TButtonGadget::NonExclusive, true, GODoc->CommandsCloning ? TButtonGadget::Down : TButtonGadget::Up, false );
+
+ControlBarGadgets[ LMVIEW_CBG_SEP4              ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ LMVIEW_CBG_SEGMENT           ]   = new TButtonGadgetDpi ( IDB_SEGMENT,           IDB_SEGMENT,            TButtonGadget::Command );
 }
 
 

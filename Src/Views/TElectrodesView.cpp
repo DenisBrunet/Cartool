@@ -257,15 +257,15 @@ ControlBarGadgets   = new TGadget * [XYZGLVIEW_CBG_NUM];
 
 CreateBaseGadgets ();
 
-ControlBarGadgets[XYZGLVIEW_CBG_SEP1]      = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[XYZGLVIEW_CBG_SHOWELEC]  = new TButtonGadget(IDB_SHOWELEC,IDB_SHOWELEC,  TButtonGadget::NonExclusive, true, TButtonGadget::Down, false);
-ControlBarGadgets[XYZGLVIEW_CBG_SHOWELNAMES]   = new TButtonGadget(IDB_SHOWELNAMES,IDB_SHOWELNAMES,  TButtonGadget::NonExclusive, true, ShowLabels ? TButtonGadget::Down : TButtonGadget::Up, false);
-ControlBarGadgets[XYZGLVIEW_CBG_FLATVIEW]  = new TButtonGadget(IDB_FLATVIEW,IDB_FLATVIEW,  TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
-
-ControlBarGadgets[XYZGLVIEW_CBG_SEP2]      = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[XYZGLVIEW_CBG_CUTPLANEX] = new TButtonGadget(IDB_CUTPLANEX, IDB_CUTPLANEX, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
-ControlBarGadgets[XYZGLVIEW_CBG_CUTPLANEY] = new TButtonGadget(IDB_CUTPLANEY, IDB_CUTPLANEY, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
-ControlBarGadgets[XYZGLVIEW_CBG_CUTPLANEZ] = new TButtonGadget(IDB_CUTPLANEZ, IDB_CUTPLANEZ, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
+ControlBarGadgets[ XYZGLVIEW_CBG_SEP1           ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ XYZGLVIEW_CBG_SHOWELEC       ]   = new TButtonGadgetDpi ( IDB_SHOWELEC,      IDB_SHOWELEC,       TButtonGadget::NonExclusive, true, TButtonGadget::Down, false);
+ControlBarGadgets[ XYZGLVIEW_CBG_SHOWELNAMES    ]   = new TButtonGadgetDpi ( IDB_SHOWELNAMES,   IDB_SHOWELNAMES,    TButtonGadget::NonExclusive, true, ShowLabels ? TButtonGadget::Down : TButtonGadget::Up, false);
+ControlBarGadgets[ XYZGLVIEW_CBG_FLATVIEW       ]   = new TButtonGadgetDpi ( IDB_FLATVIEW,      IDB_FLATVIEW,       TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
+                                                                             
+ControlBarGadgets[ XYZGLVIEW_CBG_SEP2           ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ XYZGLVIEW_CBG_CUTPLANEX      ]   = new TButtonGadgetDpi ( IDB_CUTPLANEX,     IDB_CUTPLANEX,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
+ControlBarGadgets[ XYZGLVIEW_CBG_CUTPLANEY      ]   = new TButtonGadgetDpi ( IDB_CUTPLANEY,     IDB_CUTPLANEY,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
+ControlBarGadgets[ XYZGLVIEW_CBG_CUTPLANEZ      ]   = new TButtonGadgetDpi ( IDB_CUTPLANEZ,     IDB_CUTPLANEZ,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
 
 
 if ( ! ValidView() )

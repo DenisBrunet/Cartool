@@ -425,29 +425,29 @@ void    TCartoolApp::CreateGadgets ( bool server )
                                         // Many buttons have been removed from standard display..
 if ( ! server ) {
 
-//  ControlBar->Insert ( *new TButtonGadget     ( CM_MDIFILENEW,    CM_MDIFILENEW       ) );
-    ControlBar->Insert ( *new TButtonGadget     ( CM_FILENEWEMPTYLM,CM_FILENEWEMPTYLM   ) );
-//  ControlBar->Insert ( *new TButtonGadget     ( CM_MDIFILEOPEN,   CM_MDIFILEOPEN      ) );
-//  ControlBar->Insert ( *new TButtonGadget     ( CM_FILESAVE,      CM_FILESAVE         ) );
-//  ControlBar->Insert ( *new TSeparatorGadget  ( ButtonSeparatorWidth                  ) );
+//  ControlBar->Insert ( *new TButtonGadgetDpi  ( CM_MDIFILENEW,    CM_MDIFILENEW       ) );
+    ControlBar->Insert ( *new TButtonGadgetDpi  ( CM_FILENEWEMPTYLM,CM_FILENEWEMPTYLM   ) );
+//  ControlBar->Insert ( *new TButtonGadgetDpi  ( CM_MDIFILEOPEN,   CM_MDIFILEOPEN      ) );
+//  ControlBar->Insert ( *new TButtonGadgetDpi  ( CM_FILESAVE,      CM_FILESAVE         ) );
+//  ControlBar->Insert ( *new TSeparatorGadget  ( DefaultSeparator                      ) );
     }
 
 
-//ControlBar->Insert ( *new TButtonGadget       ( CM_EDITCUT,       CM_EDITCUT          ) );
-//ControlBar->Insert ( *new TButtonGadget       ( CM_EDITCOPY,      CM_EDITCOPY         ) );
-//ControlBar->Insert ( *new TButtonGadget       ( CM_EDITPASTE,     CM_EDITPASTE        ) );
-//ControlBar->Insert ( *new TSeparatorGadget    ( ButtonSeparatorWidth                  ) );
-ControlBar  ->Insert ( *new TButtonGadget       ( CM_EDITUNDO,      CM_EDITUNDO         ) );
-//ControlBar->Insert ( *new TSeparatorGadget    ( ButtonSeparatorWidth                  ) );
-//ControlBar->Insert ( *new TButtonGadget       ( CM_EDITFIND,      CM_EDITFIND         ) );
-//ControlBar->Insert ( *new TButtonGadget       ( CM_EDITFINDNEXT,  CM_EDITFINDNEXT     ) );
+//ControlBar->Insert ( *new TButtonGadgetDpi    ( CM_EDITCUT,       CM_EDITCUT          ) );
+//ControlBar->Insert ( *new TButtonGadgetDpi    ( CM_EDITCOPY,      CM_EDITCOPY         ) );
+//ControlBar->Insert ( *new TButtonGadgetDpi    ( CM_EDITPASTE,     CM_EDITPASTE        ) );
+//ControlBar->Insert ( *new TSeparatorGadget    ( DefaultSeparator                      ) );
+ControlBar  ->Insert ( *new TButtonGadgetDpi    ( CM_EDITUNDO,      CM_EDITUNDO         ) );
+//ControlBar->Insert ( *new TSeparatorGadget    ( DefaultSeparator                      ) );
+//ControlBar->Insert ( *new TButtonGadgetDpi    ( CM_EDITFIND,      CM_EDITFIND         ) );
+//ControlBar->Insert ( *new TButtonGadgetDpi    ( CM_EDITFINDNEXT,  CM_EDITFINDNEXT     ) );
 
-//ControlBar->Insert ( *new TSeparatorGadget    ( ButtonSeparatorWidth                  ) );
-//ControlBar->Insert ( *new TButtonGadget       ( CM_HELPCONTENTS,  CM_HELPCONTENTS     ) );
+//ControlBar->Insert ( *new TSeparatorGadget    ( DefaultSeparator                      ) );
+//ControlBar->Insert ( *new TButtonGadgetDpi    ( CM_HELPCONTENTS,  CM_HELPCONTENTS     ) );
 
 
-ControlBar->Insert ( *new TSeparatorGadget      ( ButtonSeparatorWidth                  ) );
-ControlBar->Insert ( *new TButtonGadget         ( IDB_ADDVIEW, CM_VIEWCREATE            ) );
+ControlBar->Insert ( *new TSeparatorGadget      ( DefaultSeparator                      ) );
+ControlBar->Insert ( *new TButtonGadgetDpi      ( IDB_ADDVIEW, CM_VIEWCREATE            ) );
 
                                         // Add caption and fly-over help hints.
 ControlBar->SetCaption ( "Toolbar" );
@@ -477,7 +477,8 @@ ApxHarbor->Insert ( *ControlBar, alTop );
 void    TCartoolApp::CreateSplashScreen ()
 {
                                         // Splash screen will delete itself when timer runs off - no need to keep track of it
-Splash  = new TCartoolSplashWindow  (   *unique_ptr<TDib> ( new TDib ( 0, TResId ( IDB_SPLASH ) ) ),
+Splash  = new TCartoolSplashWindow  (   *unique_ptr<TDib> ( new TDib ( 0, TResId ( IDB_SPLASH ) ) ),                                                    // Not rescaling DIB
+                                     // *unique_ptr<TDib> ( crtl::RescaleDIB ( CartoolMdiClient, IDB_SPLASH, RescaleSizeDpi ( CartoolMdiClient ) ) ),   // Rescaling DIB
                                         0,  0,  TSplashWindow::ShrinkToFit,
                                         2.5 * 1000,
                                         0 /*DefaultTitle*/, // putting a title will mess up with the whole size...

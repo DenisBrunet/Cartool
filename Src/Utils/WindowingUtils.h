@@ -47,6 +47,7 @@ inline  double  MmToPixels          ( const owl::TWindow* window, double mm     
 inline  double  PixelsToMm          ( const owl::TWindow* window, int    pixels )                               { return  pixels / ( GetWindowDpmm ( window ) * 0.96 );         }
 
 inline  double  RescaleSizeDpi      ( const owl::TWindow* window )                                              { return  crtl::GetWindowDpi ( window ) / (double) USER_DEFAULT_SCREEN_DPI; }   // Rescale default 96 dpi pixel size into an equivalent pixel size of any arbitrary dpi
+inline  int     RescaleButtonDpi    ( const owl::TWindow* window = 0 )                                          { return  Round ( crtl::RescaleSizeDpi ( window ) );            }   // Buttons need to be rescaled by integer increments so as to preserve their "pixel-art" aspect
 inline owl::TDib*   RescaleDIB      ( const owl::TWindow* window, int resid, double scalingfactor );
 
                                         // Setting position and size                                            
@@ -79,8 +80,12 @@ if ( scalingfactor <= 0 || scalingfactor == 1 )
 TClientDC           dc          ( window->GetHandle () );
                                         // Create dib from resource
 TDib                srcdib      ( 0, TResId ( resid ) );
-                                        // Get the bitmap data
-TBitmap             srcbitmap   ( srcdib );
+
+bool                haspalette      = srcdib.SizeColors () > 0;
+
+auto                srcpal          = haspalette ? unique_ptr<TPalette> ( new TPalette ( srcdib ) ) : 0;
+                                        // Get the bitmap data, with optional palette
+TBitmap             srcbitmap   ( srcdib, srcpal.get () );
                                         // We need a memory dc context for source bitmap
 TMemoryDC           srcdc       ( dc );
                                         // Load source bitmap to context
@@ -107,8 +112,8 @@ StretchBlt  (   destdc,     0,  0,  destwidth,          destheight,
                 srcdc,      0,  0,  srcbitmap.Width (), srcbitmap.Height (), 
                 SRCCOPY
             );
-
-return  new TDib ( destbitmap );
+                                        // Create resized DIB, with optional palette
+return  new TDib ( destbitmap, srcpal.get() );
 
                                         // In theory, we should clean after ourselves, but these dc are temps, aren't they?
 //srcdc. RestoreBitmap ();

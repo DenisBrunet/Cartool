@@ -348,6 +348,7 @@ enum    {
 
 
 //----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
                                         // Buttons common to all views, first on the left
 enum    {
         BaseViewButtonSeparatorA,
@@ -359,10 +360,24 @@ enum    {
         NumBaseViewButtons
         };
 
-                                        // Buttons does not scale yet, but we can still make the separators dpi-aware
-#define             ButtonSeparatorWidth        crtl::MmToPixels ( 0, 1.6 )
+                                        // Separators are rescaled by the same integer ratio as the other Button Gadgets
+#define             DefaultSeparator            10 * RescaleButtonDpi (), 0, true
+
+                                        // Deriving class to make it dpi-aware
+class   TButtonGadgetDpi    :   public  owl::TButtonGadget
+{
+public:
+
+    using           owl::TButtonGadget::TButtonGadget;
+
+protected:
+
+    owl::TDib*      GetGlyphDib ();     // Overridden method will create a dpi-rescaled DIB - called at creation, and system color change
+
+};
 
 
+//----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
 class   TBaseView :         public      owl::TWindowView,

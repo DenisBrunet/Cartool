@@ -386,57 +386,57 @@ ControlBarGadgets       = new TGadget * [INVERSE_CBG_NUM];
 
 CreateBaseGadgets ();
 
-ControlBarGadgets[ INVERSE_CBG_SEP0                 ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ INVERSE_CBG_SHOW2DIS             ]   = new TButtonGadget     ( IDB_SHOW2DIS,             IDB_SHOW2DIS,           TButtonGadget::NonExclusive, false, Show2DIs        ? TButtonGadget::Down : TButtonGadget::Up );
-ControlBarGadgets[ INVERSE_CBG_SHOW3DIS             ]   = new TButtonGadget     ( IDB_SHOW3DIS,             IDB_SHOW3DIS,           TButtonGadget::NonExclusive, false, Show3DIs        ? TButtonGadget::Down : TButtonGadget::Up );
-ControlBarGadgets[ INVERSE_CBG_SHOWVECTORSIS        ]   = new TButtonGadget     ( IDB_SHOWVECTORSIS,        IDB_SHOWVECTORSIS,      TButtonGadget::NonExclusive, false, ShowVectorsIs   ? TButtonGadget::Down : TButtonGadget::Up );
+ControlBarGadgets[ INVERSE_CBG_SEP0                 ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ INVERSE_CBG_SHOW2DIS             ]   = new TButtonGadgetDpi ( IDB_SHOW2DIS,              IDB_SHOW2DIS,           TButtonGadget::NonExclusive, false, Show2DIs        ? TButtonGadget::Down : TButtonGadget::Up );
+ControlBarGadgets[ INVERSE_CBG_SHOW3DIS             ]   = new TButtonGadgetDpi ( IDB_SHOW3DIS,              IDB_SHOW3DIS,           TButtonGadget::NonExclusive, false, Show3DIs        ? TButtonGadget::Down : TButtonGadget::Up );
+ControlBarGadgets[ INVERSE_CBG_SHOWVECTORSIS        ]   = new TButtonGadgetDpi ( IDB_SHOWVECTORSIS,         IDB_SHOWVECTORSIS,      TButtonGadget::NonExclusive, false, ShowVectorsIs   ? TButtonGadget::Down : TButtonGadget::Up );
 
-ControlBarGadgets[ INVERSE_CBG_SEP1                 ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ INVERSE_CBG_SHOW3DMRI            ]   = new TButtonGadget     ( IDB_SHOW3DMRI,            IDB_SHOW3DMRI,          TButtonGadget::NonExclusive, false, Show3DMri       ? TButtonGadget::Down : TButtonGadget::Up );
-ControlBarGadgets[ INVERSE_CBG_SHOWSP               ]   = new TButtonGadget     ( IDB_SHOWSP,               IDB_SHOWSP,             TButtonGadget::NonExclusive);
+ControlBarGadgets[ INVERSE_CBG_SEP1                 ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ INVERSE_CBG_SHOW3DMRI            ]   = new TButtonGadgetDpi ( IDB_SHOW3DMRI,             IDB_SHOW3DMRI,          TButtonGadget::NonExclusive, false, Show3DMri       ? TButtonGadget::Down : TButtonGadget::Up );
+ControlBarGadgets[ INVERSE_CBG_SHOWSP               ]   = new TButtonGadgetDpi ( IDB_SHOWSP,                IDB_SHOWSP,             TButtonGadget::NonExclusive);
 
-ControlBarGadgets[ INVERSE_CBG_SEP2                 ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ INVERSE_CBG_NEXTROI              ]   = new TButtonGadget     ( IDB_NEXTROI,              IDB_NEXTROI,            TButtonGadget::NonExclusive, true, IsRoiMode        ? TButtonGadget::Down : TButtonGadget::Up, false );
-//ControlBarGadgets[ INVERSE_CBG_AVERAGEROIS        ]   = new TButtonGadget     ( IDB_AVERAGEROIS,          IDB_AVERAGEROIS,        TButtonGadget::NonExclusive, true, /*AverageRois*/false? TButtonGadget::Down : TButtonGadget::Up, false );
+ControlBarGadgets[ INVERSE_CBG_SEP2                 ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ INVERSE_CBG_NEXTROI              ]   = new TButtonGadgetDpi ( IDB_NEXTROI,               IDB_NEXTROI,            TButtonGadget::NonExclusive, true, IsRoiMode        ? TButtonGadget::Down : TButtonGadget::Up, false );
+//ControlBarGadgets[ INVERSE_CBG_AVERAGEROIS        ]   = new TButtonGadgetDpi ( IDB_AVERAGEROIS,           IDB_AVERAGEROIS,        TButtonGadget::NonExclusive, true, /*AverageRois*/false? TButtonGadget::Down : TButtonGadget::Up, false );
 
-ControlBarGadgets[ INVERSE_CBG_SEP2A                ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ INVERSE_CBG_CUTPLANECORONAL      ]   = new TButtonGadget     ( IDB_CUTPLANECORONAL,      IDB_CUTPLANECORONAL,    TButtonGadget::NonExclusive, true, TButtonGadget::Down, false );
-ControlBarGadgets[ INVERSE_CBG_CUTPLANETRANSVERSE   ]   = new TButtonGadget     ( IDB_CUTPLANETRANSVERSE,   IDB_CUTPLANETRANSVERSE, TButtonGadget::NonExclusive, true, TButtonGadget::Down, false );
-ControlBarGadgets[ INVERSE_CBG_CUTPLANESAGITTAL     ]   = new TButtonGadget     ( IDB_CUTPLANESAGITTAL,     IDB_CUTPLANESAGITTAL,   TButtonGadget::NonExclusive, true, TButtonGadget::Down, false );
+ControlBarGadgets[ INVERSE_CBG_SEP2A                ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ INVERSE_CBG_CUTPLANECORONAL      ]   = new TButtonGadgetDpi ( IDB_CUTPLANECORONAL,       IDB_CUTPLANECORONAL,    TButtonGadget::NonExclusive, true, TButtonGadget::Down, false );
+ControlBarGadgets[ INVERSE_CBG_CUTPLANETRANSVERSE   ]   = new TButtonGadgetDpi ( IDB_CUTPLANETRANSVERSE,    IDB_CUTPLANETRANSVERSE, TButtonGadget::NonExclusive, true, TButtonGadget::Down, false );
+ControlBarGadgets[ INVERSE_CBG_CUTPLANESAGITTAL     ]   = new TButtonGadgetDpi ( IDB_CUTPLANESAGITTAL,      IDB_CUTPLANESAGITTAL,   TButtonGadget::NonExclusive, true, TButtonGadget::Down, false );
                                                                                   
-ControlBarGadgets[ INVERSE_CBG_SEP3                 ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ INVERSE_CBG_PLANEMODE            ]   = new TButtonGadget     ( IDB_PLANEMODE,            IDB_PLANEMODE,          TButtonGadget::NonExclusive, false, TButtonGadget::Up );
-ControlBarGadgets[ INVERSE_CBG_LESSSLICES           ]   = new TButtonGadget     ( IDB_LESSSLICES,           IDB_LESSSLICES,         TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_MORESLICES           ]   = new TButtonGadget     ( IDB_MORESLICES,           IDB_MORESLICES,         TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_FIRSTSLICEBWD        ]   = new TButtonGadget     ( IDB_FIRSTSLICEBWD,        IDB_FIRSTSLICEBWD,      TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_FIRSTSLICEFWD        ]   = new TButtonGadget     ( IDB_FIRSTSLICEFWD,        IDB_FIRSTSLICEFWD,      TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_LASTSLICEBWD         ]   = new TButtonGadget     ( IDB_LASTSLICEBWD,         IDB_LASTSLICEBWD,       TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_LASTSLICEFWD         ]   = new TButtonGadget     ( IDB_LASTSLICEFWD,         IDB_LASTSLICEFWD,       TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_SEP3                 ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ INVERSE_CBG_PLANEMODE            ]   = new TButtonGadgetDpi ( IDB_PLANEMODE,             IDB_PLANEMODE,          TButtonGadget::NonExclusive, false, TButtonGadget::Up );
+ControlBarGadgets[ INVERSE_CBG_LESSSLICES           ]   = new TButtonGadgetDpi ( IDB_LESSSLICES,            IDB_LESSSLICES,         TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_MORESLICES           ]   = new TButtonGadgetDpi ( IDB_MORESLICES,            IDB_MORESLICES,         TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_FIRSTSLICEBWD        ]   = new TButtonGadgetDpi ( IDB_FIRSTSLICEBWD,         IDB_FIRSTSLICEBWD,      TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_FIRSTSLICEFWD        ]   = new TButtonGadgetDpi ( IDB_FIRSTSLICEFWD,         IDB_FIRSTSLICEFWD,      TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_LASTSLICEBWD         ]   = new TButtonGadgetDpi ( IDB_LASTSLICEBWD,          IDB_LASTSLICEBWD,       TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_LASTSLICEFWD         ]   = new TButtonGadgetDpi ( IDB_LASTSLICEFWD,          IDB_LASTSLICEFWD,       TButtonGadget::Command );
                                                                                   
-ControlBarGadgets[ INVERSE_CBG_SEP4                 ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ INVERSE_CBG_SHMIN                ]   = new TButtonGadget     ( IDB_SHOWMIN,              IDB_SHOWMIN,            TButtonGadget::NonExclusive );
-ControlBarGadgets[ INVERSE_CBG_SHMAX                ]   = new TButtonGadget     ( IDB_SHOWMAX,              IDB_SHOWMAX,            TButtonGadget::NonExclusive );
-ControlBarGadgets[ INVERSE_CBG_FINDMINMAX           ]   = new TButtonGadget     ( IDB_FINDMINMAX,           IDB_FINDMINMAX,         TButtonGadget::NonExclusive );
+ControlBarGadgets[ INVERSE_CBG_SEP4                 ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ INVERSE_CBG_SHMIN                ]   = new TButtonGadgetDpi ( IDB_SHOWMIN,               IDB_SHOWMIN,            TButtonGadget::NonExclusive );
+ControlBarGadgets[ INVERSE_CBG_SHMAX                ]   = new TButtonGadgetDpi ( IDB_SHOWMAX,               IDB_SHOWMAX,            TButtonGadget::NonExclusive );
+ControlBarGadgets[ INVERSE_CBG_FINDMINMAX           ]   = new TButtonGadgetDpi ( IDB_FINDMINMAX,            IDB_FINDMINMAX,         TButtonGadget::NonExclusive );
                                                                                   
-ControlBarGadgets[ INVERSE_CBG_SEP5                 ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ INVERSE_CBG_DECBR                ]   = new TButtonGadget     ( IDB_ISDECBRIGHT,          IDB_ISDECBRIGHT,        TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_INCBR                ]   = new TButtonGadget     ( IDB_ISINCBRIGHT,          IDB_ISINCBRIGHT,        TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_DECCR                ]   = new TButtonGadget     ( IDB_ISDECCONTRAST,        IDB_ISDECCONTRAST,      TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_INCCR                ]   = new TButtonGadget     ( IDB_ISINCCONTRAST,        IDB_ISINCCONTRAST,      TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_SEP5                 ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ INVERSE_CBG_DECBR                ]   = new TButtonGadgetDpi ( IDB_ISDECBRIGHT,           IDB_ISDECBRIGHT,        TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_INCBR                ]   = new TButtonGadgetDpi ( IDB_ISINCBRIGHT,           IDB_ISINCBRIGHT,        TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_DECCR                ]   = new TButtonGadgetDpi ( IDB_ISDECCONTRAST,         IDB_ISDECCONTRAST,      TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_INCCR                ]   = new TButtonGadgetDpi ( IDB_ISINCCONTRAST,         IDB_ISINCCONTRAST,      TButtonGadget::Command );
                                                                                   
-ControlBarGadgets[ INVERSE_CBG_SEP6                 ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ INVERSE_CBG_FXDSCL               ]   = new TButtonGadget     ( IDB_FIXEDSCALE,           IDB_FIXEDSCALE,         TButtonGadget::NonExclusive );
-ControlBarGadgets[ INVERSE_CBG_COLOR                ]   = new TButtonGadget     ( IDB_SPCOLOR,              IDB_SPCOLOR,            TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_SEP6                 ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ INVERSE_CBG_FXDSCL               ]   = new TButtonGadgetDpi ( IDB_FIXEDSCALE,            IDB_FIXEDSCALE,         TButtonGadget::NonExclusive );
+ControlBarGadgets[ INVERSE_CBG_COLOR                ]   = new TButtonGadgetDpi ( IDB_SPCOLOR,               IDB_SPCOLOR,            TButtonGadget::Command );
                                                                                   
-ControlBarGadgets[ INVERSE_CBG_SEP7                 ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ INVERSE_CBG_RESETREG             ]   = new TButtonGadget     ( IDB_RESETREG,             IDB_RESETREG,           TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_PREVREG              ]   = new TButtonGadget     ( IDB_PREVREG,              IDB_PREVREG,            TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_NEXTREG              ]   = new TButtonGadget     ( IDB_NEXTREG,              IDB_NEXTREG,            TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_SEARCHBESTREG        ]   = new TButtonGadget     ( IDB_SEARCHBESTREGGLOBAL,  IDB_SEARCHBESTREGGLOBAL,TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_SEP7                 ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ INVERSE_CBG_RESETREG             ]   = new TButtonGadgetDpi ( IDB_RESETREG,              IDB_RESETREG,           TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_PREVREG              ]   = new TButtonGadgetDpi ( IDB_PREVREG,               IDB_PREVREG,            TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_NEXTREG              ]   = new TButtonGadgetDpi ( IDB_NEXTREG,               IDB_NEXTREG,            TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_SEARCHBESTREG        ]   = new TButtonGadgetDpi ( IDB_SEARCHBESTREGGLOBAL,   IDB_SEARCHBESTREGGLOBAL,TButtonGadget::Command );
                                                                                   
-ControlBarGadgets[ INVERSE_CBG_SEP8                 ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ INVERSE_CBG_NEXTIS               ]   = new TButtonGadget     ( IDB_NEXTIS,               IDB_NEXTIS,             TButtonGadget::Command );
-ControlBarGadgets[ INVERSE_CBG_NEXTMRI              ]   = new TButtonGadget     ( IDB_NEXTMRI,              IDB_NEXTMRI,            TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_SEP8                 ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ INVERSE_CBG_NEXTIS               ]   = new TButtonGadgetDpi ( IDB_NEXTIS,                IDB_NEXTIS,             TButtonGadget::Command );
+ControlBarGadgets[ INVERSE_CBG_NEXTMRI              ]   = new TButtonGadgetDpi ( IDB_NEXTMRI,               IDB_NEXTMRI,            TButtonGadget::Command );
 }
 
 

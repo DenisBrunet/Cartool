@@ -176,66 +176,66 @@ ControlBarGadgets       = new TGadget * [FREQGLVIEW_CBG_NUM];
 
 CreateBaseGadgets ();
 
-ControlBarGadgets[FREQGLVIEW_CBG_SEP3]              = new TSeparatorGadget( ButtonSeparatorWidth );
-
-ControlBarGadgets[FREQGLVIEW_CBG_SPECTRUM]          = new TButtonGadget( IDB_FREQDISPLAY_SPECTRUM,  IDB_FREQDISPLAY_SPECTRUM,   TButtonGadget::Exclusive, true, IsModeSpectrum ()  ? TButtonGadget::Down : TButtonGadget::Up );
-ControlBarGadgets[FREQGLVIEW_CBG_EF]                = new TButtonGadget( IDB_FREQDISPLAY_EF,        IDB_FREQDISPLAY_EF,         TButtonGadget::Exclusive, true, IsModeEF       ()  ? TButtonGadget::Down : TButtonGadget::Up );
-ControlBarGadgets[FREQGLVIEW_CBG_FE]                = new TButtonGadget( IDB_FREQDISPLAY_FE,        IDB_FREQDISPLAY_FE,         TButtonGadget::Exclusive, true, IsModeFE       ()  ? TButtonGadget::Down : TButtonGadget::Up );
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP3A]             = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[FREQGLVIEW_CBG_AVERAGETRACKS]     = new TButtonGadget(IDB_AVERAGETRACKS,      IDB_AVERAGETRACKS,       TButtonGadget::NonExclusive, true, AverageMode     ? TButtonGadget::Down : TButtonGadget::Up, false );
-ControlBarGadgets[FREQGLVIEW_CBG_DISPLAYINTENSITY]  = new TButtonGadget(IDB_DISPLAYINTENSITY,   IDB_DISPLAYINTENSITY,    TButtonGadget::Command );
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP3B]             = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[FREQGLVIEW_CBG_SHOWTAGS]          = new TButtonGadget(IDB_SHOWMARKERS,  IDB_SHOWMARKERS,    TButtonGadget::NonExclusive, true, ShowTags ? TButtonGadget::Down : TButtonGadget::Up, false );
-ControlBarGadgets[FREQGLVIEW_CBG_PREVMARKER]        = new TButtonGadget(IDB_PREVMARKER,   IDB_PREVMARKER,     TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_NEXTMARKER]        = new TButtonGadget(IDB_NEXTMARKER,   IDB_NEXTMARKER,     TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_ADDMARKER]         = new TButtonGadget(IDB_ADDMARKER,    IDB_ADDMARKER,      TButtonGadget::Command);
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP3C]             = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[FREQGLVIEW_CBG_RNGCURS]           = new TButtonGadget(IDB_RANGECURSOR,  IDB_RANGECURSOR,    TButtonGadget::NonExclusive);
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP4]              = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[FREQGLVIEW_CBG_UP]                = new TButtonGadget(IDB_UP,           IDB_UP,             TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_DOWN]              = new TButtonGadget(IDB_DOWN,         IDB_DOWN,           TButtonGadget::Command);
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP5]              = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[FREQGLVIEW_CBG_LESSTR]            = new TButtonGadget(IDB_LESSTRACKS,   IDB_LESSTRACKS,     TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_MORETR]            = new TButtonGadget(IDB_MORETRACKS,   IDB_MORETRACKS,     TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_LESSPSEUDOTRACKS]  = new TButtonGadget(IDB_LESSPSEUDOTRACKS,   IDB_LESSPSEUDOTRACKS,     TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_MOREPSEUDOTRACKS]  = new TButtonGadget(IDB_MOREPSEUDOTRACKS,   IDB_MOREPSEUDOTRACKS,     TButtonGadget::Command);
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP6]              = new TSeparatorGadget(1);
-ControlBarGadgets[FREQGLVIEW_CBG_TRSUPER]           = new TButtonGadget(IDB_TRACKSSUPER,    IDB_TRACKSSUPER,    TButtonGadget::NonExclusive);
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP7]              = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[FREQGLVIEW_CBG_PREVIOUSFREQ]      = new TButtonGadget(IDB_PREVIOUSFREQ,   IDB_PREVIOUSFREQ,   TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_NEXTFREQ]          = new TButtonGadget(IDB_NEXTFREQ,       IDB_NEXTFREQ,       TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_LESSFREQS]         = new TButtonGadget(IDB_LESSFREQS,      IDB_LESSFREQS,      TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_MOREFREQS]         = new TButtonGadget(IDB_MOREFREQS,      IDB_MOREFREQS,      TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_FREQNORMALIZE]     = new TButtonGadget(IDB_FREQNORMALIZE,  IDB_FREQNORMALIZE,  TButtonGadget::NonExclusive, true, FreqNormalize ? TButtonGadget::Down : TButtonGadget::Up );
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP7B]             = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[FREQGLVIEW_CBG_EXTTV]             = new TButtonGadget(IDB_EXTTRACKSV,   IDB_EXTTRACKSV,     TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_COMPTV]            = new TButtonGadget(IDB_COMPTRACKSV,  IDB_COMPTRACKSV,    TButtonGadget::Command);
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP8]              = new TSeparatorGadget(1);
-ControlBarGadgets[FREQGLVIEW_CBG_EXTTH]             = new TButtonGadget(IDB_EXTTRACKSH,   IDB_EXTTRACKSH,     TButtonGadget::Command );
-ControlBarGadgets[FREQGLVIEW_CBG_COMPTH]            = new TButtonGadget(IDB_COMPTRACKSH,  IDB_COMPTRACKSH,    TButtonGadget::Command );
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP9]              = new TSeparatorGadget(1);
-ControlBarGadgets[FREQGLVIEW_CBG_VUNITS]            = new TButtonGadget(IDB_VERTUNITS,    IDB_VERTUNITS,      TButtonGadget::NonExclusive);
-ControlBarGadgets[FREQGLVIEW_CBG_HUNITS]            = new TButtonGadget(IDB_HORIZUNITS,   IDB_HORIZUNITS,     TButtonGadget::NonExclusive);
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP10]             = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[FREQGLVIEW_CBG_DECBR]             = new TButtonGadget(IDB_ISDECBRIGHT,  IDB_ISDECBRIGHT,    TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_INCBR]             = new TButtonGadget(IDB_ISINCBRIGHT,  IDB_ISINCBRIGHT,    TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_DECCR]             = new TButtonGadget(IDB_ISDECCONTRAST,IDB_ISDECCONTRAST,  TButtonGadget::Command);
-ControlBarGadgets[FREQGLVIEW_CBG_INCCR]             = new TButtonGadget(IDB_ISINCCONTRAST,IDB_ISINCCONTRAST,  TButtonGadget::Command);
-
-ControlBarGadgets[FREQGLVIEW_CBG_SEP11]             = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[FREQGLVIEW_CBG_FXDSCL]            = new TButtonGadget(IDB_FIXEDSCALE,   IDB_FIXEDSCALE,     TButtonGadget::NonExclusive, true, ScalingAuto ? TButtonGadget::Down : TButtonGadget::Up );
-ControlBarGadgets[FREQGLVIEW_CBG_COLOR]             = new TButtonGadget(IDB_SPCOLOR,      IDB_SPCOLOR,        TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP3              ]   = new TSeparatorGadget ( DefaultSeparator );
+                                                                               
+ControlBarGadgets[ FREQGLVIEW_CBG_SPECTRUM          ]   = new TButtonGadgetDpi ( IDB_FREQDISPLAY_SPECTRUM,   IDB_FREQDISPLAY_SPECTRUM,   TButtonGadget::Exclusive, true, IsModeSpectrum ()  ? TButtonGadget::Down : TButtonGadget::Up );
+ControlBarGadgets[ FREQGLVIEW_CBG_EF                ]   = new TButtonGadgetDpi ( IDB_FREQDISPLAY_EF,         IDB_FREQDISPLAY_EF,         TButtonGadget::Exclusive, true, IsModeEF       ()  ? TButtonGadget::Down : TButtonGadget::Up );
+ControlBarGadgets[ FREQGLVIEW_CBG_FE                ]   = new TButtonGadgetDpi ( IDB_FREQDISPLAY_FE,         IDB_FREQDISPLAY_FE,         TButtonGadget::Exclusive, true, IsModeFE       ()  ? TButtonGadget::Down : TButtonGadget::Up );
+                                                                               
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP3A             ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_AVERAGETRACKS     ]   = new TButtonGadgetDpi ( IDB_AVERAGETRACKS,          IDB_AVERAGETRACKS,          TButtonGadget::NonExclusive, true, AverageMode     ? TButtonGadget::Down : TButtonGadget::Up, false );
+ControlBarGadgets[ FREQGLVIEW_CBG_DISPLAYINTENSITY  ]   = new TButtonGadgetDpi ( IDB_DISPLAYINTENSITY,       IDB_DISPLAYINTENSITY,       TButtonGadget::Command );
+                                                                                 
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP3B             ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_SHOWTAGS          ]   = new TButtonGadgetDpi ( IDB_SHOWMARKERS,            IDB_SHOWMARKERS,            TButtonGadget::NonExclusive, true, ShowTags ? TButtonGadget::Down : TButtonGadget::Up, false );
+ControlBarGadgets[ FREQGLVIEW_CBG_PREVMARKER        ]   = new TButtonGadgetDpi ( IDB_PREVMARKER,             IDB_PREVMARKER,             TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_NEXTMARKER        ]   = new TButtonGadgetDpi ( IDB_NEXTMARKER,             IDB_NEXTMARKER,             TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_ADDMARKER         ]   = new TButtonGadgetDpi ( IDB_ADDMARKER,              IDB_ADDMARKER,              TButtonGadget::Command);
+                                                                               
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP3C             ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_RNGCURS           ]   = new TButtonGadgetDpi ( IDB_RANGECURSOR,            IDB_RANGECURSOR,            TButtonGadget::NonExclusive);
+                                                                                 
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP4              ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_UP                ]   = new TButtonGadgetDpi ( IDB_UP,                     IDB_UP,                     TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_DOWN              ]   = new TButtonGadgetDpi ( IDB_DOWN,                   IDB_DOWN,                   TButtonGadget::Command);
+                                                                                 
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP5              ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_LESSTR            ]   = new TButtonGadgetDpi ( IDB_LESSTRACKS,             IDB_LESSTRACKS,             TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_MORETR            ]   = new TButtonGadgetDpi ( IDB_MORETRACKS,             IDB_MORETRACKS,             TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_LESSPSEUDOTRACKS  ]   = new TButtonGadgetDpi ( IDB_LESSPSEUDOTRACKS,       IDB_LESSPSEUDOTRACKS,       TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_MOREPSEUDOTRACKS  ]   = new TButtonGadgetDpi ( IDB_MOREPSEUDOTRACKS,       IDB_MOREPSEUDOTRACKS,       TButtonGadget::Command);
+                                                                                 
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP6              ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_TRSUPER           ]   = new TButtonGadgetDpi ( IDB_TRACKSSUPER,            IDB_TRACKSSUPER,            TButtonGadget::NonExclusive);
+                                                                                 
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP7              ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_PREVIOUSFREQ      ]   = new TButtonGadgetDpi ( IDB_PREVIOUSFREQ,           IDB_PREVIOUSFREQ,           TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_NEXTFREQ          ]   = new TButtonGadgetDpi ( IDB_NEXTFREQ,               IDB_NEXTFREQ,               TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_LESSFREQS         ]   = new TButtonGadgetDpi ( IDB_LESSFREQS,              IDB_LESSFREQS,              TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_MOREFREQS         ]   = new TButtonGadgetDpi ( IDB_MOREFREQS,              IDB_MOREFREQS,              TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_FREQNORMALIZE     ]   = new TButtonGadgetDpi ( IDB_FREQNORMALIZE,          IDB_FREQNORMALIZE,          TButtonGadget::NonExclusive, true, FreqNormalize ? TButtonGadget::Down : TButtonGadget::Up );
+                                                                                 
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP7B             ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_EXTTV             ]   = new TButtonGadgetDpi ( IDB_EXTTRACKSV,             IDB_EXTTRACKSV,             TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_COMPTV            ]   = new TButtonGadgetDpi ( IDB_COMPTRACKSV,            IDB_COMPTRACKSV,            TButtonGadget::Command);
+                                                                                 
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP8              ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_EXTTH             ]   = new TButtonGadgetDpi ( IDB_EXTTRACKSH,             IDB_EXTTRACKSH,             TButtonGadget::Command );
+ControlBarGadgets[ FREQGLVIEW_CBG_COMPTH            ]   = new TButtonGadgetDpi ( IDB_COMPTRACKSH,            IDB_COMPTRACKSH,            TButtonGadget::Command );
+                                                                                 
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP9              ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_VUNITS            ]   = new TButtonGadgetDpi ( IDB_VERTUNITS,              IDB_VERTUNITS,              TButtonGadget::NonExclusive);
+ControlBarGadgets[ FREQGLVIEW_CBG_HUNITS            ]   = new TButtonGadgetDpi ( IDB_HORIZUNITS,             IDB_HORIZUNITS,             TButtonGadget::NonExclusive);
+                                                                                 
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP10             ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_DECBR             ]   = new TButtonGadgetDpi ( IDB_ISDECBRIGHT,            IDB_ISDECBRIGHT,            TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_INCBR             ]   = new TButtonGadgetDpi ( IDB_ISINCBRIGHT,            IDB_ISINCBRIGHT,            TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_DECCR             ]   = new TButtonGadgetDpi ( IDB_ISDECCONTRAST,          IDB_ISDECCONTRAST,          TButtonGadget::Command);
+ControlBarGadgets[ FREQGLVIEW_CBG_INCCR             ]   = new TButtonGadgetDpi ( IDB_ISINCCONTRAST,          IDB_ISINCCONTRAST,          TButtonGadget::Command);
+                                                                                 
+ControlBarGadgets[ FREQGLVIEW_CBG_SEP11             ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ FREQGLVIEW_CBG_FXDSCL            ]   = new TButtonGadgetDpi ( IDB_FIXEDSCALE,             IDB_FIXEDSCALE,             TButtonGadget::NonExclusive, true, ScalingAuto ? TButtonGadget::Down : TButtonGadget::Up );
+ControlBarGadgets[ FREQGLVIEW_CBG_COLOR             ]   = new TButtonGadgetDpi ( IDB_SPCOLOR,                IDB_SPCOLOR,                TButtonGadget::Command);
 
 
                                         // re-use EEG menu, as it is mainly the same, thus avoiding tedious updates in both

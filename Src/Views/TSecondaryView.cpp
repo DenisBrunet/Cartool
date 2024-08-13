@@ -131,15 +131,17 @@ void    TSecondaryView::CreateBaseGadgets ()
                                         // buttons common to all views
 TBaseView::CreateBaseGadgets ();
                                         // then buttons common to all secondary views
-ControlBarGadgets[ BaseSecondViewButtonSeparatorA       ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ BaseSecondViewButtonSyncViews        ]   = new TButtonGadget     (IDB_SYNCVIEWS,    IDB_SYNCVIEWS,      TButtonGadget::Command);
-ControlBarGadgets[ BaseSecondViewButtonSeparatorB       ]   = new TSeparatorGadget  ( ButtonSeparatorWidth );
-ControlBarGadgets[ BaseSecondViewButtonRangeAverage     ]   = new TButtonGadget     (IDB_RANGEAVE,     IDB_RANGEAVE,       TButtonGadget::Exclusive,     false,  ManageRangeCursor == MRCAverage ? TButtonGadget::Down : TButtonGadget::Up );
-ControlBarGadgets[ BaseSecondViewButtonRangeSequence    ]   = new TButtonGadget     (IDB_RANGESEQ,     IDB_RANGESEQ,       TButtonGadget::Exclusive,     false,  IsMRCSequence () ? TButtonGadget::Down : TButtonGadget::Up );
-ControlBarGadgets[ BaseSecondViewButtonRangeAnimation   ]   = new TButtonGadget     (IDB_RANGEANI,     IDB_RANGEANI,       TButtonGadget::Exclusive,     false,  ManageRangeCursor == MRCAnimation ? TButtonGadget::Down : TButtonGadget::Up );
-ControlBarGadgets[ BaseSecondViewButtonSeparatorC       ]   = new TSeparatorGadget  (1);
-ControlBarGadgets[ BaseSecondViewButtonRangeStepInc     ]   = new TButtonGadget     (IDB_RGESTEPINC,   IDB_RGESTEPINC,     TButtonGadget::Command);
-ControlBarGadgets[ BaseSecondViewButtonRangeStepDec     ]   = new TButtonGadget     (IDB_RGESTEPDEC,   IDB_RGESTEPDEC,     TButtonGadget::Command);
+ControlBarGadgets[ BaseSecondViewButtonSeparatorA       ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ BaseSecondViewButtonSyncViews        ]   = new TButtonGadgetDpi ( IDB_SYNCVIEWS,     IDB_SYNCVIEWS,      TButtonGadget::Command);
+
+ControlBarGadgets[ BaseSecondViewButtonSeparatorB       ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ BaseSecondViewButtonRangeAverage     ]   = new TButtonGadgetDpi ( IDB_RANGEAVE,      IDB_RANGEAVE,       TButtonGadget::Exclusive,     false,  ManageRangeCursor == MRCAverage ? TButtonGadget::Down : TButtonGadget::Up );
+ControlBarGadgets[ BaseSecondViewButtonRangeSequence    ]   = new TButtonGadgetDpi ( IDB_RANGESEQ,      IDB_RANGESEQ,       TButtonGadget::Exclusive,     false,  IsMRCSequence () ? TButtonGadget::Down : TButtonGadget::Up );
+ControlBarGadgets[ BaseSecondViewButtonRangeAnimation   ]   = new TButtonGadgetDpi ( IDB_RANGEANI,      IDB_RANGEANI,       TButtonGadget::Exclusive,     false,  ManageRangeCursor == MRCAnimation ? TButtonGadget::Down : TButtonGadget::Up );
+
+ControlBarGadgets[ BaseSecondViewButtonSeparatorC       ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ BaseSecondViewButtonRangeStepInc     ]   = new TButtonGadgetDpi ( IDB_RGESTEPINC,    IDB_RGESTEPINC,     TButtonGadget::Command);
+ControlBarGadgets[ BaseSecondViewButtonRangeStepDec     ]   = new TButtonGadgetDpi ( IDB_RGESTEPDEC,    IDB_RGESTEPDEC,     TButtonGadget::Command);
 }
 
 

@@ -176,12 +176,13 @@ ControlBarGadgets   = new TGadget * [SPGLVIEW_CBG_NUM];
 
 CreateBaseGadgets ();
 
-ControlBarGadgets[SPGLVIEW_CBG_SEP1]            = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[SPGLVIEW_CBG_SHOWNAMES]       = new TButtonGadget(IDB_SOLPSHOWNAMES, IDB_SOLPSHOWNAMES, TButtonGadget::NonExclusive, true, ShowLabels ? TButtonGadget::Down : TButtonGadget::Up, false);
-ControlBarGadgets[SPGLVIEW_CBG_SEP2]            = new TSeparatorGadget( ButtonSeparatorWidth );
-ControlBarGadgets[SPGLVIEW_CBG_CUTPLANEX]       = new TButtonGadget(IDB_CUTPLANEX, IDB_CUTPLANEX, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
-ControlBarGadgets[SPGLVIEW_CBG_CUTPLANEY]       = new TButtonGadget(IDB_CUTPLANEY, IDB_CUTPLANEY, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
-ControlBarGadgets[SPGLVIEW_CBG_CUTPLANEZ]       = new TButtonGadget(IDB_CUTPLANEZ, IDB_CUTPLANEZ, TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
+ControlBarGadgets[ SPGLVIEW_CBG_SEP1        ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ SPGLVIEW_CBG_SHOWNAMES   ]   = new TButtonGadgetDpi ( IDB_SOLPSHOWNAMES, IDB_SOLPSHOWNAMES,  TButtonGadget::NonExclusive, true, ShowLabels ? TButtonGadget::Down : TButtonGadget::Up, false);
+
+ControlBarGadgets[ SPGLVIEW_CBG_SEP2        ]   = new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ SPGLVIEW_CBG_CUTPLANEX   ]   = new TButtonGadgetDpi ( IDB_CUTPLANEX,     IDB_CUTPLANEX,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
+ControlBarGadgets[ SPGLVIEW_CBG_CUTPLANEY   ]   = new TButtonGadgetDpi ( IDB_CUTPLANEY,     IDB_CUTPLANEY,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
+ControlBarGadgets[ SPGLVIEW_CBG_CUTPLANEZ   ]   = new TButtonGadgetDpi ( IDB_CUTPLANEZ,     IDB_CUTPLANEZ,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
 
 if ( ! ValidView() )
     NotOK();                            // do not create the window (cancel from doc)
