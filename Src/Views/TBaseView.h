@@ -361,7 +361,7 @@ enum    {
         };
 
                                         // Separators are rescaled by the same integer ratio as the other Button Gadgets
-#define             DefaultSeparator            10 * RescaleButtonDpi (), 0, true
+#define             DefaultSeparator            6 * RescaleButtonDpi (), 0, true
 
                                         // Deriving class to make it dpi-aware
 class   TButtonGadgetDpi    :   public  owl::TButtonGadget

@@ -957,11 +957,11 @@ if ( ! isderived ) {
 
     ControlBarGadgets[ EEGGLVIEW_CBG_SEP3               ]= new TSeparatorGadget ( DefaultSeparator );
     ControlBarGadgets[ EEGGLVIEW_CBG_DISPLAYINTENSITY   ]= new TButtonGadgetDpi ( IDB_DISPLAYINTENSITY,     IDB_DISPLAYINTENSITY,   TButtonGadget::Command );
-    ControlBarGadgets[ EEGGLVIEW_CBG_NEXTROI            ]= new TButtonGadgetDpi ( IDB_NEXTROI,              IDB_NEXTROI,            TButtonGadget::NonExclusive, true, IsRoiMode ()       ? TButtonGadget::Down : TButtonGadget::Up, false );
-    ControlBarGadgets[ EEGGLVIEW_CBG_AVERAGEROIS        ]= new TButtonGadgetDpi ( IDB_AVERAGEROIS,          IDB_AVERAGEROIS,        TButtonGadget::NonExclusive, true, AverageRois     ? TButtonGadget::Down : TButtonGadget::Up, false );
+    ControlBarGadgets[ EEGGLVIEW_CBG_NEXTROI            ]= new TButtonGadgetDpi ( IDB_NEXTROI,              IDB_NEXTROI,            TButtonGadget::NonExclusive, true, IsRoiMode () ? TButtonGadget::Down : TButtonGadget::Up, false );
+    ControlBarGadgets[ EEGGLVIEW_CBG_AVERAGEROIS        ]= new TButtonGadgetDpi ( IDB_AVERAGEROIS,          IDB_AVERAGEROIS,        TButtonGadget::NonExclusive, true, AverageRois  ? TButtonGadget::Down : TButtonGadget::Up, false );
                                                                                   
     ControlBarGadgets[ EEGGLVIEW_CBG_SEP3A              ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_SHOWTAGS           ]= new TButtonGadgetDpi ( IDB_SHOWMARKERS,          IDB_SHOWMARKERS,        TButtonGadget::NonExclusive, true, ShowTags ? TButtonGadget::Down : TButtonGadget::Up, false );
+    ControlBarGadgets[ EEGGLVIEW_CBG_SHOWTAGS           ]= new TButtonGadgetDpi ( IDB_SHOWMARKERS,          IDB_SHOWMARKERS,        TButtonGadget::NonExclusive, true, ShowTags     ? TButtonGadget::Down : TButtonGadget::Up, false );
     ControlBarGadgets[ EEGGLVIEW_CBG_PREVMARKER         ]= new TButtonGadgetDpi ( IDB_PREVMARKER,           IDB_PREVMARKER,         TButtonGadget::Command);
     ControlBarGadgets[ EEGGLVIEW_CBG_NEXTMARKER         ]= new TButtonGadgetDpi ( IDB_NEXTMARKER,           IDB_NEXTMARKER,         TButtonGadget::Command);
     ControlBarGadgets[ EEGGLVIEW_CBG_ADDMARKER          ]= new TButtonGadgetDpi ( IDB_ADDMARKER,            IDB_ADDMARKER,          TButtonGadget::Command);
