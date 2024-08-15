@@ -40,14 +40,6 @@ inline  int     GetWindowHeight     ( const owl::TWindow* window )              
 inline  int     GetWindowMinSide    ( const owl::TWindow* window )                                              { return  window ? min ( GetWindowWidth ( window ), GetWindowHeight ( window ) ) : 0; }
 
                                                                                                                                                   
-inline  int     GetWindowDpi        ( const owl::TWindow* window = 0 )                                          { return  window && window->Handle  ? GetDpiForWindow ( window->Handle ) : GetDpiForSystem ();  }   // current window dpi, or system dpi as a fallback
-inline  double  GetWindowDpmm       ( const owl::TWindow* window = 0 )                                          { return  crtl::GetWindowDpi ( window ) / 25.4;                 }   // returns a floating point, due to rescaling
-
-inline  double  MmToPixels          ( const owl::TWindow* window, double mm     )                               { return  mm     * ( GetWindowDpmm ( window ) * 0.96 );         }   // not sure why it needs this adjustment - to be checked on other screens
-inline  double  PixelsToMm          ( const owl::TWindow* window, int    pixels )                               { return  pixels / ( GetWindowDpmm ( window ) * 0.96 );         }
-
-inline  double  RescaleSizeDpi      ( const owl::TWindow* window )                                              { return  crtl::GetWindowDpi ( window ) / (double) USER_DEFAULT_SCREEN_DPI; }   // Rescale default 96 dpi pixel size into an equivalent pixel size of any arbitrary dpi
-inline  int     RescaleButtonDpi    ( const owl::TWindow* window = 0 )                                          { return  Round ( crtl::RescaleSizeDpi ( window ) );            }   // Buttons need to be rescaled by integer increments so as to preserve their "pixel-art" aspect
 inline owl::TDib*   RescaleDIB      ( const owl::TWindow* window, int resid, double scalingfactor );
 
                                         // Setting position and size                                            

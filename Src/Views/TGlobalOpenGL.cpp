@@ -31,8 +31,8 @@ namespace crtl {
 TGLPixelFormat      TGlobalOpenGL::GLpfd;
 //TGLRenderingContext TGlobalOpenGL::GLrc;  // static
 
-TGLBitmapFont*      TGlobalOpenGL::SFont                = new TGLBitmapFont ( SmallFontParameters );
-TGLBitmapFont*      TGlobalOpenGL::BFont                = new TGLBitmapFont ( BigFontParameters   );
+TGLBitmapFont*      TGlobalOpenGL::SFont                = 0;
+TGLBitmapFont*      TGlobalOpenGL::BFont                = 0;
 
 TGLBillboardSphere  TGlobalOpenGL::BbLowSphere  ( BbSphereLowNumRounds,  BbSphereLowNumSlices );
 TGLBillboardSphere  TGlobalOpenGL::BbHighSphere ( BbSphereHighNumRounds, BbSphereHighNumSlices );
@@ -52,6 +52,12 @@ GLint               TGlobalOpenGL::ViewportMaxSize[ 2 ] = { 0, 0 };
                                         // Although this class can be inherited from multiple windows, it needs this initialization only once
 if ( IsOpen () )
     return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SFont   = new TGLBitmapFont ( SmallFontParameters );
+BFont   = new TGLBitmapFont ( BigFontParameters   );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

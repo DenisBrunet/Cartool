@@ -18,10 +18,10 @@ limitations under the License.
 
 #include    <owl/docview.h>             // vnCustomBase
 
-namespace crtl {
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+namespace crtl {
                                         // Adding some custom signals Id's and types of handlers for the Doc <-> View communication
 
 using   OwlNotifyIdType = const owl::uint;          // just for the sake of clarity, this is the type used by owl::vnCustomBase

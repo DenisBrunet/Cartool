@@ -91,7 +91,7 @@ if ( ResId ) {
                                         // Flat rendering looks less cluttered
     GetGadgetWindow ()->EnableFlatStyle ();
 
-    TDib*               glyph           = crtl::RescaleDIB ( GetGadgetWindow (), ResId.GetInt (), RescaleButtonDpi ( GetGadgetWindow () ) );
+    TDib*               glyph           = crtl::RescaleDIB ( GetGadgetWindow (), ResId.GetInt (), CartoolObjects.CartoolApplication->RescaleButtonActualDpi () );
 
     glyph->MapUIColors  ( TDib::MapFace 
                         | TDib::MapText 

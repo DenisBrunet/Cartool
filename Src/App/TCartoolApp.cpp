@@ -177,6 +177,8 @@ DEFINE_RESPONSE_TABLE2( TCartoolApp, TRecentFiles, TApplication )
 //  EV_COMMAND          ( CM_HELPUSING,                 CmHelpUsing),
 
     EV_WM_DROPFILES,
+    EV_WM_DISPLAYCHANGE,
+
     EV_REGISTERED       ( MruFileMessage,               CmFileSelected ),
 
     EV_OWLDOCUMENT      ( dnCreate,                     EvOwlDocument ),    // documents
@@ -252,6 +254,13 @@ PrefGraphicAccel        = FormatDontUse;
 
 ClearString ( Title,       MaxAppTitleLength );
 ClearString ( TitlePrefix, MaxAppTitleLength );
+
+MaxScreenWidth      = 0;
+MaxScreenHeight     = 0;
+ScreenWidth         = 0;
+ScreenHeight        = 0;
+MonitorDpi          = USER_DEFAULT_SCREEN_DPI;
+ActualDpi           = MonitorDpi;
 
 nCmdShow            = SW_SHOWMAXIMIZED; // default, which can be overriden with options
 
@@ -474,11 +483,74 @@ ApxHarbor->Insert ( *ControlBar, alTop );
 
 
 //----------------------------------------------------------------------------
+void    TCartoolApp::InitScreen ()
+{
+//DBGM ( BoolToString ( IsProcessDPIAware () ), "IsProcessDPIAware" );
+
+//DPI_AWARENESS_CONTEXT value;
+//GetAwarenessFromDpiAwarenessContext ( value );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Retrieve current monitor
+HMONITOR            monitor         = MonitorFromWindow ( CartoolMdiClient->GetHandle (), MONITOR_DEFAULTTONEAREST );
+
+MONITORINFOEX       monitoinfo      = { 0 };
+monitoinfo.cbSize     = sizeof ( MONITORINFOEX );
+
+GetMonitorInfo ( monitor, &monitoinfo );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Max resolution of current monitor
+DEVMODE             devmode         = { 0 };
+devmode.dmSize  = sizeof ( DEVMODE );
+
+if ( MaxScreenWidth == 0 ) {
+
+    for ( int dmi = 0; EnumDisplaySettings ( /*NULL*/ monitoinfo.szDevice, dmi, &devmode ) != 0; dmi++ ) {
+
+        Maxed ( MaxScreenWidth,  (int) devmode.dmPelsWidth  );
+        Maxed ( MaxScreenHeight, (int) devmode.dmPelsHeight );
+        }
+
+    //DBGV2 ( MaxScreenWidth, MaxScreenHeight, "MaxScreenWidth, MaxScreenHeight" );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Get current screen resolution
+//ScreenWidth   = GetSystemMetrics ( SM_CXSCREEN );
+//ScreenHeight  = GetSystemMetrics ( SM_CYSCREEN );
+//ScreenWidth   = GetSystemMetricsForDpi ( SM_CXSCREEN, GetWindowDpi () );
+//ScreenHeight  = GetSystemMetricsForDpi ( SM_CYSCREEN, GetWindowDpi () );
+
+EnumDisplaySettings ( monitoinfo.szDevice, ENUM_REGISTRY_SETTINGS /*ENUM_CURRENT_SETTINGS*/, &devmode );
+ScreenWidth     = devmode.dmPelsWidth;
+ScreenHeight    = devmode.dmPelsHeight;
+
+//DBGV2 ( ScreenWidth, ScreenHeight, "ScreenWidth, ScreenHeight" );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Compute effective DPI for a rescaled display
+double              dpiratiox       = ScreenWidth  / (double) MaxScreenWidth;
+double              dpiratioy       = ScreenHeight / (double) MaxScreenHeight;
+double              dpiratio        = max ( dpiratiox, dpiratioy ); // Actual resolution always fit the max dimension
+
+MonitorDpi          = GetWindowDpi ( CartoolMdiClient );
+ActualDpi           = MonitorDpi * dpiratio;
+
+//DBGV3 ( MonitorDpi, dpiratio, ActualDpi, "MonitorDpi, dpiratio -> ActualDpi" );
+}
+
+
+//----------------------------------------------------------------------------
 void    TCartoolApp::CreateSplashScreen ()
 {
                                         // Splash screen will delete itself when timer runs off - no need to keep track of it
-Splash  = new TCartoolSplashWindow  (   *unique_ptr<TDib> ( new TDib ( 0, TResId ( IDB_SPLASH ) ) ),                                                    // Not rescaling DIB
-                                     // *unique_ptr<TDib> ( crtl::RescaleDIB ( CartoolMdiClient, IDB_SPLASH, RescaleSizeDpi ( CartoolMdiClient ) ) ),   // Rescaling DIB
+Splash  = new TCartoolSplashWindow  (   *unique_ptr<TDib> ( new TDib ( 0, TResId ( IDB_SPLASH ) ) ),                                        // Not rescaling DIB
+                                     // *unique_ptr<TDib> ( crtl::RescaleDIB ( CartoolMdiClient, IDB_SPLASH, RescaleSizeActualDpi () ) ),   // Rescaling DIB
                                         0,  0,  TSplashWindow::ShrinkToFit,
                                         2.5 * 1000,
                                         0 /*DefaultTitle*/, // putting a title will mess up with the whole size...
@@ -517,17 +589,14 @@ CartoolMainWindow->Attr.Style &= ~(WS_CHILD);
                                         // Enable application to accept Drag & Drop'ped files - Individual windows then also needs some more flags...
 CartoolMainWindow->Attr.ExStyle |= WS_EX_ACCEPTFILES;
 
-                                        // Full HD outer window size - Note it is not aware of any screen rescaling, which didn't exist back in the day
-int             screenwidth     = GetSystemMetrics ( SM_CXSCREEN );
-int             screenheight    = GetSystemMetrics ( SM_CYSCREEN );
-//int           screenwidthdpi  = GetSystemMetricsForDpi ( SM_CXSCREEN, GetWindowDpi () );
-//int           screenheightdpi = GetSystemMetricsForDpi ( SM_CYSCREEN, GetWindowDpi () );
 
+InitScreen ();
 
-CartoolMainWindow->Attr.W       = (int) ( screenwidth  * 0.50 );
-CartoolMainWindow->Attr.H       = (int) ( screenheight * 0.75 );
-CartoolMainWindow->Attr.X       = AtLeast ( 0, ( screenwidth  - GetWindowWidth  ( CartoolMainWindow ) ) / 2 );
-CartoolMainWindow->Attr.Y       = AtLeast ( 0, ( screenheight - GetWindowHeight ( CartoolMainWindow ) ) / 2 );
+                                        // Un-maximized default size
+CartoolMainWindow->Attr.W       = (int) ( ScreenWidth  * 0.50 );
+CartoolMainWindow->Attr.H       = (int) ( ScreenHeight * 0.75 );
+CartoolMainWindow->Attr.X       = AtLeast ( 0, ( ScreenWidth  - GetWindowWidth  ( CartoolMainWindow ) ) / 2 );
+CartoolMainWindow->Attr.Y       = AtLeast ( 0, ( ScreenHeight - GetWindowHeight ( CartoolMainWindow ) ) / 2 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1376,6 +1445,17 @@ if ( typeid ( *towin ) == typeid ( TCartoolMdiChild ) )
 
                                         // try converting into a TBaseView
 return  dynamic_cast<TBaseView *> ( towin );
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Screen resolution has changed
+void    TCartoolApp::EvDisplayChange   ( uint, uint resx, uint resy )
+{
+//ScreenWidth     = resx;
+//ScreenHeight    = resy;
+                                        // Will update everything for us
+InitScreen ();
 }
 
 

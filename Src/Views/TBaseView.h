@@ -70,7 +70,7 @@ constexpr double    MoreWidthRatio              = 1.20;
 #define             SmallWindowWidth            Round ( MmToPixels ( 40 ) )
 
                                         // Common scale from which all window sizes will be derived
-#define             DefaultWindowSize           Round ( crtl::MmToPixels ( this, 100 ) )
+#define             DefaultWindowSize           Round ( CartoolApplication->MmToPixels ( 100 ) )
 
 #define             MRIWindowSizeW              DefaultWindowSize
 #define             MRIWindowSizeH              DefaultWindowSize
@@ -177,8 +177,8 @@ constexpr int       BbSphereHighNumSlices       = 40;
 
 //----------------------------------------------------------------------------
                                         // Cartool makes use of 2 different fonts
-#define             SmallFontParameters         "Tahoma",  Round ( crtl::MmToPixels ( 0, 3.4 ) ), 0, 0, 0, FW_BOLD
-#define             BigFontParameters           "Verdana", Round ( crtl::MmToPixels ( 0, 4.6 ) ), 0, 0, 0, FW_NORMAL
+#define             SmallFontParameters         "Tahoma",  Round ( CartoolObjects.CartoolApplication->MmToPixels ( 3.4 ) ), 0, 0, 0, FW_BOLD
+#define             BigFontParameters           "Verdana", Round ( CartoolObjects.CartoolApplication->MmToPixels ( 4.6 ) ), 0, 0, 0, FW_NORMAL
 
 
 //----------------------------------------------------------------------------
@@ -361,7 +361,8 @@ enum    {
         };
 
                                         // Separators are rescaled by the same integer ratio as the other Button Gadgets
-#define             DefaultSeparator            6 * RescaleButtonDpi (), 0, true
+//#define             DefaultSeparator            6 * RescaleButtonDpi (), 0, true
+#define             DefaultSeparator            6 * CartoolApplication->RescaleSizeActualDpi (), 0, true
 
                                         // Deriving class to make it dpi-aware
 class   TButtonGadgetDpi    :   public  owl::TButtonGadget
@@ -438,9 +439,9 @@ public:
     int                     GetWindowWidth      ()                                          const   { return crtl::GetWindowWidth   ( GetParentO () ); }
     int                     GetWindowHeight     ()                                          const   { return crtl::GetWindowHeight  ( GetParentO () ); }
 
-    int                     GetWindowDpi        ()                                          const   { return crtl::GetWindowDpi     ( GetParentO () ); }
-    double                  MmToPixels          ( double mm     )                           const   { return crtl::MmToPixels       ( GetParentO (), mm     );  }
-    double                  PixelsToMm          ( int    pixels )                           const   { return crtl::PixelsToMm       ( GetParentO (), pixels );  }
+    int                     GetActualDpi        ()                                          const   { return CartoolApplication->GetActualDpi   (); }
+    double                  MmToPixels          ( double mm     )                           const   { return CartoolApplication->MmToPixels     ( mm     );  }
+    double                  PixelsToMm          ( int    pixels )                           const   { return CartoolApplication->PixelsToMm     ( pixels );  }
 
 
     void                    CaptureMouse        ( CaptureMouseEnum how );

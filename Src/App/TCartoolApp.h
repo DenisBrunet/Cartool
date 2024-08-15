@@ -146,6 +146,7 @@ public:
 
     void            InitMainWindow      ();
     void            InitInstance        ();
+    void            InitScreen          ();
     bool            CanClose            ();
     bool            ProcessAppMsg       ( MSG& msg );
 
@@ -177,6 +178,15 @@ public:
     void            WindowSetPosition   ( int left, int top, int width, int height )const   { crtl::WindowSetPosition ( CartoolMainWindow, left, top, width, height ); }
     void            WindowSetGaugeSize  ()                                          const   { WindowRestore (); WindowSetSize ( 600 /*2.5 * GaugeWidth*/, 240 /*7 * GaugeHeight*/ ); }
 
+
+    int             GetWindowDpi        ( const owl::TWindow* window = 0 )          const   { return  window && window->Handle  ? GetDpiForWindow ( window->Handle ) : GetDpiForSystem ();  }   // current window dpi, or system dpi as a fallback
+    double          GetActualDpi        ()                                          const   { return  ActualDpi;                                            }
+    double          GetActualDpmm       ()                                          const   { return  ActualDpi / 25.4;                                     }   // returns a floating point, due to rescaling
+    double          RescaleSizeActualDpi()                                          const   { return  GetActualDpi () / (double) USER_DEFAULT_SCREEN_DPI;   }   // Rescale default 96 dpi pixel size into an equivalent pixel size of any arbitrary dpi
+    int             RescaleButtonActualDpi()                                        const   { return  Round ( RescaleSizeActualDpi () );                    }   // Buttons need to be rescaled by integer increments so as to preserve their "pixel-art" aspect
+    double          MmToPixels          ( double mm     )                           const   { return  mm     * ( GetActualDpmm () * 0.96 );                 }   // not sure why it needs this adjustment - to be checked on other screens
+    double          PixelsToMm          ( int    pixels )                           const   { return  pixels / ( GetActualDpmm () * 0.96 );                 }
+
                                         // for long batch processing, call these to set/reset temporary main window title (instead of plain Cartool) 
     void            SetMainTitle        ( const char* title, const char* path = 0 );
     void            SetMainTitle        ( const char* prestring, const char* path, TSuperGauge& gauge );
@@ -188,6 +198,14 @@ protected:
     char            Title       [ MaxAppTitleLength ]; // What is the actual length in Windows?
     char            TitlePrefix [ MaxAppTitleLength ];
 
+                                        // Screen & dpi
+    int             MaxScreenWidth;
+    int             MaxScreenHeight;
+    int             ScreenWidth;
+    int             ScreenHeight;
+    double          MonitorDpi;
+    double          ActualDpi;
+
 
     void            CmHelpAbout         ();
     void            CmHelpContents      ( owlwparam w );
@@ -197,6 +215,8 @@ protected:
     void            EvCloseView         ( owl::TView&       view );
     void            EvOwlDocument       ( owl::TDocument&   doc );
     LRESULT         CmFileSelected      ( WPARAM wp, LPARAM lp );
+
+    void            EvDisplayChange     ( owl::uint bbp, owl::uint resx, owl::uint resy );
 
 
     void            RetrievePreferences                 ();     // reads the Registry, then stores the results internally
