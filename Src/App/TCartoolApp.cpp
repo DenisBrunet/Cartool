@@ -1456,6 +1456,20 @@ void    TCartoolApp::EvDisplayChange   ( uint, uint resx, uint resy )
 //ScreenHeight    = resy;
                                         // Will update everything for us
 InitScreen ();
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Update font sizes
+delete  TGlobalOpenGL::SFont;
+delete  TGlobalOpenGL::BFont;
+
+TGlobalOpenGL::SFont    = new TGLBitmapFont ( SmallFontParameters );
+TGlobalOpenGL::BFont    = new TGLBitmapFont ( BigFontParameters   );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Refresh all windows
+CartoolMdiClient->RefreshWindows ();
 }
 
 
