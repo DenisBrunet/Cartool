@@ -85,6 +85,8 @@ public:
     static const char*      StaticName              ()                      { return "&Potentials Display"; }
     const char*             GetViewName             ()                      { return StaticName(); }
 
+    void                    CreateGadgets           ();
+
 
     bool                    VnNewTFCursor           ( TTFCursor *tfcursor );
     bool                    VnReloadData            ( int what );

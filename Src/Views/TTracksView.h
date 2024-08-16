@@ -291,6 +291,8 @@ public:
     const char*         GetViewName             ()  const   { return StaticName(); }
     bool                CanClose                ();
 
+    void                CreateGadgets           ();
+
 
     TElectrodesDoc*     XYZDoc;
     int                 CurrXyz;

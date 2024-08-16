@@ -38,6 +38,8 @@ public:
     static const char*  StaticName          ()          { return "&ROIs Display"; }
     const char*         GetViewName         ()          { return StaticName(); }
 
+    void                CreateGadgets       ();
+
     void                GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane );
 
 

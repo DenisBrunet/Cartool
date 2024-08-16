@@ -61,10 +61,6 @@ StandSize   = TSize ( crtl::GetWindowWidth ( this ), crtl::GetWindowHeight ( thi
 
 SetViewMenu ( new TMenuDescr ( IDM_ROI ) );
 
-NumControlBarGadgets    = ROISGLVIEW_CBG_NUM;
-ControlBarGadgets       = new TGadget * [ ROISGLVIEW_CBG_NUM ];
-
-CreateBaseGadgets ();
 
 BackColor.Set ( 0, GLBASE_BACKCOLOR_PRINTING );
 BackColor.Set ( 1, GLBASE_BACKCOLOR_PRINTING );
@@ -72,6 +68,16 @@ BackColor.Set ( 1, GLBASE_BACKCOLOR_PRINTING );
 
 if ( ! ValidView () )
     NotOK();                // do not create the window (cancel from doc)
+}
+
+
+//----------------------------------------------------------------------------
+void    TRoisView::CreateGadgets ()
+{
+NumControlBarGadgets    = ROISGLVIEW_CBG_NUM;
+ControlBarGadgets       = new TGadget * [ NumControlBarGadgets ];
+
+CreateBaseGadgets ();
 }
 
 

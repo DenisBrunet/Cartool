@@ -115,6 +115,8 @@ public:
     static const char*  StaticName      ()              { return "&Frequency Display"; }
     const char*         GetViewName     ()              { return StaticName(); }
 
+    void                CreateGadgets   ();
+
 
     TFreqDoc*       GetFreqDoc          ()              { return FreqDoc; }
     void            UpdateCaption       ();   // with time of cursor

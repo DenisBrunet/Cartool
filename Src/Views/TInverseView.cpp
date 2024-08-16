@@ -380,9 +380,14 @@ StandSize   = TSize ( InverseWindowSizeW, InverseWindowSizeH );
 
 
 SetViewMenu ( new TMenuDescr ( IDM_INVERSE ) );
+}
 
+
+//----------------------------------------------------------------------------
+void    TInverseView::CreateGadgets ()
+{
 NumControlBarGadgets    = INVERSE_CBG_NUM;
-ControlBarGadgets       = new TGadget * [INVERSE_CBG_NUM];
+ControlBarGadgets       = new TGadget * [ NumControlBarGadgets ];
 
 CreateBaseGadgets ();
 

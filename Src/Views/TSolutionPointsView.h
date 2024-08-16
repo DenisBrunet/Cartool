@@ -44,6 +44,8 @@ public:
     static const char*          StaticName          ()                          { return "&Solution Points"; }
     const char*                 GetViewName         ()                  const   { return StaticName (); }
 
+    void                        CreateGadgets       ();
+
 
     TSolutionPointsDoc*         GetSPDoc            ()                          { return SPDoc; }
     void                        GetHighlighted      ( TSelection* s )   const   { s->Copy ( 0, SPDoc->GetNumSolPoints() - 1, &Highlighted ); }

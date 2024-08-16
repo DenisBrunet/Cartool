@@ -169,10 +169,19 @@ RenderingMode           = LayoutOnePage;
                                         // signed: FreqDoc->IsFreqTypeFFTApproximation () || FreqDoc->GetFreqType () == FreqUnknown
 SetColorTable ( FreqDoc->GetAtomType ( AtomTypeUseCurrent ) );
 
+                                        // re-use EEG menu, as it is mainly the same, thus avoiding tedious updates in both
+SetViewMenu ( new TMenuDescr (IDM_EEG) );
+                                        // then add my local stuff
+GetViewMenu ()->InsertMenu ( CM_EEGVOIDFILLING, MF_BYCOMMAND, CM_FREQ3DTEXT,        "Show/hide last di&mension info" );
+GetViewMenu ()->InsertMenu ( CM_EEGSETOFFSET,   MF_BYCOMMAND, CM_FREQRESETSCALING,  "Reset frequency &normalization" );
+}
 
 
+//----------------------------------------------------------------------------
+void    TFrequenciesView::CreateGadgets ()
+{
 NumControlBarGadgets    = FREQGLVIEW_CBG_NUM;
-ControlBarGadgets       = new TGadget * [FREQGLVIEW_CBG_NUM];
+ControlBarGadgets       = new TGadget * [ NumControlBarGadgets ];
 
 CreateBaseGadgets ();
 
@@ -236,13 +245,6 @@ ControlBarGadgets[ FREQGLVIEW_CBG_INCCR             ]   = new TButtonGadgetDpi (
 ControlBarGadgets[ FREQGLVIEW_CBG_SEP11             ]   = new TSeparatorGadget ( DefaultSeparator );
 ControlBarGadgets[ FREQGLVIEW_CBG_FXDSCL            ]   = new TButtonGadgetDpi ( IDB_FIXEDSCALE,             IDB_FIXEDSCALE,             TButtonGadget::NonExclusive, true, ScalingAuto ? TButtonGadget::Down : TButtonGadget::Up );
 ControlBarGadgets[ FREQGLVIEW_CBG_COLOR             ]   = new TButtonGadgetDpi ( IDB_SPCOLOR,                IDB_SPCOLOR,                TButtonGadget::Command);
-
-
-                                        // re-use EEG menu, as it is mainly the same, thus avoiding tedious updates in both
-SetViewMenu ( new TMenuDescr (IDM_EEG) );
-                                        // then add my local stuff
-GetViewMenu ()->InsertMenu ( CM_EEGVOIDFILLING, MF_BYCOMMAND, CM_FREQ3DTEXT,        "Show/hide last di&mension info" );
-GetViewMenu ()->InsertMenu ( CM_EEGSETOFFSET,   MF_BYCOMMAND, CM_FREQRESETSCALING,  "Reset frequency &normalization" );
 }
 
 

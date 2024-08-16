@@ -168,6 +168,8 @@ public:
     static const char*          StaticName          ()              { return "&Volume Display"; }
     const char*                 GetViewName         ()              { return StaticName(); }
 
+    void                        CreateGadgets       ();
+
 
     TVolumeDoc *                GetMRIDoc           ()              { return MRIDoc; }
 

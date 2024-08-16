@@ -453,8 +453,10 @@ public:
 
     int                     NumControlBarGadgets;
     owl::TGadget**          ControlBarGadgets;  // pointers to local gadgets
-    void                    ButtonGadgetSetState ( owl::TGadget *tog, bool down );
-    void                    ButtonGadgetSetState ( int Id, bool down );
+    virtual void            CreateGadgets       ()                      = 0;
+    virtual void            DestroyGadgets      ();
+    void                    ButtonGadgetSetState( owl::TGadget *tog, bool down );
+    void                    ButtonGadgetSetState( int Id, bool down );
 
                                         // Cartool
     void                    SetStandSize        ()                              { EvSize ( 0 , StandSize ); }

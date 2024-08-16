@@ -76,10 +76,14 @@ SetViewMenu ( new TMenuDescr ( IDM_LM ) );
 
 BackColor.Set ( 0, GLBASE_BACKCOLOR_PRINTING );
 BackColor.Set ( 1, GLBASE_BACKCOLOR_PRINTING );
+}
 
 
+//----------------------------------------------------------------------------
+void    TLinkManyView::CreateGadgets ()
+{
 NumControlBarGadgets    = LMVIEW_CBG_NUM;
-ControlBarGadgets       = new TGadget* [ NumControlBarGadgets ];
+ControlBarGadgets       = new TGadget * [ NumControlBarGadgets ];
 
 CreateBaseGadgets ();
 

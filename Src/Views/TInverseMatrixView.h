@@ -40,6 +40,8 @@ public:
     static const char*  StaticName              ()          { return "Inverse &Matrix"; }
     const char*         GetViewName             ()          { return StaticName(); }
 
+    void                CreateGadgets           ();
+
 
     void                GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane );
 

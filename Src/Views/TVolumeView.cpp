@@ -444,13 +444,20 @@ StandSize   = TSize ( MRIWindowSizeW, MRIWindowSizeH );
 
 
 SetViewMenu ( new TMenuDescr ( IDM_MRI ) );
+                                                                               
+
+if ( ! ValidView () )
+    NotOK();                // do not create the window (cancel from doc)
+}
 
 
+//----------------------------------------------------------------------------
+void    TVolumeView::CreateGadgets ()
+{
 NumControlBarGadgets    = MRIGLVIEW_CBG_NUM;
-ControlBarGadgets       = new TGadget * [MRIGLVIEW_CBG_NUM];
+ControlBarGadgets       = new TGadget * [ NumControlBarGadgets ];
 
 CreateBaseGadgets ();
-
 
 ControlBarGadgets[ MRIGLVIEW_CBG_SEP1               ]   = new TSeparatorGadget ( DefaultSeparator );
 ControlBarGadgets[ MRIGLVIEW_CBG_ISOMANUAL          ]   = new TButtonGadgetDpi ( IDB_ISOMANUAL,             IDB_ISOMANUAL,          TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
@@ -485,10 +492,6 @@ ControlBarGadgets[ MRIGLVIEW_CBG_INCCR              ]   = new TButtonGadgetDpi (
 ControlBarGadgets[ MRIGLVIEW_CBG_SEP5               ]   = new TSeparatorGadget ( DefaultSeparator );
 ControlBarGadgets[ MRIGLVIEW_CBG_FXDSCL             ]   = new TButtonGadgetDpi ( IDB_FIXEDSCALE,            IDB_FIXEDSCALE,         TButtonGadget::NonExclusive);
 ControlBarGadgets[ MRIGLVIEW_CBG_COLOR              ]   = new TButtonGadgetDpi ( IDB_SPCOLOR,               IDB_SPCOLOR,            TButtonGadget::Command);
-                                                                               
-
-if ( ! ValidView () )
-    NotOK();                // do not create the window (cancel from doc)
 }
 
 

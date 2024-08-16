@@ -180,6 +180,8 @@ BumpNextViewId ();                      // in case the program creates views its
 
 ControlBarGadgets       = 0;
 NumControlBarGadgets    = 0;
+
+
 LinkedViewId            = 0;
 
 
@@ -270,6 +272,7 @@ OriginRadius    = 0;
 }
 
 
+//----------------------------------------------------------------------------
         TBaseView::~TBaseView ()
 {
 if ( MouseDC ) {
@@ -286,18 +289,8 @@ BaseDoc->NotifyViews ( vnViewDestroyed, (TParam2) this, this );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // remove from the control bar
-CartoolApplication->RemoveGadgets ();
 
-
-if ( NumControlBarGadgets > 0 && ControlBarGadgets ) {  
-                                        // then destroy the buttons
-    for ( int g = 0; g < NumControlBarGadgets; g++ )
-        delete ControlBarGadgets[ g ];
-
-    delete[]  ControlBarGadgets;
-    ControlBarGadgets   = 0;
-    }
+DestroyGadgets ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -336,6 +329,9 @@ void    TBaseView::SetupWindow ()
 {
 TWindowView::SetupWindow ();
 
+                                        // We can safely create buttons now
+CreateGadgets ();
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -362,6 +358,7 @@ AnimFx  = TTimer ( GetHandle () );
 }
 
 
+//----------------------------------------------------------------------------
 bool    TBaseView::SetDocTitle ( LPCTSTR /*docname*/, int /*index*/ )
 {
 GetParentO()->SetCaption ( /*BaseDoc->GetTitle()*/ Title ); // override with our own title
@@ -683,6 +680,26 @@ if ( GetCommandsCloning ()
 
                                         // default processing
 return  TWindowView::WindowProc ( msg, p1, p2 );
+}
+
+
+//----------------------------------------------------------------------------
+void    TBaseView::DestroyGadgets ()
+{
+if ( NumControlBarGadgets == 0 || ControlBarGadgets == 0 )
+    return;
+
+                                        // first remove from the control bar
+CartoolApplication->RemoveGadgets ();
+
+                                        // then actually destroy gadgets
+for ( int g = 0; g < NumControlBarGadgets; g++ )
+    delete  ControlBarGadgets[ g ];
+
+delete[]    ControlBarGadgets;
+
+ControlBarGadgets       = 0;
+NumControlBarGadgets    = 0;
 }
 
 

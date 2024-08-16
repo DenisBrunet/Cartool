@@ -62,10 +62,6 @@ StandSize   = TSize ( crtl::GetWindowWidth ( this ), crtl::GetWindowHeight ( thi
 
 SetViewMenu ( new TMenuDescr (IDM_IS) );
 
-NumControlBarGadgets    = ISGLVIEW_CBG_NUM;
-ControlBarGadgets       = new TGadget * [ISGLVIEW_CBG_NUM];
-
-CreateBaseGadgets ();
 
 BackColor.Set ( 0, GLBASE_BACKCOLOR_PRINTING );
 BackColor.Set ( 1, GLBASE_BACKCOLOR_PRINTING );
@@ -73,6 +69,16 @@ BackColor.Set ( 1, GLBASE_BACKCOLOR_PRINTING );
 
 if ( ! ValidView() )
     NotOK();                // do not create the window (cancel from doc)
+}
+
+
+//----------------------------------------------------------------------------
+void    TInverseMatrixView::CreateGadgets ()
+{
+NumControlBarGadgets    = ISGLVIEW_CBG_NUM;
+ControlBarGadgets       = new TGadget * [ NumControlBarGadgets ];
+
+CreateBaseGadgets ();
 }
 
 

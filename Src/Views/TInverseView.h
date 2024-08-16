@@ -192,6 +192,8 @@ public:
     static const char*      StaticName              ()                      { return "&Sources Localization"; }
     const char*             GetViewName             ()                      { return StaticName(); }
 
+    void                    CreateGadgets           ();
+
 
     void                    GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane );
     void                    HintsPaint              ();

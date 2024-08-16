@@ -52,6 +52,8 @@ public:
     static const char*  StaticName          ()  { return "LinkMany &Display"; }
     const char*         GetViewName         ()  { return StaticName(); }
 
+    void                CreateGadgets       ();
+
     void                SetupWindow         ();
     void                GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane );
 

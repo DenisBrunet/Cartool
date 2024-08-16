@@ -79,6 +79,8 @@ public:
     static const char*      StaticName          ()                          { return "&Electrodes Display"; }
     const char*             GetViewName         ()                  const   { return StaticName (); }
 
+    void                    CreateGadgets       ();
+
 
     TElectrodesDoc*         GetXYZDoc           ()                          { return XYZDoc; }
     void                    GetHighlighted      ( TSelection *s )   const   { s->Copy ( 0, XYZDoc->GetNumElectrodes() - 1, &Highlighted ); }

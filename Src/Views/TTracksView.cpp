@@ -950,76 +950,6 @@ ScrollBar              = new TTracksViewScrollbar ( this, this, IDB_HSCROLL, 0, 
 
 
 if ( ! isderived ) {
-    NumControlBarGadgets    = EEGGLVIEW_CBG_NUM;
-    ControlBarGadgets       = new TGadget * [EEGGLVIEW_CBG_NUM];
-
-    CreateBaseGadgets ();
-
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP3               ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_DISPLAYINTENSITY   ]= new TButtonGadgetDpi ( IDB_DISPLAYINTENSITY,     IDB_DISPLAYINTENSITY,   TButtonGadget::Command );
-    ControlBarGadgets[ EEGGLVIEW_CBG_NEXTROI            ]= new TButtonGadgetDpi ( IDB_NEXTROI,              IDB_NEXTROI,            TButtonGadget::NonExclusive, true, IsRoiMode () ? TButtonGadget::Down : TButtonGadget::Up, false );
-    ControlBarGadgets[ EEGGLVIEW_CBG_AVERAGEROIS        ]= new TButtonGadgetDpi ( IDB_AVERAGEROIS,          IDB_AVERAGEROIS,        TButtonGadget::NonExclusive, true, AverageRois  ? TButtonGadget::Down : TButtonGadget::Up, false );
-                                                                                  
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP3A              ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_SHOWTAGS           ]= new TButtonGadgetDpi ( IDB_SHOWMARKERS,          IDB_SHOWMARKERS,        TButtonGadget::NonExclusive, true, ShowTags     ? TButtonGadget::Down : TButtonGadget::Up, false );
-    ControlBarGadgets[ EEGGLVIEW_CBG_PREVMARKER         ]= new TButtonGadgetDpi ( IDB_PREVMARKER,           IDB_PREVMARKER,         TButtonGadget::Command);
-    ControlBarGadgets[ EEGGLVIEW_CBG_NEXTMARKER         ]= new TButtonGadgetDpi ( IDB_NEXTMARKER,           IDB_NEXTMARKER,         TButtonGadget::Command);
-    ControlBarGadgets[ EEGGLVIEW_CBG_ADDMARKER          ]= new TButtonGadgetDpi ( IDB_ADDMARKER,            IDB_ADDMARKER,          TButtonGadget::Command);
-                                                                                  
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP3B              ]= new TSeparatorGadget ( DefaultSeparator );
-  //ControlBarGadgets[ EEGGLVIEW_CBG_SYNCZERO           ]= new TButtonGadgetDpi ( IDB_SYNCZERO,             IDB_SYNCZERO,           TButtonGadget::Command);
-  //ControlBarGadgets[ EEGGLVIEW_CBG_SEP3C              ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_RNGCURS            ]= new TButtonGadgetDpi ( IDB_RANGECURSOR,          IDB_RANGECURSOR,        TButtonGadget::NonExclusive);
-                                                                                  
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP4               ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_UP                 ]= new TButtonGadgetDpi ( IDB_UP,                   IDB_UP,                 TButtonGadget::Command);
-    ControlBarGadgets[ EEGGLVIEW_CBG_DOWN               ]= new TButtonGadgetDpi ( IDB_DOWN,                 IDB_DOWN,               TButtonGadget::Command);
-    ControlBarGadgets[ EEGGLVIEW_CBG_NEXTSESSION        ]= new TButtonGadgetDpi ( IDB_NEXTSESSION,          CM_EEGNEXTSESSION,      TButtonGadget::Command);
-                                                                                  
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP5               ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_LESSTR             ]= new TButtonGadgetDpi ( IDB_LESSTRACKS,           IDB_LESSTRACKS,         TButtonGadget::Command);
-    ControlBarGadgets[ EEGGLVIEW_CBG_MORETR             ]= new TButtonGadgetDpi ( IDB_MORETRACKS,           IDB_MORETRACKS,         TButtonGadget::Command);
-    ControlBarGadgets[ EEGGLVIEW_CBG_LESSPSEUDOTRACKS   ]= new TButtonGadgetDpi ( IDB_LESSPSEUDOTRACKS,     IDB_LESSPSEUDOTRACKS,   TButtonGadget::Command);
-    ControlBarGadgets[ EEGGLVIEW_CBG_MOREPSEUDOTRACKS   ]= new TButtonGadgetDpi ( IDB_MOREPSEUDOTRACKS,     IDB_MOREPSEUDOTRACKS,   TButtonGadget::Command);
-
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP6               ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_TRSUPER            ]= new TButtonGadgetDpi ( IDB_TRACKSSUPER,          IDB_TRACKSSUPER,        TButtonGadget::NonExclusive);
-    ControlBarGadgets[ EEGGLVIEW_CBG_FLIPVERT           ]= new TButtonGadgetDpi ( IDB_FLIPVERT,             IDB_FLIPVERT,           TButtonGadget::NonExclusive);
-    ControlBarGadgets[ EEGGLVIEW_CBG_SHOWSD             ]= new TButtonGadgetDpi ( IDB_SHOWSD,               IDB_SHOWSD,             TButtonGadget::Command, true, TButtonGadget::Up);
-                                                                                  
-  //ControlBarGadgets[ EEGGLVIEW_CBG_SEP11              ]= new TSeparatorGadget ( DefaultSeparator );
-  //ControlBarGadgets[ EEGGLVIEW_CBG_STYLEW             ]= new TButtonGadgetDpi ( IDB_STYLEWINDOW,          IDB_STYLEWINDOW,        TButtonGadget::Command);
-  //ControlBarGadgets[ EEGGLVIEW_CBG_SPLITWINDOW        ]= new TButtonGadgetDpi ( IDB_SPLITWINDOW,          IDB_SPLITWINDOW,        TButtonGadget::Command);
-                                                                                  
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP7               ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_EXTTV              ]= new TButtonGadgetDpi ( IDB_EXTTRACKSV,           IDB_EXTTRACKSV,         TButtonGadget::Command);
-    ControlBarGadgets[ EEGGLVIEW_CBG_COMPTV             ]= new TButtonGadgetDpi ( IDB_COMPTRACKSV,          IDB_COMPTRACKSV,        TButtonGadget::Command);
-
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP8               ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_EXTTH              ]= new TButtonGadgetDpi ( IDB_EXTTRACKSH,           IDB_EXTTRACKSH,         TButtonGadget::Command );
-    ControlBarGadgets[ EEGGLVIEW_CBG_COMPTH             ]= new TButtonGadgetDpi ( IDB_COMPTRACKSH,          IDB_COMPTRACKSH,        TButtonGadget::Command );
-
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP9               ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_VUNITS             ]= new TButtonGadgetDpi ( IDB_VERTUNITS,            IDB_VERTUNITS,          TButtonGadget::NonExclusive);
-    ControlBarGadgets[ EEGGLVIEW_CBG_HUNITS             ]= new TButtonGadgetDpi ( IDB_HORIZUNITS,           IDB_HORIZUNITS,         TButtonGadget::NonExclusive);
-                                                                                  
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP10              ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_FILTER             ]= new TButtonGadgetDpi ( IDB_FILTER,               IDB_FILTER,             TButtonGadget::Command, true, EEGDoc->AreFiltersActivated () ? TButtonGadget::Down : TButtonGadget::Up );
-    ControlBarGadgets[ EEGGLVIEW_CBG_SETAVGREF          ]= new TButtonGadgetDpi ( IDB_SETAVGREF,            IDB_SETAVGREF,          TButtonGadget::Command, true, EEGDoc->GetReferenceType () == ReferenceAverage ? TButtonGadget::Down : TButtonGadget::Up );
-                                                                                  
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP11              ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_DECBR              ]= new TButtonGadgetDpi ( IDB_ISDECBRIGHT,          IDB_ISDECBRIGHT,        TButtonGadget::Command);
-    ControlBarGadgets[ EEGGLVIEW_CBG_INCBR              ]= new TButtonGadgetDpi ( IDB_ISINCBRIGHT,          IDB_ISINCBRIGHT,        TButtonGadget::Command);
-    ControlBarGadgets[ EEGGLVIEW_CBG_DECCR              ]= new TButtonGadgetDpi ( IDB_ISDECCONTRAST,        IDB_ISDECCONTRAST,      TButtonGadget::Command);
-    ControlBarGadgets[ EEGGLVIEW_CBG_INCCR              ]= new TButtonGadgetDpi ( IDB_ISINCCONTRAST,        IDB_ISINCCONTRAST,      TButtonGadget::Command);
-
-    ControlBarGadgets[ EEGGLVIEW_CBG_SEP12              ]= new TSeparatorGadget ( DefaultSeparator );
-    ControlBarGadgets[ EEGGLVIEW_CBG_FXDSCL             ]= new TButtonGadgetDpi ( IDB_FIXEDSCALE,           IDB_FIXEDSCALE,         TButtonGadget::NonExclusive, true, ScalingAuto ? TButtonGadget::Down : TButtonGadget::Up );
-    ControlBarGadgets[ EEGGLVIEW_CBG_COLOR              ]= new TButtonGadgetDpi ( IDB_SPCOLOR,              IDB_SPCOLOR,            TButtonGadget::Command);
-
-  //ControlBarGadgets[EEGGLVIEW_CBG_TRSUPER]->SetVisible ( false );
-  //ControlBarGadgets[EEGGLVIEW_CBG_TRSUPER]->SetSize ( TSize(0,0) );
-
                                         // set menu  TMenu
     SetViewMenu ( new TMenuDescr ( IDM_EEG ) );
 
@@ -1040,6 +970,78 @@ if ( ! isderived ) {
         GetViewMenu ()->InsertMenu ( CM_OPENSTATSFITTING,       MF_BYCOMMAND, CM_OPENFITTINGTEMPLATES2, "Open F&itting Dialog for this segmentation" );
         }
     }
+}
+
+
+//----------------------------------------------------------------------------
+void    TTracksView::CreateGadgets ()
+{
+NumControlBarGadgets    = EEGGLVIEW_CBG_NUM;
+ControlBarGadgets       = new TGadget * [ NumControlBarGadgets ];
+
+CreateBaseGadgets ();
+
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP3               ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_DISPLAYINTENSITY   ]= new TButtonGadgetDpi ( IDB_DISPLAYINTENSITY,     IDB_DISPLAYINTENSITY,   TButtonGadget::Command );
+ControlBarGadgets[ EEGGLVIEW_CBG_NEXTROI            ]= new TButtonGadgetDpi ( IDB_NEXTROI,              IDB_NEXTROI,            TButtonGadget::NonExclusive, true, IsRoiMode () ? TButtonGadget::Down : TButtonGadget::Up, false );
+ControlBarGadgets[ EEGGLVIEW_CBG_AVERAGEROIS        ]= new TButtonGadgetDpi ( IDB_AVERAGEROIS,          IDB_AVERAGEROIS,        TButtonGadget::NonExclusive, true, AverageRois  ? TButtonGadget::Down : TButtonGadget::Up, false );
+                                                                                  
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP3A              ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_SHOWTAGS           ]= new TButtonGadgetDpi ( IDB_SHOWMARKERS,          IDB_SHOWMARKERS,        TButtonGadget::NonExclusive, true, ShowTags     ? TButtonGadget::Down : TButtonGadget::Up, false );
+ControlBarGadgets[ EEGGLVIEW_CBG_PREVMARKER         ]= new TButtonGadgetDpi ( IDB_PREVMARKER,           IDB_PREVMARKER,         TButtonGadget::Command);
+ControlBarGadgets[ EEGGLVIEW_CBG_NEXTMARKER         ]= new TButtonGadgetDpi ( IDB_NEXTMARKER,           IDB_NEXTMARKER,         TButtonGadget::Command);
+ControlBarGadgets[ EEGGLVIEW_CBG_ADDMARKER          ]= new TButtonGadgetDpi ( IDB_ADDMARKER,            IDB_ADDMARKER,          TButtonGadget::Command);
+                                                                                  
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP3B              ]= new TSeparatorGadget ( DefaultSeparator );
+//ControlBarGadgets[ EEGGLVIEW_CBG_SYNCZERO           ]= new TButtonGadgetDpi ( IDB_SYNCZERO,             IDB_SYNCZERO,           TButtonGadget::Command);
+//ControlBarGadgets[ EEGGLVIEW_CBG_SEP3C              ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_RNGCURS            ]= new TButtonGadgetDpi ( IDB_RANGECURSOR,          IDB_RANGECURSOR,        TButtonGadget::NonExclusive);
+                                                                                  
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP4               ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_UP                 ]= new TButtonGadgetDpi ( IDB_UP,                   IDB_UP,                 TButtonGadget::Command);
+ControlBarGadgets[ EEGGLVIEW_CBG_DOWN               ]= new TButtonGadgetDpi ( IDB_DOWN,                 IDB_DOWN,               TButtonGadget::Command);
+ControlBarGadgets[ EEGGLVIEW_CBG_NEXTSESSION        ]= new TButtonGadgetDpi ( IDB_NEXTSESSION,          CM_EEGNEXTSESSION,      TButtonGadget::Command);
+                                                                                  
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP5               ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_LESSTR             ]= new TButtonGadgetDpi ( IDB_LESSTRACKS,           IDB_LESSTRACKS,         TButtonGadget::Command);
+ControlBarGadgets[ EEGGLVIEW_CBG_MORETR             ]= new TButtonGadgetDpi ( IDB_MORETRACKS,           IDB_MORETRACKS,         TButtonGadget::Command);
+ControlBarGadgets[ EEGGLVIEW_CBG_LESSPSEUDOTRACKS   ]= new TButtonGadgetDpi ( IDB_LESSPSEUDOTRACKS,     IDB_LESSPSEUDOTRACKS,   TButtonGadget::Command);
+ControlBarGadgets[ EEGGLVIEW_CBG_MOREPSEUDOTRACKS   ]= new TButtonGadgetDpi ( IDB_MOREPSEUDOTRACKS,     IDB_MOREPSEUDOTRACKS,   TButtonGadget::Command);
+
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP6               ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_TRSUPER            ]= new TButtonGadgetDpi ( IDB_TRACKSSUPER,          IDB_TRACKSSUPER,        TButtonGadget::NonExclusive);
+ControlBarGadgets[ EEGGLVIEW_CBG_FLIPVERT           ]= new TButtonGadgetDpi ( IDB_FLIPVERT,             IDB_FLIPVERT,           TButtonGadget::NonExclusive);
+ControlBarGadgets[ EEGGLVIEW_CBG_SHOWSD             ]= new TButtonGadgetDpi ( IDB_SHOWSD,               IDB_SHOWSD,             TButtonGadget::Command, true, TButtonGadget::Up);
+                                                                                  
+//ControlBarGadgets[ EEGGLVIEW_CBG_SEP11              ]= new TSeparatorGadget ( DefaultSeparator );
+//ControlBarGadgets[ EEGGLVIEW_CBG_STYLEW             ]= new TButtonGadgetDpi ( IDB_STYLEWINDOW,          IDB_STYLEWINDOW,        TButtonGadget::Command);
+//ControlBarGadgets[ EEGGLVIEW_CBG_SPLITWINDOW        ]= new TButtonGadgetDpi ( IDB_SPLITWINDOW,          IDB_SPLITWINDOW,        TButtonGadget::Command);
+                                                                                  
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP7               ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_EXTTV              ]= new TButtonGadgetDpi ( IDB_EXTTRACKSV,           IDB_EXTTRACKSV,         TButtonGadget::Command);
+ControlBarGadgets[ EEGGLVIEW_CBG_COMPTV             ]= new TButtonGadgetDpi ( IDB_COMPTRACKSV,          IDB_COMPTRACKSV,        TButtonGadget::Command);
+
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP8               ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_EXTTH              ]= new TButtonGadgetDpi ( IDB_EXTTRACKSH,           IDB_EXTTRACKSH,         TButtonGadget::Command );
+ControlBarGadgets[ EEGGLVIEW_CBG_COMPTH             ]= new TButtonGadgetDpi ( IDB_COMPTRACKSH,          IDB_COMPTRACKSH,        TButtonGadget::Command );
+
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP9               ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_VUNITS             ]= new TButtonGadgetDpi ( IDB_VERTUNITS,            IDB_VERTUNITS,          TButtonGadget::NonExclusive);
+ControlBarGadgets[ EEGGLVIEW_CBG_HUNITS             ]= new TButtonGadgetDpi ( IDB_HORIZUNITS,           IDB_HORIZUNITS,         TButtonGadget::NonExclusive);
+                                                                                  
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP10              ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_FILTER             ]= new TButtonGadgetDpi ( IDB_FILTER,               IDB_FILTER,             TButtonGadget::Command, true, EEGDoc->AreFiltersActivated () ? TButtonGadget::Down : TButtonGadget::Up );
+ControlBarGadgets[ EEGGLVIEW_CBG_SETAVGREF          ]= new TButtonGadgetDpi ( IDB_SETAVGREF,            IDB_SETAVGREF,          TButtonGadget::Command, true, EEGDoc->GetReferenceType () == ReferenceAverage ? TButtonGadget::Down : TButtonGadget::Up );
+                                                                                  
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP11              ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_DECBR              ]= new TButtonGadgetDpi ( IDB_ISDECBRIGHT,          IDB_ISDECBRIGHT,        TButtonGadget::Command);
+ControlBarGadgets[ EEGGLVIEW_CBG_INCBR              ]= new TButtonGadgetDpi ( IDB_ISINCBRIGHT,          IDB_ISINCBRIGHT,        TButtonGadget::Command);
+ControlBarGadgets[ EEGGLVIEW_CBG_DECCR              ]= new TButtonGadgetDpi ( IDB_ISDECCONTRAST,        IDB_ISDECCONTRAST,      TButtonGadget::Command);
+ControlBarGadgets[ EEGGLVIEW_CBG_INCCR              ]= new TButtonGadgetDpi ( IDB_ISINCCONTRAST,        IDB_ISINCCONTRAST,      TButtonGadget::Command);
+
+ControlBarGadgets[ EEGGLVIEW_CBG_SEP12              ]= new TSeparatorGadget ( DefaultSeparator );
+ControlBarGadgets[ EEGGLVIEW_CBG_FXDSCL             ]= new TButtonGadgetDpi ( IDB_FIXEDSCALE,           IDB_FIXEDSCALE,         TButtonGadget::NonExclusive, true, ScalingAuto ? TButtonGadget::Down : TButtonGadget::Up );
+ControlBarGadgets[ EEGGLVIEW_CBG_COLOR              ]= new TButtonGadgetDpi ( IDB_SPCOLOR,              IDB_SPCOLOR,            TButtonGadget::Command);
 }
 
 

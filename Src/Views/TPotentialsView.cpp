@@ -218,9 +218,14 @@ StandSize   = TSize ( MapsWindowSizeW, MapsWindowSizeH );
 
 
 SetViewMenu ( new TMenuDescr ( IDM_POTENTIALS ) );
+}
 
-NumControlBarGadgets= POTENTIALS_CBG_NUM;
-ControlBarGadgets   = new TGadget * [ POTENTIALS_CBG_NUM ];
+
+//----------------------------------------------------------------------------
+void    TPotentialsView::CreateGadgets ()
+{
+NumControlBarGadgets    = POTENTIALS_CBG_NUM;
+ControlBarGadgets       = new TGadget * [ NumControlBarGadgets ];
 
 CreateBaseGadgets ();
 
@@ -250,6 +255,7 @@ ControlBarGadgets[ POTENTIALS_CBG_NEXTXYZ       ]   = new TButtonGadgetDpi ( IDB
 }
 
 
+//----------------------------------------------------------------------------
 void    TPotentialsView::InitXyz ()
 {
                                         // bad tracks setup

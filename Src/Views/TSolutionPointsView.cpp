@@ -171,8 +171,17 @@ StandSize   = TSize ( SolPointsWindowSize, SolPointsWindowSize );
 
 SetViewMenu ( new TMenuDescr ( IDM_SP ) );
 
+
+if ( ! ValidView() )
+    NotOK();                            // do not create the window (cancel from doc)
+}
+
+
+//----------------------------------------------------------------------------
+void    TSolutionPointsView::CreateGadgets ()
+{
 NumControlBarGadgets    = SPGLVIEW_CBG_NUM;
-ControlBarGadgets   = new TGadget * [SPGLVIEW_CBG_NUM];
+ControlBarGadgets       = new TGadget * [ NumControlBarGadgets ];
 
 CreateBaseGadgets ();
 
@@ -183,9 +192,6 @@ ControlBarGadgets[ SPGLVIEW_CBG_SEP2        ]   = new TSeparatorGadget ( Default
 ControlBarGadgets[ SPGLVIEW_CBG_CUTPLANEX   ]   = new TButtonGadgetDpi ( IDB_CUTPLANEX,     IDB_CUTPLANEX,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
 ControlBarGadgets[ SPGLVIEW_CBG_CUTPLANEY   ]   = new TButtonGadgetDpi ( IDB_CUTPLANEY,     IDB_CUTPLANEY,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
 ControlBarGadgets[ SPGLVIEW_CBG_CUTPLANEZ   ]   = new TButtonGadgetDpi ( IDB_CUTPLANEZ,     IDB_CUTPLANEZ,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
-
-if ( ! ValidView() )
-    NotOK();                            // do not create the window (cancel from doc)
 }
 
 

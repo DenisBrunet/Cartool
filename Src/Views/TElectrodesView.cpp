@@ -252,8 +252,17 @@ StandSize   = TSize ( XYZWindowSize, XYZWindowSize );
 
 SetViewMenu ( new TMenuDescr (IDM_XYZ) );
 
+
+if ( ! ValidView() )
+    NotOK();                            // do not create the window (cancel from doc)
+}
+
+
+//----------------------------------------------------------------------------
+void    TElectrodesView::CreateGadgets ()
+{
 NumControlBarGadgets    = XYZGLVIEW_CBG_NUM;
-ControlBarGadgets   = new TGadget * [XYZGLVIEW_CBG_NUM];
+ControlBarGadgets       = new TGadget * [ NumControlBarGadgets ];
 
 CreateBaseGadgets ();
 
@@ -266,10 +275,6 @@ ControlBarGadgets[ XYZGLVIEW_CBG_SEP2           ]   = new TSeparatorGadget ( Def
 ControlBarGadgets[ XYZGLVIEW_CBG_CUTPLANEX      ]   = new TButtonGadgetDpi ( IDB_CUTPLANEX,     IDB_CUTPLANEX,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
 ControlBarGadgets[ XYZGLVIEW_CBG_CUTPLANEY      ]   = new TButtonGadgetDpi ( IDB_CUTPLANEY,     IDB_CUTPLANEY,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
 ControlBarGadgets[ XYZGLVIEW_CBG_CUTPLANEZ      ]   = new TButtonGadgetDpi ( IDB_CUTPLANEZ,     IDB_CUTPLANEZ,      TButtonGadget::NonExclusive, true, TButtonGadget::Up, false);
-
-
-if ( ! ValidView() )
-    NotOK();                            // do not create the window (cancel from doc)
 }
 
 
