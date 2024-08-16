@@ -403,24 +403,25 @@ if ( Closing )
     return;
 
 
-TGadget*            tog1;
-TGadget*            tog2;
+TGadget*            tocurrentgadget = ControlBar->GadgetWithId ( afterID );
+TGadget*            tonexgadget;
 
-tog1    = ControlBar->GadgetWithId ( afterID );
-
-if ( ! tog1 )
+if ( ! tocurrentgadget )
     return;
 
+                                        // AFTER this gadget
+tocurrentgadget    = ControlBar->NextGadget ( *tocurrentgadget );
 
-tog1    = ControlBar->NextGadget ( *tog1 );
+while ( tocurrentgadget ) {
 
-while ( tog1 ) {
-    tog2    = ControlBar->NextGadget ( *tog1 );
-    ControlBar->Remove ( *tog1 );
-    tog1    = tog2;
+    tonexgadget     = ControlBar->NextGadget ( *tocurrentgadget );
+
+    ControlBar->Remove ( *tocurrentgadget );
+
+    tocurrentgadget = tonexgadget;
     }
 
-                                        // update & show
+
 ControlBar->LayoutSession ();
 
 ControlBar->Invalidate ();
@@ -1454,6 +1455,9 @@ void    TCartoolApp::EvDisplayChange   ( uint, uint resx, uint resy )
 {
 //ScreenWidth     = resx;
 //ScreenHeight    = resy;
+
+int                 OldRescaleButtonActualDpi   = RescaleButtonActualDpi ();
+
                                         // Will update everything for us
 InitScreen ();
 
@@ -1465,6 +1469,36 @@ delete  TGlobalOpenGL::BFont;
 
 TGlobalOpenGL::SFont    = new TGLBitmapFont ( SmallFontParameters );
 TGlobalOpenGL::BFont    = new TGLBitmapFont ( BigFontParameters   );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Update gadgets - but only if needed
+if ( RescaleButtonActualDpi () != OldRescaleButtonActualDpi ) {
+
+                                        // Remove all gadgets from control bar
+    TGadget*            tocurrentgadget = ControlBar->FirstGadget ();
+    TGadget*            tonexgadget;
+
+    while ( tocurrentgadget ) {
+
+        tonexgadget     = ControlBar->NextGadget ( *tocurrentgadget );
+
+        ControlBar->Remove ( *tocurrentgadget );
+
+        tocurrentgadget = tonexgadget;
+        }
+
+                                        // Re-create common gadgets
+    CreateGadgets ();
+
+                                        // Resize each window's gadgets
+    CartoolMdiClient->CmAllWinAction ( CM_ALLWIN_RELOADGADGETS );
+
+                                        // Finally update control bar
+    ControlBar->LayoutSession ();
+
+    ControlBar->Invalidate ();
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1498,7 +1532,7 @@ AnimateViews        =    AnimateViews                                           
                       && IsInteractive ()                                           // must be interactive
                       && (int) files                      <= AnimationMaxDocDropped // only few files dropped
                       && CartoolDocManager->NumDocOpen () <  AnimationMaxDocOpen    // and not already crowded
-                      && ! intolmdoc                                                    // and not dropping into lm view
+                      && ! intolmdoc                                                // and not dropping into lm view
                       && ! files.SomeExtensionsAre ( AllLmFilesExt );               // and not dropping a lm file either
 
 

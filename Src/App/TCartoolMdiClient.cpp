@@ -562,7 +562,7 @@ TWindow*            tow;
 for ( doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
 for ( view = doc->GetViewList (); view != 0; view = doc->NextView ( view ) )
 
-    if ( w == CM_ALLWIN_MIN )
+    if      ( w == CM_ALLWIN_MIN )
 
         view->WindowMinimize ();
 
@@ -593,6 +593,13 @@ for ( view = doc->GetViewList (); view != 0; view = doc->NextView ( view ) )
 
             nl  += TSize ( 0, GetWindowHeight ( tow ) );
             }
+        }
+
+    else if ( w == CM_ALLWIN_RELOADGADGETS ) {
+
+        view->DestroyGadgets ();
+
+        view->CreateGadgets  ();
         }
 }
 

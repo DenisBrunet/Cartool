@@ -220,8 +220,9 @@
 #define CM_ALLWIN_MIN                   1404
 #define CM_ALLWIN_RESTORE               1405
 #define CM_ALLWIN_PANTILE               1406
-#define CM_GTV_MIN                      1407
-#define CM_GTV_RESTORE                  1408
+#define CM_ALLWIN_RELOADGADGETS         1407
+#define CM_GTV_MIN                      1408
+#define CM_GTV_RESTORE                  1409
 #define CM_WINSIZE_INC                  1410
 #define CM_WINSIZE_INCR                 1411
 #define CM_WINSIZE_INCL                 1412
