@@ -259,7 +259,7 @@ else                    return  pow ( v, p );
 double      PowerRoot ( double v, double p )
 {
                                         // force 0^0 = 0
-return  v > 0 && p > 0 ? pow ( v, 1.0 / p ) : 0;
+return  v > 0 ? pow ( v, 1.0 / p ) : 0;
 }
 
                                         // anti-symetrical power: if v is negative, return the negative of the absolute power

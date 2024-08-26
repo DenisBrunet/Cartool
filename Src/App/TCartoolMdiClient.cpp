@@ -408,18 +408,19 @@ tce.Enable ( CartoolDocManager->DocList.Next ( 0 ) != 0 );    // at least someth
 
 void    TCartoolMdiClient::CmGroupWinActionEnable ( TCommandEnabler &tce )
 {
-TDocument*          doc             = CartoolDocManager->GetCurrentDoc ();
+const TDocument*    currentdoc      = CartoolDocManager->GetCurrentDoc ();
 
-if ( doc == 0 ) {
+if ( currentdoc == 0 ) {
+
     tce.Enable ( false );
     return;
     }
 
 
-TBaseView*          view            = CartoolDocManager->GetCurrentView ();
-TLinkManyDoc*       mygod           = view ? view->GODoc : 0;
+TBaseView*          currentview     = CartoolDocManager->GetCurrentView ();
+TLinkManyDoc*       currentGOD      = currentview ? currentview->GODoc : 0;
 
-tce.Enable ( mygod != 0 );
+tce.Enable ( currentGOD != 0 );
 }
 
 
@@ -446,16 +447,13 @@ TRect               r               = view->GetParentO ()->GetWindowRect ().Norm
 
 ScreenToClient ( r );
 
-                                        // if done 4 times in a row it will double or halve the size of the window
-double              scale           = PowerRoot ( 2, 4 );
-
-                                        // revert scaling factor in case of shrinking
-if ( w == CM_WINSIZE_DEC 
-  || w == CM_WINSIZE_DECL 
-  || w == CM_WINSIZE_DECR 
-  || w == CM_WINSIZE_DECT 
-  || w == CM_WINSIZE_DECB )
-    scale   = 1 / scale;
+                                        
+double              scale           = w == CM_WINSIZE_DEC 
+                                   || w == CM_WINSIZE_DECL 
+                                   || w == CM_WINSIZE_DECR 
+                                   || w == CM_WINSIZE_DECT 
+                                   || w == CM_WINSIZE_DECB  ? PowerRoot ( 2, -4 )   // done 4 times, factor will halve..
+                                                            : PowerRoot ( 2,  4 );  // ..or double the original window size
 
                                         // If left-right keys are pressed, only apply on X dimension, and conversely for up-down keys for Y dimension
 int                 width           = w == CM_WINSIZE_INCT 
@@ -486,65 +484,66 @@ return;
 
 
 //----------------------------------------------------------------------------
-                                        // All windows from given document actions
+                                        // All windows actions from a given document
 void    TCartoolMdiClient::CmDocWinAction ( owlwparam w )
 {
-TBaseDoc*           doc             = CartoolDocManager->GetCurrentBaseDoc ();
-TBaseView*          view            = CartoolDocManager->GetCurrentView ();
-TLinkManyDoc*       mygod           = view ? view->GODoc : 0;
+TBaseDoc*           currentdoc      = CartoolDocManager->GetCurrentBaseDoc ();
 
-if ( doc == 0 )     return;
+if ( currentdoc == 0 )
+    return;
 
 
-if ( w == CM_DOCWIN_CLOSE ) {
+if      ( w == CM_DOCWIN_CLOSE ) {
 
-    if ( doc->CanClose () )
-		CartoolDocManager->CloseDoc ( doc );
+    if ( currentdoc->CanClose () )
+		CartoolDocManager->CloseDoc ( currentdoc );
     }
 
 else if ( w == CM_DOCWIN_TILE ) {
 
-    TPoint      nl ( 0, 0 );
-    TPoint      nc ( 0, 0 );
-    TWindow     *tow;
+    TPoint          nl ( 0, 0 );
+    TPoint          nc ( 0, 0 );
 
-    for ( view = doc->GetViewList(); view != 0; view = doc->NextView (view) ) {
+    for ( TBaseView* view = currentdoc->GetViewList (); view != 0; view = currentdoc->NextView ( view ) ) {
 
-        tow = view->GetParentO();
+        TWindow*    tow     = view->GetParentO ();
 
         if ( IsWindowMinimized ( tow ) )    continue;
+
 
         if ( nl.Y () + GetWindowHeight ( tow ) <= GetWindowHeight ( this ) ) {
 
             WindowSetFrameOrigin ( tow, nl.X(), nl.Y() );
 
-            nl  += TSize ( 0, GetWindowHeight ( tow ) );
+            nl += TSize ( 0, GetWindowHeight ( tow ) );
 
             if ( GetWindowRight ( tow ) > nc.X() )
                 nc  = TPoint ( GetWindowRight ( tow ) + 1, nc.Y () );
             }
         else {
             nl  = nc;
-            nc  += TSize ( GetWindowWidth ( tow ), 0 );
+            nc += TSize ( GetWindowWidth ( tow ), 0 );
 
             WindowSetFrameOrigin ( tow, nl.X(), nl.Y() );
 
-            nl  += TSize ( 0, GetWindowHeight ( tow ) );
+            nl += TSize ( 0, GetWindowHeight ( tow ) );
             }
         } // for view
     }
 
-else        // minimize / restore
+else { // minimize / restore
 
-    for ( view = doc->GetViewList(); view != 0; view = doc->NextView (view) ) {
+    TBaseView*          currentview     = CartoolDocManager->GetCurrentView ();
+    TLinkManyDoc*       currentGOD      = currentview ? currentview->GODoc : 0;
 
-        if ( view->GODoc != mygod ) continue;
+    for ( TBaseView* view = currentdoc->GetViewList (); view != 0; view = currentdoc->NextView ( view ) ) {
 
-        if ( w == CM_DOCWIN_MIN )
-            view->WindowMinimize ();
-        else if ( w == CM_DOCWIN_RESTORE )
-            view->WindowRestore ();
+        if ( view->GODoc != currentGOD ) continue;
+
+        if      ( w == CM_DOCWIN_MIN     )  view->WindowMinimize ();
+        else if ( w == CM_DOCWIN_RESTORE )  view->WindowRestore  ();
         }
+    }
 }
 
 
@@ -552,15 +551,12 @@ else        // minimize / restore
                                         // All windows actions
 void    TCartoolMdiClient::CmAllWinAction ( owlwparam w )
 {
-TBaseDoc*           doc;
-TBaseView*          view;
 TPoint              nl ( 0, 0 );
 TPoint              nc ( 0, 0 );
-TWindow*            tow;
 
 
-for ( doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
-for ( view = doc->GetViewList (); view != 0; view = doc->NextView ( view ) )
+for ( TBaseDoc*  doc  = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+for ( TBaseView* view = doc->GetViewList (); view != 0; view = doc->NextView ( view ) ) {
 
     if      ( w == CM_ALLWIN_MIN )
 
@@ -572,7 +568,7 @@ for ( view = doc->GetViewList (); view != 0; view = doc->NextView ( view ) )
 
     else if ( w == CM_ALLWIN_PANTILE ) {
 
-        tow = view->GetParentO ();
+        TWindow*    tow     = view->GetParentO ();
 
         if ( IsWindowMinimized ( tow ) )    continue;
 
@@ -580,18 +576,18 @@ for ( view = doc->GetViewList (); view != 0; view = doc->NextView ( view ) )
 
             WindowSetFrameOrigin ( tow, nl.X(), nl.Y() );
 
-            nl  += TSize ( 0, GetWindowHeight ( tow ) );
+            nl += TSize ( 0, GetWindowHeight ( tow ) );
 
             if ( GetWindowRight ( tow ) > nc.X() )
                 nc  = TPoint ( GetWindowRight ( tow ) + 1, nc.Y() );
             }
         else {
             nl  = nc;
-            nc  += TSize ( GetWindowWidth ( tow ), 0 );
+            nc += TSize ( GetWindowWidth ( tow ), 0 );
 
             WindowSetFrameOrigin ( tow, nl.X(), nl.Y() );
 
-            nl  += TSize ( 0, GetWindowHeight ( tow ) );
+            nl += TSize ( 0, GetWindowHeight ( tow ) );
             }
         }
 
@@ -601,31 +597,33 @@ for ( view = doc->GetViewList (); view != 0; view = doc->NextView ( view ) )
 
         view->CreateGadgets  ();
         }
+    } // for doc, view
 }
 
 
 //----------------------------------------------------------------------------
-                                        // All windows from same TLinkManyDoc group actions
+                                        // All windows actions from the same TLinkManyDoc group
 void    TCartoolMdiClient::CmGroupWinAction ( owlwparam w )
 {
-TBaseDoc*           doc;
-TBaseView*          view            = CartoolDocManager->GetCurrentView ();
-TLinkManyDoc*       mygod           = view ? view->GODoc : 0;
+TBaseView*          currentview     = CartoolDocManager->GetCurrentView ();
+TLinkManyDoc*       currentGOD      = currentview ? currentview->GODoc : 0;
 
-if ( mygod == 0 )  return;
+if ( currentview == 0 || currentGOD == 0 )
+    return;
 
 
-if      ( w == IDB_GTVKEEPSIZE  )           view->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_Move     , GroupTilingViews_Insert ) );
-else if ( w == IDB_GTVSTANDSIZE )           view->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_StandSize, GroupTilingViews_Insert ) );
-else if ( w == IDB_GTVFIT       )           view->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_Resize   , GroupTilingViews_Insert ) );
+if      ( w == IDB_GTVKEEPSIZE  )           currentview->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_Move     , GroupTilingViews_Insert ) );
+else if ( w == IDB_GTVSTANDSIZE )           currentview->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_StandSize, GroupTilingViews_Insert ) );
+else if ( w == IDB_GTVFIT       )           currentview->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_Resize   , GroupTilingViews_Insert ) );
 
-else
-    for ( doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
-    for ( view = doc->GetViewList ( mygod ); view != 0; view = doc->NextView ( view, mygod ) ) {
+else {
+    for ( TBaseDoc*  doc  = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+    for ( TBaseView* view = doc->GetViewList ( currentGOD ); view != 0; view = doc->NextView ( view, currentGOD ) ) {
 
         if      ( w == CM_GTV_MIN     )     view->WindowMinimize ();
         else if ( w == CM_GTV_RESTORE )     view->WindowRestore  ();
         }
+    }
 }
 
 
@@ -867,14 +865,14 @@ else                                                    TMicroStatesSegParamsDia
 void    TCartoolMdiClient::CmFitting ()
 {
                                         // calling from a .seg file?
-TTracksDoc*         tracksdoc       = dynamic_cast< TTracksDoc* > ( CartoolDocManager->GetCurrentBaseDoc () );
+TTracksDoc*         currenttracksdoc    = dynamic_cast<TTracksDoc*> ( CartoolDocManager->GetCurrentBaseDoc () );
 
                                         // then go through a few hoops for user's convenience...
-if ( tracksdoc && tracksdoc->IsContentType ( ContentTypeSeg ) ) {
+if ( currenttracksdoc && currenttracksdoc->IsContentType ( ContentTypeSeg ) ) {
 
     TFileName           filetempl;
 
-    StringCopy    ( filetempl, tracksdoc->GetDocPath () );
+    StringCopy    ( filetempl, currenttracksdoc->GetDocPath () );
                                         // file template could be either this:
     StringReplace ( filetempl, "." FILEEXT_SEG, "." FILEEXT_EEGEP );
 
