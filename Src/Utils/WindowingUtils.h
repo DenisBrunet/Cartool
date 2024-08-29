@@ -39,6 +39,10 @@ inline  int     GetWindowWidth      ( const owl::TWindow* window )              
 inline  int     GetWindowHeight     ( const owl::TWindow* window )                                              { return  window ? window->Attr.H                       : 0;    }
 inline  int     GetWindowMinSide    ( const owl::TWindow* window )                                              { return  window ? min ( GetWindowWidth ( window ), GetWindowHeight ( window ) ) : 0; }
 
+
+inline  void    RepositionMinimizedWindow   ( owl::TWindow* window, int clientheight );
+//inline  void  GetMainWindowMeasures       ( owl::TMDIFrame* window );
+
                                                                                                                                                   
 inline owl::TDib*   RescaleDIB      ( const owl::TWindow* window, int resid, double scalingfactor );
 
@@ -56,9 +60,65 @@ inline  void    WindowSetFrameOrigin( owl::TWindow* window,   int left,   int to
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
+                                        // Minimized windows can not be moved with SetWindowPos, so we need a specific function for that...
+void            RepositionMinimizedWindow ( owl::TWindow* window, int clientheight )
+{
+WINDOWPLACEMENT     wndpl;
+
+wndpl.length            = sizeof ( WINDOWPLACEMENT );
+
+if ( window == 0
+  || ! GetWindowPlacement  ( window->GetHandle (), &wndpl )
+  || wndpl.showCmd != SW_SHOWMINIMIZED )
+                                        // Not even trying to move anything
+    return;
+
+                                        // Parameters for minimized windows only
+wndpl.flags             = WPF_SETMINPOSITION;
+wndpl.showCmd           = SW_SHOWMINIMIZED;
+wndpl.ptMinPosition.y   = clientheight - window->GetWindowRect ().Height ();    // always move minimized window to the bottom - X position does not need to be adjusted, though
+
+SetWindowPlacement  ( window->GetHandle (), &wndpl );
+}
+
+
+//----------------------------------------------------------------------------
+/*                                        // Retrieving various decoration sizes - unfinished prototype
+void            GetMainWindowMeasures   ( owl::TMDIFrame* window )
+{
+owl::TRect          mainwr          = window                    ->GetWindowRect ().Normalized ();
+//owl::TRect        maincr          = window                    ->GetClientRect ().Normalized ();
+owl::TRect          mdiwr           = window->GetClientWindow ()->GetWindowRect ().Normalized ();
+owl::TRect          mdicr           = window->GetClientWindow ()->GetClientRect ().Normalized ();
+
+//DBGV6 ( mainwr.Left (), mainwr.Top (), mainwr.Right (), mainwr.Bottom (), mainwr.Width (), mainwr.Height (), "mainwr" );
+//DBGV6 ( maincr.Left (), maincr.Top (), maincr.Right (), maincr.Bottom (), maincr.Width (), maincr.Height (), "maincr" );
+//DBGV6 ( mdiwr .Left (), mdiwr .Top (), mdiwr .Right (), mdiwr .Bottom (), mdiwr .Width (), mdiwr .Height (), "mdiwr " );
+//DBGV6 ( mdicr .Left (), mdicr .Top (), mdicr .Right (), mdicr .Bottom (), mdicr .Width (), mdicr .Height (), "mdicr " );
+
+                                        // Main window precise sizes and deltas
+int                 transparentmargin   = abs ( mainwr.Left () );                   // on each 4 sides of the main window
+
+int                 mainwidth           = mainwr.Width  () - 2 * transparentmargin; // actual visible main window size
+int                 mainheight          = mainwr.Height () - 2 * transparentmargin;
+
+
+int                 decomargin          = ( mdiwr.Width () - mdicr.Width () ) / 2;  // small deco on each 4 axis of client
+
+int                 mdidecotop          = mdiwr.Top () + decomargin;    // + transparentmargin?
+int                 mdidecobottom       = decomargin;
+int                 mdidecoleft         = decomargin;
+int                 mdidecoright        = decomargin;
+
+//DBGV5 ( mainwidth, mainheight, transparentmargin, mdicr .Width (), mdicr .Height (), "mainwidth, mainheight, transparentmargin, MDI client" );
+//DBGV2 ( decomargin, mdidecotop, "decomargin, maindecotop" );
+}
+*/
+
+//----------------------------------------------------------------------------
                                         // Load and rescale a resource bitmap
                                         // There are a lot of hoops to jump through to be able to use Win32 / GDI functions
-owl::TDib*  RescaleDIB  ( const owl::TWindow* window, int resid, double scalingfactor )
+owl::TDib*      RescaleDIB  ( const owl::TWindow* window, int resid, double scalingfactor )
 {
 using namespace owl;
 

@@ -404,7 +404,7 @@ if ( Closing )
 
 
 TGadget*            tocurrentgadget = ControlBar->GadgetWithId ( afterID );
-TGadget*            tonexgadget;
+TGadget*            tonextgadget;
 
 if ( ! tocurrentgadget )
     return;
@@ -414,11 +414,11 @@ tocurrentgadget    = ControlBar->NextGadget ( *tocurrentgadget );
 
 while ( tocurrentgadget ) {
 
-    tonexgadget     = ControlBar->NextGadget ( *tocurrentgadget );
+    tonextgadget    = ControlBar->NextGadget ( *tocurrentgadget );
 
     ControlBar->Remove ( *tocurrentgadget );
 
-    tocurrentgadget = tonexgadget;
+    tocurrentgadget = tonextgadget;
     }
 
 
@@ -484,7 +484,7 @@ ApxHarbor->Insert ( *ControlBar, alTop );
 
 
 //----------------------------------------------------------------------------
-void    TCartoolApp::InitScreen ()
+void    TCartoolApp::SetScreen ()
 {
 //DBGM ( BoolToString ( IsProcessDPIAware () ), "IsProcessDPIAware" );
 
@@ -496,27 +496,30 @@ void    TCartoolApp::InitScreen ()
                                         // Retrieve current monitor
 HMONITOR            monitor         = MonitorFromWindow ( CartoolMdiClient->GetHandle (), MONITOR_DEFAULTTONEAREST );
 
-MONITORINFOEX       monitoinfo      = { 0 };
-monitoinfo.cbSize     = sizeof ( MONITORINFOEX );
+MONITORINFOEX       monitorinfo;
+monitorinfo.cbSize  = sizeof ( MONITORINFOEX );
 
-GetMonitorInfo ( monitor, &monitoinfo );
 
+GetMonitorInfo ( monitor, &monitorinfo );
+
+//DBGM ( monitorinfo.szDevice, "Monitor" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Max resolution of current monitor
-DEVMODE             devmode         = { 0 };
-devmode.dmSize  = sizeof ( DEVMODE );
+                                        // Max resolution of CURRENT monitor
+DEVMODE             devmode;
+devmode.dmSize      = sizeof ( DEVMODE );
 
-if ( MaxScreenWidth == 0 ) {
+                                        // Computed on each call, in case we switched monitor
+MaxScreenWidth      = 0;
+MaxScreenHeight     = 0;
 
-    for ( int dmi = 0; EnumDisplaySettings ( /*NULL*/ monitoinfo.szDevice, dmi, &devmode ) != 0; dmi++ ) {
+for ( DWORD dmi = 0; EnumDisplaySettings ( monitorinfo.szDevice, dmi, &devmode ) != 0; dmi++ ) {
 
-        Maxed ( MaxScreenWidth,  (int) devmode.dmPelsWidth  );
-        Maxed ( MaxScreenHeight, (int) devmode.dmPelsHeight );
-        }
-
-    //DBGV2 ( MaxScreenWidth, MaxScreenHeight, "MaxScreenWidth, MaxScreenHeight" );
+    Maxed ( MaxScreenWidth,  (int) devmode.dmPelsWidth  );
+    Maxed ( MaxScreenHeight, (int) devmode.dmPelsHeight );
     }
+
+//DBGV2 ( MaxScreenWidth, MaxScreenHeight, "MaxScreenWidth, MaxScreenHeight" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -526,7 +529,8 @@ if ( MaxScreenWidth == 0 ) {
 //ScreenWidth   = GetSystemMetricsForDpi ( SM_CXSCREEN, GetWindowDpi () );
 //ScreenHeight  = GetSystemMetricsForDpi ( SM_CYSCREEN, GetWindowDpi () );
 
-EnumDisplaySettings ( monitoinfo.szDevice, ENUM_REGISTRY_SETTINGS /*ENUM_CURRENT_SETTINGS*/, &devmode );
+EnumDisplaySettings ( monitorinfo.szDevice, ENUM_REGISTRY_SETTINGS /*ENUM_CURRENT_SETTINGS*/, &devmode );
+
 ScreenWidth     = devmode.dmPelsWidth;
 ScreenHeight    = devmode.dmPelsHeight;
 
@@ -590,14 +594,14 @@ CartoolMainWindow->Attr.Style &= ~(WS_CHILD);
                                         // Enable application to accept Drag & Drop'ped files - Individual windows then also needs some more flags...
 CartoolMainWindow->Attr.ExStyle |= WS_EX_ACCEPTFILES;
 
-
-InitScreen ();
+                                        // Will init ScreenWidth and ScreenHeight
+SetScreen ();
 
                                         // Un-maximized default size
 CartoolMainWindow->Attr.W       = (int) ( ScreenWidth  * 0.50 );
 CartoolMainWindow->Attr.H       = (int) ( ScreenHeight * 0.75 );
-CartoolMainWindow->Attr.X       = AtLeast ( 0, ( ScreenWidth  - GetWindowWidth  ( CartoolMainWindow ) ) / 2 );
-CartoolMainWindow->Attr.Y       = AtLeast ( 0, ( ScreenHeight - GetWindowHeight ( CartoolMainWindow ) ) / 2 );
+CartoolMainWindow->Attr.X       = AtLeast ( 0, ( ScreenWidth  - CartoolMainWindow->Attr.W ) / 2 );
+CartoolMainWindow->Attr.Y       = AtLeast ( 0, ( ScreenHeight - CartoolMainWindow->Attr.H ) / 2 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -658,6 +662,9 @@ ProcessCommandLine ( GetCmdLine ().c_str (), true  );   // process early options
 TApplication::InitInstance ();                          // then calls InitWindow
 
 ProcessCommandLine ( GetCmdLine ().c_str (), false );   // process files to open
+
+                                        // CartoolMainWindow has been fully created here, we can therefor retrieve its exact real estate
+MDIClientRect   = CartoolMdiClient->GetClientRect ().Normalized ();
 }
 
 
@@ -1457,9 +1464,16 @@ void    TCartoolApp::EvDisplayChange   ( uint, uint resx, uint resy )
 //ScreenHeight    = resy;
 
 int                 OldRescaleButtonActualDpi   = RescaleButtonActualDpi ();
+TRect               OldMDIClientRect            = MDIClientRect;
+int                 OldScreenWidth              = ScreenWidth;
+int                 OldScreenHeight             = ScreenHeight;
+                                        // Retrieve current window sizes
+TRect               mainwr              = CartoolMainWindow->GetWindowRect ().Normalized ();
+TRect               mdicr               = CartoolMdiClient ->GetClientRect ().Normalized ();
+
 
                                         // Will update everything for us
-InitScreen ();
+SetScreen ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1477,15 +1491,15 @@ if ( RescaleButtonActualDpi () != OldRescaleButtonActualDpi ) {
 
                                         // Remove all gadgets from control bar
     TGadget*            tocurrentgadget = ControlBar->FirstGadget ();
-    TGadget*            tonexgadget;
+    TGadget*            tonextgadget;
 
     while ( tocurrentgadget ) {
 
-        tonexgadget     = ControlBar->NextGadget ( *tocurrentgadget );
+        tonextgadget    = ControlBar->NextGadget ( *tocurrentgadget );
 
         ControlBar->Remove ( *tocurrentgadget );
 
-        tocurrentgadget = tonexgadget;
+        tocurrentgadget = tonextgadget;
         }
 
                                         // Re-create common gadgets
@@ -1502,7 +1516,70 @@ if ( RescaleButtonActualDpi () != OldRescaleButtonActualDpi ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Refresh all windows
+                                        // Update main window + children windows sizes and positions
+double              childratiox         = 1;
+double              childratioy         = 1;
+
+                                        // 2 cases here according to the MAIN window being maximized or not
+if ( IsWindowMaximized ( CartoolMainWindow ) ) {
+                                        // Easiest case: maximized main window has already been resized by Windows
+
+                                        // Update these to account for new buttons sizes
+    mainwr      = CartoolMainWindow->GetWindowRect ().Normalized ();
+    mdicr       = CartoolMdiClient ->GetClientRect ().Normalized ();
+
+                                        // CHILDREN windows scaling factor is equal to the ratio of old to new MDI Client size, which implicitly accounts for Main and MDI decorations
+    childratiox = mdicr.Width  () / (double) OldMDIClientRect.Width  ();
+    childratioy = mdicr.Height () / (double) OldMDIClientRect.Height ();
+
+                                        // Saving this for next new resolution & Maximized window
+    MDIClientRect   = mdicr;
+    }
+
+else {                                  // Not-so-easy case: non-maximized window has to be manually resized
+
+                                        // Scaling factor of the MAIN window is equal to the ratio of old to new screen resolutions, as there is no decoration to account for here
+    double              mainratiox          = ScreenWidth  / (double) OldScreenWidth;
+    double              mainratioy          = ScreenHeight / (double) OldScreenHeight;
+                                        // Top/Left seem to be already updated by Windows(?), it remains to set the new Width/Height
+    int                 newmainwidth        = Round ( mainratiox * mainwr.Width  () );
+    int                 newmainheight       = Round ( mainratioy * mainwr.Height () );
+
+    crtl::WindowSetSize     (   CartoolMainWindow,
+                                newmainwidth, 
+                                newmainheight 
+                            );
+
+                                        // New main and MDI windows size, also accounting for any buttons sizes change
+    TRect               oldmdicr            = mdicr;
+    mainwr      = CartoolMainWindow->GetWindowRect ().Normalized ();
+    mdicr       = CartoolMdiClient ->GetClientRect ().Normalized ();
+
+                                        // Now, for CHILDREN windows, scaling factor is equal to the ratio of old to new MDI Client size, which implicitely accounts for Main and MDI decorations
+    childratiox = mdicr.Width  () / (double) oldmdicr.Width  ();
+    childratioy = mdicr.Height () / (double) oldmdicr.Height ();
+    }
+
+
+for ( TBaseDoc* doc   = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+for ( TBaseView* view = doc->GetViewList (); view != 0; view = doc->NextView ( view ) ) {
+
+    if ( view->IsWindowMinimized () )
+                                        // minimized, updated windows will nicely stay in the background
+        RepositionMinimizedWindow ( view->GetParentO (), mdicr.Height () );
+
+    else
+
+        view->WindowSetPosition (   Truncate ( childratiox * view->GetWindowLeft   () ),  
+                                    Truncate ( childratioy * view->GetWindowTop    () ),
+                                    Round    ( childratiox * view->GetWindowWidth  () ),    // rounding sizes should be the most stable while not leaking outside clien window(?)
+                                    Round    ( childratioy * view->GetWindowHeight () )
+                                );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Refreshing all windows will also update: tracks width, progress bar width, all other textual windows.
 CartoolMdiClient->RefreshWindows ();
 }
 

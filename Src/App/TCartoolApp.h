@@ -146,7 +146,7 @@ public:
 
     void            InitMainWindow      ();
     void            InitInstance        ();
-    void            InitScreen          ();
+    void            SetScreen           ();
     bool            CanClose            ();
     bool            ProcessAppMsg       ( MSG& msg );
 
@@ -205,6 +205,7 @@ protected:
     int             ScreenHeight;
     double          MonitorDpi;
     double          ActualDpi;
+    owl::TRect      MDIClientRect;
 
 
     void            CmHelpAbout         ();
