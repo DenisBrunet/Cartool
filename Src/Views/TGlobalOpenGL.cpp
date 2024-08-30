@@ -56,8 +56,7 @@ if ( IsOpen () )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-SFont   = new TGLBitmapFont ( SmallFontParameters );
-BFont   = new TGLBitmapFont ( BigFontParameters   );
+CreateFonts ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -116,7 +115,8 @@ glGetIntegerv ( GL_MAX_VIEWPORT_DIMS, ViewportMaxSize );
 GLrc.Reset ();                          // non-static
 }
 
-                                        // Used to clean-up things upon Cartool exit
+
+//----------------------------------------------------------------------------
     TGlobalOpenGL::~TGlobalOpenGL ()
 {
 GLrc.Reset ();                          // non-static
@@ -137,6 +137,22 @@ if ( BFont ) {
     delete BFont;
     BFont = 0;
     }
+}
+
+
+//----------------------------------------------------------------------------
+void    TGlobalOpenGL::CreateFonts ()
+{
+                                        // Will nicely dispose off of already existing font
+if ( SFont )
+    delete  SFont;
+
+if ( BFont )
+    delete  BFont;
+
+                                        // Macros hide the fact that the font sizes depend on the current screen DPI
+SFont   = new TGLBitmapFont ( SmallFontParameters );
+BFont   = new TGLBitmapFont ( BigFontParameters   );
 }
 
 

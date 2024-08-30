@@ -29,10 +29,12 @@ namespace crtl {
 class   TGlobalOpenGL
 {
 public:
-                        TGlobalOpenGL ();
-                       ~TGlobalOpenGL ();
+                                TGlobalOpenGL ();
+                               ~TGlobalOpenGL ();
 
-    bool                        IsOpen ()   const           { return  GLLineWidthStep != 0; }   // Using one of the variable as test
+
+    static bool                 IsOpen      ()              { return  GLLineWidthStep != 0; }   // Using one of the variable as test
+    static void                 CreateFonts ();
 
                                         // static objects will be unique for all inherited classes / objects
     static TGLPixelFormat       GLpfd;                  // Declare and define a single pixel format variable (bits per pixel, per depth, per stencil, per accumulation buffer etc..)

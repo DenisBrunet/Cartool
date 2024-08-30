@@ -157,6 +157,7 @@ public:
     void            CreateGadgets       ( bool server = false );
     void            InsertGadgets       ( owl::TGadget** listgadgets, int numgadgets );
     void            RemoveGadgets       ( int afterID = CM_VIEWCREATE );
+    void            UpdateGadgets       ();
 
     void            ResetRegisterInfo   ();
     void            UnRegisterInfo      ();
@@ -219,6 +220,7 @@ protected:
 
     void            EvDisplayChange     ( owl::uint bbp, owl::uint resx, owl::uint resy );
     void            EvDpiChanged        ( int dpi, const owl::TRect& rect );
+    void            ResizeChildren      ( double childratiox, double childratioy, int clientheigh );
 
 
     void            RetrievePreferences                 ();     // reads the Registry, then stores the results internally
