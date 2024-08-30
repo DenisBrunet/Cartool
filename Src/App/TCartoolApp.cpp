@@ -435,7 +435,7 @@ ControlBar->Invalidate ();
 }
 
 
-void    TCartoolApp::CreateGadgets ( bool server )
+void    TCartoolApp::CreateBaseGadgets ( bool server )
 {
                                         // Many buttons have been removed from standard display..
 if ( ! server ) {
@@ -471,7 +471,7 @@ ControlBar->SetHintMode ( TGadgetWindow::EnterHints );
 }
 
 
-void    TCartoolApp::SetupSpeedBar ( TDecoratedMDIFrame* frame )
+void    TCartoolApp::InitGadgetsBar ( TDecoratedMDIFrame* frame )
 {
 ApxHarbor   = new THarbor ( *frame );
 
@@ -479,7 +479,7 @@ ApxHarbor   = new THarbor ( *frame );
 ControlBar  = new TDockableControlBar ( frame );
 
                                         // Create bare minimum gadgets for application
-CreateGadgets ();
+CreateBaseGadgets ();
 
                                         // Setup the toolbar ID used by OLE 2 for toolbar negotiation.
 ControlBar->Attr.Id = IDW_TOOLBAR;
@@ -504,7 +504,7 @@ while ( tocurrentgadget ) {
     }
 
                                         // Re-create common gadgets
-CreateGadgets ();
+CreateBaseGadgets ();
 
                                         // Resize each window's gadgets
 CartoolMdiClient->CmAllWinAction ( CM_ALLWIN_RELOADGADGETS );
@@ -656,8 +656,8 @@ CartoolMainWindow->Attr.AccelTable = IDM_MDI;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // All toolbars
-SetupSpeedBar ( CartoolMainWindow );
+
+InitGadgetsBar ( CartoolMainWindow );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -154,7 +154,7 @@ public:
     bool            IsNotInteractive    ()                                          const   { return  ! IsInteractive (); }
 
 
-    void            CreateGadgets       ( bool server = false );
+    void            CreateBaseGadgets   ( bool server = false );
     void            InsertGadgets       ( owl::TGadget** listgadgets, int numgadgets );
     void            RemoveGadgets       ( int afterID = CM_VIEWCREATE );
     void            UpdateGadgets       ();
@@ -242,7 +242,7 @@ private:
     TCartoolSplashWindow*   Splash;     // Splash screen window
 
 
-    void            SetupSpeedBar       ( owl::TDecoratedMDIFrame* frame );
+    void            InitGadgetsBar      ( owl::TDecoratedMDIFrame* frame );
     void            ProcessCommandLine  ( const char* CmdLine, bool beforeinit );
     void            RegisterInfo        ();
 
