@@ -218,6 +218,7 @@ protected:
     LRESULT         CmFileSelected      ( WPARAM wp, LPARAM lp );
 
     void            EvDisplayChange     ( owl::uint bbp, owl::uint resx, owl::uint resy );
+    void            EvDpiChanged        ( int dpi, const owl::TRect& rect );
 
 
     void            RetrievePreferences                 ();     // reads the Registry, then stores the results internally

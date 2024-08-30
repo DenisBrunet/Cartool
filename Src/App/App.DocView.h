@@ -21,6 +21,52 @@ limitations under the License.
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
+namespace owl {
+                                        // Adding response table macro and event handler signature for WM_DPICHANGED message
+                                        // Note: WM_DPICHANGED message returns an X and Y dpi, but as they are identical, we return only one in our handler
+
+                                        // Define macro à la "windowsx.h"
+#define HANDLE_WM_DPICHANGED(hwnd, wParam, lParam, fn) \
+    ((fn)((hwnd), (int)LOWORD(wParam), ::owl::TRect ( *reinterpret_cast<LPRECT> (p2) )), 0L)
+
+                                        // OwlNext signal handler definition
+template <> struct TDispatch<WM_DPICHANGED>
+{
+
+#if OWL_EV_SIGNATURE_CHECK
+
+template <class T> struct THandler { typedef void (T::*type) ( int dpi, const TRect& rect ); };
+
+#endif
+
+template <class T, void (T::*M) ( int, const TRect& )>
+static TResult Decode ( void* i, TParam1 p1, TParam2 p2 ) {
+
+    struct  TForwarder {
+        T*      i_;
+        void    operator () ( HWND, int dpi, const TRect& rect ) { (i_->*M) ( dpi, rect ); }
+        }   forwarder   = { static_cast<T*> ( i ) };
+
+
+    InUse(p1); InUse(p2);
+                                        // More explicit conversions done here instead of using macro
+    //int             dpi         = LOWORD ( p1 );
+    //::owl::TRect    rect        = *reinterpret_cast<LPRECT> ( p2 );
+    //forwarder ( 0, dpi, rect );
+    //return  0L;
+                                        // Windows macro style
+    return HANDLE_WM_DPICHANGED ( 0, p1, p2, forwarder );
+    }
+};
+
+                                        // Macro for response tables
+#define EV_WM_DPICHANGED OWL_EV_(WM_DPICHANGED, EvDpiChanged)
+}
+
+
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+
 namespace crtl {
                                         // Adding some custom signals Id's and types of handlers for the Doc <-> View communication
 
