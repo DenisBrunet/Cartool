@@ -1630,29 +1630,68 @@ ResizeChildren ( childratiox, childratioy, mdicr.Height () );
 
 
 //----------------------------------------------------------------------------
+                                        // Resizing all children windows
+                                        // It needs special treatments if a window is minimized, maximized, or just plain regular
 void    TCartoolApp::ResizeChildren ( double childratiox, double childratioy, int clientheigh )
 {
 if ( ( childratiox == 0 || childratiox == 1 )
   && ( childratioy == 0 || childratioy == 1 ) )
     return;
 
+                                        // 0) Remember which windows has the focus before messing around windows
+TBaseView*          currentview     = LastActiveBaseView;
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // 1) De-maximize any maximized window before any other resizing operations, to prevent weird artefacts
+TBaseView*          maximizedview   = LastActiveBaseView->IsWindowMaximized () ? LastActiveBaseView : 0;
+
+if ( maximizedview )
+    maximizedview->WindowRestore ();
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // 2) Re-position minimized windows
+for ( TBaseDoc*  doc  = CartoolDocManager->DocListNext ( 0 ); doc  != 0; doc  = CartoolDocManager->DocListNext ( doc ) )
+for ( TBaseView* view = doc->GetViewList ();                  view != 0; view = doc->NextView ( view ) )
+
+    if ( view->IsWindowMinimized () )
+                                        // This affects the MINIMIZED location only
+        RepositionMinimizedWindow ( view->GetParentO (), clientheigh );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // 3) Re-position all normal windows
 for ( TBaseDoc*  doc  = CartoolDocManager->DocListNext ( 0 ); doc  != 0; doc  = CartoolDocManager->DocListNext ( doc ) )
 for ( TBaseView* view = doc->GetViewList ();                  view != 0; view = doc->NextView ( view ) ) {
 
-    if ( view->IsWindowMinimized () )
-                                        // minimized, updated windows will nicely stay in the background
-        RepositionMinimizedWindow ( view->GetParentO (), clientheigh );
+                                        // Temporarily restore a minimized window, so its normal size and position can also be updated
+    bool        iswinmin    = view->IsWindowMinimized ();
 
-    else
-                                        // regular and maximized windows will all update nicely!
-        view->WindowSetPosition (   Truncate ( childratiox * view->GetWindowLeft   () ),  
-                                    Truncate ( childratioy * view->GetWindowTop    () ),
-                                    Round    ( childratiox * view->GetWindowWidth  () ),    // rounding sizes should be the most stable while not leaking outside clien window(?)
-                                    Round    ( childratioy * view->GetWindowHeight () )
-                                );
+    if ( iswinmin )
+        view->WindowRestore ();
+
+                                        // Normal window new position and size
+    view->WindowSetPosition (   Truncate ( childratiox * view->GetWindowLeft   () ),  
+                                Truncate ( childratioy * view->GetWindowTop    () ),
+                                Round    ( childratiox * view->GetWindowWidth  () ),    // rounding sizes should be the most stable while not leaking outside client window(?)
+                                Round    ( childratioy * view->GetWindowHeight () )
+                            );
+
+                                        // Set back to minimize state if appropriate
+    if ( iswinmin )
+        view->WindowMinimize ();
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // 4) Finally, re-maximize any maximized window
+if ( maximizedview )
+    maximizedview->WindowMaximize ();
+
+                                        // Set focus back to the proper window
+if ( currentview )
+    currentview->GetParentO ()->SetFocus ();
 }
 
 

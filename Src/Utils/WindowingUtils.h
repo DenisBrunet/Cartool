@@ -25,8 +25,8 @@ namespace crtl {
 //----------------------------------------------------------------------------
                                         // Wrapping owl::TWindow with simple utilities
 
-inline  bool    IsWindowMinimized   ( const owl::TWindow* window )                                              { return  window ? window->IsIconic ()                  : false; }
-inline  bool    IsWindowMaximized   ( const owl::TWindow* window )                                              { return  window ? window->IsZoomed ()                  : false; }
+inline  bool    IsWindowMinimized   ( const owl::TWindow* window )                                              { return  window && window->IsIconic ();    }
+inline  bool    IsWindowMaximized   ( const owl::TWindow* window )                                              { return  window && window->IsZoomed ();    }
 
                                         // Getting position and size                                            
 inline  int     GetWindowLeft       ( const owl::TWindow* window )                                              { return  window ? window->Attr.X                       : 0;    }
@@ -41,7 +41,6 @@ inline  int     GetWindowMinSide    ( const owl::TWindow* window )              
 
 
 inline  void    RepositionMinimizedWindow   ( owl::TWindow* window, int clientheight );
-//inline  void  GetMainWindowMeasures       ( owl::TMDIFrame* window );
 
                                                                                                                                                   
 inline owl::TDib*   RescaleDIB      ( const owl::TWindow* window, int resid, double scalingfactor );
