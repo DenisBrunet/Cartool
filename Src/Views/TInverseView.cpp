@@ -228,8 +228,8 @@ int                 braini;
 GODoc->GuessHeadBrainGreyMris ( tohead, tobrain, togrey, &headi, &braini );
 
 MRIDocClipp     = togrey;
-MRIDocBackg     = tobrain;
-CurrMri         = braini;
+MRIDocBackg     = tobrain->IsMask () ? tohead : tobrain;
+CurrMri         = tobrain->IsMask () ? headi  : braini;
 
                                         // group all init that is MRI dependent
 InitMri ();
