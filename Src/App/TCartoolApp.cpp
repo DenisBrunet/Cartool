@@ -1657,7 +1657,7 @@ for ( TBaseView* view = doc->GetViewList ();                  view != 0; view = 
 
     if ( view->IsWindowMinimized () )
                                         // This affects the MINIMIZED location only
-        RepositionMinimizedWindow ( view->GetParentO (), clientheigh );
+        view->RepositionMinimizedWindow ( clientheigh );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

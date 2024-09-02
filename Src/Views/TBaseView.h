@@ -435,6 +435,7 @@ public:
     void                    WindowSetOrigin     ( int left, int top )                       const   { crtl::WindowSetOrigin         ( GetParentO (), left,  top );                  }
     void                    WindowSetSize       ( int width, int height )                   const   { crtl::WindowSetSize           ( GetParentO (), width, height );               }
     void                    WindowSetPosition   ( int left, int top, int width, int height )const   { crtl::WindowSetPosition       ( GetParentO (), left,  top,   width, height ); }
+    void                    RepositionMinimizedWindow   ( int clientheight )                const   { crtl::RepositionMinimizedWindow ( GetParentO (), clientheight );              }
 
     int                     GetWindowLeft       ()                                          const   { return crtl::GetWindowLeft    ( GetParentO () ); }
     int                     GetWindowRight      ()                                          const   { return crtl::GetWindowRight   ( GetParentO () ); }

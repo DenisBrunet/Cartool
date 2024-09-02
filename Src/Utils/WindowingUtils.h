@@ -38,9 +38,7 @@ inline  int     GetWindowMiddleVert ( const owl::TWindow* window )              
 inline  int     GetWindowWidth      ( const owl::TWindow* window )                                              { return  window ? window->Attr.W                       : 0;    }
 inline  int     GetWindowHeight     ( const owl::TWindow* window )                                              { return  window ? window->Attr.H                       : 0;    }
 inline  int     GetWindowMinSide    ( const owl::TWindow* window )                                              { return  window ? min ( GetWindowWidth ( window ), GetWindowHeight ( window ) ) : 0; }
-
-
-inline  void    RepositionMinimizedWindow   ( owl::TWindow* window, int clientheight );
+inline  int     GetMinimizedWindowHeight    ( owl::TWindow* window );
 
                                                                                                                                                   
 inline owl::TDib*   RescaleDIB      ( const owl::TWindow* window, int resid, double scalingfactor );
@@ -55,9 +53,39 @@ inline  void    WindowSetOrigin     ( owl::TWindow* window,   int left,   int to
 inline  void    WindowSetSize       ( owl::TWindow* window,   int width,  int height )                          { if ( window ) window->SetWindowPos ( 0, 0,    0,   width, height, SWP_NOCOPYBITS   | SWP_SHOWWINDOW | SWP_NOMOVE ); }
 inline  void    WindowSetPosition   ( owl::TWindow* window,   int left,   int top,    int width,  int height )  { if ( window ) window->SetWindowPos ( 0, left, top, width, height, SWP_NOCOPYBITS   | SWP_SHOWWINDOW              ); }
 inline  void    WindowSetFrameOrigin( owl::TWindow* window,   int left,   int top )                             { if ( window ) window->SetWindowPos ( 0, left, top, 0,     0,      SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOSIZE ); }
+inline  void    RepositionMinimizedWindow   ( owl::TWindow* window, int clientheight );
 
 
 //----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+
+int             GetMinimizedWindowHeight ( owl::TWindow* window )
+{
+static int          MinimizedWindowHeight   = 0;
+
+                                        // Assume minimized window height can not change during process life time
+if ( MinimizedWindowHeight != 0 )
+    return  MinimizedWindowHeight;
+
+
+if ( window == 0 )
+    return  30;                         // Returns a dummy value until caller passes a valid pointer!
+
+
+bool                iswinmin        = IsWindowMinimized ( window );
+
+if ( ! iswinmin )
+    WindowMinimize ( window );
+
+MinimizedWindowHeight   = window->GetWindowRect ().Height ();
+
+if ( ! iswinmin )
+    WindowRestore ( window );
+
+return  MinimizedWindowHeight;
+}
+
+
 //----------------------------------------------------------------------------
                                         // Minimized windows can not be moved with SetWindowPos, so we need a specific function for that...
 void            RepositionMinimizedWindow ( owl::TWindow* window, int clientheight )
@@ -75,7 +103,7 @@ if ( window == 0
                                         // Parameters for minimized windows only
 wndpl.flags             = WPF_SETMINPOSITION;
 wndpl.showCmd           = SW_SHOWMINIMIZED;
-wndpl.ptMinPosition.y   = clientheight - window->GetWindowRect ().Height ();    // always move minimized window to the bottom - X position does not need to be adjusted, though
+wndpl.ptMinPosition.y   = clientheight - GetMinimizedWindowHeight ( window );   // always move minimized window to the bottom - X position left "as is", though
 
 SetWindowPlacement  ( window->GetHandle (), &wndpl );
 }
