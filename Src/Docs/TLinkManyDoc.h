@@ -26,9 +26,9 @@ namespace crtl {
 enum                GroupTilingViewsFlags
                     {
                     GroupTilingViews_Move           = 0x01,
-                    GroupTilingViews_Resize         = 0x02,
-                    GroupTilingViews_StandSize      = 0x04,
-                    GroupTilingViews_SizeMask       = GroupTilingViews_Move | GroupTilingViews_Resize | GroupTilingViews_StandSize,
+                    GroupTilingViews_BestFitSize    = 0x02,     // Best fit to current MDI Client size
+                    GroupTilingViews_StandSize      = 0x04,     // Set standard sizes
+                    GroupTilingViews_SizeMask       = GroupTilingViews_Move | GroupTilingViews_BestFitSize | GroupTilingViews_StandSize,
 
                     GroupTilingViews_RightSide      = 0x10,
                     GroupTilingViews_Insert         = 0x20,

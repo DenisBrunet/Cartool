@@ -119,7 +119,7 @@ if ( ! clear ) {
 
     Open ( ofRead );
 
-    GroupTileViews ( CombineFlags ( GroupTilingViews_Resize, GroupTilingViews_Insert ) );
+    GroupTileViews ( CombineFlags ( GroupTilingViews_BestFitSize, GroupTilingViews_Insert ) );
     }
 
 SetDirty ( false );
@@ -263,7 +263,7 @@ for ( /*int*/ i = 0; i < (int) lm.lxyz; i++ ) {
 
     if ( ! docxyz ) {
         docxyz = dynamic_cast <TElectrodesDoc*> ( CartoolDocManager->OpenDoc ( lm.lxyz[ i ], dtOpenOptions ) );
-        docxyz->GetViewList()->WindowMinimize ();
+        docxyz->GetViewList ()->WindowMinimize ();
         }
     if ( docxyz )
         ListXyzDoc.Append ( docxyz );
@@ -276,7 +276,7 @@ for ( /*int*/ i = 0; i < (int) lm.lsp; i++ ) {
 
     if ( ! docsp ) {
         docsp = dynamic_cast <TSolutionPointsDoc*> ( CartoolDocManager->OpenDoc ( lm.lsp[ i ], dtOpenOptions ) );
-        docsp->GetViewList()->WindowMinimize ();
+        docsp->GetViewList ()->WindowMinimize ();
         }
     if ( docsp )
         ListSpDoc.Append ( docsp );
@@ -289,7 +289,7 @@ for ( /*int*/ i = 0; i < (int) lm.lis; i++ ) {
 
     if ( ! docis ) {
         docis = dynamic_cast <TInverseMatrixDoc*> ( CartoolDocManager->OpenDoc ( lm.lis[ i ], dtOpenOptions ) );
-        docis->GetViewList()->WindowMinimize ();
+        docis->GetViewList ()->WindowMinimize ();
         }
     if ( docis )
         ListIsDoc.Append ( docis );
@@ -302,7 +302,7 @@ for ( /*int*/ i = 0; i < (int) lm.lmri; i++ ) {
 
     if ( ! docmri ) {
         docmri = dynamic_cast <TVolumeDoc *> ( CartoolDocManager->OpenDoc ( lm.lmri[ i ], dtOpenOptions ) );
-        docmri->GetViewList()->WindowMinimize ();
+        docmri->GetViewList ()->WindowMinimize ();
         }
     if ( docmri )
         ListMriDoc.Append ( docmri );
@@ -315,7 +315,7 @@ for ( /*int*/ i = 0; i < (int) lm.lrois; i++ ) {
 
     if ( ! docrois ) {
         docrois = dynamic_cast <TRoisDoc*> ( CartoolDocManager->OpenDoc ( lm.lrois[ i ], dtOpenOptions ) );
-        docrois->GetViewList()->WindowMinimize ();
+        docrois->GetViewList ()->WindowMinimize ();
         }
     if ( docrois )
         ListRoisDoc.Append ( docrois );
@@ -413,7 +413,7 @@ if ( (bool) ListEegDoc && (bool) ListXyzDoc ) {
 
     for ( /*int*/ i = 0; i < (int) ListEegDoc; i++ ) {
                                         // find the right Eeg view id
-        for ( view = ListEegDoc[ i ]->GetViewList(this); view != 0; view = ListEegDoc[ i ]->NextView (view, this) )
+        for ( view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) )
 
             if ( dynamic_cast<TTracksView *> ( view ) )
 
@@ -438,7 +438,7 @@ if ( (bool) ListEegDoc && numspirr && (bool) ListIsDoc && (bool) ListMriDoc ) {
 
     for ( /*int*/ i = 0; i < (int) ListEegDoc; i++ ) {
                                         // find the right Eeg view id
-        for ( view = ListEegDoc[ i ]->GetViewList(this); view != 0; view = ListEegDoc[ i ]->NextView (view, this) )
+        for ( view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) )
 
             if ( dynamic_cast<TTracksView *> ( view ) )
 
@@ -463,7 +463,7 @@ if ( (bool) ListRisDoc && numspirr && (bool) ListMriDoc ) {
 
     for ( /*int*/ i = 0; i < (int) ListRisDoc; i++ ) {
                                         // find the right Eeg view id
-        for ( view = ListRisDoc[ i ]->GetViewList(this); view != 0; view = ListRisDoc[ i ]->NextView (view, this) ) {
+        for ( view = ListRisDoc[ i ]->GetViewList ( this ); view != 0; view = ListRisDoc[ i ]->NextView ( view, this ) ) {
 
             if ( dynamic_cast<TTracksView *> ( view ) )
 
@@ -488,11 +488,11 @@ if ( (bool) ListEegDoc && numspirr && (bool) ListIsDoc && (bool) ListXyzDoc && (
 
     for ( /*int*/ i = 0; i < (int) ListEegDoc; i++ ) {  // scan pairs of views
 
-        for ( view = ListEegDoc[ i ]->GetViewList(this); view != 0; view = ListEegDoc[ i ]->NextView (view, this) )
+        for ( view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) )
 
             if ( dynamic_cast<TPotentialsView *> ( view ) )
 
-                for ( view2 = ListEegDoc[ i ]->GetViewList(this); view2 != 0; view2 = ListEegDoc[ i ]->NextView (view2, this) )
+                for ( view2 = ListEegDoc[ i ]->GetViewList ( this ); view2 != 0; view2 = ListEegDoc[ i ]->NextView (view2, this) )
 
                     if ( dynamic_cast<TInverseView *> ( view2 )
                       && view->LinkedViewId == view2->LinkedViewId )
@@ -627,117 +627,137 @@ return  (bool) ListEegDoc
 void    TLinkManyDoc::GroupTileViews ( GroupTilingViewsFlags flags, UINT viewidabove )
 {
                                         // Any tracks-like document?
-if ( ! ( (bool) ListEegDoc || (bool) ListRisDoc ) )
+if ( (int) ListEegDoc + (int) ListRisDoc == 0 )
     return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TBaseDoc*           doc;
-TBaseView*          view;
-TLinkManyDoc*       lastgod;
-TRect               r;
-int                 maxright;
-int                 xinsertion;
-int                 myleft          = INT_MAX;
-int                 myright;
-int                 maxtop          = 0;
-int                 maxleft         = INT_MAX;
-TWindow*            lastfocus       = CartoolDocManager->GetCurrentView();
+TWindow*            lastfocus       = CartoolDocManager->GetCurrentView ();
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Reposition all minimized windows so they remain within the Client
+TRect               mdicr           = CartoolMdiClient->GetClientRect ().Normalized ();
+
+
+for ( TBaseDoc*  doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+for ( TBaseView* view = doc->GetViewList (); view != 0; view = doc->NextView ( view ) )
+
+    if ( view->IsWindowMinimized () )
+
+        view->RepositionMinimizedWindow ( mdicr.Height () );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Tiling is done from the outer (decorating) window
-auto    GetViewRect     = [] ( const TBaseView* view, TRect& r )
+auto    GetViewRect     = [] ( const TBaseView* view )
 {
-view->GetParentO ()->GetWindowRect ( r );
-CartoolMdiClient->ScreenToClient ( r );
+TRect               r;
+                                        // Biggest outter window
+view->GetParentO ()->GetWindowRect  ( r );
+CartoolMdiClient   ->ScreenToClient ( r );
+
+return  r;
 };
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Find the top of all open windows
-for ( doc = CartoolDocManager->DocListNext(0); doc != 0; doc = CartoolDocManager->DocListNext(doc) )
-for ( view = doc->GetViewList(); view != 0; view = doc->NextView (view) ) {
+int                 maxtop          = 0;
+int                 maxleft         = Highest<int> ();
 
-    GetViewRect ( view, r );
 
-//  if ( ! view->IsWindowMinimized () && r.Top() < maxtop )
-    if ( r.Top () < maxtop  )   maxtop  = r.Top();
-    if ( r.Left() < maxleft )   maxleft = r.Left();
+for ( TBaseDoc*  doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+for ( TBaseView* view = doc->GetViewList (); view != 0; view = doc->NextView ( view ) ) {
+
+    TRect       r       = GetViewRect ( view );
+
+    Mined ( maxtop,  r.Top () );
+    Mined ( maxleft, r.Left() );
     }
 
-if ( maxleft == INT_MAX )  maxleft  = 0;
+
+if ( maxleft == Highest<int> () )   maxleft  = 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Where to insert ?
+TLinkManyDoc*       lastgod         = 0;
+int                 maxright;
+int                 xinsertion;
+int                 myleft          = Highest<int> ();
+int                 myright;
+
+
 if ( IsFlag ( flags, GroupTilingViews_RightSide ) ) {
 
-    maxright    = INT_MIN;
+    maxright    = Lowest<int> ();
 
-    for ( doc = CartoolDocManager->DocListNext(0); doc != 0; doc = CartoolDocManager->DocListNext(doc) )
-    for ( view = doc->GetViewList(this, false); view != 0; view = doc->NextView (view, this, false) )
+    for ( TBaseDoc*  doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+    for ( TBaseView* view = doc->GetViewList ( this, false ); view != 0; view = doc->NextView ( view, this, false ) )
 
         if ( ! view->IsWindowMinimized () ) {
 
-            GetViewRect ( view, r );
+            TRect       r       = GetViewRect ( view );
 
             Maxed ( maxright, r.Right() );
             }
 
-    if ( maxright == INT_MIN )  xinsertion  = maxright = maxleft;
-    else                        xinsertion  = maxright + GroupTilingSpaceBetweenGroups;
+    if ( maxright == Lowest<int> () )   xinsertion  = maxright = maxleft;
+    else                                xinsertion  = maxright + GroupTilingSpaceBetweenGroups;
     }
 
 else {
                                         // find my left side
-    for ( doc = CartoolDocManager->DocListNext(0); doc != 0; doc = CartoolDocManager->DocListNext(doc) )
-    for ( view = doc->GetViewList(this); view != 0; view = doc->NextView (view, this) )
+    for ( TBaseDoc*  doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+    for ( TBaseView* view = doc->GetViewList ( this ); view != 0; view = doc->NextView ( view, this ) )
 
         if ( ! view->IsWindowMinimized () ) {
 
-            GetViewRect ( view, r );
+            TRect       r       = GetViewRect ( view );
 
             Mined ( myleft, r.Left() );
             }
 
-    if ( myleft == INT_MAX )    myleft  = maxleft;
+    if ( myleft == Highest<int> () )    myleft  = maxleft;
 
 
     xinsertion  = myleft;   // if no move
 
     if ( IsFlag ( flags, GroupTilingViews_Insert ) ) {
 
-        maxright    = INT_MIN;
+        maxright    = Lowest<int> ();
         lastgod     = 0;
+
                                         // find insertion point
-        for ( doc = CartoolDocManager->DocListNext(0); doc != 0; doc = CartoolDocManager->DocListNext(doc) )
-        for ( view = doc->GetViewList(this, false); view != 0; view = doc->NextView (view, this, false) )
+        for ( TBaseDoc*  doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+        for ( TBaseView* view = doc->GetViewList ( this, false ); view != 0; view = doc->NextView ( view, this, false ) )
 
             if ( ! view->IsWindowMinimized () ) {
 
-                GetViewRect ( view, r );
+                TRect       r       = GetViewRect ( view );
 
                 if ( r.Right() >  myleft && r.Left()  <= myleft && r.Right() > maxright )   { maxright    = r.Right(); lastgod = view->GODoc; }
                 if ( r.Right() <= myleft && r.Right() >  maxright                       )   { maxright    = r.Right(); lastgod = view->GODoc; }
                 }
+
                                         // find the max right of the group that was found
         if ( lastgod != 0 ) {
 
-            for ( doc = CartoolDocManager->DocListNext(0); doc != 0; doc = CartoolDocManager->DocListNext(doc) )
-            for ( view = doc->GetViewList(lastgod); view != 0; view = doc->NextView (view, lastgod) )
+            for ( TBaseDoc*  doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+            for ( TBaseView* view = doc->GetViewList ( lastgod ); view != 0; view = doc->NextView ( view, lastgod ) )
 
                 if ( ! view->IsWindowMinimized () ) {
 
-                    GetViewRect ( view, r );
+                    TRect       r       = GetViewRect ( view );
 
                     Maxed ( maxright, r.Right() );
                     }
             }
 
-        if ( maxright == INT_MIN )  xinsertion = maxleft;
-        else                        xinsertion = maxright + GroupTilingSpaceBetweenGroups;
+        if ( maxright == Lowest<int> () )   xinsertion = maxleft;
+        else                                xinsertion = maxright + GroupTilingSpaceBetweenGroups;
         } // GroupTilingViews_Insert
     }
 
@@ -746,81 +766,67 @@ else {
                                         // Now what to do?
 if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
 
-    int             numrows = (int) ListEegDoc + (int) ListRisDoc;
-    int             wh      = CartoolMdiClient->GetWindowRect().Height() - 24;
-    int             ww      = CartoolMdiClient->GetWindowRect().Width()  - 20
-                              - GetViewList()->GetWindowRect().Width(); // subtract the width of the link view
-    int             sumw;
-    int             sumh;
-    int             maxsumw;
-    int             maxsumh;
-    int             maxlmvieww  = 0;
-    int             hbegin;
-    int             x,  y,  w,  h;
-    int             wcurr;
-    int             byx,    byy;
-    int             ei = 0;
+    int                 numrows         = (int) ListEegDoc + (int) ListRisDoc;
 
-                                        // don't resize if only 1 eeg
-//  if ( numrows == 1 )
-//      if ( IsFlag ( flags, GroupTilingViews_Resize ) )
-//          ResetFlags ( flags, GroupTilingViews_Resize );
+    int                 wh              = mdicr.Height() 
+                                        - GetMinimizedWindowHeight ( GetViewList()->GetParentO () );    // keep some room at the bottom for the minimized windows to remain visible
 
-                                        // if needed, resize my own views
+    int                 ww              = mdicr.Width()
+                                        - GetViewList ()->GetWindowWidth ();                            // remove width of our lm view
+
+
+                                        // if relevant, resize my own views
     if ( IsFlag ( flags, GroupTilingViews_StandSize ) )
 
-        for ( view = GetViewList(); view != 0; view = NextView (view) )
+        for ( TBaseView* view = GetViewList (); view != 0; view = NextView ( view ) )
 
-            view->SetStandSize();
+            view->SetStandSize ();
+
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // first move my own views
-    for ( y=maxtop, view = GetViewList(); view != 0; view = NextView (view), y += 8 ) {
+    int                 y               = maxtop;
+
+
+    for ( TBaseView* view = GetViewList (); view != 0; view = NextView ( view ), y += 8 ) {
 
         view->WindowRestore ();
         view->WindowSetOrigin ( xinsertion, y );
         }
 
+
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // shift the insertion after my views
-    for ( view = GetViewList(); view != 0; view = NextView (view) ) {
+    int                 maxlmvieww      = 0;
 
-        GetViewRect ( view, r );
+
+    for ( TBaseView* view = GetViewList (); view != 0; view = NextView ( view ) ) {
+
+        TRect       r       = GetViewRect ( view );
 
         if ( r.Right() > xinsertion )
-//          xinsertion  = view->GetWindowRect().Right() + view->WindowClientOffset.X();
-//          xinsertion  = pbr->X() + ( IsFlag ( flags, GroupTilingViews_RightSide ) ? view->WindowClientOffset.X() : 0 );
-//          xinsertion  = view->GetParentO()->GetWindowRect().Right();
-//          xinsertion  = r.Right() + view->WindowClientOffset.X();
             xinsertion  = r.Right();
 
         Maxed ( maxlmvieww, r.Width () );
         }
 
-//  if ( numrows == 1 && IsFlag ( flags, GroupTilingViews_Resize ) ) {  // special case: 1 row -> no resize, only move
-//      ResetFlags ( flags, GroupTilingViews_SizeMask );
-//      SetFlags   ( flags, GroupTilingViews_Move     );
-//      }
-
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // find how to spread the windows
                                         // first get max TSize for each eeg/ris
-    maxsumw = maxsumh = -1;
+    int                 maxsumw         = 0;
+    int                 maxsumh         = 0;
 
 
     for ( int i = 0; i < (int) ListEegDoc; i++ ) {  // process all Eeg
 
-        for ( sumw=0, sumh=0, view = ListEegDoc[ i ]->GetViewList(this); view != 0; view = ListEegDoc[ i ]->NextView (view, this) ) {
+        int         sumw    = 0;
+        int         sumh    = 0;
 
-//          if ( IsFlag ( flags, GroupTilingViews_Move ) ) {
-//              sumw    += view->GetParentO()->GetWindowRect().Width();
-//              sumh    += view->GetParentO()->GetWindowRect().Height();
-//              }
-//          else {
-                sumw    += view->StandSize.X() + view->WindowClientOffset.X();
-                sumh    += view->StandSize.Y() + view->WindowClientOffset.Y();
-//              }
+        for ( TBaseView* view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) ) {
+
+            sumw    += view->StandSize.X() + view->WindowClientOffset.X();
+            sumh    += view->StandSize.Y() + view->WindowClientOffset.Y();
             }
 
         Maxed ( maxsumw, sumw );
@@ -830,7 +836,10 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
 
     for ( int i = 0; i < (int) ListRisDoc; i++ ) {  // process all Ris
 
-        for ( sumw=0, sumh=0, view = ListRisDoc[ i ]->GetViewList(this); view != 0; view = ListRisDoc[ i ]->NextView (view, this) ) {
+        int         sumw    = 0;
+        int         sumh    = 0;
+
+        for (TBaseView*  view = ListRisDoc[ i ]->GetViewList ( this ); view != 0; view = ListRisDoc[ i ]->NextView ( view, this ) ) {
 
             sumw    += view->StandSize.X() + view->WindowClientOffset.X();
             sumh    += view->StandSize.Y() + view->WindowClientOffset.Y();
@@ -843,71 +852,70 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // second, fit it to the current window
-//  #define     HorizontalFavor     2
-//  #define     HorizontalFavor     1.3
-    #define     HorizontalFavor     1.5
+    double              HorizontalFavor     = 1.5;
+    TSize               sizemorehoriz ( HorizontalFavor * maxsumw, maxsumh );
+    int                 wcurr;
+    int                 byx;
+    int                 byy;
+    int                 ei                  = 0;
 
-
-    TSize           sizemorehoriz ( HorizontalFavor * maxsumw, maxsumh );
-
-    TRect           winrect       ( CartoolMdiClient->GetWindowRect() );
+    TRect               winrect             = mdicr;
                                         // remove LM window width from the count
     winrect.SetWH ( 0, 0, winrect.Width () - maxlmvieww, winrect.Height () );
 
-    GetViewList()->FitItemsInWindow ( numrows, sizemorehoriz, byx, byy, &winrect );
+    GetViewList ()->FitItemsInWindow ( numrows, sizemorehoriz, byx, byy, &winrect );
 
 
-    if ( IsFlag ( flags, GroupTilingViews_Resize ) ) {
+    if ( IsFlag ( flags, GroupTilingViews_BestFitSize ) ) {
 
         for ( int i = 0; i < (int) ListEegDoc; i++ ) {  // process all Eeg
 
-//          wcurr   = xinsertion;
-            wcurr   = xinsertion + ( ei % byx ) * ww / byx;
-            hbegin  = maxtop + ((int)( ei / byx )) * wh / byy;
+                        wcurr   = xinsertion + ( ei % byx ) * ww / byx;
+            int         hbegin  = maxtop     + ( ei / byx ) * wh / byy;
             ei++;
+            int         sumw    = 0;
 
-            for ( sumw=0, view = ListEegDoc[ i ]->GetViewList(this); view != 0; view = ListEegDoc[ i ]->NextView (view, this) )
 
-//              sumw    += view->GetParentO()->GetWindowRect().Width();
+            for ( TBaseView* view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) )
+
                 sumw    += view->StandSize.X() + view->WindowClientOffset.X();
 
 
-            for ( view = ListEegDoc[ i ]->GetViewList(this); view != 0; view = ListEegDoc[ i ]->NextView (view, this) ) {
-                x   = wcurr;
-                y   = hbegin;
-                w   = ( view->StandSize.X() + view->WindowClientOffset.X() ) * ww / sumw / byx;
-//              h   = ( numrows == 1 ? view->GetParentO()->GetWindowRect().Height() : wh ) / byy;
-                h   = wh / byy;
-                wcurr   += w;
+            for ( TBaseView* view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) ) {
+
+                int     x       = wcurr;
+                int     y       = hbegin;
+                int     w       = ( view->StandSize.X() + view->WindowClientOffset.X() ) * ww / sumw / byx;
+                int     h       = wh / byy;
+                wcurr  += w;
 
                 view->WindowRestore ();
                 view->WindowSetPosition ( x, y, w, h );
 
                 UpdateApplication;
                 }
-
-//          hbegin  += wh;
             } // EEG
 
 
         for ( int i = 0; i < (int) ListRisDoc; i++ ) {  // process all Ris
 
-            wcurr   = xinsertion + ( ei % byx ) * ww / byx;
-            hbegin  = maxtop + ((int)( ei / byx )) * wh / byy;
+                        wcurr   = xinsertion + ( ei % byx ) * ww / byx;
+            int         hbegin  = maxtop     + ( ei / byx ) * wh / byy;
             ei++;
+            int         sumw    = 0;
 
-            for ( sumw=0, view = ListRisDoc[ i ]->GetViewList(this); view != 0; view = ListRisDoc[ i ]->NextView (view, this) )
+            for ( TBaseView* view = ListRisDoc[ i ]->GetViewList ( this ); view != 0; view = ListRisDoc[ i ]->NextView ( view, this ) )
 
                 sumw    += view->StandSize.X() + view->WindowClientOffset.X();
 
 
-            for ( view = ListRisDoc[ i ]->GetViewList(this); view != 0; view = ListRisDoc[ i ]->NextView (view, this) ) {
-                x   = wcurr;
-                y   = hbegin;
-                w   = ( view->StandSize.X() + view->WindowClientOffset.X() ) * ww / sumw / byx;
-//              h   = ( numrows == 1 ? view->GetParentO()->GetWindowRect().Height() : wh ) / byy;
-                h   = wh / byy;
-                wcurr   += w;
+            for ( TBaseView* view = ListRisDoc[ i ]->GetViewList ( this ); view != 0; view = ListRisDoc[ i ]->NextView ( view, this ) ) {
+
+                int     x       = wcurr;
+                int     y       = hbegin;
+                int     w       = ( view->StandSize.X() + view->WindowClientOffset.X() ) * ww / sumw / byx;
+                int     h       = wh / byy;
+                wcurr  += w;
 
                 view->WindowRestore ();
                 view->WindowSetPosition ( x, y, w, h );
@@ -915,7 +923,9 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
                 UpdateApplication;
                 }
             } // RIS
-        } // if GroupTilingViews_Resize
+
+        } // if GroupTilingViews_BestFitSize
+
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     else {  // move or standard size
@@ -924,22 +934,23 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
 
             if ( ( ei % byx ) == 0 )
                 wcurr   = xinsertion;
-            hbegin  = maxtop + ((int)( ei / byx )) * wh / byy;
+            int         hbegin  = maxtop + ( ei / byx ) * wh / byy;
             ei++;
 
 
-            for ( view = ListEegDoc[ i ]->GetViewList(this); view != 0; view = ListEegDoc[ i ]->NextView (view, this) ) {
+            for ( TBaseView* view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) ) {
 
                 if ( view->GetViewId () < viewidabove )
 
-                    wcurr   = max ( view->GetParentO()->GetWindowRect().Right(), wcurr );
+                    Maxed ( wcurr, view->GetParentO()->GetWindowRect().Right() );
 
                 else {
-                    if ( IsFlag ( flags, GroupTilingViews_StandSize ) )     view->SetStandSize();
-                    x   = wcurr;
-                    y   = hbegin;
+                    if ( IsFlag ( flags, GroupTilingViews_StandSize ) )     view->SetStandSize ();
 
-                    wcurr   += view->GetParentO()->GetWindowRect().Width();
+                    int     x       = wcurr;
+                    int     y       = hbegin;
+
+                    wcurr  += view->GetParentO()->GetWindowRect().Width();
 
                     view->WindowRestore ();
                     view->WindowSetOrigin ( x, y );
@@ -947,8 +958,6 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
                     UpdateApplication;
                     }
                 }
-
-//            hbegin  += wh;
             } // EEG
 
 
@@ -956,22 +965,23 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
 
             if ( ( ei % byx ) == 0 )
                 wcurr   = xinsertion;
-            hbegin  = maxtop + ((int)( ei / byx )) * wh / byy;
+            int         hbegin  = maxtop + ( ei / byx ) * wh / byy;
             ei++;
 
 
-            for ( view = ListRisDoc[ i ]->GetViewList(this); view != 0; view = ListRisDoc[ i ]->NextView (view, this) ) {
+            for ( TBaseView* view = ListRisDoc[ i ]->GetViewList ( this ); view != 0; view = ListRisDoc[ i ]->NextView ( view, this ) ) {
 
                 if ( view->GetViewId () < viewidabove )
 
                     wcurr   = max ( view->GetParentO()->GetWindowRect().Right(), wcurr );
 
                 else {
-                    if ( IsFlag ( flags, GroupTilingViews_StandSize ) )     view->SetStandSize();
-                    x   = wcurr;
-                    y   = hbegin;
+                    if ( IsFlag ( flags, GroupTilingViews_StandSize ) )     view->SetStandSize ();
 
-                    wcurr   += view->GetParentO()->GetWindowRect().Width();
+                    int     x       = wcurr;
+                    int     y       = hbegin;
+
+                    wcurr  += view->GetParentO()->GetWindowRect().Width();
 
                     view->WindowRestore ();
                     view->WindowSetOrigin ( x, y );
@@ -980,7 +990,9 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
                     }
                 }
             } // RIS
+
         } // move or standard size
+
     } // if GroupTilingViews_Move
 
 
@@ -988,45 +1000,47 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
                                         // Finally shift overlapping windows
 if ( IsFlag ( flags, GroupTilingViews_Insert ) ) {
                                         // find my max right
-    myright = INT_MIN;
+    myright = Lowest<int> ();
 
-    for ( doc = CartoolDocManager->DocListNext(0); doc != 0; doc = CartoolDocManager->DocListNext(doc) )
-    for ( view = doc->GetViewList(this); view != 0; view = doc->NextView (view, this) )
+    for ( TBaseDoc*  doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+    for ( TBaseView* view = doc->GetViewList ( this ); view != 0; view = doc->NextView ( view, this ) )
 
         if ( ! view->IsWindowMinimized () ) {
 
-            GetViewRect ( view, r );
+            TRect       r       = GetViewRect ( view );
 
             Maxed ( myright, r.Right() );
             }
 
-    if ( myright == INT_MIN ) myright = myleft + 1;
+
+    if ( myright == Lowest<int> () )    myright = myleft + 1;
 
                                         // find the min left of non-group overlapping windows
-    int minleft = INT_MAX;
+    int     minleft     = Highest<int> ();
 
-    for ( doc = CartoolDocManager->DocListNext(0); doc != 0; doc = CartoolDocManager->DocListNext(doc) )
-    for ( view = doc->GetViewList(lastgod, false); view != 0; view = doc->NextView (view, lastgod, false) )
+    for ( TBaseDoc*  doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+    for ( TBaseView* view = doc->GetViewList ( lastgod, false ); view != 0; view = doc->NextView ( view, lastgod, false ) )
 
         if ( view->GODoc != this && ! view->IsWindowMinimized () ) {
 
-            GetViewRect ( view, r );
+            TRect       r       = GetViewRect ( view );
 
             if ( r.Left() >= myleft && r.Left() < minleft )     minleft = r.Left();
             }
 
-    if ( minleft == INT_MAX )  minleft = myleft;
+
+    if ( minleft == Highest<int> () )   minleft = myleft;
 
 
-    int delta   = myright - minleft + GroupTilingSpaceBetweenGroups;
+    int     delta       = myright - minleft + GroupTilingSpaceBetweenGroups;
 
                                         // shift windows, except the overlapping group
-    for ( doc = CartoolDocManager->DocListNext(0); doc != 0; doc = CartoolDocManager->DocListNext(doc) )
-    for ( view = doc->GetViewList(lastgod, false); view != 0; view = doc->NextView (view, lastgod, false) )
+    for ( TBaseDoc*  doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
+    for ( TBaseView* view = doc->GetViewList ( lastgod, false ); view != 0; view = doc->NextView ( view, lastgod, false ) )
 
         if ( view->GODoc != this && ! view->IsWindowMinimized () ) {
 
-            GetViewRect ( view, r );
+            TRect       r       = GetViewRect ( view );
 
             if ( r.Left() >= myleft ) {
                 view->WindowRestore ();
@@ -1039,7 +1053,7 @@ if ( IsFlag ( flags, GroupTilingViews_Insert ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( lastfocus )    lastfocus->GetParentO()->SetFocus();
+if ( lastfocus )    lastfocus->GetParentO ()->SetFocus ();
 }
 
 
@@ -1432,7 +1446,7 @@ if ( ( adding == addeeg
     TTracksDoc*         doceeg  = dynamic_cast <TTracksDoc*> ( doc );
     newview = true;
 
-    for ( view = doceeg->GetViewList(); view != 0; view = doceeg->NextView (view) )
+    for ( view = doceeg->GetViewList (); view != 0; view = doceeg->NextView ( view ) )
         if ( dynamic_cast<TTracksView *> ( view )
           && view->GODoc == this )
             { LastEegViewId   = view->GetViewId(); break; }
@@ -1452,7 +1466,7 @@ if ( adding == addxyz && (int) ListXyzDoc == 1 && (bool) ListEegDoc ) {
 
     for ( int i = 0; i < (int) ListEegDoc; i++ ){
                                         // find the right Eeg view id
-        for ( view = ListEegDoc[ i ]->GetViewList(); view != 0; view = ListEegDoc[ i ]->NextView (view) )
+        for ( view = ListEegDoc[ i ]->GetViewList (); view != 0; view = ListEegDoc[ i ]->NextView ( view ) )
 
             if ( dynamic_cast<TTracksView *> ( view )
               && view->GODoc == this )
@@ -1476,7 +1490,7 @@ if ( ( adding == addeeg
     TTracksDoc*         doceeg  = dynamic_cast <TTracksDoc*> ( doc );
     newview = true;
 
-    for ( view = doceeg->GetViewList(); view != 0; view = doceeg->NextView (view) )
+    for ( view = doceeg->GetViewList (); view != 0; view = doceeg->NextView ( view ) )
         if ( dynamic_cast<TTracksView *> ( view )
           && view->GODoc == this )
             { LastEegViewId   = view->GetViewId(); break; }
@@ -1499,7 +1513,7 @@ if ( adding == addsp  &&       numspirr   == 1 && (bool) ListEegDoc && (bool) Li
 
     for ( int i = 0; i < (int) ListEegDoc; i++ ) {
                                         // find the right Eeg view id
-        for ( view = ListEegDoc[ i ]->GetViewList(); view != 0; view = ListEegDoc[ i ]->NextView (view) )
+        for ( view = ListEegDoc[ i ]->GetViewList (); view != 0; view = ListEegDoc[ i ]->NextView ( view ) )
 
             if ( dynamic_cast<TTracksView *> ( view )
               && view->GODoc == this )
@@ -1521,7 +1535,7 @@ if ( adding == addris && numspirr && (bool) ListMriDoc ) {
     newview = true;
 
                                         // find the right Eeg view id
-    for ( view = docris->GetViewList(); view != 0; view = docris->NextView (view) ) {
+    for ( view = docris->GetViewList (); view != 0; view = docris->NextView ( view ) ) {
         if ( dynamic_cast<TTracksView *> ( view )
           && view->GODoc == this )
             { LastEegViewId   = view->GetViewId(); break; }
@@ -1543,7 +1557,7 @@ if ( adding == addsp && numspirr == 1 && (bool) ListRisDoc && (bool) ListMriDoc
 
     for ( int i = 0; i < (int) ListRisDoc; i++ ) {
                                         // find the right Eeg view id
-        for ( view = ListRisDoc[ i ]->GetViewList(); view != 0; view = ListRisDoc[ i ]->NextView (view) ) {
+        for ( view = ListRisDoc[ i ]->GetViewList (); view != 0; view = ListRisDoc[ i ]->NextView ( view ) ) {
             if ( dynamic_cast<TTracksView *> ( view )
               && view->GODoc == this )
 
@@ -1567,12 +1581,12 @@ if ( (bool) ListEegDoc && numspirr && (bool) ListIsDoc && (bool) ListXyzDoc && (
 
     for ( int i = 0; i < (int) ListEegDoc; i++ ) {  // scan pairs of views
 
-        for ( view = ListEegDoc[ i ]->GetViewList(); view != 0; view = ListEegDoc[ i ]->NextView (view) )
+        for ( view = ListEegDoc[ i ]->GetViewList (); view != 0; view = ListEegDoc[ i ]->NextView ( view ) )
 
             if ( dynamic_cast<TPotentialsView *> ( view )
               && view->GODoc == this )
 
-                for ( view2 = ListEegDoc[ i ]->GetViewList(); view2 != 0; view2 = ListEegDoc[ i ]->NextView (view2) )
+                for ( view2 = ListEegDoc[ i ]->GetViewList (); view2 != 0; view2 = ListEegDoc[ i ]->NextView (view2) )
 
                     if ( dynamic_cast<TInverseView *> ( view2 )
                       && view2->GODoc == this
@@ -1665,7 +1679,7 @@ for ( view = GetViewList (); view != 0; view = NextView ( view ) ) {
 
                                         // do a nice tiling
 if ( retile )
-    GroupTileViews ( CombineFlags ( GroupTilingViews_Resize, GroupTilingViews_Insert ) );
+    GroupTileViews ( CombineFlags ( GroupTilingViews_BestFitSize, GroupTilingViews_Insert ) );
 }
 
 
@@ -1943,12 +1957,12 @@ TListIterator<TRisDoc>      iteratorris;
 if      ( w == CM_DESYNCALL ) {
 
     foreachin ( ListEegDoc, iteratoreeg ) {
-        for ( view = iteratoreeg ()->GetViewList(this); view != 0; view = iteratoreeg ()->NextView (view, this) )
+        for ( view = iteratoreeg ()->GetViewList ( this ); view != 0; view = iteratoreeg ()->NextView ( view, this ) )
             view->CancelFriendship ();
         }
 
     foreachin ( ListRisDoc, iteratorris ) {
-        for ( view = iteratorris ()->GetViewList(this); view != 0; view = iteratorris ()->NextView (view, this) )
+        for ( view = iteratorris ()->GetViewList ( this ); view != 0; view = iteratorris ()->NextView ( view, this ) )
             view->CancelFriendship ();
         }
     }
@@ -1968,12 +1982,12 @@ else if ( w == CM_DESYNCBETWEENEEG ) {
                                         // scan all pairs of different eeg views
     foreachin ( ListEegDoc, iteratoreeg ) {
 
-        for ( view = iteratoreeg ()->GetViewList(this); view != 0; view = iteratoreeg ()->NextView (view, this) ) {
+        for ( view = iteratoreeg ()->GetViewList ( this ); view != 0; view = iteratoreeg ()->NextView ( view, this ) ) {
 
                                         // eeg-to-eeg
             for ( eegatom2 = ((TListAtom<TTracksDoc> *) iteratoreeg)->Next; eegatom2 != 0; eegatom2 = eegatom2->Next ) {
                 doceeg2 = eegatom2->To;
-                for ( view2 = doceeg2->GetViewList(this); view2 != 0; view2 = doceeg2->NextView (view2, this) )
+                for ( view2 = doceeg2->GetViewList ( this ); view2 != 0; view2 = doceeg2->NextView (view2, this) )
                                         // this pair shouldn't remains friends...
                     if ( view->IsFriendView ( view2 ) ) {
 
@@ -1981,13 +1995,13 @@ else if ( w == CM_DESYNCBETWEENEEG ) {
 
                                         // replace in eeg1 all old Ids
                         newfrid = view->GetViewId();
-                        for ( view3 = iteratoreeg ()->GetViewList(this); view3 != 0; view3 = iteratoreeg ()->NextView (view3, this) )
+                        for ( view3 = iteratoreeg ()->GetViewList ( this ); view3 != 0; view3 = iteratoreeg ()->NextView (view3, this) )
                             if ( view3->IsFriendship ( oldfrid ) )
                                 view3->SetFriendship ( newfrid );
 
                                         // replace in eeg2 all old Ids
                         newfrid = view2->GetViewId();
-                        for ( view3 = doceeg2->GetViewList(this); view3 != 0; view3 = doceeg2->NextView (view3, this) )
+                        for ( view3 = doceeg2->GetViewList ( this ); view3 != 0; view3 = doceeg2->NextView (view3, this) )
                             if ( view3->IsFriendship ( oldfrid ) )
                                 view3->SetFriendship ( newfrid );
 
@@ -1996,7 +2010,7 @@ else if ( w == CM_DESYNCBETWEENEEG ) {
 
                                         // eeg-to-ris
             foreachin ( ListRisDoc, iteratorris ) {
-                for ( view2 = iteratorris ()->GetViewList(this); view2 != 0; view2 = iteratorris ()->NextView (view2, this) )
+                for ( view2 = iteratorris ()->GetViewList ( this ); view2 != 0; view2 = iteratorris ()->NextView (view2, this) )
                                         // this pair shouldn't remains friends...
                     if ( view->IsFriendView ( view2 ) ) {
 
@@ -2004,13 +2018,13 @@ else if ( w == CM_DESYNCBETWEENEEG ) {
 
                                         // replace in eeg1 all old Ids
                         newfrid = view->GetViewId();
-                        for ( view3 = iteratoreeg ()->GetViewList(this); view3 != 0; view3 = iteratoreeg ()->NextView (view3, this) )
+                        for ( view3 = iteratoreeg ()->GetViewList ( this ); view3 != 0; view3 = iteratoreeg ()->NextView (view3, this) )
                             if ( view3->IsFriendship ( oldfrid ) )
                                 view3->SetFriendship ( newfrid );
 
                                         // replace in eeg2 all old Ids
                         newfrid = view2->GetViewId();
-                        for ( view3 = iteratorris ()->GetViewList(this); view3 != 0; view3 = iteratorris ()->NextView (view3, this) )
+                        for ( view3 = iteratorris ()->GetViewList ( this ); view3 != 0; view3 = iteratorris ()->NextView (view3, this) )
                             if ( view3->IsFriendship ( oldfrid ) )
                                 view3->SetFriendship ( newfrid );
 
@@ -2022,11 +2036,11 @@ else if ( w == CM_DESYNCBETWEENEEG ) {
                                         // scan all pairs of different ris-to-ris views
     foreachin ( ListRisDoc, iteratorris ) {
 
-        for ( view = iteratorris ()->GetViewList(this); view != 0; view = iteratorris ()->NextView (view, this) )
+        for ( view = iteratorris ()->GetViewList ( this ); view != 0; view = iteratorris ()->NextView ( view, this ) )
 
             for ( risatom2 = ((TListAtom<TRisDoc> *) iteratorris)->Next; risatom2 != 0; risatom2 = risatom2->Next ) {
                 docris2 = risatom2->To;
-                for ( view2 = docris2->GetViewList(this); view2 != 0; view2 = docris2->NextView (view2, this) )
+                for ( view2 = docris2->GetViewList ( this ); view2 != 0; view2 = docris2->NextView (view2, this) )
                                         // this pair shouldn't remains friends...
                     if ( view->IsFriendView ( view2 ) ) {
 
@@ -2034,13 +2048,13 @@ else if ( w == CM_DESYNCBETWEENEEG ) {
 
                                         // replace in eeg1 all old Ids
                         newfrid = view->GetViewId();
-                        for ( view3 = iteratorris ()->GetViewList(this); view3 != 0; view3 = iteratorris ()->NextView (view3, this) )
+                        for ( view3 = iteratorris ()->GetViewList ( this ); view3 != 0; view3 = iteratorris ()->NextView (view3, this) )
                             if ( view3->IsFriendship ( oldfrid ) )
                                 view3->SetFriendship ( newfrid );
 
                                         // replace in eeg2 all old Ids
                         newfrid = view2->GetViewId();
-                        for ( view3 = docris2->GetViewList(this); view3 != 0; view3 = docris2->NextView (view3, this) )
+                        for ( view3 = docris2->GetViewList ( this ); view3 != 0; view3 = docris2->NextView (view3, this) )
                             if ( view3->IsFriendship ( oldfrid ) )
                                 view3->SetFriendship ( newfrid );
 
@@ -2054,7 +2068,7 @@ else if ( w == CM_SYNCALL ) {
     TBaseView      *firstview = 0;
 
     foreachin ( ListEegDoc, iteratoreeg ) {
-        for ( view = iteratoreeg ()->GetViewList(this); view != 0; view = iteratoreeg ()->NextView (view, this) ) {
+        for ( view = iteratoreeg ()->GetViewList ( this ); view != 0; view = iteratoreeg ()->NextView ( view, this ) ) {
 //          if ( dynamic_cast<TTracksView *> ( view ) )
 //              continue;
 
@@ -2069,7 +2083,7 @@ else if ( w == CM_SYNCALL ) {
         }
 
     foreachin ( ListRisDoc, iteratorris ) {
-        for ( view = iteratorris ()->GetViewList(this); view != 0; view = iteratorris ()->NextView (view, this) ) {
+        for ( view = iteratorris ()->GetViewList ( this ); view != 0; view = iteratorris ()->NextView ( view, this ) ) {
 
             if ( firstview == 0 )
                 firstview = view;
@@ -2089,7 +2103,7 @@ else if ( w == CM_SYNCBETWEENEEG ) {
     foreachin ( ListEegDoc, iteratoreeg ) {
         firstview = 0;
 
-        for ( view = iteratoreeg ()->GetViewList(this); view != 0; view = iteratoreeg ()->NextView (view, this) ) {
+        for ( view = iteratoreeg ()->GetViewList ( this ); view != 0; view = iteratoreeg ()->NextView ( view, this ) ) {
             if ( firstview == 0 )
                 firstview = view;
 
@@ -2103,7 +2117,7 @@ else if ( w == CM_SYNCBETWEENEEG ) {
     foreachin ( ListRisDoc, iteratorris ) {
         firstview = 0;
 
-        for ( view = iteratorris ()->GetViewList(this); view != 0; view = iteratorris ()->NextView (view, this) ) {
+        for ( view = iteratorris ()->GetViewList ( this ); view != 0; view = iteratorris ()->NextView ( view, this ) ) {
             if ( firstview == 0 )
                 firstview = view;
 

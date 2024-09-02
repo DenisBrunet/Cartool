@@ -612,9 +612,9 @@ if ( currentview == 0 || currentGOD == 0 )
     return;
 
 
-if      ( w == IDB_GTVKEEPSIZE  )           currentview->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_Move     , GroupTilingViews_Insert ) );
-else if ( w == IDB_GTVSTANDSIZE )           currentview->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_StandSize, GroupTilingViews_Insert ) );
-else if ( w == IDB_GTVFIT       )           currentview->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_Resize   , GroupTilingViews_Insert ) );
+if      ( w == IDB_GTVKEEPSIZE  )           currentview->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_Move     ,   GroupTilingViews_Insert ) );
+else if ( w == IDB_GTVSTANDSIZE )           currentview->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_StandSize,   GroupTilingViews_Insert ) );
+else if ( w == IDB_GTVFIT       )           currentview->GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_BestFitSize, GroupTilingViews_Insert ) );
 
 else {
     for ( TBaseDoc*  doc  = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )

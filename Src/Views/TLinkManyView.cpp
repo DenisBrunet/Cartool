@@ -117,7 +117,7 @@ if ( GODoc->GetViewList() == this ) {
                                         // for myself, ready for next call
     SetStandSize ();
                                         // default tiling
-    GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_Resize, GroupTilingViews_RightSide ) );
+    GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_BestFitSize, GroupTilingViews_RightSide ) );
 
                                         // shift left all previous groups, for compactness
     //for ( TBaseDoc *doc = CartoolDocManager->DocListNext(0); doc != 0; doc = CartoolDocManager->DocListNext(doc) )
@@ -522,9 +522,9 @@ if ( ! wasiconic )
 //----------------------------------------------------------------------------
 void    TLinkManyView::CmGTV ( owlwparam w )
 {
-if      ( w == IDB_GTVKEEPSIZE )    GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_Move     , GroupTilingViews_Insert ) );
-else if ( w == IDB_GTVSTANDSIZE )   GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_StandSize, GroupTilingViews_Insert ) );
-else if ( w == IDB_GTVFIT )         GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_Resize   , GroupTilingViews_Insert ) );
+if      ( w == IDB_GTVKEEPSIZE )    GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_Move     ,   GroupTilingViews_Insert ) );
+else if ( w == IDB_GTVSTANDSIZE )   GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_StandSize,   GroupTilingViews_Insert ) );
+else if ( w == IDB_GTVFIT )         GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_BestFitSize, GroupTilingViews_Insert ) );
 }
 
 

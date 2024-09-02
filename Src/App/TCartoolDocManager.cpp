@@ -752,7 +752,7 @@ if ( view->GODoc ) {
             }
         }
                                         // in any case, do a nice insertion
-    god->GroupTileViews ( CombineFlags ( GroupTilingViews_Resize, GroupTilingViews_Insert ) );
+    god->GroupTileViews ( CombineFlags ( GroupTilingViews_BestFitSize, GroupTilingViews_Insert ) );
     }
 
                                         // Forcing the focus to activate buttons and stuff
