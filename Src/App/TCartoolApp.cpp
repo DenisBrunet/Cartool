@@ -519,17 +519,14 @@ ControlBar->Invalidate ();
 //----------------------------------------------------------------------------
 void    TCartoolApp::SetScreen ()
 {
-//DBGM ( BoolToString ( IsProcessDPIAware () ), "IsProcessDPIAware" );
-
-
-DPI_AWARENESS_CONTEXT   dpiawarenesscontext = GetThreadDpiAwarenessContext ();
-DPI_AWARENESS           dpiawareness        = GetAwarenessFromDpiAwarenessContext ( dpiawarenesscontext );
-
-//DBGV ( dpiawareness, dpiawareness == DPI_AWARENESS_UNAWARE          ? "DPI_AWARENESS_UNAWARE" 
-//                   : dpiawareness == DPI_AWARENESS_SYSTEM_AWARE     ? "DPI_AWARENESS_SYSTEM_AWARE" 
-//                   : dpiawareness == DPI_AWARENESS_PER_MONITOR_AWARE? "DPI_AWARENESS_PER_MONITOR_AWARE" 
-//                   :                                                  "DPI_AWARENESS_INVALID"
-//                   )
+//                                        // DPI-awareness test, i.e. if Cartool is allowed to resize its UI to adjust in real-time to different monitors' DPIs
+//                                        // Simple test
+//bool                isdpiaware      = IsProcessDPIAware ();
+//
+//                                        // Finer test for DPI-awareness
+//DPI_AWARENESS_CONTEXT   dpiawarenesscontext = GetThreadDpiAwarenessContext ();
+//DPI_AWARENESS           dpiawareness        = GetAwarenessFromDpiAwarenessContext ( dpiawarenesscontext );  // Returned values: DPI_AWARENESS_UNAWARE, DPI_AWARENESS_SYSTEM_AWARE, DPI_AWARENESS_PER_MONITOR_AWARE
+//bool                isdpiawarepermonitor    = dpiawareness == DPI_AWARENESS_PER_MONITOR_AWARE;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -542,7 +539,6 @@ monitorinfo.cbSize  = sizeof ( MONITORINFOEX );
 
 GetMonitorInfo ( monitor, &monitorinfo );
 
-//DBGM ( monitorinfo.szDevice, "Monitor" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Max resolution of CURRENT monitor
@@ -559,8 +555,6 @@ for ( DWORD dmi = 0; EnumDisplaySettings ( monitorinfo.szDevice, dmi, &devmode )
     Maxed ( MaxScreenHeight, (int) devmode.dmPelsHeight );
     }
 
-//DBGV2 ( MaxScreenWidth, MaxScreenHeight, "MaxScreenWidth, MaxScreenHeight" );
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Get current screen resolution
@@ -574,8 +568,6 @@ EnumDisplaySettings ( monitorinfo.szDevice, ENUM_REGISTRY_SETTINGS /*ENUM_CURREN
 ScreenWidth     = devmode.dmPelsWidth;
 ScreenHeight    = devmode.dmPelsHeight;
 
-//DBGV2 ( ScreenWidth, ScreenHeight, "ScreenWidth, ScreenHeight" );
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Compute effective DPI for a rescaled display
@@ -585,8 +577,6 @@ double              dpiratio        = max ( dpiratiox, dpiratioy ); // Actual re
 
 MonitorDpi          = GetWindowDpi ( CartoolMainWindow );
 ActualDpi           = MonitorDpi * dpiratio;
-
-//DBGV3 ( MonitorDpi, dpiratio, ActualDpi, "MonitorDpi, dpiratio -> ActualDpi" );
 }
 
 
