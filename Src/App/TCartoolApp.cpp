@@ -338,7 +338,7 @@ StringAppend    ( DefaultTitle, "  " "DEBUG" );
 
 SetName         ( DefaultTitle );
 
-                                        // Force setting DPI awareness from library
+                                        // Setting DPI awareness from library
 SetProcessDpiAwareness ( PROCESS_PER_MONITOR_DPI_AWARE );
 }
 
@@ -1605,11 +1605,16 @@ if ( RescaleButtonActualDpi () != OldRescaleButtonActualDpi )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Update main window + children windows sizes and positions
 
-                                        // For the moment, rely on Windows parameters, which might have more reasons than just preserving the orignal window to screen ratio(?)
+                                        // Rely on Windows parameters, which might have more reasons than just preserving the orignal window to screen ratio(?)
+                                        // For example, it seems we can trust it for the new position to not trigger a new EvDpiChanged...
+int                 newmainleft         = rect.Left   ();
+int                 newmaintop          = rect.Top    ();
 int                 newmainwidth        = rect.Width  ();
 int                 newmainheight       = rect.Height ();
 
-crtl::WindowSetSize     (   CartoolMainWindow,
+crtl::WindowSetPosition (   CartoolMainWindow,
+                            newmainleft,
+                            newmaintop,
                             newmainwidth, 
                             newmainheight 
                         );

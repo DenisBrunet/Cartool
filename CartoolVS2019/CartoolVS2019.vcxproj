@@ -774,9 +774,6 @@
     <Image Include="..\Src\res\ico\verbose.ico" />
     <Image Include="..\Src\res\ico\xyzcoord.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Manifest Include="..\Bin\Cartool64.manifest" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
