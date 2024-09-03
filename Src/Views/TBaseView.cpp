@@ -297,18 +297,24 @@ DestroyGadgets ();
                                         // automatically remove links to this
 TListIterator<TBaseView>    iterator;
 
-if ( ! CartoolApplication->Closing )
+if ( ! CartoolApplication->Closing ) {
+
     foreachin ( UsedBy, iterator ) {
                                         // remove, and refresh
         iterator ()->Using.Remove ( this );
         iterator ()->Invalidate ( false );
         }
+    }
+
 UsedBy.Reset ( false );
 
                                         // don't use these windows anymore
-if ( ! CartoolApplication->Closing )                // maybe the windows pointed to are already destroyed?
+if ( ! CartoolApplication->Closing ) {  // maybe the windows pointed to are already destroyed?
+
     foreachin ( Using, iterator )
         iterator ()->UsedBy.Remove ( this );
+    }
+
 Using.Reset ( false );
 }
 
@@ -1995,8 +2001,8 @@ return true;
 //----------------------------------------------------------------------------
 void    TBaseView::EvGetMinMaxInfo ( MINMAXINFO& minmaxinfo )
 {
-minmaxinfo.ptMaxSize        = TPoint( 1600, 1200 );
-minmaxinfo.ptMaxTrackSize   = TPoint( 1600, 1200 );
+minmaxinfo.ptMaxSize        = TPoint ( 4000, 4000 );
+minmaxinfo.ptMaxTrackSize   = TPoint ( 4000, 4000 );
 
 //TWindowView::EvGetMinMaxInfo ( minmaxinfo );
 }
@@ -2016,12 +2022,13 @@ if ( sizetype == SIZE_MINIMIZED ) {
     return;
     }
 
-WindowSetSize ( size.X() + WindowClientOffset.X(), size.Y() + WindowClientOffset.Y() );
+WindowSetSize   (   size.X () + WindowClientOffset.X (), 
+                    size.Y () + WindowClientOffset.Y ()  );
                                         // not useful anymore?
 //::WindowSetSize ( this, size.X(), size.Y() );
 
-//Invalidate ( false );
-ShowNow ();
+Invalidate ( false );
+//ShowNow ();
 }
 
 
@@ -2036,12 +2043,12 @@ CartoolApplication->LastActiveBaseView  = this;
                                         // Updating keys that might have changed BETWEEN focus switches
                                         // VkKey is a lower level, real-time polling, which does not make use of messages
 ControlKey              = VkControl ();
-ShiftKey                = VkShift ();
-//AltKey                = VkMenu ();
-LeftKey                 = VkKey ( VK_LEFT  );
-RightKey                = VkKey ( VK_RIGHT );
-UpKey                   = VkKey ( VK_UP    );
-DownKey                 = VkKey ( VK_DOWN  );
+ShiftKey                = VkShift   ();
+//AltKey                = VkMenu    ();
+LeftKey                 = VkKey     ( VK_LEFT  );
+RightKey                = VkKey     ( VK_RIGHT );
+UpKey                   = VkKey     ( VK_UP    );
+DownKey                 = VkKey     ( VK_DOWN  );
 
                                         // update the last group with the one of this window
 BaseDoc->LastGroupDoc = GODoc;

@@ -36,14 +36,14 @@ class   TCartoolMdiClient   :   public  owl::TMDIClient,
 
 {
 public:
-                    TCartoolMdiClient       ( owl::TModule* module = 0 );
+
+    using           owl::TMDIClient::TMDIClient;
     virtual        ~TCartoolMdiClient       ();
 
 
     bool            CanClose                ();
 
     void            RefreshWindows          ();
-//  void            AdjustScroller          ();
 
 
     void            CmWinAction             ( owlwparam w );

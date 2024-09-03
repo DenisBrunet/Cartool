@@ -196,29 +196,6 @@ END_RESPONSE_TABLE;
 
 
 //----------------------------------------------------------------------------
-        TCartoolMdiClient::TCartoolMdiClient ( TModule* module )
-      : TMDIClient ( module )
-{
-/*                                        // to navigate in the window
-Attr.Style |= WS_VSCROLL | WS_HSCROLL;
-
-Scroller        = new TScroller ( this, 20, 20, 3 * sdc.GetDeviceCaps ( HORZRES ) / 20, 1 * sdc.GetDeviceCaps ( VERTRES ) / 20 );
-Scroller->TrackMode = true;
-Scroller->AutoMode  = true;             // auto scrolling with mouse outside
-Scroller->AutoOrg   = true;
-Scroller->XPage     = sdc.GetDeviceCaps ( HORZRES );
-Scroller->YPage     = sdc.GetDeviceCaps ( VERTRES );
-Scroller->XPos      = 0;
-Scroller->YPos      = 0;
-Scroller->HasVScrollBar = true;
-Scroller->HasHScrollBar = true;
-Scroller->SetSBarRange();
-
-AdjustScroller ();
-*/
-}
-
-
         TCartoolMdiClient::~TCartoolMdiClient ()
 {
 
@@ -265,53 +242,6 @@ for ( TWindow* tow = GetFirstChild (); tow != 0 && nw != 0; tow = tow->Next (), 
     }
 }
 
-
-//----------------------------------------------------------------------------
-/*
-void    TCartoolMdiClient::AdjustScroller ()
-{
-TRect               clientRect      = GetClientRect();
-int                 minx            = 0x0FFFFFFF;
-int                 maxx            = 0x80000000;
-int                 miny            = 0x0FFFFFFF;
-int                 maxy            = 0x80000000;
-
-
-if ( GetFirstChild() == 0 ) {
-    Scroller->SetRange ( 0, 0 );
-    return;
-    }
-else {
-    TRect               wr;
-    TWindow            *tow;
-    TCartoolMdiChild   *tomdih;
-    int                 nw;
-
-    for ( tow = GetFirstChild(), nw = NumChildren(); tow != 0 && nw ; tow=tow->Next(), nw-- ) {
-
-        tomdih  = dynamic_cast<TCartoolMdiChild*> ( tow );
-
-        if ( tomdih && ! IsWindowMinimized ( tomdih ) ) {
-
-            tow->GetWindowRect( wr );
-
-            if ( wr.Left()   < minx ) minx = wr.Left();
-            if ( wr.Right()  > maxx ) maxx = wr.Right();
-            if ( wr.Top()    < miny ) miny = wr.Top();
-            if ( wr.Bottom() > maxy ) maxy = wr.Bottom();
-            }
-        }
-
-    Scroller->SetRange ( ( maxx - minx + 1 ) / Scroller->XUnit , ( maxy - miny + 1 ) / Scroller->YUnit );
-    }
-
-Scroller->ScrollTo ( 0, 0 );
-//Scroller->ScrollTo ( minx, miny );
-
-//if (!GetUpdateRect(clientRect, false))
-Invalidate ( false );
-}
-*/
 
 //----------------------------------------------------------------------------
 void    TCartoolMdiClient::EvDropFiles ( TDropInfo )

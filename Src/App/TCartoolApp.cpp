@@ -1410,8 +1410,6 @@ if ( CartoolMdiClient ) {
     child->Create ();
                                         // !forcing focus, useful when directly calling dnCreate!
     child->GetClientWindow ()->SetFocus ();
-
-//  CartoolMdiClient->AdjustScroller ();
     }
 
 //UpdateApplication;
@@ -1420,15 +1418,14 @@ if ( CartoolMdiClient ) {
 
 void    TCartoolApp::EvCloseView ( TView& view )
 {
-if ( LastActiveBaseView )
+if ( LastActiveBaseView ) {
 
     if ( LastActiveBaseView->GetViewId () == view.GetViewId () )
 
         LastActiveBaseView  = 0;
-
-
-//if ( CartoolMdiClient )
-//  CartoolMdiClient->AdjustScroller();
+    else
+        LastActiveBaseView->GetParentO ()->SetFocus ();
+    }
 
 //UpdateApplication;
 }
@@ -1437,6 +1434,7 @@ if ( LastActiveBaseView )
 void    TCartoolApp::EvOwlDocument ( TDocument& doc )
 {
 if ( doc.GetDocPath () )
+
     SaveMenuChoice ( TFileName ( doc.GetDocPath (), TFilenameExtendedPath ) );
 
 //UpdateApplication;
