@@ -103,7 +103,7 @@ if ( FVData ) {
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetProductName ( LPSTR& s )
+bool    TCartoolVersionInfo::GetProductName ( LPCTSTR& s )   const
 {
 if ( ! HasFileVersionInfo () )
     return  false;
@@ -118,7 +118,7 @@ return ::VerQueryValue ( FVData, subBlockName, (void**) &s, &vSize );
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetProductVersion ( LPSTR& s )
+bool    TCartoolVersionInfo::GetProductVersion ( LPCTSTR& s )   const
 {
 if ( ! HasFileVersionInfo () )
     return  false;
@@ -133,7 +133,7 @@ return ::VerQueryValue ( FVData, subBlockName, (void**) &s, &vSize );
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetBranchName ( LPSTR& s )
+bool    TCartoolVersionInfo::GetBranchName ( LPCTSTR& s )   const
 {
 s   = GitBranchName;
 return true;
@@ -141,7 +141,7 @@ return true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetProductRevision ( LPSTR& s )
+bool    TCartoolVersionInfo::GetProductRevision ( LPCTSTR& s )   const
 {
 s   = Revision;
 return true;
@@ -149,7 +149,7 @@ return true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetProductDate ( LPSTR& s )
+bool    TCartoolVersionInfo::GetProductDate ( LPCTSTR& s )   const
 {
 s   = GitDateNow;
 return true;
@@ -157,7 +157,7 @@ return true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetCopyright ( LPSTR& copyright )
+bool    TCartoolVersionInfo::GetCopyright ( LPCTSTR& copyright )   const
 {
 if ( ! HasFileVersionInfo () )
     return  false;
@@ -172,7 +172,7 @@ return ::VerQueryValue ( FVData, subBlockName, (void**) &copyright, &vSize );
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetBuild ( LPSTR& s )
+bool    TCartoolVersionInfo::GetBuild ( LPCTSTR& s )   const
 {
 #if defined (_CONSOLE)
 s   = "Console";
@@ -187,7 +187,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetArchitecture ( LPSTR& s )
+bool    TCartoolVersionInfo::GetArchitecture ( LPCTSTR& s )   const
 {
 #if defined (_WIN64)
 s   = "64-bit";
@@ -200,7 +200,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetOpenMP ( LPSTR& s )
+bool    TCartoolVersionInfo::GetOpenMP ( LPCTSTR& s )   const
 {
 #if defined (_OPENMP)
 s   = "OpenMP";
@@ -212,7 +212,7 @@ return  false;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetRunTimeLibrary ( LPSTR& s )
+bool    TCartoolVersionInfo::GetRunTimeLibrary ( LPCTSTR& s )   const
 {
 #if defined (_MT)
 s   = "Multi-thread";
@@ -225,7 +225,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetInstructionSet ( LPSTR& s )
+bool    TCartoolVersionInfo::GetInstructionSet ( LPCTSTR& s )   const
 {
 #if defined (__AVX512BW__)
 s   = "AVX512";
@@ -247,7 +247,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TCartoolVersionInfo::GetMKL ( LPSTR& s )
+bool    TCartoolVersionInfo::GetMKL ( LPCTSTR& s )   const
 {
                                         // or _MKL_SERVICE_H_
 #if defined (_MKL_TYPES_H_)
@@ -256,6 +256,20 @@ return  true;
 #else
 return  false;
 #endif
+}
+
+
+//----------------------------------------------------------------------------
+bool    TCartoolVersionInfo::GetDPIAwareness ( LPCTSTR& s )   const
+{
+DPI_AWARENESS       dpiawareness    = TCartoolApp::GetDPIAwareness ();
+
+switch ( dpiawareness ) {
+
+    case    DPI_AWARENESS_SYSTEM_AWARE      :   s = "DPI System Aware";     return true;
+    case    DPI_AWARENESS_PER_MONITOR_AWARE :   s = "DPI Monitor Aware";    return true;
+    default                                 :   s = "Not DPI Aware";        return false;
+    };
 }
 
 

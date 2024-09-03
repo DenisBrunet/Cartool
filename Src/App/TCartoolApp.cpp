@@ -308,7 +308,7 @@ Taloracle.Read      ( TaloracleFile );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // read these global variables
-LPSTR               tostr = 0;
+LPCTSTR             tostr           = 0;
 TCartoolVersionInfo applVersion ( this );
 
 applVersion.GetProductName     ( tostr );
@@ -517,16 +517,27 @@ ControlBar->Invalidate ();
 
 
 //----------------------------------------------------------------------------
+                                        // DPI-awareness test, i.e. if Cartool is allowed to resize its UI to adjust in real-time to different monitors' DPIs
+DPI_AWARENESS   TCartoolApp::GetDPIAwareness ()
+{
+                                        // Simple test
+if ( ! IsProcessDPIAware () )
+    return  DPI_AWARENESS_UNAWARE;
+
+                                        // Finer test for DPI-awareness
+DPI_AWARENESS_CONTEXT   dpiawarenesscontext = GetThreadDpiAwarenessContext ();
+
+DPI_AWARENESS           dpiawareness        = GetAwarenessFromDpiAwarenessContext ( dpiawarenesscontext );
+
+return  dpiawareness;
+}
+
+
+//----------------------------------------------------------------------------
 void    TCartoolApp::SetScreen ()
 {
-//                                        // DPI-awareness test, i.e. if Cartool is allowed to resize its UI to adjust in real-time to different monitors' DPIs
-//                                        // Simple test
-//bool                isdpiaware      = IsProcessDPIAware ();
-//
-//                                        // Finer test for DPI-awareness
-//DPI_AWARENESS_CONTEXT   dpiawarenesscontext = GetThreadDpiAwarenessContext ();
-//DPI_AWARENESS           dpiawareness        = GetAwarenessFromDpiAwarenessContext ( dpiawarenesscontext );  // Returned values: DPI_AWARENESS_UNAWARE, DPI_AWARENESS_SYSTEM_AWARE, DPI_AWARENESS_PER_MONITOR_AWARE
-//bool                isdpiawarepermonitor    = dpiawareness == DPI_AWARENESS_PER_MONITOR_AWARE;
+                                        // DPI-awareness test, i.e. if Cartool is allowed to resize its UI to adjust in real-time to different monitors' DPIs
+//DPI_AWARENESS       dpiawareness    = GetDPIAwareness ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

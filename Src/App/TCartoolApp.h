@@ -152,6 +152,7 @@ public:
 
     bool            IsInteractive       ()                                          const   { return  owl::TModule::IsLoaded (); /*CartoolMainWindow != 0;*/ }
     bool            IsNotInteractive    ()                                          const   { return  ! IsInteractive (); }
+    static DPI_AWARENESS    GetDPIAwareness     ();
 
 
     void            CreateBaseGadgets   ( bool server = false );

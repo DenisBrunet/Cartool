@@ -86,10 +86,10 @@ TCartoolVersionInfo applVersion ( GetModule () );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 char                name [ KiloByte ];
-LPSTR               prodName        = 0;
-LPSTR               arch            = 0;
-LPSTR               build           = 0;
-//LPSTR               runtime         = 0;
+LPCTSTR             prodName        = 0;
+LPCTSTR             arch            = 0;
+LPCTSTR             build           = 0;
+//LPCTSTR           runtime         = 0;
 
 
 if ( applVersion.GetProductName ( prodName ) )
@@ -111,14 +111,15 @@ if ( applVersion.GetBuild ( build ) )
 //    StringAppend    ( name, runtime );
 //    }
                                         // Finally showing the concatenated name
-nameCtrl   ->SetText ( (LPCTSTR) name );
+nameCtrl   ->SetText ( name );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 char                optimization[ KiloByte ];
-LPSTR               openmp          = 0;
-LPSTR               instrset        = 0;
-LPSTR               mkl             = 0;
+LPCTSTR             openmp          = 0;
+LPCTSTR             instrset        = 0;
+LPCTSTR             mkl             = 0;
+LPCTSTR             dpiawareness    = 0;
 
 
 ClearString ( optimization );
@@ -133,10 +134,16 @@ if ( applVersion.GetInstructionSet ( instrset ) ) {
     StringAppend    ( optimization, instrset );
     }
 
-                                        // Adding instruction set info
+                                        // Adding MKL library info
 if ( applVersion.GetMKL ( mkl ) ) {
     AppendSeparator ( optimization, ", " );
     StringAppend    ( optimization, mkl );
+    }
+
+                                        // Adding DPI awareness info
+if ( applVersion.GetDPIAwareness ( dpiawareness ) ) {
+    AppendSeparator ( optimization, ", " );
+    StringAppend    ( optimization, dpiawareness );
     }
 
 
@@ -144,54 +151,54 @@ if ( StringIsEmpty ( optimization ) )
     StringCopy  ( optimization, "<none>" );
 
 
-optimizationCtrl->SetText ( (LPCTSTR) optimization );
+optimizationCtrl->SetText ( optimization );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-LPSTR               branch      = 0;
+LPCTSTR             branch      = 0;
                                         // Get the branch name string
 if ( applVersion.GetBranchName ( branch ) )
-    branchCtrl->SetText ( (LPCTSTR) branch );
+    branchCtrl->SetText ( branch );
 else
-    branchCtrl->SetText ( (LPCTSTR) "" );
+    branchCtrl->SetText ( "" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-LPSTR               prodVersion     = 0;
+LPCTSTR             prodVersion     = 0;
                                         // Get the product version string
 if ( applVersion.GetProductVersion ( prodVersion ) )
-    versionCtrl->SetText ( (LPCTSTR) prodVersion );
+    versionCtrl->SetText ( prodVersion );
 else
-    versionCtrl->SetText ( (LPCTSTR) "" );
+    versionCtrl->SetText ( "" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Git infos
-LPSTR               prodRevision    = 0;
-LPSTR               prodDate        = 0;
+LPCTSTR             prodRevision    = 0;
+LPCTSTR             prodDate        = 0;
 
 
 if ( applVersion.GetProductRevision ( prodRevision ) )
-    buildCtrl->SetText ( (LPCTSTR) prodRevision );
+    buildCtrl->SetText ( prodRevision );
 else
-    buildCtrl->SetText ( (LPCTSTR) "" );
+    buildCtrl->SetText ( "" );
 
 
 if ( applVersion.GetProductDate ( prodDate ) )
-    builddateCtrl->SetText ( (LPCTSTR) prodDate );
+    builddateCtrl->SetText ( prodDate );
 else
-    builddateCtrl->SetText ( (LPCTSTR) "" );
+    builddateCtrl->SetText ( "" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // OwlNext infos
-owlnextversion  ->SetText ( (LPCTSTR) OWL_VERSION(OWL_FORMAT_VERSION_MAJOR_MINOR_RELEASE_STRING) );
+owlnextversion  ->SetText ( OWL_VERSION(OWL_FORMAT_VERSION_MAJOR_MINOR_RELEASE_STRING) );
 
-owlnextbuild    ->SetText ( (LPCTSTR) IntegerToString ( OWL_BUILD_REVISION ) );
+owlnextbuild    ->SetText ( IntegerToString ( OWL_BUILD_REVISION ) );
 
-owlnextdate     ->SetText ( (LPCTSTR) OWL_BUILD_REVISION_DATE );
+owlnextdate     ->SetText ( OWL_BUILD_REVISION_DATE );
 
-owlnextlicence  ->SetText ( (LPCTSTR) OWL_COMPANYNAME );
+owlnextlicence  ->SetText ( OWL_COMPANYNAME );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -210,33 +217,33 @@ char                buff2[ KiloByte ];
 
 
 StringCopy      ( buff, (char*) glGetString ( GL_VERSION  ) );
-oglversion->SetText ( (LPCTSTR) buff );
+oglversion->SetText ( buff );
 
 StringCopy      ( buff, (char*) glGetString ( GL_SHADING_LANGUAGE_VERSION ) );
-glslversion->SetText ( (LPCTSTR) buff );
+glslversion->SetText ( buff );
 
 StringCopy      ( buff, (char*) glGetString ( GL_VENDOR   ) );
-oglvendor->SetText ( (LPCTSTR) buff );
+oglvendor->SetText ( buff );
 
 StringCopy      ( buff, (char*) glGetString ( GL_RENDERER ) );
-oglrenderer->SetText ( (LPCTSTR) buff );
+oglrenderer->SetText ( buff );
 
 
 StringCopy      ( buff, globopengl.GLpfd.IsAccelerated  () ? "Accelerated"   : "Not accelerated",
                         ",  ",
                         globopengl.GLpfd.IsDoubleBuffer () ? "Double buffer" : "Single buffer" );
-oglprop1->SetText ( (LPCTSTR) buff );
+oglprop1->SetText ( buff );
 
 
 StringCopy      ( buff, IntegerToString ( buff2, globopengl.GLpfd.GetColorBits ()     ), " b/pixel, "     );
 StringAppend    ( buff, IntegerToString ( buff2, globopengl.GLpfd.GetDepthBits ()     ), " b/depth, "     );
 StringAppend    ( buff, IntegerToString ( buff2, globopengl.GLpfd.GetStencilBits ()   ), " b/stencil, "   );
 StringAppend    ( buff, IntegerToString ( buff2, globopengl.GLpfd.GetAccumBits ()     ), " accum.buff."   );
-oglprop2->SetText ( (LPCTSTR) buff );
+oglprop2->SetText ( buff );
 
 
 //StringCopy      ( buff, "Extensions:\t", (char*) glGetString ( GL_EXTENSIONS ) );
-//oglextensions->SetText ( (LPCTSTR) buff );
+//oglextensions->SetText ( buff );
 
 
 //globopengl.GLrc.unGLize ();   // static
