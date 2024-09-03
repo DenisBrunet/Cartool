@@ -338,18 +338,15 @@ CreateGadgets ();
 CmOrient ();
 
 
-GetParentO()->SetCaption ( Doc->GetTitle() );
+GetParentO ()->SetCaption ( Doc->GetTitle() );
 
 
-TRect               wr              =   GetParentO()->GetWindowRect();
-//TRect             cr              =   GetWindowRect();
-TRect               cr              =   GetParentO()->GetClientRect();
+TRect               wr              =   GetParentO ()->GetWindowRect ();
+TRect               cr              =   GetParentO ()->GetClientRect ();
 
 //CartoolMdiClient->ScreenToClient ( wr );
 //CartoolMdiClient->ScreenToClient ( cr );
-
                                         // offset origin with my parent window
-//WindowClientOffset = TSize ( cr.Left() - wr.Left(), cr.Top() - wr.Top() );
 WindowClientOffset = TSize ( wr.Width() - cr.Width(), wr.Height() - cr.Height() );
 
 
@@ -361,10 +358,11 @@ AnimFx  = TTimer ( GetHandle () );
 //----------------------------------------------------------------------------
 bool    TBaseView::SetDocTitle ( LPCTSTR /*docname*/, int /*index*/ )
 {
-GetParentO()->SetCaption ( /*BaseDoc->GetTitle()*/ Title ); // override with our own title
+GetParentO ()->SetCaption ( /*BaseDoc->GetTitle()*/ Title ); // override with our own title
 
 return false;
 }
+
 
 //----------------------------------------------------------------------------
                                         // Common buttons on the left side

@@ -4103,25 +4103,25 @@ else
 
 void    TInverseView::FitItemsInWindow ( int numitems, TSize itemsize, int &byx, int &byy, TRect *winrect )
 {
-TRect   wr;
+TRect               cr;
 
 SeqPerX = SeqPerY = 1;
 
 if ( ManageRangeCursor == MRCSequence ) {
                                         // ignore real window size, put it into a squared window
-    wr  = TRect ( 0, 0, 10000, 10000 );
+    cr  = TRect ( 0, 0, 10000, 10000 );
 
-    TBaseView::FitItemsInWindow ( numitems, itemsize, byx, byy, &wr );
+    TBaseView::FitItemsInWindow ( numitems, itemsize, byx, byy, &cr );
                                         // now spread the big squared window into a sequence inside the real window
-    wr  = GetWindowRect();
-    wr.SetWH ( 0, 0, wr.Width(), (double) wr.Height() );
+    cr  = GetClientRect ();
+    cr.SetWH ( 0, 0, cr.Width(), (double) cr.Height() );
 
     int     n = (double) MRCNumTF / MRCStepTF;
 
     if ( (double) MRCNumTF / MRCStepTF - n > 0 )
         n++;
 
-    TBaseView::FitItemsInWindow ( n, TSize ( byx * itemsize.X(), byy * itemsize.Y() ), SeqPerX, SeqPerY, &wr );
+    TBaseView::FitItemsInWindow ( n, TSize ( byx * itemsize.X(), byy * itemsize.Y() ), SeqPerX, SeqPerY, &cr );
     }
 else
     TBaseView::FitItemsInWindow ( numitems, itemsize, byx, byy, winrect );

@@ -118,55 +118,6 @@ if ( GODoc->GetViewList() == this ) {
     SetStandSize ();
                                         // default tiling
     GODoc->GroupTileViews ( CombineFlags ( GroupTilingViews_BestFitSize, GroupTilingViews_RightSide ) );
-
-                                        // shift left all previous groups, for compactness
-    //for ( TBaseDoc *doc = CartoolDocManager->DocListNext(0); doc != 0; doc = CartoolDocManager->DocListNext(doc) )
-    //    if ( typeid ( *doc ) == typeid ( TLinkManyDoc ) && doc != this )
-    //        ((TLinkManyDoc *) doc)->GroupTileViews ( CombineFlags ( GroupTilingViews_Move, GroupTilingViews_Insert ) );
-
-                                        // scroll to first window
-//    CartoolMdiClient->ScrollWindowEx ( -100, 0, 0, 0, 0, 0, SW_SCROLLCHILDREN );
-
-/*
-    int                 minx            = 0x0FFFFFFF;
-    int                 maxx            = 0x80000000;
-    int                 miny            = 0x0FFFFFFF;
-    int                 maxy            = 0x80000000;
-    TRect               wr;
-    TWindow            *tow;
-    TCartoolMdiChild   *tomdih;
-    int                 nw;
-
-    for ( tow=CartoolMdiClient->GetFirstChild(), nw=CartoolMdiClient->NumChildren(); tow != 0 && nw ; tow=tow->Next(), nw-- ) {
-
-        tomdih  = dynamic_cast<TCartoolMdiChild*> ( tow );
-
-        if ( tomdhi && ! IsWindowMinimized ( tomdih ) ) {
-
-            tow->GetWindowRect( wr );
-
-            if ( ((TBaseView *) tomdih->GetFirstChild())->GODoc == GODoc )
-                continue;
-
-            if ( wr.Left()   < minx ) minx = wr.Left();
-            if ( wr.Right()  > maxx ) maxx = wr.Right();
-            if ( wr.Top()    < miny ) miny = wr.Top();
-            if ( wr.Bottom() > maxy ) maxy = wr.Bottom();
-            }
-        }
-
-    if ( maxx != 0x80000000 )
-        CartoolMdiClient->ScrollWindowEx ( GetParentO()->GetWindowRect().Left() - maxx + minx, 0, 0, 0, 0, 0, SW_SCROLLCHILDREN );
-*/
-
-/*
-    TScroller   *tos = CartoolMdiClient->Scroller;
-    if ( tos ) {
-        tos->ScrollTo ( ( GetParentO()->GetWindowRect().Left() - CartoolMdiClient->GetWindowRect().Left()
-                        + GetParentO()->GetWindowRect().Width() + GroupTilingSpaceBetweenGroups           ) / tos->XUnit + tos->XPos,
-                        ( GetParentO()->GetWindowRect().Top()  - CartoolMdiClient->GetWindowRect().Top()  ) / tos->YUnit + tos->YPos );
-        }
-*/
     }
 }
 
