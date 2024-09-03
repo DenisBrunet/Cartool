@@ -1648,7 +1648,7 @@ TBaseView*          currentview     = LastActiveBaseView;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 1) De-maximize any maximized window before any other resizing operations, to prevent weird artefacts
-TBaseView*          maximizedview   = LastActiveBaseView->IsWindowMaximized () ? LastActiveBaseView : 0;
+TBaseView*          maximizedview   = LastActiveBaseView && LastActiveBaseView->IsWindowMaximized () ? LastActiveBaseView : 0;
 
 if ( maximizedview )
     maximizedview->WindowRestore ();
