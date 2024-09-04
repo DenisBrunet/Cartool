@@ -639,8 +639,8 @@ CartoolMainWindow->Attr.ExStyle |= WS_EX_ACCEPTFILES;
 SetScreen ();
 
                                         // Un-maximized default size
-CartoolMainWindow->Attr.W       = (int) ( ScreenWidth  * 0.50 );
-CartoolMainWindow->Attr.H       = (int) ( ScreenHeight * 0.75 );
+CartoolMainWindow->Attr.W       = Round ( ScreenWidth  * 0.50 );
+CartoolMainWindow->Attr.H       = Round ( ScreenHeight * 0.50 );
 CartoolMainWindow->Attr.X       = AtLeast ( 0, ( ScreenWidth  - CartoolMainWindow->Attr.W ) / 2 );
 CartoolMainWindow->Attr.Y       = AtLeast ( 0, ( ScreenHeight - CartoolMainWindow->Attr.H ) / 2 );
 

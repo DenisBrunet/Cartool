@@ -58,12 +58,12 @@ inline  void    RepositionMinimizedWindow   ( owl::TWindow* window, int clienthe
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-
+                                        // Assumes the minimized window height can not change during the process life time
 int             GetMinimizedWindowHeight ( owl::TWindow* window )
 {
+                                        // Caching results, so the actual computation is done only once
 static int          MinimizedWindowHeight   = 0;
 
-                                        // Assume minimized window height can not change during process life time
 if ( MinimizedWindowHeight != 0 )
     return  MinimizedWindowHeight;
 
