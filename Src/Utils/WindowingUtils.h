@@ -25,35 +25,41 @@ namespace crtl {
 //----------------------------------------------------------------------------
                                         // Wrapping owl::TWindow with simple utilities
 
-inline  bool    IsWindowMinimized   ( const owl::TWindow* window )                                              { return  window && window->IsIconic ();    }
-inline  bool    IsWindowMaximized   ( const owl::TWindow* window )                                              { return  window && window->IsZoomed ();    }
+inline  bool        IsWindowMinimized           ( const owl::TWindow* window )                                              { return  window && window->IsIconic ();    }
+inline  bool        IsWindowMaximized           ( const owl::TWindow* window )                                              { return  window && window->IsZoomed ();    }
 
-                                        // Getting position and size                                            
-inline  int     GetWindowLeft       ( const owl::TWindow* window )                                              { return  window ? window->Attr.X                       : 0;    }
-inline  int     GetWindowRight      ( const owl::TWindow* window )                                              { return  window ? window->Attr.X + window->Attr.W - 1  : 0;    }
-inline  int     GetWindowMiddleHoriz( const owl::TWindow* window )                                              { return  window ? window->Attr.X + window->Attr.W / 2  : 0;    }
-inline  int     GetWindowTop        ( const owl::TWindow* window )                                              { return  window ? window->Attr.Y                       : 0;    }
-inline  int     GetWindowBottom     ( const owl::TWindow* window )                                              { return  window ? window->Attr.Y + window->Attr.H - 1  : 0;    }
-inline  int     GetWindowMiddleVert ( const owl::TWindow* window )                                              { return  window ? window->Attr.Y + window->Attr.H / 2  : 0;    }
-inline  int     GetWindowWidth      ( const owl::TWindow* window )                                              { return  window ? window->Attr.W                       : 0;    }
-inline  int     GetWindowHeight     ( const owl::TWindow* window )                                              { return  window ? window->Attr.H                       : 0;    }
-inline  int     GetWindowMinSide    ( const owl::TWindow* window )                                              { return  window ? min ( GetWindowWidth ( window ), GetWindowHeight ( window ) ) : 0; }
-inline  int     GetMinimizedWindowHeight    ( owl::TWindow* window );
+                                                    // Getting position and size                                            
+inline  int         GetWindowLeft               ( const owl::TWindow* window )                                              { return  window ? window->Attr.X                       : 0;    }
+inline  int         GetWindowRight              ( const owl::TWindow* window )                                              { return  window ? window->Attr.X + window->Attr.W - 1  : 0;    }
+inline  int         GetWindowMiddleHoriz        ( const owl::TWindow* window )                                              { return  window ? window->Attr.X + window->Attr.W / 2  : 0;    }
+inline  int         GetWindowTop                ( const owl::TWindow* window )                                              { return  window ? window->Attr.Y                       : 0;    }
+inline  int         GetWindowBottom             ( const owl::TWindow* window )                                              { return  window ? window->Attr.Y + window->Attr.H - 1  : 0;    }
+inline  int         GetWindowMiddleVert         ( const owl::TWindow* window )                                              { return  window ? window->Attr.Y + window->Attr.H / 2  : 0;    }
+inline  int         GetWindowWidth              ( const owl::TWindow* window )                                              { return  window ? window->Attr.W                       : 0;    }
+inline  int         GetWindowHeight             ( const owl::TWindow* window )                                              { return  window ? window->Attr.H                       : 0;    }
+inline  int         GetWindowMinSide            ( const owl::TWindow* window )                                              { return  window ? min ( GetWindowWidth ( window ), GetWindowHeight ( window ) ) : 0; }
+inline  int         GetMinimizedWindowHeight    ( owl::TWindow* window );
 
-                                                                                                                                                  
-inline owl::TDib*   RescaleDIB      ( const owl::TWindow* window, int resid, double scalingfactor );
+                                                                                                                                                      
+inline owl::TDib*   RescaleDIB                  ( const owl::TWindow* window, int resid, double scalingfactor );
 
                                         // Setting position and size                                            
-inline  void    WindowMinimize      ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_SHOWMINIMIZED ); }
-inline  void    WindowMaximize      ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_SHOWMAXIMIZED ); }
-inline  void    WindowRestore       ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_RESTORE       ); }
-inline  void    WindowHide          ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_HIDE          ); }
+inline  void        WindowMinimize              ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_SHOWMINIMIZED ); }
+inline  void        WindowMaximize              ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_SHOWMAXIMIZED ); }
+inline  void        WindowRestore               ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_RESTORE       ); }
+inline  void        WindowHide                  ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_HIDE          ); }
 
-inline  void    WindowSetOrigin     ( owl::TWindow* window,   int left,   int top )                             { if ( window ) window->SetWindowPos ( 0, left, top, 0,     0,      SWP_NOCOPYBITS   | SWP_SHOWWINDOW | SWP_NOSIZE ); }
-inline  void    WindowSetSize       ( owl::TWindow* window,   int width,  int height )                          { if ( window ) window->SetWindowPos ( 0, 0,    0,   width, height, SWP_NOCOPYBITS   | SWP_SHOWWINDOW | SWP_NOMOVE ); }
-inline  void    WindowSetPosition   ( owl::TWindow* window,   int left,   int top,    int width,  int height )  { if ( window ) window->SetWindowPos ( 0, left, top, width, height, SWP_NOCOPYBITS   | SWP_SHOWWINDOW              ); }
-inline  void    WindowSetFrameOrigin( owl::TWindow* window,   int left,   int top )                             { if ( window ) window->SetWindowPos ( 0, left, top, 0,     0,      SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOSIZE ); }
-inline  void    RepositionMinimizedWindow   ( owl::TWindow* window, int clientheight );
+inline  void        WindowSetOrigin             ( owl::TWindow* window,   int left,   int top )                             { if ( window ) window->SetWindowPos ( 0, left, top, 0,     0,      SWP_NOCOPYBITS   | SWP_SHOWWINDOW | SWP_NOSIZE ); }
+inline  void        WindowSetSize               ( owl::TWindow* window,   int width,  int height )                          { if ( window ) window->SetWindowPos ( 0, 0,    0,   width, height, SWP_NOCOPYBITS   | SWP_SHOWWINDOW | SWP_NOMOVE ); }
+inline  void        WindowSetPosition           ( owl::TWindow* window,   int left,   int top,    int width,  int height )  { if ( window ) window->SetWindowPos ( 0, left, top, width, height, SWP_NOCOPYBITS   | SWP_SHOWWINDOW              ); }
+inline  void        WindowSetFrameOrigin        ( owl::TWindow* window,   int left,   int top )                             { if ( window ) window->SetWindowPos ( 0, left, top, 0,     0,      SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOSIZE ); }
+inline  void        RepositionMinimizedWindow   ( owl::TWindow* window, int clientheight );
+
+
+inline DPI_AWARENESS        GetDPIAwareness         ();
+inline const char*          GetCurrentMonitorName   ( HWND window, char* monitorname );
+inline owl::TRect           GetMonitorRect          ( const char* devicename, DWORD how = 0 );
+inline vector<owl::TRect>   GetMonitorsResolution   ();
 
 
 //----------------------------------------------------------------------------
@@ -197,6 +203,116 @@ return  new TDib ( destbitmap, srcpal.get() );
                                         // In theory, we should clean after ourselves, but these dc are temps, aren't they?
 //srcdc. RestoreBitmap ();
 //destdc.RestoreBitmap ();
+}
+
+
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+                                        // DPI-awareness test, i.e. if process is allowed to resize its UI to adjust in real-time to different monitors' DPIs
+DPI_AWARENESS   GetDPIAwareness ()
+{
+                                        // Simple test
+if ( ! IsProcessDPIAware () )
+    return  DPI_AWARENESS_UNAWARE;
+
+                                        // Finer test for DPI-awareness
+DPI_AWARENESS_CONTEXT   dpiawarenesscontext = GetThreadDpiAwarenessContext ();
+
+DPI_AWARENESS           dpiawareness        = GetAwarenessFromDpiAwarenessContext ( dpiawarenesscontext );
+
+return  dpiawareness;
+}
+
+
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+                                        // Returns a string like "DISPLAY1", "DISPLAY2"...
+const char*     GetCurrentMonitorName ( HWND hwindow, char* monitorname )
+{
+if ( monitorname == 0 )
+    return  0;
+
+
+HMONITOR            monitor         = MonitorFromWindow ( hwindow, MONITOR_DEFAULTTONEAREST );
+
+
+MONITORINFOEX       monitorinfo;
+monitorinfo.cbSize  = sizeof ( MONITORINFOEX );
+
+GetMonitorInfo ( monitor, &monitorinfo );
+
+
+return  strncpy ( monitorname, monitorinfo.szDevice, CCHDEVICENAME - 1 );
+}
+
+
+//----------------------------------------------------------------------------
+owl::TRect      GetMonitorRect  ( const char* monitorname, DWORD how )
+{
+owl::TRect          r;
+
+if ( monitorname == 0 )
+    return  r;
+
+
+DEVMODE             devmode;
+devmode.dmSize      = sizeof ( DEVMODE );
+
+                                        // Caller has been specific about only retrieving the current state?
+if ( how == ENUM_CURRENT_SETTINGS 
+  || how == ENUM_REGISTRY_SETTINGS ) {
+    
+    EnumDisplaySettings ( monitorname, how, &devmode );
+
+    r.SetWH (   devmode.dmPosition.x,   devmode.dmPosition.y, 
+                devmode.dmPelsWidth,    devmode.dmPelsHeight  );
+    }
+else {
+                                        // Loop through all possible states and retrieve the max size
+    int             maxscreenwidth      = 0;
+    int             maxscreenheight     = 0;
+
+    for ( DWORD dmi = 0; EnumDisplaySettings ( monitorname, dmi, &devmode ) != 0; dmi++ ) {
+
+        Maxed ( maxscreenwidth,  (int) devmode.dmPelsWidth  );
+        Maxed ( maxscreenheight, (int) devmode.dmPelsHeight );
+        }
+
+    r.SetWH (   devmode.dmPosition.x,   devmode.dmPosition.y, 
+                maxscreenwidth,         maxscreenheight       );
+    }
+
+
+return  r;
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Retrieves the TRect positions of each monitor within the Desktop virtual workspace
+vector<owl::TRect>  GetMonitorsResolution   ()
+{
+vector<owl::TRect>  monitorsrect;
+
+DISPLAY_DEVICE      displaydevice;
+displaydevice.cb    = sizeof ( DISPLAY_DEVICE );
+
+
+for ( DWORD ddi = 0; EnumDisplayDevices ( NULL, ddi, &displaydevice, 0 ) != 0; ddi++ ) {
+
+                                        // Is that a real, connected monitor?
+    if ( ! IsFlag ( displaydevice.StateFlags, (DWORD) DISPLAY_DEVICE_ATTACHED_TO_DESKTOP ) )
+        continue;
+
+
+//  bool            ismainmonitor   = IsFlag ( displaydevice.StateFlags, (DWORD) DISPLAY_DEVICE_PRIMARY_DEVICE );
+    const char*     tomonitorname   = displaydevice.DeviceName;
+    owl::TRect      r               = GetMonitorRect ( tomonitorname, ENUM_REGISTRY_SETTINGS );
+
+    monitorsrect.push_back ( r );
+    }
+
+
+return  monitorsrect;
 }
 
 

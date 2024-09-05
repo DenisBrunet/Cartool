@@ -262,7 +262,7 @@ return  false;
 //----------------------------------------------------------------------------
 bool    TCartoolVersionInfo::GetDPIAwareness ( LPCTSTR& s )   const
 {
-DPI_AWARENESS       dpiawareness    = TCartoolApp::GetDPIAwareness ();
+DPI_AWARENESS       dpiawareness    = ::crtl::GetDPIAwareness ();
 
 switch ( dpiawareness ) {
 

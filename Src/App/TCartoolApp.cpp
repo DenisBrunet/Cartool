@@ -517,23 +517,6 @@ ControlBar->Invalidate ();
 
 
 //----------------------------------------------------------------------------
-                                        // DPI-awareness test, i.e. if Cartool is allowed to resize its UI to adjust in real-time to different monitors' DPIs
-DPI_AWARENESS   TCartoolApp::GetDPIAwareness ()
-{
-                                        // Simple test
-if ( ! IsProcessDPIAware () )
-    return  DPI_AWARENESS_UNAWARE;
-
-                                        // Finer test for DPI-awareness
-DPI_AWARENESS_CONTEXT   dpiawarenesscontext = GetThreadDpiAwarenessContext ();
-
-DPI_AWARENESS           dpiawareness        = GetAwarenessFromDpiAwarenessContext ( dpiawarenesscontext );
-
-return  dpiawareness;
-}
-
-
-//----------------------------------------------------------------------------
 void    TCartoolApp::SetScreen ()
 {
                                         // DPI-awareness test, i.e. if Cartool is allowed to resize its UI to adjust in real-time to different monitors' DPIs
@@ -541,43 +524,22 @@ void    TCartoolApp::SetScreen ()
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Retrieve current monitor
-HMONITOR            monitor         = MonitorFromWindow ( CartoolMainWindow->GetHandle (), MONITOR_DEFAULTTONEAREST );
+                                        // Retrieve current monitor name
+char                monitorname[ CCHDEVICENAME ];
 
-MONITORINFOEX       monitorinfo;
-monitorinfo.cbSize  = sizeof ( MONITORINFOEX );
+GetCurrentMonitorName ( CartoolMainWindow->GetHandle (), monitorname );
 
+                                        // Get max resolution of CURRENT monitor
+TRect               maxscreen       = GetMonitorRect ( monitorname );
 
-GetMonitorInfo ( monitor, &monitorinfo );
+MaxScreenWidth      = maxscreen.Width  ();
+MaxScreenHeight     = maxscreen.Height ();
 
+                                        // Get current monitor resolution
+TRect               currscreen      = GetMonitorRect ( monitorname, ENUM_REGISTRY_SETTINGS );
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Max resolution of CURRENT monitor
-DEVMODE             devmode;
-devmode.dmSize      = sizeof ( DEVMODE );
-
-                                        // Computed on each call, in case we switched monitor
-MaxScreenWidth      = 0;
-MaxScreenHeight     = 0;
-
-for ( DWORD dmi = 0; EnumDisplaySettings ( monitorinfo.szDevice, dmi, &devmode ) != 0; dmi++ ) {
-
-    Maxed ( MaxScreenWidth,  (int) devmode.dmPelsWidth  );
-    Maxed ( MaxScreenHeight, (int) devmode.dmPelsHeight );
-    }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Get current screen resolution
-//ScreenWidth   = GetSystemMetrics ( SM_CXSCREEN );
-//ScreenHeight  = GetSystemMetrics ( SM_CYSCREEN );
-//ScreenWidth   = GetSystemMetricsForDpi ( SM_CXSCREEN, GetWindowDpi () );
-//ScreenHeight  = GetSystemMetricsForDpi ( SM_CYSCREEN, GetWindowDpi () );
-
-EnumDisplaySettings ( monitorinfo.szDevice, ENUM_REGISTRY_SETTINGS /*ENUM_CURRENT_SETTINGS*/, &devmode );
-
-ScreenWidth     = devmode.dmPelsWidth;
-ScreenHeight    = devmode.dmPelsHeight;
+ScreenWidth     = currscreen.Width  ();
+ScreenHeight    = currscreen.Height ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
