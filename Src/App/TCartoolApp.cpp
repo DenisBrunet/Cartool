@@ -588,6 +588,14 @@ if ( Splash != 0 ) {
 
 
 //----------------------------------------------------------------------------
+                                        // We better centralize the computation of the main window default size and position
+int     SetWindowsDefaultWidth  ( int screenwidth )                     { return  Round ( screenwidth  * 0.50 ); }
+int     SetWindowsDefaultHeight ( int screenheight )                    { return  Round ( screenheight * 0.50 ); }
+int     SetWindowsDefaultLeft   ( int screenwidth,  int windowwidth  )  { return  AtLeast ( 0, ( screenwidth  - windowwidth  ) / 2 ); }
+int     SetWindowsDefaultTop    ( int screenheight, int windowheight )  { return  AtLeast ( 0, ( screenheight - windowheight ) / 2 ); }
+
+
+//----------------------------------------------------------------------------
 void    TCartoolApp::InitMainWindow ()
 {
 CartoolMdiClient    = new TCartoolMdiClient ( this );
@@ -607,10 +615,10 @@ CartoolMainWindow->Attr.ExStyle |= WS_EX_ACCEPTFILES;
 SetScreen ();
 
                                         // Un-maximized default size
-CartoolMainWindow->Attr.W       = Round ( ScreenWidth  * 0.50 );
-CartoolMainWindow->Attr.H       = Round ( ScreenHeight * 0.50 );
-CartoolMainWindow->Attr.X       = AtLeast ( 0, ( ScreenWidth  - CartoolMainWindow->Attr.W ) / 2 );
-CartoolMainWindow->Attr.Y       = AtLeast ( 0, ( ScreenHeight - CartoolMainWindow->Attr.H ) / 2 );
+CartoolMainWindow->Attr.W       = SetWindowsDefaultWidth  ( ScreenWidth  );
+CartoolMainWindow->Attr.H       = SetWindowsDefaultHeight ( ScreenHeight );
+CartoolMainWindow->Attr.X       = SetWindowsDefaultLeft   ( ScreenWidth,  CartoolMainWindow->Attr.W );
+CartoolMainWindow->Attr.Y       = SetWindowsDefaultTop    ( ScreenHeight, CartoolMainWindow->Attr.H );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -829,11 +837,11 @@ else { // ! beforeinit
         int                 nummonitors     = monitorsrect.size ();
 
                                         // complete any missing dimension or origin with some default values
-        int                 w               = mainwidth  != undefined ? mainwidth  : Round        ( ScreenWidth  * 0.50 );
-        int                 h               = mainheight != undefined ? mainheight : Round        ( ScreenHeight * 0.50 );
-        int                 x               = mainleft   != undefined ? mainleft   : AtLeast ( 0, ( ScreenWidth  - w ) / 2 );
-        int                 y               = maintop    != undefined ? maintop    : AtLeast ( 0, ( ScreenHeight - h ) / 2 );
-        
+        int                 w               = mainwidth  != undefined ? mainwidth  : SetWindowsDefaultWidth  ( ScreenWidth  );
+        int                 h               = mainheight != undefined ? mainheight : SetWindowsDefaultHeight ( ScreenHeight );
+        int                 x               = mainleft   != undefined ? mainleft   : SetWindowsDefaultLeft   ( ScreenWidth,  w );
+        int                 y               = maintop    != undefined ? maintop    : SetWindowsDefaultTop    ( ScreenHeight, h );
+
                                         // remember current window state
         bool                wasmin          = IsWindowMinimized ( CartoolMainWindow );
         bool                wasmax          = IsWindowMaximized ( CartoolMainWindow );
@@ -849,10 +857,10 @@ else { // ! beforeinit
             WindowSetOrigin ( currscreen.Left (), currscreen.Top  () );
 
                                         // We have new screen width and height, so we might need to recompute these
-            w   = mainwidth  != undefined ? mainwidth  : Round        ( ScreenWidth  * 0.50 );
-            h   = mainheight != undefined ? mainheight : Round        ( ScreenHeight * 0.50 );
-            x   = mainleft   != undefined ? mainleft   : AtLeast ( 0, ( ScreenWidth  - w ) / 2 );
-            y   = maintop    != undefined ? maintop    : AtLeast ( 0, ( ScreenHeight - h ) / 2 );
+            w   = mainwidth  != undefined ? mainwidth  : SetWindowsDefaultWidth  ( ScreenWidth  );
+            h   = mainheight != undefined ? mainheight : SetWindowsDefaultHeight ( ScreenHeight );
+            x   = mainleft   != undefined ? mainleft   : SetWindowsDefaultLeft   ( ScreenWidth,  w );
+            y   = maintop    != undefined ? maintop    : SetWindowsDefaultTop    ( ScreenHeight, h );
 
                                         // Then add the offset from current monitor - because Desktop is a big virtual space actually
             x  += currscreen.Left ();
