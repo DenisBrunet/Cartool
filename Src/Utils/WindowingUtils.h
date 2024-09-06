@@ -18,6 +18,7 @@ limitations under the License.
 
 #include    <owl/window.h>              // TWindow
 #include    <owl/gdiobjec.h>            // TDib
+#include    "Strings.Utils.h"
 
 namespace crtl {
 
@@ -57,7 +58,9 @@ inline  void        RepositionMinimizedWindow   ( owl::TWindow* window, int clie
 
 
 inline DPI_AWARENESS        GetDPIAwareness         ();
+inline int                  GetWindowDpi            ( const owl::TWindow* window = 0 )                                      { return  window && window->Handle  ? GetDpiForWindow ( window->Handle ) : GetDpiForSystem ();  }   // current window dpi, or system dpi as a fallback
 inline const char*          GetCurrentMonitorName   ( HWND window, char* monitorname );
+inline const char*          GetMonitorName          ( int monitorindex, char* monitorname );
 inline owl::TRect           GetMonitorRect          ( const char* devicename, DWORD how = 0 );
 inline vector<owl::TRect>   GetMonitorsResolution   ();
 
@@ -226,7 +229,7 @@ return  dpiawareness;
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-                                        // Returns a string like "DISPLAY1", "DISPLAY2"...
+                                        // Returns a string like "\\.\DISPLAY1", "\\.\DISPLAY2"...
 const char*     GetCurrentMonitorName ( HWND hwindow, char* monitorname )
 {
 if ( monitorname == 0 )
@@ -242,7 +245,23 @@ monitorinfo.cbSize  = sizeof ( MONITORINFOEX );
 GetMonitorInfo ( monitor, &monitorinfo );
 
 
-return  strncpy ( monitorname, monitorinfo.szDevice, CCHDEVICENAME - 1 );
+return  StringCopy ( monitorname, monitorinfo.szDevice, CCHDEVICENAME - 1 );
+}
+
+
+//----------------------------------------------------------------------------
+const char*     GetMonitorName ( int monitorindex, char* monitorname )
+{
+if ( StringIsEmpty ( monitorname ) )
+    return  0;
+
+char                buff[ 32 ];
+
+GetCurrentMonitorName   ( 0, monitorname );
+DeleteChars             ( monitorname, "0123456789" );
+StringAppend            ( monitorname, IntegerToString ( buff, monitorindex ) );
+
+return  monitorname;
 }
 
 
@@ -251,7 +270,7 @@ owl::TRect      GetMonitorRect  ( const char* monitorname, DWORD how )
 {
 owl::TRect          r;
 
-if ( monitorname == 0 )
+if ( StringIsEmpty ( monitorname ) )
     return  r;
 
 
@@ -288,7 +307,7 @@ return  r;
 
 
 //----------------------------------------------------------------------------
-                                        // Retrieves the TRect positions of each monitor within the Desktop virtual workspace
+                                        // Retrieves the TRect positions of each monitor current settings, within the Desktop virtual workspace
 vector<owl::TRect>  GetMonitorsResolution   ()
 {
 vector<owl::TRect>  monitorsrect;

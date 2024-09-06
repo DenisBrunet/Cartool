@@ -772,6 +772,12 @@ for ( const char* tosearch = tobereplaced, *toreplace = replacedwith; *tosearch;
 }
 
 
+void    DeleteChars ( char* s, const char* tobedeleted )
+{
+ReplaceChars ( s, tobedeleted, "" );
+}
+
+
 void    KeepChars ( char* s, const char* tobekept )
 {
 if ( !s || !tobekept )

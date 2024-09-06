@@ -146,7 +146,7 @@ public:
 
     void            InitMainWindow      ();
     void            InitInstance        ();
-    void            SetScreen           ();
+    void            SetScreen           ( const char* optmonitorname = 0 );
     bool            CanClose            ();
     bool            ProcessAppMsg       ( MSG& msg );
 
@@ -180,7 +180,6 @@ public:
     void            WindowSetGaugeSize  ()                                          const   { WindowRestore (); WindowSetSize ( 600 /*2.5 * GaugeWidth*/, 240 /*7 * GaugeHeight*/ ); }
 
 
-    int             GetWindowDpi        ( const owl::TWindow* window = 0 )          const   { return  window && window->Handle  ? GetDpiForWindow ( window->Handle ) : GetDpiForSystem ();  }   // current window dpi, or system dpi as a fallback
     double          GetActualDpi        ()                                          const   { return  ActualDpi;                                            }
     double          GetActualDpmm       ()                                          const   { return  ActualDpi / 25.4;                                     }   // returns a floating point, due to rescaling
     double          RescaleSizeActualDpi()                                          const   { return  GetActualDpi () / (double) USER_DEFAULT_SCREEN_DPI;   }   // Rescale default 96 dpi pixel size into an equivalent pixel size of any arbitrary dpi

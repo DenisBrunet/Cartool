@@ -70,6 +70,7 @@ constexpr char*     CmdLineMainWindowLeft   = "mainleft";
 constexpr char*     CmdLineMainWindowMax    = "mainmaximized";
 constexpr char*     CmdLineMainWindowMin    = "mainminimized";
 constexpr char*     CmdLineMainWindowRest   = "mainnormal";
+constexpr char*     CmdLineMonitor          = "monitor";
 
 
 enum        RegistrationOpeningType
@@ -517,24 +518,29 @@ ControlBar->Invalidate ();
 
 
 //----------------------------------------------------------------------------
-void    TCartoolApp::SetScreen ()
+void    TCartoolApp::SetScreen ( const char* optmonitorname )
 {
                                         // DPI-awareness test, i.e. if Cartool is allowed to resize its UI to adjust in real-time to different monitors' DPIs
 //DPI_AWARENESS       dpiawareness    = GetDPIAwareness ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Retrieve current monitor name
+
 char                monitorname[ CCHDEVICENAME ];
 
-GetCurrentMonitorName ( CartoolMainWindow->GetHandle (), monitorname );
+if ( StringIsEmpty ( optmonitorname ) ) GetCurrentMonitorName ( CartoolMainWindow->GetHandle (), monitorname );
+else                                    StringCopy ( monitorname, optmonitorname, CCHDEVICENAME - 1 );
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Get max resolution of CURRENT monitor
 TRect               maxscreen       = GetMonitorRect ( monitorname );
 
-MaxScreenWidth      = maxscreen.Width  ();
-MaxScreenHeight     = maxscreen.Height ();
+MaxScreenWidth  = maxscreen.Width  ();
+MaxScreenHeight = maxscreen.Height ();
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Get current monitor resolution
 TRect               currscreen      = GetMonitorRect ( monitorname, ENUM_REGISTRY_SETTINGS );
 
@@ -660,11 +666,14 @@ if ( (   nCmdShow == SW_SHOWMAXIMIZED
                                         // Called first
 void    TCartoolApp::InitInstance ()
 {
-ProcessCommandLine ( GetCmdLine ().c_str (), true  );   // process early options, some might directly exit the app
+                                        // process early options, some might directly exit the app
+ProcessCommandLine ( GetCmdLine ().c_str (), true  );
 
-TApplication::InitInstance ();                          // then calls InitWindow
+                                        // will also call InitMainWindow
+TApplication::InitInstance ();
 
-ProcessCommandLine ( GetCmdLine ().c_str (), false );   // process files to open
+                                        // process files to open, main windows setup...
+ProcessCommandLine ( GetCmdLine ().c_str (), false );
 
                                         // CartoolMainWindow has been fully created here, we can therefor retrieve its exact real estate
 MDIClientRect   = CartoolMdiClient->GetClientRect ().Normalized ();
@@ -729,8 +738,8 @@ if ( beforeinit ) {
 
         else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowWidth   )
                || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowHeight  )
-               || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop     )
-               || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft    ) )     nCmdShow    = SW_SHOWNORMAL;    // using normal window if these were specified
+               || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft    )
+               || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop     ) )     nCmdShow    = SW_SHOWNORMAL;    // using normal window if these were specified
         }
 
     return;
@@ -746,6 +755,7 @@ else { // ! beforeinit
     int             mainheight      = undefined;
     int             maintop         = undefined;
     int             mainleft        = undefined;
+    int             monitorindex    = undefined;
      
 
     for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () ) {
@@ -753,13 +763,17 @@ else { // ! beforeinit
         if      ( cmd.GetTokenKind () == TCmdLine::Option ) {
 
             if      ( StringIs ( cmd.GetToken ().c_str (), CmdLineNoRegister        ) )     continue;   // actually doing nothing
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowWidth   ) )     mainwidth       = GetNextValue ( cmd ) + 20;    // for unknown reasons, there appear to be some deltas here
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowHeight  ) )     mainheight      = GetNextValue ( cmd ) + 10;
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop     ) )     maintop         = GetNextValue ( cmd );
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft    ) )     mainleft        = GetNextValue ( cmd ) - 10;
+
             else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMax     ) )     continue;   // already parsed
             else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMin     ) )     continue;   // already parsed
             else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowRest    ) )     continue;   // already parsed
+
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowWidth   ) )     mainwidth       = GetNextValue ( cmd ) + 20;    // for unknown reasons, there appear to be some deltas here
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowHeight  ) )     mainheight      = GetNextValue ( cmd ) + 10;
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft    ) )     mainleft        = GetNextValue ( cmd ) - 10;
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop     ) )     maintop         = GetNextValue ( cmd );
+
+            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMonitor           ) )     monitorindex    = GetNextValue ( cmd );
 
             else {
 
@@ -804,31 +818,55 @@ else { // ! beforeinit
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // some main window size / origin has been set?
-    if ( mainwidth  != undefined 
-      || mainheight != undefined 
-      || maintop    != undefined 
-      || mainleft   != undefined ) {
-                                        // some dimension is missing?
-        if ( mainwidth  == undefined )  mainwidth   = CartoolMainWindow->Attr.W;
-        if ( mainheight == undefined )  mainheight  = CartoolMainWindow->Attr.H;
-                                      // some origin is missing?
-        if ( maintop    == undefined )  maintop     = CartoolMainWindow->Attr.Y;
-        if ( mainleft   == undefined )  mainleft    = CartoolMainWindow->Attr.X;
+                                        // Main window size / origin / monitor has been overriden?
+    if ( mainwidth    != undefined 
+      || mainheight   != undefined 
+      || mainleft     != undefined
+      || maintop      != undefined 
+      || monitorindex != undefined ) {
 
+        vector<TRect>       monitorsrect    = GetMonitorsResolution ();
+        int                 nummonitors     = monitorsrect.size ();
+
+                                        // complete any missing dimension or origin with some default values
+        int                 w               = mainwidth  != undefined ? mainwidth  : Round        ( ScreenWidth  * 0.50 );
+        int                 h               = mainheight != undefined ? mainheight : Round        ( ScreenHeight * 0.50 );
+        int                 x               = mainleft   != undefined ? mainleft   : AtLeast ( 0, ( ScreenWidth  - w ) / 2 );
+        int                 y               = maintop    != undefined ? maintop    : AtLeast ( 0, ( ScreenHeight - h ) / 2 );
+        
                                         // remember current window state
-        bool    wasmin  = IsWindowMinimized ( CartoolMainWindow );
-        bool    wasmax  = IsWindowMaximized ( CartoolMainWindow );
+        bool                wasmin          = IsWindowMinimized ( CartoolMainWindow );
+        bool                wasmax          = IsWindowMaximized ( CartoolMainWindow );
 
-                                        // this applies to the normal window state
-        WindowRestore   ();
+                                        // we need a window we can ACTUALLY move
+        WindowRestore ();
 
-        WindowSetPosition ( mainleft, maintop, mainwidth, mainheight );
+                                        // Time to address the monitor option
+        if ( monitorindex != undefined && IsInsideLimits ( monitorindex, 1, nummonitors ) && nummonitors > 1 ) {
+
+            const TRect&        currscreen      = monitorsrect[ monitorindex - 1 ];
+                                        // Trick: this will trigger EvDpiChanged, change the actual monitor, and set the correct new DPI
+            WindowSetOrigin ( currscreen.Left (), currscreen.Top  () );
+
+                                        // We have new screen width and height, so we might need to recompute these
+            w   = mainwidth  != undefined ? mainwidth  : Round        ( ScreenWidth  * 0.50 );
+            h   = mainheight != undefined ? mainheight : Round        ( ScreenHeight * 0.50 );
+            x   = mainleft   != undefined ? mainleft   : AtLeast ( 0, ( ScreenWidth  - w ) / 2 );
+            y   = maintop    != undefined ? maintop    : AtLeast ( 0, ( ScreenHeight - h ) / 2 );
+
+                                        // Then add the offset from current monitor - because Desktop is a big virtual space actually
+            x  += currscreen.Left ();
+            y  += currscreen.Top  ();
+            }
+
+                            // This will NOT trigger EvDpiChanged, as we are already in the proper monitor
+        WindowSetPosition ( x, y, w, h );
 
                                         // restore window state
         if      ( wasmin )  WindowMinimize ();
         else if ( wasmax )  WindowMaximize ();
         }
+
     } // regular parsing
 
 }

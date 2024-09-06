@@ -72,6 +72,7 @@ bool                IsSpaceComma        ( char c );
 char*               LastChar         ( char*       s, long countingfromend   = 1 ); // count from 1 for last char, 2 for previous to last, etc...
 const char*         LastChar         ( const char* s, long countingfromend   = 1 ); // count from 1 for last char, 2 for previous to last, etc...
 void                ReplaceChars     ( char* s, const char* tobereplaced, const char* replacedwith );
+void                DeleteChars      ( char* s, const char* tobedeleted );
 void                KeepChars        ( char* s, const char* tobekept );
 char*               JumpToChars      ( char* s, char* reachchars );             // returns 0 if error
 void                ClipToChars      ( char* s, char* reachchars );             // clip string to first char among the list
