@@ -1654,7 +1654,7 @@ BEGIN
     GROUPBOX        "(3) Solution Space   (Use Drag && Drop in this area)",1001,4,183,376,79,WS_GROUP
     LTEXT           "&Solution Space Presets:",-1,12,197,120,10,NOT WS_GROUP
     COMBOBOX        IDC_SPPRESETS,132,194,240,200,CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "&Number or Resolution of Sol. Points:",107,12,215,120,10,NOT WS_GROUP
+    LTEXT           "&Number / Resolution of Sol. Points:",107,12,215,120,10,NOT WS_GROUP
     EDITTEXT        IDC_NUMSOLPOINTS,132,214,42,10,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "(use it to downsample a reloaded Lead Field below, if > 0)",-1,181,215,195,10,NOT WS_GROUP
     LTEXT           "Brain to Grey Mask conversion:",-1,12,229,120,10,NOT WS_GROUP
