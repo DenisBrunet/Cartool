@@ -1,6 +1,6 @@
 # Building Cartool from sources
 
-Cartool currently builds for **Windows 64bit platform** only.
+Cartool only targets **Windows 64bit platform**.
 
 There are very few dependencies: some are directly included within this repo, some can be set from the Visual Studio project property pages, and some need to be downloaded, either manually or through *vcpkg*.
 
@@ -8,14 +8,12 @@ There are very few dependencies: some are directly included within this repo, so
 - _Windows 7 64bit_ and above
 - At least 8 CPU cores
 - At least 8 GB of RAM
-- SSD disks recommended
+- SSD disk recommended
 
 ## Compiler
 **Visual Studio 2019** is the current compiler for dev.
 
 **Visual Studio 2022** should be working, but has not been fully tested yet.
-
-**Visual Studio 2015** *might* be working for Cartool itself, but some dependencies might not support it.
 
 ## *vcpkg* C++ package manager
 We are going to use the very convenient C++ package manager from Microsoft called *vcpkg*:
@@ -68,7 +66,7 @@ Open the project property pages, and from the *Intel Libraries for OneAPI* panel
 
 ***Important:***
 - You do **not** need to download *OpenBLAS* or the like, as Cartool uses the *Intel® OneMKL* library for speeding up computations!
-- Also, do **not** use *vcpkg* to install Armadillo, as it will forcibly install said *OpenBLAS*, which we do **not** want!
+- **Do not use *vcpkg* to install Armadillo**, as it will forcibly install said *OpenBLAS*, which we do **not** want!
 
 ## pcre 7
 Using *vcpkg*, install **pcre Version: 8.45**:
@@ -80,7 +78,7 @@ Using *vcpkg*, install **pcre Version: 8.45**:
 ## OwlNext 7
 Cartool uses an application framework library called [***OwlNext***](https://sourceforge.net/p/owlnext/wiki/Main_Page/), which is very similar to the *Microsoft Foundation Class*.
 
-It is *not* available from *vcpkg*, nor from *GitHub*, but only from *sourceforge.net* as source files. This meand you need to build the library yourself, though there should not be any major difficulties if you follow the following steps.
+It is *not* available from *vcpkg*, nor from *GitHub*, but only from *sourceforge.net* as source files. This means you need to build the library yourself, though there should not be any major difficulties if you follow the following steps.
 
 *If you are going to compile and distribute Cartool from sources, you need to pay attention to the following licensing terms*:
 - [OWLNext License.txt](https://sourceforge.net/p/owlnext/code/HEAD/tree/trunk/OWLNext%20License.txt)
@@ -119,8 +117,7 @@ Instead of using Windows environment variables, which need rebooting all the tim
   - *CartoolRoot*: path to your own Cartool root directory, f.ex. "D:\Dev\C++\Cartool"
   - *OwlNextRoot*: path to your own Armadillo root directory, f.ex. "D:\Dev\C++\Armadillo"
 
-The provided Solution and Project have all the correct options set for you. You can review and modify them *if you know what you are doing*!
+The provided *Solution* and *Project* are already set with the correct options. *Be careful if you update them!*
 
-Finally, you can **build the *Release* and *Debug* versions**!
-Executable files are in the .\Bin directory.
+At that point, you should be able to **build the *Release* and *Debug* versions**! The executable files will be located in the *.\Bin* directory.
 
