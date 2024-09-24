@@ -612,10 +612,11 @@ void    TCartoolApp::InitMainWindow ()
 {
 CartoolMdiClient    = new TCartoolMdiClient ( this );
 
-CartoolMainWindow   = new TDecoratedMDIFrame ( Name, IDM_MDI, std::unique_ptr<TMDIClient> ( CartoolMdiClient ), true, this );
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+CartoolMainWindow   = new TDecoratedMDIFrame ( Name, IDM_MDI, std::unique_ptr<TMDIClient> ( CartoolMdiClient ), true, this );
+
 
 CartoolMainWindow->Attr.Style |= WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME | WS_VISIBLE;
 CartoolMainWindow->Attr.Style &= ~(WS_CHILD);
@@ -632,16 +633,14 @@ CartoolMainWindow->Attr.H       = SetWindowsDefaultHeight ( ScreenHeight );
 CartoolMainWindow->Attr.X       = SetWindowsDefaultLeft   ( ScreenWidth,  CartoolMainWindow->Attr.W );
 CartoolMainWindow->Attr.Y       = SetWindowsDefaultTop    ( ScreenHeight, CartoolMainWindow->Attr.H );
 
+                                        // Associate with the accelerator table.
+CartoolMainWindow->Attr.AccelTable = IDM_MDI;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Assign ICON w/ this application.
 CartoolMainWindow->SetIcon   ( this, IDI_MDIAPPLICATION );
 CartoolMainWindow->SetIconSm ( this, IDI_MDIAPPLICATION );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Associate with the accelerator table.
-CartoolMainWindow->Attr.AccelTable = IDM_MDI;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -679,26 +678,6 @@ if ( (   nCmdShow == SW_SHOWMAXIMIZED
   && IsInteractive () )
 
     CreateSplashScreen ();
-}
-
-
-//----------------------------------------------------------------------------
-                                        // Called first
-void    TCartoolApp::InitInstance ()
-{
-                                        // process early options, some might directly exit the app
-//ProcessCommandLine ( GetCmdLine ().c_str (), true  );
-ProcessCommandLineNew ( true );
-
-                                        // will also call InitMainWindow
-TApplication::InitInstance ();
-
-                                        // process files to open, main windows setup...
-ProcessCommandLine ( GetCmdLine ().c_str (), false );
-//ProcessCommandLineNew ( false );
-
-                                        // CartoolMainWindow has been fully created here, we can therefor retrieve its exact real estate
-MDIClientRect   = CartoolMdiClient->GetClientRect ().Normalized ();
 }
 
 
@@ -755,25 +734,38 @@ CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_opti
                                         // Testing if a flag/option has been specified
 #define         HasFlag(Variable)                   ((bool) (opt##Variable)->count ())
 #define         HasOption(Variable)                 HasFlag(Variable)
-#define         HasGroup(ToGroup)                   (ToGroup && *(ToGroup))
+
+
+bool            IsGroupUsed         ( const CLI::Option_group* group )
+{
+if ( group == 0 )
+    return  false;
+
+for ( const auto* opt : group->get_options () )
+    if ( opt->count() > 0)
+        return  true;
+
+return  false;
+}
+bool            IsSubCommandUsed    ( const CLI::App* subcommand )
+{
+return  subcommand && *subcommand;  // true if sub-command has been invoked - to be more thorough, we could count options has in IsGroupUsed
+}
+
                                         // Retrieving option description
 #define         GetVariableDescription(Variable)    (opt##Variable)->get_description ().c_str ()
 #define         GetGroupDescription(Group)          (Group)->get_description ().c_str ()
 
 
 //----------------------------------------------------------------------------
-
-int     TCartoolApp::ProcessCommandLineNew ( bool    beforeinit )
+                                        // Process command-line and init windows
+void    TCartoolApp::InitInstance ()
 {
-                                        // No options?
-if ( Argv.IsNotAllocated () || Argv.GetDim () <= 1 )
-    return 0;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Init + setting help and version options
 CLI::App            app ( ProdName );
 
+
+//bool                hasoptions          = Argv.IsAllocated () && Argv.GetDim () > 1;
 
 //CLI::Option*        opthelp         = app.set_help_flag       ( "-h,--help", "Show help" );   // raises an exception(?)
 app.set_help_flag ();                                                                           // overriding default
@@ -794,27 +786,36 @@ CLI::Option_group*  mainwgroup      = app.add_option_group ( "Main Window", "Opt
 
 AddFlag         ( mainwgroup,   mwmax,          "",     CmdLineMainWindowMax,       "maximized main window" );
 AddFlag         ( mainwgroup,   mwmin,          "",     CmdLineMainWindowMin,       "minimized main window" );
-AddFlag         ( mainwgroup,   mwrest,         "",     CmdLineMainWindowRest,      "normal main window" );
+AddFlag         ( mainwgroup,   mwnorm,         "",     CmdLineMainWindowRest,      "normal main window" );
 
 AddOptionInt    ( mainwgroup,   mww,            "",     CmdLineMainWindowWidth,     "main window width" );
 AddOptionInt    ( mainwgroup,   mwh,            "",     CmdLineMainWindowHeight,    "main window height" );
 AddOptionInt    ( mainwgroup,   mwl,            "",     CmdLineMainWindowLeft,      "main window left position" );
 AddOptionInt    ( mainwgroup,   mwt,            "",     CmdLineMainWindowTop,       "main window top position" );
 
-mainwgroup->NoMoreOptions ( 5 );
+AddOptionInt    ( mainwgroup,   mwmon,          "",     CmdLineMonitor,             "monitor" );
+
+mainwgroup->NoMoreOptions ( 6 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Registration sub-command
-CLI::App*       regsub              = app.add_subcommand ( "register", "Registration command" );
+CLI::App*           regsub          = app.add_subcommand ( "register", "Registration command" );
 
 AddFlag         ( regsub,       reg,            "",     "yes",                      "register program" );
 AddFlag         ( regsub,       unreg,          "",     "no",                       "un-register program" );
 AddFlag         ( regsub,       resetreg,       "",     "reset",                    "reset program registration" );
-AddFlag         ( regsub,       noreg,          "",     "ignore",                   "ignoring program registration" );
+AddFlag         ( regsub,       noreg,          "",     "none",                     "force skipping program registration" );
 AddFlag         ( regsub,       helpreg,        "h",    "help",                     "help" );
 
 regsub->ExclusiveOptions;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Positional options
+vector<string>      files;
+
+CLI::Option*        optfiles        = app.add_option ( "files", files, "List of files" )->expected ( -1 ); // unlimited number of arguments
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -835,6 +836,8 @@ catch ( const CLI::ParseError &e ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Time to use the retrieved options
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Options that will cause some EARLY EXIT of the program
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( HasOption ( showhelp )
@@ -888,7 +891,7 @@ if ( showversion ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( HasGroup ( regsub ) ) {
+if ( IsSubCommandUsed ( regsub ) ) {
 
     if      ( noreg ) {
 
@@ -918,219 +921,109 @@ if ( HasGroup ( regsub ) ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Options that will PROCEED with the program execution
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // BEFORE window creation
+if ( IsGroupUsed ( mainwgroup ) ) {
 
-if ( HasGroup ( mainwgroup ) && beforeinit ) {
-
-    // before init
-    if      ( mwmax  )      nCmdShow    = SW_SHOWMAXIMIZED; // overriding main window state before creation
-    else if ( mwmin  )      nCmdShow    = SW_SHOWMINIMIZED;
-    else if ( mwrest )      nCmdShow    = SW_SHOWNORMAL;
-    else                    nCmdShow    = SW_SHOWNORMAL;    // any other main window option, like width, height, top, left
-
-    // after init
-    //constexpr int   undefined       = crtl::Lowest ( undefined );
-    //int             mainwidth       = HasOption ( mww ) ? mww + 20 : undefined;     // for unknown reasons, there appear to be some deltas here
-    //int             mainheight      = HasOption ( mwh ) ? mwh + 10 : undefined;
-    //int             mainleft        = HasOption ( mwl ) ? mwl - 10 : undefined;
-    //int             maintop         = HasOption ( mwt ) ? mwt      : undefined;
+    if      ( mwmax             )   nCmdShow    = SW_SHOWMAXIMIZED; // overriding main window state before creation
+    else if ( mwmin             )   nCmdShow    = SW_SHOWMINIMIZED;
+    else if ( mwnorm            )   nCmdShow    = SW_SHOWNORMAL;
+    else if ( HasOption ( mww )                                     // using normal window if these were specified
+           || HasOption ( mwh )
+           || HasOption ( mwl )
+           || HasOption ( mwt ) )   nCmdShow    = SW_SHOWNORMAL;
+    else                            nCmdShow    = SW_SHOWMAXIMIZED; // Cartool default
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-return  0;
-}
-
-
-//----------------------------------------------------------------------------
-
-void    TCartoolApp::ProcessCommandLine ( const char*   CmdLine,    bool    beforeinit )
-{
-TCmdLine            cmd ( CmdLine );
-char                buff[ MaxPathShort ];
-
-                                        // get next value token and return it converted to integer
-auto    GetNextValue    = [] ( TCmdLine& cmd )
-{
-cmd.NextToken ();
-
-if ( cmd.GetTokenKind () != TCmdLine::Value )
-    return  -1;
-                
-return  StringToInteger ( cmd.GetToken ().c_str () );
-};
+                                        // calls InitMainWindow
+TApplication::InitInstance ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // early options, before main window has been created
-if ( beforeinit ) {
-/*
-    for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () ) {
+                                        // AFTER window creation
+if ( HasOption ( mww   )
+  || HasOption ( mwh   )
+  || HasOption ( mwl   )
+  || HasOption ( mwt   )
+  || HasOption ( mwmon ) ) {
+                                        // complete any missing size / position with default values
+    int                 w               = HasOption ( mww ) ? mww : SetWindowsDefaultWidth  ( ScreenWidth     );
+    int                 h               = HasOption ( mwh ) ? mwh : SetWindowsDefaultHeight ( ScreenHeight    );
+    int                 x               = HasOption ( mwl ) ? mwl : SetWindowsDefaultLeft   ( ScreenWidth,  w );
+    int                 y               = HasOption ( mwt ) ? mwt : SetWindowsDefaultTop    ( ScreenHeight, h );
 
-        if ( cmd.GetTokenKind () != TCmdLine::Option )
-            continue;
+                                        // for unknown reasons, there appear to be some deltas here
+                        w              += 20;
+                        h              += 10;
+                        x              -= 10;
+                        y              -=  0;
 
+                                        // remember which current state the window is in
+    bool                wasmin          = IsWindowMinimized ( CartoolMainWindow );
+    bool                wasmax          = IsWindowMaximized ( CartoolMainWindow );
 
-        if      ( StringIs ( cmd.GetToken ().c_str (), CmdLineRegister ) ) {
-
-            RegisterInfo ();
-
-            ::exit ( 0 );
-            return;
-            }
-
-        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineUnregister ) ) {
-
-            UnRegisterInfo ();
-
-            ::exit ( 0 );
-            return;
-            }
-
-        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineResetRegister ) ) {
-
-            ResetRegisterInfo ();
-
-            ::exit ( 0 );
-            return;
-            }
-                                                                                     
-        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMax     ) )     nCmdShow    = SW_SHOWMAXIMIZED; // overriding main window state before creation
-        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMin     ) )     nCmdShow    = SW_SHOWMINIMIZED;
-        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowRest    ) )     nCmdShow    = SW_SHOWNORMAL;
-
-        else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowWidth   )
-               || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowHeight  )
-               || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft    )
-               || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop     ) )     nCmdShow    = SW_SHOWNORMAL;    // using normal window if these were specified
-        }
-*/
-    return;
-    }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // regular options processing, main window has been created
-else { // ! beforeinit
-
-    constexpr int   undefined       = crtl::Lowest ( undefined );
-    int             mainwidth       = undefined;
-    int             mainheight      = undefined;
-    int             maintop         = undefined;
-    int             mainleft        = undefined;
-    int             monitorindex    = undefined;
-     
-
-    for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () ) {
-
-        if      ( cmd.GetTokenKind () == TCmdLine::Option ) {
-
-            if      ( StringIs ( cmd.GetToken ().c_str (), CmdLineNoRegister        ) )     continue;   // actually doing nothing
-
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMax     ) )     continue;   // already parsed
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowMin     ) )     continue;   // already parsed
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowRest    ) )     continue;   // already parsed
-
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowWidth   ) )     mainwidth       = GetNextValue ( cmd ) + 20;    // for unknown reasons, there appear to be some deltas here
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowHeight  ) )     mainheight      = GetNextValue ( cmd ) + 10;
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft    ) )     mainleft        = GetNextValue ( cmd ) - 10;
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop     ) )     maintop         = GetNextValue ( cmd );
-
-            else if ( StringIs ( cmd.GetToken ().c_str (), CmdLineMonitor           ) )     monitorindex    = GetNextValue ( cmd );
-
-            else {
-
-                if ( IsInteractive () )
-                    ShowMessage ( cmd.GetToken ().c_str (), "Unknown option:", ShowMessageWarning );
-                }
-
-            } // if Option
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // we have a "floating" value, certainly due to a prior bad option
-        else if ( cmd.GetTokenKind () == TCmdLine::Value ) {
-
-//          if ( IsInteractive () )
-//              ShowMessage ( cmd.GetToken ().c_str (), "Unknown option:", ShowMessageWarning );
-
-            } // if Value
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // file name -> open it
-        else if ( cmd.GetTokenKind () == TCmdLine::Name ) {
-
-            StringCopy  ( buff, cmd.GetToken ().c_str () );
-
-                                        // special handling for full quotes - shouldn't happen anymore(?)
-            if ( buff[ 0 ] == '\"' ) {
-
-                const char*     tob     = StringContains ( cmd.GetLine (), '\"', StringContainsForward  ) + 1;
-                const char*     toe     = StringContains ( cmd.GetLine (), '\"', StringContainsBackward ) - 1;
-                int             len     = toe - tob + 1;
-
-                StringCopy ( buff, tob, len );
-
-                do cmd.NextToken (); while ( cmd.GetTokenKind () != TCmdLine::Done );
-                }
-
-
-            CartoolDocManager->OpenDoc ( buff, dtOpenOptions );
-            } // if Name
-
-        } // for cmd
+                                        // Force window to be normal so we can set its size & position
+    WindowRestore ();
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Main window size / origin / monitor has been overriden?
-    if ( mainwidth    != undefined 
-      || mainheight   != undefined 
-      || mainleft     != undefined
-      || maintop      != undefined 
-      || monitorindex != undefined ) {
-
-        vector<TRect>       monitorsrect    = GetMonitorsResolution ();
-        int                 nummonitors     = monitorsrect.size ();
-
-                                        // complete any missing dimension or origin with some default values
-        int                 w               = mainwidth  != undefined ? mainwidth  : SetWindowsDefaultWidth  ( ScreenWidth  );
-        int                 h               = mainheight != undefined ? mainheight : SetWindowsDefaultHeight ( ScreenHeight );
-        int                 x               = mainleft   != undefined ? mainleft   : SetWindowsDefaultLeft   ( ScreenWidth,  w );
-        int                 y               = maintop    != undefined ? maintop    : SetWindowsDefaultTop    ( ScreenHeight, h );
-
-                                        // remember current window state
-        bool                wasmin          = IsWindowMinimized ( CartoolMainWindow );
-        bool                wasmax          = IsWindowMaximized ( CartoolMainWindow );
-
-                                        // we need a window we can ACTUALLY move
-        WindowRestore ();
-
                                         // Time to address the monitor option
-        if ( monitorindex != undefined && IsInsideLimits ( monitorindex, 1, nummonitors ) && nummonitors > 1 ) {
+    vector<TRect>       monitorsrect    = GetMonitorsResolution ();
+    int                 nummonitors     = monitorsrect.size ();
 
-            const TRect&        currscreen      = monitorsrect[ monitorindex - 1 ];
+
+    if ( HasOption ( mwmon ) && IsInsideLimits ( mwmon, 1, nummonitors ) && nummonitors > 1 ) {
+
+        const TRect&        currscreen      = monitorsrect[ mwmon - 1 ];
                                         // Trick: this will trigger EvDpiChanged, change the actual monitor, and set the correct new DPI
-            WindowSetOrigin ( currscreen.Left (), currscreen.Top  () );
+        WindowSetOrigin ( currscreen.Left (), currscreen.Top  () );
 
                                         // We have new screen width and height, so we might need to recompute these
-            w   = mainwidth  != undefined ? mainwidth  : SetWindowsDefaultWidth  ( ScreenWidth  );
-            h   = mainheight != undefined ? mainheight : SetWindowsDefaultHeight ( ScreenHeight );
-            x   = mainleft   != undefined ? mainleft   : SetWindowsDefaultLeft   ( ScreenWidth,  w );
-            y   = maintop    != undefined ? maintop    : SetWindowsDefaultTop    ( ScreenHeight, h );
+        w   = HasOption ( mww ) ? mww : SetWindowsDefaultWidth  ( ScreenWidth     );
+        h   = HasOption ( mwh ) ? mwh : SetWindowsDefaultHeight ( ScreenHeight    );
+        x   = HasOption ( mwl ) ? mwl : SetWindowsDefaultLeft   ( ScreenWidth,  w );
+        y   = HasOption ( mwt ) ? mwt : SetWindowsDefaultTop    ( ScreenHeight, h );
+
+                                        // for unknown reasons, there appear to be some deltas here
+        w  += 20;
+        h  += 10;
+        x  -= 10;
+        y  -=  0;
 
                                         // Then add the offset from current monitor - because Desktop is a big virtual space actually
-            x  += currscreen.Left ();
-            y  += currscreen.Top  ();
-            }
-
-                            // This will NOT trigger EvDpiChanged, as we are already in the proper monitor
-        WindowSetPosition ( x, y, w, h );
-
-                                        // restore window state
-        if      ( wasmin )  WindowMinimize ();
-        else if ( wasmax )  WindowMaximize ();
+        x  += currscreen.Left ();
+        y  += currscreen.Top  ();
         }
 
-    } // regular parsing
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                    // Set new window size & position
+                                    // This will NOT trigger EvDpiChanged, as we are already in the proper monitor
+    WindowSetPosition ( x, y, w, h );
+
+                                    // Finally restore previous window state
+    if      ( wasmin )  WindowMinimize ();
+    else if ( wasmax )  WindowMaximize ();
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // CartoolMainWindow has been fully created here, we can therefor retrieve its exact real estate
+MDIClientRect   = CartoolMdiClient->GetClientRect ().Normalized ();
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Finally we can loop through the optional files
+if ( HasOption ( files ) ) {
+    
+    for ( const auto& file : files ) {
+                                        // Caller should quote file names that contains spaces
+        CartoolDocManager->OpenDoc ( file.c_str (), dtOpenOptions );
+        }
+    }
 
 }
 

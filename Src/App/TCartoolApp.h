@@ -244,8 +244,6 @@ private:
 
 
     void            InitGadgetsBar      ( owl::TDecoratedMDIFrame* frame );
-    void            ProcessCommandLine  ( const char* CmdLine, bool beforeinit );
-    int             ProcessCommandLineNew  ( bool beforeinit );
     void            RegisterInfo        ();
 
 

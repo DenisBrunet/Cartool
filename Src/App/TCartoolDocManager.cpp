@@ -346,7 +346,7 @@ END_RESPONSE_TABLE;
                                         //      CmFileNew,  CmFileOpen
                                         //      CreateDoc,  CreateAnyDoc
                                         //      OpenDoc
-                                        //      ProcessCommandLine, AddFiles, CmFileSelected
+                                        //      InitInstance, AddFiles, CmFileSelected
 
 
         TCartoolDocManager::TCartoolDocManager ( int mode, TApplication *app, TDocTemplate *&templateHead )
