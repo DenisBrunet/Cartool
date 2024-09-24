@@ -17,7 +17,7 @@ limitations under the License.
 #include    <iostream>
 
 #include    "TCartoolApp.h"
-crtl::TCartoolApp   app ( crtl::CartoolTitle, owl::Module, 0 ); // We need a (minimal) Cartool app object properly initialized
+crtl::TCartoolApp   app ( crtl::CartoolTitle, 0, 0, owl::Module, 0 ); // We need a (minimal) Cartool app object properly initialized
 
 
 void    ExampleTEasyStats   ();

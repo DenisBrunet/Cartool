@@ -18,6 +18,7 @@ limitations under the License.
 
 #include    <typeinfo>
 #include    "ShellScalingApi.h"
+#include    "CLI/CLI.hpp"               // command-line options
 
 #include    <owl/pch.h>
 #include    <owl/buttonga.h>
@@ -213,7 +214,7 @@ END_RESPONSE_TABLE;
                                         // tomodule is 0 for non-interactive application, f.ex. when running tests
                                         // Expected files at root directory: HelpShortFileName, TalairachOracleFileName
                                         // 'name' will be overridden with actual exe file name + revision + optional debug/console flag
-        TCartoolApp::TCartoolApp ( LPCTSTR name, TModule*& tomodule, TAppDictionary* appdir )
+        TCartoolApp::TCartoolApp ( LPCTSTR name, int argc, char** argv, TModule*& tomodule, TAppDictionary* appdir )
       : TApplication ( name, tomodule, appdir ),
         TRecentFiles ( ".\\Cartool.ini", 9 ),
         TPreferences ( TRegKey::GetCurrentUser (), CartoolRegistryUserHome )
@@ -223,6 +224,17 @@ CartoolApplication  = this;
 CartoolDocManager   = new TCartoolDocManager ( dmMDI, this );
 
 SetDocManager ( CartoolDocManager );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Proper copy of argv for CLI use
+if ( argc > 0 && argv != 0 ) {
+
+    Argv.Resize ( argc );
+
+    for ( int i = 0; i < argc; i++ )
+        Argv[ i ]   = argv[ i ];
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -285,8 +297,8 @@ RetrievePreferences ();
 ::GetModuleFileName ( 0, ApplicationFullPath, ApplicationFullPath.Size () );
 
                                         // extract executable file name
-StringCopy          ( ApplicationFileName, ApplicationFullPath );
-GetFilename         ( ApplicationFileName );
+StringCopy          ( ApplicationFileName, ToFileName ( ApplicationFullPath ) );
+RemoveExtension     ( ApplicationFileName );
 
                                         // extract only the directory
 StringCopy          ( ApplicationDir, ApplicationFullPath );
@@ -339,7 +351,7 @@ StringAppend    ( DefaultTitle, "  " "DEBUG" );
 
 SetName         ( DefaultTitle );
 
-                                        // Setting DPI awareness from library
+                                        // Setting DPI awareness programmatically, and not from manifest
 SetProcessDpiAwareness ( PROCESS_PER_MONITOR_DPI_AWARE );
 }
 
@@ -675,13 +687,15 @@ if ( (   nCmdShow == SW_SHOWMAXIMIZED
 void    TCartoolApp::InitInstance ()
 {
                                         // process early options, some might directly exit the app
-ProcessCommandLine ( GetCmdLine ().c_str (), true  );
+//ProcessCommandLine ( GetCmdLine ().c_str (), true  );
+ProcessCommandLineNew ( true );
 
                                         // will also call InitMainWindow
 TApplication::InitInstance ();
 
                                         // process files to open, main windows setup...
 ProcessCommandLine ( GetCmdLine ().c_str (), false );
+//ProcessCommandLineNew ( false );
 
                                         // CartoolMainWindow has been fully created here, we can therefor retrieve its exact real estate
 MDIClientRect   = CartoolMdiClient->GetClientRect ().Normalized ();
@@ -689,6 +703,247 @@ MDIClientRect   = CartoolMdiClient->GetClientRect ().Normalized ();
 
 
 //----------------------------------------------------------------------------
+                                        // Short and Long Names are optionals, but at least one should be specified
+                                        // If missing, we will add the "-" and "--" to options
+const char*     OptionName ( const char* ShortName, const char* LongName )
+{
+TFileName       name;
+
+
+if ( StringIsNotEmpty ( ShortName ) ) {
+
+    if ( StringStartsWith ( ShortName, "-" ) )  StringCopy      ( name,          ShortName );
+    else                                        StringCopy      ( name, "-",     ShortName );
+    }
+
+if ( StringIsNotEmpty ( LongName ) ) {
+
+    AppendSeparator ( name, "," );
+
+    if ( StringStartsWith ( LongName,  "-" ) )  StringAppend    ( name,          LongName );
+    else                                        StringAppend    ( name, "--",    LongName );
+    }
+
+
+return  name;
+};
+
+                                        // Using a macro so we can re-use the variables defined
+#define         AddFlag(ToGroup,FlagVariable,ShortName,LongName,Description) \
+bool            FlagVariable    = false; \
+CLI::Option*    opt##FlagVariable       = ( ToGroup ? ToGroup : &app )->add_flag ( OptionName(ShortName,LongName), FlagVariable, Description );
+
+
+#define         AddOptionInt(ToGroup,OptionVariable,ShortName,LongName,Description) \
+int             OptionVariable  = 0; \
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description );
+
+#define         AddOptionDouble(ToGroup,OptionVariable,ShortName,LongName,Description) \
+double          OptionVariable  = 0; \
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description );
+
+#define         AddOptionString(ToGroup,OptionVariable,ShortName,LongName,Description) \
+string          OptionVariable; \
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description );
+
+
+#define         AnyNumberOfOptions                  require_option ( ::crtl::Lowest<int> () )
+#define         ExclusiveOptions                    require_option ( 1 )
+#define         NoMoreOptions(MAXO)                 require_option ( 0, MAXO )
+#define         NumberOfOptions(MINO,MAXO)          require_option ( MINO, MAXO )
+
+                                        // Testing if a flag/option has been specified
+#define         HasFlag(Variable)                   ((bool) (opt##Variable)->count ())
+#define         HasOption(Variable)                 HasFlag(Variable)
+#define         HasGroup(ToGroup)                   (ToGroup && *(ToGroup))
+                                        // Retrieving option description
+#define         GetVariableDescription(Variable)    (opt##Variable)->get_description ().c_str ()
+#define         GetGroupDescription(Group)          (Group)->get_description ().c_str ()
+
+
+//----------------------------------------------------------------------------
+
+int     TCartoolApp::ProcessCommandLineNew ( bool    beforeinit )
+{
+                                        // No options?
+if ( Argv.IsNotAllocated () || Argv.GetDim () <= 1 )
+    return 0;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Init + setting help and version options
+CLI::App            app ( ProdName );
+
+
+//CLI::Option*        opthelp         = app.set_help_flag       ( "-h,--help", "Show help" );   // raises an exception(?)
+app.set_help_flag ();                                                                           // overriding default
+AddOptionString ( 0,            showhelp,       "h",    "help",                     "Help" );   // adding the flag manually, but as an optional string
+optshowhelp->expected ( 0, 1 ); // This allows 0 or 1 arguments
+
+
+//CLI::Option*        optversion      = app.set_version_flag ( "--version", version );          // raises an exception(?)
+AddFlag         ( 0,            showversion,    "",     "version",                  "Version" );// adding the flag manually
+
+                                        // Needed if another group is also making use of require_option
+app.AnyNumberOfOptions;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Main window group options
+CLI::Option_group*  mainwgroup      = app.add_option_group ( "Main Window", "Options to specify the main window size and position" );
+
+AddFlag         ( mainwgroup,   mwmax,          "",     CmdLineMainWindowMax,       "maximized main window" );
+AddFlag         ( mainwgroup,   mwmin,          "",     CmdLineMainWindowMin,       "minimized main window" );
+AddFlag         ( mainwgroup,   mwrest,         "",     CmdLineMainWindowRest,      "normal main window" );
+
+AddOptionInt    ( mainwgroup,   mww,            "",     CmdLineMainWindowWidth,     "main window width" );
+AddOptionInt    ( mainwgroup,   mwh,            "",     CmdLineMainWindowHeight,    "main window height" );
+AddOptionInt    ( mainwgroup,   mwl,            "",     CmdLineMainWindowLeft,      "main window left position" );
+AddOptionInt    ( mainwgroup,   mwt,            "",     CmdLineMainWindowTop,       "main window top position" );
+
+mainwgroup->NoMoreOptions ( 5 );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Registration sub-command
+CLI::App*       regsub              = app.add_subcommand ( "register", "Registration command" );
+
+AddFlag         ( regsub,       reg,            "",     "yes",                      "register program" );
+AddFlag         ( regsub,       unreg,          "",     "no",                       "un-register program" );
+AddFlag         ( regsub,       resetreg,       "",     "reset",                    "reset program registration" );
+AddFlag         ( regsub,       noreg,          "",     "ignore",                   "ignoring program registration" );
+AddFlag         ( regsub,       helpreg,        "h",    "help",                     "help" );
+
+regsub->ExclusiveOptions;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+try {
+    app.parse ( Argv.GetDim (), Argv.GetArray () );
+    }
+catch ( const CLI::ParseError &e ) {
+
+    if ( IsInteractive () )
+        ShowMessage ( CmdLine.c_str (), "Parameters Error" );
+    else
+        cerr << "Parameters Error: " << CmdLine << fastendl;
+
+    exit ( app.exit ( e ) );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Time to use the retrieved options
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( HasOption ( showhelp )
+  || helpreg ) {
+
+    string          helpmessage;
+
+    if      ( helpreg )
+                                        // register --help
+            helpmessage     = regsub->help ();
+
+    else if ( showhelp.empty () )
+                                        // General, top-level help message
+            helpmessage     = app.help ();
+
+    else try {                          // try some specialized help message
+                                        // there is no public method to test if a subcommand exists, so we need to try to access it and check for an exception...
+        if ( app.get_subcommand ( showhelp ) )
+                                        // Existing sub-command help
+            helpmessage     = app.get_subcommand ( showhelp )->help ();
+        }
+        catch ( ... ) {
+                                        // Sub-command does not exist
+            helpmessage     = "Unknown subcommand '" + showhelp + "'";
+            }
+
+    if ( IsInteractive () )
+        ShowMessage ( helpmessage.c_str (), GetVariableDescription ( showhelp ) );
+    else
+        cout << helpmessage << fastendl;
+
+
+    exit ( 0 );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( showversion ) {
+
+    string              version         = ProdVersion + string ( " (" ) + ProdRevision + string ( ")" );
+
+    if ( IsInteractive () )
+        ShowMessage ( version.c_str (), GetVariableDescription ( showversion ) );
+    else
+        cout << version << fastendl;
+
+    exit ( 0 );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( HasGroup ( regsub ) ) {
+
+    if      ( noreg ) {
+
+        DBGM ( GetVariableDescription ( noreg ), GetGroupDescription ( regsub ) );
+        }
+
+    else if ( resetreg ) {
+
+        DBGM ( GetVariableDescription ( resetreg ), GetGroupDescription ( regsub ) );
+        //ResetRegisterInfo ();
+        }
+
+    else if ( unreg ) {
+
+        DBGM ( GetVariableDescription ( unreg ), GetGroupDescription ( regsub ) );
+        //UnRegisterInfo ();
+        }
+
+    else if ( reg ) {
+
+        DBGM ( GetVariableDescription ( reg ), GetGroupDescription ( regsub ) );
+        //RegisterInfo ();
+        }
+
+    exit ( 0 );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( HasGroup ( mainwgroup ) && beforeinit ) {
+
+    // before init
+    if      ( mwmax  )      nCmdShow    = SW_SHOWMAXIMIZED; // overriding main window state before creation
+    else if ( mwmin  )      nCmdShow    = SW_SHOWMINIMIZED;
+    else if ( mwrest )      nCmdShow    = SW_SHOWNORMAL;
+    else                    nCmdShow    = SW_SHOWNORMAL;    // any other main window option, like width, height, top, left
+
+    // after init
+    //constexpr int   undefined       = crtl::Lowest ( undefined );
+    //int             mainwidth       = HasOption ( mww ) ? mww + 20 : undefined;     // for unknown reasons, there appear to be some deltas here
+    //int             mainheight      = HasOption ( mwh ) ? mwh + 10 : undefined;
+    //int             mainleft        = HasOption ( mwl ) ? mwl - 10 : undefined;
+    //int             maintop         = HasOption ( mwt ) ? mwt      : undefined;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+return  0;
+}
+
+
+//----------------------------------------------------------------------------
+
 void    TCartoolApp::ProcessCommandLine ( const char*   CmdLine,    bool    beforeinit )
 {
 TCmdLine            cmd ( CmdLine );
@@ -709,7 +964,7 @@ return  StringToInteger ( cmd.GetToken ().c_str () );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // early options, before main window has been created
 if ( beforeinit ) {
-
+/*
     for ( cmd.NextToken (); cmd.GetTokenKind () != TCmdLine::Done; cmd.NextToken () ) {
 
         if ( cmd.GetTokenKind () != TCmdLine::Option )
@@ -749,7 +1004,7 @@ if ( beforeinit ) {
                || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowLeft    )
                || StringIs ( cmd.GetToken ().c_str (), CmdLineMainWindowTop     ) )     nCmdShow    = SW_SHOWNORMAL;    // using normal window if these were specified
         }
-
+*/
     return;
     }
 
@@ -1947,9 +2202,9 @@ return  TApplication::ProcessAppMsg ( msg );
 
 //----------------------------------------------------------------------------
                                         // This one has to be in the GLOBAL namespace
-int     OwlMain ( int /*argc*/, char** /*argv*/ )
+int     OwlMain ( int argc, char** argv )
 {
-crtl::TCartoolApp   app ( crtl::CartoolTitle );
+crtl::TCartoolApp   app ( crtl::CartoolTitle, argc, argv );
 
 return  app.Run ();
 }

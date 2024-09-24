@@ -109,7 +109,7 @@ class TCartoolApp : public  owl::TApplication,
 {
 public:
                                                                   // default Owl module
-                    TCartoolApp ( LPCTSTR name, TModule*& tomodule = owl::Module, owl::TAppDictionary* appdir = 0 );
+                    TCartoolApp ( LPCTSTR name, int argc, char** argv, TModule*& tomodule = owl::Module, owl::TAppDictionary* appdir = 0 );
                    ~TCartoolApp ();
 
 
@@ -198,6 +198,8 @@ protected:
     char            Title       [ MaxAppTitleLength ]; // What is the actual length in Windows?
     char            TitlePrefix [ MaxAppTitleLength ];
 
+    TArray1<const char*>    Argv;       // Properly saving argv for CLI
+
                                         // Screen & dpi
     int             MaxScreenWidth;
     int             MaxScreenHeight;
@@ -243,6 +245,7 @@ private:
 
     void            InitGadgetsBar      ( owl::TDecoratedMDIFrame* frame );
     void            ProcessCommandLine  ( const char* CmdLine, bool beforeinit );
+    int             ProcessCommandLineNew  ( bool beforeinit );
     void            RegisterInfo        ();
 
 
