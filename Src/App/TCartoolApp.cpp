@@ -60,20 +60,6 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-constexpr char*     CmdLineRegister         = "register";
-constexpr char*     CmdLineUnregister       = "unregister";
-constexpr char*     CmdLineNoRegister       = "noregister";
-constexpr char*     CmdLineResetRegister    = "resetregister";
-constexpr char*     CmdLineMainWindowWidth  = "mainwidth";
-constexpr char*     CmdLineMainWindowHeight = "mainheight";
-constexpr char*     CmdLineMainWindowTop    = "maintop";
-constexpr char*     CmdLineMainWindowLeft   = "mainleft";
-constexpr char*     CmdLineMainWindowMax    = "mainmaximized";
-constexpr char*     CmdLineMainWindowMin    = "mainminimized";
-constexpr char*     CmdLineMainWindowRest   = "mainnormal";
-constexpr char*     CmdLineMonitor          = "monitor";
-
-
 enum        RegistrationOpeningType
             {
             NoOpening           =   0x00,
@@ -732,8 +718,8 @@ CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_opti
 #define         NumberOfOptions(MINO,MAXO)          require_option ( MINO, MAXO )
 
                                         // Testing if a flag/option has been specified
-#define         HasFlag(Variable)                   ((bool) (opt##Variable)->count ())
-#define         HasOption(Variable)                 HasFlag(Variable)
+#define         HasOption(Variable)                 ((bool) (opt##Variable)->count ())
+#define         HasFlag(Variable)                   HasOption(Variable)
 
 
 bool            IsGroupUsed         ( const CLI::Option_group* group )
@@ -776,26 +762,20 @@ optshowhelp->expected ( 0, 1 ); // This allows 0 or 1 arguments
 //CLI::Option*        optversion      = app.set_version_flag ( "--version", version );          // raises an exception(?)
 AddFlag         ( 0,            showversion,    "",     "version",                  "Version" );// adding the flag manually
 
-                                        // Needed if another group is also making use of require_option
-app.AnyNumberOfOptions;
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Main window group options
-CLI::Option_group*  mainwgroup      = app.add_option_group ( "Main Window", "Options to specify the main window size and position" );
+                                        // Main window group options - currently off as the help display appears uselessly cluttered, maybe we will restore it if we override the help formatting
+//CLI::Option_group*  mainwgroup      = app.add_option_group ( "Main Window", "Options to specify the main window size and position" );
 
-AddFlag         ( mainwgroup,   mwmax,          "",     CmdLineMainWindowMax,       "maximized main window" );
-AddFlag         ( mainwgroup,   mwmin,          "",     CmdLineMainWindowMin,       "minimized main window" );
-AddFlag         ( mainwgroup,   mwnorm,         "",     CmdLineMainWindowRest,      "normal main window" );
+AddOptionString ( 0,            mw,             "",     "mainwindow",               "main window state" );
+optmw->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
 
-AddOptionInt    ( mainwgroup,   mww,            "",     CmdLineMainWindowWidth,     "main window width" );
-AddOptionInt    ( mainwgroup,   mwh,            "",     CmdLineMainWindowHeight,    "main window height" );
-AddOptionInt    ( mainwgroup,   mwl,            "",     CmdLineMainWindowLeft,      "main window left position" );
-AddOptionInt    ( mainwgroup,   mwt,            "",     CmdLineMainWindowTop,       "main window top position" );
+AddOptionInt    ( 0,            mww,            "",     "mainwidth",                "main window width" );
+AddOptionInt    ( 0,            mwh,            "",     "mainheight",               "main window height" );
+AddOptionInt    ( 0,            mwl,            "",     "mainleft",                 "main window left position" );
+AddOptionInt    ( 0,            mwt,            "",     "maintop",                  "main window top position" );
 
-AddOptionInt    ( mainwgroup,   mwmon,          "",     CmdLineMonitor,             "monitor" );
-
-mainwgroup->NoMoreOptions ( 6 );
+AddOptionInt    ( 0,            mwmon,          "",     "monitor",                  "monitor" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -815,7 +795,7 @@ regsub->ExclusiveOptions;
                                         // Positional options
 vector<string>      files;
 
-CLI::Option*        optfiles        = app.add_option ( "files", files, "List of files" )->expected ( -1 ); // unlimited number of arguments
+CLI::Option*        optfiles        = app.add_option ( "files", files, "List of files" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -924,16 +904,21 @@ if ( IsSubCommandUsed ( regsub ) ) {
                                         // Options that will PROCEED with the program execution
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // BEFORE window creation
-if ( IsGroupUsed ( mainwgroup ) ) {
+if ( HasOption ( mw     )
+  || HasOption ( mww    )
+  || HasOption ( mwh    )
+  || HasOption ( mwl    )
+  || HasOption ( mwt    )
+  || HasOption ( mwmon  ) ) {
 
-    if      ( mwmax             )   nCmdShow    = SW_SHOWMAXIMIZED; // overriding main window state before creation
-    else if ( mwmin             )   nCmdShow    = SW_SHOWMINIMIZED;
-    else if ( mwnorm            )   nCmdShow    = SW_SHOWNORMAL;
-    else if ( HasOption ( mww )                                     // using normal window if these were specified
+    if      ( mw == "maximized" )   nCmdShow    = SW_SHOWMAXIMIZED; // overriding main window state before creation
+    else if ( mw == "minimized" )   nCmdShow    = SW_SHOWMINIMIZED;
+    else if ( mw == "normal"
+           || HasOption ( mww )                                     // also switching to normal window if any of these were specified
            || HasOption ( mwh )
            || HasOption ( mwl )
            || HasOption ( mwt ) )   nCmdShow    = SW_SHOWNORMAL;
-    else                            nCmdShow    = SW_SHOWMAXIMIZED; // Cartool default
+    else                            nCmdShow    = SW_SHOWMAXIMIZED; // fall back to Cartool default
     }
 
 
