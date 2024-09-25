@@ -703,6 +703,12 @@ CLI::Option*    opt##FlagVariable       = ( ToGroup ? ToGroup : &app )->add_flag
 int             OptionVariable  = 0; \
 CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description );
 
+#define         AddOptionInts(ToGroup,OptionVariable,HowMany,ShortName,LongName,Description) \
+vector<int>     OptionVariable; \
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description ) \
+->delimiter    ( ',' ) \
+->expected     ( HowMany );
+
 #define         AddOptionDouble(ToGroup,OptionVariable,ShortName,LongName,Description) \
 double          OptionVariable  = 0; \
 CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description );
@@ -753,40 +759,38 @@ CLI::App            app ( ProdName );
 
 //bool                hasoptions          = Argv.IsAllocated () && Argv.GetDim () > 1;
 
-//CLI::Option*        opthelp         = app.set_help_flag       ( "-h,--help", "Show help" );   // raises an exception(?)
-app.set_help_flag ();                                                                           // overriding default
-AddOptionString ( 0,            showhelp,       "h",    "help",                     "Help" );   // adding the flag manually, but as an optional string
+//CLI::Option*        opthelp         = app.set_help_flag       ( "-h,--help", "Show help" );           // raises an exception(?)
+app.set_help_flag ();                                                                                   // overriding default
+AddOptionString ( 0,            showhelp,           "h",    "help",                 "This message" );   // adding the flag manually, but as an optional string
 optshowhelp->expected ( 0, 1 ); // This allows 0 or 1 arguments
 
 
-//CLI::Option*        optversion      = app.set_version_flag ( "--version", version );          // raises an exception(?)
-AddFlag         ( 0,            showversion,    "",     "version",                  "Version" );// adding the flag manually
+//CLI::Option*        optversion      = app.set_version_flag ( "--version", version );                  // raises an exception(?)
+AddFlag         ( 0,            showversion,        "",     "version",              "Version" );        // adding the flag manually
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Main window group options - currently off as the help display appears uselessly cluttered, maybe we will restore it if we override the help formatting
 //CLI::Option_group*  mainwgroup      = app.add_option_group ( "Main Window", "Options to specify the main window size and position" );
 
-AddOptionString ( 0,            mw,             "",     "mainwindow",               "main window state" );
+AddOptionString ( 0,            mw,                 "",     "mainwindow",           "Main window state" );
 optmw->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
 
-AddOptionInt    ( 0,            mww,            "",     "mainwidth",                "main window width" );
-AddOptionInt    ( 0,            mwh,            "",     "mainheight",               "main window height" );
-AddOptionInt    ( 0,            mwl,            "",     "mainleft",                 "main window left position" );
-AddOptionInt    ( 0,            mwt,            "",     "maintop",                  "main window top position" );
+AddOptionInts   ( 0,            mwsize,     2,      "",     "mainwindowsize",       "Main window size W,H"     );
+AddOptionInts   ( 0,            mwpos,      2,      "",     "mainwindowpos",        "Main window position X,Y" );
 
-AddOptionInt    ( 0,            mwmon,          "",     "monitor",                  "monitor" );
+AddOptionInt    ( 0,            mwmon,              "",     "monitor",              "Monitor" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Registration sub-command
 CLI::App*           regsub          = app.add_subcommand ( "register", "Registration command" );
 
-AddFlag         ( regsub,       reg,            "",     "yes",                      "register program" );
-AddFlag         ( regsub,       unreg,          "",     "no",                       "un-register program" );
-AddFlag         ( regsub,       resetreg,       "",     "reset",                    "reset program registration" );
-AddFlag         ( regsub,       noreg,          "",     "none",                     "force skipping program registration" );
-AddFlag         ( regsub,       helpreg,        "h",    "help",                     "help" );
+AddFlag         ( regsub,       reg,                "",     "yes",                  "Register program" );
+AddFlag         ( regsub,       unreg,              "",     "no",                   "Un-register program" );
+AddFlag         ( regsub,       resetreg,           "",     "reset",                "Reset program registration" );
+AddFlag         ( regsub,       noreg,              "",     "none",                 "Force skipping program registration" );
+AddFlag         ( regsub,       helpreg,            "h",    "help",                 "Help" );
 
 regsub->ExclusiveOptions;
 
@@ -905,20 +909,16 @@ if ( IsSubCommandUsed ( regsub ) ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // BEFORE window creation
 if ( HasOption ( mw     )
-  || HasOption ( mww    )
-  || HasOption ( mwh    )
-  || HasOption ( mwl    )
-  || HasOption ( mwt    )
+  || HasOption ( mwsize )
+  || HasOption ( mwpos  )
   || HasOption ( mwmon  ) ) {
 
-    if      ( mw == "maximized" )   nCmdShow    = SW_SHOWMAXIMIZED; // overriding main window state before creation
-    else if ( mw == "minimized" )   nCmdShow    = SW_SHOWMINIMIZED;
+    if      ( mw == "maximized" )       nCmdShow    = SW_SHOWMAXIMIZED; // overriding main window state before creation
+    else if ( mw == "minimized" )       nCmdShow    = SW_SHOWMINIMIZED;
     else if ( mw == "normal"
-           || HasOption ( mww )                                     // also switching to normal window if any of these were specified
-           || HasOption ( mwh )
-           || HasOption ( mwl )
-           || HasOption ( mwt ) )   nCmdShow    = SW_SHOWNORMAL;
-    else                            nCmdShow    = SW_SHOWMAXIMIZED; // fall back to Cartool default
+           || HasOption ( mwsize )                                      // also switching to normal window if any of these were specified
+           || HasOption ( mwpos  ) )    nCmdShow    = SW_SHOWNORMAL;
+    else                                nCmdShow    = SW_SHOWMAXIMIZED; // fall back to Cartool default
     }
 
 
@@ -929,16 +929,14 @@ TApplication::InitInstance ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // AFTER window creation
-if ( HasOption ( mww   )
-  || HasOption ( mwh   )
-  || HasOption ( mwl   )
-  || HasOption ( mwt   )
-  || HasOption ( mwmon ) ) {
+if ( HasOption ( mwsize )
+  || HasOption ( mwpos  )
+  || HasOption ( mwmon  ) ) {
                                         // complete any missing size / position with default values
-    int                 w               = HasOption ( mww ) ? mww : SetWindowsDefaultWidth  ( ScreenWidth     );
-    int                 h               = HasOption ( mwh ) ? mwh : SetWindowsDefaultHeight ( ScreenHeight    );
-    int                 x               = HasOption ( mwl ) ? mwl : SetWindowsDefaultLeft   ( ScreenWidth,  w );
-    int                 y               = HasOption ( mwt ) ? mwt : SetWindowsDefaultTop    ( ScreenHeight, h );
+    int                 w               = HasOption ( mwsize ) ? mwsize[ 0 ] : SetWindowsDefaultWidth  ( ScreenWidth     );
+    int                 h               = HasOption ( mwsize ) ? mwsize[ 1 ] : SetWindowsDefaultHeight ( ScreenHeight    );
+    int                 x               = HasOption ( mwpos  ) ? mwpos [ 0 ] : SetWindowsDefaultLeft   ( ScreenWidth,  w );
+    int                 y               = HasOption ( mwpos  ) ? mwpos [ 1 ] : SetWindowsDefaultTop    ( ScreenHeight, h );
 
                                         // for unknown reasons, there appear to be some deltas here
                         w              += 20;
@@ -967,10 +965,10 @@ if ( HasOption ( mww   )
         WindowSetOrigin ( currscreen.Left (), currscreen.Top  () );
 
                                         // We have new screen width and height, so we might need to recompute these
-        w   = HasOption ( mww ) ? mww : SetWindowsDefaultWidth  ( ScreenWidth     );
-        h   = HasOption ( mwh ) ? mwh : SetWindowsDefaultHeight ( ScreenHeight    );
-        x   = HasOption ( mwl ) ? mwl : SetWindowsDefaultLeft   ( ScreenWidth,  w );
-        y   = HasOption ( mwt ) ? mwt : SetWindowsDefaultTop    ( ScreenHeight, h );
+        w   = HasOption ( mwsize ) ? mwsize[ 0 ] : SetWindowsDefaultWidth  ( ScreenWidth     );
+        h   = HasOption ( mwsize ) ? mwsize[ 1 ] : SetWindowsDefaultHeight ( ScreenHeight    );
+        x   = HasOption ( mwpos  ) ? mwpos [ 0 ] : SetWindowsDefaultLeft   ( ScreenWidth,  w );
+        y   = HasOption ( mwpos  ) ? mwpos [ 1 ] : SetWindowsDefaultTop    ( ScreenHeight, h );
 
                                         // for unknown reasons, there appear to be some deltas here
         w  += 20;
