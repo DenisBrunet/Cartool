@@ -670,25 +670,22 @@ if ( (   nCmdShow == SW_SHOWMAXIMIZED
 //----------------------------------------------------------------------------
                                         // Short and Long Names are optionals, but at least one should be specified
                                         // If missing, we will add the "-" and "--" to options
-const char*     OptionName ( const char* ShortName, const char* LongName )
+string          OptionName ( const string& Name1, const string& Name2 )
 {
-TFileName       name;
+string          name;
+
+if ( ! Name1.empty () )
+
+    name    = Name1;
 
 
-if ( StringIsNotEmpty ( ShortName ) ) {
+if ( ! Name2.empty () ) {
 
-    if ( StringStartsWith ( ShortName, "-" ) )  StringCopy      ( name,          ShortName );
-    else                                        StringCopy      ( name, "-",     ShortName );
+    if ( ! name.empty () )
+        name   += ",";
+
+    name   += Name2;
     }
-
-if ( StringIsNotEmpty ( LongName ) ) {
-
-    AppendSeparator ( name, "," );
-
-    if ( StringStartsWith ( LongName,  "-" ) )  StringAppend    ( name,          LongName );
-    else                                        StringAppend    ( name, "--",    LongName );
-    }
-
 
 return  name;
 };
@@ -696,26 +693,30 @@ return  name;
                                         // Using a macro so we can re-use the variables defined
 #define         AddFlag(ToGroup,FlagVariable,ShortName,LongName,Description) \
 bool            FlagVariable    = false; \
-CLI::Option*    opt##FlagVariable       = ( ToGroup ? ToGroup : &app )->add_flag ( OptionName(ShortName,LongName), FlagVariable, Description );
+CLI::Option*    opt##FlagVariable       = ( ToGroup ? ToGroup : &app )->add_flag ( OptionName(ShortName,LongName), FlagVariable, Description )
 
 
 #define         AddOptionInt(ToGroup,OptionVariable,ShortName,LongName,Description) \
 int             OptionVariable  = 0; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description );
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description )
 
 #define         AddOptionInts(ToGroup,OptionVariable,HowMany,ShortName,LongName,Description) \
 vector<int>     OptionVariable; \
 CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description ) \
 ->delimiter    ( ',' ) \
-->expected     ( HowMany );
+->expected     ( HowMany )
 
 #define         AddOptionDouble(ToGroup,OptionVariable,ShortName,LongName,Description) \
 double          OptionVariable  = 0; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description );
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description )
 
 #define         AddOptionString(ToGroup,OptionVariable,ShortName,LongName,Description) \
 string          OptionVariable; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description );
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description )
+
+#define         AddOptionStrings(ToGroup,OptionVariable,ShortName,LongName,Description) \
+vector<string>  OptionVariable; \
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description )
 
 
 #define         AnyNumberOfOptions                  require_option ( ::crtl::Lowest<int> () )
@@ -761,45 +762,42 @@ CLI::App            app ( ProdName );
 
 //CLI::Option*        opthelp         = app.set_help_flag       ( "-h,--help", "Show help" );           // raises an exception(?)
 app.set_help_flag ();                                                                                   // overriding default
-AddOptionString ( 0,            showhelp,           "h",    "help",                 "This message" );   // adding the flag manually, but as an optional string
-optshowhelp->expected ( 0, 1 ); // This allows 0 or 1 arguments
+AddOptionString ( 0,            showhelp,           "-h",   "--help",               "This message" )    // adding the flag manually, but as an optional string
+->expected ( 0, 1 ); // This allows 0 or 1 arguments
 
 
 //CLI::Option*        optversion      = app.set_version_flag ( "--version", version );                  // raises an exception(?)
-AddFlag         ( 0,            showversion,        "",     "version",              "Version" );        // adding the flag manually
+AddFlag         ( 0,            showversion,        "",     "--version",            "Version" );        // adding the flag manually
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Main window group options - currently off as the help display appears uselessly cluttered, maybe we will restore it if we override the help formatting
 //CLI::Option_group*  mainwgroup      = app.add_option_group ( "Main Window", "Options to specify the main window size and position" );
 
-AddOptionString ( 0,            mw,                 "",     "mainwindow",           "Main window state" );
-optmw->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
+AddOptionString ( 0,            mw,                 "",     "--mainwindow",         "Main window state" )
+->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
 
-AddOptionInts   ( 0,            mwsize,     2,      "",     "mainwindowsize",       "Main window size W,H"     );
-AddOptionInts   ( 0,            mwpos,      2,      "",     "mainwindowpos",        "Main window position X,Y" );
+AddOptionInts   ( 0,            mwsize,     2,      "",     "--mainwindowsize",     "Main window size W,H"     );
+AddOptionInts   ( 0,            mwpos,      2,      "",     "--mainwindowpos",      "Main window position X,Y" );
 
-AddOptionInt    ( 0,            mwmon,              "",     "monitor",              "Monitor" );
+AddOptionInt    ( 0,            mwmon,              "",     "--monitor",            "Monitor" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Registration sub-command
-CLI::App*           regsub          = app.add_subcommand ( "register", "Registration command" );
+CLI::App*           regsub          = app.add_subcommand ( "register", "Registration command" )
+->ExclusiveOptions;
 
-AddFlag         ( regsub,       reg,                "",     "yes",                  "Register program" );
-AddFlag         ( regsub,       unreg,              "",     "no",                   "Un-register program" );
-AddFlag         ( regsub,       resetreg,           "",     "reset",                "Reset program registration" );
-AddFlag         ( regsub,       noreg,              "",     "none",                 "Force skipping program registration" );
-AddFlag         ( regsub,       helpreg,            "h",    "help",                 "Help" );
-
-regsub->ExclusiveOptions;
+AddFlag         ( regsub,       reg,                "",     "--yes",                "Register program" );
+AddFlag         ( regsub,       unreg,              "",     "--no",                 "Un-register program" );
+AddFlag         ( regsub,       resetreg,           "",     "--reset",              "Reset program registration" );
+//AddFlag       ( regsub,       noreg,              "",     "--none",               "Force skipping program registration" );    // not sure if still useful, as Cartool does not touch registers when launched
+AddFlag         ( regsub,       helpreg,            "-h",   "--help",               "Help" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Positional options
-vector<string>      files;
-
-CLI::Option*        optfiles        = app.add_option ( "files", files, "List of files" );
+                                        // Positional options (not starting with '-')
+AddOptionStrings( 0,            files,              "",     "files",                "List of files" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -877,12 +875,12 @@ if ( showversion ) {
 
 if ( IsSubCommandUsed ( regsub ) ) {
 
-    if      ( noreg ) {
+//  if      ( noreg ) {
+//
+//      DBGM ( GetVariableDescription ( noreg ), GetGroupDescription ( regsub ) );
+//      }
 
-        DBGM ( GetVariableDescription ( noreg ), GetGroupDescription ( regsub ) );
-        }
-
-    else if ( resetreg ) {
+    if      ( resetreg ) {
 
         DBGM ( GetVariableDescription ( resetreg ), GetGroupDescription ( regsub ) );
         //ResetRegisterInfo ();
