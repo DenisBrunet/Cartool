@@ -54,7 +54,7 @@ constexpr int   ShortStringLength       = 64;
 constexpr char* CartoolRegistryUserHome = "Software\\Cartool\\Cartool";
 constexpr char* CartoolRegistryCompany  = CartoolTitle;
 
-                                        // preferences
+                                        // Preferences
 constexpr char* PrefGraphic             = "graphic";
 
 constexpr char* PrefAcceleration        = "acceleration";
@@ -65,6 +65,9 @@ constexpr char* PrefOn                  = "on";
 constexpr char* PrefOff                 = "off";
 
 constexpr char* PrefAuxiliaries         = "auxs";
+
+
+constexpr int   DefaultWindowState      = SW_SHOWMAXIMIZED;
 
                                         // WPARAM type inside OWLNext
 //using         owlwparam               = WPARAM;       // !NOT working in OwlNext 64 bits, which still fancy 32 bits WPARAM!

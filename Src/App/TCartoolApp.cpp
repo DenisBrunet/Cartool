@@ -263,7 +263,7 @@ ScreenHeight        = 0;
 MonitorDpi          = USER_DEFAULT_SCREEN_DPI;
 ActualDpi           = MonitorDpi;
 
-nCmdShow            = SW_SHOWMAXIMIZED; // default, which can be overriden with options
+nCmdShow            = DefaultWindowState;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -654,16 +654,6 @@ CursorOperation     = make_unique<TCursor> ( CartoolMainWindow->GetModule()->Get
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Message queue threading
 EnableMultiThreading ( true );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // nCmdShow could be overriden in InitInstance
-if ( (   nCmdShow == SW_SHOWMAXIMIZED 
-      || nCmdShow == SW_SHOWNORMAL 
-      || nCmdShow == SW_SHOWDEFAULT   )
-  && IsInteractive () )
-
-    CreateSplashScreen ();
 }
 
 
@@ -706,9 +696,11 @@ CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_opti
 ->delimiter    ( ',' ) \
 ->expected     ( HowMany )
 
+
 #define         AddOptionDouble(ToGroup,OptionVariable,ShortName,LongName,Description) \
 double          OptionVariable  = 0; \
 CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description )
+
 
 #define         AddOptionString(ToGroup,OptionVariable,ShortName,LongName,Description) \
 string          OptionVariable; \
@@ -774,6 +766,8 @@ AddFlag         ( 0,            showversion,        "",     "--version",        
                                         // Main window group options - currently off as the help display appears uselessly cluttered, maybe we will restore it if we override the help formatting
 //CLI::Option_group*  mainwgroup      = app.add_option_group ( "Main Window", "Options to specify the main window size and position" );
 
+AddFlag         ( 0,            nosplash,           "",     "--nosplash",           "No splash-screen" );
+
 AddOptionString ( 0,            mw,                 "",     "--mainwindow",         "Main window state" )
 ->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
 
@@ -788,10 +782,10 @@ AddOptionInt    ( 0,            mwmon,              "",     "--monitor",        
 CLI::App*           regsub          = app.add_subcommand ( "register", "Registration command" )
 ->ExclusiveOptions;
 
-AddFlag         ( regsub,       reg,                "",     "--yes",                "Register program" );
-AddFlag         ( regsub,       unreg,              "",     "--no",                 "Un-register program" );
-AddFlag         ( regsub,       resetreg,           "",     "--reset",              "Reset program registration" );
-//AddFlag       ( regsub,       noreg,              "",     "--none",               "Force skipping program registration" );    // not sure if still useful, as Cartool does not touch registers when launched
+AddFlag         ( regsub,       reg,                "-y",   "--yes",                "Register program" );
+AddFlag         ( regsub,       unreg,              "-n",   "--no",                 "Un-register program" );
+AddFlag         ( regsub,       resetreg,           "-r",   "--reset",              "Reset program registration" );
+//AddFlag       ( regsub,       noreg,              "-o",   "--none",               "Force skipping program registration" );    // not sure if still useful, as Cartool does not touch registers when launched
 AddFlag         ( regsub,       helpreg,            "-h",   "--help",               "Help" );
 
 
@@ -905,18 +899,29 @@ if ( IsSubCommandUsed ( regsub ) ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Options that will PROCEED with the program execution
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Splash screen does not seem to need the main window created, so put it early on for advertisement
+if ( (   nCmdShow == SW_SHOWMAXIMIZED 
+      || nCmdShow == SW_SHOWNORMAL 
+      || nCmdShow == SW_SHOWDEFAULT   )
+  && IsInteractive ()
+  && ! nosplash                         )
+
+    CreateSplashScreen ();
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // BEFORE window creation
 if ( HasOption ( mw     )
   || HasOption ( mwsize )
   || HasOption ( mwpos  )
   || HasOption ( mwmon  ) ) {
 
-    if      ( mw == "maximized" )       nCmdShow    = SW_SHOWMAXIMIZED; // overriding main window state before creation
+    if      ( mw == "maximized" )       nCmdShow    = SW_SHOWMAXIMIZED;     // overriding main window state before creation
     else if ( mw == "minimized" )       nCmdShow    = SW_SHOWMINIMIZED;
     else if ( mw == "normal"
-           || HasOption ( mwsize )                                      // also switching to normal window if any of these were specified
+           || HasOption ( mwsize )                                          // also switching to normal window if any of these were specified
            || HasOption ( mwpos  ) )    nCmdShow    = SW_SHOWNORMAL;
-    else                                nCmdShow    = SW_SHOWMAXIMIZED; // fall back to Cartool default
+    else                                nCmdShow    = DefaultWindowState;   // fall back to Cartool default
     }
 
 
