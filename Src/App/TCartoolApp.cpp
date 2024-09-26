@@ -738,8 +738,8 @@ return  subcommand && *subcommand;  // true if sub-command has been invoked - to
 }
 
                                         // Retrieving option description
-#define         GetVariableDescription(Variable)    (opt##Variable)->get_description ().c_str ()
-#define         GetGroupDescription(Group)          (Group)->get_description ().c_str ()
+#define         GetVariableDescription(Variable)    (opt##Variable)->get_description ()
+#define         GetGroupDescription(Group)          (Group)->get_description ()
 
 
 //----------------------------------------------------------------------------
@@ -802,9 +802,10 @@ try {
 catch ( const CLI::ParseError &e ) {
 
     if ( IsInteractive () )
-        ShowMessage ( CmdLine.c_str (), "Parameters Error" );
+
+        ShowMessage ( /*CmdLine*/ e.what (), "Error in command-line parameters" );
     else
-        cerr << "Parameters Error: " << CmdLine << fastendl;
+        cerr << "Error in command-line parameters: " << /*CmdLine*/ e.what () << fastendl;
 
     exit ( app.exit ( e ) );
     }
@@ -841,7 +842,7 @@ if ( HasOption ( showhelp )
             }
 
     if ( IsInteractive () )
-        ShowMessage ( helpmessage.c_str (), GetVariableDescription ( showhelp ) );
+        ShowMessage ( helpmessage, GetVariableDescription ( showhelp ) );
     else
         cout << helpmessage << fastendl;
 
@@ -857,7 +858,7 @@ if ( showversion ) {
     string              version         = ProdVersion + string ( " (" ) + ProdRevision + string ( ")" );
 
     if ( IsInteractive () )
-        ShowMessage ( version.c_str (), GetVariableDescription ( showversion ) );
+        ShowMessage ( version, GetVariableDescription ( showversion ) );
     else
         cout << version << fastendl;
 
@@ -871,24 +872,24 @@ if ( IsSubCommandUsed ( regsub ) ) {
 
 //  if      ( noreg ) {
 //
-//      DBGM ( GetVariableDescription ( noreg ), GetGroupDescription ( regsub ) );
+//      DBGM ( GetVariableDescription ( noreg ).c_str (), GetGroupDescription ( regsub ).c_str () );
 //      }
 
     if      ( resetreg ) {
 
-        DBGM ( GetVariableDescription ( resetreg ), GetGroupDescription ( regsub ) );
+        DBGM ( GetVariableDescription ( resetreg ).c_str (), GetGroupDescription ( regsub ).c_str () );
         //ResetRegisterInfo ();
         }
 
     else if ( unreg ) {
 
-        DBGM ( GetVariableDescription ( unreg ), GetGroupDescription ( regsub ) );
+        DBGM ( GetVariableDescription ( unreg ).c_str (), GetGroupDescription ( regsub ).c_str () );
         //UnRegisterInfo ();
         }
 
     else if ( reg ) {
 
-        DBGM ( GetVariableDescription ( reg ), GetGroupDescription ( regsub ) );
+        DBGM ( GetVariableDescription ( reg ).c_str (), GetGroupDescription ( regsub ).c_str () );
         //RegisterInfo ();
         }
 

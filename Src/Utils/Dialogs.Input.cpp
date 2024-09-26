@@ -72,11 +72,21 @@ DialogAttr.Name     = (LPTSTR) UIntToPtr ( numlines <= 3  ?  IDD_INPUTDIALOG3
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void        ShowMessage ( const char *text, const char *title, int flags, TWindow *that )
+void        ShowMessage ( const char* text, const char* title, int flags, TWindow *that )
 {
 MessageBox  (   that ? that->GetHandle () : 0,
                 text,
                 title ? title : "",
+                MB_SETFOREGROUND | MB_OK | MB_TOPMOST | ( flags & ShowMessageWarning ? MB_ICONEXCLAMATION : 0 ) 
+            );
+}
+
+
+void        ShowMessage ( const std::string& text, const std::string& title, int flags, TWindow *that )
+{
+MessageBox  (   that ? that->GetHandle () : 0,
+                text .c_str (),
+                title.c_str (),
                 MB_SETFOREGROUND | MB_OK | MB_TOPMOST | ( flags & ShowMessageWarning ? MB_ICONEXCLAMATION : 0 ) 
             );
 }

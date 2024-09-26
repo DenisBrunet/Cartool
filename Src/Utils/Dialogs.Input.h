@@ -35,7 +35,8 @@ enum                {
                     ShowMessageDefault          = ShowMessageNormal,
                     };
 
-void                ShowMessage             ( const char *text, const char *title = 0, int flags = ShowMessageDefault, owl::TWindow *that = 0 );
+void                ShowMessage             ( const char*        text, const char*        title = 0,  int flags = ShowMessageDefault, owl::TWindow *that = 0 );
+void                ShowMessage             ( const std::string& text, const std::string& title = "", int flags = ShowMessageDefault, owl::TWindow *that = 0 );
 void                ShowValues              ( const char *title, const char *format, ... ); // format is i:integer f:double float c:char s:string
 
 
