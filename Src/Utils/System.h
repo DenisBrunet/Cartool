@@ -17,6 +17,7 @@ limitations under the License.
 #pragma once
 
 #include    <omp.h>
+#include    <iostream>
 
 #include    <owl/registry.h>
 #include    <owl/clipboar.h>
@@ -130,6 +131,52 @@ enum    ProcessPriorityFlags
 
 
 void    SetProcessPriority  ( ProcessPriorityFlags how = DefaultPriority );
+
+
+//----------------------------------------------------------------------------
+
+inline  bool    CreateConsole ()
+{
+if ( ! AllocConsole () )
+    return  false;
+
+freopen ( "CONIN$",  "r", stdin  );
+freopen ( "CONOUT$", "w", stderr );
+freopen ( "CONOUT$", "w", stdout );
+
+return  true;
+}
+
+
+inline  bool    DeleteConsole ( bool showpresskey = false )
+{
+if ( showpresskey ) {
+    std::cout << "\n";
+    system ( "pause" );     // show message "Press any key to continue" and waits
+    }
+
+return  FreeConsole ();
+}
+
+
+inline  bool    HasConsole ()
+{
+return  (bool) GetConsoleWindow ();
+}
+
+                                        // Create a console if it does not exist
+inline void     PrintConsole ( const string& message )
+{
+bool                createconsole   = /*IsInteractive () &&*/ ! HasConsole ();
+
+if ( createconsole )
+    CreateConsole ();
+
+::std::cout << message << "\n";
+
+if ( createconsole )
+    DeleteConsole ( true );
+}
 
 
 //----------------------------------------------------------------------------

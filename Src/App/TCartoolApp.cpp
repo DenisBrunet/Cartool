@@ -782,11 +782,11 @@ AddOptionInt    ( 0,            mwmon,              "",     "--monitor",        
 CLI::App*           regsub          = app.add_subcommand ( "register", "Registration command" )
 ->ExclusiveOptions;
 
-AddFlag         ( regsub,       reg,                "-y",   "--yes",                "Register program" );
-AddFlag         ( regsub,       unreg,              "-n",   "--no",                 "Un-register program" );
-AddFlag         ( regsub,       resetreg,           "-r",   "--reset",              "Reset program registration" );
+AddFlag         ( regsub,       reg,                "-y",   "--yes",                "Register program to Windows" );
+AddFlag         ( regsub,       unreg,              "-n",   "--no",                 "Un-register program to Windows" );
+AddFlag         ( regsub,       resetreg,           "-r",   "--reset",              "Clean-up Windows registration to default" );
 //AddFlag       ( regsub,       noreg,              "-o",   "--none",               "Force skipping program registration" );    // not sure if still useful, as Cartool does not touch registers when launched
-AddFlag         ( regsub,       helpreg,            "-h",   "--help",               "Help" );
+AddFlag         ( regsub,       helpreg,            "-h",   "--help",               "This message" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -801,11 +801,12 @@ try {
     }
 catch ( const CLI::ParseError &e ) {
 
-    if ( IsInteractive () )
-
-        ShowMessage ( /*CmdLine*/ e.what (), "Error in command-line parameters" );
-    else
-        cerr << "Error in command-line parameters: " << /*CmdLine*/ e.what () << fastendl;
+    PrintConsole    ( string ( "Error in command-line parameters: " ) + /*CmdLine*/ e.what () + NewLine
+                      +                                                                         NewLine
+                      + "See the correct command-line syntax by calling: "                      NewLine
+                      + ToFileName ( ApplicationFullPath ) + " --help"                          NewLine
+                      + " or"                                                                   NewLine
+                      + ToFileName ( ApplicationFullPath ) + " <subcommand> --help"             NewLine );
 
     exit ( app.exit ( e ) );
     }
@@ -841,11 +842,7 @@ if ( HasOption ( showhelp )
             helpmessage     = "Unknown subcommand '" + showhelp + "'";
             }
 
-    if ( IsInteractive () )
-        ShowMessage ( helpmessage, GetVariableDescription ( showhelp ) );
-    else
-        cout << helpmessage << fastendl;
-
+    PrintConsole    ( helpmessage );
 
     exit ( 0 );
     }
@@ -855,12 +852,7 @@ if ( HasOption ( showhelp )
 
 if ( showversion ) {
 
-    string              version         = ProdVersion + string ( " (" ) + ProdRevision + string ( ")" );
-
-    if ( IsInteractive () )
-        ShowMessage ( version, GetVariableDescription ( showversion ) );
-    else
-        cout << version << fastendl;
+    PrintConsole    ( string ( ProdVersion ) + " (" + ProdRevision + ")" );
 
     exit ( 0 );
     }
@@ -870,28 +862,10 @@ if ( showversion ) {
 
 if ( IsSubCommandUsed ( regsub ) ) {
 
-//  if      ( noreg ) {
-//
-//      DBGM ( GetVariableDescription ( noreg ).c_str (), GetGroupDescription ( regsub ).c_str () );
-//      }
-
-    if      ( resetreg ) {
-
-        DBGM ( GetVariableDescription ( resetreg ).c_str (), GetGroupDescription ( regsub ).c_str () );
-        //ResetRegisterInfo ();
-        }
-
-    else if ( unreg ) {
-
-        DBGM ( GetVariableDescription ( unreg ).c_str (), GetGroupDescription ( regsub ).c_str () );
-        //UnRegisterInfo ();
-        }
-
-    else if ( reg ) {
-
-        DBGM ( GetVariableDescription ( reg ).c_str (), GetGroupDescription ( regsub ).c_str () );
-        //RegisterInfo ();
-        }
+    if      ( reg      )    PrintConsole    ( GetVariableDescription ( reg      ) ); // RegisterInfo ();
+    else if ( unreg    )    PrintConsole    ( GetVariableDescription ( unreg    ) ); // UnRegisterInfo ();
+    else if ( resetreg )    PrintConsole    ( GetVariableDescription ( resetreg ) ); // ResetRegisterInfo ();
+//  else if ( noreg    )    PrintConsole    ( GetVariableDescription ( noreg    ) );
 
     exit ( 0 );
     }
