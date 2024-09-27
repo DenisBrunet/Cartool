@@ -862,10 +862,10 @@ if ( showversion ) {
 
 if ( IsSubCommandUsed ( regsub ) ) {
 
-    if      ( reg      )    PrintConsole    ( GetVariableDescription ( reg      ) ); // RegisterInfo ();
-    else if ( unreg    )    PrintConsole    ( GetVariableDescription ( unreg    ) ); // UnRegisterInfo ();
-    else if ( resetreg )    PrintConsole    ( GetVariableDescription ( resetreg ) ); // ResetRegisterInfo ();
-//  else if ( noreg    )    PrintConsole    ( GetVariableDescription ( noreg    ) );
+    if      ( reg      )    /* PrintConsole    ( GetVariableDescription ( reg      ) ); */ RegisterInfo      ();
+    else if ( unreg    )    /* PrintConsole    ( GetVariableDescription ( unreg    ) ); */ UnRegisterInfo    ();
+    else if ( resetreg )    /* PrintConsole    ( GetVariableDescription ( resetreg ) ); */ ResetRegisterInfo ();
+//  else if ( noreg    )    /* PrintConsole    ( GetVariableDescription ( noreg    ) ); */
 
     exit ( 0 );
     }
