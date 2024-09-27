@@ -147,29 +147,16 @@ public:
     FormatWish      PrefGraphic3DTextures;
 
 
-    void            InitMainWindow      ();
-    void            InitInstance        ();
-    void            SetScreen           ( const char* optmonitorname = 0 );
-    bool            CanClose            ();
-    bool            ProcessAppMsg       ( MSG& msg );
-
     bool            IsInteractive       ()                                          const   { return  owl::TModule::IsLoaded (); /*CartoolMainWindow != 0;*/ }
     bool            IsNotInteractive    ()                                          const   { return  ! IsInteractive (); }
-
 
     void            CreateBaseGadgets   ( bool server = false );
     void            InsertGadgets       ( owl::TGadget** listgadgets, int numgadgets );
     void            RemoveGadgets       ( int afterID = CM_VIEWCREATE );
     void            UpdateGadgets       ();
 
-    void            ResetRegisterInfo   ();
-    void            UnRegisterInfo      ();
-
     TBaseView*      GetViewFromDrop     ( owl::TDropInfo& drop );
     void            OpenDroppedFiles    ( TGoF &files, TBaseView *view = 0 );
-
-    void            CreateSplashScreen  ();
-    void            DestroySplashScreen ();
 
 
     double          GetActualDpi        ()                                          const   { return  ActualDpi;                                            }
@@ -200,6 +187,19 @@ protected:
     double          MonitorDpi;
     double          ActualDpi;
     owl::TRect      MDIClientRect;
+
+                                        // TApplication
+    void            InitMainWindow      ();
+    void            InitInstance        ();
+    void            SetScreen           ( const char* optmonitorname = 0 );
+    bool            CanClose            ();
+    bool            ProcessAppMsg       ( MSG& msg );
+
+    void            ResetRegisterInfo   ();
+    void            UnRegisterInfo      ();
+
+    void            CreateSplashScreen  ();
+    void            DestroySplashScreen ();
 
 
     void            CmHelpAbout         ();
