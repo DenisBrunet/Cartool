@@ -114,7 +114,7 @@ bool                openingfiles    = (int) outgof * (int) files <= 10;
 
 //if ( (int) files > 5 )
 //
-//    CartoolApplication->WindowMinimize ();
+//    WindowMinimize ( CartoolMainWindow );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -143,7 +143,7 @@ for ( int eegi = 0; eegi < (int) files; eegi++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-CartoolApplication->WindowMaximize ();
+WindowMaximize ( CartoolMainWindow );
 
 Gauge.FinishParts ();
 

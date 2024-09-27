@@ -226,7 +226,7 @@ TransferData ( tdGetData );
 
 if ( ! BatchProcessing ) {
 
-//  ::WindowMinimize ( this );
+//  WindowMinimize ( this );
 
     Destroy ();
 

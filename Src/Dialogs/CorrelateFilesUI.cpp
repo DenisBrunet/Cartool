@@ -502,7 +502,7 @@ else if ( correlate == CorrelateTypePhaseIntCoupling ) {
 
 if ( (int) getfiles1 + (int) getfiles2 >= 5 )
                                         // batch can be long, hide Cartool until we are done
-    CartoolApplication->WindowMinimize ();
+    WindowMinimize ( CartoolMainWindow );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -524,7 +524,7 @@ CorrelateFiles (    filenames1,         filenames2,
 
 SetProcessPriority ();
 
-CartoolApplication->WindowMaximize ();
+WindowMaximize ( CartoolMainWindow );
 
 //CartoolApplication->ResetMainTitle ();
 Gauge.FinishParts ();

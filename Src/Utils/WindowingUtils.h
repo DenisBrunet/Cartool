@@ -26,8 +26,22 @@ namespace crtl {
 //----------------------------------------------------------------------------
                                         // Wrapping owl::TWindow with simple utilities
 
+enum    WindowState
+        {
+        UnknownWindowState,
+        WindowStateNormal,
+        WindowStateMinimized,
+        WindowStateMaximized,
+        WindowStateHidden,
+        };
+                                        // Versatile, all-in-one function to get/set a window state
+inline  WindowState GetWindowState              ( const owl::TWindow* window );
+inline  void        SetWindowState              ( owl::TWindow* window, WindowState newstate );
+                                        // Specialized versions
 inline  bool        IsWindowMinimized           ( const owl::TWindow* window )                                              { return  window && window->IsIconic ();    }
 inline  bool        IsWindowMaximized           ( const owl::TWindow* window )                                              { return  window && window->IsZoomed ();    }
+inline  bool        IsWindowHidden              ( const owl::TWindow* window )                                              { return  window && ! ( GetWindowLong ( window->Handle, GWL_STYLE ) & WS_VISIBLE ); }   // IsWindowVisible is NOT working as expected...
+inline  bool        IsWindowNormal              ( const owl::TWindow* window )                                              { return  window && ! ( IsWindowMinimized ( window ) || IsWindowMaximized ( window ) || IsWindowHidden ( window ) ); }
 
                                                     // Getting position and size                                            
 inline  int         GetWindowLeft               ( const owl::TWindow* window )                                              { return  window ? window->Attr.X                       : 0;    }
@@ -55,6 +69,7 @@ inline  void        WindowSetSize               ( owl::TWindow* window,   int wi
 inline  void        WindowSetPosition           ( owl::TWindow* window,   int left,   int top,    int width,  int height )  { if ( window ) window->SetWindowPos ( 0, left, top, width, height, SWP_NOCOPYBITS   | SWP_SHOWWINDOW              ); }
 inline  void        WindowSetFrameOrigin        ( owl::TWindow* window,   int left,   int top )                             { if ( window ) window->SetWindowPos ( 0, left, top, 0,     0,      SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOSIZE ); }
 inline  void        RepositionMinimizedWindow   ( owl::TWindow* window, int clientheight );
+inline  void        WindowSetGaugeSize          ( owl::TWindow* window )                                                    { WindowRestore ( window ); WindowSetSize (  window, 600 /*2.5 * GaugeWidth*/, 240 /*7 * GaugeHeight*/ ); }
 
 
 inline DPI_AWARENESS        GetDPIAwareness         ();
@@ -66,6 +81,28 @@ inline vector<owl::TRect>   GetMonitorsResolution   ();
 
 
 //----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+
+WindowState     GetWindowState  ( const owl::TWindow* window )
+{
+if      ( window == 0 )                     return  UnknownWindowState;
+else if ( IsWindowMinimized ( window ) )    return  WindowStateMinimized;
+else if ( IsWindowMaximized ( window ) )    return  WindowStateMaximized;
+else if ( IsWindowHidden    ( window ) )    return  WindowStateHidden;
+else                                        return  WindowStateNormal;
+}
+
+
+void            SetWindowState  ( owl::TWindow* window, WindowState newstate )
+{
+if      ( window == 0 )                         return;
+else if ( newstate == WindowStateMinimized )    WindowMinimize ( window );
+else if ( newstate == WindowStateMaximized )    WindowMaximize ( window );
+else if ( newstate == WindowStateHidden    )    WindowHide     ( window );
+else                                            WindowRestore  ( window );
+}
+
+
 //----------------------------------------------------------------------------
                                         // Assumes the minimized window height can not change during the process life time
 int             GetMinimizedWindowHeight ( owl::TWindow* window )

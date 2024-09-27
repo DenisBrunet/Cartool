@@ -201,7 +201,7 @@ Gauge.AddPart   ( gaugepca,     PCANumGauge     * (int) filenames, 50 );  // gau
 
 if ( (int) filenames >= 5 )
                                         // batch can be long, hide Cartool until we are done
-    CartoolApplication->WindowMinimize ();
+    WindowMinimize ( CartoolMainWindow );
                                         // Changing priority
 SetProcessPriority ( BatchProcessingPriority );
 
@@ -231,7 +231,7 @@ for ( int i = 0; i < (int) filenames; i++ ) {
 
 SetProcessPriority ();
 
-CartoolApplication->WindowMaximize ();
+WindowMaximize ( CartoolMainWindow );
 
 //CartoolApplication->ResetMainTitle ();
 Gauge.FinishParts ();

@@ -776,7 +776,7 @@ Gauge.CurrentPart   = 0;
 
 if ( IsBatchFirstCall () && (int) BatchFileNames > 10 )
                                         // batch can be long, hide Cartool until we are done
-    CartoolApplication->WindowMinimize ();
+    WindowMinimize ( CartoolMainWindow );
 
 
 CartoolApplication->SetMainTitle ( RisToVolumeTitle, EEGDoc->GetDocPath (), Gauge );
@@ -969,7 +969,7 @@ UpdateApplication;
 
 if ( IsBatchLastCall () ) {
 
-    CartoolApplication->WindowMaximize ();
+    WindowMaximize ( CartoolMainWindow );
 
     Gauge.FinishParts ();
     CartoolApplication->SetMainTitle ( RisToVolumeTitle, fileprefix, Gauge );

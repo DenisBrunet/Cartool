@@ -889,7 +889,7 @@ if ( showstepgauge ) {
 
 if ( IsBatchFirstCall () && (int) BatchFileNames > 5 )
                                         // batch can be long, hide Cartool until we are done
-    CartoolApplication->WindowMinimize ();
+    WindowMinimize ( CartoolMainWindow );
 
                                         // Changing priority
 SetProcessPriority ( BatchProcessingPriority );
@@ -931,7 +931,7 @@ if ( openauto )
 
 if ( IsBatchLastCall () ) {
 
-    CartoolApplication->WindowMaximize ();
+    WindowMaximize ( CartoolMainWindow );
 
     Gauge.FinishParts ();
     CartoolApplication->SetMainTitle ( NormalizeTitleMany, "", Gauge );

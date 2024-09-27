@@ -1863,7 +1863,7 @@ bool                silent              = NumBatchFiles () > 1;
 if ( IsBatchFirstCall () && BatchFileNames.NumFiles () > 1 )
 //if ( BatchProcessing && IsBatchFirstCall () )
 
-    CartoolApplication->WindowMinimize ();
+    WindowMinimize ( CartoolMainWindow );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1927,8 +1927,8 @@ if ( openauto ) {
 //if ( ! BatchProcessing || IsBatchLastCall () ) {
 if ( IsBatchLastCall () && BatchFileNames.NumFiles () > 1 ) {
 
-  //CartoolApplication->WindowMaximize ();
-    CartoolApplication->WindowRestore ();
+  //WindowMaximize ( CartoolMainWindow );
+    WindowRestore  ( CartoolMainWindow );
 
     //CartoolApplication->ResetMainTitle ();
     CartoolApplication->SetMainTitle ( "Frequency Analysis of ", ToFileName ( EEGDoc->GetDocPath () ) );

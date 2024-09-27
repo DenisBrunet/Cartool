@@ -2622,7 +2622,7 @@ enum                {
 
 //if ( ! ( interactive || xyzcoregistertomri ) )
 //                                        // shrinking size to keep the progress bar under observation
-//    CartoolApplication->WindowSetGaugeSize (); 
+//    WindowSetGaugeSize ( CartoolMainWindow ); 
 
 
 TSuperGauge         Gauge;
@@ -5184,7 +5184,7 @@ if ( IsEmptyDirectory ( BaseDirLocal ) )
 
 SetProcessPriority ();
 
-CartoolApplication->WindowMaximize ();
+WindowMaximize ( CartoolMainWindow );
 
 Gauge.FinishParts ();
 

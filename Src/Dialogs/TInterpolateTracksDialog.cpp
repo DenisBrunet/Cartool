@@ -939,7 +939,7 @@ bool                silent              = NumBatchFiles () > 1;
 
 if ( IsBatchFirstCall () && BatchFileNames.NumFiles () > 1 )
 
-    CartoolApplication->WindowMinimize ();
+    WindowMinimize ( CartoolMainWindow );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -967,7 +967,7 @@ if ( openauto )
 
 if ( IsBatchLastCall () && BatchFileNames.NumFiles () > 1 ) {
 
-    CartoolApplication->WindowRestore ();
+    WindowRestore ( CartoolMainWindow );
 
     CartoolApplication->SetMainTitle ( "Done - " InterpolationTitle, neweegfile );
     }

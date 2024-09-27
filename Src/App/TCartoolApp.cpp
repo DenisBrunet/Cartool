@@ -923,11 +923,9 @@ if ( HasOption ( mwsize )
                         y              -=  0;
 
                                         // remember which current state the window is in
-    bool                wasmin          = IsWindowMinimized ( CartoolMainWindow );
-    bool                wasmax          = IsWindowMaximized ( CartoolMainWindow );
-
+    WindowState         oldwindowstate  = GetWindowState ( CartoolMainWindow );
                                         // Force window to be normal so we can set its size & position
-    WindowRestore ();
+    WindowRestore ( CartoolMainWindow );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -940,7 +938,7 @@ if ( HasOption ( mwsize )
 
         const TRect&        currscreen      = monitorsrect[ mwmon - 1 ];
                                         // Trick: this will trigger EvDpiChanged, change the actual monitor, and set the correct new DPI
-        WindowSetOrigin ( currscreen.Left (), currscreen.Top  () );
+        WindowSetOrigin ( CartoolMainWindow, currscreen.Left (), currscreen.Top  () );
 
                                         // We have new screen width and height, so we might need to recompute these
         w   = HasOption ( mwsize ) ? mwsize[ 0 ] : SetWindowsDefaultWidth  ( ScreenWidth     );
@@ -963,11 +961,9 @@ if ( HasOption ( mwsize )
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                     // Set new window size & position
                                     // This will NOT trigger EvDpiChanged, as we are already in the proper monitor
-    WindowSetPosition ( x, y, w, h );
-
+    WindowSetPosition   ( CartoolMainWindow, x, y, w, h );
                                     // Finally restore previous window state
-    if      ( wasmin )  WindowMinimize ();
-    else if ( wasmax )  WindowMaximize ();
+    SetWindowState      ( CartoolMainWindow, oldwindowstate );
     }
 
 
@@ -1673,10 +1669,10 @@ else {                                  // Not-so-easy case: non-maximized windo
     int                 newmainwidth        = Round ( mainratiox * mainwr.Width  () );
     int                 newmainheight       = Round ( mainratioy * mainwr.Height () );
 
-    crtl::WindowSetSize     (   CartoolMainWindow,
-                                newmainwidth, 
-                                newmainheight 
-                            );
+    WindowSetSize   (   CartoolMainWindow,
+                        newmainwidth, 
+                        newmainheight 
+                    );
 
                                         // New main and MDI windows size, also accounting for any buttons sizes change
     TRect               oldmdicr            = mdicr;
@@ -1728,12 +1724,12 @@ int                 newmaintop          = rect.Top    ();
 int                 newmainwidth        = rect.Width  ();
 int                 newmainheight       = rect.Height ();
 
-crtl::WindowSetPosition (   CartoolMainWindow,
-                            newmainleft,
-                            newmaintop,
-                            newmainwidth, 
-                            newmainheight 
-                        );
+WindowSetPosition ( CartoolMainWindow,
+                    newmainleft,
+                    newmaintop,
+                    newmainwidth, 
+                    newmainheight 
+                  );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

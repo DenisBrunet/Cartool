@@ -154,7 +154,7 @@ Gauge.Next ( 1 );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-CartoolObjects.CartoolApplication->WindowMaximize ();
+WindowMaximize ( CartoolObjects.CartoolMainWindow );
 
 CartoolObjects.CartoolApplication->SetMainTitle    ( GenerateOscillatingDataTitle, BaseFileName, Gauge );
 

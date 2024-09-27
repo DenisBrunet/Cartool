@@ -484,7 +484,7 @@ enum                GaugeRisEnum
                     };
 
                                         // shrinking size to keep the progress bar under observation
-//CartoolObjects.CartoolApplication->WindowSetGaugeSize (); 
+//WindowSetGaugeSize ( CartoolObjects.CartoolMainWindow ); 
 
 
 TSuperGauge         Gauge;
@@ -499,7 +499,7 @@ Gauge.AddPart       ( gaugeriscompavg,      numgroups,                          
 
 if ( /*numgroups > 1 ||*/ numfiles > 10 )
                                         // batch can be long, hide Cartool until we are done
-    CartoolObjects.CartoolApplication->WindowMinimize ();
+    WindowMinimize ( CartoolObjects.CartoolMainWindow );
 
                                         // Changing priority
 SetProcessPriority ( BatchProcessingPriority );
@@ -1379,7 +1379,7 @@ if ( rois )
 
 SetProcessPriority ();
 
-CartoolObjects.CartoolApplication->WindowMaximize ();
+WindowMaximize ( CartoolObjects.CartoolMainWindow );
 
 Gauge.FinishParts ();
 

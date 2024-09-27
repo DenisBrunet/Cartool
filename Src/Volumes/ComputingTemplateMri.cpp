@@ -989,7 +989,7 @@ Gauge.AddPart       ( gaugetemplmriloop,        123,            74 );
 //if ( IsBatchFirstCall () && (int) BatchFileNames > 5 )
 if ( nummrifiles > 5 )
                                         // batch can be long, hide Cartool until we are done
-    CartoolObjects.CartoolApplication->WindowMinimize ();
+    WindowMinimize ( CartoolObjects.CartoolMainWindow );
 
 
 CartoolObjects.CartoolApplication->SetMainTitle ( TemplateMriTitle, BaseFileName, Gauge );
@@ -1236,7 +1236,7 @@ templatedoc .Close  ( CloseDocLetOpen );
 //spidoc    .Close  ( CloseDocLetOpen );
 
 
-CartoolObjects.CartoolApplication->WindowMaximize ();
+WindowMaximize ( CartoolObjects.CartoolMainWindow );
 
 Gauge.FinishParts ();
 

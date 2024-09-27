@@ -502,6 +502,7 @@ for ( TBaseView* view = doc->GetViewList (); view != 0; view = doc->NextView ( v
 
         if ( IsWindowMinimized ( tow ) )    continue;
 
+
         if ( nl.Y () + GetWindowHeight ( tow ) <= GetWindowHeight ( this ) ) {
 
             WindowSetFrameOrigin ( tow, nl.X(), nl.Y() );

@@ -2333,7 +2333,7 @@ if ( ispreprocessing ) {
     }
 
                                         // batch can be long, hide Cartool until we are done
-//CartoolApplication->WindowMinimize ();
+//WindowMinimize ( CartoolMainWindow );
 
                                         // Changing priority
 SetProcessPriority ( BatchProcessingPriority );
@@ -2475,7 +2475,7 @@ endofprocessing:
 
 SetProcessPriority ();
 
-CartoolApplication->WindowMaximize ();
+WindowMaximize ( CartoolMainWindow );
 }
 
 //----------------------------------------------------------------------------

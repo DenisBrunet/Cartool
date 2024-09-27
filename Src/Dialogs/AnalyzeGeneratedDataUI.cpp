@@ -630,7 +630,7 @@ expfile0  .End ();
 delete[]    anmean;
 delete[]    anmax;
 
-CartoolApplication->WindowMaximize ();
+WindowMaximize ( CartoolMainWindow );
 
 CartoolApplication->SetMainTitle ( "Data Analysis", path, Gauge );
 

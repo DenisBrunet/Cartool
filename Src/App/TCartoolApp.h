@@ -172,17 +172,6 @@ public:
     void            DestroySplashScreen ();
 
 
-    void            WindowMinimize      ()                                          const   { crtl::WindowMinimize    ( CartoolMainWindow ); }
-    void            WindowMaximize      ()                                          const   { crtl::WindowMaximize    ( CartoolMainWindow ); }
-    void            WindowRestore       ()                                          const   { crtl::WindowRestore     ( CartoolMainWindow ); }
-    void            WindowHide          ()                                          const   { crtl::WindowHide        ( CartoolMainWindow ); }
-
-    void            WindowSetOrigin     ( int left, int top )                       const   { crtl::WindowSetOrigin   ( CartoolMainWindow, left, top );                }
-    void            WindowSetSize       ( int width, int height )                   const   { crtl::WindowSetSize     ( CartoolMainWindow, width, height );            }
-    void            WindowSetPosition   ( int left, int top, int width, int height )const   { crtl::WindowSetPosition ( CartoolMainWindow, left, top, width, height ); }
-    void            WindowSetGaugeSize  ()                                          const   { WindowRestore (); WindowSetSize ( 600 /*2.5 * GaugeWidth*/, 240 /*7 * GaugeHeight*/ ); }
-
-
     double          GetActualDpi        ()                                          const   { return  ActualDpi;                                            }
     double          GetActualDpmm       ()                                          const   { return  ActualDpi / 25.4;                                     }   // returns a floating point, due to rescaling
     double          RescaleSizeActualDpi()                                          const   { return  GetActualDpi () / (double) USER_DEFAULT_SCREEN_DPI;   }   // Rescale default 96 dpi pixel size into an equivalent pixel size of any arbitrary dpi

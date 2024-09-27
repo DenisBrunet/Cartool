@@ -481,7 +481,7 @@ for ( int    filei   = 0;                filei   <  numfiles;        filei++ ) {
 //if ( deletemapfiles )
 //    NukeDirectory ( BaseDir );
 
-CartoolObjects.CartoolApplication->WindowMaximize ();
+WindowMaximize ( CartoolObjects.CartoolMainWindow );
 
 CartoolObjects.CartoolApplication->SetMainTitle    ( GenerateDataTitle, BaseFileName, Gauge );
 

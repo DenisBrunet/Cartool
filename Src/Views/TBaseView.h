@@ -423,9 +423,13 @@ public:
     owl::TResult            EvCommand           ( owl::uint id, THandle hWndCtl, owl::uint notifyCode );
     owl::TResult            WindowProc          ( owl::uint msg, owl::TParam1 p1, owl::TParam2 p2 );
 
-
-    bool                    IsWindowMinimized   ()                                          const   { return crtl::IsWindowMinimized ( GetParentO () ); }
-    bool                    IsWindowMaximized   ()                                          const   { return crtl::IsWindowMaximized ( GetParentO () ); }
+                                                // Replicating windows utilities, passing the proper parent object each time
+    WindowState             GetWindowState      ()                                          const   { return crtl::GetWindowState    ( GetParentO () );             }
+    void                    SetWindowState      ( WindowState newstate )                    const   {        crtl::SetWindowState    ( GetParentO (), newstate );   }
+    bool                    IsWindowMinimized   ()                                          const   { return crtl::IsWindowMinimized ( GetParentO () );             }
+    bool                    IsWindowMaximized   ()                                          const   { return crtl::IsWindowMaximized ( GetParentO () );             }
+    bool                    IsWindowHidden      ()                                          const   { return crtl::IsWindowHidden    ( GetParentO () );             }
+    bool                    IsWindowNormal      ()                                          const   { return crtl::IsWindowNormal    ( GetParentO () ); }
 
     void                    WindowMinimize      ()                                          const   { crtl::WindowMinimize          ( GetParentO () ); }
     void                    WindowMaximize      ()                                          const   { crtl::WindowMaximize          ( GetParentO () ); }
