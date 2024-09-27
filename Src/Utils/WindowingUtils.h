@@ -38,9 +38,9 @@ enum    WindowState
 inline  WindowState GetWindowState              ( const owl::TWindow* window );
 inline  void        SetWindowState              ( owl::TWindow* window, WindowState newstate );
                                         // Specialized versions
-inline  bool        IsWindowMinimized           ( const owl::TWindow* window )                                              { return  window && window->IsIconic ();    }
-inline  bool        IsWindowMaximized           ( const owl::TWindow* window )                                              { return  window && window->IsZoomed ();    }
-inline  bool        IsWindowHidden              ( const owl::TWindow* window )                                              { return  window && ! ( GetWindowLong ( window->Handle, GWL_STYLE ) & WS_VISIBLE ); }   // IsWindowVisible is NOT working as expected...
+inline  bool        IsWindowMinimized           ( const owl::TWindow* window )                                              { return  window &&   ( GetWindowLong ( window->Handle, GWL_STYLE ) & WS_MINIMIZE );    }
+inline  bool        IsWindowMaximized           ( const owl::TWindow* window )                                              { return  window &&   ( GetWindowLong ( window->Handle, GWL_STYLE ) & WS_MAXIMIZE );    }
+inline  bool        IsWindowHidden              ( const owl::TWindow* window )                                              { return  window && ! ( GetWindowLong ( window->Handle, GWL_STYLE ) & WS_VISIBLE  );    }   // IsWindowVisible is NOT working as expected...
 inline  bool        IsWindowNormal              ( const owl::TWindow* window )                                              { return  window && ! ( IsWindowMinimized ( window ) || IsWindowMaximized ( window ) || IsWindowHidden ( window ) ); }
 
                                                     // Getting position and size                                            
@@ -62,7 +62,7 @@ inline owl::TDib*   RescaleDIB                  ( const owl::TWindow* window, in
 inline  void        WindowMinimize              ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_SHOWMINIMIZED ); }
 inline  void        WindowMaximize              ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_SHOWMAXIMIZED ); }
 inline  void        WindowRestore               ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_RESTORE       ); }
-inline  void        WindowHide                  ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_HIDE          ); }
+inline  void        WindowHide                  ( owl::TWindow* window )                                                    { if ( window ) window->ShowWindow ( SW_HIDE          ); }  // Calling WindowRestore before, if we wish to avoid min / max and hidden
 
 inline  void        WindowSetOrigin             ( owl::TWindow* window,   int left,   int top )                             { if ( window ) window->SetWindowPos ( 0, left, top, 0,     0,      SWP_NOCOPYBITS   | SWP_SHOWWINDOW | SWP_NOSIZE ); }
 inline  void        WindowSetSize               ( owl::TWindow* window,   int width,  int height )                          { if ( window ) window->SetWindowPos ( 0, 0,    0,   width, height, SWP_NOCOPYBITS   | SWP_SHOWWINDOW | SWP_NOMOVE ); }
@@ -86,9 +86,9 @@ inline vector<owl::TRect>   GetMonitorsResolution   ();
 WindowState     GetWindowState  ( const owl::TWindow* window )
 {
 if      ( window == 0 )                     return  UnknownWindowState;
+else if ( IsWindowHidden    ( window ) )    return  WindowStateHidden;      // !test early as window could still have the min / max flags on, and be hidden!
 else if ( IsWindowMinimized ( window ) )    return  WindowStateMinimized;
 else if ( IsWindowMaximized ( window ) )    return  WindowStateMaximized;
-else if ( IsWindowHidden    ( window ) )    return  WindowStateHidden;
 else                                        return  WindowStateNormal;
 }
 
