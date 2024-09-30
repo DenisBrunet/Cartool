@@ -995,14 +995,7 @@ if ( HasOption ( files ) ) {
                                         // !We could have any number of these possibly repeating options, so we have to check the boundaries for each of them individually!
                                         // If the number of options is less than the number of files, then the last values will be repeated
 
-        if ( HasOption ( chw ) ) {
-
-            int         i       = NoMore ( filei, (int) chw.size () - 1 );
-
-            if      ( chw[ i ] == "maximized" )     view->SetWindowState ( WindowStateMaximized );
-            else if ( chw[ i ] == "minimized" )     view->SetWindowState ( WindowStateMinimized );
-            }
-
+                                        // Changing size and position is possible only with a Normal window, which is the case upon creation
         if ( HasOption ( chwsize ) && chwsize.size () >= 2 ) {
 
             int         i       = 2 * NoMore ( filei, (int) chwsize.size () / 2 - 1 );
@@ -1019,6 +1012,14 @@ if ( HasOption ( files ) ) {
             int         y       = chwpos [ i + 1 ];
 
             view->WindowSetOrigin ( x, y );
+            }
+                                        // Only here we can modify window state
+        if ( HasOption ( chw ) ) {
+
+            int         i       = NoMore ( filei, (int) chw.size () - 1 );
+
+            if      ( chw[ i ] == "maximized" )     view->SetWindowState ( WindowStateMaximized );
+            else if ( chw[ i ] == "minimized" )     view->SetWindowState ( WindowStateMinimized );
             }
 
         } // for filei
