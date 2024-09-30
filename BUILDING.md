@@ -29,6 +29,7 @@ Here is the list of all the dependencies needed to compile Cartool:
 - Intel® OneMKL
 - Armadillo
 - pcre 7
+- CLI11
 - OwlNext 7
 
 ## OpenGL
@@ -74,6 +75,12 @@ Using *vcpkg*, install **pcre Version: 8.45**:
 .\vcpkg install pcre
 ````
 ***Important***: there are 2 versions of pcre, we use pcre here, *not* pcre2!
+
+## CLI11
+Using *vcpkg*, install **cli11**:
+```
+.\vcpkg install cli11
+````
 
 ## OwlNext 7
 Cartool uses an application framework library called [***OwlNext***](https://sourceforge.net/p/owlnext/wiki/Main_Page/), which is very similar to the *Microsoft Foundation Class*.
