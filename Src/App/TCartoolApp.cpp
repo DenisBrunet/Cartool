@@ -706,9 +706,10 @@ CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_opti
 string          OptionVariable; \
 CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description )
 
-#define         AddOptionStrings(ToGroup,OptionVariable,ShortName,LongName,Description) \
+#define         AddOptionStrings(ToGroup,OptionVariable,HowMany,ShortName,LongName,Description) \
 vector<string>  OptionVariable; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description )
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description ) \
+->expected     ( HowMany )
 
 
 #define         AnyNumberOfOptions                  require_option ( ::crtl::Lowest<int> () )
@@ -768,11 +769,18 @@ AddFlag         ( 0,            showversion,        "",     "--version",        
 
 AddFlag         ( 0,            nosplash,           "",     "--nosplash",           "No splash-screen" );
 
+
 AddOptionString ( 0,            mw,                 "",     "--mainwindow",         "Main window state" )
 ->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
-
 AddOptionInts   ( 0,            mwsize,     2,      "",     "--mainwindowsize",     "Main window size W,H"     );
 AddOptionInts   ( 0,            mwpos,      2,      "",     "--mainwindowpos",      "Main window position X,Y" );
+
+
+AddOptionStrings( 0,            chw,        -1,     "",     "--childwindow",        "Child window state(s) \t\t(could be repeated for each file)" )
+->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
+AddOptionInts   ( 0,            chwsize,    -1,     "",     "--childwindowsize",    "Child window size(s) W,H \t\t(could be repeated for each file)"     );
+AddOptionInts   ( 0,            chwpos,     -1,     "",     "--childwindowpos",     "Child window position(s) X,Y \t(could be repeated for each file)" );
+
 
 AddOptionInt    ( 0,            mwmon,              "",     "--monitor",            "Monitor" );
 
@@ -791,7 +799,7 @@ AddFlag         ( regsub,       helpreg,            "-h",   "--help",           
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Positional options (not starting with '-')
-AddOptionStrings( 0,            files,              "",     "files",                "List of files" );
+AddOptionStrings( 0,            files,      -1,     "",     "files",                "List of files" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -975,11 +983,45 @@ MDIClientRect   = CartoolMdiClient->GetClientRect ().Normalized ();
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Finally we can loop through the optional files
 if ( HasOption ( files ) ) {
-    
-    for ( const auto& file : files ) {
+
+    for ( int filei = 0; filei < files.size (); filei++ ) {
                                         // Caller should quote file names that contains spaces
-        CartoolDocManager->OpenDoc ( file.c_str (), dtOpenOptions );
-        }
+        TBaseDoc*   doc     = CartoolDocManager->OpenDoc ( files[ filei ].c_str (), dtOpenOptions );
+        if ( doc  == 0 )    continue;
+
+        TBaseView*  view    = doc->GetViewList ();
+        if ( view == 0 )    continue;
+
+                                        // !We could have any number of these possibly repeating options, so we have to check the boundaries for each of them individually!
+                                        // If the number of options is less than the number of files, then the last values will be repeated
+
+        if ( HasOption ( chw ) ) {
+
+            int         i       = NoMore ( filei, (int) chw.size () - 1 );
+
+            if      ( chw[ i ] == "maximized" )     view->SetWindowState ( WindowStateMaximized );
+            else if ( chw[ i ] == "minimized" )     view->SetWindowState ( WindowStateMinimized );
+            }
+
+        if ( HasOption ( chwsize ) && chwsize.size () >= 2 ) {
+
+            int         i       = 2 * NoMore ( filei, (int) chwsize.size () / 2 - 1 );
+            int         w       = chwsize[ i     ];
+            int         h       = chwsize[ i + 1 ];
+
+            view->WindowSetSize ( w, h );
+            }
+
+        if ( HasOption ( chwpos ) && chwpos.size () >= 2 ) {
+
+            int         i       = 2 * NoMore ( filei, (int) chwpos.size () / 2 - 1 );
+            int         x       = chwpos [ i     ];
+            int         y       = chwpos [ i + 1 ];
+
+            view->WindowSetOrigin ( x, y );
+            }
+
+        } // for filei
     }
 
 }
