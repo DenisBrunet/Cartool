@@ -336,6 +336,17 @@ return  false;
 
 
 //----------------------------------------------------------------------------
+void        CheckAbsolutePath ( char* path, int maxsize )
+{
+if ( StringIsEmpty ( path ) )
+    return;
+
+
+_fullpath ( path, path, maxsize );
+}
+
+
+//----------------------------------------------------------------------------
                                         // check for very long filenames, and prepend the magic string if needed
 void        CheckExtendedPath ( char* path, bool force )
 {
@@ -1353,6 +1364,12 @@ return  CanOpenFile ( (char*) TFileName ( file ), flags );
 }
 
 
+bool    CanOpenFile ( const string& file, CanOpenFlags flags )
+{
+return  CanOpenFile ( (char*) TFileName ( file.c_str () ), flags );
+}
+
+
 //----------------------------------------------------------------------------
 bool    CanOpenFile ( char *file, CanOpenFlags flags )
 {
@@ -1507,7 +1524,7 @@ Reset ();
                                         // make a safe copy, in a big enough fixed buffer
 StringCopy ( FileName, filename, TFilenameSize - 1 );
 
-Check ( flags );
+CheckFileName ( flags );
 }
 
 
@@ -1526,32 +1543,38 @@ if ( StringIsNotEmpty ( ext ) )
 }
 
 
-void   TFileName::Check ( TFilenameFlags flags )
+//----------------------------------------------------------------------------
+void   TFileName::CheckFileName ( TFilenameFlags flags )
 {
                                         // Check path with this preferred sequence:
 
                                         // can expand to a longer string - though is currently prevented to be longer than 256
-if ( flags & TFilenameMsDosToWindows )
+if ( IsFlag ( flags, TFilenameMsDosToWindows ) )
     MsDosPathToWindowsPath ();
 
+                                        // convert a relative path to an absolute one
+if ( IsFlag ( flags, TFilenameAbsolutePath ) )
+    CheckAbsolutePath ();
+
                                         // add special prefix for path longer than 256
-if ( flags & TFilenameExtendedPath )
+if ( IsFlag ( flags, TFilenameExtendedPath ) )
     CheckExtendedPath ();
 
                                         // convert to another extension / sibling file for Cartool purpose (.img to .hdr f.ex.)
-if ( flags & TFilenameSibling )
+if ( IsFlag ( flags, TFilenameSibling ) )
     CheckSiblingFile ();
 
                                         // keeping only the directory part - trailing \ is removed
-if ( flags & TFilenameDirectory )
+if ( IsFlag ( flags, TFilenameDirectory ) )
     RemoveFilename ( FileName, false );
 
-                                        // avoiding averwrite by generating a new version name
-if ( flags & TFilenameNoOverwrite )
+                                        // avoiding overwrite by generating a variation of given file name
+if ( IsFlag ( flags, TFilenameNoOverwrite ) )
     CheckNoOverwrite ();
 }
 
 
+//----------------------------------------------------------------------------
         TFileName::TFileName ( const TFileName &op )
 {
 StringCopy          ( FileName, op.FileName, TFilenameSize - 1 );
@@ -1575,6 +1598,18 @@ return  *this;
 
 
 //----------------------------------------------------------------------------
+bool   TFileName::IsRelativePath  ()    const
+{
+return  PathIsRelative  ( FileName );   // !doc says up to MAX_PATH chars!
+}
+
+
+bool   TFileName::IsAbsolutePath  ()    const
+{
+return  ! IsRelativePath  (); 
+}
+
+
 bool   TFileName::IsExtendedPath  ()
 {
 return  crtl::IsExtendedPath ( FileName ); 
@@ -1604,6 +1639,12 @@ crtl::CheckExtendedPath ( FileName );
 void   TFileName::MsDosPathToWindowsPath ()
 {
 crtl::MsDosPathToWindowsPath ( FileName );
+}
+
+
+void   TFileName::CheckAbsolutePath ()
+{
+crtl::CheckAbsolutePath ( FileName, TFilenameSize );
 }
 
 

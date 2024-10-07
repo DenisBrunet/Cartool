@@ -203,20 +203,24 @@ return  filei2 - filei1 + 1;
 
 
 //----------------------------------------------------------------------------
-                                        // Overridden functions, called from either TGoF or TStrings
-                                        // It is assumed forcing a fixed size of MaxPathShort would provide enough room for all operations based on file names / paths
+                                        // Overridden functions, called from either TGoF or TStrings:
+                                        //  - Adding some margin to the reserved size, in case of extension replacement
+                                        //  - Making sure we have at least 2K space reserved
+                                        //  - Making sure we have absolute path files
+                                        //  - Checking file names bigger than old 256 MAX_PATH have the extended prefix
 void    TGoF::Add ( const char* string )
 {
-TStrings::Add ( string, StringFixedSize, max ( StringLength ( string ) + 64, (long) MaxPathShort ) ); 
-
-CheckExtendedPath ( Strings.GetLast () ); 
+Add ( string, 0 );
 }
 
 
 void    TGoF::Add ( const char* string, long length )
 {
-TStrings::Add ( string, StringFixedSize, max ( length, StringLength ( string ) + 64, (long) MaxPathShort ) ); 
+int                 stringlength    = max ( length, StringLength ( string ) + 64, (long) MaxPathShort ); 
 
+TStrings::Add ( string, StringFixedSize, stringlength ); 
+
+CheckAbsolutePath ( Strings.GetLast (), stringlength ); 
 CheckExtendedPath ( Strings.GetLast () ); 
 }
 

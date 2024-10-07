@@ -189,6 +189,13 @@ Set ( &strings );
 }
 
 
+void    TStrings::Set ( const vector<string>&    strings )
+{
+for ( int i = 0; i < strings.size (); i++ )
+    Add ( strings[ i ].c_str () );
+}
+
+
 void    TStrings::Set ( const TList<char>& strings )
 {
 if ( &Strings == &strings )

@@ -41,12 +41,13 @@ class   TStrings
 {
 public:
                     TStrings    ();
-                    TStrings    ( int numstrings, long stringlength )                             { Set ( numstrings, stringlength ); }
-                    TStrings    ( const char*         string  )                                   { SetOnly ( string ); }
-                    TStrings    ( const TStrings*     strings )                                   { Set ( strings ); }
-                    TStrings    ( const TList<char>&  strings )                                   { Set ( strings ); }
-                    TStrings    ( const owl::TStringArray& strings )                              { Set ( strings ); }
-                    TStrings    ( const TArray2<char>&  arraychar )                               { Set ( arraychar ); }
+                    TStrings    ( int numstrings, long stringlength )               { Set     ( numstrings, stringlength ); }
+                    TStrings    ( const char*                       string  )       { SetOnly ( string );                   }
+                    TStrings    ( const TStrings*                   strings )       { Set     ( strings );                  }
+                    TStrings    ( const std::vector<std::string>&   strings )       { Set     ( strings );                  }
+                    TStrings    ( const TList<char>&                strings )       { Set     ( strings );                  }
+                    TStrings    ( const owl::TStringArray&          strings )       { Set     ( strings );                  }
+                    TStrings    ( const TArray2<char>&              arraychar )     { Set     ( arraychar );                }
 
     virtual        ~TStrings    ();
 
@@ -67,11 +68,12 @@ public:
     virtual void    Reset           ();
 
     void            Set             ( int numstrings, long stringsize );
-    void            Set             ( const TStrings*    strings );
-    void            Set             ( const TStrings&    strings );
-    void            Set             ( const TList<char>& strings );
+    void            Set             ( const TStrings*                   strings );
+    void            Set             ( const TStrings&                   strings );
+    void            Set             ( const std::vector<std::string>&   strings );
+    void            Set             ( const TList<char>&                strings );
     void            Set             ( const char* strings, const char* separators );
-    void            Set             ( const owl::TStringArray& strings );   // OWL strings
+    void            Set             ( const owl::TStringArray&          strings );   // OWL strings
     void            Set             ( const TArray2<char>& arraychar );     // // "C"-like array of chars
     void            SetOnly         ( const char* string );
 

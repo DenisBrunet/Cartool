@@ -156,13 +156,15 @@ class   TGoGoF;
 class   TGoF        :   public TStrings
 {
 public:
-                    TGoF ()                                     : TStrings   ()                             {}
-                    TGoF ( int numstrings )                     : TStrings   ( numstrings, MaxPathShort )   {}  // expected max size of file names
-                    TGoF ( const char*              string  )   : TStrings   ( string  )                    {}
-                    TGoF ( const TStrings*          strings )   : TStrings   ( strings )                    {}
-                    TGoF ( const TStrings&          strings )   : TStrings   ( strings )                    {}
-                    TGoF ( const TList<char>&       strings )   : TStrings   ( strings )                    {}
-                    TGoF ( const owl::TStringArray& strings )   : TStrings   ( strings )                    {}
+                                        // We override the Add method here, but base constructors know nothing about it, so we need to "duplicate" the TStrings construcotr bodies
+                    TGoF ()                                             : TStrings   ()            {}
+                    TGoF ( int numstrings )                             { Set ( numstrings, MaxPathShort ); } // expected max size of file names
+                    TGoF ( const char*                      string  )   { SetOnly ( string );       }
+                    TGoF ( const TStrings*                  strings )   { Set ( strings );          }
+                    TGoF ( const TStrings&                  strings )   { Set ( (TGoF &) strings ); }
+                    TGoF ( const std::vector<std::string>&  strings )   { Set ( strings );          }
+                    TGoF ( const TList<char>&               strings )   { Set ( strings );          }
+                    TGoF ( const owl::TStringArray&         strings )   { Set ( strings );          }
                     TGoF ( const owl::TDropInfo&      drop, const char* filesext = 0, TPointInt* where = 0, bool doesnotbelong = false );   // from drop info + extension filter + position
                     TGoF ( const TGoGoF& gogof, int gofi1 = -1, int gofi2 = -1 );   // Very handy trick to "flatten" a group of group of files
                     TGoF ( const TGoGoF& gogof, const TGoF& gof );                  // Very handy trick to "flatten" a group of group of files + another group
@@ -172,8 +174,8 @@ public:
     int             NumFiles        ( int filei1, int filei2 )  const;          // optional range that will be tested against current range
 
                                         // virtual functions
-    void            Add             ( const char* string );
-    void            Add             ( const char* string, long length );
+    void            Add             ( const char* string )              override;
+    void            Add             ( const char* string, long length ) override;
     void            Add             ( const TGoF& gof );
 
 

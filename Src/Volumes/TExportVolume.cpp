@@ -172,7 +172,7 @@ if ( Filename.IsEmpty () ) {            // no filename is kind of a problem...
     }
 
                                         // can modify Filename
-Filename.Check ( (TFilenameFlags) ( TFilenameExtendedPath | TFilenameSibling ) );
+Filename.CheckFileName ( (TFilenameFlags) ( TFilenameExtendedPath | TFilenameSibling ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

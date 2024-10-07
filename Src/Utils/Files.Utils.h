@@ -61,6 +61,7 @@ char*               AppendFilenameAsSubdirectory    ( char* path );
 bool                CreatePath                      ( const char* path, bool endswithfilename );  // make sure the whole chain of directories are created, up to the final file
 int                 FilenameToSiblings              ( char* file, TGoF &gof );              // transforms/expands a filename into its legal sibling (.img -> .hdr, MFF -> signal?.bin, etc..)
 void                CheckSiblingFile                ( char* path );
+void                CheckAbsolutePath               ( char* path, int maxsize );
 bool                IsExtendedPath                  ( char* path );
 void                CheckExtendedPath               ( char* path, bool force = false );     // checks if path needs the magic prefix "\\?\"
 void                CheckNoOverwrite                ( char* path );                         // prevent overwriting by making the current file a variation
@@ -158,8 +159,9 @@ enum                CanOpenFlags
                     };
 
 
-bool                CanOpenFile      ( char*        file,   CanOpenFlags flags = CanOpenFileDefault );  // !can update path parameter!
-bool                CanOpenFile      ( const char*  file,   CanOpenFlags flags = CanOpenFileDefault );
+bool                CanOpenFile      ( char*              file,   CanOpenFlags flags = CanOpenFileDefault );  // !can update path parameter!
+bool                CanOpenFile      ( const char*        file,   CanOpenFlags flags = CanOpenFileDefault );
+bool                CanOpenFile      ( const std::string& file,   CanOpenFlags flags = CanOpenFileDefault );
 
 
 //----------------------------------------------------------------------------
@@ -179,10 +181,11 @@ enum                TFilenameFlags
                     {
                     TFilenameNoPreprocessing    = 0x000,
                     TFilenameMsDosToWindows     = 0x001,
-                    TFilenameExtendedPath       = 0x002,
-                    TFilenameSibling            = 0x004,
-                    TFilenameDirectory          = 0x008,
-                    TFilenameNoOverwrite        = 0x010,
+                    TFilenameAbsolutePath       = 0x002,
+                    TFilenameExtendedPath       = 0x004,
+                    TFilenameSibling            = 0x008,
+                    TFilenameDirectory          = 0x010,
+                    TFilenameNoOverwrite        = 0x020,
                     };
 
 
@@ -204,9 +207,11 @@ public:
     void            SetTempFileName         ( const char* ext );
 
 
-    bool            IsEmpty                 ()      const                   { return  StringIsEmpty    ( FileName ) ; }
-    bool            IsNotEmpty              ()      const                   { return  StringIsNotEmpty ( FileName ) ; }
+    bool            IsEmpty                 ()      const                   { return  StringIsEmpty    ( FileName ); }
+    bool            IsNotEmpty              ()      const                   { return  StringIsNotEmpty ( FileName ); }
 
+    bool            IsRelativePath          ()      const;
+    bool            IsAbsolutePath          ()      const;
 
     bool            IsExtendedPath          ();
     void            ResetExtendedPath       ();
@@ -214,9 +219,10 @@ public:
 
 
     bool            CanOpenFile             ()  const;
-    void            Check                   ( TFilenameFlags flags );
+    void            CheckFileName           ( TFilenameFlags flags );
     void            CheckExtendedPath       ();
     void            MsDosPathToWindowsPath  ();
+    void            CheckAbsolutePath       ();
     void            CheckSiblingFile        ();
     void            CheckNoOverwrite        ();
     void            GetCurrentDir           ()                      { ::GetCurrentDirectory ( Size (), FileName ); }
