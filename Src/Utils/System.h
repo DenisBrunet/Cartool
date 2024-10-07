@@ -172,7 +172,7 @@ bool                createconsole   = /*IsInteractive () &&*/ ! HasConsole ();
 if ( createconsole )
     CreateConsole ();
 
-::std::cout << message << "\n";
+::std::cout << message;
 
 if ( createconsole )
     DeleteConsole ( true );

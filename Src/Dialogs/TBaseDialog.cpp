@@ -67,6 +67,17 @@ const char SavingEegFileExtPreset[ NumSavingEegFileTypes ][ 8 ] =
                                         };
 
 
+SavingEegFileTypes  ExtensionToSavingEegFileTypes   ( const char* ext )
+{
+for ( int i = 0; i < NumSavingEegFileTypes; i++ )
+    if ( StringIs ( SavingEegFileExtPreset [ i ], ext ) )
+        return (SavingEegFileTypes) i;
+
+return  PresetFileTypeDefaultEEG;
+}
+
+
+
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 DEFINE_RESPONSE_TABLE1 ( TBaseDialog, TDialog )

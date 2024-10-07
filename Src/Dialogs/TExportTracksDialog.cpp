@@ -985,9 +985,11 @@ TimeOptions         timeoptions      = CheckToBool ( transfer->TimeInterval     
 
 
 bool                endoffile           = CheckToBool ( transfer->EndOfFile );
-long                timemin             = timeoptions == ExportTimeInterval ? StringToInteger ( transfer->TimeMin ) : 0;
-long                timemax             = timeoptions == ExportTimeInterval ? endoffile ?   lasttimeframe
-                                                                                        :   StringToInteger ( transfer->TimeMax ) : 0;
+long                timemin             = timeoptions == ExportTimeInterval ? StringToInteger ( transfer->TimeMin )
+                                                                            : 0;
+long                timemax             = timeoptions == ExportTimeInterval ? ( endoffile ? lasttimeframe /*or Highest ( timemax )*/
+                                                                                          : StringToInteger ( transfer->TimeMax ) )
+                                                                            : 0;
 
 Clipped ( timemin, timemax, (long) 0, lasttimeframe );
 

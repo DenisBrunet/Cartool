@@ -136,7 +136,8 @@ bool                IsBatchLastCall     = HasBatchFiles && batchfileindex == Num
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool                isfrequency         = IsExtensionAmong ( EEGDoc->GetDocPath (), AllFreqFilesExt ) || StringIsNotEmpty ( freqinfix );
+bool                isfrequency         = IsExtensionAmong ( EEGDoc->GetDocPath (), AllFreqFilesExt )
+                                       || StringIsNotEmpty ( freqinfix );
 
 
 int                 numregel            = EEGDoc->GetNumElectrodes   ();

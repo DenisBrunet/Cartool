@@ -45,10 +45,12 @@ limitations under the License.
 #include    "Volumes.AnalyzeNifti.h"
 #include    "Volumes.TTalairachOracle.h"
 #include    "TExportTracks.h"
+#include    "ReprocessTracks.h"
 #include    "Dialogs.Input.h"
 #include    "Dialogs.TSuperGauge.h"
 
 #include    "TLinkManyDoc.h"
+#include    "TRoisDoc.h"
 
 #include    "TBaseView.h"
 
@@ -720,6 +722,16 @@ CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_opti
                                         // Testing if a flag/option has been specified
 #define         HasOption(Variable)                 ((bool) (opt##Variable)->count ())
 #define         HasFlag(Variable)                   HasOption(Variable)
+#define         GetOptionString(Variable)           ((opt##Variable)->results ()[ 0 ])
+
+                                        // Testing if a sub-command flag/option has been specified
+#define         HasSubOption(Sub,Option)            ((Sub)->get_option ( Option )->count ())
+#define         HasSubFlag(Sub,Option)              HasSubOption(Sub,Option)
+#define         GetSubOptionInt(Sub,Option)         (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->as<int> ()            : 0 )
+#define         GetSubOptionInts(Sub,Option)        (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->as<vector<int>> ()    : vector<int>() )
+#define         GetSubOptionDouble(Sub,Option)      (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->as<double> ()         : 0 )
+#define         GetSubOptionString(Sub,Option)      (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->results ()[ 0 ]       : "" )
+#define         GetSubOptionStrings(Sub,Option)     (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->results ()            : "" )
 
 
 bool            IsGroupUsed         ( const CLI::Option_group* group )
@@ -741,6 +753,196 @@ return  subcommand && *subcommand;  // true if sub-command has been invoked - to
                                         // Retrieving option description
 #define         GetVariableDescription(Variable)    (opt##Variable)->get_description ()
 #define         GetGroupDescription(Group)          (Group)->get_description ()
+
+
+//----------------------------------------------------------------------------
+
+void        ReprocessTracksCLI ( CLI::App* reprocsub, const TGoF& gof )
+{
+if ( ! IsSubCommandUsed ( reprocsub )
+  || gof.IsEmpty () )
+
+    return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Tracks parameters
+string              roisfile        = GetSubOptionString ( reprocsub, "--roisfile" );
+string              xyzfile         = GetSubOptionString ( reprocsub, "--xyzfile"  );
+
+TracksOptions       tracksoptions   = ! roisfile.empty () ? ProcessRois 
+                                    :                       ProcessTracks;
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Wraps everything for us: existing file name & opening doc
+TOpenDoc<TElectrodesDoc>    XYZDoc  ( xyzfile .c_str (), OpenDocHidden );
+TOpenDoc<TRoisDoc>          RoisDoc ( roisfile.c_str (), OpenDocHidden );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+string              tracks          = GetSubOptionString ( reprocsub, "--tracks" );
+
+string              nulltracks      = GetSubOptionString ( reprocsub, "--nulltracks" );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Time parameters
+                                        // default values
+TimeOptions         timeoptions     = ExportTimeInterval;
+long                timemin         = 0;                      
+long                timemax         = Highest ( timemax );    
+string              keeptriggers;
+string              excludetriggers;
+
+
+if      ( HasSubOption ( reprocsub, "--timemin" )
+       || HasSubOption ( reprocsub, "--timemax" ) ) {
+
+    timeoptions     = ExportTimeInterval;
+
+    if  ( HasSubOption ( reprocsub, "--timemin" ) )
+        timemin     = GetSubOptionInt ( reprocsub, "--timemin" );
+
+    if  ( HasSubOption ( reprocsub, "--timemax" ) )
+        timemax     = GetSubOptionInt ( reprocsub, "--timemax" );
+    }
+
+else if ( HasSubOption ( reprocsub, "--keeptriggers" ) ) {
+
+    timeoptions     = ExportTimeTriggers;
+    keeptriggers    = GetSubOptionString ( reprocsub, "--keeptriggers" );
+    }
+
+else if ( HasSubOption ( reprocsub, "--excludetriggers" ) ) {
+
+    timeoptions     = ExcludeTimeTriggers;
+    excludetriggers = GetSubOptionString ( reprocsub, "--excludetriggers" );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+string              filters         = GetSubOptionString ( reprocsub, "--filters" );
+
+FiltersOptions      filteringoptions= filters.empty ()  ? NotUsingFilters   // default
+                                                        : UsingOtherFilters;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+string              reflist         = GetSubOptionString ( reprocsub, "--reference" );
+
+ReferenceType       ref             = reflist.empty ()
+                                   || reflist == "none"
+                                   || reflist == "no reference"
+                                   || reflist == "noreference"
+                                   || reflist == "as in file"
+                                   || reflist == "asinfile"             ? ReferenceAsInFile
+                                    : reflist == "average"
+                                   || reflist == "average reference"
+                                   || reflist == "avgref"               ? ReferenceAverage
+                                    :                                     ReferenceMultipleTracks;  // ReprocessTracks will sort out between  ReferenceSingleTrack  and  ReferenceMultipleTracks
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+vector<int>         baselinecorrint = GetSubOptionInts ( reprocsub, "--baselinecorr" );
+
+bool                baselinecorr    = baselinecorrint.size () == 2;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+string              rescaling       = GetSubOptionString ( reprocsub, "--rescaling" );
+
+RescalingOptions    rescalingoptions= rescaling.empty ()                ? NotRescaled
+                                    : rescaling == "meangfp"
+                                   || rescaling == "mean gfp"           ? GfpRescaling
+                                    :                                     ConstantRescaling;
+
+                                        // just to avoid crashing in case a string was provided
+double              rescalingfactor = StringToDouble ( GetSubOptionString ( reprocsub, "--rescaling" ).c_str () );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool                average         = HasSubFlag ( reprocsub, "--averaging" );
+
+SequenceOptions     sequenceoptions = average ? AverageProcessing
+                                    :           SequenceProcessing;
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // ReprocessTracks will ignore if 0
+int                 downsampleratio = timeoptions     == ExportTimeInterval 
+                                   && sequenceoptions == SequenceProcessing ? GetSubOptionInt ( reprocsub, "--downsampling" )
+                                                                            : 0;
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+string              fileext         = GetSubOptionString ( reprocsub, "--fileext" );
+
+SavingEegFileTypes  filetype        = ExtensionToSavingEegFileTypes ( fileext.c_str () );
+
+string              infix           = GetSubOptionString ( reprocsub, "--infix" );
+
+bool                outputmarkers   = ! HasSubFlag ( reprocsub, "--nomarkers" );
+
+ConcatenateOptions  concatenateoptions  = HasSubFlag ( reprocsub, "--concatenate" ) && (int) gof > 1 ? ConcatenateTime
+                                                                                                     : NoConcatenateTime;
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool                silent              = true;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TTracksFilters<float>   altfilters;
+double                  defaultsamplingfrequency    = 0;
+long                    ConcatInputTime             = 0;
+long                    ConcatOutputTime            = 0;
+TExportTracks           expfile;            // needed for files concatenation
+
+
+for ( int filei = 0; filei < (int) gof; filei++ ) {
+
+    cout << "Processing: " << gof  [ filei ]<< NewLine;
+
+    TOpenDoc<TTracksDoc>    EEGDoc ( gof[ filei ], OpenDocHidden );
+
+    if ( filteringoptions == UsingOtherFilters && filei == 0 )
+        altfilters.TextToParameters ( filters.c_str (), EEGDoc->GetSamplingFrequency () /*defaultsamplingfrequency*/ );
+
+
+    ReprocessTracks (
+                    EEGDoc,
+                    tracksoptions,          tracks.c_str (),
+                    XYZDoc,
+                    RoisDoc,
+                    timeoptions,
+                    timemin,                timemax,
+                    keeptriggers.c_str (),  excludetriggers.c_str (),
+                    nulltracks.c_str (),
+                    filteringoptions,       &altfilters,    defaultsamplingfrequency,
+                    ref,                    reflist.c_str (),
+                    baselinecorr,           baselinecorr ? baselinecorrint[ 0 ] : 0,    baselinecorr ? baselinecorrint[ 1 ] : 0,
+                    rescalingoptions,       rescalingfactor,
+                    sequenceoptions,
+                    downsampleratio,
+                    filetype,
+                    infix.c_str (),
+                    "",
+                    outputmarkers,
+                    concatenateoptions,     concatenateoptions == ConcatenateTime ? &ConcatInputTime : 0,   concatenateoptions == ConcatenateTime ? &ConcatOutputTime : 0,
+                    expfile,
+                    &gof,
+                    filei,
+                    silent
+                    );
+    } // for file
+
+}
 
 
 //----------------------------------------------------------------------------
@@ -776,10 +978,10 @@ AddOptionInts   ( 0,            mwsize,     2,      "",     "--mainwindowsize", 
 AddOptionInts   ( 0,            mwpos,      2,      "",     "--mainwindowpos",      "Main window position X,Y" );
 
 
-AddOptionStrings( 0,            chw,        -1,     "",     "--childwindow",        "Child window state(s) \t\t(could be repeated for each file)" )
+AddOptionStrings( 0,            chw,        -1,     "",     "--childwindow",        "Child window state(s) "    Tab Tab "(could be repeated for each file)" )
 ->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
-AddOptionInts   ( 0,            chwsize,    -1,     "",     "--childwindowsize",    "Child window size(s) W,H \t\t(could be repeated for each file)"     );
-AddOptionInts   ( 0,            chwpos,     -1,     "",     "--childwindowpos",     "Child window position(s) X,Y \t(could be repeated for each file)" );
+AddOptionInts   ( 0,            chwsize,    -1,     "",     "--childwindowsize",    "Child window size(s) W,H " Tab Tab "(could be repeated for each file)"     );
+AddOptionInts   ( 0,            chwpos,     -1,     "",     "--childwindowpos",     "Child window position(s) X,Y " Tab "(could be repeated for each file)" );
 
 
 AddOptionInt    ( 0,            mwmon,              "",     "--monitor",            "Monitor" );
@@ -795,6 +997,61 @@ AddFlag         ( regsub,       unreg,              "-n",   "--no",             
 AddFlag         ( regsub,       resetreg,           "-r",   "--reset",              "Clean-up Windows registration to default" );
 //AddFlag       ( regsub,       noreg,              "-o",   "--none",               "Force skipping program registration" );    // not sure if still useful, as Cartool does not touch registers when launched
 AddFlag         ( regsub,       helpreg,            "-h",   "--help",               "This message" );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Reprocess Tracks sub-command
+CLI::App*           reprocsub       = app.add_subcommand ( "reprocesstracks", "Reprocess tracks command" )
+->alias ( "exporttracks" );
+
+
+AddOptionString ( reprocsub,    xyzfile,            "",     "--xyzfile",            "XYZ electrodes coordinates file" );
+AddOptionString ( reprocsub,    roisfile,           "",     "--roisfile",           "ROIs regions of interest file" );
+
+optroisfile->excludes ( optxyzfile  );
+
+AddOptionString ( reprocsub,    tracks,             "",     "--tracks",             "Tracks to export" Tab Tab Tab "Default: all tracks" );
+
+AddOptionInt    ( reprocsub,    timemin,            "",     "--timemin",            "From Time Frame " Tab Tab Tab "Default: 0" );
+AddOptionInt    ( reprocsub,    timemax,            "",     "--timemax",            "To Time Frame   " Tab Tab Tab "Default: end of file" );
+AddOptionString ( reprocsub,    keeptriggers,       "",     "--keeptriggers",       "Keeping triggers / markers list" );
+AddOptionString ( reprocsub,    excludetriggers,    "",     "--excludetriggers",    "Excluding triggers / markers list" );
+
+opttimemin     ->excludes ( optkeeptriggers    )->excludes ( optexcludetriggers );
+opttimemax     ->excludes ( optkeeptriggers    )->excludes ( optexcludetriggers );
+optkeeptriggers->excludes ( optexcludetriggers );
+
+AddOptionString ( reprocsub,    nulltracks,         "",     "--nulltracks",         "List of null tracks to append" );
+
+AddOptionString ( reprocsub,    filters,            "",     "--filters",            "Optional filters string, similar to the verbose files" );
+
+AddOptionString ( reprocsub,    ref,                "",     "--reference",          "List of new reference tracks" Tab "Special values: 'none' or 'asinfile' or 'average'" );
+
+AddOptionInts   ( reprocsub,    baselinecorr,   2,  "",     "--baselinecorr",       "Baseline correction interval, in time frames" );
+
+AddOptionString ( reprocsub,    rescaling,          "",     "--rescaling",          "Scaling factor" Tab Tab Tab "Special value: 'meangfp'" );
+
+AddFlag         ( reprocsub,    average,            "",     "--averaging",          "Averaging the whole time dimension" );
+
+AddOptionInt    ( reprocsub,    downsampleratio,    "",     "--downsampling",       "Downsampling ratio" )
+->check ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : string(); } );
+
+AddOptionString ( reprocsub,    fileext,            "",     "--fileext",            "Output file extension" Tab Tab "Default: eeg" )
+->check ( CLI::IsMember ( { SavingEegFileExtPreset[ PresetFileTypeTxt ],
+                            SavingEegFileExtPreset[ PresetFileTypeEp  ],
+                            SavingEegFileExtPreset[ PresetFileTypeEph ],
+                            SavingEegFileExtPreset[ PresetFileTypeSef ],
+                            SavingEegFileExtPreset[ PresetFileTypeBV  ],
+                            SavingEegFileExtPreset[ PresetFileTypeEdf ],
+                            SavingEegFileExtPreset[ PresetFileTypeRis ]  } ) );
+
+AddOptionString ( reprocsub,    infix,              "",     "--infix",              "Infix appended to the file name" );
+
+AddFlag         ( reprocsub,    nomarkers,          "",     "--nomarkers",          "Not saving the markers to file" );
+
+AddFlag         ( reprocsub,    concatenate,        "",     "--concatenate",        "Concatenate all output into a single file" );
+
+AddFlag         ( reprocsub,    helpreproc,         "-h",   "--help",               "This message" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -819,6 +1076,9 @@ catch ( const CLI::ParseError &e ) {
     exit ( app.exit ( e ) );
     }
 
+                                        // For our own convenience, convert vector<string> files to TGoF, while also converting any relative path to absolute
+TGoF                gof ( files );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Time to use the retrieved options
@@ -827,17 +1087,14 @@ catch ( const CLI::ParseError &e ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( HasOption ( showhelp )
-  || helpreg ) {
+  || helpreg
+  || helpreproc ) {
 
     string          helpmessage;
 
-    if      ( helpreg )
-                                        // register --help
-            helpmessage     = regsub->help ();
-
-    else if ( showhelp.empty () )
-                                        // General, top-level help message
-            helpmessage     = app.help ();
+    if      ( helpreg           )   helpmessage     = regsub   ->help ();   // register --help
+    else if ( helpreproc        )   helpmessage     = reprocsub->help ();   // reprocess --help
+    else if ( showhelp.empty () )   helpmessage     = app.help ();          // General, top-level help message
 
     else try {                          // try some specialized help message
                                         // there is no public method to test if a subcommand exists, so we need to try to access it and check for an exception...
@@ -860,7 +1117,7 @@ if ( HasOption ( showhelp )
 
 if ( showversion ) {
 
-    PrintConsole    ( string ( ProdVersion ) + " (" + ProdRevision + ")" );
+    PrintConsole    ( string ( ProdVersion ) + " (" + ProdRevision + ")" + NewLine );
 
     exit ( 0 );
     }
@@ -874,6 +1131,16 @@ if ( IsSubCommandUsed ( regsub ) ) {
     else if ( unreg    )    /* PrintConsole    ( GetVariableDescription ( unreg    ) ); */ UnRegisterInfo    ();
     else if ( resetreg )    /* PrintConsole    ( GetVariableDescription ( resetreg ) ); */ ResetRegisterInfo ();
 //  else if ( noreg    )    /* PrintConsole    ( GetVariableDescription ( noreg    ) ); */
+
+    exit ( 0 );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( IsSubCommandUsed ( reprocsub ) ) {
+
+    ReprocessTracksCLI ( reprocsub, gof );
 
     exit ( 0 );
     }
@@ -984,9 +1251,9 @@ MDIClientRect   = CartoolMdiClient->GetClientRect ().Normalized ();
                                         // Finally we can loop through the optional files
 if ( HasOption ( files ) ) {
 
-    for ( int filei = 0; filei < files.size (); filei++ ) {
+    for ( int filei = 0; filei < (int) gof; filei++ ) {
                                         // Caller should quote file names that contains spaces
-        TBaseDoc*   doc     = CartoolDocManager->OpenDoc ( files[ filei ].c_str (), dtOpenOptions );
+        TBaseDoc*   doc     = CartoolDocManager->OpenDoc ( gof[ filei ], dtOpenOptions );
         if ( doc  == 0 )    continue;
 
         TBaseView*  view    = doc->GetViewList ();
