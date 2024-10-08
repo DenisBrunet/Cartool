@@ -661,15 +661,9 @@ EnableMultiThreading ( true );
 
 //----------------------------------------------------------------------------
                                         // Short and Long Names are optionals, but at least one should be specified
-                                        // If missing, we will add the "-" and "--" to options
-string          OptionName ( const string& Name1, const string& Name2 )
+string          CLIBuildOptionName ( const string& Name1, const string& Name2 )
 {
-string          name;
-
-if ( ! Name1.empty () )
-
-    name    = Name1;
-
+string          name        = Name1;
 
 if ( ! Name2.empty () ) {
 
@@ -682,47 +676,61 @@ if ( ! Name2.empty () ) {
 return  name;
 };
 
-                                        // Using a macro so we can re-use the variables defined
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Setting options and flags
+
+                                        // Using a macro so we can define 2 variables: the one requested, and a CLI::Option* one
+                                        // Later, use  HasOption, HasFlag, GetVariableDescription
 #define         AddFlag(ToGroup,FlagVariable,ShortName,LongName,Description) \
 bool            FlagVariable    = false; \
-CLI::Option*    opt##FlagVariable       = ( ToGroup ? ToGroup : &app )->add_flag ( OptionName(ShortName,LongName), FlagVariable, Description )
+CLI::Option*    opt##FlagVariable       = ( ToGroup ? ToGroup : &app )->add_flag ( CLIBuildOptionName(ShortName,LongName), FlagVariable, Description )
 
 
 #define         AddOptionInt(ToGroup,OptionVariable,ShortName,LongName,Description) \
 int             OptionVariable  = 0; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description )
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description )
 
 #define         AddOptionInts(ToGroup,OptionVariable,HowMany,ShortName,LongName,Description) \
 vector<int>     OptionVariable; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description ) \
-->delimiter    ( ',' ) \
-->expected     ( HowMany )
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description ) \
+->delimiter     ( ',' ) \
+->expected      ( HowMany )
 
 
 #define         AddOptionDouble(ToGroup,OptionVariable,ShortName,LongName,Description) \
 double          OptionVariable  = 0; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description )
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description )
+
+#define         AddOptionDoubles(ToGroup,OptionVariable,HowMany,ShortName,LongName,Description) \
+vector<double>  OptionVariable; \
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description ) \
+->delimiter     ( ',' ) \
+->expected      ( HowMany )
 
 
 #define         AddOptionString(ToGroup,OptionVariable,ShortName,LongName,Description) \
 string          OptionVariable; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description )
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description )
 
 #define         AddOptionStrings(ToGroup,OptionVariable,HowMany,ShortName,LongName,Description) \
 vector<string>  OptionVariable; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( OptionName(ShortName,LongName), OptionVariable, Description ) \
-->expected     ( HowMany )
+CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description ) \
+->expected      ( HowMany )
 
-
+                                        // Giving some semantic to these options
 #define         AnyNumberOfOptions                  require_option ( ::crtl::Lowest<int> () )
 #define         ExclusiveOptions                    require_option ( 1 )
 #define         NoMoreOptions(MAXO)                 require_option ( 0, MAXO )
 #define         NumberOfOptions(MINO,MAXO)          require_option ( MINO, MAXO )
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Retrieving options and flags
+
                                         // Testing if a flag/option has been specified
 #define         HasOption(Variable)                 ((bool) (opt##Variable)->count ())
 #define         HasFlag(Variable)                   HasOption(Variable)
-#define         GetOptionString(Variable)           ((opt##Variable)->results ()[ 0 ])
 
                                         // Testing if a sub-command flag/option has been specified
 #define         HasSubOption(Sub,Option)            ((Sub)->get_option ( Option )->count ())
@@ -734,7 +742,7 @@ CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_opti
 #define         GetSubOptionString(Sub,Option)      (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->results ()[ 0 ]       : "" )
 #define         GetSubOptionStrings(Sub,Option)     (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->results ()            : "" )
 
-
+                                        // Is a given Group or Sub-command being used?
 bool            IsGroupUsed         ( const CLI::Option_group* group )
 {
 if ( group == 0 )
