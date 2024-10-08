@@ -730,6 +730,7 @@ CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_opti
 #define         GetSubOptionInt(Sub,Option)         (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->as<int> ()            : 0 )
 #define         GetSubOptionInts(Sub,Option)        (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->as<vector<int>> ()    : vector<int>() )
 #define         GetSubOptionDouble(Sub,Option)      (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->as<double> ()         : 0 )
+#define         GetSubOptionDoubles(Sub,Option)     (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->as<vector<double>> () : vector<double>() )
 #define         GetSubOptionString(Sub,Option)      (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->results ()[ 0 ]       : "" )
 #define         GetSubOptionStrings(Sub,Option)     (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->results ()            : "" )
 
@@ -897,6 +898,75 @@ bool                silent              = true;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/*                                      // Console output prototype
+CreateConsole ();
+
+cout << ( tracksoptions == ProcessRois ? "Exporting ROIs: " : "Exporting Tracks: " );
+
+if      ( RoisDoc.IsOpen () )   {   cout << roisfile << ", " << RoisDoc->ROIs->GetName () << ": " << RoisDoc->ROIs->GetNumRois () << " x " << RoisDoc->ROIs->GetDimension (); }
+else if ( XYZDoc .IsOpen () )   {   cout << xyzfile << ": " << XYZDoc->GetNumElectrodes (); }
+else                            {   cout << "EEG tracks names"; }
+cout << NewLine;
+
+cout << "Tracks: " << ( tracks.empty () ? "All tracks" : tracks ) << NewLine;
+
+cout << "Time Options: " << ( timeoptions == ExportTimeInterval  ? "Time Interval" 
+                            : timeoptions == ExportTimeTriggers  ? "Keeping triggers List"
+                            : timeoptions == ExcludeTimeTriggers ? "Excluding triggers List"
+                            :                                      "Unknown" ) << NewLine;
+if ( timeoptions == ExportTimeInterval ) {
+    cout << "Time Min: " << ( timemin == 0 ? "Beginning of file" : IntegerToString ( timemin ) ) << NewLine;
+    cout << "Time Max: " << ( timemax == Highest ( timemax ) ? "End of file" : IntegerToString ( timemax ) ) << NewLine;
+    }
+else if ( timeoptions == ExportTimeTriggers )
+    cout << "Keep Triggers: " << keeptriggers << NewLine;
+else if ( timeoptions == ExcludeTimeTriggers )
+    cout << "Exclude Triggers: " << excludetriggers << NewLine;
+
+cout << "Adding Null Tracks: " << BoolToString ( ! nulltracks.empty () ) << NewLine;
+if ( ! nulltracks.empty () )
+    cout << "Null tracks: " << nulltracks << NewLine;
+
+cout << "Filtering: " << BoolToString ( filteringoptions ) << NewLine;
+if ( filteringoptions ) 
+    cout << "Filters: " << filters << NewLine;
+
+cout << "Reference: " << ReferenceNames[ ref ] << NewLine;
+if ( ref == ReferenceMultipleTracks )
+    cout << "Reference list: " << reflist << NewLine;
+
+cout << "Baseline: " << BoolToString ( baselinecorr ) << NewLine;
+if ( baselinecorr )
+    cout << "From: " << baselinecorrint[ 0 ] << " To " << baselinecorrint[ 1 ] << NewLine;
+
+cout << "Rescaling: " << ( rescalingoptions == NotRescaled          ? "No rescaling" 
+                         : rescalingoptions == ConstantRescaling    ? "Constant rescaling"
+                         : rescalingoptions == GfpRescaling         ? "Mean GFP rescaling"
+                         :                                            "Unknown" ) << NewLine;
+if ( rescalingoptions == ConstantRescaling )
+    cout << "Scaling Factor: " << rescalingfactor << NewLine;
+else if ( rescalingoptions == GfpRescaling )
+    cout << "Scaling Factor: " << "Mean GFP" << NewLine;
+
+cout << "Sequence Option: " << ( sequenceoptions == SequenceProcessing  ? "Sequential Data" 
+                               : sequenceoptions == AverageProcessing   ? "Averaging Data in Time"
+                               :                                          "Unknown" ) << NewLine;
+cout << "Downsample Ratio: " << ( downsampleratio == 0 ? "No" : IntegerToString ( downsampleratio ) ) << NewLine;
+cout << "File Type & Extension: " << filetype << ", " << SavingEegFileExtPreset[ filetype ] << NewLine;
+cout << "Infix: " << ( infix.empty () ? "None" : infix ) << NewLine;
+cout << "Saving Markers: " << BoolToString ( outputmarkers ) << NewLine;
+
+cout << "Concatenate Time: " << BoolToString ( concatenateoptions ) << NewLine;
+if ( concatenateoptions == ConcatenateTime ) {
+    cout << "Concatenating " << (int) gof << " files" << NewLine;
+    for ( int filei = 0; filei < (int) gof; filei++ )
+        cout << "Concatenate File: " << gof[ filei ]   << NewLine;
+    }
+
+cout << NewLine;
+*/
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TTracksFilters<float>   altfilters;
 double                  defaultsamplingfrequency    = 0;
@@ -942,6 +1012,8 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                     );
     } // for file
 
+
+//DeleteConsole ( true );
 }
 
 
@@ -962,7 +1034,7 @@ AddOptionString ( 0,            showhelp,           "-h",   "--help",           
 
 
 //CLI::Option*        optversion      = app.set_version_flag ( "--version", version );                  // raises an exception(?)
-AddFlag         ( 0,            showversion,        "",     "--version",            "Version" );        // adding the flag manually
+AddFlag         ( 0,            showversion,        "",     "--version",            "Showing program version" );    // adding the flag manually
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -972,19 +1044,19 @@ AddFlag         ( 0,            showversion,        "",     "--version",        
 AddFlag         ( 0,            nosplash,           "",     "--nosplash",           "No splash-screen" );
 
 
-AddOptionString ( 0,            mw,                 "",     "--mainwindow",         "Main window state" )
+AddOptionString ( 0,            mw,                 "",     "--mainwindow",         "Main window initial state" )
 ->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
 AddOptionInts   ( 0,            mwsize,     2,      "",     "--mainwindowsize",     "Main window size W,H"     );
 AddOptionInts   ( 0,            mwpos,      2,      "",     "--mainwindowpos",      "Main window position X,Y" );
 
 
-AddOptionStrings( 0,            chw,        -1,     "",     "--childwindow",        "Child window state(s) "    Tab Tab "(could be repeated for each file)" )
+AddOptionStrings( 0,            chw,        -1,     "",     "--childwindow",        "Next child window state(s) "    Tab Tab "(could be repeated for each file)" )
 ->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
-AddOptionInts   ( 0,            chwsize,    -1,     "",     "--childwindowsize",    "Child window size(s) W,H " Tab Tab "(could be repeated for each file)"     );
-AddOptionInts   ( 0,            chwpos,     -1,     "",     "--childwindowpos",     "Child window position(s) X,Y " Tab "(could be repeated for each file)" );
+AddOptionInts   ( 0,            chwsize,    -1,     "",     "--childwindowsize",    "Next child window size(s) W,H " Tab Tab "(could be repeated for each file)"     );
+AddOptionInts   ( 0,            chwpos,     -1,     "",     "--childwindowpos",     "Next child window position(s) X,Y " Tab "(could be repeated for each file)" );
 
 
-AddOptionInt    ( 0,            mwmon,              "",     "--monitor",            "Monitor" );
+AddOptionInt    ( 0,            mwmon,              "",     "--monitor",            "On which monitor to open the program" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -992,9 +1064,9 @@ AddOptionInt    ( 0,            mwmon,              "",     "--monitor",        
 CLI::App*           regsub          = app.add_subcommand ( "register", "Registration command" )
 ->ExclusiveOptions;
 
-AddFlag         ( regsub,       reg,                "-y",   "--yes",                "Register program to Windows" );
-AddFlag         ( regsub,       unreg,              "-n",   "--no",                 "Un-register program to Windows" );
-AddFlag         ( regsub,       resetreg,           "-r",   "--reset",              "Clean-up Windows registration to default" );
+AddFlag         ( regsub,       reg,                "-y",   "--yes",                "Register program to Windows (associating icons & file extensions)" );
+AddFlag         ( regsub,       unreg,              "-n",   "--no",                 "Un-register program to Windows (removing icons & file associations)" );
+AddFlag         ( regsub,       resetreg,           "-r",   "--reset",              "Clean-up Windows registration to default (un-register, then register again)" );
 //AddFlag       ( regsub,       noreg,              "-o",   "--none",               "Force skipping program registration" );    // not sure if still useful, as Cartool does not touch registers when launched
 AddFlag         ( regsub,       helpreg,            "-h",   "--help",               "This message" );
 
@@ -1004,18 +1076,18 @@ AddFlag         ( regsub,       helpreg,            "-h",   "--help",           
 CLI::App*           reprocsub       = app.add_subcommand ( "reprocesstracks", "Reprocess tracks command" )
 ->alias ( "exporttracks" );
 
-
-AddOptionString ( reprocsub,    xyzfile,            "",     "--xyzfile",            "XYZ electrodes coordinates file" );
-AddOptionString ( reprocsub,    roisfile,           "",     "--roisfile",           "ROIs regions of interest file" );
+                                        // Parameters appearance follow the dialog's visual design
+AddOptionString ( reprocsub,    xyzfile,            "",     "--xyzfile",            "Using electrodes names from a XYZ electrodes coordinates file" );
+AddOptionString ( reprocsub,    roisfile,           "",     "--roisfile",           "Computing ROIs & using ROIs names from a ROIs file" );
 
 optroisfile->excludes ( optxyzfile  );
 
-AddOptionString ( reprocsub,    tracks,             "",     "--tracks",             "Tracks to export" Tab Tab Tab "Default: all tracks" );
+AddOptionString ( reprocsub,    tracks,             "",     "--tracks",             "Tracks to export" Tab Tab Tab Tab "Default: all tracks; Special values: 'gfp', 'dis' and 'avg'" );
 
-AddOptionInt    ( reprocsub,    timemin,            "",     "--timemin",            "From Time Frame " Tab Tab Tab "Default: 0" );
-AddOptionInt    ( reprocsub,    timemax,            "",     "--timemax",            "To Time Frame   " Tab Tab Tab "Default: end of file" );
-AddOptionString ( reprocsub,    keeptriggers,       "",     "--keeptriggers",       "Keeping triggers / markers list" );
-AddOptionString ( reprocsub,    excludetriggers,    "",     "--excludetriggers",    "Excluding triggers / markers list" );
+AddOptionInt    ( reprocsub,    timemin,            "",     "--timemin",            "Exporting from Time Frame " Tab Tab "Default: 0" );
+AddOptionInt    ( reprocsub,    timemax,            "",     "--timemax",            "Exporting to Time Frame   " Tab Tab "Default: end of file" );
+AddOptionString ( reprocsub,    keeptriggers,       "",     "--keeptriggers",       "Exporting only the data from a triggers / markers list" );
+AddOptionString ( reprocsub,    excludetriggers,    "",     "--excludetriggers",    "Exporting all data but from a triggers / markers list" );
 
 opttimemin     ->excludes ( optkeeptriggers    )->excludes ( optexcludetriggers );
 opttimemax     ->excludes ( optkeeptriggers    )->excludes ( optexcludetriggers );
@@ -1025,25 +1097,19 @@ AddOptionString ( reprocsub,    nulltracks,         "",     "--nulltracks",     
 
 AddOptionString ( reprocsub,    filters,            "",     "--filters",            "Optional filters string, similar to the verbose files" );
 
-AddOptionString ( reprocsub,    ref,                "",     "--reference",          "List of new reference tracks" Tab "Special values: 'none' or 'asinfile' or 'average'" );
+AddOptionString ( reprocsub,    ref,                "",     "--reference",          "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
 
-AddOptionInts   ( reprocsub,    baselinecorr,   2,  "",     "--baselinecorr",       "Baseline correction interval, in time frames" );
+AddOptionInts   ( reprocsub,    baselinecorr,   2,  "",     "--baselinecorr",       "Baseline correction interval, in time frames since beginning of file" );
 
-AddOptionString ( reprocsub,    rescaling,          "",     "--rescaling",          "Scaling factor" Tab Tab Tab "Special value: 'meangfp'" );
+AddOptionString ( reprocsub,    rescaling,          "",     "--rescaling",          "Scaling factor" Tab Tab Tab Tab "Special value: 'meangfp'" );
 
 AddFlag         ( reprocsub,    average,            "",     "--averaging",          "Averaging the whole time dimension" );
 
 AddOptionInt    ( reprocsub,    downsampleratio,    "",     "--downsampling",       "Downsampling ratio" )
 ->check ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : string(); } );
 
-AddOptionString ( reprocsub,    fileext,            "",     "--fileext",            "Output file extension" Tab Tab "Default: eeg" )
-->check ( CLI::IsMember ( { SavingEegFileExtPreset[ PresetFileTypeTxt ],
-                            SavingEegFileExtPreset[ PresetFileTypeEp  ],
-                            SavingEegFileExtPreset[ PresetFileTypeEph ],
-                            SavingEegFileExtPreset[ PresetFileTypeSef ],
-                            SavingEegFileExtPreset[ PresetFileTypeBV  ],
-                            SavingEegFileExtPreset[ PresetFileTypeEdf ],
-                            SavingEegFileExtPreset[ PresetFileTypeRis ]  } ) );
+AddOptionString ( reprocsub,    fileext,            "",     "--fileext",            string ( "Output file extension" Tab Tab Tab "Default: " ) + SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] )
+->check ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
 
 AddOptionString ( reprocsub,    infix,              "",     "--infix",              "Infix appended to the file name" );
 
@@ -1056,6 +1122,7 @@ AddFlag         ( reprocsub,    helpreproc,         "-h",   "--help",           
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Positional options (not starting with '-')
+                                        // Note that files list usually need to separated from other parameters with " -- ", like in "--<option>=<something> -- <file1> <file2> <file3>"
 AddOptionStrings( 0,            files,      -1,     "",     "files",                "List of files" );
 
 
@@ -1068,9 +1135,9 @@ catch ( const CLI::ParseError &e ) {
 
     PrintConsole    ( string ( "Error in command-line parameters: " ) + /*CmdLine*/ e.what () + NewLine
                       +                                                                         NewLine
-                      + "See the correct command-line syntax by calling: "                      NewLine
+                      + "See the correct command-line syntax by either calling:"                NewLine
+                      +                                                                         NewLine
                       + ToFileName ( ApplicationFullPath ) + " --help"                          NewLine
-                      + " or"                                                                   NewLine
                       + ToFileName ( ApplicationFullPath ) + " <subcommand> --help"             NewLine );
 
     exit ( app.exit ( e ) );
