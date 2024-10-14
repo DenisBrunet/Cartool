@@ -1246,8 +1246,6 @@ optkeeptriggers->excludes ( optexcludetriggers );
 
 AddOptionString ( reprocsub,    nulltracks,         "",     "--nulltracks",         "List of null tracks to append" );
 
-//AddOptionString ( reprocsub,    filters,            "",     "--filters",            "Optional filters string, similar to the verbose files" );
-
 AddOptionString ( reprocsub,    ref,                "",     "--reference",          "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
 
 AddOptionInts   ( reprocsub,    baselinecorr,   2,  "",     "--baselinecorr",       "Baseline correction interval, in time frames since beginning of file" );
@@ -1271,28 +1269,50 @@ AddFlag         ( reprocsub,    concatenate,        "",     "--concatenate",    
 AddFlag         ( reprocsub,    helpreproc,         "-h",   "--help",               "This message" );
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Reprocess Tracks filters "sub-command"
+//AddOptionString ( reprocsub,    filters,            "",     "--filters",            "Optional filters string, similar to the verbose files" );
+
+
 AddFlag         ( reprocsub,    filters,            "",     "--filters",            "Using any combination of the following filters:" );
 // we should be adding "->needs ( optfilters )" to all options below, but his really becomes unreadable
 
 AddFlag         ( reprocsub,    baseline,           "--dc", "--baseline",           "Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)" );
 
-AddOptionDouble ( reprocsub,    highpass,           "",     "--highpass",           "High-Pass Butterworth filter" );
-AddOptionDouble ( reprocsub,    lowpass,            "",     "--lowpass",            "Low-Pass Butterworth filter" );
+                                        // !We allow the simultaneous use of highpass and lowpass, which will be combined into a single bandpass!
+AddOptionDouble ( reprocsub,    highpass,           "",     "--highpass",           "High-Pass Butterworth filter" )
+                                        // Testing High-Pass < Low-Pass here
+->check ( [ &reprocsub ]( const string& str )
+    {   
+    double      cuth            = StringToDouble ( str.c_str () );
+    bool        hasl            = HasSubOption       ( reprocsub,"--lowpass" );
+    double      cutl            = GetSubOptionDouble ( reprocsub, "--lowpass" );
+
+    return         cuth <= 0
+        || hasl && cutl <= 0    ? "frequency cut should be above 0"
+         : hasl && cuth > cutl  ? "high-pass cut should be less than the low-pass cut"
+         :                        ""; 
+    } );
+
+AddOptionDouble ( reprocsub,    lowpass,            "",     "--lowpass",            "Low-Pass Butterworth filter" )
+->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
+                                        // Bandpass, however, excludes both highpass and lowpass
 AddOptionDoubles( reprocsub,    bandpass,       2,  "",     "--bandpass",           "Band-Pass Butterworth filter" );
-                                        // We allow highpass + lowpass, that will be combined into bandpass
-                                        // However bandpass does not allow neither highpass nor lowpass
-optbandpass ->excludes ( optlowpass  );
-optbandpass ->excludes ( opthighpass );
+
+optbandpass->excludes ( optlowpass  )
+           ->excludes ( opthighpass );
+
 
 AddOptionInt    ( reprocsub,    order,              "",     "--order",              string ( "Butterworth filter order" ) + Tab + Tab + Tab + "Default: " + TFilterDefaultOrderString )
-->check ( [ &reprocsub ]( const string& str )   {   int         o               = StringToInteger ( str.c_str () );
-                                                    bool        optionok        = HasSubOption ( reprocsub,"--highpass" ) || HasSubOption ( reprocsub,"--lowpass"  ) || HasSubOption ( reprocsub,"--bandpass" );
-                                                    bool        orderevenok     = IsEven         ( o );
-                                                    bool        orderrangeok    = IsInsideLimits ( o, TFilterMinOrder, TFilterMaxOrder );
-                                                    return ! optionok                       ? "--order requires one of the following {--highpass, --lowpass, --bandpass} option"
-                                                         : ! orderevenok || ! orderrangeok  ? string ( "Value should be an even number, and within the range " ) + TFilterMinOrderString + ".." + TFilterMaxOrderString
-                                                         : ""; 
-                                                } );
+->check ( [ &reprocsub ]( const string& str )   
+    {   int         o               = StringToInteger ( str.c_str () );
+        bool        optionok        = HasSubOption ( reprocsub,"--highpass" ) || HasSubOption ( reprocsub,"--lowpass"  ) || HasSubOption ( reprocsub,"--bandpass" );
+        bool        orderevenok     = IsEven         ( o );
+        bool        orderrangeok    = IsInsideLimits ( o, TFilterMinOrder, TFilterMaxOrder );
+        return ! optionok                       ? "--order requires one of the following {--highpass, --lowpass, --bandpass} option"
+             : ! orderevenok || ! orderrangeok  ? string ( "Value should be an even number, and within the range " ) + TFilterMinOrderString + ".." + TFilterMaxOrderString
+             :                                    ""; 
+    } );
 
 AddFlag         ( reprocsub,    causal,             "",     "--causal",             "Causal filters, using only forward filtering" );
 
