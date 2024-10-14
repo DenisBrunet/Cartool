@@ -90,7 +90,7 @@ public:
     double          Notches[ MaxNotches ];      // requested by user
     bool            NotchesAutoHarmonics;
 
-    bool                SpatialFiltering;
+    bool                SpatialFiltering;       // It would be nice to have XyzFile here, too, while also specifying the filter type in FiltersParam
     SpatialFilterType   SpatialFilter;
 
     bool            Ranking;
@@ -646,7 +646,7 @@ if ( FiltersParam.GetNotches () ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Spatial Filter setup
 if ( HasSpatialFilter () /* && FilterSpatial.IsNotAllocated () */ ) {
-
+                                        // Will gracefully handle an empty XyzFile
     FilterSpatial.Set   (   SpatialFilter, 
                             FiltersParam.XyzFile, 
                             SpatialFilterMaxNeighbors ( DefaultSFDistance ), 
@@ -978,13 +978,13 @@ if ( ( toc = StringContains ( text, "Rank" ) ) != 0 ) {
 
 
 if ( ( toc = StringContains ( text, "Rectification " ) ) != 0 ) {
-    sscanf ( toc, "Rectification %s", t );
+    sscanf ( toc, "Rectification %[A-Za-z]s", t );
     FiltersParam.SetRectification ( t );
     }
 
                                         // Rectification not mandatory anymore
 if ( ( toc = StringContains ( text, "Envelope of " ) ) != 0 ) {
-    sscanf ( toc, "Envelope of %s", t );
+    sscanf ( toc, "Envelope of %[-+.0-9]s", t );
     FiltersParam.SetEnvelopeWidth ( t );
 
                                         // for safety

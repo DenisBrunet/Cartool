@@ -838,15 +838,6 @@ else if ( HasSubOption ( reprocsub, "--excludetriggers" ) ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Converting a whole string, as coming from the verbose output, to parameters
-                                        // Off for the moment so we can focus on setting the parameters one by one below...
-//string              filters         = GetSubOptionString ( reprocsub, "--filters" );
-//
-//FiltersOptions      filteringoptions= filters.empty ()  ? NotUsingFilters   // default
-//                                                        : UsingOtherFilters;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // For total safety, it is convenient to have a default sampling frequency at hand, which could be used for EEGs that don't have one
 double              defaultsamplingfrequency    = 0;
 
@@ -874,12 +865,26 @@ TTracksFilters<float>   altfilters;
 
 
 if ( filteringoptions == UsingOtherFilters ) {
-                                        // Based on TTracksFilters::TextToParameters
+
     TTracksFiltersStruct&       fp          = altfilters.FiltersParam;
 
     fp.ResetAll ();
 
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // 1) Converting a whole optional string, as coming from the verbose output, to parameters
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if ( HasSubOption ( reprocsub, "--text" ) ) {
+
+        string              filterstext     = GetSubOptionString ( reprocsub, "--text" );
+
+        altfilters.TextToParameters ( filterstext.c_str (), XYZDoc.IsOpen () ? XYZDoc->GetDocPath () : 0, defaultsamplingfrequency );
+        }
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // 2) Setting or overwriting each parameter, one at a time - Heavily based on TTracksFilters::TextToParameters method
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     if ( HasSubOption ( reprocsub, "--bandpass" ) ) {
@@ -973,10 +978,12 @@ if ( filteringoptions == UsingOtherFilters ) {
         fp.SetThresholdBelow ( GetSubOptionString ( reprocsub, "--keepbelow" ).c_str () );
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // We went through all these because this method checks the whole consistency of all the paramters for us
+                                        // 3) Finally setting the filters from the struct - A quite robust and tested method
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     altfilters.SetFromStruct ( defaultsamplingfrequency, true );
 
-
+                                        // A final consistency check
     if ( altfilters.HasNoFilters () )
         filteringoptions    = NotUsingFilters;
     }
@@ -1270,12 +1277,13 @@ AddFlag         ( reprocsub,    helpreproc,         "-h",   "--help",           
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Reprocess Tracks filters "sub-command"
-//AddOptionString ( reprocsub,    filters,            "",     "--filters",            "Optional filters string, similar to the verbose files" );
-
+                                        // Reprocess Tracks sub-command, filters "sub-command"-like option
 
 AddFlag         ( reprocsub,    filters,            "",     "--filters",            "Using any combination of the following filters:" );
 // we should be adding "->needs ( optfilters )" to all options below, but his really becomes unreadable
+
+AddOptionString ( reprocsub,    filterstring,       "",     "--text",               "A whole filters string, in double quote, as coming from a verbose file" )
+->needs ( optfilters );
 
 AddFlag         ( reprocsub,    baseline,           "--dc", "--baseline",           "Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)" );
 
@@ -1363,7 +1371,7 @@ catch ( const CLI::ParseError &e ) {
 
     PrintConsole    ( string ( "Error in command-line parameters: " ) + /*CmdLine*/ e.what () + NewLine
                       +                                                                         NewLine
-                      + "See the correct command-line syntax by either calling:"                NewLine
+                      + "See the correct command-line syntax by calling either:"                NewLine
                       +                                                                         NewLine
                       + ToFileName ( ApplicationFullPath ) + " --help"                          NewLine
                       + ToFileName ( ApplicationFullPath ) + " <subcommand> --help"             NewLine );

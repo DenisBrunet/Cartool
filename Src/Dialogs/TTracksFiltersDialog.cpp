@@ -240,12 +240,16 @@ Rectification           = BoolToCheck ( false );
 RectificationAbs        = BoolToCheck ( false );
 RectificationPower      = BoolToCheck ( false );
 
-if      ( IsStringAmong ( t, "Abs Absolute" ) ) {
+if      ( StringContains ( t, "Absolute" )
+       || StringContains ( t, "Abs"      ) ) {
+
     Rectification       = BoolToCheck (  true );
     RectificationAbs    = BoolToCheck (  true );
     Set ();
     }
-else if ( IsStringAmong ( t, "Power Squared" ) ) {
+else if ( StringContains ( t, "Power"   )
+       || StringContains ( t, "Squared" ) ) {
+
     Rectification       = BoolToCheck (  true );
     RectificationPower  = BoolToCheck (  true );
     Set ();
