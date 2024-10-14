@@ -1481,12 +1481,27 @@ do {
             }
         } // trigger type
 
+
+    else if ( StringStartsWith ( buff, "Electrodes coordinates" ) ) {
+                                        // Use file name for both xyz display and filter
+        if ( StringIsEmpty ( toc ) || StringIs ( toc, "none" ) ) {
+
+            ClearString ( TAvgTransfer.XyzDocFile );                        // does not seem to update, because not the current dialog...
+            ClearString ( TAvgTransfer.Filters.FiltersParam.XyzFile );
+            }
+
+        else {
+            StringCopy  ( TAvgTransfer.XyzDocFile,                   toc ); // does not seem to update, because not the current dialog...
+            StringCopy  ( TAvgTransfer.Filters.FiltersParam.XyzFile, toc );
+            }
+        }
+
     else if ( StringStartsWith ( buff, "Filters:" ) ) {
                                     // stupid trick to set the init flag to false, and prevent overwriting the textual params
         TTracksFiltersDialog    (   CartoolMainWindow,              IDD_TRACKSFILTERS, 
                                     TAvgTransfer.Filters.FiltersParam,  TAvgTransfer.SamplingFrequency ? TAvgTransfer.SamplingFrequency : 0 );
 
-        TAvgTransfer.Filters.TextToParameters ( toc, TAvgTransfer.SamplingFrequency );
+        TAvgTransfer.Filters.TextToParameters ( toc, TAvgTransfer.XyzDocFile, TAvgTransfer.SamplingFrequency );
 
         TAvgTransfer.SetFilters             = BoolToCheck ( TAvgTransfer.Filters.HasAnyFilter () );
         }
@@ -1535,8 +1550,9 @@ do {
     else if ( StringStartsWith ( buff, "Automatically accept all" ) )
         TAvgTransfer.AcceptAll              = StringToCheck ( toc );
 
-    else if ( StringStartsWith ( buff, "Applying average reference" ) ) {
-        TAvgTransfer.AvgRef                 = StringToCheck ( toc );
+    else if ( StringStartsWith ( buff, "Applying average reference" ) 
+           || StringStartsWith ( buff, "Data reference" ) ) {
+        TAvgTransfer.AvgRef                 = StringToCheck ( toc ) || StringIs ( toc, "Average Reference" );
         TAvgTransfer.NoRef                  = BoolToCheck ( ! CheckToBool ( TAvgTransfer.AvgRef ) );
         }
                                         // not supported anymore
@@ -1623,7 +1639,7 @@ if ( TTracksFiltersDialog   (   CartoolMainWindow,              IDD_TRACKSFILTER
 TAvgTransfer.Filters.SetFromStruct ( TAvgTransfer.SamplingFrequency, false );
 
                                         // reset button if dialog returns no filters
-if ( ! TAvgTransfer.Filters.HasAnyFilter () ) {
+if ( TAvgTransfer.Filters.HasNoFilters () ) {
     TAvgTransfer.SetFilters     = BoolToCheck ( false );
     TransferData ( tdSetData );
     return;
@@ -2187,6 +2203,9 @@ TGoF&               gofeeg          = (*gogof)[ gofi1     ];
 TGoF&               gofses          = (*gogof)[ gofi1 + 1 ];
 TGoF&               goftva          = (*gogof)[ gofi1 + 2 ];
 TGoF&               goftrg          = (*gogof)[ gofi1 + 3 ];
+                                        // !Temp fix for TGoF forcing absolute paths, which is totally irrelvant for us here!
+gofses.RemoveDir ();
+goftrg.RemoveDir ();
 
 char                buff   [ 64 * KiloByte ];
 TFileName           eegfile;
@@ -2708,7 +2727,9 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     }
 
 verbose.NextLine ();
-verbose.Put ( "Electrodes coordinates file:", usexyz ? transfer.XyzDocFile : "None" );
+verbose.Put ( "Electrodes coordinates file:", usexyz                                            ? transfer.XyzDocFile 
+                                            : StringIsNotEmpty ( Filters.FiltersParam.XyzFile ) ? Filters.FiltersParam.XyzFile 
+                                            :                                                     "None" );
 }
 
 
