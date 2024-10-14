@@ -1487,14 +1487,14 @@ if ( FiltersActivated ) {
                                         // do all filters
     Filters.ApplyFilters    (   buff,   NumElectrodes,  dontfilterauxs ? &AuxTracks : 0, 
                                 numtf,  tfoffset, 
-                                (FilterPrecedence) ( FilterBeforeRef | FilterTemporal | FilterTopographic ) 
+                                (FilterPrecedence) ( FilterBeforeRef | FilterTemporal | FilterNonTemporal ) 
                             );
 
                                         // don't forget case filtermargin == 0, we need to non-temporally filter this guy
     if ( loadbuffdiss )
         Filters.ApplyFilters    (   BuffDiss,   NumElectrodes,  dontfilterauxs ? &AuxTracks : 0, 
                                     1,          0, 
-                                    (FilterPrecedence) ( FilterBeforeRef | FilterTopographic ) 
+                                    (FilterPrecedence) ( FilterBeforeRef | FilterNonTemporal ) 
                                 );
 
     } // if filtering
@@ -1562,14 +1562,14 @@ if ( FiltersActivated ) {
                                         // filter both temporal & non-temporal
     Filters.ApplyFilters    (   buff,   NumElectrodes,  dontfilterauxs ? &AuxTracks : 0, 
                                 numtf,  tfoffset, 
-                                (FilterPrecedence) ( FilterAfterRef | FilterTemporal | FilterTopographic ) 
+                                (FilterPrecedence) ( FilterAfterRef | FilterTemporal | FilterNonTemporal ) 
                             );
 
                                         // don't forget case filtermargin == 0, we need to non-temporal filter this guy
     if ( loadbuffdiss )
         Filters.ApplyFilters    (   BuffDiss,   NumElectrodes,  dontfilterauxs ? &AuxTracks : 0, 
                                     1,          0, 
-                                    (FilterPrecedence) ( FilterAfterRef | FilterTopographic ) 
+                                    (FilterPrecedence) ( FilterAfterRef | FilterNonTemporal ) 
                                 );
 
                                         // save the precious values @ [TF - 1], if we have some margin

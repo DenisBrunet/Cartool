@@ -95,7 +95,7 @@ if ( filtersoptions == UsingOtherFilters && altfilters == 0 )
     return  false;
 
                                         // reset flag if there are indeed no filters set / activated in altfilters
-if ( filtersoptions == UsingOtherFilters && ! altfilters->HasAnyFilter () )
+if ( filtersoptions == UsingOtherFilters && altfilters->HasNoFilters () )
     filtersoptions = NotUsingFilters;
 
                                         // if EEGDoc has existing BUT deactivated filters, reset use of filters - Note that this preferably be addressed by caller beforehand...

@@ -31,6 +31,8 @@ enum            FilterCausality
                                         // Order limits for a single filter - must also be a multiple of 2
 constexpr int   TFilterMinOrder                 =  2;
 constexpr int   TFilterMaxOrder                 = 64;
+constexpr char* TFilterMinOrderString           = "2";
+constexpr char* TFilterMaxOrderString           = "64";
                                         // Order limits for a bandpass/bandstop filter - must also be a multiple of 4
 constexpr int   TFilterMinTwiceOrder            = 2 * TFilterMinOrder;
 constexpr int   TFilterMaxTwiceOrder            = 2 * TFilterMaxOrder;

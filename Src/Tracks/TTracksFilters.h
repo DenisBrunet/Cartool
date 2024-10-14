@@ -54,9 +54,9 @@ enum                FilterPrecedence
                                             // Some filters have to be done before, some after, the re-referencing
                     FilterBeforeRef     = 0x01,
                     FilterAfterRef      = 0x02,
-                                            // Qualifying the filter as temporal or topographic - convenient for buffer allocation or extra temporal margin
+                                            // Qualifying the filter as temporal or non-temporal/topographic - convenient for buffer allocation or extra temporal margin
                     FilterTemporal      = 0x10,
-                    FilterTopographic   = 0x20,
+                    FilterNonTemporal   = 0x20,
                     };
 
 
@@ -119,20 +119,34 @@ public:
 
 
     char*           ParametersToText    (       char* text )                const;
-    void            TextToParameters    ( const char* text, double fsamp );
+    void            TextToParameters    ( const char* text, const char* xyzfile, double fsamp );
 
+                                                // Tests if all conditions are met for any given filter - f.ex. Butterworth can not run if no sampling frequency are provided
+    bool            HasSamplingFrequency    ()  const   { return SamplingFrequency > 0;                             }
+    bool            HasBaseline             ()  const   { return Baseline;                                          }
+    bool            HasButterworthHigh      ()  const   { return ButterworthHigh > 0 && HasSamplingFrequency ();    }
+    bool            HasButterworthLow       ()  const   { return ButterworthLow  > 0 && HasSamplingFrequency ();    }
+    bool            HasButterworthBand      ()  const   { return HasButterworthHigh () && HasButterworthLow ();     }   // combining high and low pass into a band-pass
+    bool            HasButterworthFilter    ()  const   { return HasButterworthHigh () || HasButterworthLow ();     }
+    bool            HasNotches              ()  const   { return NumNotches      > 0 && HasSamplingFrequency ();    }
+    bool            HasEnvelope             ()  const   { return EnvelopeWidth   > 0 && HasSamplingFrequency ();    }
+    bool            HasTemporalFilter       ()  const   { return HasBaseline () || HasButterworthHigh () || HasButterworthLow () || HasNotches () || HasEnvelope (); }
 
-    bool            HasButterworthFilter    ()  const   { return                       ButterworthHigh  || ButterworthLow; }
-    bool            HasTemporalFilter       ()  const   { return Baseline           || ButterworthHigh  || ButterworthLow   || NumNotches           || EnvelopeWidth; }
-    bool            HasTopographicalFilter  ()  const   { return SpatialFiltering   || Ranking          || Rectification    || ThresholdKeepAbove   || ThresholdKeepBelow ; }
-    bool            HasAnyFilter            ()  const   { return HasTemporalFilter  () || HasTopographicalFilter (); }
-    bool            IsBandPassFilter        ()  const   { return                       ButterworthHigh  && ButterworthLow; }
+    bool            HasSpatialFilter        ()  const   { return SpatialFiltering && SpatialFilter != SpatialFilterNone; }
+    bool            HasRanking              ()  const   { return Ranking;                                           }
+    bool            HasRectification        ()  const   { return Rectification != 0;                                }
+    bool            HasThresholdKeepAbove   ()  const   { return ThresholdKeepAbove;                                }
+    bool            HasThresholdKeepBelow   ()  const   { return ThresholdKeepBelow;                                }
+    bool            HasNonTemporalFilter    ()  const   { return HasSpatialFilter () || HasRanking () || HasRectification () || HasThresholdKeepAbove () || HasThresholdKeepBelow (); }
+
+    bool            HasAnyFilter            ()  const   { return HasTemporalFilter  () || HasNonTemporalFilter ();  }
+    bool            HasNoFilters            ()  const   { return ! HasAnyFilter ();                                 }
 
 
     void            ApplyFilters            ( TArray2<TypeD>&   data, int numel, const TSelection* skipel, int numpts, int tfoffset, FilterPrecedence filterprecedence );
 
 
-                    TTracksFilters      ( const TTracksFilters &op );
+                    TTracksFilters      ( const TTracksFilters &op  );
     TTracksFilters& operator    =       ( const TTracksFilters &op2 );
 
 
@@ -328,7 +342,7 @@ if ( SamplingFrequency <= 0 )
 template <class TypeD>
 int     TTracksFilters<TypeD>::GetSafeMargin ()   const
 {
-if ( ! ( HasTemporalFilter () && SamplingFrequency > 0 ) )
+if ( ! ( HasTemporalFilter () && HasSamplingFrequency () ) )
     return  0;
 
 
@@ -342,7 +356,7 @@ int                 marginnotches   = 0;
 int                 marginenvelope  = 0;
 
                                         // Spread a full cycle on the lowest frequency on each side
-if ( ButterworthHigh )
+if ( HasButterworthHigh () )
 
     marginhigh  = Round (   FrequencyToTimeFrame ( ButterworthHigh, SamplingFrequency ) 
                           * NoMore ( (const int) 10, OrderHigh )    // Higher orders need more margin, but we cap it up to 10 as there doesn't seem any real gain above, while computation is really getting worse
@@ -352,7 +366,7 @@ if ( ButterworthHigh )
                                         // DC without High Pass is a tough choice: 
                                         // do the baseline on what is requested (no margin), or add the biggest possible margin?
                                         // currently, don't add any margin, the baseline is done on the requested data
-//if ( Baseline )
+//if ( HasBaseline () )
 // 
 //    marginbaseline  =   Round (   FrequencyToTimeFrame ( EegFilterMinFrequency, SamplingFrequency ) 
 //                                / 2                                                               
@@ -360,7 +374,7 @@ if ( ButterworthHigh )
 
 
                                         // Spread a full cycle on the highest frequency on each side
-if ( ButterworthLow )
+if ( HasButterworthLow () )
 
     marginlow   = AtLeast ( EegMinLowFilterSide, Round (   FrequencyToTimeFrame ( ButterworthLow, SamplingFrequency ) 
                                                          * OrderLow     // Higher orders need more margin
@@ -369,7 +383,7 @@ if ( ButterworthLow )
 
 
                                         // Quite a generous margin for notch, as line artifacts can be strong and could mess with the current Butterworth Bandstop
-if ( NumNotches ) {
+if ( HasNotches () ) {
 
     int             mn;
 
@@ -385,7 +399,7 @@ if ( NumNotches ) {
     }
 
                                         // Most Envelope filters will need some margin
-if ( EnvelopeWidth )
+if ( HasEnvelope () )
 
     marginenvelope  = (int) FilterEnvelope.GetEnvelopeWidthTF ( OddSize );
 //  marginenvelope  = (int) FilterEnvelope.GetEnvelopeWidthTF ( TracksFiltersEnvelope == FilterTypeEnvelopeAnalytic ? EvenSize : OddSize );
@@ -407,10 +421,6 @@ margin      = max ( marginhigh, marginlow, marginnotches, marginenvelope /*, mar
 Mined  ( margin, EegMaxFilterSide );
 
 
-//DBGV6 (ButterworthHigh, OrderHigh, ButterworthLow, OrderLow, GetOrder (), margin, "GetSafeMargin: High+order Low+order Order -> margin" );
-//if ( VkQuery () )  DBGV6 ( marginhigh, marginlow, FilterNotches.GetNumFilters (), marginnotches, marginenvelope, margin, "Filter Margins: high low #+notch env -> margin" );
-
-
 return  margin;
 }
 
@@ -419,11 +429,11 @@ return  margin;
 template <class TypeD>
 int     TTracksFilters<TypeD>::GetOrder ()  const       
 {
-return  IsBandPassFilter () ? 2 * max ( OrderHigh, OrderLow )               // Order is multiple of 4, done by DOUBLING the single high/low filter order. Final filter has a steeper rolloff. This is similar to Matlab f.ex.
-//      IsBandPassFilter () ? RoundTo ( max ( OrderHigh, OrderLow ), 4 )    // Order is multiple of 4, ROUNDED to closest value from single high/low filter order. This means final filter has a more comparable rolloff as the individual filter. It however adds some confusion, or requires all filters orders to be also multiple of 4.
-      : ButterworthHigh     ? OrderHigh                                     // could handle different orders for high and low filters - though these are currently the same
-      : ButterworthLow      ? OrderLow 
-      :                       0; 
+return  HasButterworthBand  () ? 2 * max ( OrderHigh, OrderLow )            // Order is multiple of 4, done by DOUBLING the single high/low filter order. Final filter has a steeper rolloff. This is similar to Matlab f.ex.
+//      HasButterworthBand  () ? RoundTo ( max ( OrderHigh, OrderLow ), 4 ) // Order is multiple of 4, ROUNDED to closest value from single high/low filter order. This means final filter has a more comparable rolloff as the individual filter. It however adds some confusion, or requires all filters orders to be also multiple of 4.
+      : HasButterworthHigh  () ? OrderHigh                                  // could handle different orders for high and low filters - though these are currently the same
+      : HasButterworthLow   () ? OrderLow 
+      :                          0; 
 }    
 
 
@@ -436,7 +446,7 @@ void    TTracksFilters<TypeD>::SetFilters ( double fsamp, bool silent )
                                         // Non temporal / frequency filters
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( Rectification )
+if ( HasRectification () )
 
     FilterRectification.Set ( Rectification == IDC_RECTIFICATIONABS     ?   FilterRectifyAbs
                           : /*Rectification == IDC_RECTIFICATIONPOWER   ?*/ FilterRectifySquare );
@@ -444,25 +454,32 @@ if ( Rectification )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Filter is cutting, dialog is remaining
-if      ( ThresholdKeepAbove && ThresholdKeepBelow )
+if      ( HasThresholdKeepAbove () && HasThresholdKeepBelow () )
                                         // when both thresholding are being used, the actual method depends on the order of the thresolds
     if ( ThresholdKeepAboveValue > ThresholdKeepBelowValue )    FilterThreshold.Set ( FilterClipAboveAndBelow, ThresholdKeepAboveValue, ThresholdKeepBelowValue );
 
     else                                                        FilterThreshold.Set ( FilterClipAboveOrBelow,  ThresholdKeepAboveValue, ThresholdKeepBelowValue );
 
-else if ( ThresholdKeepAbove )                                  FilterThreshold.Set ( FilterClipBelow,         ThresholdKeepAboveValue );
+else if ( HasThresholdKeepAbove () )                            FilterThreshold.Set ( FilterClipBelow,         ThresholdKeepAboveValue );
 
-else if ( ThresholdKeepBelow )                                  FilterThreshold.Set ( FilterClipAbove,         ThresholdKeepBelowValue );
+else if ( HasThresholdKeepBelow () )                            FilterThreshold.Set ( FilterClipAbove,         ThresholdKeepBelowValue );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Temporal / frequency filters
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // update SamplingFrequency
+                                        // Try to update SamplingFrequency
 SetSamplingFrequency ( fsamp );
 
-if ( SamplingFrequency == 0 )
+if ( ! HasSamplingFrequency () ) {
+                                        // force reset these filters(?) so at least we don't claim to have done them...
+    //FiltersParam.ButterworthLow     = BoolToCheck ( false );
+    //FiltersParam.ButterworthHigh    = BoolToCheck ( false );
+    //FiltersParam.Envelope           = BoolToCheck ( false );
+    //FiltersParam.Notches            = BoolToCheck ( false );
+
     return;                             // problem here...
+    }
 
                                         // setting current frequency limits
 FreqMax     = SamplingFrequency / 2;
@@ -474,19 +491,19 @@ FreqMin     = EegFilterMinFrequency;
 bool                freqadjusted    = false;
 
                                         // reload the frequencies asked by the user
-ButterworthLow              = ButterworthLowRequested;
-ButterworthHigh             = ButterworthHighRequested;
+ButterworthLow      = ButterworthLowRequested;
+ButterworthHigh     = ButterworthHighRequested;
 
                                         // adjust values if needed
-if ( ButterworthHigh )
+if ( HasButterworthHigh () )
     freqadjusted   |= ! Clipped ( ButterworthHigh, FreqMin, FreqMax );
 
 
-if ( ButterworthLow )
+if ( HasButterworthLow () )
     freqadjusted   |= ! Clipped ( ButterworthLow,  FreqMin, FreqMax );
 
 
-if ( NumNotches ) {
+if ( HasNotches () ) {
 
     for ( int n = 0; n < NumNotches; n++ )
 
@@ -496,7 +513,7 @@ if ( NumNotches ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( EnvelopeWidth ) {
+if ( HasEnvelope () ) {
 
 //  double          minwidth        = FrequenciesToEnvelopeWidth ( ButterworthHigh, ButterworthLow );
 //
@@ -516,19 +533,14 @@ if ( EnvelopeWidth ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // this seems the right place - TTracksDoc::SetFilters and TTracksFilters::SetFromStruct will end up calling SetFilters
                                         // High & Low pass filters will be automatically redirected to BandPass WITH TWICE THE ORDER
-if      ( IsBandPassFilter () )     FilterButterworthBandPass.Set ( GetOrder (), Causal, SamplingFrequency, ButterworthLow, ButterworthHigh );
-else if ( ButterworthHigh     )     FilterButterworthHighPass.Set ( GetOrder (), Causal, SamplingFrequency, ButterworthHigh );
-else if ( ButterworthLow      )     FilterButterworthLowPass .Set ( GetOrder (), Causal, SamplingFrequency, ButterworthLow  );
-                                        // simulating the old filters, running High then Low pass
-//if ( ButterworthHigh     )     FilterButterworthHighPass.Set ( GetOrder (), Causal, SamplingFrequency, ButterworthHigh );
-//if ( ButterworthLow      )     FilterButterworthLowPass .Set ( GetOrder (), Causal, SamplingFrequency, ButterworthLow  );
-
-//DBGV4 ( (bool) ButterworthHigh, (bool) ButterworthLow, IsBandPassFilter (), GetOrder (), "SetFilters: High? Low? Band? -> Order" );
+if      ( HasButterworthBand () )   FilterButterworthBandPass.Set ( GetOrder (), Causal, SamplingFrequency, ButterworthLow, ButterworthHigh );
+else if ( HasButterworthHigh () )   FilterButterworthHighPass.Set ( GetOrder (), Causal, SamplingFrequency, ButterworthHigh );
+else if ( HasButterworthLow  () )   FilterButterworthLowPass .Set ( GetOrder (), Causal, SamplingFrequency, ButterworthLow  );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( NumNotches ) {
+if ( HasNotches () ) {
 
     FilterNotches.Reset ();
 
@@ -541,9 +553,9 @@ if ( NumNotches ) {
             double      fnh     = hi * Notches[ n ];
 
                                         // no more harmonics?
-            if ( ! NotchesAutoHarmonics && hi == 2                              // auto-harmonics were actually not requested
-              || fnh > SamplingFrequency / 2                                    // strictly above Nyquist
-              || ButterworthLow && fnh > ButterworthLow + 2 * Notches[ n ]      // skip auto-harmonics above the low-pass limit + 2 stops (OK for order 2)
+            if ( ! NotchesAutoHarmonics && hi == 2                                  // auto-harmonics were actually not requested
+              || fnh > SamplingFrequency / 2                                        // strictly above Nyquist
+              || HasButterworthLow () && fnh > ButterworthLow + 2 * Notches[ n ]    // skip auto-harmonics above the low-pass limit + 2 stops (OK for order 2)
                )
                 break;
 
@@ -595,10 +607,8 @@ OrderLow                    = FiltersParam.GetOrderLow  ();
 
 Causal                      = FiltersParam.GetCausal ();
 
-//DBGV2 ( ButterworthHigh, OrderHigh, "SetFromStruct: ButterworthHigh, OrderHigh" );
-//DBGV2 ( ButterworthLow, OrderLow, "SetFromStruct: ButterworthLow, OrderLow" );
-
 SpatialFiltering            = FiltersParam.GetSpatialFiltering ();
+//SpatialFilter             = SpatialFilterDefault;
 
 Ranking                     = FiltersParam.GetRanking ();
 
@@ -606,9 +616,9 @@ Rectification               = FiltersParam.GetRectification ();
 
 EnvelopeWidth               = FiltersParam.GetEnvelopeWidth ();
 
-ThresholdKeepAbove          = FiltersParam.IsThresholdAbove ();
+ThresholdKeepAbove          = FiltersParam.IsThresholdAbove  ();
 ThresholdKeepAboveValue     = FiltersParam.GetThresholdAbove ();
-ThresholdKeepBelow          = FiltersParam.IsThresholdBelow ();
+ThresholdKeepBelow          = FiltersParam.IsThresholdBelow  ();
 ThresholdKeepBelowValue     = FiltersParam.GetThresholdBelow ();
 
 
@@ -635,9 +645,13 @@ if ( FiltersParam.GetNotches () ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Spatial Filter setup
-if ( SpatialFiltering /* && FilterSpatial.IsNotAllocated () */ ) {
+if ( HasSpatialFilter () /* && FilterSpatial.IsNotAllocated () */ ) {
 
-    FilterSpatial.Set ( SpatialFilter, FiltersParam.XyzFile, SpatialFilterMaxNeighbors ( DefaultSFDistance ), SpatialFilterMaxDistance ( DefaultSFDistance ) );
+    FilterSpatial.Set   (   SpatialFilter, 
+                            FiltersParam.XyzFile, 
+                            SpatialFilterMaxNeighbors ( DefaultSFDistance ), 
+                            SpatialFilterMaxDistance  ( DefaultSFDistance ) 
+                        );
 
                                         // If failed, revoke the spatial filter
     if ( FilterSpatial.IsNotAllocated () /*|| FilterSpatial.GetNumElectrodes () != numel*/ )
@@ -668,9 +682,9 @@ if ( filterprecedence == UnknownPrecedence )
                                         // Put everything in a big block
 OmpParallelBegin
                                         // Pre-Reference
-if ( filterprecedence & FilterBeforeRef ) {
+if ( IsFlag ( filterprecedence, FilterBeforeRef ) ) {
 
-    if ( ( filterprecedence & FilterTemporal ) && ( Baseline || ButterworthHigh || ButterworthLow || NumNotches ) ) {
+    if ( IsFlag ( filterprecedence, FilterTemporal ) && ( HasBaseline () || HasButterworthHigh () || HasButterworthLow () || HasNotches () ) ) {
 
         OmpFor
 
@@ -680,27 +694,24 @@ if ( filterprecedence & FilterBeforeRef ) {
                 continue;
 
                                         // !Always before High Pass!
-            if ( Baseline )                     FilterBaseline.Apply            ( data[ el ] + tfoffset, numpts );
+            if ( HasBaseline () )               FilterBaseline.Apply            ( data[ el ] + tfoffset, numpts );
 
                                         // force Band Pass
-            if      ( IsBandPassFilter () )     FilterButterworthBandPass.Apply ( data[ el ] + tfoffset, numpts );
+            if      ( HasButterworthBand () )   FilterButterworthBandPass.Apply ( data[ el ] + tfoffset, numpts );
 
-            else if ( ButterworthHigh     )     FilterButterworthHighPass.Apply ( data[ el ] + tfoffset, numpts );
+            else if ( HasButterworthHigh () )   FilterButterworthHighPass.Apply ( data[ el ] + tfoffset, numpts );
 
-            else if ( ButterworthLow      )     FilterButterworthLowPass .Apply ( data[ el ] + tfoffset, numpts );
-                                        // simulating the old filters, running High then Low pass
-//          if ( ButterworthHigh     )          FilterButterworthHighPass.Apply ( data[ el ] + tfoffset, numpts );
-//          if ( ButterworthLow      )          FilterButterworthLowPass .Apply ( data[ el ] + tfoffset, numpts );
+            else if ( HasButterworthLow  () )   FilterButterworthLowPass .Apply ( data[ el ] + tfoffset, numpts );
 
 
-            if ( NumNotches )                   FilterNotches.Apply             ( data[ el ] + tfoffset, numpts );
+            if ( HasNotches () )                FilterNotches.Apply             ( data[ el ] + tfoffset, numpts );
             } // for el
 
         } // FilterTemporal
 
                                         // Break open these 2 filters, to access the outer loop - Also join the spatial filters together, sparing some memory transfer
                                         // Ranking is not affected by the reference, put it here allows for Average Reference display of ranks
-    if ( filterprecedence & FilterTopographic ) {
+    if ( IsFlag ( filterprecedence, FilterNonTemporal ) ) {
                                         // Allocate private objects
         TVector<TypeD>          temp ( numel );
 
@@ -712,8 +723,9 @@ if ( filterprecedence & FilterBeforeRef ) {
                 temp[ i ]    = data ( i, tfoffset + tf0 );
 
 
-            if ( SpatialFiltering )     FilterSpatial.Apply ( temp );                       // could also make use skipel?
-            if ( Ranking          )     FilterRanking.Apply ( temp, RankingOptions ( RankingAccountNulls | RankingMergeIdenticals ) );  // ignoring null values or not? or ignoring only for positive data?
+            if ( HasSpatialFilter () )  FilterSpatial.Apply ( temp );                       // could also make use skipel?
+
+            if ( HasRanking       () )  FilterRanking.Apply ( temp, RankingOptions ( RankingAccountNulls | RankingMergeIdenticals ) );  // ignoring null values or not? or ignoring only for positive data?
 
 
             for ( int i = 0; i < numel; i++ )
@@ -729,7 +741,7 @@ if ( filterprecedence & FilterBeforeRef ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Post-Reference
-if ( ( filterprecedence & FilterAfterRef ) && ( Rectification || EnvelopeWidth || ThresholdKeepAbove || ThresholdKeepBelow ) ) {
+if ( IsFlag ( filterprecedence, FilterAfterRef ) && ( HasRectification () || HasEnvelope () || HasThresholdKeepAbove () || HasThresholdKeepBelow () ) ) {
 
     OmpFor
 
@@ -738,14 +750,14 @@ if ( ( filterprecedence & FilterAfterRef ) && ( Rectification || EnvelopeWidth |
         if ( skipel && skipel->IsSelected ( el ) )
             continue;
                                         // BEFORE Envelope
-        if ( ( filterprecedence & FilterTopographic ) && Rectification )            FilterRectification .Apply  ( data[ el ] + tfoffset, numpts );
+        if ( IsFlag ( filterprecedence, FilterNonTemporal ) && HasRectification () )            FilterRectification .Apply  ( data[ el ] + tfoffset, numpts );
 
                                         // AFTER Rectification
-        if ( ( filterprecedence & FilterTemporal    ) && EnvelopeWidth )            FilterEnvelope      .Apply  ( data[ el ] + tfoffset, numpts );
+        if ( IsFlag ( filterprecedence, FilterTemporal    ) && HasEnvelope () )                 FilterEnvelope      .Apply  ( data[ el ] + tfoffset, numpts );
 
 
-        if ( ( filterprecedence & FilterTopographic ) && ( ThresholdKeepAbove 
-                                                        || ThresholdKeepBelow ) )   FilterThreshold     .Apply  ( data[ el ] + tfoffset, numpts );
+        if ( IsFlag ( filterprecedence, FilterNonTemporal ) && ( HasThresholdKeepAbove () 
+                                                              || HasThresholdKeepBelow () ) )   FilterThreshold     .Apply  ( data[ el ] + tfoffset, numpts );
 
         } // for el
 
@@ -764,44 +776,31 @@ constexpr char*     TextSeparator   = ", ";
 ClearString ( text );
 
 
-if ( Baseline ) {
+if ( HasBaseline () ) {
     AppendSeparator ( text, TextSeparator );
 
     StringAppend    ( text, "DC removed" );
     }
 
                                         // Bypass Low and High filters, converted to Band Pass
-if      ( IsBandPassFilter () ) {
+if      ( HasButterworthBand () ) {
     AppendSeparator ( text, TextSeparator );
 
     StringAppend    ( text, "Band Pass ", FloatToString ( ButterworthHigh, 2 ), " to ", FloatToString ( ButterworthLow, 2 ) );
     }
 
-else if ( ButterworthHigh ) {
+else if ( HasButterworthHigh () ) {
     AppendSeparator ( text, TextSeparator );
 
     StringAppend    ( text, "High Pass ", FloatToString ( ButterworthHigh, 2 ) );
     }
 
-else if ( ButterworthLow ) {
+else if ( HasButterworthLow () ) {
     AppendSeparator ( text, TextSeparator );
 
     StringAppend    ( text, "Low Pass ", FloatToString ( ButterworthLow, 2 ) );
     }
 
-/*                                        // simulating the old filters, running High then Low pass
-if ( ButterworthHigh ) {
-    AppendSeparator ( text, TextSeparator );
-
-    StringAppend    ( text, "High Pass ", FloatToString ( ButterworthHigh, 2 ) );
-    }
-
-if ( ButterworthLow ) {
-    AppendSeparator ( text, TextSeparator );
-
-    StringAppend    ( text, "Low Pass ", FloatToString ( ButterworthLow, 2 ) );
-    }
-*/
 
 if ( HasButterworthFilter () ) {
     AppendSeparator ( text, TextSeparator );
@@ -817,7 +816,7 @@ if ( HasButterworthFilter () ) {
     }
 
 
-if ( NumNotches ) {
+if ( HasNotches () ) {
     AppendSeparator ( text, TextSeparator );
 
                                         // Current effective notches, including the one generated automatically
@@ -836,35 +835,35 @@ if ( NumNotches ) {
     }
 
 
-if ( SpatialFiltering != SpatialFilterNone ) {
+if ( HasSpatialFilter () ) {
     AppendSeparator ( text, TextSeparator );
 
-    StringAppend    ( text, GetSpatialFilterName ( SpatialFilter ) );
+    StringAppend    ( text, SpatialFilterLongName[ SpatialFilter ] );
     }
 
 
-if ( Ranking ) {
+if ( HasRanking () ) {
     AppendSeparator ( text, TextSeparator );
 
     StringAppend    ( text, "Ranked" );
     }
 
 
-if ( Rectification ) {
+if ( HasRectification () ) {
     AppendSeparator ( text, TextSeparator );
 
     StringAppend    ( text, "Rectification ", Rectification == IDC_RECTIFICATIONABS ? "Abs" : "Power" );
     }
 
 
-if ( EnvelopeWidth ) {
+if ( HasEnvelope () ) {
     AppendSeparator ( text, TextSeparator );
 
     StringAppend    ( text, "Envelope of ", FloatToString ( EnvelopeWidth, 2 ), " ms" );
     }
 
                                         // bonus: write the sampling frequency, in case we reload with  TextToParameters
-if ( SamplingFrequency > 0 ) {
+if ( HasSamplingFrequency () ) {
     AppendSeparator ( text, TextSeparator );
 
     StringAppend    ( text, "Sampling Frequency ", FloatToString ( SamplingFrequency, 2 ) );
@@ -872,14 +871,14 @@ if ( SamplingFrequency > 0 ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-if ( ThresholdKeepAbove ) {
+if ( HasThresholdKeepAbove () ) {
     AppendSeparator ( text, TextSeparator );
 
     StringAppend    ( text, "Threshold showing Above ", FloatToString ( ThresholdKeepAboveValue, 2 ) );
     }
 
 
-if ( ThresholdKeepBelow ) {
+if ( HasThresholdKeepBelow () ) {
     AppendSeparator ( text, TextSeparator );
 
     StringAppend    ( text, "Threshold showing Below ", FloatToString ( ThresholdKeepBelowValue, 2 ) );
@@ -898,18 +897,16 @@ return text;
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TTracksFilters<TypeD>::TextToParameters ( const char *text, double fsamp )
+void    TTracksFilters<TypeD>::TextToParameters ( const char* text, const char* xyzfile, double fsamp )
 {
 const char*         toc;
 char                t [ 256 ];
-
-//DBGM ( text, "TTracksFilters<TypeD>::TextToParameters" );
 
 
 FiltersParam.ResetAll ();
 
                                         // scan string and update the parameters structure itself
-if      ( ( toc = StringContains ( text, "Band Pass " ) ) != 0 ) {
+if ( ( toc = StringContains ( text, "Band Pass " ) ) != 0 ) {
 
     sscanf ( toc, "Band Pass %[-+.0-9]s", t );
     FiltersParam.SetButterworthHigh ( t );
@@ -1006,13 +1003,9 @@ if ( ( toc = StringContains ( text, "Sampling Frequency " ) ) != 0 ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // testing all possible spatial filter strings
-for ( int i = 0; i < NumSpatialFilterTypes; i++ )
+if ( ( SpatialFilter = TextToSpatialFilterType ( text ) ) != SpatialFilterNone )
 
-    if ( ( toc = StringContains ( text, GetSpatialFilterName ( (SpatialFilterType) i ) ) ) != 0 ) {
-        SpatialFilter   = (SpatialFilterType) i;
-        FiltersParam.SetSpatialFiltering ( toc );   // ?is this correct?
-        break;
-        }
+    FiltersParam.SetSpatialFiltering ( xyzfile );   // FiltersParam  stores only the XYZ file, not the type of filter
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
