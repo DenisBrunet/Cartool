@@ -858,135 +858,114 @@ if ( defaultsamplingfrequency == 0 )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // --filters acting like a sub-sub-command
-FiltersOptions          filteringoptions= HasSubFlag ( reprocsub, "--filters" ) ? UsingOtherFilters
-                                                                                : NotUsingFilters;    // default
+                                        // Filters
 TTracksFilters<float>   altfilters;
+TTracksFiltersStruct&   fp              = altfilters.FiltersParam;
 
 
-if ( filteringoptions == UsingOtherFilters ) {
-
-    TTracksFiltersStruct&       fp          = altfilters.FiltersParam;
-
-    fp.ResetAll ();
-
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 1) Converting a whole optional string, as coming from the verbose output, to parameters
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+if ( HasSubOption ( reprocsub, "--filters" ) ) {
 
-    if ( HasSubOption ( reprocsub, "--text" ) ) {
+    string              filters         = GetSubOptionString ( reprocsub, "--filters" );
 
-        string              filterstext     = GetSubOptionString ( reprocsub, "--text" );
+    altfilters.TextToParameters ( filters.c_str (), XYZDoc.IsOpen () ? XYZDoc->GetDocPath () : 0, defaultsamplingfrequency );
+    }
 
-        altfilters.TextToParameters ( filterstext.c_str (), XYZDoc.IsOpen () ? XYZDoc->GetDocPath () : 0, defaultsamplingfrequency );
-        }
-
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 2) Setting or overwriting each parameter, one at a time - Heavily based on TTracksFilters::TextToParameters method
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+if ( HasSubOption ( reprocsub, "--bandpass" ) ) {
 
-    if ( HasSubOption ( reprocsub, "--bandpass" ) ) {
-
-        vector<string>      band            = GetSubOptionStrings ( reprocsub, "--bandpass" );
+    vector<string>      band            = GetSubOptionStrings ( reprocsub, "--bandpass" );
     
-        fp.SetButterworthHigh ( band[ 0 ].c_str () );
-        fp.SetButterworthLow  ( band[ 1 ].c_str () );
-        }
+    fp.SetButterworthHigh ( band[ 0 ].c_str () );
+    fp.SetButterworthLow  ( band[ 1 ].c_str () );
+    }
 
-    if ( HasSubOption ( reprocsub, "--highpass" ) )
+if ( HasSubOption ( reprocsub, "--highpass" ) )
 
-        fp.SetButterworthHigh ( GetSubOptionString ( reprocsub, "--highpass" ).c_str () );
+    fp.SetButterworthHigh ( GetSubOptionString ( reprocsub, "--highpass" ).c_str () );
 
-    if ( HasSubOption ( reprocsub, "--lowpass" ) )
+if ( HasSubOption ( reprocsub, "--lowpass" ) )
 
-        fp.SetButterworthLow  ( GetSubOptionString ( reprocsub, "--lowpass" ).c_str () );
+    fp.SetButterworthLow  ( GetSubOptionString ( reprocsub, "--lowpass" ).c_str () );
 
-    if ( HasSubOption ( reprocsub, "--order" ) ) {
+if ( HasSubOption ( reprocsub, "--order" ) ) {
 
-        int                 order           = GetSubOptionInt ( reprocsub, "--order" );
+    int                 order           = GetSubOptionInt ( reprocsub, "--order" );
 
-        if ( fp.IsBandPass () )
-            order  /= 2;                // set half the band-pass order
+    if ( fp.IsBandPass () )
+        order  /= 2;                // set half the band-pass order
 
-        fp.SetOrderHigh ( IntegerToString ( order ) );
-        fp.SetOrderLow  ( IntegerToString ( order ) );
-        }
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    if ( HasSubFlag ( reprocsub, "--causal" ) )
-
-        fp.SetCausal ( HasSubFlag ( reprocsub, "--causal" ) ? "Causal" : "Non-Causal" );    // Default is already Non-Causal, but let's be extra-cautious here
-
-    if ( HasSubFlag ( reprocsub, "--baseline" ) )
-
-        fp.SetBaseline ( "Baseline" );
-
-    if ( HasSubOption ( reprocsub, "--notches" ) ) {
-
-        vector<string>      notches         = GetSubOptionStrings ( reprocsub, "--notches" );
-        string              allnotches;
-
-        for ( const auto& s : notches )
-            allnotches  += s + ",";
-
-        fp.SetNotches ( allnotches.c_str () );
-
-        fp.SetNotchesAutoHarmonics ( HasSubFlag ( reprocsub, "--harmonics" ) );
-        }
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    if ( HasSubOption ( reprocsub, "--spatial" )
-      && HasSubOption ( reprocsub, "--xyzfile" ) ) {
-                                        // we will fill the missing value with the default option
-        if ( GetSubOptionString ( reprocsub, "--spatial" ).empty () )
-            altfilters.SpatialFilter    = SpatialFilterDefault;
-        else
-            altfilters.SpatialFilter    = TextToSpatialFilterType ( GetSubOptionString ( reprocsub, "--spatial" ).c_str () );
+    fp.SetOrderHigh ( IntegerToString ( order ) );
+    fp.SetOrderLow  ( IntegerToString ( order ) );
+    }
 
 
-        fp.SetSpatialFiltering ( XYZDoc->GetDocPath () );
-        }
+if ( HasSubFlag ( reprocsub, "--causal" ) )
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    fp.SetCausal ( HasSubFlag ( reprocsub, "--causal" ) ? "Causal" : "Non-Causal" );    // Default is already Non-Causal, but let's be extra-cautious here
 
-    if ( HasSubFlag ( reprocsub, "--ranking" ) )
+if ( HasSubFlag ( reprocsub, "--baseline" ) )
 
-        fp.SetRanking ( "Rank" );
+    fp.SetBaseline ( "Baseline" );
 
-    if ( HasSubOption ( reprocsub, "--rectification" ) )
+if ( HasSubOption ( reprocsub, "--notches" ) ) {
 
-        fp.SetRectification ( GetSubOptionString ( reprocsub, "--rectification" ).c_str () );
+    vector<string>      notches         = GetSubOptionStrings ( reprocsub, "--notches" );
+    string              allnotches;
 
-    if ( HasSubOption ( reprocsub, "--envelope" ) ) {
+    for ( const auto& s : notches )
+        allnotches  += s + ",";
 
-        fp.SetEnvelopeWidth ( GetSubOptionString ( reprocsub, "--envelope" ).c_str () );
+    fp.SetNotches ( allnotches.c_str () );
 
-        if ( ! fp.IsRectification () )  // shouldn't happen
-            fp.SetRectification ( "Power" );
-        }
+    fp.SetNotchesAutoHarmonics ( HasSubFlag ( reprocsub, "--harmonics" ) );
+    }
 
-    if ( HasSubOption ( reprocsub, "--keepabove" ) )
 
-        fp.SetThresholdAbove ( GetSubOptionString ( reprocsub, "--keepabove" ).c_str () );
+if ( HasSubOption ( reprocsub, "--spatial" )
+    && HasSubOption ( reprocsub, "--xyzfile" ) ) {
+                                    // we will fill the missing value with the default option
+    if ( GetSubOptionString ( reprocsub, "--spatial" ).empty () )
+        altfilters.SpatialFilter    = SpatialFilterDefault;
+    else
+        altfilters.SpatialFilter    = TextToSpatialFilterType ( GetSubOptionString ( reprocsub, "--spatial" ).c_str () );
 
-    if ( HasSubOption ( reprocsub, "--keepbelow" ) )
 
-        fp.SetThresholdBelow ( GetSubOptionString ( reprocsub, "--keepbelow" ).c_str () );
+    fp.SetSpatialFiltering ( XYZDoc->GetDocPath () );
+    }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( HasSubFlag ( reprocsub, "--ranking" ) )
+
+    fp.SetRanking ( "Rank" );
+
+if ( HasSubOption ( reprocsub, "--rectification" ) )
+
+    fp.SetRectification ( GetSubOptionString ( reprocsub, "--rectification" ).c_str () );
+
+if ( HasSubOption ( reprocsub, "--envelope" ) ) {
+
+    fp.SetEnvelopeWidth ( GetSubOptionString ( reprocsub, "--envelope" ).c_str () );
+
+    if ( ! fp.IsRectification () )  // shouldn't happen
+        fp.SetRectification ( "Power" );
+    }
+
+if ( HasSubOption ( reprocsub, "--keepabove" ) )
+
+    fp.SetThresholdAbove ( GetSubOptionString ( reprocsub, "--keepabove" ).c_str () );
+
+if ( HasSubOption ( reprocsub, "--keepbelow" ) )
+
+    fp.SetThresholdBelow ( GetSubOptionString ( reprocsub, "--keepbelow" ).c_str () );
+
+
                                         // 3) Finally setting the filters from the struct - A quite robust and tested method
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    altfilters.SetFromStruct ( defaultsamplingfrequency, true );
+altfilters.SetFromStruct ( defaultsamplingfrequency, true );
 
                                         // A final consistency check
-    if ( altfilters.HasNoFilters () )
-        filteringoptions    = NotUsingFilters;
-    }
+FiltersOptions          filteringoptions    = altfilters.HasNoFilters () ? NotUsingFilters      // default
+                                                                         : UsingOtherFilters;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1277,13 +1256,12 @@ AddFlag         ( reprocsub,    helpreproc,         "-h",   "--help",           
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Reprocess Tracks sub-command, filters "sub-command"-like option
+                                        // Reprocess Tracks filters options
 
-AddFlag         ( reprocsub,    filters,            "",     "--filters",            "Using any combination of the following filters:" );
-// we should be adding "->needs ( optfilters )" to all options below, but his really becomes unreadable
+AddOptionString ( reprocsub,    filters,            "",     "--filters",            "A whole string of filtering options, in double quote, as coming from a verbose file" )
+                                        // tricky check to raise an error if filters string was not provided: CLI11 will use the next option as a string, so we can simply test for "-" or "--"
+->check ( []( const string& str ) { return str.find ( "-", 0 ) == 0 ? "string must be in double quotes" : ""; } );
 
-AddOptionString ( reprocsub,    filterstring,       "",     "--text",               "A whole filters string, in double quote, as coming from a verbose file" )
-->needs ( optfilters );
 
 AddFlag         ( reprocsub,    baseline,           "--dc", "--baseline",           "Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)" );
 
@@ -1328,6 +1306,7 @@ AddOptionDoubles( reprocsub,    notches,       -1,  "--notch","--notches",      
 AddFlag         ( reprocsub,    notchesharm,        "",     "--harmonics",          "Adding Notches harmonics" );
 optnotchesharm->needs ( optnotches );
 
+
 AddOptionString ( reprocsub,    spatial,            "",     "--spatial",            string ( "Spatial filter" ) + Tab + Tab + Tab + Tab + "Default: " + SpatialFilterShortName[ SpatialFilterDefault ] )
 ->needs ( optxyzfile )
                                             // Case sensitive, but allows a nice listing when requesting Help
@@ -1340,7 +1319,8 @@ AddOptionString ( reprocsub,    spatial,            "",     "--spatial",        
 //                                        return  TextToSpatialFilterType ( str.c_str () ) == SpatialFilterNone ? string ( "Spatial Filter should be in " ) + allspatial : ""; } )
 ->expected ( 0, 1 ); // This allows 0 or 1 arguments
 
-AddFlag         ( reprocsub,    ranking,            "",     "--ranking",            "Ranking data at each time point in the [0..1] range" );
+
+AddFlag         ( reprocsub,    ranking,            "",     "--ranking",            "Ranking data at each time point to [0..1] range" );
 
 AddOptionString ( reprocsub,    rectification,      "",     "--rectification",      "Rectification, i.e. making data all positive" )
 ->check ( CLI::IsMember ( { "abs", "absolute", "power", "squared" } ) );
