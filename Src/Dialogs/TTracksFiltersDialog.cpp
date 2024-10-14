@@ -240,12 +240,12 @@ Rectification           = BoolToCheck ( false );
 RectificationAbs        = BoolToCheck ( false );
 RectificationPower      = BoolToCheck ( false );
 
-if      ( StringStartsWith ( t, "Abs" ) ) {
+if      ( IsStringAmong ( t, "Abs Absolute" ) ) {
     Rectification       = BoolToCheck (  true );
     RectificationAbs    = BoolToCheck (  true );
     Set ();
     }
-else if ( StringIs ( t, "Power" ) ) {
+else if ( IsStringAmong ( t, "Power Squared" ) ) {
     Rectification       = BoolToCheck (  true );
     RectificationPower  = BoolToCheck (  true );
     Set ();
@@ -257,9 +257,9 @@ void    TTracksFiltersStruct::SetEnvelopeWidth ( const char* t )
 {
 Envelope                = BoolToCheck ( true );
 
-StringCopy ( EnvelopeWidth, t );
+StringCopy      ( EnvelopeWidth, t );
                                         // convert to equivalent frequency
-FloatToString ( MillisecondsToFrequency ( StringToDouble ( t ) ) );
+FloatToString   ( EnvelopeFreq,  MillisecondsToFrequency ( StringToDouble ( EnvelopeWidth ) ) );
 
 Set ();
 }

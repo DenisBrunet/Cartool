@@ -731,8 +731,15 @@ CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_opti
                                         // Testing if a flag/option has been specified
 #define         HasOption(Variable)                 ((bool) (opt##Variable)->count ())
 #define         HasFlag(Variable)                   HasOption(Variable)
+                                        // As a proper function, with string parameters
+bool            HasOptionFct ( const CLI::App& app, const char* subcommandname, const char* optionname )    
+{ 
+return  StringIsEmpty ( subcommandname ) ? (bool) app.get_option ( optionname )->count ()
+                                         : (bool) app.get_subcommand ( subcommandname )->get_option ( optionname )->count (); 
+}
 
                                         // Testing if a sub-command flag/option has been specified
+#define         HasSubCommand(Sub,Subcommand)       ((Sub)->get_subcommand ( Subcommand ) )
 #define         HasSubOption(Sub,Option)            ((Sub)->get_option ( Option )->count ())
 #define         HasSubFlag(Sub,Option)              HasSubOption(Sub,Option)
 #define         GetSubOptionInt(Sub,Option)         (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->as<int> ()            : 0 )
@@ -740,7 +747,7 @@ CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_opti
 #define         GetSubOptionDouble(Sub,Option)      (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->as<double> ()         : 0 )
 #define         GetSubOptionDoubles(Sub,Option)     (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->as<vector<double>> () : vector<double>() )
 #define         GetSubOptionString(Sub,Option)      (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->results ()[ 0 ]       : "" )
-#define         GetSubOptionStrings(Sub,Option)     (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->results ()            : "" )
+#define         GetSubOptionStrings(Sub,Option)     (HasSubOption(Sub,Option) ? (Sub)->get_option ( Option )->results ()            : vector<string>() )
 
                                         // Is a given Group or Sub-command being used?
 bool            IsGroupUsed         ( const CLI::Option_group* group )
@@ -796,7 +803,7 @@ string              nulltracks      = GetSubOptionString ( reprocsub, "--nulltra
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Time parameters
+                                        // Time parameters, exclusively between time interval, triggers to keep or triggers to exclude
                                         // default values
 TimeOptions         timeoptions     = ExportTimeInterval;
 long                timemin         = 0;                      
@@ -831,11 +838,148 @@ else if ( HasSubOption ( reprocsub, "--excludetriggers" ) ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Converting a whole string, as coming from the verbose output, to parameters
+                                        // Off for the moment so we can focus on setting the parameters one by one below...
+//string              filters         = GetSubOptionString ( reprocsub, "--filters" );
+//
+//FiltersOptions      filteringoptions= filters.empty ()  ? NotUsingFilters   // default
+//                                                        : UsingOtherFilters;
 
-string              filters         = GetSubOptionString ( reprocsub, "--filters" );
 
-FiltersOptions      filteringoptions= filters.empty ()  ? NotUsingFilters   // default
-                                                        : UsingOtherFilters;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // For total safety, it is convenient to have a default sampling frequency at hand, which could be used for EEGs that don't have one
+double              defaultsamplingfrequency    = 0;
+
+                                        // First see if caller provided one
+if ( HasSubOption ( reprocsub, "--samplingfrequency" ) )
+
+    defaultsamplingfrequency    = GetSubOptionDouble ( reprocsub, "--samplingfrequency" );
+
+                                        // Still null?
+if ( defaultsamplingfrequency == 0 )
+                                        // Loop through all files and stop at first positive sampling frequency
+    for ( int filei = 0; filei < (int) gof; filei++ )
+
+        if ( ReadFromHeader ( gof[ filei ],  ReadSamplingFrequency,    &defaultsamplingfrequency )
+          && defaultsamplingfrequency > 0 )
+
+            break;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // --filters acting like a sub-sub-command
+FiltersOptions          filteringoptions= HasSubFlag ( reprocsub, "--filters" ) ? UsingOtherFilters
+                                                                                : NotUsingFilters;    // default
+TTracksFilters<float>   altfilters;
+
+
+if ( filteringoptions == UsingOtherFilters ) {
+                                        // Based on TTracksFilters::TextToParameters
+    TTracksFiltersStruct&       fp          = altfilters.FiltersParam;
+
+    fp.ResetAll ();
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if ( HasSubOption ( reprocsub, "--bandpass" ) ) {
+
+        vector<string>      band            = GetSubOptionStrings ( reprocsub, "--bandpass" );
+    
+        fp.SetButterworthHigh ( band[ 0 ].c_str () );
+        fp.SetButterworthLow  ( band[ 1 ].c_str () );
+        }
+
+    if ( HasSubOption ( reprocsub, "--highpass" ) )
+
+        fp.SetButterworthHigh ( GetSubOptionString ( reprocsub, "--highpass" ).c_str () );
+
+    if ( HasSubOption ( reprocsub, "--lowpass" ) )
+
+        fp.SetButterworthLow  ( GetSubOptionString ( reprocsub, "--lowpass" ).c_str () );
+
+    if ( HasSubOption ( reprocsub, "--order" ) ) {
+
+        int                 order           = GetSubOptionInt ( reprocsub, "--order" );
+
+        if ( fp.IsBandPass () )
+            order  /= 2;                // set half the band-pass order
+
+        fp.SetOrderHigh ( IntegerToString ( order ) );
+        fp.SetOrderLow  ( IntegerToString ( order ) );
+        }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if ( HasSubFlag ( reprocsub, "--causal" ) )
+
+        fp.SetCausal ( HasSubFlag ( reprocsub, "--causal" ) ? "Causal" : "Non-Causal" );    // Default is already Non-Causal, but let's be extra-cautious here
+
+    if ( HasSubFlag ( reprocsub, "--baseline" ) )
+
+        fp.SetBaseline ( "Baseline" );
+
+    if ( HasSubOption ( reprocsub, "--notches" ) ) {
+
+        vector<string>      notches         = GetSubOptionStrings ( reprocsub, "--notches" );
+        string              allnotches;
+
+        for ( const auto& s : notches )
+            allnotches  += s + ",";
+
+        fp.SetNotches ( allnotches.c_str () );
+
+        fp.SetNotchesAutoHarmonics ( HasSubFlag ( reprocsub, "--harmonics" ) );
+        }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if ( HasSubOption ( reprocsub, "--spatial" )
+      && HasSubOption ( reprocsub, "--xyzfile" ) ) {
+                                        // we will fill the missing value with the default option
+        if ( GetSubOptionString ( reprocsub, "--spatial" ).empty () )
+            altfilters.SpatialFilter    = SpatialFilterDefault;
+        else
+            altfilters.SpatialFilter    = TextToSpatialFilterType ( GetSubOptionString ( reprocsub, "--spatial" ).c_str () );
+
+
+        fp.SetSpatialFiltering ( XYZDoc->GetDocPath () );
+        }
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if ( HasSubFlag ( reprocsub, "--ranking" ) )
+
+        fp.SetRanking ( "Rank" );
+
+    if ( HasSubOption ( reprocsub, "--rectification" ) )
+
+        fp.SetRectification ( GetSubOptionString ( reprocsub, "--rectification" ).c_str () );
+
+    if ( HasSubOption ( reprocsub, "--envelope" ) ) {
+
+        fp.SetEnvelopeWidth ( GetSubOptionString ( reprocsub, "--envelope" ).c_str () );
+
+        if ( ! fp.IsRectification () )  // shouldn't happen
+            fp.SetRectification ( "Power" );
+        }
+
+    if ( HasSubOption ( reprocsub, "--keepabove" ) )
+
+        fp.SetThresholdAbove ( GetSubOptionString ( reprocsub, "--keepabove" ).c_str () );
+
+    if ( HasSubOption ( reprocsub, "--keepbelow" ) )
+
+        fp.SetThresholdBelow ( GetSubOptionString ( reprocsub, "--keepbelow" ).c_str () );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // We went through all these because this method checks the whole consistency of all the paramters for us
+    altfilters.SetFromStruct ( defaultsamplingfrequency, true );
+
+
+    if ( altfilters.HasNoFilters () )
+        filteringoptions    = NotUsingFilters;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -889,9 +1033,9 @@ int                 downsampleratio = timeoptions     == ExportTimeInterval
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              fileext         = GetSubOptionString ( reprocsub, "--fileext" );
+string              extension       = GetSubOptionString ( reprocsub, "--extension" );
 
-SavingEegFileTypes  filetype        = ExtensionToSavingEegFileTypes ( fileext.c_str () );
+SavingEegFileTypes  filetype        = ExtensionToSavingEegFileTypes ( extension.c_str () );
 
 string              infix           = GetSubOptionString ( reprocsub, "--infix" );
 
@@ -935,9 +1079,14 @@ cout << "Adding Null Tracks: " << BoolToString ( ! nulltracks.empty () ) << NewL
 if ( ! nulltracks.empty () )
     cout << "Null tracks: " << nulltracks << NewLine;
 
-cout << "Filtering: " << BoolToString ( filteringoptions ) << NewLine;
-if ( filteringoptions ) 
-    cout << "Filters: " << filters << NewLine;
+
+cout << "Filtering: " << BoolToString ( filteringoptions == UsingOtherFilters ) << NewLine;
+if ( filteringoptions == UsingOtherFilters ) {
+    char        buff[ KiloByte ];
+    cout << "Filters: " << altfilters.ParametersToText ( buff ) << NewLine;
+    }
+cout << "Default Sampling Frequency: " << defaultsamplingfrequency << NewLine;
+
 
 cout << "Reference: " << ReferenceNames[ ref ] << NewLine;
 if ( ref == ReferenceMultipleTracks )
@@ -976,10 +1125,8 @@ cout << NewLine;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TTracksFilters<float>   altfilters;
-double                  defaultsamplingfrequency    = 0;
-long                    ConcatInputTime             = 0;
-long                    ConcatOutputTime            = 0;
+long                    concatinputtime             = 0;
+long                    concatoutputtime            = 0;
 TExportTracks           expfile;            // needed for files concatenation
 
 
@@ -988,9 +1135,6 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
     cout << "Processing: " << gof  [ filei ]<< NewLine;
 
     TOpenDoc<TTracksDoc>    EEGDoc ( gof[ filei ], OpenDocHidden );
-
-    if ( filteringoptions == UsingOtherFilters && filei == 0 )
-        altfilters.TextToParameters ( filters.c_str (), EEGDoc->GetSamplingFrequency () /*defaultsamplingfrequency*/ );
 
 
     ReprocessTracks (
@@ -1002,7 +1146,7 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                     timemin,                timemax,
                     keeptriggers.c_str (),  excludetriggers.c_str (),
                     nulltracks.c_str (),
-                    filteringoptions,       &altfilters,    defaultsamplingfrequency,
+                    filteringoptions,       &altfilters,        defaultsamplingfrequency,
                     ref,                    reflist.c_str (),
                     baselinecorr,           baselinecorr ? baselinecorrint[ 0 ] : 0,    baselinecorr ? baselinecorrint[ 1 ] : 0,
                     rescalingoptions,       rescalingfactor,
@@ -1012,7 +1156,7 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                     infix.c_str (),
                     "",
                     outputmarkers,
-                    concatenateoptions,     concatenateoptions == ConcatenateTime ? &ConcatInputTime : 0,   concatenateoptions == ConcatenateTime ? &ConcatOutputTime : 0,
+                    concatenateoptions,     concatenateoptions == ConcatenateTime ? &concatinputtime : 0,   concatenateoptions == ConcatenateTime ? &concatoutputtime : 0,
                     expfile,
                     &gof,
                     filei,
@@ -1086,9 +1230,8 @@ CLI::App*           reprocsub       = app.add_subcommand ( "reprocesstracks", "R
 
                                         // Parameters appearance follow the dialog's visual design
 AddOptionString ( reprocsub,    xyzfile,            "",     "--xyzfile",            "Using electrodes names from a XYZ electrodes coordinates file" );
-AddOptionString ( reprocsub,    roisfile,           "",     "--roisfile",           "Computing ROIs & using ROIs names from a ROIs file" );
-
-optroisfile->excludes ( optxyzfile  );
+AddOptionString ( reprocsub,    roisfile,           "",     "--roisfile",           "Computing ROIs & using ROIs names from a ROIs file" )
+->excludes ( optxyzfile  );
 
 AddOptionString ( reprocsub,    tracks,             "",     "--tracks",             "Tracks to export" Tab Tab Tab Tab "Default: all tracks; Special values: 'gfp', 'dis' and 'avg'" );
 
@@ -1103,7 +1246,7 @@ optkeeptriggers->excludes ( optexcludetriggers );
 
 AddOptionString ( reprocsub,    nulltracks,         "",     "--nulltracks",         "List of null tracks to append" );
 
-AddOptionString ( reprocsub,    filters,            "",     "--filters",            "Optional filters string, similar to the verbose files" );
+//AddOptionString ( reprocsub,    filters,            "",     "--filters",            "Optional filters string, similar to the verbose files" );
 
 AddOptionString ( reprocsub,    ref,                "",     "--reference",          "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
 
@@ -1114,9 +1257,9 @@ AddOptionString ( reprocsub,    rescaling,          "",     "--rescaling",      
 AddFlag         ( reprocsub,    average,            "",     "--averaging",          "Averaging the whole time dimension" );
 
 AddOptionInt    ( reprocsub,    downsampleratio,    "",     "--downsampling",       "Downsampling ratio" )
-->check ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : string(); } );
+->check ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : ""; } );
 
-AddOptionString ( reprocsub,    fileext,            "",     "--fileext",            string ( "Output file extension" Tab Tab Tab "Default: " ) + SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] )
+AddOptionString ( reprocsub,    extension,          "--ext","--extension",          string ( "Output file extension" Tab Tab Tab "Default: " ) + SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] )
 ->check ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
 
 AddOptionString ( reprocsub,    infix,              "",     "--infix",              "Infix appended to the file name" );
@@ -1126,6 +1269,63 @@ AddFlag         ( reprocsub,    nomarkers,          "",     "--nomarkers",      
 AddFlag         ( reprocsub,    concatenate,        "",     "--concatenate",        "Concatenate all output into a single file" );
 
 AddFlag         ( reprocsub,    helpreproc,         "-h",   "--help",               "This message" );
+
+
+AddFlag         ( reprocsub,    filters,            "",     "--filters",            "Using any combination of the following filters:" );
+// we should be adding "->needs ( optfilters )" to all options below, but his really becomes unreadable
+
+AddFlag         ( reprocsub,    baseline,           "--dc", "--baseline",           "Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)" );
+
+AddOptionDouble ( reprocsub,    highpass,           "",     "--highpass",           "High-Pass Butterworth filter" );
+AddOptionDouble ( reprocsub,    lowpass,            "",     "--lowpass",            "Low-Pass Butterworth filter" );
+AddOptionDoubles( reprocsub,    bandpass,       2,  "",     "--bandpass",           "Band-Pass Butterworth filter" );
+                                        // We allow highpass + lowpass, that will be combined into bandpass
+                                        // However bandpass does not allow neither highpass nor lowpass
+optbandpass ->excludes ( optlowpass  );
+optbandpass ->excludes ( opthighpass );
+
+AddOptionInt    ( reprocsub,    order,              "",     "--order",              string ( "Butterworth filter order" ) + Tab + Tab + Tab + "Default: " + TFilterDefaultOrderString )
+->check ( [ &reprocsub ]( const string& str )   {   int         o               = StringToInteger ( str.c_str () );
+                                                    bool        optionok        = HasSubOption ( reprocsub,"--highpass" ) || HasSubOption ( reprocsub,"--lowpass"  ) || HasSubOption ( reprocsub,"--bandpass" );
+                                                    bool        orderevenok     = IsEven         ( o );
+                                                    bool        orderrangeok    = IsInsideLimits ( o, TFilterMinOrder, TFilterMaxOrder );
+                                                    return ! optionok                       ? "--order requires one of the following {--highpass, --lowpass, --bandpass} option"
+                                                         : ! orderevenok || ! orderrangeok  ? string ( "Value should be an even number, and within the range " ) + TFilterMinOrderString + ".." + TFilterMaxOrderString
+                                                         : ""; 
+                                                } );
+
+AddFlag         ( reprocsub,    causal,             "",     "--causal",             "Causal filters, using only forward filtering" );
+
+AddOptionDoubles( reprocsub,    notches,       -1,  "--notch","--notches",          "Notches filter" );
+AddFlag         ( reprocsub,    notchesharm,        "",     "--harmonics",          "Adding Notches harmonics" );
+optnotchesharm->needs ( optnotches );
+
+AddOptionString ( reprocsub,    spatial,            "",     "--spatial",            string ( "Spatial filter" ) + Tab + Tab + Tab + Tab + "Default: " + SpatialFilterShortName[ SpatialFilterDefault ] )
+->needs ( optxyzfile )
+                                            // Case sensitive, but allows a nice listing when requesting Help
+->check ( CLI::IsMember ( vector<string> ( SpatialFilterShortName + SpatialFilterOutlier, SpatialFilterShortName + NumSpatialFilterTypes ) ) )
+                                            // Allowing for case insensitive (and even the long names, although not advertized), but Help is not helping
+//->check ( []( const string& str )   {   string      allspatial  = "{"; 
+//                                        for ( int i = SpatialFilterOutlier; i < NumSpatialFilterTypes; i++ )
+//                                            allspatial  += string ( SpatialFilterShortName[ i ] ) + string ( i < NumSpatialFilterTypes - 1 ? ", " : "" ); 
+//                                        allspatial += "}";
+//                                        return  TextToSpatialFilterType ( str.c_str () ) == SpatialFilterNone ? string ( "Spatial Filter should be in " ) + allspatial : ""; } )
+->expected ( 0, 1 ); // This allows 0 or 1 arguments
+
+AddFlag         ( reprocsub,    ranking,            "",     "--ranking",            "Ranking data at each time point in the [0..1] range" );
+
+AddOptionString ( reprocsub,    rectification,      "",     "--rectification",      "Rectification, i.e. making data all positive" )
+->check ( CLI::IsMember ( { "abs", "absolute", "power", "squared" } ) );
+
+AddOptionDouble ( reprocsub,    envelope,           "",     "--envelope",           "Adding a sliding-window smoothing after Rectification, value in [ms]" )
+->needs ( optrectification )
+->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "smoothing window, in [ms], should be positive" : ""; } );
+
+AddOptionDouble ( reprocsub,    keepabove,          "",     "--keepabove",          "Thresholding data, keeping data above value" );
+AddOptionDouble ( reprocsub,    keepbelow,          "",     "--keepbelow",          "Thresholding data, keeping data below value" );
+
+AddOptionDouble ( reprocsub,    samplingfrequency,  "",     "--samplingfrequency",  "Default Sampling Frequency, only in case a file has none" )
+->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "sampling frequency should be above 0" : ""; } );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
