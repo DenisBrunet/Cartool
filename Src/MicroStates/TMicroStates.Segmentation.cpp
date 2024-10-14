@@ -890,7 +890,7 @@ mainverb.PutTitle ( "Segmentation - Main" );
 
 verbose.NextTopic ( "Data Preprocessing:" );
 {
-verbose.Put ( "Spatial Filter:", GetSpatialFilterName ( spatialfilter ) );
+verbose.Put ( "Spatial Filter:", SpatialFilterLongName[ spatialfilter ] );
 if ( spatialfilter != SpatialFilterNone )
     verbose.Put ( "Electrodes Coordinates file:", xyzfile );
 }
@@ -1625,7 +1625,7 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
 
     verbose.NextTopic ( "Data Preprocessing:" );
     {
-    verbose.Put ( "Spatial Filter:", GetSpatialFilterName ( spatialfilter ) );
+    verbose.Put ( "Spatial Filter:", SpatialFilterLongName[ spatialfilter ] );
     if ( spatialfilter != SpatialFilterNone )
         verbose.Put ( "Electrodes Coordinates file:", xyzfile );
     }

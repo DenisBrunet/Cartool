@@ -338,7 +338,7 @@ verbose.PutTitle ( "Computing Results of Inverse Solution" );
 
 verbose.NextTopic ( "Data Preprocessing:" );
 {
-verbose.Put ( "Spatial Filter:", GetSpatialFilterName ( spatialfilter ) );
+verbose.Put ( "Spatial Filter:", SpatialFilterLongName[ spatialfilter ] );
 if ( spatialfilter != SpatialFilterNone )
     verbose.Put ( "Electrodes Coordinates file:", xyzfile );
 }

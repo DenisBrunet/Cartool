@@ -44,37 +44,45 @@ enum            SpatialFilterType
                 };
 
 
-inline const char*  GetSpatialFilterName ( SpatialFilterType sf )
-{
-switch ( sf ) {
-    case    SpatialFilterNone                       :   return  "No Spatial Filter";
-    case    SpatialFilterOutlier                    :   return  "Spatial Outliers Interpolation";
-    case    SpatialFilterOutliersGaussianMean       :   return  "Spatial Outliers Gaussian Smoothing";
-    case    SpatialFilterOutliersWeightedMean       :   return  "Spatial Outliers Weighted Smoothing";
-    case    SpatialFilterInterseptileGaussianMean   :   return  "Spatial Interseptile Gaussian Mean";
-    case    SpatialFilterInterseptileWeightedMean   :   return  "Spatial Interseptile Weighted Mean";
-    case    SpatialFilterMedian                     :   return  "Spatial Median";
-    case    SpatialFilterInterquartileMean          :   return  "Spatial Interquartile Mean";
-    case    SpatialFilterMinMax                     :   return  "Spatial Min-Max";
-    default                                         :   return  "Unknown Spatial Filter";
-    };
-}
+const char  SpatialFilterLongName[ NumSpatialFilterTypes ][ 48 ] =
+                {
+                "No Spatial Filter",
+                "Spatial Outliers Interpolation",
+                "Spatial Outliers Gaussian Smoothing",
+                "Spatial Outliers Weighted Smoothing",
+                "Spatial Interseptile Gaussian Mean",
+                "Spatial Interseptile Weighted Mean",
+                "Spatial Median",
+                "Spatial Interquartile Mean"
+                };
 
+const char  SpatialFilterShortName[ NumSpatialFilterTypes ][ 32 ] =
+                {
+                "NoSpatial",
+                "SpatialOutliers",
+                "SpatialOutGauss",
+                "SpatialOutWeight",
+                "SpatialIGM",
+                "SpatialIWM",
+                "SpatialMedian",
+                "SpatialIQM",
+                "SpatialMinMax"
+                };
 
-inline const char*  GetSpatialFilterShortName ( SpatialFilterType sf )
+                                        // loosely scanning a text for spatial filter string
+inline SpatialFilterType    TextToSpatialFilterType ( const char* text )
 {
-switch ( sf ) {
-    case    SpatialFilterNone                       :   return  "NoSpatial";
-    case    SpatialFilterOutlier                    :   return  "SpatialOutliers";
-    case    SpatialFilterOutliersGaussianMean       :   return  "SpatialOutGauss";
-    case    SpatialFilterOutliersWeightedMean       :   return  "SpatialOutWeight";
-    case    SpatialFilterInterseptileGaussianMean   :   return  "SpatialIGM";
-    case    SpatialFilterInterseptileWeightedMean   :   return  "SpatialIWM";
-    case    SpatialFilterMedian                     :   return  "SpatialMedian";
-    case    SpatialFilterInterquartileMean          :   return  "SpatialIQM";
-    case    SpatialFilterMinMax                     :   return  "SpatialMinMax";
-    default                                         :   return  "UnknownSpatial";
-    };
+if ( StringIsEmpty ( text ) )
+    return  SpatialFilterNone;
+
+for ( int i = 0; i < NumSpatialFilterTypes; i++ )
+
+    if ( StringContains ( text, SpatialFilterLongName [ i ] )
+      || StringContains ( text, SpatialFilterShortName[ i ] ) )
+
+        return  (SpatialFilterType) i;
+
+return  SpatialFilterNone;
 }
 
 

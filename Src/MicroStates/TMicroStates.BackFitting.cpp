@@ -740,7 +740,7 @@ verbose.PutTitle ( "Back-Fitting" );
                                         // !don't use main or gfppeaks because they can be forced from to other values than the dialogs'!
 verbose.NextTopic ( "Data Preprocessing:" );
 {
-verbose.Put ( "Spatial Filter:", GetSpatialFilterName ( spatialfilter ) );
+verbose.Put ( "Spatial Filter:", SpatialFilterLongName[ spatialfilter ] );
 if ( spatialfilter != SpatialFilterNone )
     verbose.Put ( "Electrodes Coordinates file:", xyzfile );
 verbose.NextLine ();
