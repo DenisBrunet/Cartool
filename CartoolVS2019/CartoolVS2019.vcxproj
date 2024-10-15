@@ -51,9 +51,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <TargetName>Cartool64</TargetName>
-    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
+    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\CLI;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
     <LibraryPath>$(OwlNextRoot)\lib;..\Lib;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
+    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\CLI;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
     <OutDir>..\Bin\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
@@ -62,9 +62,9 @@
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <TargetName>Cartool64d</TargetName>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
+    <IncludePath>$(OwlNextRoot)\include;$(ArmadilloRoot)\include;..\Src\res;..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\CLI;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(IncludePath)</IncludePath>
     <LibraryPath>$(OwlNextRoot)\lib;..\Lib;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
+    <SourcePath>..\Src\MemUtil;..\Src\Arrays;..\Src\OpenGL;..\Src\GlobalOptimize;..\Src\Volumes;..\Src\Electrodes;..\Src\App;..\Src\Docs;..\Src\Views;..\Src\Utils;..\Src\CLI;..\Src\Dialogs;..\Src\MicroStates;..\Src\ESI;..\Src\Tracks;$(OwlNextRoot)\source\owlcore;$(SourcePath)</SourcePath>
     <OutDir>..\Bin\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
