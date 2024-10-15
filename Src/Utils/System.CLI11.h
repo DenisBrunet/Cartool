@@ -46,40 +46,41 @@ return  name;
 
                                         // Using a macro so we can define 2 variables: the one requested, and a CLI::Option* one
                                         // Later, use  HasOption, HasFlag, GetVariableDescription
+                                        // ToGroup could either be the main "app" or a sub-command
 #define         AddFlag(ToGroup,FlagVariable,ShortName,LongName,Description) \
 bool            FlagVariable    = false; \
-CLI::Option*    opt##FlagVariable       = ( ToGroup ? ToGroup : &app )->add_flag ( CLIBuildOptionName(ShortName,LongName), FlagVariable, Description )
+CLI::Option*    opt##FlagVariable       = ToGroup->add_flag ( CLIBuildOptionName(ShortName,LongName), FlagVariable, Description )
 
 
 #define         AddOptionInt(ToGroup,OptionVariable,ShortName,LongName,Description) \
 int             OptionVariable  = 0; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description )
+CLI::Option*    opt##OptionVariable     = ToGroup->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description )
 
 #define         AddOptionInts(ToGroup,OptionVariable,HowMany,ShortName,LongName,Description) \
 vector<int>     OptionVariable; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description ) \
+CLI::Option*    opt##OptionVariable     = ToGroup->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description ) \
 ->delimiter     ( ',' ) \
 ->expected      ( HowMany )
 
 
 #define         AddOptionDouble(ToGroup,OptionVariable,ShortName,LongName,Description) \
 double          OptionVariable  = 0; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description )
+CLI::Option*    opt##OptionVariable     = ToGroup->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description )
 
 #define         AddOptionDoubles(ToGroup,OptionVariable,HowMany,ShortName,LongName,Description) \
 vector<double>  OptionVariable; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description ) \
+CLI::Option*    opt##OptionVariable     = ToGroup->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description ) \
 ->delimiter     ( ',' ) \
 ->expected      ( HowMany )
 
 
 #define         AddOptionString(ToGroup,OptionVariable,ShortName,LongName,Description) \
 string          OptionVariable; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description )
+CLI::Option*    opt##OptionVariable     = ToGroup->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description )
 
 #define         AddOptionStrings(ToGroup,OptionVariable,HowMany,ShortName,LongName,Description) \
 vector<string>  OptionVariable; \
-CLI::Option*    opt##OptionVariable     = ( ToGroup ? ToGroup : &app )->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description ) \
+CLI::Option*    opt##OptionVariable     = ToGroup->add_option ( CLIBuildOptionName(ShortName,LongName), OptionVariable, Description ) \
 ->expected      ( HowMany )
 
                                         // Giving some semantic to these options

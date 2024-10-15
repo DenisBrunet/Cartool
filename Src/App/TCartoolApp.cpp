@@ -660,8 +660,141 @@ EnableMultiThreading ( true );
 
 
 //----------------------------------------------------------------------------
+                                        // Defining the interface
+void        ExportTracksCLIDefine ( CLI::App* reprocsub )
+{
+if ( reprocsub == 0 )
+    return;
 
-void        ReprocessTracksCLI ( CLI::App* reprocsub, const TGoF& gof )
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Parameters appearance follow the dialog's visual design
+AddOptionString ( reprocsub,    xyzfile,            "",     "--xyzfile",            "Using electrodes names from a XYZ electrodes coordinates file" );
+AddOptionString ( reprocsub,    roisfile,           "",     "--roisfile",           "Computing ROIs & using ROIs names from a ROIs file" )
+->excludes ( optxyzfile  );
+
+AddOptionString ( reprocsub,    tracks,             "",     "--tracks",             "Tracks to export" Tab Tab Tab Tab "Default: all tracks; Special values: 'gfp', 'dis' and 'avg'" );
+
+AddOptionInt    ( reprocsub,    timemin,            "",     "--timemin",            "Exporting from Time Frame " Tab Tab "Default: 0" );
+AddOptionInt    ( reprocsub,    timemax,            "",     "--timemax",            "Exporting to Time Frame   " Tab Tab "Default: end of file" );
+AddOptionString ( reprocsub,    keeptriggers,       "",     "--keeptriggers",       "Exporting only the data from a triggers / markers list" );
+AddOptionString ( reprocsub,    excludetriggers,    "",     "--excludetriggers",    "Exporting all data but from a triggers / markers list" );
+
+opttimemin     ->excludes ( optkeeptriggers    )->excludes ( optexcludetriggers );
+opttimemax     ->excludes ( optkeeptriggers    )->excludes ( optexcludetriggers );
+optkeeptriggers->excludes ( optexcludetriggers );
+
+AddOptionString ( reprocsub,    nulltracks,         "",     "--nulltracks",         "List of null tracks to append" );
+
+AddOptionString ( reprocsub,    ref,                "",     "--reference",          "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
+
+AddOptionInts   ( reprocsub,    baselinecorr,   2,  "",     "--baselinecorr",       "Baseline correction interval, in time frames since beginning of file" );
+
+AddOptionString ( reprocsub,    rescaling,          "",     "--rescaling",          "Scaling factor" Tab Tab Tab Tab "Special value: 'meangfp'" );
+
+AddFlag         ( reprocsub,    average,            "",     "--averaging",          "Averaging the whole time dimension" );
+
+AddOptionInt    ( reprocsub,    downsampleratio,    "",     "--downsampling",       "Downsampling ratio" )
+->check ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : ""; } );
+
+AddOptionString ( reprocsub,    extension,          "--ext","--extension",          string ( "Output file extension" Tab Tab Tab "Default: " ) + SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] )
+->check ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
+
+AddOptionString ( reprocsub,    infix,              "",     "--infix",              "Infix appended to the file name" );
+
+AddFlag         ( reprocsub,    nomarkers,          "",     "--nomarkers",          "Not saving the markers to file" );
+
+AddFlag         ( reprocsub,    concatenate,        "",     "--concatenate",        "Concatenate all output into a single file" );
+
+AddFlag         ( reprocsub,    helpreproc,         "-h",   "--help",               "This message" );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Reprocess Tracks filters options
+
+AddOptionString ( reprocsub,    filters,            "",     "--filters",            "A whole string of filtering options, in double quote, as coming from a verbose file" )
+                                        // tricky check to raise an error if filters string was not provided: CLI11 will use the next option as a string, so we can simply test for "-" or "--"
+->check ( []( const string& str ) { return str.find ( "-", 0 ) == 0 ? "string must be in double quotes" : ""; } );
+
+
+AddFlag         ( reprocsub,    baseline,           "--dc", "--baseline",           "Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)" );
+
+                                        // !We allow the simultaneous use of highpass and lowpass, which will be combined into a single bandpass!
+AddOptionDouble ( reprocsub,    highpass,           "",     "--highpass",           "High-Pass Butterworth filter" )
+                                        // Testing High-Pass < Low-Pass here
+->check ( [ &reprocsub ]( const string& str )
+    {   
+    double      cuth            = StringToDouble ( str.c_str () );
+    bool        hasl            = HasSubOption       ( reprocsub,"--lowpass" );
+    double      cutl            = GetSubOptionDouble ( reprocsub, "--lowpass" );
+
+    return         cuth <= 0
+        || hasl && cutl <= 0    ? "frequency cut should be above 0"
+         : hasl && cuth > cutl  ? "high-pass cut should be less than the low-pass cut"
+         :                        ""; 
+    } );
+
+AddOptionDouble ( reprocsub,    lowpass,            "",     "--lowpass",            "Low-Pass Butterworth filter" )
+->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
+                                        // Bandpass, however, excludes both highpass and lowpass
+AddOptionDoubles( reprocsub,    bandpass,       2,  "",     "--bandpass",           "Band-Pass Butterworth filter" );
+
+optbandpass->excludes ( optlowpass  )
+           ->excludes ( opthighpass );
+
+
+AddOptionInt    ( reprocsub,    order,              "",     "--order",              string ( "Butterworth filter order" ) + Tab + Tab + Tab + "Default: " + TFilterDefaultOrderString )
+->check ( [ &reprocsub ]( const string& str )   
+    {   int         o               = StringToInteger ( str.c_str () );
+        bool        optionok        = HasSubOption ( reprocsub,"--highpass" ) || HasSubOption ( reprocsub,"--lowpass"  ) || HasSubOption ( reprocsub,"--bandpass" );
+        bool        orderevenok     = IsEven         ( o );
+        bool        orderrangeok    = IsInsideLimits ( o, TFilterMinOrder, TFilterMaxOrder );
+        return ! optionok                       ? "--order requires one of the following {--highpass, --lowpass, --bandpass} option"
+             : ! orderevenok || ! orderrangeok  ? string ( "Value should be an even number, and within the range " ) + TFilterMinOrderString + ".." + TFilterMaxOrderString
+             :                                    ""; 
+    } );
+
+AddFlag         ( reprocsub,    causal,             "",     "--causal",             "Causal filters, using only forward filtering" );
+
+AddOptionDoubles( reprocsub,    notches,       -1,  "--notch","--notches",          "Notches filter" );
+AddFlag         ( reprocsub,    notchesharm,        "",     "--harmonics",          "Adding Notches harmonics" );
+optnotchesharm->needs ( optnotches );
+
+
+AddOptionString ( reprocsub,    spatial,            "",     "--spatial",            string ( "Spatial filter" ) + Tab + Tab + Tab + Tab + "Default: " + SpatialFilterShortName[ SpatialFilterDefault ] )
+->needs ( optxyzfile )
+                                            // Case sensitive, but allows a nice listing when requesting Help
+->check ( CLI::IsMember ( vector<string> ( SpatialFilterShortName + SpatialFilterOutlier, SpatialFilterShortName + NumSpatialFilterTypes ) ) )
+                                            // Allowing for case insensitive (and even the long names, although not advertized), but Help is not helping
+//->check ( []( const string& str )   {   string      allspatial  = "{"; 
+//                                        for ( int i = SpatialFilterOutlier; i < NumSpatialFilterTypes; i++ )
+//                                            allspatial  += string ( SpatialFilterShortName[ i ] ) + string ( i < NumSpatialFilterTypes - 1 ? ", " : "" ); 
+//                                        allspatial += "}";
+//                                        return  TextToSpatialFilterType ( str.c_str () ) == SpatialFilterNone ? string ( "Spatial Filter should be in " ) + allspatial : ""; } )
+->expected ( 0, 1 ); // This allows 0 or 1 arguments
+
+
+AddFlag         ( reprocsub,    ranking,            "",     "--ranking",            "Ranking data at each time point to [0..1] range" );
+
+AddOptionString ( reprocsub,    rectification,      "",     "--rectification",      "Rectification, i.e. making data all positive" )
+->check ( CLI::IsMember ( { "abs", "absolute", "power", "squared" } ) );
+
+AddOptionDouble ( reprocsub,    envelope,           "",     "--envelope",           "Adding a sliding-window smoothing after Rectification, value in [ms]" )
+->needs ( optrectification )
+->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "smoothing window, in [ms], should be positive" : ""; } );
+
+AddOptionDouble ( reprocsub,    keepabove,          "",     "--keepabove",          "Thresholding data, keeping data above value" );
+AddOptionDouble ( reprocsub,    keepbelow,          "",     "--keepbelow",          "Thresholding data, keeping data below value" );
+
+AddOptionDouble ( reprocsub,    samplingfrequency,  "",     "--samplingfrequency",  "Default Sampling Frequency, only in case a file has none" )
+->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "sampling frequency should be above 0" : ""; } );
+
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Running the command
+void        ExportTracksCLI ( CLI::App* reprocsub, const TGoF& gof )
 {
 if ( ! IsSubCommandUsed ( reprocsub )
   || gof.IsEmpty () )
@@ -1049,40 +1182,41 @@ void    TCartoolApp::InitInstance ()
 {
                                         // Init + setting help and version options
 CLI::App            app ( ProdName );
+CLI::App*           toapp           = &app;
 
 
 //bool                hasoptions          = Argv.IsAllocated () && Argv.GetDim () > 1;
 
 //CLI::Option*        opthelp         = app.set_help_flag       ( "-h,--help", "Show help" );           // raises an exception(?)
 app.set_help_flag ();                                                                                   // overriding default
-AddOptionString ( 0,            showhelp,           "-h",   "--help",               "This message" )    // adding the flag manually, but as an optional string
+AddOptionString ( toapp,        showhelp,           "-h",   "--help",               "This message" )    // adding the flag manually, but as an optional string
 ->expected ( 0, 1 ); // This allows 0 or 1 arguments
 
 
 //CLI::Option*        optversion      = app.set_version_flag ( "--version", version );                  // raises an exception(?)
-AddFlag         ( 0,            showversion,        "",     "--version",            "Showing program version" );    // adding the flag manually
+AddFlag         ( toapp,        showversion,        "",     "--version",            "Showing program version" );    // adding the flag manually
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Main window group options - currently off as the help display appears uselessly cluttered, maybe we will restore it if we override the help formatting
 //CLI::Option_group*  mainwgroup      = app.add_option_group ( "Main Window", "Options to specify the main window size and position" );
 
-AddFlag         ( 0,            nosplash,           "",     "--nosplash",           "No splash-screen" );
+AddFlag         ( toapp,        nosplash,           "",     "--nosplash",           "No splash-screen" );
 
 
-AddOptionString ( 0,            mw,                 "",     "--mainwindow",         "Main window initial state" )
+AddOptionString ( toapp,        mw,                 "",     "--mainwindow",         "Main window initial state" )
 ->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
-AddOptionInts   ( 0,            mwsize,     2,      "",     "--mainwindowsize",     "Main window size W,H"     );
-AddOptionInts   ( 0,            mwpos,      2,      "",     "--mainwindowpos",      "Main window position X,Y" );
+AddOptionInts   ( toapp,        mwsize,     2,      "",     "--mainwindowsize",     "Main window size W,H"     );
+AddOptionInts   ( toapp,        mwpos,      2,      "",     "--mainwindowpos",      "Main window position X,Y" );
 
 
-AddOptionStrings( 0,            chw,        -1,     "",     "--childwindow",        "Next child window state(s) "    Tab Tab "(could be repeated for each file)" )
+AddOptionStrings( toapp,        chw,        -1,     "",     "--childwindow",        "Next child window state(s) "    Tab Tab "(could be repeated for each file)" )
 ->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
-AddOptionInts   ( 0,            chwsize,    -1,     "",     "--childwindowsize",    "Next child window size(s) W,H " Tab Tab "(could be repeated for each file)"     );
-AddOptionInts   ( 0,            chwpos,     -1,     "",     "--childwindowpos",     "Next child window position(s) X,Y " Tab "(could be repeated for each file)" );
+AddOptionInts   ( toapp,        chwsize,    -1,     "",     "--childwindowsize",    "Next child window size(s) W,H " Tab Tab "(could be repeated for each file)"     );
+AddOptionInts   ( toapp,        chwpos,     -1,     "",     "--childwindowpos",     "Next child window position(s) X,Y " Tab "(could be repeated for each file)" );
 
 
-AddOptionInt    ( 0,            mwmon,              "",     "--monitor",            "On which monitor to open the program" );
+AddOptionInt    ( toapp,        mwmon,              "",     "--monitor",            "On which monitor to open the program" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1098,136 +1232,16 @@ AddFlag         ( regsub,       helpreg,            "-h",   "--help",           
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Reprocess Tracks sub-command
-CLI::App*           reprocsub       = app.add_subcommand ( "reprocesstracks", "Reprocess tracks command" )
-->alias ( "exporttracks" );
+                                        // Export / Reprocess Tracks sub-command
+CLI::App*           reprocsub       = app.add_subcommand ( "exporttracks", "Export / re-process tracks command" );
 
-                                        // Parameters appearance follow the dialog's visual design
-AddOptionString ( reprocsub,    xyzfile,            "",     "--xyzfile",            "Using electrodes names from a XYZ electrodes coordinates file" );
-AddOptionString ( reprocsub,    roisfile,           "",     "--roisfile",           "Computing ROIs & using ROIs names from a ROIs file" )
-->excludes ( optxyzfile  );
-
-AddOptionString ( reprocsub,    tracks,             "",     "--tracks",             "Tracks to export" Tab Tab Tab Tab "Default: all tracks; Special values: 'gfp', 'dis' and 'avg'" );
-
-AddOptionInt    ( reprocsub,    timemin,            "",     "--timemin",            "Exporting from Time Frame " Tab Tab "Default: 0" );
-AddOptionInt    ( reprocsub,    timemax,            "",     "--timemax",            "Exporting to Time Frame   " Tab Tab "Default: end of file" );
-AddOptionString ( reprocsub,    keeptriggers,       "",     "--keeptriggers",       "Exporting only the data from a triggers / markers list" );
-AddOptionString ( reprocsub,    excludetriggers,    "",     "--excludetriggers",    "Exporting all data but from a triggers / markers list" );
-
-opttimemin     ->excludes ( optkeeptriggers    )->excludes ( optexcludetriggers );
-opttimemax     ->excludes ( optkeeptriggers    )->excludes ( optexcludetriggers );
-optkeeptriggers->excludes ( optexcludetriggers );
-
-AddOptionString ( reprocsub,    nulltracks,         "",     "--nulltracks",         "List of null tracks to append" );
-
-AddOptionString ( reprocsub,    ref,                "",     "--reference",          "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
-
-AddOptionInts   ( reprocsub,    baselinecorr,   2,  "",     "--baselinecorr",       "Baseline correction interval, in time frames since beginning of file" );
-
-AddOptionString ( reprocsub,    rescaling,          "",     "--rescaling",          "Scaling factor" Tab Tab Tab Tab "Special value: 'meangfp'" );
-
-AddFlag         ( reprocsub,    average,            "",     "--averaging",          "Averaging the whole time dimension" );
-
-AddOptionInt    ( reprocsub,    downsampleratio,    "",     "--downsampling",       "Downsampling ratio" )
-->check ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : ""; } );
-
-AddOptionString ( reprocsub,    extension,          "--ext","--extension",          string ( "Output file extension" Tab Tab Tab "Default: " ) + SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] )
-->check ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
-
-AddOptionString ( reprocsub,    infix,              "",     "--infix",              "Infix appended to the file name" );
-
-AddFlag         ( reprocsub,    nomarkers,          "",     "--nomarkers",          "Not saving the markers to file" );
-
-AddFlag         ( reprocsub,    concatenate,        "",     "--concatenate",        "Concatenate all output into a single file" );
-
-AddFlag         ( reprocsub,    helpreproc,         "-h",   "--help",               "This message" );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Reprocess Tracks filters options
-
-AddOptionString ( reprocsub,    filters,            "",     "--filters",            "A whole string of filtering options, in double quote, as coming from a verbose file" )
-                                        // tricky check to raise an error if filters string was not provided: CLI11 will use the next option as a string, so we can simply test for "-" or "--"
-->check ( []( const string& str ) { return str.find ( "-", 0 ) == 0 ? "string must be in double quotes" : ""; } );
-
-
-AddFlag         ( reprocsub,    baseline,           "--dc", "--baseline",           "Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)" );
-
-                                        // !We allow the simultaneous use of highpass and lowpass, which will be combined into a single bandpass!
-AddOptionDouble ( reprocsub,    highpass,           "",     "--highpass",           "High-Pass Butterworth filter" )
-                                        // Testing High-Pass < Low-Pass here
-->check ( [ &reprocsub ]( const string& str )
-    {   
-    double      cuth            = StringToDouble ( str.c_str () );
-    bool        hasl            = HasSubOption       ( reprocsub,"--lowpass" );
-    double      cutl            = GetSubOptionDouble ( reprocsub, "--lowpass" );
-
-    return         cuth <= 0
-        || hasl && cutl <= 0    ? "frequency cut should be above 0"
-         : hasl && cuth > cutl  ? "high-pass cut should be less than the low-pass cut"
-         :                        ""; 
-    } );
-
-AddOptionDouble ( reprocsub,    lowpass,            "",     "--lowpass",            "Low-Pass Butterworth filter" )
-->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
-                                        // Bandpass, however, excludes both highpass and lowpass
-AddOptionDoubles( reprocsub,    bandpass,       2,  "",     "--bandpass",           "Band-Pass Butterworth filter" );
-
-optbandpass->excludes ( optlowpass  )
-           ->excludes ( opthighpass );
-
-
-AddOptionInt    ( reprocsub,    order,              "",     "--order",              string ( "Butterworth filter order" ) + Tab + Tab + Tab + "Default: " + TFilterDefaultOrderString )
-->check ( [ &reprocsub ]( const string& str )   
-    {   int         o               = StringToInteger ( str.c_str () );
-        bool        optionok        = HasSubOption ( reprocsub,"--highpass" ) || HasSubOption ( reprocsub,"--lowpass"  ) || HasSubOption ( reprocsub,"--bandpass" );
-        bool        orderevenok     = IsEven         ( o );
-        bool        orderrangeok    = IsInsideLimits ( o, TFilterMinOrder, TFilterMaxOrder );
-        return ! optionok                       ? "--order requires one of the following {--highpass, --lowpass, --bandpass} option"
-             : ! orderevenok || ! orderrangeok  ? string ( "Value should be an even number, and within the range " ) + TFilterMinOrderString + ".." + TFilterMaxOrderString
-             :                                    ""; 
-    } );
-
-AddFlag         ( reprocsub,    causal,             "",     "--causal",             "Causal filters, using only forward filtering" );
-
-AddOptionDoubles( reprocsub,    notches,       -1,  "--notch","--notches",          "Notches filter" );
-AddFlag         ( reprocsub,    notchesharm,        "",     "--harmonics",          "Adding Notches harmonics" );
-optnotchesharm->needs ( optnotches );
-
-
-AddOptionString ( reprocsub,    spatial,            "",     "--spatial",            string ( "Spatial filter" ) + Tab + Tab + Tab + Tab + "Default: " + SpatialFilterShortName[ SpatialFilterDefault ] )
-->needs ( optxyzfile )
-                                            // Case sensitive, but allows a nice listing when requesting Help
-->check ( CLI::IsMember ( vector<string> ( SpatialFilterShortName + SpatialFilterOutlier, SpatialFilterShortName + NumSpatialFilterTypes ) ) )
-                                            // Allowing for case insensitive (and even the long names, although not advertized), but Help is not helping
-//->check ( []( const string& str )   {   string      allspatial  = "{"; 
-//                                        for ( int i = SpatialFilterOutlier; i < NumSpatialFilterTypes; i++ )
-//                                            allspatial  += string ( SpatialFilterShortName[ i ] ) + string ( i < NumSpatialFilterTypes - 1 ? ", " : "" ); 
-//                                        allspatial += "}";
-//                                        return  TextToSpatialFilterType ( str.c_str () ) == SpatialFilterNone ? string ( "Spatial Filter should be in " ) + allspatial : ""; } )
-->expected ( 0, 1 ); // This allows 0 or 1 arguments
-
-
-AddFlag         ( reprocsub,    ranking,            "",     "--ranking",            "Ranking data at each time point to [0..1] range" );
-
-AddOptionString ( reprocsub,    rectification,      "",     "--rectification",      "Rectification, i.e. making data all positive" )
-->check ( CLI::IsMember ( { "abs", "absolute", "power", "squared" } ) );
-
-AddOptionDouble ( reprocsub,    envelope,           "",     "--envelope",           "Adding a sliding-window smoothing after Rectification, value in [ms]" )
-->needs ( optrectification )
-->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "smoothing window, in [ms], should be positive" : ""; } );
-
-AddOptionDouble ( reprocsub,    keepabove,          "",     "--keepabove",          "Thresholding data, keeping data above value" );
-AddOptionDouble ( reprocsub,    keepbelow,          "",     "--keepbelow",          "Thresholding data, keeping data below value" );
-
-AddOptionDouble ( reprocsub,    samplingfrequency,  "",     "--samplingfrequency",  "Default Sampling Frequency, only in case a file has none" )
-->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "sampling frequency should be above 0" : ""; } );
+ExportTracksCLIDefine ( reprocsub );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Positional options (not starting with '-')
                                         // Note that files list usually need to separated from other parameters with " -- ", like in "--<option>=<something> -- <file1> <file2> <file3>"
-AddOptionStrings( 0,            files,      -1,     "",     "files",                "List of files" );
+AddOptionStrings( toapp,        files,      -1,     "",     "files",                "List of files" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1257,15 +1271,16 @@ TGoF                gof ( files );
                                         // Options that will cause some EARLY EXIT of the program
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( HasOption ( showhelp )
-  || helpreg
-  || helpreproc ) {
+if ( HasOption    ( showhelp )
+  || HasSubOption ( regsub,    "--help" )
+  || HasSubOption ( reprocsub, "--help" )
+   ) {
 
     string          helpmessage;
 
-    if      ( helpreg           )   helpmessage     = regsub   ->help ();   // register --help
-    else if ( helpreproc        )   helpmessage     = reprocsub->help ();   // reprocess --help
-    else if ( showhelp.empty () )   helpmessage     = app.help ();          // General, top-level help message
+    if      ( HasSubOption ( regsub,    "--help" )  )   helpmessage     = regsub   ->help ();   // register --help
+    else if ( HasSubOption ( reprocsub, "--help" )  )   helpmessage     = reprocsub->help ();   // reprocess --help
+    else if ( showhelp.empty ()                     )   helpmessage     = app       .help ();   // General, top-level help message
 
     else try {                          // try some specialized help message
                                         // there is no public method to test if a subcommand exists, so we need to try to access it and check for an exception...
@@ -1311,7 +1326,7 @@ if ( IsSubCommandUsed ( regsub ) ) {
 
 if ( IsSubCommandUsed ( reprocsub ) ) {
 
-    ReprocessTracksCLI ( reprocsub, gof );
+    ExportTracksCLI ( reprocsub, gof );
 
     exit ( 0 );
     }
