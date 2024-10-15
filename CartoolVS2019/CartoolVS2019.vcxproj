@@ -538,6 +538,7 @@
     <ClInclude Include="..\Src\Utils\Strings.TStrings.h" />
     <ClInclude Include="..\Src\Utils\Strings.TStringsMap.h" />
     <ClInclude Include="..\Src\Utils\Strings.Utils.h" />
+    <ClInclude Include="..\Src\Utils\System.CLI11.h" />
     <ClInclude Include="..\Src\Utils\System.h" />
     <ClInclude Include="..\Src\Utils\System.OpenMP.h" />
     <ClInclude Include="..\Src\Utils\TCoregistrationTransform.h" />
