@@ -41,7 +41,7 @@ limitations under the License.
 #include    "TCartoolAboutDialog.h"
 
 #include    "System.CLI11.h"
-#include    "ExportTracksCLI.h"
+#include    "ReprocessTracksCLI.h"
 #include    "Volumes.AnalyzeNifti.h"
 #include    "Volumes.TTalairachOracle.h"
 #include    "Dialogs.Input.h"
@@ -712,10 +712,10 @@ AddFlag         ( regsub,       helpreg,            "-h",   "--help",           
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Export / Reprocess Tracks sub-command
-CLI::App*           reprocsub       = app.add_subcommand ( "exporttracks", "Export / re-process tracks command" );
+                                        // Reprocess Tracks sub-command
+CLI::App*           reprocsub       = app.add_subcommand ( "reprocesstracks", "Re-process / Export tracks command" );
 
-ExportTracksCLIDefine ( reprocsub );
+ReprocessTracksCLIDefine ( reprocsub );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -806,7 +806,7 @@ if ( IsSubCommandUsed ( regsub ) ) {
 
 if ( IsSubCommandUsed ( reprocsub ) ) {
 
-    ExportTracksCLI ( reprocsub, gof );
+    ReprocessTracksCLI ( reprocsub, gof );
 
     exit ( 0 );
     }

@@ -1304,6 +1304,9 @@
     <ClInclude Include="..\Src\Utils\System.CLI11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\CLI\ReprocessTracksCLI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\Src\res\resource.rc">

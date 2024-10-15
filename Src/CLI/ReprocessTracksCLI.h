@@ -34,7 +34,7 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
                                         // Defining the interface
-void        ExportTracksCLIDefine ( CLI::App* reprocsub )
+void        ReprocessTracksCLIDefine ( CLI::App* reprocsub )
 {
 if ( reprocsub == 0 )
     return;
@@ -167,7 +167,7 @@ AddOptionDouble ( reprocsub,    samplingfrequency,  "",     "--samplingfrequency
 
 //----------------------------------------------------------------------------
                                         // Running the command
-void        ExportTracksCLI ( CLI::App* reprocsub, const TGoF& gof )
+void        ReprocessTracksCLI ( CLI::App* reprocsub, const TGoF& gof )
 {
 if ( ! IsSubCommandUsed ( reprocsub )
   || gof.IsEmpty () )
