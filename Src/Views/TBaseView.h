@@ -61,16 +61,16 @@ constexpr double    MoreWidthRatio              = 1.20;
 
                                         // Using defines as values need to be evaluated at each call, in case dpi has changed during process lifetime
                                         // For very big screen, it is a bit useless to have windows opening bigger than that:
-#define             MinWindowHeight             Round ( MmToPixels (  80 ) )
-#define             MaxWindowHeight             Round ( MmToPixels ( 200 ) )
-#define             MaxWindowHeightLarge        Round ( MmToPixels ( 300 ) )
+#define             MinWindowHeight             MmToPixels (  80 )
+#define             MaxWindowHeight             MmToPixels ( 200 )
+#define             MaxWindowHeightLarge        MmToPixels ( 300 )
 
                                         // what is a small window?
-#define             SmallWindowHeight           Round ( MmToPixels ( 40 ) )
-#define             SmallWindowWidth            Round ( MmToPixels ( 40 ) )
+#define             SmallWindowHeight           MmToPixels ( 40 )
+#define             SmallWindowWidth            MmToPixels ( 40 )
 
                                         // Common scale from which all window sizes will be derived
-#define             DefaultWindowSize           Round ( CartoolApplication->MmToPixels ( 100 ) )
+#define             DefaultWindowSize           CartoolApplication->MmToPixels ( 100 )
 
 #define             MRIWindowSizeW              DefaultWindowSize
 #define             MRIWindowSizeH              DefaultWindowSize
@@ -163,8 +163,8 @@ constexpr OrientEnum    DefaultVolumeOrientation    = OrientSagittalLeft;
 #define             GLBASE_MAXCOLOR             (GLfloat) 1.00, (GLfloat) 0.20, (GLfloat) 0.20
 
                                         // Using defines on purpose, as this should evaluate at each call
-#define             ColorMapWidth               Round ( MmToPixels (  4 ) )
-#define             ColorMapHeight              Round ( MmToPixels ( 53 ) )
+#define             ColorMapWidth               MmToPixels (  4 )
+#define             ColorMapHeight              MmToPixels ( 53 )
 
 
 //----------------------------------------------------------------------------
@@ -178,8 +178,8 @@ constexpr int       BbSphereHighNumSlices       = 40;
 //----------------------------------------------------------------------------
                                         // Cartool makes use of 2 different fonts
 
-#define             SmallFontSize               AtLeast ( 13, Round ( CartoolObjects.CartoolApplication->MmToPixels ( 3.4 ) ) )
-#define             BigFontSize                 AtLeast ( 15, Round ( CartoolObjects.CartoolApplication->MmToPixels ( 4.6 ) ) )
+#define             SmallFontSize               AtLeast ( 13, CartoolObjects.CartoolApplication->MmToPixels ( 3.4 ) )
+#define             BigFontSize                 AtLeast ( 15, CartoolObjects.CartoolApplication->MmToPixels ( 4.6 ) )
 
 #define             SmallFontParameters         "Tahoma",  SmallFontSize, 0, 0, 0, FW_BOLD
 #define             BigFontParameters           "Verdana", BigFontSize,   0, 0, 0, FW_NORMAL
@@ -449,7 +449,7 @@ public:
     int                     GetWindowHeight     ()                                          const   { return crtl::GetWindowHeight  ( GetParentO () ); }
 
     int                     GetActualDpi        ()                                          const   { return CartoolApplication->GetActualDpi   (); }
-    double                  MmToPixels          ( double mm     )                           const   { return CartoolApplication->MmToPixels     ( mm     );  }
+    int                     MmToPixels          ( double mm     )                           const   { return CartoolApplication->MmToPixels     ( mm     );  }
     double                  PixelsToMm          ( int    pixels )                           const   { return CartoolApplication->PixelsToMm     ( pixels );  }
 
 

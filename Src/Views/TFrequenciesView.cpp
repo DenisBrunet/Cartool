@@ -3588,10 +3588,10 @@ if ( RButtonDown && ! ShiftKey ) { // && !ControlKey ) {
     if ( MouseAxis == MouseAxisVertical && IsFreqVertical () && FrequenciesOverride ) {
 
 //      if ( ady >= MouseMoveScale ) {
-        if ( ady > MinMouseMove ) {
+        if ( ady >  MinMouseMove ) {
 
-//          FCursor.ShiftPos ( ( dy < 0 ? -1 : 1 ) * (double) min ( ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 6.0 : 1.0 ) );
-            FCursor.ShiftPos ( ( dy < 0 ? -1 : 1 ) * (double) min ( (double) ady, MinMouseMove ) / MinMouseMove * ( ady > MouseMoveScaleFast ? 6.0 : 1.0 ) );
+//          FCursor.ShiftPos ( ( dy < 0 ? -1 : 1 ) * min ( ady, MouseMoveScale ) / (double) MouseMoveScale * ( ady > MouseMoveScaleFast ? 6.0 : 1.0 ) );
+            FCursor.ShiftPos ( ( dy < 0 ? -1 : 1 ) * min ( ady, MinMouseMove   ) / (double) MinMouseMove   * ( ady > MouseMoveScaleFast ? 6.0 : 1.0 ) );
 
             CmNextFrequency ( 0 );
 

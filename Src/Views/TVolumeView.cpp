@@ -2323,7 +2323,7 @@ if ( LButtonDown || MButtonDown || RButtonDown ) {
 
 //  glTranslated ( PaintRect.Width() / 2, PaintRect.Height() / 2, 0 );
     glTranslated ( MousePos.X(), PaintRect.Height() - MousePos.Y(), 0 );
-    glScaled ( CursorHintSize, CursorHintSize, 1 );
+    glScaled     ( CursorHintSize, CursorHintSize, 1 );
 
 
     if ( RButtonDown && ! ControlKey &&  MouseAxis == MouseAxisVertical && IsoMode != MriIsoFixed ) {
@@ -2913,16 +2913,16 @@ if ( RButtonDown ) {
                || Editing == EditingToolSphereSurface
                || Editing == EditingToolCylinder      && adx > ady ) {
 
-            if ( dx > 0 )   EditingRadius *= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
-            else            EditingRadius /= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
+            if ( dx > 0 )   EditingRadius *= 1 + min ( adx, MouseMoveScale ) / (double) MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
+            else            EditingRadius /= 1 + min ( adx, MouseMoveScale ) / (double) MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
 
             Clipped ( EditingRadius, (double) 0.5, (double) MRIDoc->GetSize ()->MaxSize () / 2 );
             }
 
         else if ( Editing == EditingToolCylinder && adx < ady ) {
 
-            if ( dy > 0 )   EditingDepth /= 1 + (double) 2 * min ( (double) ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 0.5 : 0.1 );
-            else            EditingDepth *= 1 + (double) 2 * min ( (double) ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 0.5 : 0.1 );
+            if ( dy > 0 )   EditingDepth /= 1 + 2 * min ( ady, MouseMoveScale ) / (double) MouseMoveScale * ( ady > MouseMoveScaleFast ? 0.5 : 0.1 );
+            else            EditingDepth *= 1 + 2 * min ( ady, MouseMoveScale ) / (double) MouseMoveScale * ( ady > MouseMoveScaleFast ? 0.5 : 0.1 );
 
             Clipped ( EditingDepth, (double) 0.5, (double) MRIDoc->GetSize ()->MaxSize () );
             }
@@ -2959,8 +2959,8 @@ if ( RButtonDown ) {
             }
         else if ( MouseAxis == MouseAxisHorizontal ) {
                                         // brightness & contrast
-            if ( dx > 0 )   ScalingLevel /= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
-            else            ScalingLevel *= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
+            if ( dx > 0 )   ScalingLevel /= 1 + min ( adx, MouseMoveScale ) / (double) MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
+            else            ScalingLevel *= 1 + min ( adx, MouseMoveScale ) / (double) MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.5 : 0.1 );
 
             CmSetBrightness ( 0 );
             }

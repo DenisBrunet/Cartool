@@ -163,9 +163,9 @@ public:
     double          GetActualDpmm       ()                                          const   { return  ActualDpi / 25.4;                                     }   // returns a floating point, due to rescaling
     double          RescaleSizeActualDpi()                                          const   { return  GetActualDpi () / (double) USER_DEFAULT_SCREEN_DPI;   }   // Rescale default 96 dpi pixel size into an equivalent pixel size of any arbitrary dpi
     int             RescaleButtonActualDpi()                                        const   { return  Round ( RescaleSizeActualDpi () );                    }   // Buttons need to be rescaled by integer increments so as to preserve their "pixel-art" aspect
-    double          MmToPixels          ( double mm     )                           const   { return  mm     * ( GetActualDpmm () * 0.96 );                 }   // not sure why it needs this adjustment - to be checked on other screens
-    double          PixelsToMm          ( int    pixels )                           const   { return  pixels / ( GetActualDpmm () * 0.96 );                 }
-    int             PointsToPixels      ( int    pt     )                           const   { return  Round ( MmToPixels ( PointsToMm ( pt     ) ) );       }
+    int             MmToPixels          ( double mm     )                           const   { return  Round ( mm     * ( GetActualDpmm () * 0.96 ) );       }   // not sure why it needs this adjustment - to be checked on other screens
+    double          PixelsToMm          ( int    pixels )                           const   { return          pixels / ( GetActualDpmm () * 0.96 );         }
+    int             PointsToPixels      ( int    pt     )                           const   { return  MmToPixels ( PointsToMm ( pt     ) );                 }
     int             PixelsToPoints      ( int    pixels )                           const   { return  MmToPoints ( PixelsToMm ( pixels ) );                 }
 
                                         // for long batch processing, call these to set/reset temporary main window title (instead of plain Cartool) 

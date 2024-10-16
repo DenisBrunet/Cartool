@@ -4989,8 +4989,8 @@ if ( RButtonDown ) {
 
         if ( IsIntensityModes () && IntensityOverride ) {
 
-            if ( dx > 0 )   ScalingLevel *= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 1.0 : 0.2 );
-            else            ScalingLevel /= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 1.0 : 0.2 );
+            if ( dx > 0 )   ScalingLevel *= 1 + min ( adx, MouseMoveScale ) / (double) MouseMoveScale * ( adx > MouseMoveScaleFast ? 1.0 : 0.2 );
+            else            ScalingLevel /= 1 + min ( adx, MouseMoveScale ) / (double) MouseMoveScale * ( adx > MouseMoveScaleFast ? 1.0 : 0.2 );
 
             CmZoomVert ( 0 );
             }
@@ -4999,8 +4999,8 @@ if ( RButtonDown ) {
 
             ulong       oldlen      = CDPt.GetLength();
 
-            if ( dx > 0 )   STH *= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.6 : 0.2 );
-            else            STH /= 1 + (double) min ( (double) adx, MouseMoveScale ) / MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.6 : 0.2 );
+            if ( dx > 0 )   STH *= 1 + min ( adx, MouseMoveScale ) / (double) MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.6 : 0.2 );
+            else            STH /= 1 + min ( adx, MouseMoveScale ) / (double) MouseMoveScale * ( adx > MouseMoveScaleFast ? 0.6 : 0.2 );
 
             CmZoomHorz ( 0 );
                                         // force the change
@@ -5058,8 +5058,8 @@ if ( RButtonDown ) {
 
                     if ( ! Highlighted[ e ] )  continue;
 
-                    if ( dy > 0 )   ScaleTracks[ e ] /= 1 + (double) min ( (double) ady, MouseMoveScale ) / MouseMoveScale * 0.3;
-                    else            ScaleTracks[ e ] *= 1 + (double) min ( (double) ady, MouseMoveScale ) / MouseMoveScale * 0.3;
+                    if ( dy > 0 )   ScaleTracks[ e ] /= 1 + min ( ady, MouseMoveScale ) / (double) MouseMoveScale * 0.3;
+                    else            ScaleTracks[ e ] *= 1 + min ( ady, MouseMoveScale ) / (double) MouseMoveScale * 0.3;
                     }
 
                 //Invalidate ( false );
@@ -5069,8 +5069,8 @@ if ( RButtonDown ) {
                                             // adjust global scaling
                 double  osl     = ScalingLevel;
 
-                if ( dy > 0 )   ScalingLevel /= 1 + (double) min ( (double) ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 1.0 : 0.3 );
-                else            ScalingLevel *= 1 + (double) min ( (double) ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 1.0 : 0.3 );
+                if ( dy > 0 )   ScalingLevel /= 1 + min ( ady, MouseMoveScale ) / (double) MouseMoveScale * ( ady > MouseMoveScaleFast ? 1.0 : 0.3 );
+                else            ScalingLevel *= 1 + min ( ady, MouseMoveScale ) / (double) MouseMoveScale * ( ady > MouseMoveScaleFast ? 1.0 : 0.3 );
 
                 CmZoomVert ( 0 );
                 } // ! ControlKey
@@ -5082,8 +5082,8 @@ if ( RButtonDown ) {
             double          scalev          = ScalingLevel;
             scalev                         *= ScaleTracks[ 0 ];
 
-            if ( dy > 0 )   OffsetTracks   += (double) min ( (double) ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 75 : 25 ) / scalev * ( TracksFlipVert ? -1 : 1 );
-            else            OffsetTracks   -= (double) min ( (double) ady, MouseMoveScale ) / MouseMoveScale * ( ady > MouseMoveScaleFast ? 75 : 25 ) / scalev * ( TracksFlipVert ? -1 : 1 );
+            if ( dy > 0 )   OffsetTracks   += min ( ady, MouseMoveScale ) / (double) MouseMoveScale * ( ady > MouseMoveScaleFast ? 75 : 25 ) / scalev * ( TracksFlipVert ? -1 : 1 );
+            else            OffsetTracks   -= min ( ady, MouseMoveScale ) / (double) MouseMoveScale * ( ady > MouseMoveScaleFast ? 75 : 25 ) / scalev * ( TracksFlipVert ? -1 : 1 );
 
             //Invalidate ( false );
             ShowNow ();
@@ -5105,9 +5105,9 @@ if ( RButtonDown ) {
                     if ( ady < 25 )
                         ShiftTracks ( dy > 0 ? IDB_UP : IDB_DOWN, 1 );
                     else if ( ady < 30 )
-                        ShiftTracks ( dy > 0 ? IDB_UP : IDB_DOWN, 1 + (double) min ( (double) ady, MouseMoveScale ) / MouseMoveScale * 10 );
+                        ShiftTracks ( dy > 0 ? IDB_UP : IDB_DOWN, 1 + min ( ady, MouseMoveScale ) / (double) MouseMoveScale * 10 );
                     else
-                        ShiftTracks ( dy > 0 ? IDB_UP : IDB_DOWN, 1 + (double) min ( (double) ady, MouseMoveScale ) / MouseMoveScale * (double) EEGDoc->GetNumElectrodes() / 50 );
+                        ShiftTracks ( dy > 0 ? IDB_UP : IDB_DOWN, 1 + min ( ady, MouseMoveScale ) / (double) MouseMoveScale * (double) EEGDoc->GetNumElectrodes() / 50 );
                 }
             else
                 return; // don't update MousePos

@@ -41,7 +41,7 @@ constexpr double    RegularTracksVerticalRatio  = 0.80;
                                         // setting a limit to the number of window slots - it can be very big, though
 constexpr int       MaxWindowSlots              = 10000;
                                         // optional color scaling width on the right - enough space for floatting point values
-#define             ColorScaleWidth             Round ( MmToPixels ( 20 ) )
+#define             ColorScaleWidth             MmToPixels ( 20 )
 
                                         // text margin on the left for track names has to be limited - though we give some very liberal limits here
 constexpr int       TextMarginMin               =  50;

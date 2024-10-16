@@ -1273,7 +1273,7 @@ if ( LButtonDown || MButtonDown || RButtonDown ) {
         SetWindowCoordinates ();
         glTranslated ( MousePos.X(), PaintRect.Height() - MousePos.Y(), 0 );
 //      glTranslated ( PaintRect.Width() / 2, PaintRect.Height() / 2, 0 );
-        glScaled ( CursorHintSize, CursorHintSize, 1 );
+        glScaled     ( CursorHintSize, CursorHintSize, 1 );
         }
 
     GLBlendOn       ();

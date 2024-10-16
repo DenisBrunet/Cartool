@@ -29,8 +29,8 @@ namespace crtl {
 //----------------------------------------------------------------------------
                                         // Progress Bars made easier, even without access to application / main windows
 
-#define             GaugeWidth                  Round ( CartoolApplication->MmToPixels ( 60 ) )
-#define             GaugeHeight                 Round ( CartoolApplication->MmToPixels (  8 ) )
+#define             GaugeWidth                  CartoolApplication->MmToPixels ( 60 )
+#define             GaugeHeight                 CartoolApplication->MmToPixels (  8 )
 
                                         // Barely used anymore
 void                SetGaugeRel ( owl::TGauge &G, int N, int D );
