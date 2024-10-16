@@ -220,7 +220,6 @@ int                 stringlength    = max ( length, StringLength ( string ) + 64
 
 TStrings::Add ( string, StringFixedSize, stringlength ); 
 
-CheckAbsolutePath ( Strings.GetLast (), stringlength ); 
 CheckExtendedPath ( Strings.GetLast () ); 
 }
 
@@ -228,6 +227,35 @@ CheckExtendedPath ( Strings.GetLast () );
 void    TGoF::Add ( const TGoF& gof )                             
 {
 TStrings::Add ( gof );               // will call back our TGoF::Add above
+}
+
+
+//----------------------------------------------------------------------------
+void    TGoF::CheckFileNames  ( TFilenameFlags flags )
+{
+if ( flags == TFilenameNoPreprocessing )
+    return;
+
+
+for ( int i = 0; i < (int) Strings; i++ ) {
+                                        // copy AND update file name at the same time
+    TFileName   filename ( Strings[ i ], flags );
+
+                                        // any effective change?
+    if ( StringIs ( filename, Strings[ i ] ) )
+        continue;
+
+                                        // allocate a new string
+    int         stringsize      = max ( filename.Length () + 64, (long) MaxPathShort ); 
+    char*       toc             = new char [ stringsize ];
+
+    ClearString ( toc, stringsize );
+    StringCopy  ( toc, filename   );
+
+                                        // delete old string, without releasing the list atom, and make it point to the new memory string instead
+    delete[]    Strings.GetAtom ( i )->To;
+    Strings.GetAtom ( i )->To = toc;
+    }
 }
 
 

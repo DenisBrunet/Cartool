@@ -121,9 +121,9 @@ public:
     TStrings&       operator    =       ( const TStrings &op2 );
 
 
-    char*           operator    []              ( int index )       { return Strings[ index ]; }
+          char*     operator    []              ( int index )       { return Strings[ index ]; }
     const char*     operator    []              ( int index ) const { return Strings[ index ]; }    // access from const object forces returning a const char*
-    char*           operator    ()              ( int index )       { return Strings[ index ]; }
+          char*     operator    ()              ( int index )       { return Strings[ index ]; }
     const char*     operator    ()              ( int index ) const { return Strings[ index ]; }    // access from const object forces returning a const char*
 
                     operator    int                 ()  const       { return (int)  Strings; }

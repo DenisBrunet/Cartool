@@ -742,7 +742,7 @@ catch ( const CLI::ParseError &e ) {
     }
 
                                         // For our own convenience, convert vector<string> files to TGoF, while also converting any relative path to absolute
-TGoF                gof ( files );
+TGoF                gof ( files, (TFilenameFlags) ( TFilenameAbsolutePath, TFilenameExtendedPath ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

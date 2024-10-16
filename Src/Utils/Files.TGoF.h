@@ -157,12 +157,13 @@ class   TGoF        :   public TStrings
 {
 public:
                                         // We override the Add method here, but base constructors know nothing about it, so we need to "duplicate" the TStrings construcotr bodies
+                                        // !Be sure to override all constructors from TStrings!
                     TGoF ()                                             : TStrings   ()            {}
                     TGoF ( int numstrings )                             { Set ( numstrings, MaxPathShort ); } // expected max size of file names
                     TGoF ( const char*                      string  )   { SetOnly ( string );       }
                     TGoF ( const TStrings*                  strings )   { Set ( strings );          }
                     TGoF ( const TStrings&                  strings )   { Set ( (TGoF &) strings ); }
-                    TGoF ( const std::vector<std::string>&  strings )   { Set ( strings );          }
+                    TGoF ( const std::vector<std::string>&  strings, TFilenameFlags flags = TFilenameNoPreprocessing )  { Set ( strings ); CheckFileNames ( flags );         }
                     TGoF ( const TList<char>&               strings )   { Set ( strings );          }
                     TGoF ( const owl::TStringArray&         strings )   { Set ( strings );          }
                     TGoF ( const owl::TDropInfo&      drop, const char* filesext = 0, TPointInt* where = 0, bool doesnotbelong = false );   // from drop info + extension filter + position
@@ -177,6 +178,8 @@ public:
     void            Add             ( const char* string )              override;
     void            Add             ( const char* string, long length ) override;
     void            Add             ( const TGoF& gof );
+
+    void            CheckFileNames  ( TFilenameFlags flags );
 
 
     bool            AllExtensionsAre            ( const char* exts, int atomtype = 0 /*UnknownAtomType*/ )    const;  // all files have extensions belonging to the list provided
@@ -223,7 +226,7 @@ public:
     bool            GetCommonString ( char* base, bool includedir = true, bool includedifference = false )      const;
     void            GetFilenamesSubRange    ( int& fromchars, int& tochars )                                    const;
 
-    void            Sort            (); // overriding TStrings::Sort
+    void            Sort            ()  override; // overriding TStrings::Sort
 
     void            SplitFreqFiles  ( SplitFreqFlags how, TGoGoF *gogofout = 0, bool showgauge = true );
     void            Resample        ( ResamplingType resampling, int numresamples, int resamplingsize, const TGoF* gofalt, TGoGoF& resgogof, TGoGoF* resgogofalt );  // resampling into anoth group of files
