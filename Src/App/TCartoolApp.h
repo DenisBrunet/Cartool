@@ -165,6 +165,8 @@ public:
     int             RescaleButtonActualDpi()                                        const   { return  Round ( RescaleSizeActualDpi () );                    }   // Buttons need to be rescaled by integer increments so as to preserve their "pixel-art" aspect
     double          MmToPixels          ( double mm     )                           const   { return  mm     * ( GetActualDpmm () * 0.96 );                 }   // not sure why it needs this adjustment - to be checked on other screens
     double          PixelsToMm          ( int    pixels )                           const   { return  pixels / ( GetActualDpmm () * 0.96 );                 }
+    int             PointsToPixels      ( int    pt     )                           const   { return  Round ( MmToPixels ( PointsToMm ( pt     ) ) );       }
+    int             PixelsToPoints      ( int    pixels )                           const   { return  MmToPoints ( PixelsToMm ( pixels ) );                 }
 
                                         // for long batch processing, call these to set/reset temporary main window title (instead of plain Cartool) 
     void            SetMainTitle        ( const char* title, const char* path = 0 );

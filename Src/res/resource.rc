@@ -153,19 +153,19 @@ BEGIN
             MENUITEM "&Statistics on Tracks",       CM_STATISTICSTRACKS
             POPUP "&Histograms"
             BEGIN
-                MENUITEM "Histograms across Time, per Track",		1
+                MENUITEM "Histograms across Time, per Track", 1
                 MENUITEM "&Raw Histograms",             CM_HISTOTIMERAW
                 MENUITEM "&Smooth Histograms",          CM_HISTOTIMESMOOTH
                 MENUITEM "&Log Histograms",             CM_HISTOTIMELOG
                 MENUITEM "&Cumulated Density Function", CM_HISTOTIMECDF
                 MENUITEM SEPARATOR
-                MENUITEM "Histograms across Tracks, per Time Point",	1
+                MENUITEM "Histograms across Tracks, per Time Point", 1
                 MENUITEM "R&aw Histograms",             CM_HISTOTRACKSRAW
                 MENUITEM "S&mooth Histograms",          CM_HISTOTRACKSSMOOTH
                 MENUITEM "L&og Histograms",             CM_HISTOTRACKSLOG
                 MENUITEM "C&umulated Density Function", CM_HISTOTRACKSCDF
                 MENUITEM SEPARATOR
-                MENUITEM "Histograms of block (Tracks x Time)",    1
+                MENUITEM "Histograms of block (Tracks x Time)", 1
                 MENUITEM "Ra&w Histograms",             CM_HISTOALLRAW
                 MENUITEM "Smoot&h Histograms",          CM_HISTOALLSMOOTH
                 MENUITEM "Lo&g Histograms",             CM_HISTOALLLOG
@@ -446,7 +446,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Overwrite marker nam&es\t(Ctrl + R)", CM_EEGMRKOVERWRITENAMES
         MENUITEM "Replace substr&ings in marker names", CM_EEGMRKSUBSTITUTENAMES
-        MENUITEM "Rege&xp marker names substitution",   CM_EEGMRKREGEXPNAMES
+        MENUITEM "Rege&xp marker names substitution", CM_EEGMRKREGEXPNAMES
         MENUITEM SEPARATOR
         MENUITEM "Mer&Ge exact overlapping markers", CM_EEGMRKMERGEOVERLAPPING
         MENUITEM "Merge identical contig&Uous markers", CM_EEGMRKMERGECONTIGUOUS
@@ -490,7 +490,7 @@ BEGIN
         MENUITEM "Relative time, origin at the &Beginning", CM_EEGTIMERELATIVE
         MENUITEM "Relative time, &Arbitrary origin", CM_EEGTIMERELATIVETO
         MENUITEM SEPARATOR
-        MENUITEM "Go to time &Origin\t(Numpad 0)",CM_EEGTIME0
+        MENUITEM "Go to time &Origin\t(Numpad 0)", CM_EEGTIME0
         MENUITEM "Go to Specified Time\t(Ctrl + G)", CM_GOTOTIME
         MENUITEM "Select All Time\t(Ctrl + A)", CM_SELECTALLTIME
         MENUITEM "Set Display Time &Window",    CM_SETTIMEWINDOW
@@ -793,7 +793,7 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "Remove &Less Neighbors",      CM_FILTERLESSNEIGH
             MENUITEM "Add &More Neighbors",         CM_FILTERMORENEIGH
-            MENUITEM "Binary Median / Surface &Relaxation",	CM_FILTERRELAX
+            MENUITEM "Binary Median / Surface &Relaxation", CM_FILTERRELAX
             MENUITEM "&Percentage of Fullness",     CM_FILTERPERCENTFULL
             MENUITEM "Cut Belo&w Percentage of Fullness", CM_FILTERCUTBELOWFULL
             MENUITEM "Volume &Fragmentation",       CM_FILTERSAV
@@ -1477,7 +1477,7 @@ BEGIN
     LTEXT           "&Pre  - Frames Duration:",6008,12,198,120,9,NOT WS_GROUP
     EDITTEXT        IDC_DE_PRE,132,197,60,10,ES_RIGHT | ES_NUMBER
     EDITTEXT        IDC_DE_PRE_MS,192,198,60,10,ES_RIGHT | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
-    LTEXT           "Pos&t - Frames Duration:",6009,12,212,120,9,NOT WS_GROUP
+    LTEXT           "Post - Frames &Duration:",6009,12,212,120,9,NOT WS_GROUP
     EDITTEXT        IDC_DE_POST,132,211,60,10,ES_RIGHT | ES_NUMBER
     EDITTEXT        IDC_DE_POST_MS,192,212,60,10,ES_RIGHT | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
     LTEXT           "Total  Frames Duration:",6010,12,226,120,9,NOT WS_GROUP
@@ -1883,11 +1883,11 @@ BEGIN
     PUSHBUTTON      "Help",IDHELP,222,299,60,14,BS_CENTER
 END
 
-IDD_TRACKSFILTERS DIALOG 0, 0, 383, 342
+IDD_TRACKSFILTERS DIALOGEX 0, 0, 383, 342
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_CENTER | DS_CONTEXTHELP | WS_VISIBLE | WS_CAPTION
 EXSTYLE WS_EX_ACCEPTFILES
 CAPTION "Filters"
-FONT 8, "Verdana"
+FONT 8, "Verdana", 0, 0, 0x0
 BEGIN
     GROUPBOX        "Sequence of Filters",112,4,3,376,233,WS_GROUP
     CONTROL         " &DC / Baseline Removal",IDC_BASELINE,"Button",BS_AUTOCHECKBOX | BS_LEFT | BS_PUSHLIKE | WS_TABSTOP,12,17,120,14
@@ -1934,9 +1934,9 @@ BEGIN
     EDITTEXT        IDC_THRESHOLDBELOWVALUE,132,215,60,10,ES_AUTOHSCROLL
     LTEXT           "When using both, formula depends on values' order",-1,195,208,182,10,NOT WS_GROUP
     GROUPBOX        "Options",111,4,238,376,71,WS_GROUP
-    LTEXT           "&Sampling Frequency (set if missing):",104,12,251,120,10,NOT WS_GROUP
+    LTEXT           "&Sampling Frequency:",104,12,251,120,10,NOT WS_GROUP
     EDITTEXT        IDC_AUXSAMPLINGFREQUENCY,132,250,60,10,ES_RIGHT | ES_AUTOHSCROLL
-    LTEXT           "[Hz]",101,195,251,18,10,NOT WS_GROUP
+    LTEXT           "[Hz]   (provide a value if empty, or 0)",101,195,251,180,10,NOT WS_GROUP
     LTEXT           "Also apply filters to:",113,12,271,120,10,NOT WS_GROUP
     CONTROL         "Auxiliar&y Channels",IDC_FILTERAUXS,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,132,268,120,14
     LTEXT           "Switch On / Off all filters set:",117,12,291,120,10,NOT WS_GROUP
@@ -3030,6 +3030,10 @@ BEGIN
     BEGIN
     END
 
+    IDD_TRACKSFILTERS, DIALOG
+    BEGIN
+    END
+
     IDD_INTERPOLATE, DIALOG
     BEGIN
         BOTTOMMARGIN, 383
@@ -3115,6 +3119,11 @@ BEGIN
 END
 
 IDD_SEGMENT1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_TRACKSFILTERS AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

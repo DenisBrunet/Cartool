@@ -512,7 +512,7 @@ TExportTracks           expfile;            // needed for files concatenation
 
 for ( int filei = 0; filei < (int) gof; filei++ ) {
 
-    cout << "Processing: " << gof  [ filei ]<< NewLine;
+//  cout << "Processing: " << gof  [ filei ]<< NewLine;
 
     TOpenDoc<TTracksDoc>    EEGDoc ( gof[ filei ], OpenDocHidden );
 

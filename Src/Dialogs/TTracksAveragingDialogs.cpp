@@ -1393,7 +1393,7 @@ for ( int i = 0; i < (int) paramfiles; i++ ) {
 
     ReadParams ( paramfiles[ i ] );
 
-    ShowMessage ( "Parameters retrieved from file!", ToFileName ( paramfiles[ i ] ), ShowMessageNormal, this );
+    ShowMessage ( "Parameters successfully retrieved from ." FILEEXT_VRB " file!", ToFileName ( paramfiles[ i ] ), ShowMessageNormal, this );
     }
 
 
@@ -3102,7 +3102,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Open view
-    EegView     = dynamic_cast< TTracksView * > ( EegDoc->GetViewList () );
+    EegView     = dynamic_cast<TTracksView*> ( EegDoc->GetViewList () );
 
                                         // in case we opened the EEG in hidden mode, this is time to step forward and create a view!
     if ( EegView == 0 ) {
@@ -3288,14 +3288,26 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     int                 ctdlgx              = GetWindowLeft   ( this );
 //  int                 ctdlgy              = GetWindowTop    ( this );
 
+                                        // The progress bar, not being part of the dialog, needs to be "attached" to it manually
+                                        // We need extra-care to compute its exact position in pixels, as the dialog measurements are all in points
+    int                 gaugex              = CartoolApplication->PointsToPixels ( 2 );                 // distance to left (and right) border
+    int                 gaugew              = ctdlgw - (   Windows10OffsetW                             // dialog shadow shift
+                                                         + 2 * gaugex                                   // centered left and right
+                                                         + 1                                            // it still looks 1 pixel too wide
+                                                       );
+    int                 gaugeh              = CartoolApplication->PointsToPixels ( 20 );
+    int                 gaugey              = ctdlgh - (   ( Windows10OffsetH - Windows10OffsetY )      // dialog shadow shift
+                                                         + gaugeh                                       // gauge actual height
+                                                         + CartoolApplication->PointsToPixels ( 25 )    // gauge top position in dialog
+                                                       );
 
     gauge   = new TGauge    (   this, 
                                 "Browsing  %02d%%", 
                                 IDC_PROGRESS,
-                                3,
-                                ctdlgh - 67,
-                                ctdlgw - 22,
-                                25,          
+                                gaugex,
+                                gaugey,
+                                gaugew,
+                                gaugeh,
                                 true 
                             );
 

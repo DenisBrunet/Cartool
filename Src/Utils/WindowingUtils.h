@@ -24,8 +24,16 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-                                        // Wrapping owl::TWindow with simple utilities
+                                        // Windows10 seems to be adding some extra borders on each window, due to dropped-shadows(?)
+                                        // Defined as const until we find a way to retrieve them from the system
+constexpr int       Windows10OffsetW        =  20;
+constexpr int       Windows10OffsetH        =  10;
+constexpr int       Windows10OffsetX        =  10;
+constexpr int       Windows10OffsetY        =   0;
 
+
+//----------------------------------------------------------------------------
+                                        // Wrapping owl::TWindow with simple utilities
 enum    WindowState
         {
         UnknownWindowState,
@@ -78,6 +86,9 @@ inline const char*          GetCurrentMonitorName   ( HWND window, char* monitor
 inline const char*          GetMonitorName          ( int monitorindex, char* monitorname );
 inline owl::TRect           GetMonitorRect          ( const char* devicename, DWORD how = 0 );
 inline vector<owl::TRect>   GetMonitorsResolution   ();
+                                        // Used for dialog's point measurement conversion
+inline int          MmToPoints                  ( double mm )                                                               { return  Round ( ( 72   / 25.4 ) * mm );   }
+inline double       PointsToMm                  ( int    pt )                                                               { return          ( 25.4 / 72   ) * pt;     }
 
 
 //----------------------------------------------------------------------------

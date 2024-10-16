@@ -858,10 +858,10 @@ if ( HasOption ( mwsize )
     int                 y               = HasOption ( mwpos  ) ? mwpos [ 1 ] : SetWindowsDefaultTop    ( ScreenHeight, h );
 
                                         // for unknown reasons, there appear to be some deltas here
-                        w              += 20;
-                        h              += 10;
-                        x              -= 10;
-                        y              -=  0;
+                        w              += Windows10OffsetW;
+                        h              += Windows10OffsetH;
+                        x              -= Windows10OffsetX;
+                        y              -= Windows10OffsetY;
 
                                         // remember which current state the window is in
     WindowState         oldwindowstate  = GetWindowState ( CartoolMainWindow );
@@ -888,10 +888,10 @@ if ( HasOption ( mwsize )
         y   = HasOption ( mwpos  ) ? mwpos [ 1 ] : SetWindowsDefaultTop    ( ScreenHeight, h );
 
                                         // for unknown reasons, there appear to be some deltas here
-        w  += 20;
-        h  += 10;
-        x  -= 10;
-        y  -=  0;
+        w  += Windows10OffsetW;
+        h  += Windows10OffsetH;
+        x  -= Windows10OffsetX;
+        y  -= Windows10OffsetY;
 
                                         // Then add the offset from current monitor - because Desktop is a big virtual space actually
         x  += currscreen.Left ();
