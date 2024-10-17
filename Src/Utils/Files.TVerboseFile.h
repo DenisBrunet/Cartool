@@ -89,7 +89,7 @@ private:
     std::ofstream*  ofv;
     int             DescriptionLength;
 
-    char            buff[ 1024 ];
+    char            buff[ KiloByte ];
 
                                         // Reserved for table output
     int             TableColSize0;      // special width for first column, based of the length of rows' names

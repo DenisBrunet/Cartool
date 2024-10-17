@@ -40,16 +40,15 @@ enum            StringOptions
 class   TStrings
 {
 public:
-                    TStrings    ();
+                    TStrings    ()                                                  { Reset ();                             }
                     TStrings    ( int numstrings, long stringlength )               { Set     ( numstrings, stringlength ); }
                     TStrings    ( const char*                       string  )       { SetOnly ( string );                   }
-                    TStrings    ( const TStrings*                   strings )       { Set     ( strings );                  }
-                    TStrings    ( const std::vector<std::string>&   strings )       { Set     ( strings );                  }
-                    TStrings    ( const TList<char>&                strings )       { Set     ( strings );                  }
-                    TStrings    ( const owl::TStringArray&          strings )       { Set     ( strings );                  }
-                    TStrings    ( const TArray2<char>&              arraychar )     { Set     ( arraychar );                }
+                    TStrings    ( const TStrings&                   strings )       { Set     ( strings );                  }   // Copy constructor
+                    TStrings    ( const std::vector<std::string>&   strings )       { Set     ( strings );                  }   // Used by CLI
+                    TStrings    ( const owl::TStringArray&          strings )       { Set     ( strings );                  }   // Used by OwlNext dialogs
+                    TStrings    ( const TArray2<char>&              arraychar )     { Set     ( arraychar );                }   // Can be handy
 
-    virtual        ~TStrings    ();
+    virtual        ~TStrings    ()                                                  { Reset ();                             }
 
 
     int             NumStrings              ()  const       { return    Strings.Num ();         }
@@ -59,23 +58,21 @@ public:
     long            GetMaxStringLength      ()  const;
     int             GetLongestStringIndex   ()  const;
 
-          char*     GetFirst ()                             { return    Strings.GetFirst (); }
     const char*     GetFirst ()                 const       { return    Strings.GetFirst (); }
-          char*     GetLast  ()                             { return    Strings.GetLast  (); }
+          char*     GetFirst ()                             { return    Strings.GetFirst (); }
     const char*     GetLast  ()                 const       { return    Strings.GetLast  (); }
+          char*     GetLast  ()                             { return    Strings.GetLast  (); }
 
 
     virtual void    Reset           ();
 
     void            Set             ( int numstrings, long stringsize );
-    void            Set             ( const TStrings*                   strings );
+    void            SetOnly         ( const char* string );
     void            Set             ( const TStrings&                   strings );
     void            Set             ( const std::vector<std::string>&   strings );
-    void            Set             ( const TList<char>&                strings );
-    void            Set             ( const char* strings, const char* separators );
     void            Set             ( const owl::TStringArray&          strings );   // OWL strings
     void            Set             ( const TArray2<char>& arraychar );     // // "C"-like array of chars
-    void            SetOnly         ( const char* string );
+    void            Set             ( const char* strings, const char* separators );
 
 
     void            Add             ( const char* string, StringOptions how, long length = 0 );   // the work horse
@@ -117,14 +114,13 @@ public:
     void            Show            ( const char* title = 0 )   const;
 
 
-    TStrings                            ( const TStrings &op  );
     TStrings&       operator    =       ( const TStrings &op2 );
 
 
-          char*     operator    []              ( int index )       { return Strings[ index ]; }
     const char*     operator    []              ( int index ) const { return Strings[ index ]; }    // access from const object forces returning a const char*
-          char*     operator    ()              ( int index )       { return Strings[ index ]; }
+          char*     operator    []              ( int index )       { return Strings[ index ]; }
     const char*     operator    ()              ( int index ) const { return Strings[ index ]; }    // access from const object forces returning a const char*
+          char*     operator    ()              ( int index )       { return Strings[ index ]; }
 
                     operator    int                 ()  const       { return (int)  Strings; }
                     operator    bool                ()  const       { return (bool) Strings; }

@@ -193,8 +193,8 @@ class   TFileName
 {
 public:
                     TFileName ();
-                    TFileName ( const char* filename, TFilenameFlags flags = TFilenameNoPreprocessing );
-                    TFileName ( char*       filename, TFilenameFlags flags = TFilenameNoPreprocessing );
+                    TFileName ( const char* filename, TFilenameFlags flags = TFilenameNoPreprocessing )     { Set ( filename, flags ); }
+                    TFileName ( char*       filename, TFilenameFlags flags = TFilenameNoPreprocessing )     { Set ( filename, flags ); }
 
 
     char            FileName[ TFilenameSize ];
@@ -229,8 +229,9 @@ public:
 
 
     void            ClipFileName            ( int from, int to );   // only the (last) file name part
-    char*           ReplaceExtension        ( const char* newext )  { return  crtl::ReplaceExtension ( FileName, newext ); };
-    char*           ReplaceDir              ( const char* newdir )  { return  crtl::ReplaceDir       ( FileName, newdir ); };
+    char*           ReplaceExtension        ( const char* newext )  { return  crtl::ReplaceExtension ( FileName, newext );  }
+    char*           ReplaceDir              ( const char* newdir )  { return  crtl::ReplaceDir       ( FileName, newdir );  }
+    char*           GetFilename             ()                      { return  crtl::GetFilename      ( FileName );          }
 
     long            Length                  ()      const           { return  StringLength ( FileName ); }
     long            Size                    ()      const           { return  TFilenameSize; }

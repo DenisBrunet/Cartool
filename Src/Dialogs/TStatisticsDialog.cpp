@@ -570,7 +570,7 @@ if ( w == IDC_ADDGROUP || GoGoF.IsEmpty () ) {
 
     gof         = new TStatGoF;
 
-    gof->Set ( (TGoF *) getfiles );
+    gof->Set ( (const TGoF &) getfiles );
     }
 else { // IDC_USELASTGROUP
 
@@ -579,7 +579,7 @@ else { // IDC_USELASTGROUP
 
     gof         = new TStatGoF;
 
-    gof->Set ( GoGoF.GetLast () );
+    gof->Set ( *GoGoF.GetLast () );
     }
 
                                         // update slot

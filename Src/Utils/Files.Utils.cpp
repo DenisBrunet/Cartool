@@ -272,9 +272,6 @@ if ( ! (bool) gof )                     // no transformed files?
 
 gof.Sort ();
 
-//gof.Show ( "FilenameToSiblings" );
-
-
 return  (int) gof;
 }
 
@@ -353,7 +350,7 @@ void        CheckExtendedPath ( char* path, bool force )
 if ( StringIsEmpty ( path ) )
     return;
 
-                                        // Windows default is still 256 + 4 = 260
+                                        // Windows default path length is still 256 + 4 = 260
 if ( ( force || StringLength ( path ) >= WindowsMaxPath )
   && ! IsExtendedPath ( path ) )
 
@@ -1497,18 +1494,6 @@ return  false;
         TFileName::TFileName ()
 {
 Reset ();
-}
-
-
-        TFileName::TFileName ( const char* filename, TFilenameFlags flags )
-{
-Set ( filename, flags );
-}
-
-
-        TFileName::TFileName ( char* filename, TFilenameFlags flags )
-{
-Set ( filename, flags );
 }
 
 

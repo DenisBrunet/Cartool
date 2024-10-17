@@ -49,7 +49,7 @@ if ( ! files.Execute () )
                                         // Check first the last group's own coherence, as tracks files
 TracksCompatibleClass       CompatRis;
 
-((TGoF)files).AllTracksAreCompatible ( CompatRis );
+( (const TGoF&) files).AllTracksAreCompatible ( CompatRis );
 
                                         // We allow files with different dimensions, as long they contain the given SP names
 if      ( CompatRis.NumTracks == CompatibilityIrrelevant ) {
@@ -72,7 +72,7 @@ if      ( CompatRis.NumTF == CompatibilityIrrelevant ) {
                                         // Group is coherent regarding file types? (doing this first, maybe?)
 TracksGroupClass        tg;
 
-if ( ((TGoF)files).AnyTracksGroup ( tg ) ) {
+if ( ( (const TGoF&) files).AnyTracksGroup ( tg ) ) {
 
     if      (   tg.noneofthese  ) { 
         ShowMessage (   "Oopsie, files don't really look like tracks,"  NewLine 

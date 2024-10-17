@@ -1965,11 +1965,11 @@ Destroy ();
 
                                         // transfer to a GoGoF of 4 groups, each group holding one type of the files parameters
 TGoGoF              GoGoF;
-
-GoGoF.Add ( new TGoF ( TAvgTransfer.ComboEeg.GetStrings () ), false, MaxPathShort );
-GoGoF.Add ( new TGoF ( TAvgTransfer.ComboSes.GetStrings () ), false, MaxPathShort );
-GoGoF.Add ( new TGoF ( TAvgTransfer.ComboTva.GetStrings () ), false, MaxPathShort );
-GoGoF.Add ( new TGoF ( TAvgTransfer.ComboTrg.GetStrings () ), false, MaxPathShort );
+                                        
+GoGoF.Add ( new TGoF ( TAvgTransfer.ComboEeg.GetStrings (), TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) ) );   // real file name - needs some checks
+GoGoF.Add ( new TGoF ( TAvgTransfer.ComboSes.GetStrings (),                  TFilenameNoPreprocessing                        ) );   // just strings   - skip checks
+GoGoF.Add ( new TGoF ( TAvgTransfer.ComboTva.GetStrings (), TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) ) );   // real file name - needs some checks
+GoGoF.Add ( new TGoF ( TAvgTransfer.ComboTrg.GetStrings (),                  TFilenameNoPreprocessing                        ) );   // just strings   - skip checks
 
                                         // first file introduced = first file to be processed
 GoGoF.RevertOrder ();
@@ -2203,9 +2203,6 @@ TGoF&               gofeeg          = (*gogof)[ gofi1     ];
 TGoF&               gofses          = (*gogof)[ gofi1 + 1 ];
 TGoF&               goftva          = (*gogof)[ gofi1 + 2 ];
 TGoF&               goftrg          = (*gogof)[ gofi1 + 3 ];
-                                        // !Temp fix for TGoF forcing absolute paths, which is totally irrelvant for us here!
-gofses.RemoveDir ();
-goftrg.RemoveDir ();
 
 char                buff   [ 64 * KiloByte ];
 TFileName           eegfile;
@@ -2226,15 +2223,15 @@ EegDoc.Open ( gofeeg[ 0 ], OpenDocHidden );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool                usefilters          = Filters.HasAnyFilter () && CheckToBool ( transfer.SetFilters );
-bool                filterdata          = usefilters && CheckToBool ( transfer.FilterData    );
-bool                filterdisplay       = usefilters && CheckToBool ( transfer.FilterDisplay );
+bool                usefilters          = Filters.HasAnyFilter () && CheckToBool ( transfer.SetFilters    );
+bool                filterdata          = usefilters              && CheckToBool ( transfer.FilterData    );
+bool                filterdisplay       = usefilters              && CheckToBool ( transfer.FilterDisplay );
 bool                anyfilter           = filterdata || filterdisplay;
 double              SamplingFrequency   = transfer.SamplingFrequency;   // retrieve the global sampling frequency
 
-bool                CheckEl             = CheckToBool ( transfer.CheckEl );
+bool                CheckEl             = CheckToBool    ( transfer.CheckEl );
 double              ElThreshold         = StringToDouble ( transfer.ElThreshold );
-bool                CheckAux            = CheckToBool ( transfer.CheckAux );
+bool                CheckAux            = CheckToBool    ( transfer.CheckAux );
 double              AuxThreshold        = StringToDouble ( transfer.AuxThreshold );
 
 
@@ -2699,6 +2696,29 @@ TransferData ( tdSetData );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+auto    CookTvaFileName = [] ( const char* basefilename, const char* eegfilename, const char* session, const char* triggerlist )
+{
+TFileName           tvafile;
+
+StringCopy      ( tvafile,      basefilename );
+StringAppend    ( tvafile, ".", TFileName ( eegfilename ).GetFilename () );
+
+if ( StringToInteger ( session ) > 0 )
+    StringAppend( tvafile, ".", session );
+
+char            buff[ KiloByte ];
+StringAppend    ( tvafile, ".", TSplitStrings ( triggerlist, UniqueStrings ).ToString ( buff, false ) );
+AddExtension    ( tvafile, FILEEXT_TVA );
+
+                                        // We don't want to overwrite any existing file
+CheckNoOverwrite( tvafile );
+
+return  tvafile;
+};
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // verbose file init
 TVerboseFile    verbose ( fileoutvrb, VerboseFileDefaultWidth );
 
@@ -2818,15 +2838,8 @@ verbose.NextLine ();
 if ( ! acceptall ) {
 
     for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
-        StringCopy      ( eegfile, gofeeg[ eegi ] );
-        RemoveExtension ( eegfile );
-        RemoveDir       ( eegfile );
-
-        //  triggerlist.Set ( trglist, UniqueStrings );
-        //  TSplitStrings   triggerlist;
-        triggerlist.Set ( (char *) goftrg[ eegi ], UniqueStrings );
-
-        sprintf ( fileouttva, "%s.%s.%s.%s", (char*) BaseFileName, (char*) eegfile, triggerlist.ToString ( buff, false ), FILEEXT_TVA );
+                                        // Will not return the proper, non-overwriting file name, because files don't really exist here...
+        fileouttva  = CookTvaFileName ( BaseFileName, gofeeg[ eegi ], gofses[ eegi ], goftrg[ eegi ] );
 
         verbose.Put ( eegi == 0 ? "Trigger validation file(s):" : "", fileouttva );
         }
@@ -3036,7 +3049,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                                         // results are 0 for nothing, or 1..n
     int             session     = StringToInteger ( seslist );
 
-    if ( session != 0 ) {
+    if ( session > 0 ) {
 
         EegDoc.Unlock ();
                                         // changing session means closing and re-opening
@@ -3079,7 +3092,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
                                         // New temp file name - including session #
         StringCopy          ( filefiltered, BaseFileName );
-        if ( session != 0 )
+        if ( session > 0 )
             StringAppend    ( filefiltered, "." "Session", IntegerToString ( session ) );
         StringAppend        ( filefiltered, "." "Filtered" );
         AddExtension        ( filefiltered, FILEEXT_EEGBV );    // !using a file type that handles native triggers, so the saved file will totally mimick the original one!
@@ -3482,19 +3495,8 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     if ( ! acceptall ) {
                                         // can open file and is different from input tva?
         do {
-            StringCopy      ( buff, eegfile );
-            RemoveExtension ( buff );
-            RemoveDir       ( buff );
-                                        // make a local copy, as was the original (= shorter)
-            TSplitStrings   triggerlist;
-            triggerlist.Set ( trglist, UniqueStrings );
-
-
-            StringCopy      ( fileouttva, BaseFileName, ".", buff );
-            if ( session > 0 )
-                StringAppend( fileouttva, ".", IntegerToString ( session ) );
-            StringAppend    ( fileouttva, ".", triggerlist.ToString ( buff, false ) );
-            AddExtension    ( fileouttva, FILEEXT_TVA );
+                                        // Will return the proper, non-overwriting file name
+            fileouttva  = CookTvaFileName ( BaseFileName, eegfile, seslist, trglist );
 
 
             if ( triggerOrigin == TO_1TF || automode == AutoAcceptAll )

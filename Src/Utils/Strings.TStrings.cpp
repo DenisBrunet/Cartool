@@ -30,24 +30,6 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-        TStrings::TStrings ()
-{
-Reset ();
-}
-
-
-        TStrings::~TStrings ()
-{
-Reset ();
-}
-
-
-        TStrings::TStrings ( const TStrings &op )
-{
-Set ( (TStrings &) op );
-}
-
-
 TStrings&    TStrings::operator= ( const TStrings &op2 )
 {
 if ( &op2 == this )
@@ -171,21 +153,15 @@ for ( int i = 0; i < numstrings; i++ )
 }
 
 
-void    TStrings::Set ( const TStrings*    strings )
+void    TStrings::Set ( const TStrings&    strings )
 {
-if ( strings == this )
+if ( &strings == this )
     return;
 
 Reset ();
 
-for ( int i = 0; i < (int) (*strings); i++ )
-    Add ( (*strings)[ i ] );
-}
-
-
-void    TStrings::Set ( const TStrings&    strings )
-{
-Set ( &strings );
+for ( int i = 0; i < (int) strings; i++ )
+    Add ( strings[ i ] );
 }
 
 
@@ -196,25 +172,11 @@ for ( int i = 0; i < strings.size (); i++ )
 }
 
 
-void    TStrings::Set ( const TList<char>& strings )
-{
-if ( &Strings == &strings )
-    return;
-
-Reset ();
-
-for ( int i = 0; i < (int) strings; i++ )
-    Add ( strings[ i ] );
-}
-
-
 void    TStrings::Set ( const char* strings, const char* separators )
 {
 Reset ();
 
-
 TSplitStrings       split ( strings, NonUniqueStrings, separators );
-
 
 for ( int i = 0; i < (int) split; i++ )
     Add ( split[ i ] );

@@ -155,12 +155,7 @@ Add ( gof );
 }
 
 
-        TGoF::TGoF ( const TGoF &op )
-{
-Set ( (TStrings &) op );
-}
-
-
+//----------------------------------------------------------------------------
 TGoF& TGoF::operator= ( const TGoF &op2 )
 {
 if ( &op2 == this )
@@ -208,19 +203,17 @@ return  filei2 - filei1 + 1;
                                         //  - Making sure we have at least 2K space reserved
                                         //  - Making sure we have absolute path files
                                         //  - Checking file names bigger than old 256 MAX_PATH have the extended prefix
-void    TGoF::Add ( const char* string )
+void    TGoF::Add ( const char* file )
 {
-Add ( string, 0 );
+Add ( file, 0 );
 }
 
 
-void    TGoF::Add ( const char* string, long length )
+void    TGoF::Add ( const char* file, long length )
 {
-int                 stringlength    = max ( length, StringLength ( string ) + 64, (long) MaxPathShort ); 
+int                 stringlength    = max ( length, StringLength ( file ) + 64, (long) MaxPathShort ); 
 
-TStrings::Add ( string, StringFixedSize, stringlength ); 
-
-CheckExtendedPath ( Strings.GetLast () ); 
+TStrings::Add ( file, StringFixedSize, stringlength ); 
 }
 
 
@@ -233,21 +226,29 @@ TStrings::Add ( gof );               // will call back our TGoF::Add above
 //----------------------------------------------------------------------------
 void    TGoF::CheckFileNames  ( TFilenameFlags flags )
 {
-if ( flags == TFilenameNoPreprocessing )
+if ( flags == TFilenameNoPreprocessing || IsEmpty () )
     return;
 
 
+TFileName       filename;
+
 for ( int i = 0; i < (int) Strings; i++ ) {
+
+    if ( StringIsEmpty ( Strings[ i ] ) )
+        continue;
+
                                         // copy AND update file name at the same time
-    TFileName   filename ( Strings[ i ], flags );
+    filename.Set ( Strings[ i ], flags );
 
                                         // any effective change?
     if ( StringIs ( filename, Strings[ i ] ) )
         continue;
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // allocate a new string
-    int         stringsize      = max ( filename.Length () + 64, (long) MaxPathShort ); 
-    char*       toc             = new char [ stringsize ];
+    int             stringsize      = max ( filename.Length () + 64, (long) MaxPathShort ); 
+    char*           toc             = new char [ stringsize ];
 
     ClearString ( toc, stringsize );
     StringCopy  ( toc, filename   );
@@ -396,9 +397,6 @@ else {
     return;
     }
         
-//DBGV4 ( allhavedigits, commonstartlength, diffdigitslength, maxdigitlength, "allhavedigits, @pos, difflength maxdigitlength" );
-//str.Show ( "short strings" );
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // do we really need to work on any digit substring?
@@ -434,8 +432,6 @@ if ( diffdigitslength ) {
                                         // finally sort the upgraded string list
     str.TStrings::Sort ();
 
-//    str.Show ( "string num padding + sort" );
-
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // copy whole original file paths
@@ -452,9 +448,6 @@ if ( diffdigitslength ) {
 else
                                         // digits with all equal length
     TStrings::Sort ();
-
-
-//Show ( diffdigitslength ? "sorted num" : "sorted normal" );
 }
 
 
@@ -464,10 +457,7 @@ else
 Reset ();
 
 
-TFileName           path;
-int                 dropcount       = drop.DragQueryFileCount ();
-TGoF                siblingfiles;
-
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( where != 0 ) {
     owl::TPoint     droppedposition;
@@ -478,14 +468,23 @@ if ( where != 0 ) {
     }
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TFileName           file;
+TGoF                siblingfiles;
+int                 dropcount       = drop.DragQueryFileCount ();
+
 for ( int i = 0; i < dropcount; i++ ) {
 
 //  drop.DragQueryFileNameLen ( i );
 
-    drop.DragQueryFile ( i, path, path.Size () );
+    drop.DragQueryFile ( i, file, file.Size () );
 
+                                        // do that all the time, by safety (used to be in the Add method)
+    file.CheckFileName ( TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) );
 
-    FilenameToSiblings ( (char *) path, siblingfiles );
+                                        // see if user dropped a directory, or EEG buddy files
+    FilenameToSiblings ( (char *) file, siblingfiles );
 
 
     for ( int si = 0; si < (int) siblingfiles; si++ )
@@ -563,9 +562,6 @@ sortedmrifiles.Add ( *this );
 
                                         // copy
 *this   = sortedmrifiles;
-
-
-//Show ( "Dropped & Sorted" );
 }
 
 
@@ -3169,7 +3165,7 @@ int                 numstrings  = NumStrings ();
 char*               toc;
 
                                         // work with a copy
-TStrings            string ( this );
+TStrings            string ( *this );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

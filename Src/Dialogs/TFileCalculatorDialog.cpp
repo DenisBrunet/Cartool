@@ -396,11 +396,11 @@ if ( w == IDC_ADDGROUP || GoGoF.IsEmpty () ) {
     if ( ! getfiles.Execute () )
         return;
 
-    gof->Set ( (TGoF *) getfiles );
+    gof->Set ( (const TGoF &) getfiles );
     }
 else { // IDC_USELASTGROUP
 
-    gof->Set ( GoGoF.GetLast () );
+    gof->Set ( *GoGoF.GetLast () );
     }
 
 

@@ -156,27 +156,28 @@ class   TGoGoF;
 class   TGoF        :   public TStrings
 {
 public:
-                                        // We override the Add method here, but base constructors know nothing about it, so we need to "duplicate" the TStrings construcotr bodies
-                                        // !Be sure to override all constructors from TStrings!
-                    TGoF ()                                             : TStrings   ()            {}
-                    TGoF ( int numstrings )                             { Set ( numstrings, MaxPathShort ); } // expected max size of file names
-                    TGoF ( const char*                      string  )   { SetOnly ( string );       }
-                    TGoF ( const TStrings*                  strings )   { Set ( strings );          }
-                    TGoF ( const TStrings&                  strings )   { Set ( (TGoF &) strings ); }
-                    TGoF ( const std::vector<std::string>&  strings, TFilenameFlags flags = TFilenameNoPreprocessing )  { Set ( strings ); CheckFileNames ( flags );         }
-                    TGoF ( const TList<char>&               strings )   { Set ( strings );          }
-                    TGoF ( const owl::TStringArray&         strings )   { Set ( strings );          }
-                    TGoF ( const owl::TDropInfo&      drop, const char* filesext = 0, TPointInt* where = 0, bool doesnotbelong = false );   // from drop info + extension filter + position
-                    TGoF ( const TGoGoF& gogof, int gofi1 = -1, int gofi2 = -1 );   // Very handy trick to "flatten" a group of group of files
-                    TGoF ( const TGoGoF& gogof, const TGoF& gof );                  // Very handy trick to "flatten" a group of group of files + another group
+                                        // ALL TStrings constructors that make use of the (overridden) Add method (called from Set) must be overridden
+                    TGoF () : TStrings ()                                                                               {}
+                    TGoF ( int numfiles )                                                                               { Set ( numfiles, MaxPathShort );           }   // expected max size of file names
+                    TGoF ( const char*                      file,  TFilenameFlags flags = TFilenameNoPreprocessing )    { SetOnly ( file ); CheckFileNames ( flags );  }
+                    TGoF ( const TStrings&                  files, TFilenameFlags flags = TFilenameNoPreprocessing )    { Set ( files ); CheckFileNames ( flags );  }   // TStrings "copy" constructor
+                    TGoF ( const std::vector<std::string>&  files, TFilenameFlags flags = TFilenameNoPreprocessing )    { Set ( files ); CheckFileNames ( flags );  }   // Used by CLI
+                    TGoF ( const owl::TStringArray&         files, TFilenameFlags flags = TFilenameNoPreprocessing )    { Set ( files ); CheckFileNames ( flags );  }   // Used by OwlNext dialogs
+                    TGoF ( const TArray2<char>&             files, TFilenameFlags flags = TFilenameNoPreprocessing )    { Set ( files ); CheckFileNames ( flags );  }   // Can be handy
+
+                                        // TGoF specific constructors
+                    TGoF ( const TGoF&                      files, TFilenameFlags flags = TFilenameNoPreprocessing )    { Set ( files ); CheckFileNames ( flags );  }   // TGoF copy constructor
+                    TGoF ( const owl::TDropInfo& drop, const char* filesext = 0, TPointInt* where = 0, bool doesnotbelong = false );                                    // Used for Dialogs' drop info
+                    TGoF ( const TGoGoF& gogof, int gofi1 = -1, int gofi2 = -1 );                                                                                       // Handy constructor used to "flatten" a group of group of files
+                    TGoF ( const TGoGoF& gogof, const TGoF& gof );                                                                                                      // Same as above + another group
 
 
     int             NumFiles        ()                          const;   
     int             NumFiles        ( int filei1, int filei2 )  const;          // optional range that will be tested against current range
 
                                         // virtual functions
-    void            Add             ( const char* string )              override;
-    void            Add             ( const char* string, long length ) override;
+    void            Add             ( const char* file )                final;
+    void            Add             ( const char* file, long length )   final;
     void            Add             ( const TGoF& gof );
 
     void            CheckFileNames  ( TFilenameFlags flags );
@@ -226,7 +227,7 @@ public:
     bool            GetCommonString ( char* base, bool includedir = true, bool includedifference = false )      const;
     void            GetFilenamesSubRange    ( int& fromchars, int& tochars )                                    const;
 
-    void            Sort            ()  override; // overriding TStrings::Sort
+    void            Sort            ()  final;
 
     void            SplitFreqFiles  ( SplitFreqFlags how, TGoGoF *gogofout = 0, bool showgauge = true );
     void            Resample        ( ResamplingType resampling, int numresamples, int resamplingsize, const TGoF* gofalt, TGoGoF& resgogof, TGoGoF* resgogofalt );  // resampling into anoth group of files
@@ -236,7 +237,6 @@ public:
 
 //  char*           operator    []              ( int index )           { return TStrings::operator[] ( index ); }
 
-    TGoF                                        ( const TGoF &op );
     TGoF&           operator    =               ( const TGoF &op2 );
 };
 
@@ -309,8 +309,8 @@ public:
 
 
     const TGoF*     GetFirst        ()  const                           { return   Group.GetFirst (); }
-    const TGoF*     GetLast         ()  const                           { return   Group.GetLast  (); }
           TGoF*     GetFirst        ()                                  { return   Group.GetFirst (); }
+    const TGoF*     GetLast         ()  const                           { return   Group.GetLast  (); }
           TGoF*     GetLast         ()                                  { return   Group.GetLast  (); }
 
 
@@ -328,8 +328,8 @@ public:
     TGoGoF&         operator    =               ( const TGoF&   op2 );
 
 
-    TGoF&           operator    []              ( int index )           { return *Group[ index ]; }
     const TGoF&     operator    []              ( int index )   const   { return *Group[ index ]; }
+          TGoF&     operator    []              ( int index )           { return *Group[ index ]; }
 
                     operator    int             ()              const   { return (int)  Group; }
                     operator    bool            ()              const   { return (bool) Group; }

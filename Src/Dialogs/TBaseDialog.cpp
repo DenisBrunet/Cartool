@@ -278,7 +278,7 @@ if ( ! getfiles.Execute () ) {
     }
 
 
-BatchFileNames.Set ( (TGoF *) getfiles );   // setting multiple files
+BatchFileNames.Set ( (const TGoF &) getfiles );   // setting multiple files
 
 BatchProcess ();
 

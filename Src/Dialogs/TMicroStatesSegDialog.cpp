@@ -2825,7 +2825,7 @@ for ( int absg = 0; absg < gogof.NumGroups (); absg++ ) {
 
             if ( dualdata ) {
                                         // same procedure - we can reuse the temp concatmaps var
-                concatmaps.ReadFiles( &preprocgogofalt[ absg2 ], dualdatatype, ReferenceAsInFile );
+                concatmaps.ReadFiles( preprocgogofalt[ absg2 ], dualdatatype, ReferenceAsInFile );
 
                 StringCopy          ( concatfilealt, concatfile );
                 ReplaceExtension    ( concatfilealt, DualDataPresets[ dualdata ].SavingExtension );

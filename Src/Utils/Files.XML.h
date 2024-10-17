@@ -106,7 +106,7 @@ do {
             TSplitStrings   attr ( buff + StringLength ( element ), NonUniqueStrings, " =\t\n" );
 //            attr.Show ( "XMLGotoElement / Attributes" );
 
-            attributes->Set ( (TStrings *) &attr.GetTokens () );
+            attributes->Set ( attr.GetTokens () );
             }
 
         return  true;
