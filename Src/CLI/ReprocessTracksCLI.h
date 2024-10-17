@@ -42,11 +42,11 @@ if ( reprocsub == 0 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Parameters appearance follow the dialog's visual design
+AddOptionString ( reprocsub,    tracks,             "",     "--tracks",             "Tracks to export" Tab Tab Tab Tab "Default: all tracks; Special values: 'gfp', 'dis' and 'avg'" );
+
 AddOptionString ( reprocsub,    xyzfile,            "",     "--xyzfile",            "Using electrodes names from a XYZ electrodes coordinates file" );
 AddOptionString ( reprocsub,    roisfile,           "",     "--roisfile",           "Computing ROIs & using ROIs names from a ROIs file" )
 ->excludes ( optxyzfile  );
-
-AddOptionString ( reprocsub,    tracks,             "",     "--tracks",             "Tracks to export" Tab Tab Tab Tab "Default: all tracks; Special values: 'gfp', 'dis' and 'avg'" );
 
 AddOptionInt    ( reprocsub,    timemin,            "",     "--timemin",            "Exporting from Time Frame " Tab Tab "Default: 0" );
 AddOptionInt    ( reprocsub,    timemax,            "",     "--timemax",            "Exporting to Time Frame   " Tab Tab "Default: end of file" );
@@ -58,28 +58,6 @@ opttimemax     ->excludes ( optkeeptriggers    )->excludes ( optexcludetriggers 
 optkeeptriggers->excludes ( optexcludetriggers );
 
 AddOptionString ( reprocsub,    nulltracks,         "",     "--nulltracks",         "List of null tracks to append" );
-
-AddOptionString ( reprocsub,    ref,                "",     "--reference",          "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
-
-AddOptionInts   ( reprocsub,    baselinecorr,   2,  "",     "--baselinecorr",       "Baseline correction interval, in time frames since beginning of file" );
-
-AddOptionString ( reprocsub,    rescaling,          "",     "--rescaling",          "Scaling factor" Tab Tab Tab Tab "Special value: 'meangfp'" );
-
-AddFlag         ( reprocsub,    average,            "",     "--averaging",          "Averaging the whole time dimension" );
-
-AddOptionInt    ( reprocsub,    downsampleratio,    "",     "--downsampling",       "Downsampling ratio" )
-->check ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : ""; } );
-
-AddOptionString ( reprocsub,    extension,          "--ext","--extension",          string ( "Output file extension" Tab Tab Tab "Default: " ) + SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] )
-->check ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
-
-AddOptionString ( reprocsub,    infix,              "",     "--infix",              "Infix appended to the file name" );
-
-AddFlag         ( reprocsub,    nomarkers,          "",     "--nomarkers",          "Not saving the markers to file" );
-
-AddFlag         ( reprocsub,    concatenate,        "",     "--concatenate",        "Concatenate all output into a single file" );
-
-AddFlag         ( reprocsub,    helpreproc,         "-h",   "--help",               "This message" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -162,6 +140,32 @@ AddOptionDouble ( reprocsub,    keepbelow,          "",     "--keepbelow",      
 AddOptionDouble ( reprocsub,    samplingfrequency,  "",     "--samplingfrequency",  "Default Sampling Frequency, only in case a file has none" )
 ->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "sampling frequency should be above 0" : ""; } );
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+AddOptionString ( reprocsub,    ref,                "",     "--reference",          "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
+
+AddOptionInts   ( reprocsub,    baselinecorr,   2,  "",     "--baselinecorr",       "Baseline correction interval, in time frames since beginning of file" );
+
+AddOptionString ( reprocsub,    rescaling,          "",     "--rescaling",          "Scaling factor" Tab Tab Tab Tab "Special value: 'meangfp'" );
+
+AddFlag         ( reprocsub,    sequential,         "",     "--sequential",         "Sequential output" Tab Tab Tab Tab "Default option" );
+AddFlag         ( reprocsub,    average,            "",     "--average",            "Averaging the time dimension" )
+->excludes ( optsequential );
+
+AddOptionInt    ( reprocsub,    downsampleratio,    "",     "--downsampling",       "Downsampling ratio" )
+->check ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : ""; } );
+
+AddOptionString ( reprocsub,    infix,              "",     "--infix",              "Infix appended to the file name" );
+
+AddOptionString ( reprocsub,    extension,          "--ext","--extension",          string ( "Output file extension" Tab Tab Tab "Default: " ) + SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] )
+->check ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
+
+AddFlag         ( reprocsub,    nomarkers,          "",     "--nomarkers",          "Not saving the markers to file" );
+
+AddFlag         ( reprocsub,    concatenate,        "",     "--concatenate",        "Concatenate all output into a single file" );
+
+AddFlag         ( reprocsub,    helpreproc,         "-h",   "--help",               "This message" );
 }
 
 
@@ -317,7 +321,7 @@ if ( HasSubOption ( reprocsub, "--notches" ) ) {
 
 
 if ( HasSubOption ( reprocsub, "--spatial" )
-    && HasSubOption ( reprocsub, "--xyzfile" ) ) {
+  && HasSubOption ( reprocsub, "--xyzfile" ) ) {
                                     // we will fill the missing value with the default option
     if ( GetSubOptionString ( reprocsub, "--spatial" ).empty () )
         altfilters.SpatialFilter    = SpatialFilterDefault;
@@ -400,10 +404,13 @@ double              rescalingfactor = StringToDouble ( GetSubOptionString ( repr
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool                average         = HasSubFlag ( reprocsub, "--averaging" );
+bool                sequential      = HasSubFlag ( reprocsub, "--sequential" );
+bool                average         = HasSubFlag ( reprocsub, "--average" );
 
-SequenceOptions     sequenceoptions = average ? AverageProcessing
-                                    :           SequenceProcessing;
+SequenceOptions     sequenceoptions = sequential ? SequenceProcessing
+                                    : average    ? AverageProcessing
+                                    :              SequenceProcessing;  // default value
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // ReprocessTracks will ignore if 0
@@ -430,7 +437,12 @@ bool                silent              = true;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/*                                      // Console output prototype
+                                        // Console output prototype
+//#define     CLIConsoleOutput
+#undef      CLIConsoleOutput
+
+#if defined(CLIConsoleOutput)
+
 CreateConsole ();
 
 cout << ( tracksoptions == ProcessRois ? "Exporting ROIs: " : "Exporting Tracks: " );
@@ -501,18 +513,21 @@ if ( concatenateoptions == ConcatenateTime ) {
     }
 
 cout << NewLine;
-*/
+
+#endif
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-long                    concatinputtime             = 0;
-long                    concatoutputtime            = 0;
-TExportTracks           expfile;            // needed for files concatenation
+long                concatinputtime     = 0;
+long                concatoutputtime    = 0;
+TExportTracks       expfile;            // needed for files concatenation
 
 
 for ( int filei = 0; filei < (int) gof; filei++ ) {
 
-//  cout << "Processing: " << gof  [ filei ]<< NewLine;
+#if defined(CLIConsoleOutput)
+    cout << "Processing: " << gof  [ filei ]<< NewLine;
+#endif
 
     TOpenDoc<TTracksDoc>    EEGDoc ( gof[ filei ], OpenDocHidden );
 
@@ -545,7 +560,9 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
     } // for file
 
 
-//DeleteConsole ( true );
+#if defined(CLIConsoleOutput)
+DeleteConsole ( true );
+#endif
 }
 
 
