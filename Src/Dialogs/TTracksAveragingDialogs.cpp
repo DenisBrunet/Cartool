@@ -2235,26 +2235,27 @@ bool                CheckAux            = CheckToBool    ( transfer.CheckAux );
 double              AuxThreshold        = StringToDouble ( transfer.AuxThreshold );
 
 
-enum                {
-                    TO_1TF,
-                    TO_TRIGGER,
-                    TO_TRIGGEROFFSET,
-                    TO_REACTIONTIME
+enum                EpochOriginEnum
+                    {
+                    EpochOriginFixedTF,
+                    EpochOriginTrigger,
+                    EpochOriginTriggerOffset,
+                    EpochOriginTriggerReactionTime
                     };
 
-int                 triggerOrigin;
+EpochOriginEnum     triggerOrigin;
 double              triggerOffset       = 0;
 int                 trigger1TF          = 0;
 
-if      ( CheckToBool ( transfer.TriggerFixedTF      ) )    triggerOrigin   = TO_1TF;
-else if ( CheckToBool ( transfer.Trigger             ) )    triggerOrigin   = TO_TRIGGER;
-else if ( CheckToBool ( transfer.TriggerOffset       ) )    triggerOrigin   = TO_TRIGGEROFFSET;
-else if ( CheckToBool ( transfer.TriggerReactionTime ) )    triggerOrigin   = TO_REACTIONTIME;
-else                                                        triggerOrigin   = TO_TRIGGER;
+if      ( CheckToBool ( transfer.TriggerFixedTF      ) )    triggerOrigin   = EpochOriginFixedTF;
+else if ( CheckToBool ( transfer.Trigger             ) )    triggerOrigin   = EpochOriginTrigger;
+else if ( CheckToBool ( transfer.TriggerOffset       ) )    triggerOrigin   = EpochOriginTriggerOffset;
+else if ( CheckToBool ( transfer.TriggerReactionTime ) )    triggerOrigin   = EpochOriginTriggerReactionTime;
+else                                                        triggerOrigin   = EpochOriginTrigger;
 
-if ( triggerOrigin == TO_1TF )
+if ( triggerOrigin == EpochOriginFixedTF )
     trigger1TF      = StringToInteger ( transfer.TriggerFixedTFValue );
-if ( triggerOrigin == TO_TRIGGEROFFSET )
+if ( triggerOrigin == EpochOriginTriggerOffset )
     triggerOffset   = StringToDouble ( transfer.TriggerOffsetValue );
 
 
@@ -2271,7 +2272,7 @@ int                 durationPre         = StringToInteger ( transfer.DurationPre
 int                 durationPost        = StringToInteger ( transfer.DurationPost );
 
                                         // check margins, usually for auto-averaging
-if ( triggerOrigin == TO_1TF ) {
+if ( triggerOrigin == EpochOriginFixedTF ) {
     Clipped ( trigger1TF,   (int) 0, (int) EegDoc->GetNumTimeFrames () - 1          );
 
     Clipped ( durationPre,  (int) 0, (int) trigger1TF                               );
@@ -2328,7 +2329,7 @@ if ( baseLineCorrPost == baseLineCorrPre || ignorepolarity )
                     baseLineCorr        = false;
 
 bool                MergeTriggers       = CheckToBool ( transfer.MergeTriggers );
-bool                SplitTriggers       = CheckToBool ( transfer.SplitTriggers ) && triggerOrigin != TO_1TF;
+bool                SplitTriggers       = CheckToBool ( transfer.SplitTriggers ) && triggerOrigin != EpochOriginFixedTF;
 bool                SaveAverage         = CheckToBool ( transfer.SaveAverage );
 bool                SaveSum             = CheckToBool ( transfer.SaveSum );
 bool                SaveSD              = CheckToBool ( transfer.SaveSD );
@@ -2874,17 +2875,17 @@ if ( deltafilterms > 0 ) {
 
 verbose.NextTopic ( "Time Interval:" );
 {
-if      ( triggerOrigin == TO_1TF )             verbose.Put ( "Epoch origin is:", "TF ", trigger1TF );
-else if ( triggerOrigin == TO_TRIGGER )         verbose.Put ( "Epoch origin is:", "Trigger" );
-else if ( triggerOrigin == TO_TRIGGEROFFSET )   verbose.Put ( "Epoch origin is:", "Trigger + ", triggerOffset, " [TF]" );
-else if ( triggerOrigin == TO_REACTIONTIME  )   verbose.Put ( "Epoch origin is:", "Trigger + Reaction Time" );
+if      ( triggerOrigin == EpochOriginFixedTF               )   verbose.Put ( "Epoch origin is:", "TF ", trigger1TF );
+else if ( triggerOrigin == EpochOriginTrigger               )   verbose.Put ( "Epoch origin is:", "Trigger" );
+else if ( triggerOrigin == EpochOriginTriggerOffset         )   verbose.Put ( "Epoch origin is:", "Trigger + ", triggerOffset, " [TF]" );
+else if ( triggerOrigin == EpochOriginTriggerReactionTime   )   verbose.Put ( "Epoch origin is:", "Trigger + Reaction Time" );
 
 verbose.Put ( "Duration Pre   in [TF]:", durationPre );
 verbose.Put ( "Duration Post  in [TF]:", durationPost );
 verbose.Put ( "Duration Total in [TF]:", transfer.DurationTotal );
 //verbose.Put ( "Duration Total in [TF]:", durationPre + durationPost );
 
-if      ( triggerOrigin != TO_1TF ) {
+if      ( triggerOrigin != EpochOriginFixedTF ) {
 
     ClearString ( buff );
 
@@ -3369,7 +3370,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                                         // init the control dialog
     int                 currtrigg;
     int                 savedcurrtrigg;
-    int                 numtriggers         = triggerOrigin == TO_1TF ? 1 : EegDoc->GetNumMarkers ( /*markertype*/ );   // count all markers
+    int                 numtriggers         = triggerOrigin == EpochOriginFixedTF ? 1 : EegDoc->GetNumMarkers ( /*markertype*/ );   // count all markers
     int                 numtriggacc         = 0;
     int                 numtriggrej         = 0;
 
@@ -3417,7 +3418,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 //  verbose.Put ( "Total number of triggers and markers:", EegDoc->GetNumMarkers ( AllMarkerTypes ) );
 
 
-    if      ( triggerOrigin != TO_1TF ) {
+    if      ( triggerOrigin != EpochOriginFixedTF ) {
 
         ClearString ( buff );
 
@@ -3452,9 +3453,9 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // reset automode, except if grand averaging
-//    if ( triggerOrigin != TO_1TF )
-//        automode    = AutoNone;
-    automode        = acceptall ? AutoAcceptAll : triggerOrigin != TO_1TF ? AutoNone : automode;
+//  if ( triggerOrigin != EpochOriginFixedTF )
+//      automode    = AutoNone;
+    automode        = acceptall ? AutoAcceptAll : triggerOrigin != EpochOriginFixedTF ? AutoNone : automode;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3499,7 +3500,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
             fileouttva  = CookTvaFileName ( BaseFileName, eegfile, seslist, trglist );
 
 
-            if ( triggerOrigin == TO_1TF || automode == AutoAcceptAll )
+            if ( triggerOrigin == EpochOriginFixedTF || automode == AutoAcceptAll )
                                         // overwrite silently
                 canopen = CanOpenFile ( fileouttva, CanOpenFileWrite );
             else
@@ -3554,7 +3555,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
         }
     else
 
-        if ( triggerOrigin == TO_REACTIONTIME )
+        if ( triggerOrigin == EpochOriginTriggerReactionTime )
             (ofstream&) verbose << "Error! Can not compute the epoch origin based on reaction time, tva file is missing!\n"
                                << "       trigger will be used as the origin\n\n";
 
@@ -3590,7 +3591,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     tvartms     = 0;
 
                                         // special case: force this only 1 TF
-    if ( triggerOrigin == TO_1TF ) {
+    if ( triggerOrigin == EpochOriginFixedTF ) {
 
         marker.From    = trigger1TF;
         StringCopy ( marker.Name, triggerlist[ 0 ] ); // to be sure it is accepted
@@ -3698,8 +3699,8 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                 tvartms     = 0;
 
                                         // transform trigger position into epoch origin
-            if      ( triggerOrigin == TO_TRIGGEROFFSET )   marker.From += triggerOffset;
-            else if ( triggerOrigin == TO_REACTIONTIME  )   marker.From += Round ( MillisecondsToTimeFrame ( tvartms, samplingfrequency ) );
+            if      ( triggerOrigin == EpochOriginTriggerOffset         )   marker.From += triggerOffset;
+            else if ( triggerOrigin == EpochOriginTriggerReactionTime   )   marker.From += Round ( MillisecondsToTimeFrame ( tvartms, samplingfrequency ) );
 
                                         // !silly, but this is the only place to store the Reaction Time (converted to int)!
             marker.To  = tvartms * 1000;
