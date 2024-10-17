@@ -520,15 +520,12 @@ UpdateSampleSize ();
 }
 
 
-bool    TMicroStatesSegFilesDialog::CheckTracksGroup ( const TGoF* gof )
+bool    TMicroStatesSegFilesDialog::CheckTracksGroup ( const TGoF& gof )
 {
-if ( gof == 0 )
-    return  false;
-
                                         // Check whole group dimensions
 TracksCompatibleClass   tc;
                                         // Checks for the most important dimensions (note that numsolpoints is numtracks for .ris)
-gof->AllTracksAreCompatible ( tc );
+gof.AllTracksAreCompatible ( tc );
 
 
 if      ( tc.NumTracks == CompatibilityNotConsistent ) {
@@ -867,7 +864,7 @@ StringAppend ( prefix, " " );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-const TGoF*         gof         = GoGoF.GetFirst ();
+const TGoF&         gof         = GoGoF.GetFirst ();
 TFileName           match;
 
 
@@ -875,14 +872,14 @@ if      ( presetfile == SegPresetFilesERP
        || presetfile == SegPresetFilesRestingStatesSubjAllData
        || presetfile == SegPresetFilesRestingStatesSubjResampling ) {
 
-    gof->GetCommonString ( match, true /*, true*/ );
+    gof.GetCommonString ( match, true /*, true*/ );
     }
 
 else if ( presetfile == SegPresetFilesRestingStatesGroupAllData
        || presetfile == SegPresetFilesRestingStatesGroupResampling ) {
                                         // Re-use the individual RS Clustering directory name
                                         // adding "GC" and removing ".Best Clustering"
-    StringCopy                      ( match, (*gof)[ 0 ] );
+    StringCopy                      ( match, gof[ 0 ] );
 
     RemoveFilename                  ( match );
 
@@ -1143,7 +1140,7 @@ if ( first )                            // add a new group
     GoGoF.Add ( new TGoF );
 
 
-GoGoF.GetLast ()->Add ( filename, MaxPathShort );
+GoGoF.GetLast ().Add ( filename, MaxPathShort );
 
 GroupsAllRis        = GoGoF.AllExtensionsAre ( FILEEXT_RIS );
 

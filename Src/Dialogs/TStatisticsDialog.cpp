@@ -579,7 +579,7 @@ else { // IDC_USELASTGROUP
 
     gof         = new TStatGoF;
 
-    gof->Set ( *GoGoF.GetLast () );
+    gof->Set ( GoGoF.GetLast () );
     }
 
                                         // update slot
@@ -589,7 +589,7 @@ gof->EndOfFile      = CheckToBool       ( StatTransfer.EndOfFile    );
 gof->StatTime       = (StatTimeType) StatTransfer.PresetsTime.GetSelIndex ();
 
 
-if ( CheckGroups ( gof ) ) {
+if ( CheckGroups ( *gof ) ) {
     GoGoF.Add ( gof );
     AddGroupSummary ( GoGoF.NumGroups () - 1 );
     }
@@ -598,12 +598,8 @@ else
 }
 
 
-bool    TStatisticsFilesDialog::CheckGroups ( const TGoF* gof ) const
+bool    TStatisticsFilesDialog::CheckGroups ( const TGoF& gof ) const
 {
-if ( gof == 0 )
-    return false;
-
-
 int                 ng              = GoGoF.NumGroups ();
 const char*         toc;
 bool                checkprevious   = ng >= 2 && ! ( ng & 1 );
@@ -622,7 +618,7 @@ if ( StatTransfer.HasPaired () ) {
     }
 */
 /*
-int                 numinfiles      = gof->NumFiles;
+int                 numinfiles      = gof.NumFiles;
                                         // same # of files?
                                         // test only with previous paired group
 if ( StatTransfer.HasPaired () && checkprevious
@@ -637,7 +633,7 @@ int                 numel;
 int                 numelref = 0;
 TListIterator<char> iterator;
 
-foreachin ( *gof, iterator ) {
+foreachin ( gof, iterator ) {
 
     toc = iterator ();
 
@@ -867,12 +863,12 @@ if ( GoGoF.IsEmpty () )
 
 if ( StatTransfer.IsCsvFile () ) {
 
-    const char*     toref       = GoGoF.GetLast()->GetFirst ();
-    int             count       = GoGoF.GetLast()->GroupIndex;
+    const char*     toref       = GoGoF.GetLast().GetFirst ();
+    int             count       = GoGoF.GetLast().GroupIndex;
 
     for ( ; GoGoF.NumGroups () > 0 && count >= 0; count-- )
 
-        if ( StringIs ( GoGoF.GetLast()->GetFirst (), toref ) ) {
+        if ( StringIs ( GoGoF.GetLast().GetFirst (), toref ) ) {
             GoGoF.RemoveLastGroup ();
             GroupsSummary->DeleteString ( 0 );
             }
@@ -1166,7 +1162,7 @@ if ( first ) {                          // add a new group
     }
 
 
-GoGoF.GetLast ()->Add ( filename, MaxPathShort );
+GoGoF.GetLast ().Add ( filename, MaxPathShort );
 }
 
 

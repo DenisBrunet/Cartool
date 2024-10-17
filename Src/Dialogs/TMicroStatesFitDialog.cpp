@@ -507,17 +507,12 @@ if ( ! CheckTracksGroup ( GoGoF.GetLast () ) )
 
 
 //----------------------------------------------------------------------------
-bool    TMicroStatesFitFilesDialog::CheckTracksGroup ( const TGoF* gof )
+bool    TMicroStatesFitFilesDialog::CheckTracksGroup ( const TGoF& gof )
 {
-if ( gof == 0 )
-    return false;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 1) Check gof by itself (same as Segmentation)
 TracksCompatibleClass   tc;
 
-gof->AllTracksAreCompatible ( tc );
+gof.AllTracksAreCompatible ( tc );
 
 //DBGV6 ( numtracks, numauxtracks, numsolpoints, numtf, NumFreqs, samplingfrequency, "CheckTracksGroup last GoF: numtracks, numauxtracks, numsolpoints, numtf, NumFreqs, samplingfrequency" );
 
@@ -596,7 +591,7 @@ if ( StringIsNotEmpty ( FitTransfer.TemplateFileName ) ) {
                                         // 3) Check gof with all the other groups
 
                                         // temporarily join the gof to the GoGoF, so we can test the compatibility of gof with GoGoF
-TGoF ( GoGoF, *gof ).AllTracksAreCompatible ( tc );
+TGoF ( GoGoF, gof ).AllTracksAreCompatible ( tc );
 
 
 if      ( tc.NumTracks == CompatibilityNotConsistent ) {
@@ -627,25 +622,25 @@ if ( gofi < 0 || gofi >= (int) GoGoF )
     return;
 
 
-TGoF               *gof             = &GoGoF[ gofi ];
+TGoF&               gof             = GoGoF[ gofi ];
 TFileName           buff;
 TFileName           buff2;
 TFileName           buff3;
 
                                         // update dialog
-StringCopy ( buff2, ToFileName ( gof->GetFirst () ) );
-StringCopy ( buff3, ToFileName ( gof->GetLast () ) );
+StringCopy ( buff2, ToFileName ( gof.GetFirst () ) );
+StringCopy ( buff3, ToFileName ( gof.GetLast () ) );
 
 
-if ( gof->NumFiles () == 1 )
+if ( gof.NumFiles () == 1 )
     sprintf ( buff, "Group %2d:  %0d File  ( %s )",
               gofi + 1,
-              gof->NumFiles (),
+              gof.NumFiles (),
               (char*) buff2 );
 else
     sprintf ( buff, "Group %2d:  %0d Files  ( %s .. %s )",
               gofi + 1,
-              gof->NumFiles (),
+              gof.NumFiles (),
               (char*) buff2, (char*) buff3 );
 
 
@@ -1009,7 +1004,7 @@ if ( first )                            // add a new group
     GoGoF.Add ( new TGoF );
 
 
-GoGoF.GetLast ()->Add ( filename, MaxPathShort );
+GoGoF.GetLast ().Add ( filename, MaxPathShort );
 
 GroupsAllRis    = GoGoF.AllExtensionsAre ( FILEEXT_RIS );
 }

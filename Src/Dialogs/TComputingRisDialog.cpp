@@ -1471,8 +1471,8 @@ ComputingRisPresetsEnum esicase         = (ComputingRisPresetsEnum) EegPresets->
                                         // Just test for the file extensions
 
 TracksGroupClass        tg;
-//bool                  freqgroups          = GoGoF.AnyTracksGroup ( tg ) && tg.allfreq;                // testing all groups
-bool                    freqgroup           = GoGoF.GetLast ()->AnyTracksGroup ( tg ) && tg.allfreq;    // testing only the last group - more what we want
+//bool                  freqgroups          = GoGoF.AnyTracksGroup ( tg ) && tg.allfreq;            // testing all groups
+bool                    freqgroup           = GoGoF.GetLast ().AnyTracksGroup ( tg ) && tg.allfreq; // testing only the last group - more what we want
 
 
 if (   freqgroup && esicase != ComputingRisPresetFreq ) {
@@ -1482,7 +1482,7 @@ if (   freqgroup && esicase != ComputingRisPresetFreq ) {
 
                                         // Update preset for the user, and clean-up EEGs - usage will tell if this is bothersome
 
-    TGoF*               copylastgof     = new TGoF ( *GoGoF.GetLast () );
+    TGoF*               copylastgof     = new TGoF ( GoGoF.GetLast () );
 
     CmClearEegGroups ();    // deleting all - needs to reintroduce the last gof, though
 
@@ -1503,13 +1503,13 @@ if ( ! freqgroup && esicase == ComputingRisPresetFreq ) {
 
                                         // Update preset for the user, and clean-up EEGs - usage will tell if this is bothersome
 
-    TGoF*               copylastgof     = new TGoF ( *GoGoF.GetLast () );
+    TGoF*               copylastgof     = new TGoF ( GoGoF.GetLast () );
 
     CmClearEegGroups ();    // deleting all - needs to reintroduce the last gof, though
 
     GoGoF.Add ( copylastgof, false, MaxPathShort );
                                         // conveniently switching preset for the user
-    bool                allerps         = GoGoF.GetLast ()->AllExtensionsAre    ( AllEegErpFilesExt );
+    bool                allerps         = GoGoF.GetLast ().AllExtensionsAre    ( AllEegErpFilesExt );
 
     esicase         = allerps ? ComputingRisPresetErpIndivMeans : ComputingRisPresetSpont;
 
@@ -1521,16 +1521,16 @@ if ( ! freqgroup && esicase == ComputingRisPresetFreq ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Begins by testing the last group alone, usually the last one added
-const TGoF*         lastgof         = GoGoF.GetLast ();
+const TGoF&         lastgof         = GoGoF.GetLast ();
 
                                         // no files? try again
-if ( lastgof->IsEmpty () )
+if ( lastgof.IsEmpty () )
     return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Check first the last group's own coherence, as tracks files
-lastgof->AllTracksAreCompatible ( ComputingRisTransfer.CompatEegs );
+lastgof.AllTracksAreCompatible ( ComputingRisTransfer.CompatEegs );
 
 
 if      ( ComputingRisTransfer.CompatEegs.NumTracks == CompatibilityNotConsistent ) {
@@ -1597,7 +1597,7 @@ if ( acrossconditions
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Group is coherent regarding file types? (doing this first, maybe?)
 
-if ( ! lastgof->AnyTracksGroup ( tg ) ) {
+if ( ! lastgof.AnyTracksGroup ( tg ) ) {
 
     if      (   tg.noneofthese  )   ShowMessage ( "Oops, files don't really look like tracks," NewLine "are you trying to fool me?!" NewLine "Check again your input files...", ComputingRisTitle, ShowMessageWarning );
     else if ( ! tg.alleeg       )   ShowMessage ( "Files don't seem to be consistently of the EEG type!" NewLine "Check again your input files...", ComputingRisTitle, ShowMessageWarning );
@@ -1616,7 +1616,7 @@ FreqsCompatibleClass    fc;
 if ( tg.allfreq /*or NumFreqs > CompatibilityConsistent*/ ) {
 
 
-    lastgof->AllFreqsAreCompatible ( fc );
+    lastgof.AllFreqsAreCompatible ( fc );
 
                                         // NumTracks, numtf, NumFreqs and samplingfrequency have already been investigated before...
 
@@ -1909,12 +1909,11 @@ GroupsSummary->ClearList ();
 
 ComputingRisPresetsEnum esicase         = (ComputingRisPresetsEnum) EegPresets  ->GetSelIndex ();
 GroupsLayoutEnum        grouplayout     = (GroupsLayoutEnum)        GroupPresets->GetSelIndex ();
-TFileName           buff;
-TGoF*               gof;
+TFileName               buff;
 
 for ( int gofi = 0; gofi < (int) GoGoF; gofi++ ) {
 
-    gof     = &GoGoF[ gofi ];
+    TGoF&       gof     = GoGoF[ gofi ];
 
                                         // being more explicit on the groups' label
     if      ( grouplayout == GroupsLayoutAllSubj1Cond          )    StringCopy      ( buff, CRISPresets[ esicase ].IsClusters ()                            ? "Cluster" : "Condition" ); // although equivalent, we can be more specific
@@ -1923,15 +1922,15 @@ for ( int gofi = 0; gofi < (int) GoGoF; gofi++ ) {
     else                                                            StringCopy      ( buff, "Group"   );
     StringAppend    ( buff, " ",  IntegerToString ( gofi + 1, NumIntegerDigits ( (int) GoGoF ) ), ":" );
 
-    StringAppend    ( buff, "  ", IntegerToString ( gof->NumFiles () ), " " );
+    StringAppend    ( buff, "  ", IntegerToString ( gof.NumFiles () ), " " );
     if      ( grouplayout == GroupsLayoutAllSubj1Cond          )    StringAppend    ( buff, "Subject"    );
     else if ( grouplayout == GroupsLayout1SubjAllCond          )    StringAppend    ( buff, CRISPresets[ esicase ].IsClusters ()                            ? "Cluster" : "Condition" ); // although equivalent, we can be more specific
     else if ( grouplayout == GroupsLayout1SubjAllCondAllEpochs )    StringAppend    ( buff, "Epoch File" );
     else                                                            StringAppend    ( buff, "File"       );
-    StringAppend    ( buff, StringPlural ( gof->NumFiles () ) );
+    StringAppend    ( buff, StringPlural ( gof.NumFiles () ) );
 
-    if ( gof->NumFiles () == 1 )    StringAppend    ( buff, "  ( ", ToFileName ( gof->GetFirst () ),                                         " )" );
-    else                            StringAppend    ( buff, "  ( ", ToFileName ( gof->GetFirst () ), " .. ", ToFileName ( gof->GetLast () ), " )" );
+    if ( gof.NumFiles () == 1 )     StringAppend    ( buff, "  ( ", ToFileName ( gof.GetFirst () ),                                        " )" );
+    else                            StringAppend    ( buff, "  ( ", ToFileName ( gof.GetFirst () ), " .. ", ToFileName ( gof.GetLast () ), " )" );
 
 
     GroupsSummary->InsertString ( buff, 0 );

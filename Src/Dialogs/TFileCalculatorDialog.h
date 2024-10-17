@@ -78,7 +78,7 @@ protected:
     static TGoGoF       GoGoF;
 
 
-    bool                CheckGroups             ( const TGoF* gof );
+    bool                CheckGroups             ( const TGoF& gof );
     void                AddFileToGroup          ( const char* filename, bool first );
     void                GuessOutputFileExtension();
     void                AddGroupSummary         ( int gofi );

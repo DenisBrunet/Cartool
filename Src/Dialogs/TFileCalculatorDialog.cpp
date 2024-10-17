@@ -235,7 +235,7 @@ if ( first )                            // add a new group
     GoGoF.Add ( new TGoF );
 
 
-GoGoF.GetLast ()->Add ( filename, MaxPathShort );
+GoGoF.GetLast ().Add ( filename, MaxPathShort );
 }
 
 
@@ -400,11 +400,11 @@ if ( w == IDC_ADDGROUP || GoGoF.IsEmpty () ) {
     }
 else { // IDC_USELASTGROUP
 
-    gof->Set ( *GoGoF.GetLast () );
+    gof->Set ( GoGoF.GetLast () );
     }
 
 
-if ( CheckGroups ( gof ) ) {
+if ( CheckGroups ( *gof ) ) {
     GoGoF.Add ( gof, false, MaxPathShort );
     AddGroupSummary ( GoGoF.NumGroups () - 1 );
     }
@@ -466,19 +466,15 @@ foreachin ( GoGoF, gofiterator ) {
 
 
 //----------------------------------------------------------------------------
-bool    TFileCalculatorDialog::CheckGroups ( const TGoF* gof )
+bool    TFileCalculatorDialog::CheckGroups ( const TGoF& gof )
 {
-if ( gof == 0 )
-    return false;
-
-
 const char*         toc;
-int                 numscanned      = gof->NumFiles ();
-//int                 numscanned      = min ( gof->NumFiles (), 100 );    // poll only this amount of files, assume it's enough!
+int                 numscanned      = gof.NumFiles ();
+//int                 numscanned      = min ( gof.NumFiles (), 100 );    // poll only this amount of files, assume it's enough!
 
 
                                         // only for tracks
-if ( IsExtensionAmong ( (*gof)[ 0 ], AllTracksFilesExt " " AllDataExt ) ) {
+if ( IsExtensionAmong ( gof[ 0 ], AllTracksFilesExt " " AllDataExt ) ) {
 
 /*
                                         // all groups with tracks have the same # of files?
@@ -498,7 +494,7 @@ if ( IsExtensionAmong ( (*gof)[ 0 ], AllTracksFilesExt " " AllDataExt ) ) {
 
     for ( int i = 0; i < numscanned; i++ ) {
 
-        toc = (*gof)[ Round ( ( i / (double) NonNull ( numscanned - 1 ) ) * ( gof->NumFiles () - 1 ) ) ];
+        toc = gof[ Round ( ( i / (double) NonNull ( numscanned - 1 ) ) * ( gof.NumFiles () - 1 ) ) ];
 
         if ( ! ReadFromHeader ( toc, ReadNumTimeFrames, &numtf ) ) {
             ShowMessage ( "Can not read the number of Time Frames!", toc, ShowMessageWarning );
@@ -542,7 +538,7 @@ int                 numelref = 0;
 
 for ( int i = 0; i < numscanned; i++ ) {
 
-    toc = (*gof)[ Round ( ( i / (double) NonNull ( numscanned - 1 ) ) * ( gof->NumFiles () - 1 ) ) ];
+    toc = gof[ Round ( ( i / (double) NonNull ( numscanned - 1 ) ) * ( gof.NumFiles () - 1 ) ) ];
 
     if ( ! ReadFromHeader ( toc, ReadNumElectrodes, &numel ) ) {
         ShowMessage ( "Can not read the number of electrodes!", toc, ShowMessageWarning );
@@ -559,7 +555,7 @@ for ( int i = 0; i < numscanned; i++ ) {
 
 
                                         // only solution points
-if ( IsExtensionAmong ( (*gof)[ 0 ], AllInverseFilesExt ) ) {
+if ( IsExtensionAmong ( gof[ 0 ], AllInverseFilesExt ) ) {
                                         // same # of solution points across groups?
     int                 numsp;
     int                 numspref = 0;
@@ -567,7 +563,7 @@ if ( IsExtensionAmong ( (*gof)[ 0 ], AllInverseFilesExt ) ) {
 
     for ( int i = 0; i < numscanned; i++ ) {
 
-        toc = (*gof)[ Round ( ( i / (double) NonNull ( numscanned - 1 ) ) * ( gof->NumFiles () - 1 ) ) ];
+        toc = gof[ Round ( ( i / (double) NonNull ( numscanned - 1 ) ) * ( gof.NumFiles () - 1 ) ) ];
 
         if ( ! ReadFromHeader ( toc, ReadNumSolPoints, &numsp ) ) {
             ShowMessage ( "Can not read the number of solution points!", toc, ShowMessageWarning );
@@ -594,28 +590,28 @@ if ( gofi < 0 || gofi >= (int) GoGoF )
     return;
 
 
-TGoF               *gof             = &GoGoF[ gofi ];
+TGoF&               gof             = GoGoF[ gofi ];
 char                buff [ MaxPathShort ];
 char                buff2[ MaxPathShort ];
 
                                         // update dialog
-if ( gof->NumFiles () > 1 ) {
-    StringCopy ( buff2, ToFileName ( gof->GetFirst () ) );
+if ( gof.NumFiles () > 1 ) {
+    StringCopy ( buff2, ToFileName ( gof.GetFirst () ) );
 
     char                buff3[ MaxPathShort ];
-    StringCopy ( buff3, ToFileName ( gof->GetLast () ) );
+    StringCopy ( buff3, ToFileName ( gof.GetLast () ) );
 
-    StringAppend ( buff2, gof->NumFiles () == 2 ? ", " : " .. ", buff3 );
+    StringAppend ( buff2, gof.NumFiles () == 2 ? ", " : " .. ", buff3 );
     }
 else {
-    StringCopy ( buff2, ToFileName ( gof->GetFirst () ) );
+    StringCopy ( buff2, ToFileName ( gof.GetFirst () ) );
     }
 
 
 sprintf ( buff, "Group %2d: %0d File%s ( %s )",
           gofi + 1,
-          gof->NumFiles (),
-          StringPlural ( gof->NumFiles (), true ),
+          gof.NumFiles (),
+          StringPlural ( gof.NumFiles (), true ),
           buff2 );
 
 

@@ -211,7 +211,7 @@ public:
     int             NumSamples;
 
 
-    void            Reset           ();
+    void            Reset           ()  final;
 
     bool            IsTimeSequential()  const                   { return  crtl::IsTimeSequential ( StatTime ); }
     bool            IsTimeAveraged  ()  const                   { return  crtl::IsTimeAveraged   ( StatTime ); }
@@ -225,10 +225,10 @@ class   TStatGoGoF  :   public TGoGoF
 {
 public:
 
-    const TStatGoF* GetFirst ()                                 const   { return   (TStatGoF *) TGoGoF::GetFirst (); }
-          TStatGoF* GetFirst ()                                         { return   (TStatGoF *) TGoGoF::GetFirst (); }
-    const TStatGoF* GetLast  ()                                 const   { return   (TStatGoF *) TGoGoF::GetLast  (); }
-          TStatGoF* GetLast  ()                                         { return   (TStatGoF *) TGoGoF::GetLast  (); }
+    const TStatGoF& GetFirst ()                                 const   { return   (TStatGoF &) TGoGoF::GetFirst (); }
+          TStatGoF& GetFirst ()                                         { return   (TStatGoF &) TGoGoF::GetFirst (); }
+    const TStatGoF& GetLast  ()                                 const   { return   (TStatGoF &) TGoGoF::GetLast  (); }
+          TStatGoF& GetLast  ()                                         { return   (TStatGoF &) TGoGoF::GetLast  (); }
 
 
     bool            AllAreAverages  ( int gofi1, int gofi2 )    const;
@@ -439,7 +439,7 @@ protected:
     owl::TCheckBox      *MoreOutputs;
 
 
-    bool                CheckGroups             ( const TGoF* gof ) const;
+    bool                CheckGroups             ( const TGoF& gof ) const;
     void                AddFileToGroup          ( const char* filename, bool first );
     void                GuessOutputFileExtension();
     void                AddGroupSummary         ( int gofi );

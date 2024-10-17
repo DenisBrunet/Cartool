@@ -334,8 +334,10 @@ public:
     void            Remove          ( const TMaps* maps );          // from the list, does not destroy the TMaps object
 
 
-    TMaps          *GetFirst ()                                     { return   Group.GetFirst (); }
-    TMaps          *GetLast  ()                                     { return   Group.GetLast  (); }
+    const TMaps*    GetFirst ()         const                       { return   Group.GetFirst (); }
+          TMaps*    GetFirst ()                                     { return   Group.GetFirst (); }
+    const TMaps*    GetLast  ()         const                       { return   Group.GetLast  (); }
+          TMaps*    GetLast  ()                                     { return   Group.GetLast  (); }
 
 
     void            Normalize                   ( AtomType datatype, bool centeraverage = false  );
@@ -356,14 +358,14 @@ public:
     TGoMaps&        operator    =   ( const TGoMaps &op2 );     
 
 
-          TMaps&    operator    ()              ( int index )                               { return *Group[ index ]; }
-    const TMaps&    operator    ()              ( int index )                       const   { return *Group[ index ]; }
-          TMap&     operator    ()              ( int groupi, int index )                   { return (*Group[ groupi ])[ index ]; }
+    const TMaps&    operator    ()              ( int index )                       const   { return  *Group[ index  ]; }
+          TMaps&    operator    ()              ( int index )                               { return  *Group[ index  ]; }
     const TMap&     operator    ()              ( int groupi, int index )           const   { return (*Group[ groupi ])[ index ]; }
-          TMapAtomType& operator()              ( int groupi, int index, int dimi )         { return (*Group[ groupi ])[ index ][ dimi ]; }
+          TMap&     operator    ()              ( int groupi, int index )                   { return (*Group[ groupi ])[ index ]; }
     const TMapAtomType& operator()              ( int groupi, int index, int dimi ) const   { return (*Group[ groupi ])[ index ][ dimi ]; }
-          TMaps&    operator    []              ( int index )                               { return *Group[ index ]; }
-    const TMaps&    operator    []              ( int index )                       const   { return *Group[ index ]; }
+          TMapAtomType& operator()              ( int groupi, int index, int dimi )         { return (*Group[ groupi ])[ index ][ dimi ]; }
+    const TMaps&    operator    []              ( int index )                       const   { return  *Group[ index  ]; }
+          TMaps&    operator    []              ( int index )                               { return  *Group[ index  ]; }
 
                     operator    int             ()                                  const   { return (int)  Group; }
                     operator    bool            ()                                  const   { return (bool) Group; }

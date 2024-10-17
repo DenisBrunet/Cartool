@@ -2221,7 +2221,7 @@ if ( (bool) ListEegDoc ) {
     TListIterator<TTracksDoc>   iteratoreeg;
 
     foreachin ( ListEegDoc, iteratoreeg )
-        segdlg.GoGoF.GetLast ()->Add ( iteratoreeg ()->GetDocPath (), MaxPathShort );
+        segdlg.GoGoF.GetLast ().Add ( iteratoreeg ()->GetDocPath (), MaxPathShort );
     }
 
                                         // then add my files - Ris
@@ -2232,7 +2232,7 @@ if ( (bool) ListRisDoc ) {
     TListIterator<TRisDoc>          iteratorris;
 
     foreachin ( ListRisDoc, iteratorris )
-        segdlg.GoGoF.GetLast ()->Add ( iteratorris ()->GetDocPath (), MaxPathShort );
+        segdlg.GoGoF.GetLast ().Add ( iteratorris ()->GetDocPath (), MaxPathShort );
     }
 
 

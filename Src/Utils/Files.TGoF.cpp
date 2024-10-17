@@ -1086,6 +1086,9 @@ if ( IsEmpty () )
 for ( int i = 0; i < (int) Strings; i++ )
 
     crtl::ReplaceExtension ( Strings[ i ], newext );
+
+                                        // New extension might leak beyond the magic Windows size
+CheckFileNames ( TFilenameExtendedPath );
 }
 
 

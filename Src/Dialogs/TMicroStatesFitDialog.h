@@ -383,7 +383,7 @@ protected:
     void                CmVariableEnable        ( owl::TCommandEnabler &tce )   { TMicroStatesFitDialog::CmVariableEnable ( tce ); }
 
     void                SetEnumEpochs           ( int maxtf = 0 );
-    bool                CheckTracksGroup        ( const TGoF* gof );
+    bool                CheckTracksGroup        ( const TGoF& gof );
     void                AddFileToGroup          ( const char* filename, bool first );
     void                AddGroupSummary         ( int gofi );
     void                SetBaseFilename         ();

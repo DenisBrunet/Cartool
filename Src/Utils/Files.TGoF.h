@@ -308,10 +308,10 @@ public:
     void            Show            ( const char* title = 0 )                           const   { Show ( 0, NumGroups () - 1, title ); }
 
 
-    const TGoF*     GetFirst        ()  const                           { return   Group.GetFirst (); }
-          TGoF*     GetFirst        ()                                  { return   Group.GetFirst (); }
-    const TGoF*     GetLast         ()  const                           { return   Group.GetLast  (); }
-          TGoF*     GetLast         ()                                  { return   Group.GetLast  (); }
+    const TGoF&     GetFirst        ()  const                           { return   *Group.GetFirst (); }
+          TGoF&     GetFirst        ()                                  { return   *Group.GetFirst (); }
+    const TGoF&     GetLast         ()  const                           { return   *Group.GetLast  (); }
+          TGoF&     GetLast         ()                                  { return   *Group.GetLast  (); }
 
 
     void            CopyFilesTo     ( const char* newdir, CopyToFlags flags, const char* buddyexts = 0 ); // copy the files
