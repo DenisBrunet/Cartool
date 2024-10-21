@@ -42,42 +42,48 @@ if ( reprocsub == 0 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Parameters appearance follow the dialog's visual design
-AddOptionString ( reprocsub,    tracks,             "",     "--tracks",             "Tracks to export" Tab Tab Tab Tab "Default: all tracks; Special values: 'gfp', 'dis' and 'avg'" );
+DefineCLIOptionString   ( reprocsub,        "",     "--tracks",             "Tracks to export" Tab Tab Tab Tab "Special values: 'gfp', 'dis' and 'avg'" )
+->ShowDefault           ( "Default:All" );
 
-AddOptionString ( reprocsub,    xyzfile,            "",     "--xyzfile",            "Using electrodes names from a XYZ electrodes coordinates file" );
-AddOptionString ( reprocsub,    roisfile,           "",     "--roisfile",           "Computing ROIs & using ROIs names from a ROIs file" )
-->excludes ( optxyzfile  );
+DefineCLIOptionString   ( reprocsub,        "",     "--xyzfile",            "Using electrodes names from a XYZ electrodes coordinates file" );
+DefineCLIOptionString   ( reprocsub,        "",     "--roisfile",           "Computing ROIs & using ROIs names from a ROIs file" );
 
-AddOptionInt    ( reprocsub,    timemin,            "",     "--timemin",            "Exporting from Time Frame " Tab Tab "Default: 0" );
-AddOptionInt    ( reprocsub,    timemax,            "",     "--timemax",            "Exporting to Time Frame   " Tab Tab "Default: end of file" );
-AddOptionString ( reprocsub,    keeptriggers,       "",     "--keeptriggers",       "Exporting only the data from a triggers / markers list" );
-AddOptionString ( reprocsub,    excludetriggers,    "",     "--excludetriggers",    "Exporting all data but from a triggers / markers list" );
+ExcludeCLIOptions       ( reprocsub,        "--xyzfile",    "--roisfile" );
 
-opttimemin     ->excludes ( optkeeptriggers    )->excludes ( optexcludetriggers );
-opttimemax     ->excludes ( optkeeptriggers    )->excludes ( optexcludetriggers );
-optkeeptriggers->excludes ( optexcludetriggers );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-AddOptionString ( reprocsub,    nulltracks,         "",     "--nulltracks",         "List of null tracks to append" );
+DefineCLIOptionInt      ( reprocsub,        "",     "--timemin",            "Exporting from Time Frame" )
+->ShowDefault           ( "Default:0" );
+DefineCLIOptionInt      ( reprocsub,        "",     "--timemax",            "Exporting to Time Frame" )
+->ShowDefault           ( "Default:End-of-file" );
+DefineCLIOptionString   ( reprocsub,        "",     "--keeptriggers",       "Exporting only the data from a triggers / markers list" );
+DefineCLIOptionString   ( reprocsub,        "",     "--excludetriggers",    "Exporting all data but from a triggers / markers list" );
 
+ExcludeCLIOptions       ( reprocsub,        "--timemin",       "--keeptriggers",   "--excludetriggers" );
+ExcludeCLIOptions       ( reprocsub,        "--timemax",       "--keeptriggers",   "--excludetriggers" );
+ExcludeCLIOptions       ( reprocsub,        "--keeptriggers",  "--excludetriggers" );
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+DefineCLIOptionString   ( reprocsub,        "",     "--nulltracks",         "List of null tracks to append" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Reprocess Tracks filters options
-
-AddOptionString ( reprocsub,    filters,            "",     "--filters",            "A whole string of filtering options, in double quote, as coming from a verbose file" )
+DefineCLIOptionString   ( reprocsub,        "",     "--filters",            "A whole string of filtering options, in double quote, as coming from a verbose file" )
                                         // tricky check to raise an error if filters string was not provided: CLI11 will use the next option as a string, so we can simply test for "-" or "--"
-->check ( []( const string& str ) { return str.find ( "-", 0 ) == 0 ? "string must be in double quotes" : ""; } );
+->CheckOption           ( []( const string& str ) { return str.find ( "-", 0 ) == 0 ? "string must be in double quotes" : ""; } );
 
 
-AddFlag         ( reprocsub,    baseline,           "--dc", "--baseline",           "Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)" );
+DefineCLIFlag           ( reprocsub,        "--dc", "--baseline",           "Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)" );
 
                                         // !We allow the simultaneous use of highpass and lowpass, which will be combined into a single bandpass!
-AddOptionDouble ( reprocsub,    highpass,           "",     "--highpass",           "High-Pass Butterworth filter" )
+DefineCLIOptionDouble   ( reprocsub,        "",     "--highpass",           "High-Pass Butterworth filter" )
                                         // Testing High-Pass < Low-Pass here
-->check ( [ &reprocsub ]( const string& str )
+->CheckOption           ( [ &reprocsub ]( const string& str )
     {   
     double      cuth            = StringToDouble ( str.c_str () );
-    bool        hasl            = HasSubOption       ( reprocsub,"--lowpass" );
-    double      cutl            = GetSubOptionDouble ( reprocsub, "--lowpass" );
+    bool        hasl            = HasCLIOption       ( reprocsub,"--lowpass" );
+    double      cutl            = GetCLIOptionDouble ( reprocsub, "--lowpass" );
 
     return         cuth <= 0
         || hasl && cutl <= 0    ? "frequency cut should be above 0"
@@ -85,19 +91,18 @@ AddOptionDouble ( reprocsub,    highpass,           "",     "--highpass",       
          :                        ""; 
     } );
 
-AddOptionDouble ( reprocsub,    lowpass,            "",     "--lowpass",            "Low-Pass Butterworth filter" )
-->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
+DefineCLIOptionDouble   ( reprocsub,        "",     "--lowpass",            "Low-Pass Butterworth filter" )
+->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
                                         // Bandpass, however, excludes both highpass and lowpass
-AddOptionDoubles( reprocsub,    bandpass,       2,  "",     "--bandpass",           "Band-Pass Butterworth filter" );
-
-optbandpass->excludes ( optlowpass  )
-           ->excludes ( opthighpass );
+DefineCLIOptionDoubles  ( reprocsub,    2,  "",     "--bandpass",           "Band-Pass Butterworth filter" );
+ExcludeCLIOptions       ( reprocsub,        "--bandpass",      "--highpass",   "--lowpass"     );
 
 
-AddOptionInt    ( reprocsub,    order,              "",     "--order",              string ( "Butterworth filter order" ) + Tab + Tab + Tab + "Default: " + TFilterDefaultOrderString )
-->check ( [ &reprocsub ]( const string& str )   
+DefineCLIOptionInt      ( reprocsub,        "",     "--order",              "Butterworth filter order" )
+->ShowDefault           ( "Default:" + string ( IntegerToString ( TFilterDefaultOrder ) ) + " or 2x" + string ( IntegerToString ( TFilterDefaultOrder )  ) )
+->CheckOption           ( [ &reprocsub ]( const string& str )   
     {   int         o               = StringToInteger ( str.c_str () );
-        bool        optionok        = HasSubOption ( reprocsub,"--highpass" ) || HasSubOption ( reprocsub,"--lowpass"  ) || HasSubOption ( reprocsub,"--bandpass" );
+        bool        optionok        = HasCLIOption ( reprocsub,"--highpass" ) || HasCLIOption ( reprocsub,"--lowpass"  ) || HasCLIOption ( reprocsub,"--bandpass" );
         bool        orderevenok     = IsEven         ( o );
         bool        orderrangeok    = IsInsideLimits ( o, TFilterMinOrder, TFilterMaxOrder );
         return ! optionok                       ? "--order requires one of the following {--highpass, --lowpass, --bandpass} option"
@@ -105,67 +110,85 @@ AddOptionInt    ( reprocsub,    order,              "",     "--order",          
              :                                    ""; 
     } );
 
-AddFlag         ( reprocsub,    causal,             "",     "--causal",             "Causal filters, using only forward filtering" );
+DefineCLIFlag           ( reprocsub,        "",     "--causal",             "Causal filters, using only forward filtering" );
 
-AddOptionDoubles( reprocsub,    notches,       -1,  "--notch","--notches",          "Notches filter" );
-AddFlag         ( reprocsub,    notchesharm,        "",     "--harmonics",          "Adding Notches harmonics" );
-optnotchesharm->needs ( optnotches );
+DefineCLIOptionDoubles  ( reprocsub,    -1, "",     "--notches",            "Notches filter" );
+DefineCLIFlag           ( reprocsub,        "",     "--harmonics",          "Adding Notches harmonics" );
+NeedsCLIOption          ( reprocsub,        "--harmonics",  "--notches" );
 
 
-AddOptionString ( reprocsub,    spatial,            "",     "--spatial",            string ( "Spatial filter" ) + Tab + Tab + Tab + Tab + "Default: " + SpatialFilterShortName[ SpatialFilterDefault ] )
-->needs ( optxyzfile )
+DefineCLIOptionString   ( reprocsub,        "",     "--spatial",            "Spatial filter" )
+->ShowDefault           ( "Default:" + string ( SpatialFilterShortName[ SpatialFilterDefault ] ) );
+NeedsCLIOption          ( reprocsub,        "--spatial",    "--xyzfile" )
                                             // Case sensitive, but allows a nice listing when requesting Help
-->check ( CLI::IsMember ( vector<string> ( SpatialFilterShortName + SpatialFilterOutlier, SpatialFilterShortName + NumSpatialFilterTypes ) ) )
+->TypeOfOption          ( "ENUM" )
+->CheckOption           ( CLI::IsMember ( vector<string> ( SpatialFilterShortName + SpatialFilterOutlier, SpatialFilterShortName + NumSpatialFilterTypes ) ) )
                                             // Allowing for case insensitive (and even the long names, although not advertized), but Help is not helping
-//->check ( []( const string& str )   {   string      allspatial  = "{"; 
-//                                        for ( int i = SpatialFilterOutlier; i < NumSpatialFilterTypes; i++ )
-//                                            allspatial  += string ( SpatialFilterShortName[ i ] ) + string ( i < NumSpatialFilterTypes - 1 ? ", " : "" ); 
-//                                        allspatial += "}";
-//                                        return  TextToSpatialFilterType ( str.c_str () ) == SpatialFilterNone ? string ( "Spatial Filter should be in " ) + allspatial : ""; } )
-->expected ( 0, 1 ); // This allows 0 or 1 arguments
+//->CheckOption         ( []( const string& str )   {   string      allspatial  = "{"; 
+//                                                      for ( int i = SpatialFilterOutlier; i < NumSpatialFilterTypes; i++ )
+//                                                          allspatial  += string ( SpatialFilterShortName[ i ] ) + string ( i < NumSpatialFilterTypes - 1 ? ", " : "" ); 
+//                                                      allspatial += "}";
+//                                                      return  TextToSpatialFilterType ( str.c_str () ) == SpatialFilterNone ? string ( "Spatial Filter should be in " ) + allspatial : ""; } )
+->ZeroOrOneArgument;
 
 
-AddFlag         ( reprocsub,    ranking,            "",     "--ranking",            "Ranking data at each time point to [0..1] range" );
+DefineCLIFlag           ( reprocsub,        "",     "--ranking",            "Ranking data at each time point to [0..1] range" );
 
-AddOptionString ( reprocsub,    rectification,      "",     "--rectification",      "Rectification, i.e. making data all positive" )
-->check ( CLI::IsMember ( { "abs", "absolute", "power", "squared" } ) );
+DefineCLIOptionString   ( reprocsub,        "",     "--rectification",      "Rectification, i.e. making data all positive" )
+->TypeOfOption          ( "ENUM" )
+->CheckOption           ( CLI::IsMember ( { "abs", "absolute", "power", "squared" } ) );
 
-AddOptionDouble ( reprocsub,    envelope,           "",     "--envelope",           "Adding a sliding-window smoothing after Rectification, value in [ms]" )
-->needs ( optrectification )
-->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "smoothing window, in [ms], should be positive" : ""; } );
+DefineCLIOptionDouble   ( reprocsub,        "",     "--envelope",           "Adding a sliding-window smoothing after Rectification, value in [ms]" );
+NeedsCLIOption          ( reprocsub,        "--envelope",   "--rectification" )
+->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "smoothing window, in [ms], should be positive" : ""; } );
 
-AddOptionDouble ( reprocsub,    keepabove,          "",     "--keepabove",          "Thresholding data, keeping data above value" );
-AddOptionDouble ( reprocsub,    keepbelow,          "",     "--keepbelow",          "Thresholding data, keeping data below value" );
+DefineCLIOptionDouble   ( reprocsub,        "",     "--keepabove",          "Thresholding data, keeping data above value" );
+DefineCLIOptionDouble   ( reprocsub,        "",     "--keepbelow",          "Thresholding data, keeping data below value" );
 
-AddOptionDouble ( reprocsub,    samplingfrequency,  "",     "--samplingfrequency",  "Default Sampling Frequency, only in case a file has none" )
-->check ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "sampling frequency should be above 0" : ""; } );
-
+DefineCLIOptionDouble   ( reprocsub,        "",     "--samplingfrequency",  "Default Sampling Frequency, only in case a file has none" )
+->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "sampling frequency should be above 0" : ""; } );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-AddOptionString ( reprocsub,    ref,                "",     "--reference",          "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
+DefineCLIOptionString   ( reprocsub,        "",     "--reference",          "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
 
-AddOptionInts   ( reprocsub,    baselinecorr,   2,  "",     "--baselinecorr",       "Baseline correction interval, in time frames since beginning of file" );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-AddOptionString ( reprocsub,    rescaling,          "",     "--rescaling",          "Scaling factor" Tab Tab Tab Tab "Special value: 'meangfp'" );
+DefineCLIOptionInts     ( reprocsub,    2,  "",     "--baselinecorr",       "Baseline correction interval, in time frames since beginning of file" );
 
-AddFlag         ( reprocsub,    sequential,         "",     "--sequential",         "Sequential output" Tab Tab Tab Tab "Default option" );
-AddFlag         ( reprocsub,    average,            "",     "--average",            "Averaging the time dimension" )
-->excludes ( optsequential );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-AddOptionInt    ( reprocsub,    downsampleratio,    "",     "--downsampling",       "Downsampling ratio" )
-->check ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : ""; } );
+DefineCLIOptionString   ( reprocsub,        "",     "--rescaling",          "Scaling factor" Tab Tab Tab Tab "Special value: 'meangfp'" );
 
-AddOptionString ( reprocsub,    infix,              "",     "--infix",              "Infix appended to the file name" );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-AddOptionString ( reprocsub,    extension,          "--ext","--extension",          string ( "Output file extension" Tab Tab Tab "Default: " ) + SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] )
-->check ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
+DefineCLIFlag           ( reprocsub,        "",     "--sequential",         "Sequential output" Tab Tab Tab Tab "Default option" );
+DefineCLIFlag           ( reprocsub,        "",     "--average",            "Averaging the time dimension" );
+ExcludeCLIOptions       ( reprocsub,        "--sequential", "--average" );
 
-AddFlag         ( reprocsub,    nomarkers,          "",     "--nomarkers",          "Not saving the markers to file" );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-AddFlag         ( reprocsub,    concatenate,        "",     "--concatenate",        "Concatenate all output into a single file" );
+DefineCLIOptionInt      ( reprocsub,        "",     "--downsampling",       "Downsampling ratio" )
+->CheckOption           ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : ""; } );
 
-AddFlag         ( reprocsub,    helpreproc,         "-h",   "--help",               "This message" );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+DefineCLIOptionString   ( reprocsub,        "",     "--infix",              "Infix appended to the file name" );
+
+DefineCLIOptionString   ( reprocsub,        "--ext","--extension",          "Output file extension" )
+->TypeOfOption          ( "ENUM" )
+->ShowDefault           ( "Default:" + string ( SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] ) )
+->CheckOption           ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+DefineCLIFlag           ( reprocsub,        "",     "--nomarkers",          "Not saving the markers to file" );
+
+DefineCLIFlag           ( reprocsub,        "",     "--concatenate",        "Concatenate all output into a single file" );
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+DefineCLIFlag           ( reprocsub,        "-h",   "--help",               "This message" );
 }
 
 
@@ -181,8 +204,8 @@ if ( ! IsSubCommandUsed ( reprocsub )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Tracks parameters
-string              roisfile        = GetSubOptionString ( reprocsub, "--roisfile" );
-string              xyzfile         = GetSubOptionString ( reprocsub, "--xyzfile"  );
+string              roisfile        = GetCLIOptionString ( reprocsub, "--roisfile" );
+string              xyzfile         = GetCLIOptionString ( reprocsub, "--xyzfile"  );
 
 TracksOptions       tracksoptions   = ! roisfile.empty () ? ProcessRois 
                                     :                       ProcessTracks;
@@ -195,9 +218,9 @@ TOpenDoc<TRoisDoc>          RoisDoc ( roisfile.c_str (), OpenDocHidden );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              tracks          = GetSubOptionString ( reprocsub, "--tracks" );
+string              tracks          = GetCLIOptionString ( reprocsub, "--tracks" );
 
-string              nulltracks      = GetSubOptionString ( reprocsub, "--nulltracks" );
+string              nulltracks      = GetCLIOptionString ( reprocsub, "--nulltracks" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -210,28 +233,28 @@ string              keeptriggers;
 string              excludetriggers;
 
 
-if      ( HasSubOption ( reprocsub, "--timemin" )
-       || HasSubOption ( reprocsub, "--timemax" ) ) {
+if      ( HasCLIOption ( reprocsub, "--timemin" )
+       || HasCLIOption ( reprocsub, "--timemax" ) ) {
 
     timeoptions     = ExportTimeInterval;
 
-    if  ( HasSubOption ( reprocsub, "--timemin" ) )
-        timemin     = GetSubOptionInt ( reprocsub, "--timemin" );
+    if  ( HasCLIOption ( reprocsub, "--timemin" ) )
+        timemin     = GetCLIOptionInt ( reprocsub, "--timemin" );
 
-    if  ( HasSubOption ( reprocsub, "--timemax" ) )
-        timemax     = GetSubOptionInt ( reprocsub, "--timemax" );
+    if  ( HasCLIOption ( reprocsub, "--timemax" ) )
+        timemax     = GetCLIOptionInt ( reprocsub, "--timemax" );
     }
 
-else if ( HasSubOption ( reprocsub, "--keeptriggers" ) ) {
+else if ( HasCLIOption ( reprocsub, "--keeptriggers" ) ) {
 
     timeoptions     = ExportTimeTriggers;
-    keeptriggers    = GetSubOptionString ( reprocsub, "--keeptriggers" );
+    keeptriggers    = GetCLIOptionString ( reprocsub, "--keeptriggers" );
     }
 
-else if ( HasSubOption ( reprocsub, "--excludetriggers" ) ) {
+else if ( HasCLIOption ( reprocsub, "--excludetriggers" ) ) {
 
     timeoptions     = ExcludeTimeTriggers;
-    excludetriggers = GetSubOptionString ( reprocsub, "--excludetriggers" );
+    excludetriggers = GetCLIOptionString ( reprocsub, "--excludetriggers" );
     }
 
 
@@ -240,9 +263,9 @@ else if ( HasSubOption ( reprocsub, "--excludetriggers" ) ) {
 double              defaultsamplingfrequency    = 0;
 
                                         // First see if caller provided one
-if ( HasSubOption ( reprocsub, "--samplingfrequency" ) )
+if ( HasCLIOption ( reprocsub, "--samplingfrequency" ) )
 
-    defaultsamplingfrequency    = GetSubOptionDouble ( reprocsub, "--samplingfrequency" );
+    defaultsamplingfrequency    = GetCLIOptionDouble ( reprocsub, "--samplingfrequency" );
 
                                         // Still null?
 if ( defaultsamplingfrequency == 0 )
@@ -262,33 +285,33 @@ TTracksFiltersStruct&   fp              = altfilters.FiltersParam;
 
 
                                         // 1) Converting a whole optional string, as coming from the verbose output, to parameters
-if ( HasSubOption ( reprocsub, "--filters" ) ) {
+if ( HasCLIOption ( reprocsub, "--filters" ) ) {
 
-    string              filters         = GetSubOptionString ( reprocsub, "--filters" );
+    string              filters         = GetCLIOptionString ( reprocsub, "--filters" );
 
     altfilters.TextToParameters ( filters.c_str (), XYZDoc.IsOpen () ? XYZDoc->GetDocPath () : 0, defaultsamplingfrequency );
     }
 
                                         // 2) Setting or overwriting each parameter, one at a time - Heavily based on TTracksFilters::TextToParameters method
-if ( HasSubOption ( reprocsub, "--bandpass" ) ) {
+if ( HasCLIOption ( reprocsub, "--bandpass" ) ) {
 
-    vector<string>      band            = GetSubOptionStrings ( reprocsub, "--bandpass" );
+    vector<string>      band            = GetCLIOptionStrings ( reprocsub, "--bandpass" );
     
     fp.SetButterworthHigh ( band[ 0 ].c_str () );
     fp.SetButterworthLow  ( band[ 1 ].c_str () );
     }
 
-if ( HasSubOption ( reprocsub, "--highpass" ) )
+if ( HasCLIOption ( reprocsub, "--highpass" ) )
 
-    fp.SetButterworthHigh ( GetSubOptionString ( reprocsub, "--highpass" ).c_str () );
+    fp.SetButterworthHigh ( GetCLIOptionString ( reprocsub, "--highpass" ).c_str () );
 
-if ( HasSubOption ( reprocsub, "--lowpass" ) )
+if ( HasCLIOption ( reprocsub, "--lowpass" ) )
 
-    fp.SetButterworthLow  ( GetSubOptionString ( reprocsub, "--lowpass" ).c_str () );
+    fp.SetButterworthLow  ( GetCLIOptionString ( reprocsub, "--lowpass" ).c_str () );
 
-if ( HasSubOption ( reprocsub, "--order" ) ) {
+if ( HasCLIOption ( reprocsub, "--order" ) ) {
 
-    int                 order           = GetSubOptionInt ( reprocsub, "--order" );
+    int                 order           = GetCLIOptionInt ( reprocsub, "--order" );
 
     if ( fp.IsBandPass () )
         order  /= 2;                // set half the band-pass order
@@ -298,17 +321,17 @@ if ( HasSubOption ( reprocsub, "--order" ) ) {
     }
 
 
-if ( HasSubFlag ( reprocsub, "--causal" ) )
+if ( HasCLIFlag ( reprocsub, "--causal" ) )
 
-    fp.SetCausal ( HasSubFlag ( reprocsub, "--causal" ) ? "Causal" : "Non-Causal" );    // Default is already Non-Causal, but let's be extra-cautious here
+    fp.SetCausal ( HasCLIFlag ( reprocsub, "--causal" ) ? "Causal" : "Non-Causal" );    // Default is already Non-Causal, but let's be extra-cautious here
 
-if ( HasSubFlag ( reprocsub, "--baseline" ) )
+if ( HasCLIFlag ( reprocsub, "--baseline" ) )
 
     fp.SetBaseline ( "Baseline" );
 
-if ( HasSubOption ( reprocsub, "--notches" ) ) {
+if ( HasCLIOption ( reprocsub, "--notches" ) ) {
 
-    vector<string>      notches         = GetSubOptionStrings ( reprocsub, "--notches" );
+    vector<string>      notches         = GetCLIOptionStrings ( reprocsub, "--notches" );
     string              allnotches;
 
     for ( const auto& s : notches )
@@ -316,46 +339,46 @@ if ( HasSubOption ( reprocsub, "--notches" ) ) {
 
     fp.SetNotches ( allnotches.c_str () );
 
-    fp.SetNotchesAutoHarmonics ( HasSubFlag ( reprocsub, "--harmonics" ) );
+    fp.SetNotchesAutoHarmonics ( HasCLIFlag ( reprocsub, "--harmonics" ) );
     }
 
 
-if ( HasSubOption ( reprocsub, "--spatial" )
-  && HasSubOption ( reprocsub, "--xyzfile" ) ) {
+if ( HasCLIOption ( reprocsub, "--spatial" )
+  && HasCLIOption ( reprocsub, "--xyzfile" ) ) {
                                     // we will fill the missing value with the default option
-    if ( GetSubOptionString ( reprocsub, "--spatial" ).empty () )
+    if ( GetCLIOptionString ( reprocsub, "--spatial" ).empty () )
         altfilters.SpatialFilter    = SpatialFilterDefault;
     else
-        altfilters.SpatialFilter    = TextToSpatialFilterType ( GetSubOptionString ( reprocsub, "--spatial" ).c_str () );
+        altfilters.SpatialFilter    = TextToSpatialFilterType ( GetCLIOptionString ( reprocsub, "--spatial" ).c_str () );
 
 
     fp.SetSpatialFiltering ( XYZDoc->GetDocPath () );
     }
 
 
-if ( HasSubFlag ( reprocsub, "--ranking" ) )
+if ( HasCLIFlag ( reprocsub, "--ranking" ) )
 
     fp.SetRanking ( "Rank" );
 
-if ( HasSubOption ( reprocsub, "--rectification" ) )
+if ( HasCLIOption ( reprocsub, "--rectification" ) )
 
-    fp.SetRectification ( GetSubOptionString ( reprocsub, "--rectification" ).c_str () );
+    fp.SetRectification ( GetCLIOptionString ( reprocsub, "--rectification" ).c_str () );
 
-if ( HasSubOption ( reprocsub, "--envelope" ) ) {
+if ( HasCLIOption ( reprocsub, "--envelope" ) ) {
 
-    fp.SetEnvelopeWidth ( GetSubOptionString ( reprocsub, "--envelope" ).c_str () );
+    fp.SetEnvelopeWidth ( GetCLIOptionString ( reprocsub, "--envelope" ).c_str () );
 
     if ( ! fp.IsRectification () )  // shouldn't happen
         fp.SetRectification ( "Power" );
     }
 
-if ( HasSubOption ( reprocsub, "--keepabove" ) )
+if ( HasCLIOption ( reprocsub, "--keepabove" ) )
 
-    fp.SetThresholdAbove ( GetSubOptionString ( reprocsub, "--keepabove" ).c_str () );
+    fp.SetThresholdAbove ( GetCLIOptionString ( reprocsub, "--keepabove" ).c_str () );
 
-if ( HasSubOption ( reprocsub, "--keepbelow" ) )
+if ( HasCLIOption ( reprocsub, "--keepbelow" ) )
 
-    fp.SetThresholdBelow ( GetSubOptionString ( reprocsub, "--keepbelow" ).c_str () );
+    fp.SetThresholdBelow ( GetCLIOptionString ( reprocsub, "--keepbelow" ).c_str () );
 
 
                                         // 3) Finally setting the filters from the struct - A quite robust and tested method
@@ -368,7 +391,7 @@ FiltersOptions          filteringoptions    = altfilters.HasNoFilters () ? NotUs
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              reflist         = GetSubOptionString ( reprocsub, "--reference" );
+string              reflist         = GetCLIOptionString ( reprocsub, "--reference" );
 
 ReferenceType       ref             = reflist.empty ()
                                    || reflist == "none"
@@ -384,14 +407,14 @@ ReferenceType       ref             = reflist.empty ()
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-vector<int>         baselinecorrint = GetSubOptionInts ( reprocsub, "--baselinecorr" );
+vector<int>         baselinecorrint = GetCLIOptionInts ( reprocsub, "--baselinecorr" );
 
 bool                baselinecorr    = baselinecorrint.size () == 2;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              rescaling       = GetSubOptionString ( reprocsub, "--rescaling" );
+string              rescaling       = GetCLIOptionString ( reprocsub, "--rescaling" );
 
 RescalingOptions    rescalingoptions= rescaling.empty ()                ? NotRescaled
                                     : rescaling == "meangfp"
@@ -399,13 +422,13 @@ RescalingOptions    rescalingoptions= rescaling.empty ()                ? NotRes
                                     :                                     ConstantRescaling;
 
                                         // just to avoid crashing in case a string was provided
-double              rescalingfactor = StringToDouble ( GetSubOptionString ( reprocsub, "--rescaling" ).c_str () );
+double              rescalingfactor = StringToDouble ( GetCLIOptionString ( reprocsub, "--rescaling" ).c_str () );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool                sequential      = HasSubFlag ( reprocsub, "--sequential" );
-bool                average         = HasSubFlag ( reprocsub, "--average" );
+bool                sequential      = HasCLIFlag ( reprocsub, "--sequential" );
+bool                average         = HasCLIFlag ( reprocsub, "--average" );
 
 SequenceOptions     sequenceoptions = sequential ? SequenceProcessing
                                     : average    ? AverageProcessing
@@ -415,20 +438,20 @@ SequenceOptions     sequenceoptions = sequential ? SequenceProcessing
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // ReprocessTracks will ignore if 0
 int                 downsampleratio = timeoptions     == ExportTimeInterval 
-                                   && sequenceoptions == SequenceProcessing ? GetSubOptionInt ( reprocsub, "--downsampling" )
+                                   && sequenceoptions == SequenceProcessing ? GetCLIOptionInt ( reprocsub, "--downsampling" )
                                                                             : 0;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              extension       = GetSubOptionString ( reprocsub, "--extension" );
+string              extension       = GetCLIOptionString ( reprocsub, "--extension" );
 
 SavingEegFileTypes  filetype        = ExtensionToSavingEegFileTypes ( extension.c_str () );
 
-string              infix           = GetSubOptionString ( reprocsub, "--infix" );
+string              infix           = GetCLIOptionString ( reprocsub, "--infix" );
 
-bool                outputmarkers   = ! HasSubFlag ( reprocsub, "--nomarkers" );
+bool                outputmarkers   = ! HasCLIFlag ( reprocsub, "--nomarkers" );
 
-ConcatenateOptions  concatenateoptions  = HasSubFlag ( reprocsub, "--concatenate" ) && (int) gof > 1 ? ConcatenateTime
+ConcatenateOptions  concatenateoptions  = HasCLIFlag ( reprocsub, "--concatenate" ) && (int) gof > 1 ? ConcatenateTime
                                                                                                      : NoConcatenateTime;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -438,8 +461,8 @@ bool                silent              = true;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Console output prototype
-//#define     CLIConsoleOutput
-#undef      CLIConsoleOutput
+#define     CLIConsoleOutput
+//#undef      CLIConsoleOutput
 
 #if defined(CLIConsoleOutput)
 

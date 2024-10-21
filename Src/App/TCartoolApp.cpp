@@ -669,34 +669,46 @@ CLI::App*           toapp           = &app;
 
 //CLI::Option*        opthelp         = app.set_help_flag       ( "-h,--help", "Show help" );           // raises an exception(?)
 app.set_help_flag ();                                                                                   // overriding default
-AddOptionString ( toapp,        showhelp,           "-h",   "--help",               "This message" )    // adding the flag manually, but as an optional string
-->expected ( 0, 1 ); // This allows 0 or 1 arguments
+DefineCLIOptionString   ( toapp,                    "-h",   "--help",               "This message" )    // adding the flag manually, but as an optional string
+->TypeOfOption          ( "SUBCOMMAND" )
+->ZeroOrOneArgument;
 
 
 //CLI::Option*        optversion      = app.set_version_flag ( "--version", version );                  // raises an exception(?)
-AddFlag         ( toapp,        showversion,        "",     "--version",            "Showing program version" );    // adding the flag manually
+DefineCLIFlag           ( toapp,                    "",     "--version",            "Showing program version" );    // adding the flag manually
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Main window group options - currently off as the help display appears uselessly cluttered, maybe we will restore it if we override the help formatting
 //CLI::Option_group*  mainwgroup      = app.add_option_group ( "Main Window", "Options to specify the main window size and position" );
 
-AddFlag         ( toapp,        nosplash,           "",     "--nosplash",           "No splash-screen" );
+DefineCLIFlag           ( toapp,                    "",     "--nosplash",           "No splash-screen" );
 
 
-AddOptionString ( toapp,        mw,                 "",     "--mainwindow",         "Main window initial state" )
-->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
-AddOptionInts   ( toapp,        mwsize,     2,      "",     "--mainwindowsize",     "Main window size W,H"     );
-AddOptionInts   ( toapp,        mwpos,      2,      "",     "--mainwindowpos",      "Main window position X,Y" );
+DefineCLIOptionString   ( toapp,                    "",     "--mainwindow",         "Main window initial state" )
+->TypeOfOption          ( "ENUM" )
+->ShowDefault           ( "Default:" + string ( DefaultWindowState == SW_SHOWMAXIMIZED ? "Maximized" : DefaultWindowState == SW_SHOWMINIMIZED ? "Minimized" : "Normal" ) )
+->CheckOption           ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
+
+DefineCLIOptionInts     ( toapp,            2,      "",     "--mainwindowsize",     "Main window size W,H"     );
+DefineCLIOptionInts     ( toapp,            2,      "",     "--mainwindowpos",      "Main window position X,Y" );
 
 
-AddOptionStrings( toapp,        chw,        -1,     "",     "--childwindow",        "Next child window state(s) "    Tab Tab "(could be repeated for each file)" )
-->check ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
-AddOptionInts   ( toapp,        chwsize,    -1,     "",     "--childwindowsize",    "Next child window size(s) W,H " Tab Tab "(could be repeated for each file)"     );
-AddOptionInts   ( toapp,        chwpos,     -1,     "",     "--childwindowpos",     "Next child window position(s) X,Y " Tab "(could be repeated for each file)" );
+DefineCLIOptionStrings  ( toapp,           -1,      "",     "--childwindow",        "Next child window state(s) "    Tab Tab "(could be repeated for each file)" )
+->TypeOfOption          ( "ENUMS" )
+->ShowDefault           ( "Default:Normal" )
+->CheckOption           ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
+
+DefineCLIOptionInts     ( toapp,           -1,      "",     "--childwindowsize",    "Next child window size(s) W,H " Tab Tab "(could be repeated for each file)" )
+->TypeOfOption          ( "PAIRS OF INTEGERS..." );
+
+DefineCLIOptionInts     ( toapp,           -1,      "",     "--childwindowpos",     "Next child window position(s) X,Y " Tab "(could be repeated for each file)" )
+->TypeOfOption          ( "PAIRS OF INTEGERS..." );
 
 
-AddOptionInt    ( toapp,        mwmon,              "",     "--monitor",            "On which monitor to open the program" );
+DefineCLIOptionInt      ( toapp,                    "",     "--monitor",            "On which monitor to open the program" )
+->TypeOfOption          ( "INDEX" )
+->ShowDefault           ( "Default:1" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -704,11 +716,11 @@ AddOptionInt    ( toapp,        mwmon,              "",     "--monitor",        
 CLI::App*           regsub          = app.add_subcommand ( "register", "Registration command" )
 ->ExclusiveOptions;
 
-AddFlag         ( regsub,       reg,                "-y",   "--yes",                "Register program to Windows (associating icons & file extensions)" );
-AddFlag         ( regsub,       unreg,              "-n",   "--no",                 "Un-register program to Windows (removing icons & file associations)" );
-AddFlag         ( regsub,       resetreg,           "-r",   "--reset",              "Clean-up Windows registration to default (un-register, then register again)" );
-//AddFlag       ( regsub,       noreg,              "-o",   "--none",               "Force skipping program registration" );    // not sure if still useful, as Cartool does not touch registers when launched
-AddFlag         ( regsub,       helpreg,            "-h",   "--help",               "This message" );
+DefineCLIFlag           ( regsub,                   "-y",   "--yes",                "Register program to Windows (associating icons & file extensions)" );
+DefineCLIFlag           ( regsub,                   "-n",   "--no",                 "Un-register program to Windows (removing icons & file associations)" );
+DefineCLIFlag           ( regsub,                   "-r",   "--reset",              "Clean-up Windows registration to default (un-register, then register again)" );
+//DefineCLIFlag         ( regsub,                   "-o",   "--none",               "Force skipping program registration" );    // not sure if still useful, as Cartool does not touch registers when launched
+DefineCLIFlag           ( regsub,                   "-h",   "--help",               "This message" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -721,7 +733,9 @@ ReprocessTracksCLIDefine ( reprocsub );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Positional options (not starting with '-')
                                         // Note that files list usually need to separated from other parameters with " -- ", like in "--<option>=<something> -- <file1> <file2> <file3>"
-AddOptionStrings( toapp,        files,      -1,     "",     "files",                "List of files" );
+                                        // Absolute paths are recommended, though local path to current exe file will be resolved
+DefineCLIOptionStrings  ( toapp,           -1,      "",     "files",                "List of files" )
+->TypeOfOption          ( "" /*"FILENAMES"*/ );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -741,8 +755,10 @@ catch ( const CLI::ParseError &e ) {
     exit ( app.exit ( e ) );
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // For our own convenience, convert vector<string> files to TGoF, while also converting any relative path to absolute
-TGoF                gof ( files, TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) );
+TGoF                gof ( GetCLIOptionStrings ( toapp, "files" ), TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -751,15 +767,16 @@ TGoF                gof ( files, TFilenameFlags ( TFilenameAbsolutePath | TFilen
                                         // Options that will cause some EARLY EXIT of the program
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( HasOption    ( showhelp )
-  || HasSubOption ( regsub,    "--help" )
-  || HasSubOption ( reprocsub, "--help" )
+if ( HasCLIOption ( toapp,     "--help" )   // redefined NOT as a flag
+  || HasCLIFlag   ( regsub,    "--help" )
+  || HasCLIFlag   ( reprocsub, "--help" )
    ) {
 
-    string          helpmessage;
+    string              showhelp        = GetCLIOptionString ( toapp, "--help" );
+    string              helpmessage;
 
-    if      ( HasSubOption ( regsub,    "--help" )  )   helpmessage     = regsub   ->help ();   // register --help
-    else if ( HasSubOption ( reprocsub, "--help" )  )   helpmessage     = reprocsub->help ();   // reprocess --help
+    if      ( HasCLIFlag ( regsub,    "--help" )    )   helpmessage     = regsub   ->help ();   // register --help
+    else if ( HasCLIFlag ( reprocsub, "--help" )    )   helpmessage     = reprocsub->help ();   // reprocess --help
     else if ( showhelp.empty ()                     )   helpmessage     = app       .help ();   // General, top-level help message
 
     else try {                          // try some specialized help message
@@ -781,7 +798,7 @@ if ( HasOption    ( showhelp )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( showversion ) {
+if ( HasCLIFlag ( toapp, "--version" ) ) {
 
     PrintConsole    ( string ( ProdVersion ) + " (" + ProdRevision + ")" + NewLine );
 
@@ -793,10 +810,10 @@ if ( showversion ) {
 
 if ( IsSubCommandUsed ( regsub ) ) {
 
-    if      ( reg      )    /* PrintConsole    ( GetVariableDescription ( reg      ) ); */ RegisterInfo      ();
-    else if ( unreg    )    /* PrintConsole    ( GetVariableDescription ( unreg    ) ); */ UnRegisterInfo    ();
-    else if ( resetreg )    /* PrintConsole    ( GetVariableDescription ( resetreg ) ); */ ResetRegisterInfo ();
-//  else if ( noreg    )    /* PrintConsole    ( GetVariableDescription ( noreg    ) ); */
+    if      ( HasCLIFlag ( regsub, "--yes"   ) ) /* PrintConsole    ( GetCLIOptionDescription ( regsub, "--yes"   ) ); */   RegisterInfo      ();
+    else if ( HasCLIFlag ( regsub, "--no"    ) ) /* PrintConsole    ( GetCLIOptionDescription ( regsub, "--no"    ) ); */   UnRegisterInfo    ();
+    else if ( HasCLIFlag ( regsub, "--reset" ) ) /* PrintConsole    ( GetCLIOptionDescription ( regsub, "--reset" ) ); */   ResetRegisterInfo ();
+//  else if ( HasCLIFlag ( regsub, "--none"  ) ) /* PrintConsole    ( GetCLIOptionDescription ( regsub, "--none"  ) ); */   
 
     exit ( 0 );
     }
@@ -820,23 +837,27 @@ if ( (   nCmdShow == SW_SHOWMAXIMIZED
       || nCmdShow == SW_SHOWNORMAL 
       || nCmdShow == SW_SHOWDEFAULT   )
   && IsInteractive ()
-  && ! nosplash                         )
+  && ! HasCLIFlag ( toapp, "--nosplash" ) )
 
     CreateSplashScreen ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // BEFORE window creation
-if ( HasOption ( mw     )
-  || HasOption ( mwsize )
-  || HasOption ( mwpos  )
-  || HasOption ( mwmon  ) ) {
+if ( HasCLIOption ( toapp, "--mainwindow"     )
+  || HasCLIOption ( toapp, "--mainwindowsize" )
+  || HasCLIOption ( toapp, "--mainwindowpos"  )
+  || HasCLIOption ( toapp, "--monitor"        ) ) {
+
+    string              mw              = GetCLIOptionString    ( toapp, "--mainwindow"     );
+    bool                hasmwsize       = HasCLIOption          ( toapp, "--mainwindowsize" );
+    bool                hasmwpos        = HasCLIOption          ( toapp, "--mainwindowpos"  );
 
     if      ( mw == "maximized" )       nCmdShow    = SW_SHOWMAXIMIZED;     // overriding main window state before creation
     else if ( mw == "minimized" )       nCmdShow    = SW_SHOWMINIMIZED;
     else if ( mw == "normal"
-           || HasOption ( mwsize )                                          // also switching to normal window if any of these were specified
-           || HasOption ( mwpos  ) )    nCmdShow    = SW_SHOWNORMAL;
+           || hasmwsize                                                     // also switching to normal window if any of these were specified
+           || hasmwpos          )       nCmdShow    = SW_SHOWNORMAL;
     else                                nCmdShow    = DefaultWindowState;   // fall back to Cartool default
     }
 
@@ -848,14 +869,22 @@ TApplication::InitInstance ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // AFTER window creation
-if ( HasOption ( mwsize )
-  || HasOption ( mwpos  )
-  || HasOption ( mwmon  ) ) {
+if ( HasCLIOption ( toapp, "--mainwindowsize" )
+  || HasCLIOption ( toapp, "--mainwindowpos"  )
+  || HasCLIOption ( toapp, "--monitor"        ) ) {
+
+    bool                hasmwsize       = HasCLIOption      ( toapp, "--mainwindowsize" );
+    vector<int>         mwsize          = GetCLIOptionInts  ( toapp, "--mainwindowsize" );
+    bool                hasmwpos        = HasCLIOption      ( toapp, "--mainwindowpos"  );
+    vector<int>         mwpos           = GetCLIOptionInts  ( toapp, "--mainwindowpos"  );
+    bool                hasmwmon        = HasCLIOption      ( toapp, "--monitor"        );
+    int                 mwmon           = GetCLIOptionInt   ( toapp, "--monitor"        );
+
                                         // complete any missing size / position with default values
-    int                 w               = HasOption ( mwsize ) ? mwsize[ 0 ] : SetWindowsDefaultWidth  ( ScreenWidth     );
-    int                 h               = HasOption ( mwsize ) ? mwsize[ 1 ] : SetWindowsDefaultHeight ( ScreenHeight    );
-    int                 x               = HasOption ( mwpos  ) ? mwpos [ 0 ] : SetWindowsDefaultLeft   ( ScreenWidth,  w );
-    int                 y               = HasOption ( mwpos  ) ? mwpos [ 1 ] : SetWindowsDefaultTop    ( ScreenHeight, h );
+    int                 w               = hasmwsize ? mwsize[ 0 ] : SetWindowsDefaultWidth  ( ScreenWidth     );
+    int                 h               = hasmwsize ? mwsize[ 1 ] : SetWindowsDefaultHeight ( ScreenHeight    );
+    int                 x               = hasmwpos  ? mwpos [ 0 ] : SetWindowsDefaultLeft   ( ScreenWidth,  w );
+    int                 y               = hasmwpos  ? mwpos [ 1 ] : SetWindowsDefaultTop    ( ScreenHeight, h );
 
                                         // for unknown reasons, there appear to be some deltas here
                         w              += Windows10OffsetW;
@@ -875,17 +904,17 @@ if ( HasOption ( mwsize )
     int                 nummonitors     = monitorsrect.size ();
 
 
-    if ( HasOption ( mwmon ) && IsInsideLimits ( mwmon, 1, nummonitors ) && nummonitors > 1 ) {
+    if ( hasmwmon && IsInsideLimits ( mwmon, 1, nummonitors ) && nummonitors > 1 ) {
 
         const TRect&        currscreen      = monitorsrect[ mwmon - 1 ];
                                         // Trick: this will trigger EvDpiChanged, change the actual monitor, and set the correct new DPI
         WindowSetOrigin ( CartoolMainWindow, currscreen.Left (), currscreen.Top  () );
 
                                         // We have new screen width and height, so we might need to recompute these
-        w   = HasOption ( mwsize ) ? mwsize[ 0 ] : SetWindowsDefaultWidth  ( ScreenWidth     );
-        h   = HasOption ( mwsize ) ? mwsize[ 1 ] : SetWindowsDefaultHeight ( ScreenHeight    );
-        x   = HasOption ( mwpos  ) ? mwpos [ 0 ] : SetWindowsDefaultLeft   ( ScreenWidth,  w );
-        y   = HasOption ( mwpos  ) ? mwpos [ 1 ] : SetWindowsDefaultTop    ( ScreenHeight, h );
+        w   = hasmwsize ? mwsize[ 0 ] : SetWindowsDefaultWidth  ( ScreenWidth     );
+        h   = hasmwsize ? mwsize[ 1 ] : SetWindowsDefaultHeight ( ScreenHeight    );
+        x   = hasmwpos  ? mwpos [ 0 ] : SetWindowsDefaultLeft   ( ScreenWidth,  w );
+        y   = hasmwpos  ? mwpos [ 1 ] : SetWindowsDefaultTop    ( ScreenHeight, h );
 
                                         // for unknown reasons, there appear to be some deltas here
         w  += Windows10OffsetW;
@@ -915,7 +944,7 @@ MDIClientRect   = CartoolMdiClient->GetClientRect ().Normalized ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Finally we can loop through the optional files
-if ( HasOption ( files ) ) {
+if ( HasCLIOption ( toapp, "files" ) ) {
 
     for ( int filei = 0; filei < (int) gof; filei++ ) {
                                         // Caller should quote file names that contains spaces
@@ -928,8 +957,15 @@ if ( HasOption ( files ) ) {
                                         // !We could have any number of these possibly repeating options, so we have to check the boundaries for each of them individually!
                                         // If the number of options is less than the number of files, then the last values will be repeated
 
+        bool                haschw          = HasCLIOption          ( toapp, "--childwindow"     );
+        vector<string>      chw             = GetCLIOptionStrings   ( toapp, "--childwindow"     );
+        bool                haschwsize      = HasCLIOption          ( toapp, "--childwindowsize" );
+        vector<int>         chwsize         = GetCLIOptionInts      ( toapp, "--childwindowsize" );
+        bool                haschwpos       = HasCLIOption          ( toapp, "--childwindowpos"  );
+        vector<int>         chwpos          = GetCLIOptionInts      ( toapp, "--childwindowpos"  );
+
                                         // Changing size and position is possible only with a Normal window, which is the case upon creation
-        if ( HasOption ( chwsize ) && chwsize.size () >= 2 ) {
+        if ( haschwsize && chwsize.size () >= 2 ) {
 
             int         i       = 2 * NoMore ( filei, (int) chwsize.size () / 2 - 1 );
             int         w       = chwsize[ i     ];
@@ -938,7 +974,7 @@ if ( HasOption ( files ) ) {
             view->WindowSetSize ( w, h );
             }
 
-        if ( HasOption ( chwpos ) && chwpos.size () >= 2 ) {
+        if ( haschwpos && chwpos.size () >= 2 ) {
 
             int         i       = 2 * NoMore ( filei, (int) chwpos.size () / 2 - 1 );
             int         x       = chwpos [ i     ];
@@ -947,7 +983,7 @@ if ( HasOption ( files ) ) {
             view->WindowSetOrigin ( x, y );
             }
                                         // Only here we can modify window state
-        if ( HasOption ( chw ) ) {
+        if ( haschw ) {
 
             int         i       = NoMore ( filei, (int) chw.size () - 1 );
 
