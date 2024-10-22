@@ -78,37 +78,48 @@ DefineCLIFlag           ( reprocsub,        "--dc", "--baseline",           "Bas
 
                                         // !We allow the simultaneous use of highpass and lowpass, which will be combined into a single bandpass!
 DefineCLIOptionDouble   ( reprocsub,        "",     "--highpass",           "High-Pass Butterworth filter" )
-                                        // Testing High-Pass < Low-Pass here
-->CheckOption           ( [ &reprocsub ]( const string& str )
-    {   
-    double      cuth            = StringToDouble ( str.c_str () );
-    bool        hasl            = HasCLIOption       ( reprocsub,"--lowpass" );
-    double      cutl            = GetCLIOptionDouble ( reprocsub, "--lowpass" );
-
-    return         cuth <= 0
-        || hasl && cutl <= 0    ? "frequency cut should be above 0"
-         : hasl && cuth > cutl  ? "high-pass cut should be less than the low-pass cut"
-         :                        ""; 
-    } );
+->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
+                                        // Testing High-Pass < Low-Pass here - NOT working anymore
+//->CheckOption           ( [ &reprocsub ]( const string& str )
+//    {   
+//    double      cuth            = StringToDouble ( str.c_str () );
+//    bool        hasl            = HasCLIOption       ( reprocsub, "--lowpass" );
+//    double      cutl            = GetCLIOptionDouble ( reprocsub, "--lowpass" );
+//
+//    return         cuth <= 0
+//        || hasl && cutl <= 0    ? "frequency cut should be above 0"
+//         : hasl && cuth > cutl  ? "high-pass cut should be less than the low-pass cut"
+//         :                        ""; 
+//    } );
 
 DefineCLIOptionDouble   ( reprocsub,        "",     "--lowpass",            "Low-Pass Butterworth filter" )
 ->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
+
                                         // Bandpass, however, excludes both highpass and lowpass
-DefineCLIOptionDoubles  ( reprocsub,    2,  "",     "--bandpass",           "Band-Pass Butterworth filter" );
+DefineCLIOptionDoubles  ( reprocsub,    2,  "",     "--bandpass",           "Band-Pass Butterworth filter" )
+->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
 ExcludeCLIOptions       ( reprocsub,        "--bandpass",      "--highpass",   "--lowpass"     );
 
 
 DefineCLIOptionInt      ( reprocsub,        "",     "--order",              "Butterworth filter order" )
-->ShowDefault           ( "Default:" + string ( IntegerToString ( TFilterDefaultOrder ) ) + " or 2x" + string ( IntegerToString ( TFilterDefaultOrder )  ) )
+->ShowDefault           ( "Default:" + string ( IntegerToString ( TFilterDefaultOrder ) ) + " or " + string ( IntegerToString ( 2 * TFilterDefaultOrder )  ) )
 ->CheckOption           ( [ &reprocsub ]( const string& str )   
     {   int         o               = StringToInteger ( str.c_str () );
-        bool        optionok        = HasCLIOption ( reprocsub,"--highpass" ) || HasCLIOption ( reprocsub,"--lowpass"  ) || HasCLIOption ( reprocsub,"--bandpass" );
         bool        orderevenok     = IsEven         ( o );
         bool        orderrangeok    = IsInsideLimits ( o, TFilterMinOrder, TFilterMaxOrder );
-        return ! optionok                       ? "--order requires one of the following {--highpass, --lowpass, --bandpass} option"
-             : ! orderevenok || ! orderrangeok  ? string ( "Value should be an even number, and within the range " ) + TFilterMinOrderString + ".." + TFilterMaxOrderString
+        return ! orderevenok || ! orderrangeok  ? string ( "Value should be either a multiple of 2 (highpass or lowpass), or 4 (bandpass), and within the range " ) + TFilterMinOrderString + ".." + TFilterMaxOrderString
              :                                    ""; 
     } );
+//->CheckOption           ( [ &reprocsub ]( const string& str )   
+//    {   int         o               = StringToInteger ( str.c_str () );
+//        bool        optionok        = HasCLIOption ( reprocsub,"--highpass" ) || HasCLIOption ( reprocsub,"--lowpass"  ) || HasCLIOption ( reprocsub,"--bandpass" );
+//        bool        orderevenok     = IsEven         ( o );
+//        bool        orderrangeok    = IsInsideLimits ( o, TFilterMinOrder, TFilterMaxOrder );
+//        return ! optionok                       ? "--order requires one of the following {--highpass, --lowpass, --bandpass} option"
+//             : ! orderevenok || ! orderrangeok  ? string ( "Value should be an even number, and within the range " ) + TFilterMinOrderString + ".." + TFilterMaxOrderString
+//             :                                    ""; 
+//    } );
+
 
 DefineCLIFlag           ( reprocsub,        "",     "--causal",             "Causal filters, using only forward filtering" );
 
@@ -293,21 +304,41 @@ if ( HasCLIOption ( reprocsub, "--filters" ) ) {
     }
 
                                         // 2) Setting or overwriting each parameter, one at a time - Heavily based on TTracksFilters::TextToParameters method
-if ( HasCLIOption ( reprocsub, "--bandpass" ) ) {
+                                        // We currently allow highpass + lowpass parameters to define a bandpass
+if      ( HasCLIOption ( reprocsub, "--bandpass" ) 
+       || HasCLIOption ( reprocsub, "--highpass" ) && HasCLIOption ( reprocsub, "--lowpass"  ) ) {
 
-    vector<string>      band            = GetCLIOptionStrings ( reprocsub, "--bandpass" );
-    
-    fp.SetButterworthHigh ( band[ 0 ].c_str () );
-    fp.SetButterworthLow  ( band[ 1 ].c_str () );
+    string      hs;
+    string      ls;
+
+    if ( HasCLIOption ( reprocsub, "--bandpass" ) ) {
+
+        vector<string>      band            = GetCLIOptionStrings ( reprocsub, "--bandpass" );
+        
+        hs      = band[ 0 ];
+        ls      = band[ 1 ];
+        }
+    else {
+        hs      = GetCLIOptionString ( reprocsub, "--highpass" );
+        ls      = GetCLIOptionString ( reprocsub, "--lowpass"  );
+        }
+
+                                        // check order here, as CLI11 check method seems to crash
+    double      h   = StringToDouble ( hs.c_str () );
+    double      l   = StringToDouble ( ls.c_str () );
+
+    fp.SetButterworthHigh ( h < l ? hs.c_str () : ls.c_str () );
+    fp.SetButterworthLow  ( h < l ? ls.c_str () : hs.c_str () );
     }
 
-if ( HasCLIOption ( reprocsub, "--highpass" ) )
+else if ( HasCLIOption ( reprocsub, "--highpass" ) )
 
     fp.SetButterworthHigh ( GetCLIOptionString ( reprocsub, "--highpass" ).c_str () );
 
-if ( HasCLIOption ( reprocsub, "--lowpass" ) )
+else if ( HasCLIOption ( reprocsub, "--lowpass" ) )
 
     fp.SetButterworthLow  ( GetCLIOptionString ( reprocsub, "--lowpass" ).c_str () );
+
 
 if ( HasCLIOption ( reprocsub, "--order" ) ) {
 
