@@ -1371,7 +1371,13 @@ return  arctan < 0 ? arctan + TwoPi : arctan;
 }
 
 
-double          Cotangent ( double angle )
+double      ArcTangent ( const std::complex<float>& c )
+{
+return  ArcTangent ( c.imag (), c.real () );
+}
+
+
+double      Cotangent ( double angle )
 {
 return  1.0 / tan ( angle );
 }

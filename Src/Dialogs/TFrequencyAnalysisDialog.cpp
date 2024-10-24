@@ -1389,7 +1389,7 @@ Clipped ( savefmax, fmin, fmax );
 
                                         // don't allow too little steps (especially in the case of S-Transform)
 savefstep   = AtLeast ( IsSTransform ( CurrentPreset ) ? 0.5 : 0.25, fstep );   // when not retrieving SaveFreqStep
-//Maxed ( savefstep, fstep );                                                     // when retrieving SaveFreqStep
+//Maxed ( savefstep, fstep );                                                   // when retrieving SaveFreqStep
     
 
                                         // update dialog

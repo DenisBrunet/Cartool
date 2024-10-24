@@ -64,6 +64,10 @@ enum    MklRescaling
         NoRescaling,
         SqrtRescaling,
         FullRescaling,
+
+        ForwardRescaling            = NoRescaling,
+        BackwardRescaling           = FullRescaling,    // default rescaling used for forward AND backward (FFT then FFTI) to get back to original scaling
+        ForwardRescalingParseval    = FullRescaling,    // FFT forward only Parseval rescaling, which preserves the energy of the signal - still be careful of real signal "folded" output
         };
 
                                         // Wrap descriptor handle & hide ugly settings

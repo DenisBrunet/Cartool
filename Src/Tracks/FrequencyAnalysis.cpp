@@ -438,9 +438,9 @@ long                timenum             = ( timemax - timemin + 1 );
 
 
 double              datafreqstep_hz     = samplingfrequency / (double) blocksize;
-int                 limitfreqmax_i      = freqsize - 1;                             // = blocksize / 2 - was:  GetNyquist ( blocksize, analysis == FreqAnalysisSTransform )
+int                 limitfreqmax_i      = freqsize - 1;                             // Nyquist frequency; = blocksize / 2 - was:  GetNyquist ( blocksize, analysis == FreqAnalysisSTransform )
 double              limitfreqmax_hz     = limitfreqmax_i * datafreqstep_hz;
-double              limitfreqmin_i      = 1;
+double              limitfreqmin_i      = 1;                                        // first non-null frequency
 double              limitfreqmin_hz     = limitfreqmin_i * datafreqstep_hz;
 
                                         // these are the cases where we DON'T want to average sub-bands frequencies
@@ -1034,11 +1034,12 @@ if          ( outputbands == OutputLinearInterval ) {
     verbose.Put ( "Number of frequencies saved:",   freqbands[ 0 ].SaveNumFreqs );
                                         // be explicit, give all freqs
 
-    TOneFrequencyBand*          fb          = freqbands.data ();
+    const TOneFrequencyBand*    fb          = freqbands.data ();
 
     for ( int fi = fb->SaveFreqMin_i, fi0 = 0; fi <= fb->SaveFreqMax_i; fi += fb->SaveFreqStep_i, fi0++ ) {
 
         if ( fb->AvgNumFreqs > 1 ) {
+
             verbose.Put ( fi0 ? "" : "Merging frequencies [Hz]:" );
 
             for ( int downf = 0, fi2 = fi; downf < fb->AvgNumFreqs; downf++, fi2 += fb->AvgFreqStep_i )
@@ -1056,7 +1057,7 @@ else if     ( outputbands == OutputBands
 
     verbose.Put ( "Number of frequency bands:", numfreqbands );
 
-    TOneFrequencyBand*          fb          = freqbands.data ();
+    const TOneFrequencyBand*    fb          = freqbands.data ();
 
     for ( int fbi = 0; fbi < numfreqbands; fbi++, fb++ ) {
 
@@ -1064,6 +1065,7 @@ else if     ( outputbands == OutputBands
         verbose.Put ( "Frequency band #:",          fbi + 1 );
 
         if ( fb->AvgNumFreqs > 1 ) {
+
             verbose.Put ( "From frequency [Hz]:",            fb->SaveFreqMin_hz );
             verbose.Put ( "To   frequency [Hz]:",            fb->SaveFreqMax_hz );
             verbose.Put ( "Number of frequencies averaged:", fb->AvgNumFreqs );
@@ -1258,7 +1260,7 @@ int                 intwidth;
 
 if      ( outputbands == OutputLinearInterval ) {
 
-    TOneFrequencyBand*          fb          = freqbands.data ();
+    const TOneFrequencyBand*    fb          = freqbands.data ();
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1329,7 +1331,7 @@ else if ( outputbands == OutputBands
     bool        avgnumfreqs     = false;
 
 
-    TOneFrequencyBand*          fb          = freqbands.data ();
+    const TOneFrequencyBand*    fb          = freqbands.data ();
 
     for ( int fbi = 0; fbi < numfreqbands; fbi++, fb++ ) {
 
@@ -1451,17 +1453,30 @@ mkl::TMklFft        ffti;
 
 if ( analysis == FreqAnalysisSTransform ) {
 
-    fft .Set ( mkl::FromReal,      mkl::NoRescaling,   blocksize );
-    ffti.Set ( mkl::BackToComplex, mkl::FullRescaling, blocksize );
+    fft .Set ( mkl::FromReal,      mkl::ForwardRescaling,           blocksize );
+    ffti.Set ( mkl::BackToComplex, mkl::BackwardRescaling,          blocksize );
     }
 else if ( analysis == FreqAnalysisFFTApproximation ) {
-                                        // Single FFTs will rescale by sqrt(#samples)
-    fft .Set ( mkl::FromReal,      mkl::SqrtRescaling, blocksize );
+                                        // Single FFT rescaling for Parseval equality
+    fft .Set ( mkl::FromReal,      mkl::ForwardRescalingParseval,   blocksize );
     }
 else { // all other FFT analysis
-                                        // Single FFTs will rescale by sqrt(#samples)
-    fft .Set ( mkl::FromReal,      mkl::SqrtRescaling, blocksize );
+                                        // Single FFT rescaling for Parseval equality
+    fft .Set ( mkl::FromReal,      mkl::ForwardRescalingParseval,   blocksize );
     }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // For a REAL INPUT SIGNAL, the optimized FFT will return only ~HALF OF THE RESULTS, namely the "positive" frequencies
+                                        // But we still need to ACCOUNT for the corresponding "negative" frequencies, either for the norm or energy, for the Parseval equality to be correct
+                                        // But there is a twist, however, as both the 0 and Nyquist frequencies have NO CONJUGATE COUNTERPARTS, so they should NOT be doubled up
+                                        // This does not qualify to the full FFT -> FFTI transform, as in that case, we just need to get back to original data (scaling)
+//auto    NegFreqFactor   = [ limitfreqmax_i ] ( int fi ) { return (AReal) ( fi == 0 || fi == limitfreqmax_i ? 1 : 2 ); };
+
+                                        // Use if for FFT and FFT Approximation (not nedded for ST, and Phase output):
+// NegFreqFactor ( fi ) * F ( fi )  or  NegFreqFactor ( fi ) * abs ( F ( fi ) )  or  NegFreqFactor ( fi ) * norm ( F ( fi ) )
+
+                                        // Finally chose not to make use of it, because it will make a visual / numerical discrepancy between the 0 / Nyquist frequencies and the other doubled frequencies...
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1571,7 +1586,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 //          for ( int i = freqsize; i < blocksize;    i++ )     F ( i )  = 0;   // !buffer was not touched by the real FFT, so it is still 0!
 
                                         // loop through the output bands
-            TOneFrequencyBand*          fb          = freqbands.data ();
+            const TOneFrequencyBand*    fb          = freqbands.data ();
 
             for ( int fbi = 0, savedfi0 = 0; fbi < numfreqbands; fbi++, fb++ ) {
 
@@ -1676,11 +1691,11 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                                         // converting to needed type
                             for ( int i = 0; i < blocksize; i++ ) {
 
-                                if      ( outputatomtype == OutputAtomComplex )     { SumST ( i ) +=        ST ( i );           }
-                                else if ( outputatomtype == OutputAtomPhase   )     { SumST ( i ) += ArcTangent ( ST ( i ).imag (), ST ( i ).real () );   }
-                                else if ( outputatomtype == OutputAtomNorm    )     { SumST ( i ) += abs  ( ST ( i ) );         }
-                                else if ( outputatomtype == OutputAtomNorm2   )     { SumST ( i ) += norm ( ST ( i ) );         }
-                                else if ( outputatomtype == OutputAtomReal    )     { SumST ( i ) +=        ST ( i ).real ();   } // saving ST ( i ) is the original data + filter; abs ( ST ( i ) ) is the envelope
+                                if      ( outputatomtype == OutputAtomComplex )     { SumST ( i ) +=              ST ( i );         }
+                                else if ( outputatomtype == OutputAtomPhase   )     { SumST ( i ) += ArcTangent ( ST ( i ) );       }
+                                else if ( outputatomtype == OutputAtomNorm    )     { SumST ( i ) += abs        ( ST ( i ) );       }
+                                else if ( outputatomtype == OutputAtomNorm2   )     { SumST ( i ) += norm       ( ST ( i ) );       }
+                                else if ( outputatomtype == OutputAtomReal    )     { SumST ( i ) +=              ST ( i ).real (); } // saving ST ( i ) is the original data + filter; abs ( ST ( i ) ) is the envelope
                                 } // for i
 
                             } // freqs > 0 [Hz]
@@ -1710,7 +1725,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
             fft ( X, F );
 
                                         // loop through the output bands, saving ALL data of each band
-            TOneFrequencyBand*          fb          = freqbands.data ();
+            const TOneFrequencyBand*    fb          = freqbands.data ();
 
             for ( int fbi = 0; fbi < numfreqbands; fbi++, fb++ ) {
 
@@ -1733,32 +1748,31 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
             fft ( X, F );
 
                                         // loop through the output bands
-            TOneFrequencyBand*          fb          = freqbands.data ();
+            const TOneFrequencyBand*    fb          = freqbands.data ();
 
             for ( int fbi = 0, savedfi0 = 0; fbi < numfreqbands; fbi++, fb++ ) {
 
                                         // convert & average frequencies by steps
                 for ( int fi = fb->SaveFreqMin_i; fi <= fb->SaveFreqMax_i; fi += fb->SaveFreqStep_i, savedfi0++ ) {
 
+                    if      ( outputatomtype == OutputAtomComplex )             { blockfft ( savedfi0, eli )    =              F ( fi );    }   // OK when dealing with norm of complex, but not norm^2
+                    else if ( outputatomtype == OutputAtomPhase   )             { blockfft ( savedfi0, eli )    = ArcTangent ( F ( fi ) );  }
+                    else if ( outputatomtype == OutputAtomNorm    )             { blockfft ( savedfi0, eli )    = abs        ( F ( fi ) );  }
+                    else if ( outputatomtype == OutputAtomNorm2   )             { blockfft ( savedfi0, eli )    = norm       ( F ( fi ) );  }
+                    else if ( outputatomtype == OutputAtomReal    )             { blockfft ( savedfi0, eli )    = abs        ( F ( fi ) );  }   // this case shouldn't happen, but let's feed it something anyway
+
+
                                         // allow frequency averaging only if not complex - AvgNumFreqs must be set to 1
                     bool        avgfreqs    = fb->AvgNumFreqs > 1 && ! nofreqavg;
-
-                    if      ( outputatomtype == OutputAtomComplex )             { blockfft ( savedfi0, eli )    =        F ( fi );      }
-                    else if ( outputatomtype == OutputAtomPhase   )             { blockfft ( savedfi0, eli )    = fi > 0 ? ArcTangent ( F ( fi ).imag (), F ( fi ).real () ) : 0; } // actually can use ArcTangent all the time, but then we have alternating 0 and Pi phases, according to the sign of the real component. This could be confusing, force the phase to 0 anyway.
-                    else if ( outputatomtype == OutputAtomNorm    )             { blockfft ( savedfi0, eli )    = abs  ( F ( fi ) );    }
-                    else if ( outputatomtype == OutputAtomNorm2   )             { blockfft ( savedfi0, eli )    = norm ( F ( fi ) );    }
-                    else if ( outputatomtype == OutputAtomReal    )             { blockfft ( savedfi0, eli )    = abs  ( F ( fi ) );    }   // this case shouldn't happen, but let's feed it something anyway
-
 
                     if ( avgfreqs ) {   // sum following frequencies
 
                         for ( int downf = 1, fi2 = fi + fb->AvgFreqStep_i ; downf < fb->AvgNumFreqs; downf++, fi2 += fb->AvgFreqStep_i ) {
 
-//                          if      ( outputatomtype == OutputAtomComplex )     { blockfft ( savedfi0, eli )   += avgfreqs ? norm : F ( fi2 ); }
-//                          else if ( outputatomtype == OutputAtomPhase   )     { blockfft ( savedfi0, eli )   += ArcTangent ( F ( fi2 ).imag (), F ( fi2 ).real () ); }
-                            if      ( outputatomtype == OutputAtomNorm    )     { blockfft ( savedfi0, eli )   += abs  ( F ( fi2 ) );   }
-                            else if ( outputatomtype == OutputAtomNorm2   )     { blockfft ( savedfi0, eli )   += norm ( F ( fi2 ) );   }
-                            else if ( outputatomtype == OutputAtomReal    )     { blockfft ( savedfi0, eli )   += abs  ( F ( fi2 ) );   }
+                                        // !OutputAtomComplex and OutputAtomPhase types are NOT allowed for averaging!
+                            if      ( outputatomtype == OutputAtomNorm    )     { blockfft ( savedfi0, eli )   += abs        ( F ( fi2 ) ); }
+                            else if ( outputatomtype == OutputAtomNorm2   )     { blockfft ( savedfi0, eli )   += norm       ( F ( fi2 ) ); }
+                            else if ( outputatomtype == OutputAtomReal    )     { blockfft ( savedfi0, eli )   += abs        ( F ( fi2 ) ); }
                             }
 
                                         // then average
@@ -1776,13 +1790,13 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
                 if ( outputsequential ) {   // write directly to file
                     if      ( datatypeout == AtomTypeComplex )  {   results ( blocki0, eli, 2 * fi0     )   = blockfft ( fi0, eli ).real ();    
-                                                                    results ( blocki0, eli, 2 * fi0 + 1 )   = blockfft ( fi0, eli ).imag ();   }
+                                                                    results ( blocki0, eli, 2 * fi0 + 1 )   = blockfft ( fi0, eli ).imag ();}
                     else                                            results ( blocki0, eli,     fi0     )   = blockfft ( fi0, eli ).real ();
                     } // if outputsequential
 
                 else {                      // sum up in buffer
-                    if      ( datatypeout == AtomTypeComplex )  { sumfft ( fi0, eli )  +=  blockfft ( fi0, eli );           } // shouldn't happen, not meaningful to average complex numbers!
-                    else                                        { sumfft ( fi0, eli )  +=  blockfft ( fi0, eli ).real ();   } // norm, norm2 have already been computed, in the Real part
+                    if      ( datatypeout == AtomTypeComplex )  {   sumfft  ( fi0, eli )                   += blockfft ( fi0, eli );        }   // shouldn't happen, not meaningful to average complex numbers!
+                    else                                        {   sumfft  ( fi0, eli )                   += blockfft ( fi0, eli ).real ();}   // norm/norm2 has already been computed, and is stored in the Real component
                     } // if average freqs
 
                 } // for savedfreqband
@@ -1800,7 +1814,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                                         // FFT Approximation - filling completed, time to actually process results
     if ( analysis == FreqAnalysisFFTApproximation ) {
                                         // loop through the output bands
-        TOneFrequencyBand*          fb          = freqbands.data ();
+        const TOneFrequencyBand*    fb          = freqbands.data ();
 
         for ( int fbi = 0, savedfi0 = 0; fbi < numfreqbands; fbi++, fb++ ) {
 
@@ -1826,10 +1840,6 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                                         // time is in Z
                 orgz    = 2 * blocki0;
 #endif
-
-                                        // allow frequency averaging only if not complex - AvgNumFreqs must be set to 1
-                bool        avgfreqs    = fb->AvgNumFreqs > 1 && ! nofreqavg;
-
                                         // the actual approximation is here
                 ApproximateFrequency ( &fftappr ( fbi, fftafi0, 0 ), numelsave );
 
@@ -1837,6 +1847,9 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                 for ( int eli2 = 0; eli2 < numelsave; eli2++ )
                     blockfft ( fi0, eli2 )  = fftappr ( fbi, fftafi0, eli2 );
 
+
+                                        // allow frequency averaging only if not complex - AvgNumFreqs must be set to 1
+                bool        avgfreqs    = fb->AvgNumFreqs > 1 && ! nofreqavg;
 
                 if ( avgfreqs ) {   // sum following frequencies
 
@@ -1860,7 +1873,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                                     // then rescale
                     for ( int eli2 = 0; eli2 < numelsave; eli2++ )
                         blockfft ( fi0, eli2 ) /= fb->AvgNumFreqs;
-                    } // for sub-band
+                    } // avgfreqs
 
                 else // don't forget to step
 
@@ -1876,7 +1889,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                     if ( outputsequential ) {   // write directly to file
 
                         if      ( datatypeout == AtomTypeComplex )  {   results ( blocki0, eli2, 2 * savedfi0       )   = blockfft ( fi0, eli2 ).real ();  
-                                                                        results ( blocki0, eli2, 2 * savedfi0 + 1   )   = blockfft ( fi0, eli2 ).imag ();  }
+                                                                        results ( blocki0, eli2, 2 * savedfi0 + 1   )   = blockfft ( fi0, eli2 ).imag ();   }
                         else                                            results ( blocki0, eli2,     savedfi0       )   = blockfft ( fi0, eli2 ).real ();
                         } // if outputsequential
 
@@ -1886,8 +1899,8 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
                             InvertFreqMap ( blockfft[ fi0 ], numelsave );
 
-                        if      ( datatypeout == AtomTypeComplex )  { sumfft ( savedfi0, eli2 ) += blockfft ( fi0, eli2 );         } // shouldn't happen, not meaningful to average in C!
-                        else                                        { sumfft ( savedfi0, eli2 ) += blockfft ( fi0, eli2 ).real (); } // norm, norm2 have already been computed, in the Real part
+                        if      ( datatypeout == AtomTypeComplex )  {   sumfft ( savedfi0, eli2 )                      += blockfft ( fi0, eli2 );           }   // shouldn't happen, not meaningful to average in C!
+                        else                                        {   sumfft ( savedfi0, eli2 )                      += blockfft ( fi0, eli2 ).real ();   }   // norm, norm2 have already been computed, in the Real part
                         }
                     }
                 } // for freq

@@ -633,6 +633,7 @@ double          FastLanczos3    ( double x );   // x: [-3..3]
 
                                         // returned in radian, always positive
 double          ArcTangent      ( double y, double x );
+double          ArcTangent      ( const std::complex<float>& c );
 double          Cotangent       ( double angle );
 
 

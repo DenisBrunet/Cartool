@@ -95,7 +95,7 @@ Reset ();
 How         = how;
 DataSize    = AtLeast ( 0, numdata );
 
-if ( DataSize == 0 )
+if ( DataSize <= 0 )
     How = UnknownProcessing;
 
 if ( How == UnknownProcessing )
@@ -124,13 +124,15 @@ if ( rescaling != NoRescaling ) {
            || How == FromComplex )
 
         DftiSetValue ( mklh, DFTI_FORWARD_SCALE,  rescaling == SqrtRescaling    ? 1 / sqrt ( (double) DataSize ) 
-                                                             /*FullRescaling*/  : 1 /        (double) DataSize   );
+                                                : rescaling == FullRescaling    ? 1 /        (double) DataSize
+                                                :            /*NoRescaling*/      1                              );
 
     else if ( How == BackToReal 
            || How == BackToComplex )
 
         DftiSetValue ( mklh, DFTI_BACKWARD_SCALE, rescaling == SqrtRescaling    ? 1 / sqrt ( (double) DataSize ) 
-                                                             /*FullRescaling*/  : 1 /        (double) DataSize   );
+                                                : rescaling == FullRescaling    ? 1 /        (double) DataSize
+                                                :            /*NoRescaling*/      1                              );
     } // some rescaling
 
 

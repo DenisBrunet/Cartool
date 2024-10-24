@@ -449,8 +449,8 @@ int                 lastfreqi           = numpts / 2;
                                         // We need the Hilbert transform, so we go through some Fourier to do that
 
                                         // ?can we put this as fields?
-mkl::TMklFft        fft  ( mkl::FromReal,      mkl::NoRescaling,   numpts );
-mkl::TMklFft        ffti ( mkl::BackToComplex, mkl::FullRescaling, numpts );
+mkl::TMklFft        fft  ( mkl::FromReal,      mkl::ForwardRescaling,  numpts );
+mkl::TMklFft        ffti ( mkl::BackToComplex, mkl::BackwardRescaling, numpts );
 
 
 TVector<AReal>      X ( numpts );
