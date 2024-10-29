@@ -1173,7 +1173,8 @@ ReprocessTracks (
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 bool                openauto            = CheckToBool ( transfer->OpenAuto )
-                                       && ! isfrequency;
+                                       && ! isfrequency
+                                       && CartoolApplication->IsInteractive ();
 
                                         // complimentary opening the file for the user
 if ( openauto )

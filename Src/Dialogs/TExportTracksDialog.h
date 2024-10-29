@@ -119,7 +119,14 @@ public:
                         TExportTracksDialog ( owl::TWindow* parent, owl::TResId resId, TTracksDoc* doc );
                        ~TExportTracksDialog ();
 
+
+    void                BatchProcess                ()  final;
+    void                BatchProcessCurrent         ()  final;
+    void                ProcessCurrent              ( void *usetransfer = 0, const char *moreinfix = 0 )    final;
+
+
 protected:
+
     owl::TRadioButton   *ExportTracks;
     owl::TEdit          *Tracks;
     owl::TCheckBox      *UseXyzDoc;
@@ -175,11 +182,6 @@ protected:
     TExportTracks       ExpFile;
     long                ConcatInputTime;
     long                ConcatOutputTime;
-
-
-    void                BatchProcess                ();
-    void                BatchProcessCurrent         ();
-    void                ProcessCurrent              ( void *usetransfer = 0, const char *moreinfix = 0 );
 
 
     void                SetupWindow                 ();

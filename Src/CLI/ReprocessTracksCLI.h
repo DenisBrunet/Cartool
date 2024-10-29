@@ -34,7 +34,7 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
                                         // Defining the interface
-void        ReprocessTracksCLIDefine ( CLI::App* reprocsub )
+inline void     ReprocessTracksCLIDefine ( CLI::App* reprocsub )
 {
 if ( reprocsub == 0 )
     return;
@@ -205,7 +205,7 @@ DefineCLIFlag           ( reprocsub,        "-h",   "--help",               "Thi
 
 //----------------------------------------------------------------------------
                                         // Running the command
-void        ReprocessTracksCLI ( CLI::App* reprocsub, const TGoF& gof )
+inline void     ReprocessTracksCLI ( CLI::App* reprocsub, const TGoF& gof )
 {
 if ( ! IsSubCommandUsed ( reprocsub )
   || gof.IsEmpty () )
@@ -270,7 +270,7 @@ else if ( HasCLIOption ( reprocsub, "--excludetriggers" ) ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // For total safety, it is convenient to have a default sampling frequency at hand, which could be used for EEGs that don't have one
+                                        // For total safety, it is convenient to have a default sampling frequency at hand, which could be passed to EEGs that lack one
 double              defaultsamplingfrequency    = 0;
 
                                         // First see if caller provided one
@@ -492,8 +492,8 @@ bool                silent              = true;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Console output prototype
-#define     CLIConsoleOutput
-//#undef      CLIConsoleOutput
+//#define     CLIConsoleOutput
+#undef      CLIConsoleOutput
 
 #if defined(CLIConsoleOutput)
 
