@@ -33,6 +33,13 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
+                                        // Options names
+constexpr char* __tracks        = "--tracks";
+constexpr char* __timemin       = "--timemin";
+constexpr char* __timemax       = "--timemax";
+
+
+//----------------------------------------------------------------------------
                                         // Defining the interface
 inline void     ReprocessTracksCLIDefine ( CLI::App* reprocsub )
 {
@@ -42,7 +49,7 @@ if ( reprocsub == 0 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Parameters appearance follow the dialog's visual design
-DefineCLIOptionString   ( reprocsub,        "",     "--tracks",             "Tracks to export" Tab Tab Tab Tab "Special values: 'gfp', 'dis' and 'avg'" )
+DefineCLIOptionString   ( reprocsub,        "",     __tracks,               "Tracks to export" Tab Tab Tab Tab "Special values: 'gfp', 'dis' and 'avg'" )
 ->ShowDefault           ( "Default:All" );
 
 DefineCLIOptionString   ( reprocsub,        "",     "--xyzfile",            "Using electrodes names from a XYZ electrodes coordinates file" );
@@ -52,16 +59,16 @@ ExcludeCLIOptions       ( reprocsub,        "--xyzfile",    "--roisfile" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionInt      ( reprocsub,        "",     "--timemin",            "Exporting from Time Frame" )
+DefineCLIOptionInt      ( reprocsub,        "",     __timemin,              "Exporting from Time Frame" )
 ->ShowDefault           ( "Default:0" );
-DefineCLIOptionInt      ( reprocsub,        "",     "--timemax",            "Exporting to Time Frame" )
+DefineCLIOptionInt      ( reprocsub,        "",     __timemax,              "Exporting to Time Frame" )
 ->ShowDefault           ( "Default:End-of-file" );
 DefineCLIOptionString   ( reprocsub,        "",     "--keeptriggers",       "Exporting only the data from a triggers / markers list" );
 DefineCLIOptionString   ( reprocsub,        "",     "--excludetriggers",    "Exporting all data but from a triggers / markers list" );
 
-ExcludeCLIOptions       ( reprocsub,        "--timemin",       "--keeptriggers",   "--excludetriggers" );
-ExcludeCLIOptions       ( reprocsub,        "--timemax",       "--keeptriggers",   "--excludetriggers" );
-ExcludeCLIOptions       ( reprocsub,        "--keeptriggers",  "--excludetriggers" );
+ExcludeCLIOptions       ( reprocsub,        __timemin,          "--keeptriggers",   "--excludetriggers" );
+ExcludeCLIOptions       ( reprocsub,        __timemax,          "--keeptriggers",   "--excludetriggers" );
+ExcludeCLIOptions       ( reprocsub,        "--keeptriggers",   "--excludetriggers" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -229,7 +236,7 @@ TOpenDoc<TRoisDoc>          RoisDoc ( roisfile.c_str (), OpenDocHidden );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              tracks          = GetCLIOptionString ( reprocsub, "--tracks" );
+string              tracks          = GetCLIOptionString ( reprocsub, __tracks );
 
 string              nulltracks      = GetCLIOptionString ( reprocsub, "--nulltracks" );
 
@@ -244,16 +251,16 @@ string              keeptriggers;
 string              excludetriggers;
 
 
-if      ( HasCLIOption ( reprocsub, "--timemin" )
-       || HasCLIOption ( reprocsub, "--timemax" ) ) {
+if      ( HasCLIOption ( reprocsub, __timemin )
+       || HasCLIOption ( reprocsub, __timemax ) ) {
 
     timeoptions     = ExportTimeInterval;
 
-    if  ( HasCLIOption ( reprocsub, "--timemin" ) )
-        timemin     = GetCLIOptionInt ( reprocsub, "--timemin" );
+    if  ( HasCLIOption ( reprocsub, __timemin ) )
+        timemin     = GetCLIOptionInt ( reprocsub, __timemin );
 
-    if  ( HasCLIOption ( reprocsub, "--timemax" ) )
-        timemax     = GetCLIOptionInt ( reprocsub, "--timemax" );
+    if  ( HasCLIOption ( reprocsub, __timemax ) )
+        timemax     = GetCLIOptionInt ( reprocsub, __timemax );
     }
 
 else if ( HasCLIOption ( reprocsub, "--keeptriggers" ) ) {

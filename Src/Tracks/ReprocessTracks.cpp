@@ -82,9 +82,9 @@ if (   EEGDoc           == 0
 if ( tracksoptions == ProcessRois && roisdoc == 0 )
     return  false;
 
-
-if ( timeoptions == ExportTimeInterval && ( timemin < 0 || timemax < 0 || timemin > timemax ) )
-    return  false;
+                                        // Off, as this will be checked later on
+//if ( timeoptions == ExportTimeInterval && ( timemin < 0 || timemax < 0 || timemin > timemax ) )
+//    return  false;
 
                                         // or do we allow to export empty files?
 if ( timeoptions == ExportTimeTriggers && StringIsEmpty ( triggerstokeeplist ) )
