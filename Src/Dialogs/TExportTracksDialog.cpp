@@ -1054,19 +1054,23 @@ else if ( CheckToBool ( transfer->OtherRef   ) ) {
 
     refsel.Reset ();
 
-    refsel.Set    ( transfer->RefList, &ElectrodesNames );
+    refsel.Set    ( transfer->RefList, &ElectrodesNames, CartoolApplication->IsInteractive () );
 
-    refsel.ToText ( transfer->RefList, &ElectrodesNames, AuxiliaryTracksNames );
+                                        // that should not be...
+    if ( refsel.NumSet () == 0 ) {
 
-                                        // aborting now?
-    if ( refsel.NumSet() == 0 ) {
-        CloseXyz  ();
-        CloseRois ();
-        CmCancel  ();
+        ref     = ReferenceAsInFile;    // either setting to no reference, as is currently done in  TTracksDoc::SetReferenceType
+                                        
+        //CloseXyz  ();                 // or aborting?
+        //CloseRois ();
+        //CmCancel  ();
         }
+    else {
 
-                                        // We can be a bit more specific here
-    ref     = refsel.NumSet () == 1 ? ReferenceSingleTrack : ReferenceMultipleTracks;
+        refsel.ToText ( transfer->RefList, &ElectrodesNames, AuxiliaryTracksNames );
+                                            // We can be a bit more specific here
+        ref     = refsel.NumSet () == 1 ? ReferenceSingleTrack : ReferenceMultipleTracks;
+        }
     }
 
                                         // Allow any sort of re-referencing

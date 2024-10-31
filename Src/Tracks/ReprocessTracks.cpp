@@ -307,26 +307,32 @@ if ( createfile )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Setting data type, reference, and reading parameters
 AtomType         	datatype        = EEGDoc->GetAtomType ( AtomTypeUseOriginal );
+char                reflistclean    [ EditSizeText ];
 
                                         // force reset reference?
 //if (    IsPositive ( datatype )
 //     || IsAngular  ( datatype ) )   ref = ReferenceAsInFile;
 
 
-if ( ref == ReferenceSingleTrack || ref == ReferenceMultipleTracks ) {
+if ( ref == ReferenceSingleTrack 
+  || ref == ReferenceMultipleTracks ) {
 
     refsel.Reset ();
 
     refsel.Set    ( reflist, &ElectrodesNames, ! silent );
 
                                         // that should not be...
-    if ( refsel.NumSet () == 0 )
-        ref     = ReferenceAsInFile;          // either setting to no reference, as is currently done in  TTracksDoc::SetReferenceType
-//      return  false;                  // or exiting?
+    if ( refsel.NumSet () == 0 ) {
 
-                                        // allow us to override single / multiple electrode(s) ref
-    if      ( refsel.NumSet () == 1 && ref == ReferenceMultipleTracks )     ref     = ReferenceSingleTrack;
-    else if ( refsel.NumSet () >  1 && ref == ReferenceSingleTrack    )     ref     = ReferenceMultipleTracks;
+        ref     = ReferenceAsInFile;    // either setting to no reference, as is currently done in  TTracksDoc::SetReferenceType
+//      return  false;                  // or exiting?
+        }
+    else {
+
+        refsel.ToText ( reflistclean, &ElectrodesNames, AuxiliaryTracksNames );
+                                            // We can be a bit more specific here
+        ref     = refsel.NumSet () == 1 ? ReferenceSingleTrack : ReferenceMultipleTracks;
+        }
     }
 
                                         // Allow any sort of re-referencing
@@ -1215,8 +1221,8 @@ if ( closefile ) {
     if      ( datatype == AtomTypePositive
            || ref == ReferenceAsInFile          )       verbose.Put ( "Reference:", "No reference, as in file" );
     else if ( ref == ReferenceAverage           )       verbose.Put ( "Reference:", "Average reference" );
-    else if ( ref == ReferenceSingleTrack       )       verbose.Put ( "Reference:", reflist );
-    else if ( ref == ReferenceMultipleTracks    )       verbose.Put ( "Reference:", reflist );
+    else if ( ref == ReferenceSingleTrack       )       verbose.Put ( "Reference:", reflistclean );
+    else if ( ref == ReferenceMultipleTracks    )       verbose.Put ( "Reference:", reflistclean );
     else if ( ref == ReferenceUsingCurrent      ) {
 
         if      ( EEGDoc->GetReferenceType () == ReferenceAverage  )    verbose.Put ( "Current reference:", "Average reference" );
