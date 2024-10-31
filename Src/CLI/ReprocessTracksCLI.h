@@ -34,9 +34,47 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
                                         // Options names
-constexpr char* __tracks        = "--tracks";
-constexpr char* __timemin       = "--timemin";
-constexpr char* __timemax       = "--timemax";
+constexpr char*     __tracks            = "--tracks";
+constexpr char*     __xyzfile           = "--xyzfile";
+constexpr char*     __roisfile          = "--roisfile";
+
+constexpr char*     __timemin           = "--timemin";
+constexpr char*     __timemax           = "--timemax";
+constexpr char*     __keeptriggers      = "--keeptriggers";
+constexpr char*     __excludetriggers   = "--excludetriggers";
+constexpr char*     __nulltracks        = "--nulltracks";
+
+constexpr char*     __filters           = "--filters";
+constexpr char*     __baseline          = "--baseline";
+constexpr char*     __dc                = "--dc";
+constexpr char*     __highpass          = "--highpass";
+constexpr char*     __lowpass           = "--lowpass";
+constexpr char*     __bandpass          = "--bandpass";
+constexpr char*     __order             = "--order";
+constexpr char*     __causal            = "--causal";
+constexpr char*     __notches           = "--notches";
+constexpr char*     __harmonics         = "--harmonics";
+constexpr char*     __spatial           = "--spatial";
+constexpr char*     __ranking           = "--ranking";
+constexpr char*     __rectification     = "--rectification";
+constexpr char*     __envelope          = "--envelope";
+constexpr char*     __keepabove         = "--keepabove";
+constexpr char*     __keepbelow         = "--keepbelow";
+constexpr char*     __samplingfrequency = "--samplingfrequency";
+
+constexpr char*     __reference         = "--reference";
+constexpr char*     __baselinecorr      = "--baselinecorr";
+constexpr char*     __rescaling         = "--rescaling";
+constexpr char*     __sequential        = "--sequential";
+constexpr char*     __average           = "--average";
+constexpr char*     __downsampling      = "--downsampling";
+
+constexpr char*     __infix             = "--infix";
+constexpr char*     __extension         = "--extension";
+constexpr char*     __ext               = "--ext";
+
+constexpr char*     __nomarkers         = "--nomarkers";
+constexpr char*     __concatenate       = "--concatenate";
 
 
 //----------------------------------------------------------------------------
@@ -52,10 +90,10 @@ if ( reprocsub == 0 )
 DefineCLIOptionString   ( reprocsub,        "",     __tracks,               "Tracks to export" Tab Tab Tab Tab "Special values: 'gfp', 'dis' and 'avg'" )
 ->ShowDefault           ( "Default:All" );
 
-DefineCLIOptionString   ( reprocsub,        "",     "--xyzfile",            "Using electrodes names from a XYZ electrodes coordinates file" );
-DefineCLIOptionString   ( reprocsub,        "",     "--roisfile",           "Computing ROIs & using ROIs names from a ROIs file" );
+DefineCLIOptionString   ( reprocsub,        "",     __xyzfile,              "Using electrodes names from a XYZ electrodes coordinates file" );
+DefineCLIOptionString   ( reprocsub,        "",     __roisfile,             "Computing ROIs & using ROIs names from a ROIs file" );
 
-ExcludeCLIOptions       ( reprocsub,        "--xyzfile",    "--roisfile" );
+ExcludeCLIOptions       ( reprocsub,        __xyzfile,      __roisfile );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -63,35 +101,35 @@ DefineCLIOptionInt      ( reprocsub,        "",     __timemin,              "Exp
 ->ShowDefault           ( "Default:0" );
 DefineCLIOptionInt      ( reprocsub,        "",     __timemax,              "Exporting to Time Frame" )
 ->ShowDefault           ( "Default:End-of-file" );
-DefineCLIOptionString   ( reprocsub,        "",     "--keeptriggers",       "Exporting only the data from a triggers / markers list" );
-DefineCLIOptionString   ( reprocsub,        "",     "--excludetriggers",    "Exporting all data but from a triggers / markers list" );
+DefineCLIOptionString   ( reprocsub,        "",     __keeptriggers,         "Exporting only the data from a triggers / markers list" );
+DefineCLIOptionString   ( reprocsub,        "",     __excludetriggers,      "Exporting all data but from a triggers / markers list" );
 
-ExcludeCLIOptions       ( reprocsub,        __timemin,          "--keeptriggers",   "--excludetriggers" );
-ExcludeCLIOptions       ( reprocsub,        __timemax,          "--keeptriggers",   "--excludetriggers" );
-ExcludeCLIOptions       ( reprocsub,        "--keeptriggers",   "--excludetriggers" );
+ExcludeCLIOptions       ( reprocsub,        __timemin,          __keeptriggers,     __excludetriggers );
+ExcludeCLIOptions       ( reprocsub,        __timemax,          __keeptriggers,     __excludetriggers );
+ExcludeCLIOptions       ( reprocsub,        __keeptriggers,     __excludetriggers );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionString   ( reprocsub,        "",     "--nulltracks",         "List of null tracks to append" );
+DefineCLIOptionString   ( reprocsub,        "",     __nulltracks,           "List of null tracks to append" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Reprocess Tracks filters options
-DefineCLIOptionString   ( reprocsub,        "",     "--filters",            "A whole string of filtering options, in double quote, as coming from a verbose file" )
+DefineCLIOptionString   ( reprocsub,        "",     __filters,              "A whole string of filtering options, in double quote, as coming from a verbose file" )
                                         // tricky check to raise an error if filters string was not provided: CLI11 will use the next option as a string, so we can simply test for "-" or "--"
 ->CheckOption           ( []( const string& str ) { return str.find ( "-", 0 ) == 0 ? "string must be in double quotes" : ""; } );
 
 
-DefineCLIFlag           ( reprocsub,        "--dc", "--baseline",           "Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)" );
+DefineCLIFlag           ( reprocsub,        __dc,   __baseline,             "Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)" );
 
                                         // !We allow the simultaneous use of highpass and lowpass, which will be combined into a single bandpass!
-DefineCLIOptionDouble   ( reprocsub,        "",     "--highpass",           "High-Pass Butterworth filter" )
+DefineCLIOptionDouble   ( reprocsub,        "",     __highpass,             "High-Pass Butterworth filter" )
 ->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
                                         // Testing High-Pass < Low-Pass here - NOT working anymore
 //->CheckOption           ( [ &reprocsub ]( const string& str )
 //    {   
 //    double      cuth            = StringToDouble ( str.c_str () );
-//    bool        hasl            = HasCLIOption       ( reprocsub, "--lowpass" );
-//    double      cutl            = GetCLIOptionDouble ( reprocsub, "--lowpass" );
+//    bool        hasl            = HasCLIOption       ( reprocsub, __lowpass );
+//    double      cutl            = GetCLIOptionDouble ( reprocsub, __lowpass );
 //
 //    return         cuth <= 0
 //        || hasl && cutl <= 0    ? "frequency cut should be above 0"
@@ -99,16 +137,16 @@ DefineCLIOptionDouble   ( reprocsub,        "",     "--highpass",           "Hig
 //         :                        ""; 
 //    } );
 
-DefineCLIOptionDouble   ( reprocsub,        "",     "--lowpass",            "Low-Pass Butterworth filter" )
+DefineCLIOptionDouble   ( reprocsub,        "",     __lowpass,              "Low-Pass Butterworth filter" )
 ->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
 
                                         // Bandpass, however, excludes both highpass and lowpass
-DefineCLIOptionDoubles  ( reprocsub,    2,  "",     "--bandpass",           "Band-Pass Butterworth filter" )
+DefineCLIOptionDoubles  ( reprocsub,    2,  "",     __bandpass,             "Band-Pass Butterworth filter" )
 ->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
-ExcludeCLIOptions       ( reprocsub,        "--bandpass",      "--highpass",   "--lowpass"     );
+ExcludeCLIOptions       ( reprocsub,        __bandpass,         __highpass,     __lowpass );
 
 
-DefineCLIOptionInt      ( reprocsub,        "",     "--order",              "Butterworth filter order" )
+DefineCLIOptionInt      ( reprocsub,        "",     __order,                "Butterworth filter order" )
 ->ShowDefault           ( "Default:" + string ( IntegerToString ( TFilterDefaultOrder ) ) + " or " + string ( IntegerToString ( 2 * TFilterDefaultOrder )  ) )
 ->CheckOption           ( [ &reprocsub ]( const string& str )   
     {   int         o               = StringToInteger ( str.c_str () );
@@ -119,25 +157,25 @@ DefineCLIOptionInt      ( reprocsub,        "",     "--order",              "But
     } );
 //->CheckOption           ( [ &reprocsub ]( const string& str )   
 //    {   int         o               = StringToInteger ( str.c_str () );
-//        bool        optionok        = HasCLIOption ( reprocsub,"--highpass" ) || HasCLIOption ( reprocsub,"--lowpass"  ) || HasCLIOption ( reprocsub,"--bandpass" );
+//        bool        optionok        = HasCLIOption ( reprocsub,__highpass ) || HasCLIOption ( reprocsub,__lowpass  ) || HasCLIOption ( reprocsub,__bandpass );
 //        bool        orderevenok     = IsEven         ( o );
 //        bool        orderrangeok    = IsInsideLimits ( o, TFilterMinOrder, TFilterMaxOrder );
-//        return ! optionok                       ? "--order requires one of the following {--highpass, --lowpass, --bandpass} option"
+//        return ! optionok                       ? __order requires one of the following {__highpass, __lowpass, bandpass} option"
 //             : ! orderevenok || ! orderrangeok  ? string ( "Value should be an even number, and within the range " ) + TFilterMinOrderString + ".." + TFilterMaxOrderString
 //             :                                    ""; 
 //    } );
 
 
-DefineCLIFlag           ( reprocsub,        "",     "--causal",             "Causal filters, using only forward filtering" );
+DefineCLIFlag           ( reprocsub,        "",     __causal,               "Causal filters, using only forward filtering" );
 
-DefineCLIOptionDoubles  ( reprocsub,    -1, "",     "--notches",            "Notches filter" );
-DefineCLIFlag           ( reprocsub,        "",     "--harmonics",          "Adding Notches harmonics" );
-NeedsCLIOption          ( reprocsub,        "--harmonics",  "--notches" );
+DefineCLIOptionDoubles  ( reprocsub,    -1, "",     __notches,              "Notches filter" );
+DefineCLIFlag           ( reprocsub,        "",     __harmonics,            "Adding Notches harmonics" );
+NeedsCLIOption          ( reprocsub,        __harmonics,    __notches );
 
 
-DefineCLIOptionString   ( reprocsub,        "",     "--spatial",            "Spatial filter" )
+DefineCLIOptionString   ( reprocsub,        "",     __spatial,              "Spatial filter" )
 ->ShowDefault           ( "Default:" + string ( SpatialFilterShortName[ SpatialFilterDefault ] ) );
-NeedsCLIOption          ( reprocsub,        "--spatial",    "--xyzfile" )
+NeedsCLIOption          ( reprocsub,        __spatial,      __xyzfile )
                                             // Case sensitive, but allows a nice listing when requesting Help
 ->TypeOfOption          ( "ENUM" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( SpatialFilterShortName + SpatialFilterOutlier, SpatialFilterShortName + NumSpatialFilterTypes ) ) )
@@ -150,59 +188,59 @@ NeedsCLIOption          ( reprocsub,        "--spatial",    "--xyzfile" )
 ->ZeroOrOneArgument;
 
 
-DefineCLIFlag           ( reprocsub,        "",     "--ranking",            "Ranking data at each time point to [0..1] range" );
+DefineCLIFlag           ( reprocsub,        "",     __ranking,              "Ranking data at each time point to [0..1] range" );
 
-DefineCLIOptionString   ( reprocsub,        "",     "--rectification",      "Rectification, i.e. making data all positive" )
+DefineCLIOptionString   ( reprocsub,        "",     __rectification,        "Rectification, i.e. making data all positive" )
 ->TypeOfOption          ( "ENUM" )
 ->CheckOption           ( CLI::IsMember ( { "abs", "absolute", "power", "squared" } ) );
 
-DefineCLIOptionDouble   ( reprocsub,        "",     "--envelope",           "Adding a sliding-window smoothing after Rectification, value in [ms]" );
-NeedsCLIOption          ( reprocsub,        "--envelope",   "--rectification" )
+DefineCLIOptionDouble   ( reprocsub,        "",     __envelope,             "Sliding-window smoothing after rectification (positive-only data), value in [ms]" );
+NeedsCLIOption          ( reprocsub,        __envelope,     __rectification )   // dialog does not enforce this, just in case data is already positive, but we do here
 ->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "smoothing window, in [ms], should be positive" : ""; } );
 
-DefineCLIOptionDouble   ( reprocsub,        "",     "--keepabove",          "Thresholding data, keeping data above value" );
-DefineCLIOptionDouble   ( reprocsub,        "",     "--keepbelow",          "Thresholding data, keeping data below value" );
+DefineCLIOptionDouble   ( reprocsub,        "",     __keepabove,            "Thresholding data, keeping data above value" );
+DefineCLIOptionDouble   ( reprocsub,        "",     __keepbelow,            "Thresholding data, keeping data below value" );
 
-DefineCLIOptionDouble   ( reprocsub,        "",     "--samplingfrequency",  "Default Sampling Frequency, only in case a file has none" )
+DefineCLIOptionDouble   ( reprocsub,        "",     __samplingfrequency,    "Default Sampling Frequency, only in case a file has none" )
 ->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "sampling frequency should be above 0" : ""; } );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionString   ( reprocsub,        "",     "--reference",          "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
+DefineCLIOptionString   ( reprocsub,        "",     __reference,            "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionInts     ( reprocsub,    2,  "",     "--baselinecorr",       "Baseline correction interval, in time frames since beginning of file" );
+DefineCLIOptionInts     ( reprocsub,    2,  "",     __baselinecorr,         "Baseline correction interval, in time frames since beginning of file" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionString   ( reprocsub,        "",     "--rescaling",          "Scaling factor" Tab Tab Tab Tab "Special value: 'meangfp'" );
+DefineCLIOptionString   ( reprocsub,        "",     __rescaling,            "Scaling factor" Tab Tab Tab Tab "Special value: 'meangfp'" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIFlag           ( reprocsub,        "",     "--sequential",         "Sequential output" Tab Tab Tab Tab "Default option" );
-DefineCLIFlag           ( reprocsub,        "",     "--average",            "Averaging the time dimension" );
-ExcludeCLIOptions       ( reprocsub,        "--sequential", "--average" );
+DefineCLIFlag           ( reprocsub,        "",     __sequential,           "Sequential output" Tab Tab Tab Tab "Default option" );
+DefineCLIFlag           ( reprocsub,        "",     __average,              "Averaging the time dimension" );
+ExcludeCLIOptions       ( reprocsub,        __sequential,   __average );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionInt      ( reprocsub,        "",     "--downsampling",       "Downsampling ratio" )
+DefineCLIOptionInt      ( reprocsub,        "",     __downsampling,         "Downsampling ratio" )
 ->CheckOption           ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : ""; } );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionString   ( reprocsub,        "",     "--infix",              "Infix appended to the file name" );
+DefineCLIOptionString   ( reprocsub,        "",     __infix,                "Infix appended to the file name" );
 
-DefineCLIOptionString   ( reprocsub,        "--ext","--extension",          "Output file extension" )
+DefineCLIOptionString   ( reprocsub,        __ext,  __extension,            "Output file extension" )
 ->TypeOfOption          ( "ENUM" )
 ->ShowDefault           ( "Default:" + string ( SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] ) )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIFlag           ( reprocsub,        "",     "--nomarkers",          "Not saving the markers to file" );
+DefineCLIFlag           ( reprocsub,        "",     __nomarkers,            "Not saving the markers to file" );
 
-DefineCLIFlag           ( reprocsub,        "",     "--concatenate",        "Concatenate all output into a single file" );
+DefineCLIFlag           ( reprocsub,        "",     __concatenate,          "Concatenate all output into a single file" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -222,8 +260,8 @@ if ( ! IsSubCommandUsed ( reprocsub )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Tracks parameters
-string              roisfile        = GetCLIOptionString ( reprocsub, "--roisfile" );
-string              xyzfile         = GetCLIOptionString ( reprocsub, "--xyzfile"  );
+string              roisfile        = GetCLIOptionString ( reprocsub, __roisfile );
+string              xyzfile         = GetCLIOptionString ( reprocsub, __xyzfile  );
 
 TracksOptions       tracksoptions   = ! roisfile.empty () ? ProcessRois 
                                     :                       ProcessTracks;
@@ -238,7 +276,7 @@ TOpenDoc<TRoisDoc>          RoisDoc ( roisfile.c_str (), OpenDocHidden );
 
 string              tracks          = GetCLIOptionString ( reprocsub, __tracks );
 
-string              nulltracks      = GetCLIOptionString ( reprocsub, "--nulltracks" );
+string              nulltracks      = GetCLIOptionString ( reprocsub, __nulltracks );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -263,16 +301,16 @@ if      ( HasCLIOption ( reprocsub, __timemin )
         timemax     = GetCLIOptionInt ( reprocsub, __timemax );
     }
 
-else if ( HasCLIOption ( reprocsub, "--keeptriggers" ) ) {
+else if ( HasCLIOption ( reprocsub, __keeptriggers ) ) {
 
     timeoptions     = ExportTimeTriggers;
-    keeptriggers    = GetCLIOptionString ( reprocsub, "--keeptriggers" );
+    keeptriggers    = GetCLIOptionString ( reprocsub, __keeptriggers );
     }
 
-else if ( HasCLIOption ( reprocsub, "--excludetriggers" ) ) {
+else if ( HasCLIOption ( reprocsub, __excludetriggers ) ) {
 
     timeoptions     = ExcludeTimeTriggers;
-    excludetriggers = GetCLIOptionString ( reprocsub, "--excludetriggers" );
+    excludetriggers = GetCLIOptionString ( reprocsub, __excludetriggers );
     }
 
 
@@ -281,9 +319,9 @@ else if ( HasCLIOption ( reprocsub, "--excludetriggers" ) ) {
 double              defaultsamplingfrequency    = 0;
 
                                         // First see if caller provided one
-if ( HasCLIOption ( reprocsub, "--samplingfrequency" ) )
+if ( HasCLIOption ( reprocsub, __samplingfrequency ) )
 
-    defaultsamplingfrequency    = GetCLIOptionDouble ( reprocsub, "--samplingfrequency" );
+    defaultsamplingfrequency    = GetCLIOptionDouble ( reprocsub, __samplingfrequency );
 
                                         // Still null?
 if ( defaultsamplingfrequency == 0 )
@@ -303,31 +341,31 @@ TTracksFiltersStruct&   fp              = altfilters.FiltersParam;
 
 
                                         // 1) Converting a whole optional string, as coming from the verbose output, to parameters
-if ( HasCLIOption ( reprocsub, "--filters" ) ) {
+if ( HasCLIOption ( reprocsub, __filters ) ) {
 
-    string              filters         = GetCLIOptionString ( reprocsub, "--filters" );
+    string              filters         = GetCLIOptionString ( reprocsub, __filters );
 
     altfilters.TextToParameters ( filters.c_str (), XYZDoc.IsOpen () ? XYZDoc->GetDocPath () : 0, defaultsamplingfrequency );
     }
 
                                         // 2) Setting or overwriting each parameter, one at a time - Heavily based on TTracksFilters::TextToParameters method
                                         // We currently allow highpass + lowpass parameters to define a bandpass
-if      ( HasCLIOption ( reprocsub, "--bandpass" ) 
-       || HasCLIOption ( reprocsub, "--highpass" ) && HasCLIOption ( reprocsub, "--lowpass"  ) ) {
+if      ( HasCLIOption ( reprocsub, __bandpass ) 
+       || HasCLIOption ( reprocsub, __highpass ) && HasCLIOption ( reprocsub, __lowpass  ) ) {
 
     string      hs;
     string      ls;
 
-    if ( HasCLIOption ( reprocsub, "--bandpass" ) ) {
+    if ( HasCLIOption ( reprocsub, __bandpass ) ) {
 
-        vector<string>      band            = GetCLIOptionStrings ( reprocsub, "--bandpass" );
+        vector<string>      band            = GetCLIOptionStrings ( reprocsub, __bandpass );
         
         hs      = band[ 0 ];
         ls      = band[ 1 ];
         }
     else {
-        hs      = GetCLIOptionString ( reprocsub, "--highpass" );
-        ls      = GetCLIOptionString ( reprocsub, "--lowpass"  );
+        hs      = GetCLIOptionString ( reprocsub, __highpass );
+        ls      = GetCLIOptionString ( reprocsub, __lowpass  );
         }
 
                                         // check order here, as CLI11 check method seems to crash
@@ -338,18 +376,18 @@ if      ( HasCLIOption ( reprocsub, "--bandpass" )
     fp.SetButterworthLow  ( h < l ? ls.c_str () : hs.c_str () );
     }
 
-else if ( HasCLIOption ( reprocsub, "--highpass" ) )
+else if ( HasCLIOption ( reprocsub, __highpass ) )
 
-    fp.SetButterworthHigh ( GetCLIOptionString ( reprocsub, "--highpass" ).c_str () );
+    fp.SetButterworthHigh ( GetCLIOptionString ( reprocsub, __highpass ).c_str () );
 
-else if ( HasCLIOption ( reprocsub, "--lowpass" ) )
+else if ( HasCLIOption ( reprocsub, __lowpass ) )
 
-    fp.SetButterworthLow  ( GetCLIOptionString ( reprocsub, "--lowpass" ).c_str () );
+    fp.SetButterworthLow  ( GetCLIOptionString ( reprocsub, __lowpass ).c_str () );
 
 
-if ( HasCLIOption ( reprocsub, "--order" ) ) {
+if ( HasCLIOption ( reprocsub, __order ) ) {
 
-    int                 order           = GetCLIOptionInt ( reprocsub, "--order" );
+    int                 order           = GetCLIOptionInt ( reprocsub, __order );
 
     if ( fp.IsBandPass () )
         order  /= 2;                // set half the band-pass order
@@ -359,17 +397,17 @@ if ( HasCLIOption ( reprocsub, "--order" ) ) {
     }
 
 
-if ( HasCLIFlag ( reprocsub, "--causal" ) )
+if ( HasCLIFlag ( reprocsub, __causal ) )
 
-    fp.SetCausal ( HasCLIFlag ( reprocsub, "--causal" ) ? "Causal" : "Non-Causal" );    // Default is already Non-Causal, but let's be extra-cautious here
+    fp.SetCausal ( HasCLIFlag ( reprocsub, __causal ) ? "Causal" : "Non-Causal" );    // Default is already Non-Causal, but let's be extra-cautious here
 
-if ( HasCLIFlag ( reprocsub, "--baseline" ) )
+if ( HasCLIFlag ( reprocsub, __baseline ) )
 
     fp.SetBaseline ( "Baseline" );
 
-if ( HasCLIOption ( reprocsub, "--notches" ) ) {
+if ( HasCLIOption ( reprocsub, __notches ) ) {
 
-    vector<string>      notches         = GetCLIOptionStrings ( reprocsub, "--notches" );
+    vector<string>      notches         = GetCLIOptionStrings ( reprocsub, __notches );
     string              allnotches;
 
     for ( const auto& s : notches )
@@ -377,46 +415,46 @@ if ( HasCLIOption ( reprocsub, "--notches" ) ) {
 
     fp.SetNotches ( allnotches.c_str () );
 
-    fp.SetNotchesAutoHarmonics ( HasCLIFlag ( reprocsub, "--harmonics" ) );
+    fp.SetNotchesAutoHarmonics ( HasCLIFlag ( reprocsub, __harmonics ) );
     }
 
 
-if ( HasCLIOption ( reprocsub, "--spatial" )
-  && HasCLIOption ( reprocsub, "--xyzfile" ) ) {
+if ( HasCLIOption ( reprocsub, __spatial )
+  && HasCLIOption ( reprocsub, __xyzfile ) ) {
                                     // we will fill the missing value with the default option
-    if ( GetCLIOptionString ( reprocsub, "--spatial" ).empty () )
+    if ( GetCLIOptionString ( reprocsub, __spatial ).empty () )
         altfilters.SpatialFilter    = SpatialFilterDefault;
     else
-        altfilters.SpatialFilter    = TextToSpatialFilterType ( GetCLIOptionString ( reprocsub, "--spatial" ).c_str () );
+        altfilters.SpatialFilter    = TextToSpatialFilterType ( GetCLIOptionString ( reprocsub, __spatial ).c_str () );
 
 
     fp.SetSpatialFiltering ( XYZDoc->GetDocPath () );
     }
 
 
-if ( HasCLIFlag ( reprocsub, "--ranking" ) )
+if ( HasCLIFlag ( reprocsub, __ranking ) )
 
     fp.SetRanking ( "Rank" );
 
-if ( HasCLIOption ( reprocsub, "--rectification" ) )
+if ( HasCLIOption ( reprocsub, __rectification ) )
 
-    fp.SetRectification ( GetCLIOptionString ( reprocsub, "--rectification" ).c_str () );
+    fp.SetRectification ( GetCLIOptionString ( reprocsub, __rectification ).c_str () );
 
-if ( HasCLIOption ( reprocsub, "--envelope" ) ) {
+if ( HasCLIOption ( reprocsub, __envelope ) ) {
 
-    fp.SetEnvelopeWidth ( GetCLIOptionString ( reprocsub, "--envelope" ).c_str () );
+    fp.SetEnvelopeWidth ( GetCLIOptionString ( reprocsub, __envelope ).c_str () );
 
     if ( ! fp.IsRectification () )  // shouldn't happen
         fp.SetRectification ( "Power" );
     }
 
-if ( HasCLIOption ( reprocsub, "--keepabove" ) )
+if ( HasCLIOption ( reprocsub, __keepabove ) )
 
-    fp.SetThresholdAbove ( GetCLIOptionString ( reprocsub, "--keepabove" ).c_str () );
+    fp.SetThresholdAbove ( GetCLIOptionString ( reprocsub, __keepabove ).c_str () );
 
-if ( HasCLIOption ( reprocsub, "--keepbelow" ) )
+if ( HasCLIOption ( reprocsub, __keepbelow ) )
 
-    fp.SetThresholdBelow ( GetCLIOptionString ( reprocsub, "--keepbelow" ).c_str () );
+    fp.SetThresholdBelow ( GetCLIOptionString ( reprocsub, __keepbelow ).c_str () );
 
 
                                         // 3) Finally setting the filters from the struct - A quite robust and tested method
@@ -429,7 +467,7 @@ FiltersOptions          filteringoptions    = altfilters.HasNoFilters () ? NotUs
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              reflist         = GetCLIOptionString ( reprocsub, "--reference" );
+string              reflist         = GetCLIOptionString ( reprocsub, __reference );
 
 ReferenceType       ref             = reflist.empty ()
                                    || reflist == "none"
@@ -445,14 +483,14 @@ ReferenceType       ref             = reflist.empty ()
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-vector<int>         baselinecorrint = GetCLIOptionInts ( reprocsub, "--baselinecorr" );
+vector<int>         baselinecorrint = GetCLIOptionInts ( reprocsub, __baselinecorr );
 
 bool                baselinecorr    = baselinecorrint.size () == 2;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              rescaling       = GetCLIOptionString ( reprocsub, "--rescaling" );
+string              rescaling       = GetCLIOptionString ( reprocsub, __rescaling );
 
 RescalingOptions    rescalingoptions= rescaling.empty ()                ? NotRescaled
                                     : rescaling == "meangfp"
@@ -460,13 +498,13 @@ RescalingOptions    rescalingoptions= rescaling.empty ()                ? NotRes
                                     :                                     ConstantRescaling;
 
                                         // just to avoid crashing in case a string was provided
-double              rescalingfactor = StringToDouble ( GetCLIOptionString ( reprocsub, "--rescaling" ).c_str () );
+double              rescalingfactor = StringToDouble ( GetCLIOptionString ( reprocsub, __rescaling ).c_str () );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool                sequential      = HasCLIFlag ( reprocsub, "--sequential" );
-bool                average         = HasCLIFlag ( reprocsub, "--average" );
+bool                sequential      = HasCLIFlag ( reprocsub, __sequential );
+bool                average         = HasCLIFlag ( reprocsub, __average    );
 
 SequenceOptions     sequenceoptions = sequential ? SequenceProcessing
                                     : average    ? AverageProcessing
@@ -476,21 +514,21 @@ SequenceOptions     sequenceoptions = sequential ? SequenceProcessing
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // ReprocessTracks will ignore if 0
 int                 downsampleratio = timeoptions     == ExportTimeInterval 
-                                   && sequenceoptions == SequenceProcessing ? GetCLIOptionInt ( reprocsub, "--downsampling" )
+                                   && sequenceoptions == SequenceProcessing ? GetCLIOptionInt ( reprocsub, __downsampling )
                                                                             : 0;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              extension       = GetCLIOptionString ( reprocsub, "--extension" );
+string              extension       = GetCLIOptionString ( reprocsub, __extension );
 
 SavingEegFileTypes  filetype        = ExtensionToSavingEegFileTypes ( extension.c_str () );
 
-string              infix           = GetCLIOptionString ( reprocsub, "--infix" );
+string              infix           = GetCLIOptionString ( reprocsub, __infix );
 
-bool                outputmarkers   = ! HasCLIFlag ( reprocsub, "--nomarkers" );
+bool                outputmarkers   = ! HasCLIFlag ( reprocsub, __nomarkers );
 
-ConcatenateOptions  concatenateoptions  = HasCLIFlag ( reprocsub, "--concatenate" ) && (int) gof > 1 ? ConcatenateTime
-                                                                                                     : NoConcatenateTime;
+ConcatenateOptions  concatenateoptions  = HasCLIFlag ( reprocsub, __concatenate ) && (int) gof > 1 ? ConcatenateTime
+                                                                                                   : NoConcatenateTime;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
