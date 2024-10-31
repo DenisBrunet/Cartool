@@ -299,6 +299,8 @@ if      ( HasCLIOption ( reprocsub, __timemin )
 
     if  ( HasCLIOption ( reprocsub, __timemax ) )
         timemax     = GetCLIOptionInt ( reprocsub, __timemax );
+
+    CheckOrder ( timemin, timemax );
     }
 
 else if ( HasCLIOption ( reprocsub, __keeptriggers ) ) {
@@ -486,6 +488,9 @@ ReferenceType       ref             = reflist.empty ()
 vector<int>         baselinecorrint = GetCLIOptionInts ( reprocsub, __baselinecorr );
 
 bool                baselinecorr    = baselinecorrint.size () == 2;
+
+if ( baselinecorr )
+    CheckOrder ( baselinecorrint[ 0 ], baselinecorrint[ 1 ] );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1089,9 +1089,16 @@ long                baselinecorrpost    = baselinecorr ? baselinecorreof ? lastt
                                                        : 0;
 
                                         // check over current limits
-if ( baselinecorr )
+if ( baselinecorr ) {
+                                        // this is not beyond limit, this is totally wrong parameters
+    if ( baselinecorrpre < 0             && baselinecorrpost < 0
+      || baselinecorrpre > lasttimeframe && ( baselinecorreof || baselinecorrpost > lasttimeframe ) )
 
-    Clipped ( baselinecorrpre,  baselinecorrpost,   (long) 0, lasttimeframe );
+        baselinecorr    = false;
+
+    else
+        Clipped ( baselinecorrpre,  baselinecorrpost,   (long) 0, lasttimeframe );
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

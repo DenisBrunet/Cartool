@@ -106,9 +106,9 @@ if ( filtersoptions == UsingCurrentFilters && ! EEGDoc->AreFiltersActivated () )
 if ( ( ref == ReferenceSingleTrack || ref == ReferenceMultipleTracks ) && StringIsEmpty ( reflist ) )
     return  false;
 
-
-if ( baselinecorr && baselinecorrpre > baselinecorrpost )
-    return  false;
+                                        // Off, as this will be checked later on
+//if ( baselinecorr && baselinecorrpre > baselinecorrpost )
+//    return  false;
 
 
 if ( rescalingoptions == GfpRescaling && ! EEGDoc->HasPseudoElectrodes () )
@@ -249,10 +249,17 @@ long                baselinecorrnum     = 0;
 
                                         // check over current limits
 if ( baselinecorr ) {
+                                        // this is not beyond limit, this is totally wrong parameters
+    if ( baselinecorrpre < 0             && baselinecorrpost < 0
+      || baselinecorrpre > lasttimeframe && baselinecorrpost > lasttimeframe )
 
-    Clipped ( baselinecorrpre,  baselinecorrpost,   (long) 0, lasttimeframe );
+        baselinecorr    = false;
 
-    baselinecorrnum     = baselinecorrpost - baselinecorrpre + 1;
+    else {
+        Clipped ( baselinecorrpre,  baselinecorrpost,   (long) 0, lasttimeframe );
+
+        baselinecorrnum     = baselinecorrpost - baselinecorrpre + 1;
+        }
     }
 
 
