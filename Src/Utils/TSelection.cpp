@@ -750,16 +750,18 @@ void    TSelection::Set ( int fromvalue, int tovalue )
 if ( fromvalue > MaxValue () || tovalue < MinValue () )
     return;
 
-
-Clipped ( fromvalue, tovalue, MinValue (), MaxValue () );
+                                        // !Done separately so to keep relative order between fromvalue and tovalue!
+Clipped ( fromvalue, MinValue (), MaxValue () );
+Clipped ( tovalue,   MinValue (), MaxValue () );
 
 
 if ( IsTemplate () ) {
                                         // do the counting in the index space
     int                 fromvaluei      = ValueToIndex[ fromvalue ];
     int                 tovaluei        = ValueToIndex[ tovalue   ];
-
-    Clipped ( fromvaluei, tovaluei, 0, NumTemplate - 1 );
+                                        // !Done separately so to keep relative order between fromvalue and tovalue!
+    Clipped ( fromvaluei, 0, NumTemplate - 1 );
+    Clipped ( tovaluei,   0, NumTemplate - 1 );
 
     ForAllValues ( valuei, fromvaluei, tovaluei )
         Set ( IndexToValue[ valuei ] );
@@ -823,7 +825,9 @@ Set ( value, ! ArraySet[ value ] );     // invert current value
 
 void    TSelection::Invert ( int fromvalue, int tovalue )
 {
-Clipped ( fromvalue, tovalue, MinValue (), MaxValue () );
+                                        // !Done separately so to keep relative order between fromvalue and tovalue!
+Clipped ( fromvalue, MinValue (), MaxValue () );
+Clipped ( tovalue,   MinValue (), MaxValue () );
 
 
 if ( IsTemplate () ) {
@@ -831,7 +835,8 @@ if ( IsTemplate () ) {
     int                 fromvaluei      = ValueToIndex[ fromvalue ];
     int                 tovaluei        = ValueToIndex[ tovalue   ];
 
-    Clipped ( fromvaluei, tovaluei, 0, NumTemplate - 1 );
+    Clipped ( fromvaluei, 0, NumTemplate - 1 );
+    Clipped ( tovaluei,   0, NumTemplate - 1 );
 
     ForAllValues ( valuei, fromvaluei, tovaluei )
         Invert ( IndexToValue[ valuei ] );
@@ -1129,7 +1134,9 @@ if ( ! sel2 )
 int                 minvalue        = max ( MinValue (), sel2->MinValue () );
 int                 maxvalue        = min ( MaxValue (), sel2->MaxValue () );
 
-Clipped ( fromvalue, tovalue, minvalue, maxvalue );
+                                        // !Done separately so to keep relative order between fromvalue and tovalue!
+Clipped ( fromvalue, minvalue, maxvalue );
+Clipped ( tovalue,   minvalue, maxvalue );
 
 
 if ( IsTemplate () ) {
@@ -1138,7 +1145,8 @@ if ( IsTemplate () ) {
     int                 tovaluei        = ValueToIndex[ tovalue   ];
     int                 value;
 
-    Clipped ( fromvaluei, tovaluei, 0, NumTemplate - 1 );
+    Clipped ( fromvaluei, 0, NumTemplate - 1 );
+    Clipped ( tovaluei,   0, NumTemplate - 1 );
 
 
     ForAllValues ( valuei, fromvaluei, tovaluei ) {
@@ -1160,7 +1168,9 @@ else
 //----------------------------------------------------------------------------
 void    TSelection::Shift ( int fromvalue, int tovalue, int numshift, TSelectionShiftFlags flags )
 {
-Clipped ( fromvalue, tovalue, MinValue (), MaxValue () );
+                                        // !Done separately so to keep relative order between fromvalue and tovalue!
+Clipped ( fromvalue, MinValue (), MaxValue () );
+Clipped ( tovalue,   MinValue (), MaxValue () );
 
 if ( fromvalue == tovalue
   || numshift < 1         )
@@ -1177,7 +1187,8 @@ if ( IsTemplate () ) {                  // we're going to work directly on the i
     fromvaluei  = ValueToIndex[ fromvalue ];
     tovaluei    = ValueToIndex[ tovalue   ];
 
-    Clipped ( fromvaluei, tovaluei, 0, NumTemplate - 1 );
+    Clipped ( fromvaluei, 0, NumTemplate - 1 );
+    Clipped ( tovaluei,   0, NumTemplate - 1 );
 
     if ( fromvaluei == tovaluei )
         return;
