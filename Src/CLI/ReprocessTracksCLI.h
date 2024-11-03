@@ -473,12 +473,8 @@ string              reflist         = GetCLIOptionString ( reprocsub, __referenc
 
 ReferenceType       ref             = reflist.empty ()
                                    || reflist == "none"
-                                   || reflist == "no reference"
-                                   || reflist == "noreference"
-                                   || reflist == "as in file"
                                    || reflist == "asinfile"             ? ReferenceAsInFile
                                     : reflist == "average"
-                                   || reflist == "average reference"
                                    || reflist == "avgref"               ? ReferenceAverage
                                     :                                     ReferenceMultipleTracks;  // ReprocessTracks will sort out between  ReferenceSingleTrack  and  ReferenceMultipleTracks
 
@@ -498,8 +494,7 @@ if ( baselinecorr )
 string              rescaling       = GetCLIOptionString ( reprocsub, __rescaling );
 
 RescalingOptions    rescalingoptions= rescaling.empty ()                ? NotRescaled
-                                    : rescaling == "meangfp"
-                                   || rescaling == "mean gfp"           ? GfpRescaling
+                                    : rescaling == "meangfp"            ? GfpRescaling
                                     :                                     ConstantRescaling;
 
                                         // just to avoid crashing in case a string was provided
@@ -537,7 +532,7 @@ ConcatenateOptions  concatenateoptions  = HasCLIFlag ( reprocsub, __concatenate 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool                silent              = true;
+bool                silent          = true;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
