@@ -243,7 +243,7 @@ buff[8] = 0;
 int                 numblocks       = StringToInteger ( buff ); // !can be -1 if unkown -> need to recompute it later
 
 
-ifs.read ( buff, 8 );                   // block duration in seconds
+ifs.read ( buff, 8 );                   // block duration in seconds - could be 0 in sampling frequency is unknown
 buff[8] = 0;
 int                 duration        = StringToInteger ( buff );
 
@@ -306,8 +306,8 @@ BlockSize   = 0;
 for ( int el = 0; el < NumElectrodesInFile; el++ )
     BlockSize               += ChannelsSampling[ el ].ChannelSize;
 
-                                        // here we have the max sampling frequency
-SamplingFrequency   = (double) MaxSamplesPerBlock / ( duration ? duration : 0.1 );
+                                        // here we have the (max) sampling frequency
+SamplingFrequency   = duration <= 0 ? 0 : MaxSamplesPerBlock / (double) duration;
 
                                         // if numblocks is unknown, compute it from known values
 if ( numblocks < 0 )
@@ -478,7 +478,7 @@ if ( GetDocPath() ) {
     int                 numblocks       = StringToInteger ( buff ); // !can be -1 if unkown -> need to recompute it later
 
 
-    InputStream->read ( buff, 8 );      // block duration in seconds
+    InputStream->read ( buff, 8 );      // block duration in seconds - could be 0 in sampling frequency is unknown
     buff[8] = 0;
     int                 duration        = StringToInteger ( buff );
 
@@ -553,7 +553,7 @@ if ( GetDocPath() ) {
         }
 
                                         // here we have the max sampling frequency
-    SamplingFrequency   = (double) MaxSamplesPerBlock / ( duration ? duration : 0.1 );
+    SamplingFrequency   = duration <= 0 ? 0 : MaxSamplesPerBlock / (double) duration;
 
                                         // if numblocks is unknown, compute it from known values
     if ( numblocks < 0 )

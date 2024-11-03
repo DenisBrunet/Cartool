@@ -1127,8 +1127,16 @@ else if ( Type == ExportTracksEdf ) {
     of->write ( buff, 44 );
 
                                         // sets block size
-    EdfTfPerRec         = Clip ( Round ( SamplingFrequency ), 1, 61440 );       // below 1 Hz -> 1, above, the SF; plus a limit to 61440
-    int     secperrec   = Round ( (double) EdfTfPerRec / SamplingFrequency );   // also round the result, if below 1 Hz
+    if ( SamplingFrequency > 0 )
+        EdfTfPerRec         = Clip ( Round ( SamplingFrequency ), 1, 61440 );   // 1 second of data, clipped within 1 to 61440 limit
+    else
+        EdfTfPerRec         = Clip ( Round ( NumTime ),           1, 61440 );   // using time as backup
+
+
+    int     secperrec   = SamplingFrequency > 0 ? Round ( EdfTfPerRec / SamplingFrequency ) // also rounding the result, if below 1 Hz
+                                                : 0;                                        // unknown - we count on the reading part to handle that...
+
+
     EdfNumRecords       = ( NumTime + EdfTfPerRec - 1 ) / EdfTfPerRec;          // round the number of records, but have to handle trailing data
 //  EdfNumRecords       = NumTime / EdfTfPerRec;                                // truncated number of records, the easiest way
 
@@ -1161,7 +1169,7 @@ else if ( Type == ExportTracksEdf ) {
     sprintf ( buff, "%0ld", EdfNumRecords );
     *StringEnd ( buff ) = ' ';
     of->write ( buff, 8 );
-                                        // duration of 1 record, in [s], what a stupid format!
+                                        // duration of 1 record, in [s] - could be 0 if sampling frequency is unknown
     SetString ( buff, ' ', 8 );
     sprintf ( buff, "%0d", secperrec );
     *StringEnd ( buff ) = ' ';
