@@ -25,6 +25,7 @@ limitations under the License.
 #include    "TMaps.h"
 
 #include    "TEegCartoolSefDoc.h"
+#include    "TEegBiosemiBdfDoc.h"
 #include    "TRisDoc.h"
 #include    "TVolumeAnalyzeDoc.h"
 #include    "TFreqDoc.h"
@@ -1128,12 +1129,12 @@ else if ( Type == ExportTracksEdf ) {
 
                                         // sets block size
     if ( SamplingFrequency > 0 )
-        EdfTfPerRec         = Clip ( Round ( SamplingFrequency ), 1, 61440 );   // 1 second of data, clipped within 1 to 61440 limit
+        EdfTfPerRec         = Clip ( Round ( SamplingFrequency ), 1, EdfMaxBlockSize ); // 1 second of data, clipped within 1 to 61440 limit
     else
-        EdfTfPerRec         = Clip ( Round ( NumTime ),           1, 61440 );   // using time as backup
+        EdfTfPerRec         = Clip ( Round ( NumTime ),           1, EdfMaxBlockSize ); // using time as block size
 
 
-    int     secperrec   = SamplingFrequency > 0 ? Round ( EdfTfPerRec / SamplingFrequency ) // also rounding the result, if below 1 Hz
+    int     blockduration   = SamplingFrequency > 0 ? Round ( EdfTfPerRec / SamplingFrequency ) // also rounding the result, if below 1 Hz
                                                 : 0;                                        // unknown - we count on the reading part to handle that...
 
 
@@ -1171,7 +1172,7 @@ else if ( Type == ExportTracksEdf ) {
     of->write ( buff, 8 );
                                         // duration of 1 record, in [s] - could be 0 if sampling frequency is unknown
     SetString ( buff, ' ', 8 );
-    sprintf ( buff, "%0d", secperrec );
+    sprintf ( buff, "%0d", blockduration );
     *StringEnd ( buff ) = ' ';
     of->write ( buff, 8 );
                                         // number of electrodes + status line

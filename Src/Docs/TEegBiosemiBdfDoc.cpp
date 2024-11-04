@@ -70,22 +70,11 @@ return TTracksDoc::CanClose ();
 //----------------------------------------------------------------------------
 void    TEegBiosemiBdfDoc::ReadNativeMarkers ()
 {
-                                        // any Status channel?
+                                        // no Status channel?
 if ( NumElectrodes == NumElectrodesInFile )
     return;
 
                                         // scan the whole file for the triggers
-long                tfi;
-long                tf;
-long                l;
-long                oldl;
-long                start;
-char                triggername[ 8 ];
-int                 block;
-int                 blockmax;
-int                 firsttf;
-UCHAR*              toT;
-bool                triggers8;
 int                 BuffSize        = ChannelsSampling[ NumElectrodes ].ChannelSize;
 int                 cellsize        = CellSize ( FileType );
 
@@ -95,42 +84,47 @@ ifstream            ifs ( TFileName ( GetDocPath(), TFilenameExtendedPath ), ios
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // loop through all blocks
-blockmax        = ( NumTimeFrames - 1 ) / MaxSamplesPerBlock;
-
 
                                         // goto first block, and skip regular electrodes
 ifs.seekg ( DataOrg + cellsize * NumElectrodes * MaxSamplesPerBlock );
 ifs.read  ( (char*) Tracks.GetArray (), BuffSize );
 
                                         // scan first block, and guess if we have 16 or 8 bits per trigger code
-triggers8 = true;
+bool                triggers8       = true;
                                         //  skip 1st TF, which is often irrelevent / noise
-for ( tfi = 1, tf = 1, toT = &Tracks[ tf * cellsize ]; tf < MaxSamplesPerBlock - 1 && tfi < NumTimeFrames; tfi++, tf++ ) {
+UCHAR*              toT             = &Tracks[ 1 * cellsize ];
+
+for ( int tfi = 1, tf0 = 1; tf0 < MaxSamplesPerBlock - 1 && tfi < NumTimeFrames; tfi++, tf0++ ) {
 
     toT++;
 
-//  if ( *toT != 0xff ) {
-    if ( *toT != *(toT + cellsize) ) {  // if not constant in time, then should contain trigger indormation
-        triggers8 = false;
+//  if ( *toT != 0xFF ) {
+    if ( *toT != *( toT + cellsize ) ) {    // if not constant in time, then should contain trigger information
+
+        triggers8   = false;
         break;
         }
 
-    toT += cellsize - 1;
+    toT    += cellsize - 1;
     }
-//DBGM ( triggers8 ? "yes":"no", "triggers 8bits?" );
-
-//ofstream    ooo ( "E:\\Data\\Biosemi.markers.txt" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+int                 blockmax        = ( NumTimeFrames - 1 ) / MaxSamplesPerBlock;
+char                triggername[ 8 ];
+long                starttf         = 0;    // global, to allow final unfinished trigger test
+long                l               = 0;
 
                                         // for relative access
 ifs.seekg ( DataOrg + cellsize * NumElectrodes * MaxSamplesPerBlock, ios::beg );
 
 
-for ( block     = 0,
-      firsttf   = 0; block <= blockmax;  block++,
-                                         firsttf = block * MaxSamplesPerBlock ) {
+for ( int   block     = 0,
+            firsttf   = 0; 
+                block <= blockmax;
+                    block++,
+                    firsttf = block * MaxSamplesPerBlock ) {
 
                                         // goto block, and skip regular electrodes
 //  ifs.seekg ( DataOrg + block * BlockSize + cellsize * NumElectrodes * MaxSamplesPerBlock, ios::beg );
@@ -142,18 +136,22 @@ for ( block     = 0,
                                         // assuming Status channel has the same sampling as the max channel
     ifs.read ( (char*) Tracks.GetArray (), BuffSize );
 
-    for ( tfi = firsttf, tf = 0, toT = Tracks; tf < MaxSamplesPerBlock && tfi < NumTimeFrames; tfi++, tf++ ) {
 
-        l    = *( (long *) toT );
-        toT += cellsize;
+    UCHAR*              toT             = Tracks.GetArray ();
+    long                oldl            = 0;
 
-        *(((ushort *)&l)+1) = 0;        // only bits 0 to 15 holds "trigger input"
+    for ( int tfi = firsttf, tf0 = 0; tf0 < MaxSamplesPerBlock && tfi < NumTimeFrames; tfi++, tf0++ ) {
+
+        l       = *( (long *) toT );
+        toT    += cellsize;
+
+        *( ( (ushort *)&l ) + 1 )   = 0;// only bits 0 to 15 holds "trigger input"
 
         if ( triggers8 )                // but second byte can also be unused
-            *(((uchar *)&l)+1)  = 0;
+            *( ( (uchar *)&l ) + 1 )    = 0;
 
-        if ( !tfi )
-            oldl = l;
+        if ( tfi == 0 )
+            oldl    = l;
 
 //        if ( *toT & 0x1 )
 //            AppendMarker ( TMarker ( tfi, tfi, (MarkerCode) 0, MarkerNameEpoch ) );
@@ -161,27 +159,37 @@ for ( block     = 0,
 
 
         if ( l != oldl )                // transition ?
-            if ( l ) {                  // to a non-null state ?
-//            if ( l && !oldl ) {        // to a non-null state ?
-                start = tfi;
-                sprintf ( triggername, "%0ld", l ); // old code, only for rising edge
-                AppendMarker ( TMarker ( tfi, tfi, (MarkerCode) l, triggername, MarkerTypeTrigger ) );
 
-//                ooo << tfi << "   " << l << "\n";
+            if ( l != 0 ) {             // to a non-null state?
+//          if ( l && ! oldl ) {        // to a non-null state?
+
+                        starttf = tfi;
+                long    endtf   = tfi;
+
+                IntegerToString ( triggername, l ); // old way - storing only trigger's rising edge
+
+                AppendMarker ( TMarker ( starttf, endtf, (MarkerCode) l, triggername, MarkerTypeTrigger ) );
                 }
-//            else {                      // store full-length trigger
-//                sprintf ( triggername, "%0ld", oldl );
-//                AppendMarker ( TMarker ( start, tfi - 1, (MarkerCode) oldl, triggername ) );
-//                }
+//          else {                      // to a null state - storing the full trigger's duration
+//              long    endtf   = tfi - 1;
+//
+//              IntegerToString ( triggername, oldl );
+// 
+//              AppendMarker ( TMarker ( starttf, endtf, (MarkerCode) oldl, triggername ) );
+//              }
 
-        oldl = l;                       // store previous level
-        } // for el
+
+        oldl    = l;                    // store previous level
+        } // for tf
+
     } // for block
 
 
-if ( l ) {                              // remaining partial trigger?
-    sprintf ( triggername, "%0ld", l );
-    AppendMarker ( TMarker ( start, NumTimeFrames - 1, (MarkerCode) l, triggername, MarkerTypeTrigger ) );
+if ( l != 0 ) {                         // reach the EOF with an unfinished trigger?
+                                        // close it ourselves
+    IntegerToString ( triggername, l );
+
+    AppendMarker ( TMarker ( starttf, NumTimeFrames - 1, (MarkerCode) l, triggername, MarkerTypeTrigger ) );
     }
 }
 
@@ -245,7 +253,7 @@ int                 numblocks       = StringToInteger ( buff ); // !can be -1 if
 
 ifs.read ( buff, 8 );                   // block duration in seconds - could be 0 in sampling frequency is unknown
 buff[8] = 0;
-int                 duration        = StringToInteger ( buff );
+int                 blockduration   = StringToInteger ( buff );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -307,7 +315,7 @@ for ( int el = 0; el < NumElectrodesInFile; el++ )
     BlockSize               += ChannelsSampling[ el ].ChannelSize;
 
                                         // here we have the (max) sampling frequency
-SamplingFrequency   = duration <= 0 ? 0 : MaxSamplesPerBlock / (double) duration;
+SamplingFrequency   = blockduration <= 0 ? 0 : MaxSamplesPerBlock / (double) blockduration;
 
                                         // if numblocks is unknown, compute it from known values
 if ( numblocks < 0 )
@@ -480,7 +488,7 @@ if ( GetDocPath() ) {
 
     InputStream->read ( buff, 8 );      // block duration in seconds - could be 0 in sampling frequency is unknown
     buff[8] = 0;
-    int                 duration        = StringToInteger ( buff );
+    int                 blockduration   = StringToInteger ( buff );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -553,7 +561,7 @@ if ( GetDocPath() ) {
         }
 
                                         // here we have the max sampling frequency
-    SamplingFrequency   = duration <= 0 ? 0 : MaxSamplesPerBlock / (double) duration;
+    SamplingFrequency   = blockduration <= 0 ? 0 : MaxSamplesPerBlock / (double) blockduration;
 
                                         // if numblocks is unknown, compute it from known values
     if ( numblocks < 0 )
@@ -711,12 +719,12 @@ int                 lastfiletf      = RoundToAbove ( NumTimeFrames, MaxSamplesPe
 ReadRawTracks ( lastfiletf - MaxSamplesPerBlock, lastfiletf - 1, eegbuff );
 
                                         // there should be at least 1 non-null TF(?)
-for ( int tf = MaxSamplesPerBlock - 1; tf > 0; tf-- )
-for ( int e  = 0; e  < NumElectrodes; e++ )
+for ( int tf0 = MaxSamplesPerBlock - 1; tf0 > 0; tf0-- )
+for ( int e = 0; e  < NumElectrodes; e++ )
                                         // testing exact 0 does not work due to the EDF conversion method
-    if ( abs ( eegbuff ( e, tf ) ) > SingleFloatEpsilon )
+    if ( abs ( eegbuff ( e, tf0 ) ) > SingleFloatEpsilon )
 
-        return  MaxSamplesPerBlock - 1 - tf;
+        return  MaxSamplesPerBlock - 1 - tf0;
 
                                         // error, just ignore
 return  0;
@@ -757,13 +765,13 @@ for ( int e = 0; e < NumElectrodes; e++ ) {
 
     short       lastdata            = todata[ samplesperblock - 1 ];
 
-    for ( int tf = samplesperblock - 2; tf > 0; tf-- ) {
+    for ( int tf0 = samplesperblock - 2; tf0 > 0; tf0-- ) {
 
         //double  v       = *toS * Gains[ e ] + Offsets[ e ];
                                         // this is another trick: we simply look for EQUAL DIGITAL VALUES, NOT any physical close-to-0 ones
-        if ( todata[ tf ] != lastdata )
-                                        // !formula does not work if tf == samplesperblock - 2, hence the early test!
-            return  Round ( ( ( samplesperblock - tf - 1 ) / (double) ( MaxSamplesPerBlock - 1 ) ) * ( samplesperblock - 1 ) );
+        if ( todata[ tf0 ] != lastdata )
+                                        // !formula does not work if tf0 == samplesperblock - 2, hence the early test!
+            return  Round ( ( ( samplesperblock - tf0 - 1 ) / (double) ( MaxSamplesPerBlock - 1 ) ) * ( samplesperblock - 1 ) );
         }
     }
 
@@ -808,46 +816,35 @@ return true;
 //----------------------------------------------------------------------------
 void    TEegBiosemiBdfDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float> &buff, int tfoffset )
 {
-int                 block;
-int                 firsttfinblock;
-int                 numtfinblock;
-int                 firsttf;
-int                 el;
-int                 tf;
-long                tfi;
-UCHAR              *toT;
-long                l;
-short              *toS;
-TEegBdfChannel     *toch;
-
 int                 blockmax        = tf2 / MaxSamplesPerBlock;
-int                 spb1;
-int                 mspb1           = MaxSamplesPerBlock - 1;
-//long                nextelpos;
-//uint                tfminread;
-//int                 tfremainingread;
+double              mspb1           = MaxSamplesPerBlock - 1;   // !converted to double!
 
 
                                         // loop through all blocks
-for ( block          = tf1 / MaxSamplesPerBlock,
-      firsttfinblock = tf1 % MaxSamplesPerBlock,
-      firsttf        = tf1;   block <= blockmax; block++,
-                                                 tfoffset      += MaxSamplesPerBlock - firsttfinblock,
-                                                 firsttfinblock = 0,
-                                                 firsttf        = block * MaxSamplesPerBlock ) {
-                                        // max number of tf to be read in this block
-    numtfinblock    = MaxSamplesPerBlock - firsttfinblock;
-                                        // origin of next full track to be read
-//    nextelpos       = DataOrg + block * BlockSize;
+for ( int   block           = tf1 / MaxSamplesPerBlock,
+            firsttfinblock  = tf1 % MaxSamplesPerBlock,
+            firsttf         = tf1;   
+                block <= blockmax;
+                    block++,
+                    tfoffset       += MaxSamplesPerBlock - firsttfinblock,
+                    firsttfinblock  = 0,
+                    firsttf         = block * MaxSamplesPerBlock ) {
 
-//    tfremainingread = tf2 - firsttf + 1;
-                                        // get a whole block
+                                        // max number of tf to be read in this block
+    int     numtfinblock    = MaxSamplesPerBlock - firsttfinblock;
+                                        // origin of next full track to be read
+//  long    nextelpos       = DataOrg + block * BlockSize;
+//  int     tfremainingread = tf2 - firsttf + 1;
+
+                                        // read a whole block at once
     InputStream->seekg ( DataOrg + block * BlockSize );
 
-                                        // in the block, values for one electrode are consecutives
-    for ( el = 0, toch = ChannelsSampling; el < NumElectrodes; el++, toch++ ) {
+                                        // within a single block, values for a given track are consecutives
+    TEegBdfChannel*     toch    = ChannelsSampling;
+
+    for ( int el = 0; el < NumElectrodes; el++, toch++ ) {
                                         // get that channel length
-        spb1            = toch->SamplesPerBlock - 1;
+        int     spb1        = toch->SamplesPerBlock - 1;
                                         // get the complete line for this electrode
         InputStream->read ( (char*) Tracks.GetArray (), toch->ChannelSize );
 
@@ -855,39 +852,40 @@ for ( block          = tf1 / MaxSamplesPerBlock,
 /*                                        // optimal jump to where data are
         InputStream->seekg ( nextelpos + firsttfinblock * CellSize ( FileType ), ios::beg );
                                         // so that we can read the min # of data: min of remaining block or remaining data
-        tfminread       = min ( toch->SamplesPerBlock - firsttfinblock, tfremainingread );
+        uint    tfminread   = min ( toch->SamplesPerBlock - firsttfinblock, tfremainingread );
                                         // still put the data at offset position
         InputStream->read ( &Tracks[ firsttfinblock * CellSize ( FileType ), tfminread * CellSize ( FileType ) ] );
                                         // next channel beginning
-        nextelpos      += toch->ChannelSize;
+        nextelpos          += toch->ChannelSize;
 */
 
 
         if ( IsEdf ( FileType ) ) {
 
-            for ( tfi=firsttf, tf=0; tfi <= tf2 && tf < numtfinblock; tfi++, tf++ ) {
+            for ( int tfi = firsttf, tf0 = 0; tfi <= tf2 && tf0 < numtfinblock; tfi++, tf0++ ) {
 
-                toS = (short*) Tracks.GetArray () + Round ( ( ( firsttfinblock + tf ) / (double) mspb1 ) * spb1 );
+                short*  toS     = (short*) Tracks.GetArray () + Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 );
 
-                buff (el,tfoffset + tf)  = *toS * Gains[ el ] + Offsets[ el ];
+                buff ( el, tfoffset + tf0 )  = *toS * Gains[ el ] + Offsets[ el ];
 
-//              if ( buff (el,tfoffset + tf) == -MAXSHORT-1 ) buff (el,tfoffset + tf) = 0;
+//              if ( buff ( el, tfoffset + tf0 )    == -MAXSHORT-1 )    buff ( el, tfoffset + tf0 ) = 0;
                 } // for tfi
             } // if Edf
 
         else { // Bdf
 
-            for ( tfi=firsttf, tf=0; tfi <= tf2 && tf < numtfinblock; tfi++, tf++ ) {
+            for ( int tfi = firsttf, tf0 = 0; tfi <= tf2 && tf0 < numtfinblock; tfi++, tf0++ ) {
 
-                toT = &Tracks[ 3 * Round ( ( ( firsttfinblock + tf ) / (double) mspb1 ) * spb1 ) ];
+                UCHAR*  toT     = &Tracks[ 3 * Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 ) ];
 
-                l   = *((long *) toT);
-                toT++; toT++;
+                long    l       = *((long *) toT);
 
-                *(((uchar *) &l) + 3) = (uchar) ( *toT & 0x80 ? 0xff : 0x00 );
+                toT    += 2;
+
+                *( ((uchar *) &l) + 3 ) = (uchar) ( ( *toT & 0x80 ) ? 0xFF : 0x00 );
 //              toT++;
 
-                buff ( el, tfoffset + tf )  = l * Gains[ el ] + Offsets[ el ];
+                buff ( el, tfoffset + tf0 )  = l * Gains[ el ] + Offsets[ el ];
                 } // for tfi
             } // if Bdf
         } // for el

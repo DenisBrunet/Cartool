@@ -59,6 +59,9 @@ inline bool     IsBdf       ( EdfType t )   { return IsFlag ( t, BdfMask ); }
 inline bool     IsEdf       ( EdfType t )   { return IsFlag ( t, EdfMask ); }
 inline int      CellSize    ( EdfType t )   { return IsEdf  ( t ) ? 2 : IsBdf ( t ) ? 3 : 0;  } // BDF is EDF with 3 bytes per sample
 
+                                        // EDF recommended max block size
+constexpr int   EdfMaxBlockSize     = 0xF000; // 61440;
+
 
 //----------------------------------------------------------------------------
 
