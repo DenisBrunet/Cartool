@@ -124,9 +124,9 @@ protected:
 
     owl::TInStream* InputStream;
 
-    std::vector<UCHAR>                  Tracks;
-    std::vector<double>                 Gains;
-    std::vector<double>                 Zeros;
+    TVector<float>                      Tracks;
+    TVector<double>                     Gains;
+    TVector<double>                     Zeros;
 
     std::vector<TEegEgi_Mff_Session>    Sequences;
     std::vector<TEegEgi_Mff_Bin_Block>  Blocks;

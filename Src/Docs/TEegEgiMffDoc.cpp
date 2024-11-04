@@ -739,7 +739,7 @@ if ( GetDocPath () ) {
 
             if ( StringIs ( element, "GCAL" ) ) {
 
-                Gains.resize ( NumElectrodes );
+                Gains.Resize ( NumElectrodes );
 
                 for ( int el = 0; el < NumElectrodes; el++ ) {
                                         // retrieve element, including attributes
@@ -749,13 +749,13 @@ if ( GetDocPath () ) {
 
                     Gains[ index ]  = value;
 
-//                    DBGV2 ( index + 1, Gains[ index ], attr[ 1 ] );
+                    //DBGV2 ( index + 1, Gains[ index ], attr[ 1 ] );
                     }
                 } // Gains
 
             else if ( StringIs ( element, "ZCAL" ) ) {
 
-                Zeros.resize ( NumElectrodes );
+                Zeros.Resize ( NumElectrodes );
 
                 for ( int el = 0; el < NumElectrodes; el++ ) {
                                         // retrieve element, including attributes
@@ -765,7 +765,7 @@ if ( GetDocPath () ) {
 
                     Zeros[ index ]  = value;
 
-//                    DBGV2 ( index + 1, Zeros[ index ], attr[ 1 ] );
+                    //DBGV2 ( index + 1, Zeros[ index ], attr[ 1 ] );
                     }
                 } // Zeros
 /*
@@ -788,8 +788,13 @@ if ( GetDocPath () ) {
             } while ( fix.good () ); // reading calibration
         }
 
-//    DBGM2 ( BoolToString ( (bool) Gains ), BoolToString ( (bool) Zeros ), "Gains? Zeros?" );
+                                        // Give some feedbacks, but maybe only for Gains, as Zeros seem to be always missing(?)
+  //if ( ! (bool) Gains &&   (bool) Zeros )     ShowMessage ( "MFF xml file is missing Gains,\nreading file might give some unexpected results...", ToFileName ( fileinfox ), ShowMessageWarning );
+  //if (   (bool) Gains && ! (bool) Zeros )     ShowMessage ( "MFF xml file is missing Zeros,\nreading file might give some unexpected results...", ToFileName ( fileinfox ), ShowMessageWarning );
+  //if ( ! (bool) Gains && ! (bool) Zeros )     ShowMessage ( "MFF xml file is missing both Zeros and Gains,\nreading file might give some unexpected results...", ToFileName ( fileinfox ), ShowMessageWarning );
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // signal has been filtered?
 //  if ( XMLGotoElement ( fix, "dataInfo",      0,          0, true )
 //    && XMLGetElement  ( fix, "filters",       "dataInfo", element ) ) {
@@ -1009,7 +1014,7 @@ OffDis              = NumElectrodes + PseudoTrackOffsetDis;
 OffAvg              = NumElectrodes + PseudoTrackOffsetAvg;
 
                                         // do all allocations stuff
-Tracks.resize ( sizeof ( float ) * MaxSamplesPerBlock );
+Tracks.Resize ( MaxSamplesPerBlock );
 
 
 ElectrodesNames.Set ( TotalElectrodes, ElectrodeNameSize );
@@ -1081,30 +1086,30 @@ for ( ; block <= blockmax; tfoffset      += numtfinblock /*Blocks[ block ].NumTi
                                         // get that channel length
         int         tfpertrack      = toch[ el ].SamplesPerBlock - 1;
                                         // get the complete line for this electrode - very inefficient
-//      InputStream->read ( (char*) Tracks.data (), toch->ChannelSize );
+//      InputStream->read ( (char*) Tracks.GetArray (), toch->ChannelSize );
                                         // optimal jump to where data are
         InputStream->seekg ( nextelpos + firsttfinblock * sizeof ( float ), ios::beg );
                                         // so that we can read the min # of data: min of remaining block or remaining data
         ULONG       tfminread       = min ( toch[ el ].SamplesPerBlock - firsttfinblock, tfremainingread );
                                         // still put the data at offset position
-        InputStream->read ( (char*) Tracks.data () + firsttfinblock * sizeof ( float ), tfminread * sizeof ( float ) );
+        InputStream->read ( (char*) ( Tracks.GetArray () + firsttfinblock ), tfminread * sizeof ( float ) );
                                         // next channel beginning
                     nextelpos      += toch[ el ].ChannelSize;
 
 
         for ( int tfi = firsttf, tf = 0; tfi <= tf2 && tf < numtfinblock; tfi++, tf++ ) {
 
-            float*  toF = (float *) Tracks.data () + ( EqualTracks ? firsttfinblock + tf 
-                                                                   : Round ( ( ( firsttfinblock + tf ) / (double) maxtfperblock ) * tfpertrack ) );
+            float*  toF = Tracks.GetArray () + ( EqualTracks ? firsttfinblock + tf 
+                                                             : Round ( ( ( firsttfinblock + tf ) / (double) maxtfperblock ) * tfpertrack ) );
 
 //          if ( IsNotAProperNumber ( *toF ) )
 //              buff ( el, tfoffset + tf ) = 0;
 //          else
                                         // don't know if all possibilities can occur, so put all formulas
-                buff ( el, tfoffset + tf )  = Gains.size () && Zeros.size () ? ( *toF - Zeros[ el ] ) * Gains[ el ]
-                                            : Gains.size ()                  ?   *toF                 * Gains[ el ]
-                                            :                  Zeros.size () ?   *toF - Zeros[ el ]
-                                                                             :   *toF;
+                buff ( el, tfoffset + tf )  = (bool) Gains && (bool) Zeros  ? ( *toF - Zeros[ el ] ) * Gains[ el ]
+                                            : (bool) Gains                  ?   *toF                 * Gains[ el ]
+                                            :                 (bool) Zeros  ?   *toF - Zeros[ el ]
+                                                                            :   *toF;
             } // for tfi
         } // for el
 
