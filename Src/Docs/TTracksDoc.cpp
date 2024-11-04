@@ -1354,7 +1354,7 @@ if (         reference == ReferenceUsingCurrent
      || (    reference == ReferenceSingleTrack 
           || reference == ReferenceMultipleTracks ) && referencesel == 0 ) {
 
-    reference       =  Reference;   // current type can be anything, including single/multiple track(s)
+    reference       =  Reference;       // current type can be anything, including single/multiple track(s)
     referencesel    = &ReferenceTracks;
     }
 
@@ -1425,7 +1425,7 @@ if ( needsmargin ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Caller doesn't have to worry about the necessary margin, it will be adjusted here!
-                                        // Note that the previous content will be lost, though this usually not a problem as when data is filtered, buffer is usually evaluated as a whole, and not a sub-part of it
+                                        // Note that the previous content will be lost, though this usually is not a problem, as for filtered data, the buffer is usually evaluated as a whole
                                         // buff can only grow, not shrink
 buff.Resize (   max ( pseudotracks ? NumElectrodes + NumPseudoTracks 
                                    : NumElectrodes, 
@@ -1462,19 +1462,19 @@ if ( FiltersActivated ) {
                 continue;
 
 
-            if ( mirrorl > 0 )              // mirror missing part, and complete with 0 if too little data
+            if ( mirrorl > 0 )          // mirror missing part, and complete with 0 if too little data
 
                 for ( int tfl = mirrorl - 1, tfr = mirrorl + 1; tfl >= 0; tfl--, tfr++ )
-                                            // don't mirror from the right mirror (if any)
-                    buff ( el, tfl )   = tfr <= lastvalidtf ? buff ( el, tfr ) : 0;   // symetrical filling
-    //              buff ( el, tfl )   = buff ( el, mirrorl );                        // cst filling
-    //              buff ( el, tfl )   = 0;                                            // null filling
+                                        // don't mirror from the right mirror (if any)
+                    buff ( el, tfl )   = tfr <= lastvalidtf ? buff ( el, tfr ) : 0; // symetrical filling
+    //              buff ( el, tfl )   = buff ( el, mirrorl );                      // constant   filling
+    //              buff ( el, tfl )   = 0;                                         // null       filling
 
 
-            if ( mirrorr > 0 )              // mirror missing part, and complete with 0 if too little data
+            if ( mirrorr > 0 )          // mirror missing part, and complete with 0 if too little data
 
                 for ( int tf = 0, tfr = lastvalidtf + 1, tfl = lastvalidtf - 1; tf < mirrorr; tf++, tfr++, tfl-- )
-                                            // don't mirror from the left mirror (if any)
+                                        // don't mirror from the left mirror (if any)
                     buff ( el, tfr )   = tfl >= mirrorl ? buff ( el, tfl ) : 0;
             } // for el
 
@@ -1482,9 +1482,11 @@ if ( FiltersActivated ) {
         if ( mirrorl )
             tfoffset    = 0;            // after the left mirroring, there is no offset anymore
 
-        } // filling mirror parts
+        } // filling mirrored parts
 
-                                        // do all filters
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // do all (pre-reference) filters
     Filters.ApplyFilters    (   buff,   NumElectrodes,  dontfilterauxs ? &AuxTracks : 0, 
                                 numtf,  tfoffset, 
                                 (FilterPrecedence) ( FilterBeforeRef | FilterTemporal | FilterNonTemporal ) 

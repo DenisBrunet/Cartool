@@ -102,9 +102,9 @@ if ( filtersoptions == UsingOtherFilters && altfilters->HasNoFilters () )
 if ( filtersoptions == UsingCurrentFilters && ! EEGDoc->AreFiltersActivated () )
     filtersoptions = NotUsingFilters;
 
-
-if ( ( ref == ReferenceSingleTrack || ref == ReferenceMultipleTracks ) && StringIsEmpty ( reflist ) )
-    return  false;
+                                        // Off, as this will be checked later on
+//if ( ( ref == ReferenceSingleTrack || ref == ReferenceMultipleTracks ) && StringIsEmpty ( reflist ) )
+//    return  false;
 
                                         // Off, as this will be checked later on
 //if ( baselinecorr && baselinecorrpre > baselinecorrpost )
@@ -337,7 +337,7 @@ if ( ref == ReferenceSingleTrack
     else {
 
         refsel.ToText ( reflistclean, &ElectrodesNames, AuxiliaryTracksNames );
-                                            // We can be a bit more specific here
+                                        // We can be a bit more specific here
         ref     = refsel.NumSet () == 1 ? ReferenceSingleTrack : ReferenceMultipleTracks;
         }
     }
