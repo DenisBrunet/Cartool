@@ -1067,9 +1067,9 @@ else if ( CheckToBool ( transfer->OtherRef   ) ) {
         }
     else {
 
+        ref     = ReferenceArbitraryTracks;
+
         refsel.ToText ( transfer->RefList, &ElectrodesNames, AuxiliaryTracksNames );
-                                        // We can be a bit more specific here
-        ref     = refsel.NumSet () == 1 ? ReferenceSingleTrack : ReferenceMultipleTracks;
         }
     }
 

@@ -271,7 +271,7 @@ protected:
 
     TSelection      BadTracks;          // Broken channels
     TSelection      AuxTracks;          // Auxiliary channels - BadTracks and AuxTracks should not have common elements
-    TSelection      ValidTracks;        // Channels NOT Bad, NOT auxiliaries and NOR pseudo
+    TSelection      ValidTracks;        // Channels NOT Bad, Auxiliaries or Pseudo-Tracks - So in short: all good EEG channels
 
                                         // Tracks parameters
     long            NumTimeFrames;      // Time Frames will be in the [0 .. NumTimeFrames - 1] range

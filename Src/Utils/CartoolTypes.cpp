@@ -293,8 +293,7 @@ const char          ReferenceNames[ NumReferenceTypes ][ 32 ] =
                     {
                     "Unknown Reference",
                     "No Reference",
-                    "Single Track Reference",
-                    "Multiple Tracks Reference",
+                    "Arbitrary Track(s) Reference",
                     "Average Reference",
                     "Current Reference",
                     };

@@ -1196,9 +1196,8 @@ if ( ref == ReferenceNone || ref == ReferenceUsingCurrent )
 
 if      ( ref == ReferenceAverage     )   AverageReference     ( datatype );
                                         // !TODO!
-else if ( ref == ReferenceSingleTrack 
-       || ref == ReferenceMultipleTracks ) {
-    ShowMessage ( "Single / Multi tracks referencing not yet implemented!", "TMaps::SetReference", ShowMessageWarning ); 
+else if ( ref == ReferenceArbitraryTracks ) {
+    ShowMessage ( "Arbitrary tracks referencing not yet implemented!", "TMaps::SetReference", ShowMessageWarning ); 
     exit ( 1 ); 
     }
 

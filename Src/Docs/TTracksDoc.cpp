@@ -1128,26 +1128,17 @@ switch ( Reference ) {
     break;
 
 
-  case ReferenceSingleTrack:
-  case ReferenceMultipleTracks:
+  case ReferenceArbitraryTracks:
                                         // use the selection to get the tracks #
     ReferenceTracks.Reset ();
 
     ReferenceTracks.Set ( tracks, elnames ? elnames : GetElectrodesNames (), verbose );
-                                        // remove aux tracks
-//  ReferenceTracks -= AuxTracks;
 
-    if      ( (int) ReferenceTracks == 0 ) {// cancel if no tracks
+    if ( (int) ReferenceTracks == 0 ) {
 
         SetReferenceType ( ReferenceAsInFile );
         return;
         }
-
-    else if ( (int) ReferenceTracks == 1 )  // update type
-
-        Reference = ReferenceSingleTrack;
-    else
-        Reference = ReferenceMultipleTracks;
 
     break;
 
@@ -1350,9 +1341,8 @@ if ( pseudotracks == ComputePseudoTracks && ! ( HasPseudoElectrodes () && OffGfp
     pseudotracks    = NoPseudoTracks;
 
                                         // falling back to current doc type
-if (         reference == ReferenceUsingCurrent
-     || (    reference == ReferenceSingleTrack 
-          || reference == ReferenceMultipleTracks ) && referencesel == 0 ) {
+if (    reference == ReferenceUsingCurrent
+     || reference == ReferenceArbitraryTracks && referencesel == 0 ) {
 
     reference       =  Reference;       // current type can be anything, including single/multiple track(s)
     referencesel    = &ReferenceTracks;
@@ -1511,7 +1501,7 @@ double              numt            = NonNull ( GetNumValidElectrodes () );
 if ( reference != ReferenceAsInFile ) {
 
     double                      refvalue    = 0;
-    TIteratorSelectedForward*   toseli      = reference == ReferenceSingleTrack || reference == ReferenceMultipleTracks ? new TIteratorSelectedForward ( *referencesel ) : 0;
+    TIteratorSelectedForward*   toseli      = reference == ReferenceArbitraryTracks ? new TIteratorSelectedForward ( *referencesel ) : 0;
 
 
     for ( int tf = 0, tfo = tfoffset; tf < numtf; tf++, tfo++ ) {
@@ -1528,12 +1518,7 @@ if ( reference != ReferenceAsInFile ) {
             refvalue   /= numt;
             }
 
-        else if ( reference == ReferenceSingleTrack ) {
-
-            refvalue    = buff ( (*toseli)(), tfo );
-            }
-
-        else if ( reference == ReferenceMultipleTracks ) {
+        else if ( reference == ReferenceArbitraryTracks ) {
 
             refvalue    = 0;
                                         // !re-launch FirstSelected every time!

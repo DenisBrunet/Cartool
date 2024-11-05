@@ -383,9 +383,9 @@ enum                ReferenceType
                     ReferenceAsInFile,                          // used for loading EEG files "as is", without re-referencing
                     ReferenceNone           = ReferenceAsInFile,// used for computation of templates, also don't re-reference
 
-                    ReferenceSingleTrack,                       // Single and multiple tracks are quite equivalent, i.e. using a specified list of track(s) for reference
-                    ReferenceMultipleTracks,
-                    ReferenceAverage,
+                    ReferenceArbitraryTracks,                   // Any arbitrary selection of reference tracks
+
+                    ReferenceAverage,                           // Average Reference, which uses all valid EEG channels, excluding Bad, Auxiliary and Pseudo-Tracks channels
 
                     ReferenceUsingCurrent,                      // Special value that needs to be contextually resolved, f.ex. during batch processing
 

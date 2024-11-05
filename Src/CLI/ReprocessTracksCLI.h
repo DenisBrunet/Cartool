@@ -476,7 +476,7 @@ ReferenceType       ref             = reflist.empty ()
                                    || reflist == "asinfile"             ? ReferenceAsInFile
                                     : reflist == "average"
                                    || reflist == "avgref"               ? ReferenceAverage
-                                    :                                     ReferenceMultipleTracks;  // ReprocessTracks will sort out between  ReferenceSingleTrack  and  ReferenceMultipleTracks
+                                    :                                     ReferenceArbitraryTracks;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -580,7 +580,7 @@ cout << "Default Sampling Frequency: " << defaultsamplingfrequency << NewLine;
 
 
 cout << "Reference: " << ReferenceNames[ ref ] << NewLine;
-if ( ref == ReferenceMultipleTracks )
+if ( ref == ReferenceArbitraryTracks )
     cout << "Reference list: " << reflist << NewLine;
 
 cout << "Baseline: " << BoolToString ( baselinecorr ) << NewLine;

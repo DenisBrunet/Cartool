@@ -1654,19 +1654,25 @@ else if ( CheckToBool ( transfer->AvgRef     ) )    ref = ReferenceAverage;
 else if ( CheckToBool ( transfer->CurrentRef ) )    ref = ReferenceUsingCurrent;
 else if ( CheckToBool ( transfer->OtherRef   ) ) {
 
-    ref     = ReferenceMultipleTracks;
-
     refsel.Reset ();
 
     refsel.Set    ( transfer->RefList, XYZDoc.IsOpen () ? XYZDoc->GetElectrodesNames() : EEGDoc->GetElectrodesNames() );
-                                        // list clean-up
-    refsel.ToText ( transfer->RefList, XYZDoc.IsOpen () ? XYZDoc->GetElectrodesNames() : EEGDoc->GetElectrodesNames(), AuxiliaryTracksNames );
 
-    TransferData ( tdSetData );
-                                        // aborting now?
-    if ( refsel.NumSet() == 0 ) {
-        CmCancel ();
-        return;
+                                        // that should not be...
+    if ( refsel.NumSet () == 0 ) {
+
+        ref     = ReferenceAsInFile;    // either setting to no reference, as is currently done in  TTracksDoc::SetReferenceType
+                                        
+        //CmCancel ();                  // aborting now?
+        //return;
+        }
+    else {
+
+        ref     = ReferenceArbitraryTracks;
+                                        // list clean-up
+        refsel.ToText ( transfer->RefList, XYZDoc.IsOpen () ? XYZDoc->GetElectrodesNames() : EEGDoc->GetElectrodesNames(), AuxiliaryTracksNames );
+
+        TransferData ( tdSetData );
         }
     }
 else                                                ref = ReferenceAsInFile;

@@ -926,22 +926,26 @@ if ( savefftapprox  )   StringCopy      ( fileoutapprfreqs,     BaseFileNameAppr
                                         // choose the right reference
 TSelection          refsel ( eegdoc->GetTotalElectrodes (), OrderSorted );     // electrodes for specified reference
 
-if (   ref == ReferenceSingleTrack 
-    || ref == ReferenceMultipleTracks ) {
+if ( ref == ReferenceArbitraryTracks ) {
 
     refsel.Reset ();
 
     refsel.Set    ( reflist, xyzdoc.IsOpen () ? xyzdoc->GetElectrodesNames() : eegdoc->GetElectrodesNames(), ! silent );
 
-    if ( refsel.NumSet() == 0 )
-        return  false;
+                                        // that should not be...
+    if ( refsel.NumSet () == 0 ) {
+
+        ref     = ReferenceAsInFile;    // either setting to no reference, as is currently done in  TTracksDoc::SetReferenceType
+        //return  false;
+        }
     }
 
 
 CheckReference ( ref, datatypein );
 
                                         // rare case, user asked for average reference on 1 track...
-if ( eegdoc->GetNumElectrodes () == 1 && ref == ReferenceAverage )
+if ( ref == ReferenceAverage && eegdoc->GetNumElectrodes () == 1 )
+
     ref     = ReferenceAsInFile;
 
 
@@ -1130,15 +1134,14 @@ verbose.NextTopic ( "Reference of data:" );
 {
 if      ( ref == ReferenceAsInFile          )       verbose.Put ( "Reference:", "No reference, as in file" );
 else if ( ref == ReferenceAverage           )       verbose.Put ( "Reference:", "Average reference" );
-else if ( ref == ReferenceSingleTrack       )       verbose.Put ( "Reference:", reflist );
-else if ( ref == ReferenceMultipleTracks    )       verbose.Put ( "Reference:", reflist );
+else if ( ref == ReferenceArbitraryTracks   )       verbose.Put ( "Reference:", reflist );
 else if ( ref == ReferenceUsingCurrent      ) {
 
     if      ( eegdoc->GetReferenceType () == ReferenceAverage  )    verbose.Put ( "Current reference:", "Average reference" );
     else if ( eegdoc->GetReferenceType () == ReferenceAsInFile )    verbose.Put ( "Current reference:", "No reference, as in file" );
     else {
         eegdoc->GetReferenceTracks ().ToText ( buff, xyzdoc.IsOpen () ? xyzdoc->GetElectrodesNames() : eegdoc->GetElectrodesNames(), AuxiliaryTracksNames );
-                                                                    verbose.Put ( "Current reference:", buff );
+                                                                        verbose.Put ( "Current reference:", buff );
         }
     }
 else                                                verbose.Put ( "Reference:", "Unknown" );

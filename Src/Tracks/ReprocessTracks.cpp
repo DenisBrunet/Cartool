@@ -103,7 +103,7 @@ if ( filtersoptions == UsingCurrentFilters && ! EEGDoc->AreFiltersActivated () )
     filtersoptions = NotUsingFilters;
 
                                         // Off, as this will be checked later on
-//if ( ( ref == ReferenceSingleTrack || ref == ReferenceMultipleTracks ) && StringIsEmpty ( reflist ) )
+//if ( ref == ReferenceArbitraryTracks && StringIsEmpty ( reflist ) )
 //    return  false;
 
                                         // Off, as this will be checked later on
@@ -321,8 +321,7 @@ char                reflistclean    [ EditSizeText ];
 //     || IsAngular  ( datatype ) )   ref = ReferenceAsInFile;
 
 
-if ( ref == ReferenceSingleTrack 
-  || ref == ReferenceMultipleTracks ) {
+if ( ref == ReferenceArbitraryTracks ) {
 
     refsel.Reset ();
 
@@ -337,8 +336,6 @@ if ( ref == ReferenceSingleTrack
     else {
 
         refsel.ToText ( reflistclean, &ElectrodesNames, AuxiliaryTracksNames );
-                                        // We can be a bit more specific here
-        ref     = refsel.NumSet () == 1 ? ReferenceSingleTrack : ReferenceMultipleTracks;
         }
     }
 
@@ -1228,8 +1225,7 @@ if ( closefile ) {
     if      ( datatype == AtomTypePositive
            || ref == ReferenceAsInFile          )       verbose.Put ( "Reference:", "No reference, as in file" );
     else if ( ref == ReferenceAverage           )       verbose.Put ( "Reference:", "Average reference" );
-    else if ( ref == ReferenceSingleTrack       )       verbose.Put ( "Reference:", reflistclean );
-    else if ( ref == ReferenceMultipleTracks    )       verbose.Put ( "Reference:", reflistclean );
+    else if ( ref == ReferenceArbitraryTracks   )       verbose.Put ( "Reference:", reflistclean );
     else if ( ref == ReferenceUsingCurrent      ) {
 
         if      ( EEGDoc->GetReferenceType () == ReferenceAverage  )    verbose.Put ( "Current reference:", "Average reference" );

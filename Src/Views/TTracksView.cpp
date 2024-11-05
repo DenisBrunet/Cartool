@@ -7473,7 +7473,7 @@ ButtonGadgetSetState ( IDB_RANGECURSOR, TFCursor.IsExtending() );
 
 void    TTracksView::CmSetReference ( owlwparam w )
 {
-char                buff[ 256 ];
+char                buff[ KiloByte ];
 int                 el;
 
                                         // shortcut button: transform into the right ref
@@ -7516,30 +7516,28 @@ switch ( w ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // These two cases just boils down to the same case internally - we just fancy giving some more specific input message
     case CM_EEGREFELECSINGLE:
+
+        ClearString ( buff );
+
+        if ( ! GetInputFromUser ( "Give the name of the new reference track:", "Reference Track", buff, "", this ) )
+            return;
+
+        EEGDoc->SetReferenceType ( ReferenceArbitraryTracks, buff, GetElectrodesNames () );
+
+        break;
+
+
     case CM_EEGREFELECMULTIPLE:
 
         ClearString ( buff );
 
-        if ( ! GetInputFromUser ( "Name(s) of the new reference tracks(s):", "Reference Tracks", buff, "", this ) )
+        if ( ! GetInputFromUser ( "Give the names of the new reference tracks:", "Reference Tracks", buff, "", this ) )
             return;
-                                        // it will sort between the 2 cases
-        EEGDoc->SetReferenceType ( ReferenceMultipleTracks, buff, GetElectrodesNames () );
 
-/*
-        const char *elname;
+        EEGDoc->SetReferenceType ( ReferenceArbitraryTracks, buff, GetElectrodesNames () );
 
-        for ( el=0; el < EEGDoc->GetNumElectrodes(); el++ ) {
-            elname  = GetElectrodeName ( el );
-            if ( StringIs ( buff, elname ) ) {
-                EEGDoc->SetReferenceType ( el );
-                break;
-                }
-            }
-
-        if ( el == EEGDoc->GetNumElectrodes() ) // not found -> no modif
-            return;
-*/
         break;
 
 
@@ -7567,7 +7565,7 @@ switch ( w ) {
         int                 nscan;
 
         do {
-            ifm->getline ( buff, 256 );
+            ifm->getline ( buff, KiloByte );
 
             ClearString ( el1 );
             ClearString ( el2 );
