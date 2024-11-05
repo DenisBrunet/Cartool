@@ -57,19 +57,21 @@ class   TTracksViewMontage
 public:
 
     inline          TTracksViewMontage ()               {}
-    inline         ~TTracksViewMontage ()               { Reset (); }
+    inline         ~TTracksViewMontage ()               { Reset ();                         }
 
 
     inline void     Set                 ( int numel );
-    inline void     Reset               ()              { Slots.DeallocateMemory (); }
+    inline void     Reset               ()              { Slots.DeallocateMemory ();        }
 
+    inline bool     IsAllocated         ()  const       { return Slots.IsAllocated ();      }
+    inline bool     IsNotAllocated      ()  const       { return Slots.IsNotAllocated ();   }
 
     inline int      GetNumActiveSlots   ()  const;
 
 
-    inline                                  operator    bool    ()          const   { return (bool) Slots; }
-    inline const TTracksViewMontageSlot&    operator    []      ( int i )   const   { return Slots[ i ]; }  // !no boundary check!
-    inline       TTracksViewMontageSlot&    operator    []      ( int i )           { return Slots[ i ]; }
+    inline                                  operator    bool    ()          const   { return Slots.IsAllocated ();  }
+    inline const TTracksViewMontageSlot&    operator    []      ( int i )   const   { return Slots[ i ];            }   // !no boundary check!
+    inline       TTracksViewMontageSlot&    operator    []      ( int i )           { return Slots[ i ];            }
 
 
 protected:

@@ -244,6 +244,11 @@ DEFINE_RESPONSE_TABLE1(TTracksView, TBaseView)
     EV_COMMAND_AND_ID   ( CM_EEGREFELECSINGLE,          CmSetReference ),
     EV_COMMAND_AND_ID   ( CM_EEGREFELECMULTIPLE,        CmSetReference ),
     EV_COMMAND_AND_ID   ( CM_EEGREFMONTAGE,             CmSetReference ),
+    EV_COMMAND_ENABLE   ( CM_EEGREFNONE,                CmSetReferenceNoneEnable     ),
+    EV_COMMAND_ENABLE   ( CM_EEGREFAVG,                 CmSetReferenceAvgEnable      ),
+    EV_COMMAND_ENABLE   ( CM_EEGREFELECSINGLE,          CmSetReferenceSingleEnable   ),
+    EV_COMMAND_ENABLE   ( CM_EEGREFELECMULTIPLE,        CmSetReferenceMultipleEnable ),
+    EV_COMMAND_ENABLE   ( CM_EEGREFMONTAGE,             CmSetReferenceMontageEnable  ),
 
     EV_COMMAND_AND_ID   ( CM_EEGUSERSCALE,              CmSetScaling ),
     EV_COMMAND_AND_ID   ( CM_EEGRESETSCALING,           CmSetScaling ),
@@ -6571,13 +6576,17 @@ else {                                  // regular file
 
             if ( (bool) Montage ) {
 
-                if ( (bool) Montage[ e ] )
+                if ( (bool) Montage[ e ] ) {
 
                     if ( Montage[ e ].TwoTracks () )
                         v   = fabs ( Montage[ e ].ToData1[ tf ] - Montage[ e ].ToData2[ tf ] );
                     else
                         v   = fabs ( Montage[ e ].ToData1[ tf ] );
+                    }
+                else // montage, but they are all auxiliaries
+                    v   = 0;
                 } // if montage
+
             else // no Montage
                 v   = fabs ( EegBuff[ e ][ tf ] );
 
@@ -6617,13 +6626,17 @@ else {                                  // regular file
 
                 if ( (bool) Montage && e <= EEGDoc->GetLastRegularIndex () ) {
 
-                    if ( (bool) Montage[ e ] )
+                    if ( (bool) Montage[ e ] ) {
 
                         if ( Montage[ e ].TwoTracks () )
                             v   = fabs ( Montage[ e ].ToData1[ tf ] - Montage[ e ].ToData2[ tf ] );
                         else
                             v   = fabs ( Montage[ e ].ToData1[ tf ] );
+                        }
+                    else // montage, but they are all auxiliaries
+                        v   = 0;
                     } // if montage
+
                 else // no Montage, or pseudo electrode
                     v   = fabs ( EegBuff[ e ][ tf ] );
 
@@ -7471,6 +7484,7 @@ ButtonGadgetSetState ( IDB_RANGECURSOR, TFCursor.IsExtending() );
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksView::CmSetReference ( owlwparam w )
 {
 char                buff[ KiloByte ];
@@ -7550,7 +7564,15 @@ switch ( w ) {
         if ( ! getfile.Execute () )
             return;
 
-        ifstream           *ifm     = new ifstream ( TFileName ( (const char *) getfile, TFilenameExtendedPath ) );
+        ifstream            ifm ( TFileName ( (const char *) getfile, TFilenameExtendedPath ) );
+
+                                        // Testing magic number
+        ifm.getline ( buff, KiloByte );
+
+        if ( ! IsMagicNumber ( buff, MTGTXT_MAGICNUMBER1) ) {
+            ShowMessage ( "It seems your montage file has a wrong magic number!" NewLine "Check your input file, and specifically its first line...", "Montage File", ShowMessageWarning );
+            return;
+            }
 
 
         Montage.Set ( EEGDoc->GetTotalElectrodes() );
@@ -7565,7 +7587,7 @@ switch ( w ) {
         int                 nscan;
 
         do {
-            ifm->getline ( buff, KiloByte );
+            ifm.getline ( buff, KiloByte );
 
             ClearString ( el1 );
             ClearString ( el2 );
@@ -7583,6 +7605,7 @@ switch ( w ) {
             for ( el = 0; el < EEGDoc->GetTotalElectrodes(); el++ )
 
                 if ( StringIs ( GetElectrodeName ( el, false ), el1 ) ) {
+
                     Montage[ mi ].El1      = el;            // store both electrode index
                     Montage[ mi ].ToData1  = EegBuff[ el ]; // and a direct pointer to data buffer
                     break;
@@ -7630,10 +7653,8 @@ switch ( w ) {
                                         // ready for next montage slot
             mi++;
 
-            } while ( ! ifm->eof() && mi <= EEGDoc->GetNumElectrodes() );
+            } while ( ! ifm.eof () && mi <= EEGDoc->GetNumElectrodes() );
 
-
-        delete  ifm;
 
                                         // oops, montage appears empty after scan?
         if ( mi == 0 ) {
@@ -7690,6 +7711,37 @@ Invalidate ( false );
 }
 
 
+void    TTracksView::CmSetReferenceNoneEnable ( TCommandEnabler &tce )
+{
+tce.SetCheck ( ! (bool) Montage && EEGDoc->GetReferenceType () == ReferenceNone );
+}
+
+
+void    TTracksView::CmSetReferenceAvgEnable ( TCommandEnabler &tce )
+{
+tce.SetCheck ( ! (bool) Montage && EEGDoc->GetReferenceType () == ReferenceAverage );
+}
+
+
+void    TTracksView::CmSetReferenceSingleEnable ( TCommandEnabler &tce )
+{
+tce.SetCheck ( ! (bool) Montage && EEGDoc->GetReferenceType () == ReferenceArbitraryTracks && EEGDoc->GetReferenceTracks ().NumSet () == 1 );
+}
+
+
+void    TTracksView::CmSetReferenceMultipleEnable ( TCommandEnabler &tce )
+{
+tce.SetCheck ( ! (bool) Montage && EEGDoc->GetReferenceType () == ReferenceArbitraryTracks && EEGDoc->GetReferenceTracks ().NumSet () > 1 );
+}
+
+
+void    TTracksView::CmSetReferenceMontageEnable ( TCommandEnabler &tce )
+{
+tce.SetCheck ( (bool) Montage );
+}
+
+
+//----------------------------------------------------------------------------
 void    TTracksView::CmSetScaling ( owlwparam w )
 {
 if ( w == CM_EEGUSERSCALE ) {           // set global scaling

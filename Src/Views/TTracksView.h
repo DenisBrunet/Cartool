@@ -529,6 +529,11 @@ protected:
     void                CmHorizGrid             ();
     void                CmRangeCursor           ();
     void                CmSetReference          ( owlwparam w );
+    void                CmSetReferenceNoneEnable        ( owl::TCommandEnabler &tce );
+    void                CmSetReferenceAvgEnable         ( owl::TCommandEnabler &tce );
+    void                CmSetReferenceSingleEnable      ( owl::TCommandEnabler &tce );
+    void                CmSetReferenceMultipleEnable    ( owl::TCommandEnabler &tce );
+    void                CmSetReferenceMontageEnable     ( owl::TCommandEnabler &tce );
     void                CmSetScaling            ( owlwparam w );
     void                CmShowTags              ();
     void                CmPreviousNextMarker    ( owlwparam w );
