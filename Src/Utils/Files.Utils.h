@@ -252,7 +252,9 @@ public:
     char            operator    ()          ( int    i ) const      { return FileName[ i ]; }
 
     bool            operator    ==          ( const TFileName &op  )    const   { return  StringIs    ( FileName, op.FileName ); }
+    bool            operator    ==          ( const char*      op  )    const   { return  StringIs    ( FileName, op          ); }
     bool            operator    !=          ( const TFileName &op  )    const   { return  StringIsNot ( FileName, op.FileName ); }
+    bool            operator    !=          ( const char*      op  )    const   { return  StringIsNot ( FileName, op          ); }
 
     TFileName       operator    +=          ( const char*      op2 )            { StringAppend ( FileName, op2 );                               return *this; }
     TFileName       operator    +           ( const char*      op2 )    const   { TFileName temp; StringCopy ( temp.FileName, FileName, op2 );  return temp; }

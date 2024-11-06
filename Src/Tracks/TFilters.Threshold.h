@@ -37,14 +37,14 @@ template <class TypeD>
 class   TFilterThreshold    : public TFilter<TypeD>
 {
 public:
-                    TFilterThreshold ();
-                    TFilterThreshold ( FilterThresholdEnum how, double threshold );
+                    TFilterThreshold        ();
+                    TFilterThreshold        ( FilterThresholdEnum how, double threshold );
 
 
-    void            Reset   ();
-    void            Set     ( FilterThresholdEnum how, double threshold1, double threshold2 = DBL_MAX );
+    void            Reset                   ();
+    void            Set                     ( FilterThresholdEnum how, double threshold1, double threshold2 = DBL_MAX );
 
-    inline void     Apply                   ( TypeD* data, int numpts );
+    inline void     Apply                   ( TypeD* data, int dim );
     inline void     Apply                   ( TVector<TypeD>& map );
     inline void     Apply                   ( TMaps& maps, int nummaps = -1 );
 
@@ -130,35 +130,40 @@ CheckOrder  ( Threshold1, Threshold2 );
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TFilterThreshold<TypeD>::Apply ( TypeD* data, int numpts )
+void    TFilterThreshold<TypeD>::Apply ( TypeD* data, int dim )
 {
+if ( data == 0 || dim == 0 )
+
+    return;
+
+
 switch ( How ) {
 
     case    FilterClipAbove:
-        for ( int tf = 0; tf < numpts; tf++ )
-            if ( data[ tf ] > Threshold1 )
-                data[ tf ]  = 0;
+        for ( int i = 0; i < dim; i++ )
+            if ( data[ i ] > Threshold1 )
+                data[ i ]  = 0;
         break;
 
 
     case    FilterClipBelow:
-        for ( int tf = 0; tf < numpts; tf++ )
-            if ( data[ tf ] < Threshold1 )
-                data[ tf ]  = 0;
+        for ( int i = 0; i < dim; i++ )
+            if ( data[ i ] < Threshold1 )
+                data[ i ]  = 0;
         break;
 
 
     case    FilterClipAboveOrBelow:
-        for ( int tf = 0; tf < numpts; tf++ )
-            if ( data[ tf ] < Threshold1 || data[ tf ] > Threshold2 )
-                data[ tf ]  = 0;
+        for ( int i = 0; i < dim; i++ )
+            if ( data[ i ] < Threshold1 || data[ i ] > Threshold2 )
+                data[ i ]  = 0;
         break;
 
 
     case    FilterClipAboveAndBelow:
-        for ( int tf = 0; tf < numpts; tf++ )
-            if ( data[ tf ] > Threshold1 && data[ tf ] < Threshold2 )
-                data[ tf ]  = 0;
+        for ( int i = 0; i < dim; i++ )
+            if ( data[ i ] > Threshold1 && data[ i ] < Threshold2 )
+                data[ i ]  = 0;
         break;
     }
 }

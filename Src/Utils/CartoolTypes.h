@@ -394,6 +394,9 @@ enum                ReferenceType
 
 extern  const char  ReferenceNames[ NumReferenceTypes ][ 32 ];
 
+                                        // References which actually do something
+inline bool         IsEffectiveReference    ( ReferenceType ref )   { return ref == ReferenceArbitraryTracks || ref == ReferenceAverage; }
+
 
 //----------------------------------------------------------------------------
                                         // Define a centralized function so that all processing that somehow

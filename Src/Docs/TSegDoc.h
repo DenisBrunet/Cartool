@@ -39,7 +39,7 @@ public:
     void            SetReferenceType( ReferenceType ref, const char* tracks = 0, const TStrings* elnames = 0, bool verbose = true ) final   { Reference = ReferenceAsInFile; }  // always
     bool            CanFilter       ()      const final     { return    ExtensionIs ( FILEEXT_DATA ); }
     void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
-    void            GetTracks       ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencesel = 0, TRois *rois = 0 )  final;
+    void            GetTracks       ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencetracks = 0, TRois *rois = 0 )  final;
 
 
     int             GetNumFiles     ()      const   { return NumFiles;      }

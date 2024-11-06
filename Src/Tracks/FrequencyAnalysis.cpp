@@ -1502,8 +1502,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                             blockeeg,       0, 
                             datatypein, 
                             ComputePseudoTracks, 
-                            ref, 
-                            &refsel 
+                            ref,            &refsel 
                         );
 
 

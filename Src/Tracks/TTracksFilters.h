@@ -51,12 +51,11 @@ constexpr int       MaxNotches                      = 32;
 enum                FilterPrecedence
                     {
                     UnknownPrecedence   = 0x00,
-                                            // Some filters have to be done before, some after, the re-referencing
-                    FilterBeforeRef     = 0x01,
-                    FilterAfterRef      = 0x02,
-                                            // Qualifying the filter as temporal or non-temporal/topographic - convenient for buffer allocation or extra temporal margin
-                    FilterTemporal      = 0x10,
-                    FilterNonTemporal   = 0x20,
+                                        // Breaking-up filters into Temporal and Non-Temporal ones: convenient for buffer allocation or extra temporal margin, and fine-tuning calls
+                    FilterTemporal      = 0x01,
+                    FilterNonTemporal   = 0x02,
+
+                    AllFilters          = FilterTemporal | FilterNonTemporal,
                     };
 
 
@@ -94,6 +93,9 @@ public:
     SpatialFilterType   SpatialFilter;
 
     bool            Ranking;
+
+    ReferenceType   Reference;                  // Default reference, but can be overridden by ApplyFilter to the caller own responsibility
+    TSelection      ReferenceTracks;
     
     int             Rectification;
     double          EnvelopeWidth;              // in [ms]
@@ -134,16 +136,18 @@ public:
 
     bool            HasSpatialFilter        ()  const   { return SpatialFiltering && SpatialFilter != SpatialFilterNone; }
     bool            HasRanking              ()  const   { return Ranking;                                           }
+    bool            HasReference            ( ReferenceType ref = ReferenceUsingCurrent )   const   { return IsEffectiveReference ( ref == ReferenceUsingCurrent ? Reference : ref );   }   // default is to test local Reference, but it can be overridden with any parameter
     bool            HasRectification        ()  const   { return Rectification != 0;                                }
     bool            HasThresholdKeepAbove   ()  const   { return ThresholdKeepAbove;                                }
     bool            HasThresholdKeepBelow   ()  const   { return ThresholdKeepBelow;                                }
-    bool            HasNonTemporalFilter    ()  const   { return HasSpatialFilter () || HasRanking () || HasRectification () || HasThresholdKeepAbove () || HasThresholdKeepBelow (); }
+                                                                                                        // HasReference not included for the moment
+    bool            HasNonTemporalFilter    ()  const   { return HasSpatialFilter () || HasRanking () /*|| HasReference ()*/ || HasRectification () || HasThresholdKeepAbove () || HasThresholdKeepBelow (); }
 
-    bool            HasAnyFilter            ()  const   { return HasTemporalFilter  () || HasNonTemporalFilter ();  }
+    bool            HasAnyFilter            ()  const   { return HasTemporalFilter () || HasNonTemporalFilter ();   }
     bool            HasNoFilters            ()  const   { return ! HasAnyFilter ();                                 }
 
-
-    void            ApplyFilters            ( TArray2<TypeD>&   data, int numel, const TSelection* skipel, int numpts, int tfoffset, FilterPrecedence filterprecedence );
+                                        // To apply the reference, FilterNonTemporal flag should be set
+    void            ApplyFilters            ( TArray2<TypeD>&   data, int numel, int numpts, int tfoffset, ReferenceType reference, const TSelection* referencetracks, const TSelection* validtracks, const TSelection* auxtracks, FilterPrecedence filterprecedence = AllFilters );
 
 
                     TTracksFilters      ( const TTracksFilters &op  );
@@ -164,6 +168,7 @@ private:
                                         // Non-temporal (i.e. instantaneous or topographical) filters
     TFilterSpatial              <TypeD>     FilterSpatial;
     TFilterRanking              <TypeD>     FilterRanking;
+    TFilterReference            <TypeD>     FilterReference;
     TFilterRectification        <TypeD>     FilterRectification;
     TFilterThreshold            <TypeD>     FilterThreshold;
 
@@ -197,6 +202,8 @@ SpatialFiltering            = false;
 SpatialFilter               = SpatialFilterDefault;
 
 Ranking                     = false;
+
+Reference                   = ReferenceAsInFile;
 
 Rectification               = 0;
 EnvelopeWidth               = 0;
@@ -234,6 +241,9 @@ SpatialFiltering            = op.SpatialFiltering;
 SpatialFilter               = op.SpatialFilter;
 
 Ranking                     = op.Ranking;
+
+Reference                   = op.Reference;
+ReferenceTracks             = op.ReferenceTracks;
 
 Rectification               = op.Rectification;
 EnvelopeWidth               = op.EnvelopeWidth;
@@ -290,6 +300,9 @@ SpatialFiltering            = op2.SpatialFiltering;
 SpatialFilter               = op2.SpatialFilter;
 
 Ranking                     = op2.Ranking;
+
+Reference                   = op2.Reference;
+ReferenceTracks             = op2.ReferenceTracks;
 
 Rectification               = op2.Rectification;
 EnvelopeWidth               = op2.EnvelopeWidth;
@@ -444,6 +457,34 @@ void    TTracksFilters<TypeD>::SetFilters ( double fsamp, bool silent )
 {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Non temporal / frequency filters
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( HasSpatialFilter () ) {
+                                        // Will gracefully handle an empty XyzFile, as well as avoiding reloading/recomputing from the same file
+    FilterSpatial.Set   (   SpatialFilter, 
+                            FiltersParam.XyzFile, 
+                            SpatialFilterMaxNeighbors ( DefaultSFDistance ), 
+                            SpatialFilterMaxDistance  ( DefaultSFDistance ) 
+                        );
+
+                                        // If failed, revoke the spatial filter
+    if ( FilterSpatial.IsNotAllocated () /*|| FilterSpatial.GetNumElectrodes () != numel*/ )
+        SpatialFiltering    = false;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// FilterRanking: nothing to Set
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( HasReference () )
+
+    FilterReference.Set ( Reference, ReferenceTracks );
+
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( HasRectification () )
@@ -644,25 +685,8 @@ if ( FiltersParam.GetNotches () ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Spatial Filter setup
-if ( HasSpatialFilter () /* && FilterSpatial.IsNotAllocated () */ ) {
-                                        // Will gracefully handle an empty XyzFile
-    FilterSpatial.Set   (   SpatialFilter, 
-                            FiltersParam.XyzFile, 
-                            SpatialFilterMaxNeighbors ( DefaultSFDistance ), 
-                            SpatialFilterMaxDistance  ( DefaultSFDistance ) 
-                        );
-
-                                        // If failed, revoke the spatial filter
-    if ( FilterSpatial.IsNotAllocated () /*|| FilterSpatial.GetNumElectrodes () != numel*/ )
-        SpatialFiltering    = false;
-    }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // which in turn will call SetSamplingFrequency, as we really need this value set
 SetFilters ( fsamp, silent );
-
 }
 
 
@@ -671,8 +695,9 @@ SetFilters ( fsamp, silent );
                                         // temporal / topographical  x  pre- / post-reference
                                         // The caller sets the flags according to his needs
 template <class TypeD>
-void    TTracksFilters<TypeD>::ApplyFilters (   TArray2<TypeD>&     data,       int         numel,      const TSelection*   skipel, 
-                                                int                 numpts,     int         tfoffset, 
+void    TTracksFilters<TypeD>::ApplyFilters (   TArray2<TypeD>&     data,       int                 numel,      
+                                                int                 numpts,     int                 tfoffset, 
+                                                ReferenceType       reference,  const TSelection*   referencetracks,    const TSelection*   validtracks,    const TSelection*   auxtracks, 
                                                 FilterPrecedence    filterprecedence 
                                             )
 {
@@ -681,87 +706,87 @@ if ( filterprecedence == UnknownPrecedence )
 
                                         // Put everything in a big block
 OmpParallelBegin
-                                        // Pre-Reference
-if ( IsFlag ( filterprecedence, FilterBeforeRef ) ) {
 
-    if ( IsFlag ( filterprecedence, FilterTemporal ) && ( HasBaseline () || HasButterworthHigh () || HasButterworthLow () || HasNotches () ) ) {
-
-        OmpFor
-
-        for ( int el = 0; el < numel; el++ ) {
-
-            if ( skipel && skipel->IsSelected ( el ) )
-                continue;
-
-                                        // !Always before High Pass!
-            if ( HasBaseline () )               FilterBaseline.Apply            ( data[ el ] + tfoffset, numpts );
-
-                                        // force Band Pass
-            if      ( HasButterworthBand () )   FilterButterworthBandPass.Apply ( data[ el ] + tfoffset, numpts );
-
-            else if ( HasButterworthHigh () )   FilterButterworthHighPass.Apply ( data[ el ] + tfoffset, numpts );
-
-            else if ( HasButterworthLow  () )   FilterButterworthLowPass .Apply ( data[ el ] + tfoffset, numpts );
-
-
-            if ( HasNotches () )                FilterNotches.Apply             ( data[ el ] + tfoffset, numpts );
-            } // for el
-
-        } // FilterTemporal
-
-                                        // Break open these 2 filters, to access the outer loop - Also join the spatial filters together, sparing some memory transfer
-                                        // Ranking is not affected by the reference, put it here allows for Average Reference display of ranks
-    if ( IsFlag ( filterprecedence, FilterNonTemporal ) ) {
-                                        // Allocate private objects
-        TVector<TypeD>          temp ( numel );
-
-        OmpFor
-
-        for ( long tf0 = 0; tf0 < numpts; tf0++ ) {
-
-            for ( int i = 0; i < numel; i++ )
-                temp[ i ]    = data ( i, tfoffset + tf0 );
-
-
-            if ( HasSpatialFilter () )  FilterSpatial.Apply ( temp );                       // could also make use skipel?
-
-            if ( HasRanking       () )  FilterRanking.Apply ( temp, RankingOptions ( RankingAccountNulls | RankingMergeIdenticals ) );  // ignoring null values or not? or ignoring only for positive data?
-
-
-            for ( int i = 0; i < numel; i++ )
-                data ( i, tfoffset + tf0 )  = temp[ i ];
-            } // for tf
-        } // spatial / ranking
-
-    } // FilterBeforeRef
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Reference is done here
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Post-Reference
-if ( IsFlag ( filterprecedence, FilterAfterRef ) && ( HasRectification () || HasEnvelope () || HasThresholdKeepAbove () || HasThresholdKeepBelow () ) ) {
+                                        // Pre-Reference, Temporal filters
+if ( IsFlag ( filterprecedence, FilterTemporal ) && ( HasBaseline () || HasButterworthBand () || HasButterworthHigh () || HasButterworthLow () || HasNotches () ) ) {
 
     OmpFor
 
     for ( int el = 0; el < numel; el++ ) {
 
-        if ( skipel && skipel->IsSelected ( el ) )
+        if ( auxtracks && auxtracks->IsSelected ( el ) )
             continue;
+
+                                        // !Always before High Pass!
+        if      ( HasBaseline ()        )   FilterBaseline.Apply            ( data[ el ] + tfoffset, numpts );
+
+                                        // force Band Pass
+        if      ( HasButterworthBand () )   FilterButterworthBandPass.Apply ( data[ el ] + tfoffset, numpts );
+
+        else if ( HasButterworthHigh () )   FilterButterworthHighPass.Apply ( data[ el ] + tfoffset, numpts );
+
+        else if ( HasButterworthLow  () )   FilterButterworthLowPass .Apply ( data[ el ] + tfoffset, numpts );
+
+
+        if ( HasNotches () )                FilterNotches.Apply             ( data[ el ] + tfoffset, numpts );
+        } // for el
+
+    } // FilterTemporal
+
+
+                                        // Pre-Reference Non-Temporal + Reference filters       !testing parameter reference!
+if ( IsFlag ( filterprecedence, FilterNonTemporal ) && ( HasSpatialFilter () || HasRanking () || HasReference ( reference ) ) ) {
+                                    // Allocate private objects
+    TVector<TypeD>          temp ( numel );
+
+    OmpFor
+
+    for ( long tf0 = 0; tf0 < numpts; tf0++ ) {
+
+                                    // copy data to temp map
+        for ( int i = 0; i < numel; i++ )
+            temp[ i ]    = data ( i, tfoffset + tf0 );
+
+
+        if ( HasSpatialFilter () )          FilterSpatial.Apply ( temp );                       // could also make use auxtracks?
+
+
+        if ( HasRanking       () )          FilterRanking.Apply ( temp, RankingOptions ( RankingAccountNulls | RankingMergeIdenticals ) );  // ignoring null values or not? or ignoring only for positive data?
+
+                                    // !Calling  HasReference()  with overridden parameter!
+        if ( HasReference ( reference ) )   FilterReference.Apply ( temp, reference, referencetracks, validtracks, auxtracks );
+
+                                    // copy back map results
+        for ( int i = 0; i < numel; i++ )
+            data ( i, tfoffset + tf0 )  = temp[ i ];
+        } // for tf
+    } // FilterNonTemporal
+
+
+                                        // Post-Reference, both Temporal and Non-Temporal filters
+if ( HasRectification () || HasEnvelope () || HasThresholdKeepAbove () || HasThresholdKeepBelow () ) {
+
+    OmpFor
+
+    for ( int el = 0; el < numel; el++ ) {
+
+        if ( auxtracks && auxtracks->IsSelected ( el ) )
+            continue;
+
                                         // BEFORE Envelope
+                                        // !We call with a vector of temporal data, but it does not matter for this operator!
         if ( IsFlag ( filterprecedence, FilterNonTemporal ) && HasRectification () )            FilterRectification .Apply  ( data[ el ] + tfoffset, numpts );
 
                                         // AFTER Rectification
         if ( IsFlag ( filterprecedence, FilterTemporal    ) && HasEnvelope () )                 FilterEnvelope      .Apply  ( data[ el ] + tfoffset, numpts );
 
-
+                                        // !We call with a vector of temporal data, but it does not matter for this operator!
         if ( IsFlag ( filterprecedence, FilterNonTemporal ) && ( HasThresholdKeepAbove () 
                                                               || HasThresholdKeepBelow () ) )   FilterThreshold     .Apply  ( data[ el ] + tfoffset, numpts );
-
         } // for el
 
-    } // FilterAfterRef
+    } // After Reference
+
 
 OmpParallelEnd
 }

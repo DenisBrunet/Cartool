@@ -183,7 +183,7 @@ protected:
     int                 MaxNumNeigh;
     double              MaxDistNeigh;
     TArray3<double>     NeighDist;
-//  TFileName           File;           // ?storing file name could be useful to avoid reloading maybe?
+    TFileName           File;
 
 };
 
@@ -214,6 +214,7 @@ How                 = SpatialFilterNone;
 MaxNumNeigh         = 0;
 MaxDistNeigh        = 0;
 NeighDist.DeallocateMemory ();
+File.Reset ();
 }
 
 
@@ -224,6 +225,7 @@ How                 = op.How;
 MaxNumNeigh         = op.MaxNumNeigh;
 MaxDistNeigh        = op.MaxDistNeigh;
 NeighDist           = op.NeighDist;
+File                = op.File;
 }
 
 
@@ -238,6 +240,7 @@ How                 = op2.How;
 MaxNumNeigh         = op2.MaxNumNeigh;
 MaxDistNeigh        = op2.MaxDistNeigh;
 NeighDist           = op2.NeighDist;
+File                = op2.File;
 
 
 return  *this;
@@ -248,14 +251,26 @@ return  *this;
 template <class TypeD>
 void    TFilterSpatial<TypeD>::Set ( SpatialFilterType how, const char* file, int maxnumneigh, double maxdistneigh )
 {
+                                        // Avoid reloading/recomputing from the same file/same filter
+if ( How != SpatialFilterNone
+  && How == how
+  && IsAllocated () 
+//&& GetNumPoints () == dim
+  && File == file           )
+
+    return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 Reset ();
 
 if ( how == SpatialFilterNone || StringIsEmpty ( file ) )
     return;
 
                                         // Opening only once, retrieving neighborhood info, then closing
-TOpenDoc< TElectrodesDoc     >  XYZDoc ( file, OpenDocHidden );
-TOpenDoc< TSolutionPointsDoc >  SPDoc  ( file, OpenDocHidden );
+TOpenDoc<TElectrodesDoc    >    XYZDoc ( file, OpenDocHidden );
+TOpenDoc<TSolutionPointsDoc>    SPDoc  ( file, OpenDocHidden );
 
 if ( XYZDoc.IsNotOpen () && SPDoc.IsNotOpen () )
     return;
@@ -265,6 +280,7 @@ if ( XYZDoc.IsNotOpen () && SPDoc.IsNotOpen () )
 
 How                 = how;
 MaxDistNeigh        = maxdistneigh;
+File                = file;
 
 
 if      ( XYZDoc ) {

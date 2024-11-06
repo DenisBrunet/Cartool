@@ -260,7 +260,7 @@ void    TSegDoc::GetTracks  (   long                tf1,            long        
                                 TArray2<float>&     buff,           int             tfoffset, 
                                 AtomType            /*atomtype*/,
                                 PseudoTracksType    /*pseudotracks*/,
-                                ReferenceType       /*reference*/,  TSelection*     /*referencesel*/,
+                                ReferenceType       /*reference*/,  TSelection*     /*referencetracks*/,
                                 TRois*              /*rois*/
                             )
 {

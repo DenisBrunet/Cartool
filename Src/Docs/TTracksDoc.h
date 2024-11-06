@@ -241,7 +241,7 @@ public:
     virtual void    ReadRawTracks       ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )    = 0;
 
                                         // Retrieving tracks with optional filter / re-reference / pseudo-tracks / ROIs computation
-    virtual void    GetTracks           ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencesel = 0, TRois *rois = 0 );
+    virtual void    GetTracks           ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencetracks = 0, TRois *rois = 0 );
 
 
     virtual bool    IsStandDevAvail     ()                      { return false; }
@@ -266,12 +266,12 @@ protected:
     TFileStream     FileStream;         // Wrapper to some low-level file access (currently used only in TEegCartoolSefDoc for faster R/W)
 
                                         // Typology of tracks
-    ReferenceType   Reference;          // current reference
-    TSelection      ReferenceTracks;    // in case of single track / multiple tracks / average
+    ReferenceType&  Reference           = Filters.Reference;        // now stored in Filters - we use some "aliases" to (temporarily) keep the code as is
+    TSelection&     ReferenceTracks     = Filters.ReferenceTracks;
 
-    TSelection      BadTracks;          // Broken channels
-    TSelection      AuxTracks;          // Auxiliary channels - BadTracks and AuxTracks should not have common elements
-    TSelection      ValidTracks;        // Channels NOT Bad, Auxiliaries or Pseudo-Tracks - So in short: all good EEG channels
+    TSelection      BadTracks;          // Broken channels    : channels that dit not pick up signal correctly during recording
+    TSelection      AuxTracks;          // Auxiliary channels : channels with non-eeg data - Note that BadTracks and AuxTracks should not have any common elements
+    TSelection      ValidTracks;        // All good channels  : NOT Bad, NOT Auxiliaries and NOT Pseudo-Tracks
 
                                         // Tracks parameters
     long            NumTimeFrames;      // Time Frames will be in the [0 .. NumTimeFrames - 1] range

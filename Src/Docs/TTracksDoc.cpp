@@ -94,6 +94,7 @@ const char          DimensionNames[ NumDimensionTypes ][ ContentTypeMaxChars ] =
       : TBaseDoc ( parent ), TMarkers ( this )
 {
 Reference           = ReferenceAsInFile;
+
 ExtraContentType    = TracksContentUnknown;
 CopyVirtualMemory ( ExtraContentTypeNames, TracksContentNames, NumTracksContentTypes * ContentTypeMaxChars );
 
@@ -1326,7 +1327,7 @@ void    TTracksDoc::GetTracks   (   long                tf1,            long    
                                     TArray2<float>&     buff,           int             tfoffset, 
                                     AtomType            atomtype,
                                     PseudoTracksType    pseudotracks,
-                                    ReferenceType       reference,      TSelection*     referencesel,
+                                    ReferenceType       reference,      TSelection*     referencetracks,
                                     TRois*              rois      
                                 )
 {
@@ -1342,10 +1343,10 @@ if ( pseudotracks == ComputePseudoTracks && ! ( HasPseudoElectrodes () && OffGfp
 
                                         // falling back to current doc type
 if (    reference == ReferenceUsingCurrent
-     || reference == ReferenceArbitraryTracks && referencesel == 0 ) {
+     || reference == ReferenceArbitraryTracks && referencetracks == 0 ) {
 
     reference       =  Reference;       // current type can be anything, including single/multiple track(s)
-    referencesel    = &ReferenceTracks;
+    referencetracks = &ReferenceTracks;
     }
 
                                         // When data is positive, compute the RMS instead of the GFP by skipping the re-centering
@@ -1353,8 +1354,9 @@ bool                gfpnotcentered  = IsAbsolute ( atomtype );
 
                                         // assume the caller knows what he wants, even an average ref of Positive, Vector etc...
 if ( gfpnotcentered && IsVector ( atomtype ) ) {
-    reference     = ReferenceAsInFile;
-    referencesel  = 0;
+
+    reference       = ReferenceAsInFile;
+    referencetracks = 0;
     }
 
 
@@ -1440,8 +1442,9 @@ ReadRawTracks ( tf1, tf2, buff, tfoffset );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // apply pre-reference filters
-if ( FiltersActivated ) {
+                                        // Filters & reference
+if ( FiltersActivated 
+  || IsEffectiveReference ( reference ) ) { // FiltersActivated does not account for the reference for the moment, soto not disrupt the separation between filters and reference
 
                                         // temporal filtering, needs filling the mirror left and/or right parts?
     if ( needsmargin && ( mirrorl > 0 || mirrorr > 0 ) ) {
@@ -1476,89 +1479,23 @@ if ( FiltersActivated ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // do all (pre-reference) filters
-    Filters.ApplyFilters    (   buff,   NumElectrodes,  dontfilterauxs ? &AuxTracks : 0, 
-                                numtf,  tfoffset, 
-                                (FilterPrecedence) ( FilterBeforeRef | FilterTemporal | FilterNonTemporal ) 
+                                        // do ALL filters at once, including reference, with the correct sequencing
+    Filters.ApplyFilters    (   buff,       NumElectrodes,  
+                                numtf,      tfoffset,
+                                reference,  referencetracks,    &ValidTracks,   dontfilterauxs ? &AuxTracks : 0
                             );
 
                                         // don't forget case filtermargin == 0, we need to non-temporally filter this guy
     if ( loadbuffdiss )
-        Filters.ApplyFilters    (   BuffDiss,   NumElectrodes,  dontfilterauxs ? &AuxTracks : 0, 
-                                    1,          0, 
-                                    (FilterPrecedence) ( FilterBeforeRef | FilterNonTemporal ) 
+
+        Filters.ApplyFilters    (   BuffDiss,   NumElectrodes,
+                                    1,          0,
+                                    reference,  referencetracks,    &ValidTracks,   dontfilterauxs ? &AuxTracks : 0,
+                                    FilterNonTemporal
                                 );
 
-    } // if filtering
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // count only non-aux and non-bad electrodes
-double              numt            = NonNull ( GetNumValidElectrodes () );
-
-                                        // change any reference
-                                        // tfoffset & numtf might have been modified if filtering
-if ( reference != ReferenceAsInFile ) {
-
-    double                      refvalue    = 0;
-    TIteratorSelectedForward*   toseli      = reference == ReferenceArbitraryTracks ? new TIteratorSelectedForward ( *referencesel ) : 0;
-
-
-    for ( int tf = 0, tfo = tfoffset; tf < numtf; tf++, tfo++ ) {
-
-                                        // choose the right reference
-        if      ( reference == ReferenceAverage ) {
-                                        // don't use ReferenceTracks, as we can be in an overriding case
-            refvalue    = 0;
-
-            for ( int el = 0; el < NumElectrodes; el++ ) 
-                if ( ValidTracks[ el ] )
-                    refvalue   += buff ( el, tfo );
-                
-            refvalue   /= numt;
-            }
-
-        else if ( reference == ReferenceArbitraryTracks ) {
-
-            refvalue    = 0;
-                                        // !re-launch FirstSelected every time!
-            for ( toseli->FirstSelected ( *referencesel ); (bool) (*toseli); ++(*toseli) )
-
-                refvalue   += buff ( (*toseli)(), tfo );
-
-            refvalue   /= NonNull ( referencesel->NumSet () );
-            }
-
-                                        // subtract reference
-        for ( int el = 0; el < NumElectrodes; el++ ) 
-            if ( ! AuxTracks[ el ] )   
-                buff ( el, tfo ) -= refvalue;
-            
-        } // for tf
-    
-
-    if ( toseli != 0 )
-        delete  toseli;
-    } // ! ReferenceAsInFile
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // post-reference filtering, like Envelope / Thresholding, should be done at the end, after referencing
-if ( FiltersActivated ) {
-
-                                        // filter both temporal & non-temporal
-    Filters.ApplyFilters    (   buff,   NumElectrodes,  dontfilterauxs ? &AuxTracks : 0, 
-                                numtf,  tfoffset, 
-                                (FilterPrecedence) ( FilterAfterRef | FilterTemporal | FilterNonTemporal ) 
-                            );
-
-                                        // don't forget case filtermargin == 0, we need to non-temporal filter this guy
-    if ( loadbuffdiss )
-        Filters.ApplyFilters    (   BuffDiss,   NumElectrodes,  dontfilterauxs ? &AuxTracks : 0, 
-                                    1,          0, 
-                                    (FilterPrecedence) ( FilterAfterRef | FilterNonTemporal ) 
-                                );
-
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // save the precious values @ [TF - 1], if we have some margin
     if ( pseudotracks && filtermargin > 0 )
         for ( int el = 0; el < NumElectrodes; el++ )
@@ -1603,6 +1540,9 @@ if ( pseudotracks ) {
     double              avg2;
     double              gfp2;
     double              rescalevector   = IsVector ( atomtype ) ? 3 : 1;
+
+                                        // count only non-aux and non-bad electrodes
+    double              numt            = NonNull ( GetNumValidElectrodes () );
 
 
     for ( int tf = 0, tfo = tfoffset, tfo1 = tfo - 1; tf < numtf; tf++, tfo++, tfo1++ ) {

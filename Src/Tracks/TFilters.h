@@ -18,11 +18,12 @@ limitations under the License.
                                         // TFilter and TFilters definition
 #include    "TFilters.Base.h"
                                         // Temporal filters
-#include    "TFilters.Butterworth.h"
 #include    "TFilters.Baseline.h"
+#include    "TFilters.Butterworth.h"
 #include    "TFilters.Envelope.h"
                                         // Non-temporal filters
-#include    "TFilters.Threshold.h"
-#include    "TFilters.Rectification.h"
-#include    "TFilters.Ranking.h"
 #include    "TFilters.Spatial.h"
+#include    "TFilters.Ranking.h"
+#include    "TFilters.Reference.h"
+#include    "TFilters.Rectification.h"
+#include    "TFilters.Threshold.h"

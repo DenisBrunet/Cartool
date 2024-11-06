@@ -490,6 +490,7 @@
     <ClInclude Include="..\Src\Tracks\TFilters.h" />
     <ClInclude Include="..\Src\Tracks\TFilters.Ranking.h" />
     <ClInclude Include="..\Src\Tracks\TFilters.Rectification.h" />
+    <ClInclude Include="..\Src\Tracks\TFilters.Reference.h" />
     <ClInclude Include="..\Src\Tracks\TFilters.Spatial.h" />
     <ClInclude Include="..\Src\Tracks\TFilters.Threshold.h" />
     <ClInclude Include="..\Src\Tracks\TInterpolateTracks.h" />

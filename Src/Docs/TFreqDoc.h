@@ -106,7 +106,7 @@ public:
     void            SetReferenceType            ( ReferenceType ref, const char* tracks = 0, const TStrings* elnames = 0, bool verbose = true ) final   { Reference = ReferenceAsInFile; }  // re-referencing not allowed
     bool            CanFilter                   ()              const               final   { return false; }                   // filtering not allowed
     bool            SetFiltersActivated         ( bool state, bool silent = false ) final   { FiltersActivated = false; return FiltersActivated; }
-    void            GetTracks                   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencesel = 0, TRois *rois = 0 )  override;
+    void            GetTracks                   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencetracks = 0, TRois *rois = 0 )  override;
 
                                         // TFreqDoc
     virtual int     GetNumFrequencies           ()              const   { return NumFrequencies; }
@@ -136,7 +136,7 @@ public:
                                         // same as above, but can return real and imaginary parts
     virtual void    ReadFrequencies             ( long tf1, long tf2, TSetArray2<float> &realpart, TSetArray2<float> &imagpart, int tfoffset = 0 ) = 0;
                                         // get all tracks (pseudos optionals), all freqs
-    virtual void    GetFrequencies              ( long tf1, long tf2, TSetArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencesel = 0, TRois *rois = 0 );
+    virtual void    GetFrequencies              ( long tf1, long tf2, TSetArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencetracks = 0, TRois *rois = 0 );
                                         // handy function to just retrieve data on-demands
     virtual double  GetFreqValue                ( long el, long tf, long f ) = 0;
 

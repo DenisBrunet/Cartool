@@ -7490,12 +7490,12 @@ void    TTracksView::CmSetReference ( owlwparam w )
 char                buff[ KiloByte ];
 int                 el;
 
-                                        // shortcut button: transform into the right ref
+                                        // convert button ID to corresponding menu ID
 if ( w == IDB_SETAVGREF )
 
     w   = EEGDoc->GetReferenceType () == ReferenceAverage ? CM_EEGREFNONE : CM_EEGREFAVG;
 
-                                        // force big reset
+                                        // force Montage reset
 if ( w != CM_EEGREFMONTAGE && (bool) Montage ) {
 
     Montage.Reset   ();
