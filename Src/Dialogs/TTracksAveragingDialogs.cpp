@@ -437,10 +437,6 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
     maxtf   = min ( maxtf, numtf );
 
 
-//    DBGV6 ( i + 1, numtf, maxtf, numeleeg, dsf, dsf1, "EEG Check: # #TF maxTF #El SF AllSF" );
-//    DBGV3 ( numeleeg1, numeleeg, numelxyz, "numeleeg1, numeleeg, numelxyz" );
-
-
 //  if ( ! ReadFromHeader ( buff, ReadNumAuxElectrodes, &numauxeleeg ) )  return;
 //  if ( numelxyz != numeleeg - numauxeleeg ) {
 
@@ -460,7 +456,6 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
 TAvgTransfer.SamplingFrequency  = dsf1;
 TAvgTransfer.MaxNumTF           = maxtf < 0 || maxtf == INT_MAX ? 0 : maxtf;
 
-//DBGV2 ( TAvgTransfer.MaxNumTF, TAvgTransfer.SamplingFrequency, "All Files: maxTF, SF" );
 
 return true;
 }
@@ -713,7 +708,6 @@ for ( int i = 0; i < numeeg; i++ )
 
 
 files.GetCommonString ( match, true /*, true*/ );
-//DBGM ( match, "match" );
 
 
 if ( ! IsAbsoluteFilename ( match ) )
@@ -803,9 +797,6 @@ for ( int file = 0; file < sf.GetNumRecords (); file ++ ) {
                                                         // if trigger is empty, better to set one
     if ( ! sf.GetRecord ( file, "triggers", attrtriggers ) )
         StringCopy ( attrtriggers, "*" );
-
-//    sprintf ( buff, "file: %s  session: %s  tva: %s  triggers: %s", attrfile, attrsession, attrtva, attrtriggers );
-//    DBGM ( buff, "record total" );
 
 /*
     ComboEeg->Reset ();
@@ -2434,7 +2425,6 @@ if ( IsFreqLoop () ) {
         StringAppend    ( BaseFileName, ".", FreqName );
 
         FreqType    = FreqDoc->GetFreqType ();
-//        DBGM2 ( FreqName, BaseFileName, "IsFreqLoop" );
         }
     }
 
@@ -2625,12 +2615,6 @@ int                 offsetTestMax       = ( durationPre + offsetData ) + duratio
 int                 numBLCTF            = offsetBLCMax - offsetBLCMin + 1;
 
 
-//DBGV7 ( durationPre, - baseLineCorrPre, deltaleftbaseline, deltabadepochs, deltaleft, offsetData, offsetBLCMin, "durationPre, - baseLineCorrPre, deltaleftbaseline, deltabadepochs, deltaleft, offsetData, offsetBLCMin" );
-//DBGV7 ( durationPost, baseLineCorrPost, deltarightbaseline, deltabadepochs, deltaright, offsetData + durationPre, offsetBLCMax, "durationPost, baseLineCorrPost, deltarightbaseline, deltabadepochs, deltaright, offsetData + durationPre, offsetBLCMax" );
-//DBGV5 ( durationPost, baseLineCorrPost, deltaright, offsetBLCMax, dataTotal, "durationPost, baseLineCorrPost, deltaright, offsetBLCMax, dataTotal" );
-//DBGV4 ( deltafiltertf, offsetTestMin, offsetTestMax, dataTotal, "deltafiltertf, offsetTestMin, offsetTestMax, dataTotal" );
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // the whole pre-trigger interval to be read, including pre-stimulus and baseline
 int                 pretrigger          = durationPre + offsetData;
@@ -2644,7 +2628,6 @@ numElectrodes   = EegDoc->GetNumElectrodes ();
 totalChannels   = EegDoc->GetTotalElectrodes ();
 filtermargin    = 0; // Filters.GetSafeMargin ();   // in case of filtering, file will fully pre-processed at once and saved to a temp file - we don't need margins anymore
 
-//DBGV3 ( dataTotal, filtermargin, dataTotal + 2 * filtermargin, "datatotal filtermargin buffersize" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // choose ordered as there are many operations between these TSelection
@@ -3657,7 +3640,6 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                         sscanf ( buff, "%d %lf", &tvaok, &tvartms );
                                         // then skip tvaok and tvartms, to have access to a trigger name which could contain some spaces(!)
                         SkipFirstWords ( buff, tvaname, 2 );
-//                        DBGM ( tvaname, "tva name" );
                         }
                     }
 
@@ -4009,8 +3991,6 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                 accepttrigger   = true;
                 rejecttrigger   = false;
                 }
-
-//          DBGV4 ( marker.From, regallmin, regallmax, accepttrigger, "Pos  min max  accept_auto" );
 
                                         // need to break the automode?
             if ( automode == AutoRejectUntilOk && accepttrigger ) {
