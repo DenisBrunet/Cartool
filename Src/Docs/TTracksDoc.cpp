@@ -1341,7 +1341,7 @@ if ( pseudotracks == ComputePseudoTracks && ! ( HasPseudoElectrodes () && OffGfp
 
     pseudotracks    = NoPseudoTracks;
 
-                                        // falling back to current doc type
+                                        // resolving current reference, & checking consistency
 if (    reference == ReferenceUsingCurrent
      || reference == ReferenceArbitraryTracks && referencetracks == 0 ) {
 
@@ -1350,7 +1350,7 @@ if (    reference == ReferenceUsingCurrent
     }
 
                                         // When data is positive, compute the RMS instead of the GFP by skipping the re-centering
-bool                gfpnotcentered  = IsAbsolute ( atomtype );
+bool                gfpnotcentered      = IsAbsolute ( atomtype );
 
                                         // assume the caller knows what he wants, even an average ref of Positive, Vector etc...
 if ( gfpnotcentered && IsVector ( atomtype ) ) {
@@ -1361,78 +1361,43 @@ if ( gfpnotcentered && IsVector ( atomtype ) ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // temporal filtering variables
-int                 numtf           = tf2 - tf1 + 1;
-long                mirrorl         = 0;    // how many TFs to mirror on the left
-long                mirrorr         = 0;    // how many TFs to mirror on the right
-long                lastvalidtf;
-int                 savedtf1        = tf1;
-//int               savedtf2        = tf2;
-int                 savednumtf      = numtf;
-int                 savedtfoffset   = tfoffset;
-bool                dontfilterauxs  = ! ( FiltersActivated && CheckToBool ( Filters.FiltersParam.FilterAuxs ) );
-
-
-bool                needsmargin     = FiltersActivated && Filters.HasTemporalFilter ();
-                                        // can be 0 if only non-temporal filters - we have to rely on BuffDiss in that case
-                                        // should be at least 1 in case of temporal, the only problematic case being Baseline alone so the previous TF is baseline-d correctly
-int                 filtermargin    = needsmargin ? AtLeast ( 1, Filters.GetSafeMargin () ) : 0;
-
-                                        // check if we need to load a separate 1 TF buffer for the first dissimilarity
-bool                loadbuffdiss    = pseudotracks          // only if we compute the pseudos
-                                   && filtermargin == 0     // if the buffer has not been extended due to filtering
-                                   && tf1 > 0;              // previous absolute TF must exist
+                                        // !Filters can exist but user could have deactivated them!
+bool                dotemporalfilters   =     FiltersActivated && Filters.HasTemporalFilter ();
+                                        // Also depends from user's wish
+bool                dontfilterauxs      = ! ( FiltersActivated && CheckToBool ( Filters.FiltersParam.FilterAuxs ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // set new limits if temporal filtering
-                                        // note that we can still non-temporal filter, but it doesn't need any of the margin gymnastic
-if ( needsmargin ) {
 
-    numtf          += 2 * filtermargin; // add some TFs to the borders
+long                numtf               = tf2 - tf1 + 1;
 
 
-    tfoffset        = 0;                // place all stuff at the beginning of buffer, to have all space for filtering
+if ( dotemporalfilters )
+                                        // Adjust the time parameters and set the time margins for temporal filtering
+    Filters.UpdateTimeRange (   buff, 
+                                pseudotracks ? NumElectrodes + NumPseudoTracks : NumElectrodes, NumTimeFrames,
+                                tf1,    tf2,    numtf,  tfoffset    // !update values with new limits!
+                            );
 
-
-    tf1            -= filtermargin;     // shift left side
-
-    if ( tf1 < 0 ) {                    // but check its limit
-        mirrorl     = -tf1;             // if out, ask for mirroring what is known
-        tf1         = 0;
-        tfoffset    = mirrorl;          // temporarily make some room for beginning mirror
-        }
-
-
-    tf2            += filtermargin;     // shift right side
-
-    if ( tf2 >= NumTimeFrames ) {       // but check its limit
-        mirrorr     = tf2 - ( NumTimeFrames - 1 );  // mirroring
-        tf2         = NumTimeFrames - 1;            // new limit
-        }
-
-    lastvalidtf     = numtf - 1 - mirrorr;  // last position with real data, before the right mirroring part
-    } // needsmargin
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Caller doesn't have to worry about the necessary margin, it will be adjusted here!
                                         // Note that the previous content will be lost, though this usually is not a problem, as for filtered data, the buffer is usually evaluated as a whole
-                                        // buff can only grow, not shrink
-buff.Resize (   max ( pseudotracks ? NumElectrodes + NumPseudoTracks 
-                                   : NumElectrodes, 
-                      buff.GetDim1 () ), 
-                max ( numtf, 
-                      buff.GetDim2 () ) );
+Filters.SetBuffer   (   buff, 
+                        pseudotracks ? NumElectrodes + NumPseudoTracks : NumElectrodes, numtf
+                    );
 
-                                        // BuffDiss dimensions could also be asserted here...
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // load buffer for the Dissimilarity of first time frame
-if ( loadbuffdiss ) 
-    ReadRawTracks ( tf1 - 1, tf1 - 1, BuffDiss );   // this is not optimal as it launches a separate read for 1 TF - also tf1 > 0 here
-else
-    BuffDiss.ResetMemory ();                        // just to be clean...
+                                        // We have to care for an optional 1 TF buffer used for dissimilarity computation
+if ( pseudotracks ) {
+    
+    if ( tf1 == 0 )                     // original or modified tf1 - Dissimilarity can not be computed 
+
+        BuffDiss.ResetMemory ();        // by safety
+
+    else if ( ! dotemporalfilters )     // unmodified tf1 > 0 - read an additional time point @ tf1-1 as there is addition margin from any filter here
+
+        ReadRawTracks ( tf1 - 1, tf1 - 1, BuffDiss );
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1443,88 +1408,30 @@ ReadRawTracks ( tf1, tf2, buff, tfoffset );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Filters & reference
-if ( FiltersActivated 
-  || IsEffectiveReference ( reference ) ) { // FiltersActivated does not account for the reference for the moment, soto not disrupt the separation between filters and reference
+if ( FiltersActivated && Filters.HasAnyFilter ()
+  || IsEffectiveReference ( reference ) ) { // !filters semantic do not include the reference for the moment!
 
-                                        // temporal filtering, needs filling the mirror left and/or right parts?
-    if ( needsmargin && ( mirrorl > 0 || mirrorr > 0 ) ) {
-
-        for ( int el = 0; el < NumElectrodes; el++ ) {
-                                            // skip auxs?
-            if ( dontfilterauxs && AuxTracks[ el ] )
-                continue;
-
-
-            if ( mirrorl > 0 )          // mirror missing part, and complete with 0 if too little data
-
-                for ( int tfl = mirrorl - 1, tfr = mirrorl + 1; tfl >= 0; tfl--, tfr++ )
-                                        // don't mirror from the right mirror (if any)
-                    buff ( el, tfl )   = tfr <= lastvalidtf ? buff ( el, tfr ) : 0; // symetrical filling
-    //              buff ( el, tfl )   = buff ( el, mirrorl );                      // constant   filling
-    //              buff ( el, tfl )   = 0;                                         // null       filling
-
-
-            if ( mirrorr > 0 )          // mirror missing part, and complete with 0 if too little data
-
-                for ( int tf = 0, tfr = lastvalidtf + 1, tfl = lastvalidtf - 1; tf < mirrorr; tf++, tfr++, tfl-- )
-                                        // don't mirror from the left mirror (if any)
-                    buff ( el, tfr )   = tfl >= mirrorl ? buff ( el, tfl ) : 0;
-            } // for el
-
-
-        if ( mirrorl )
-            tfoffset    = 0;            // after the left mirroring, there is no offset anymore
-
-        } // filling mirrored parts
-
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // do ALL filters at once, including reference, with the correct sequencing
+                                        // do ALL filters at once, including reference, with the correct sequence
     Filters.ApplyFilters    (   buff,       NumElectrodes,  
                                 numtf,      tfoffset,
-                                reference,  referencetracks,    &ValidTracks,   dontfilterauxs ? &AuxTracks : 0
+                                reference,  referencetracks,    &ValidTracks,   dontfilterauxs ? &AuxTracks : 0,
+                                pseudotracks && tf1 > 0 && dotemporalfilters ? &BuffDiss : 0,   // we can legally retrieve data @ tf1-1
+                                AllFilters
                             );
 
-                                        // don't forget case filtermargin == 0, we need to non-temporally filter this guy
-    if ( loadbuffdiss )
+    if ( dotemporalfilters )
+
+        Filters.RestoreTimeRange    (   tf1,    tf2,    numtf,  tfoffset    );  // !restore original values!
+
+
+    if ( pseudotracks && tf1 > 0 && ! dotemporalfilters )
 
         Filters.ApplyFilters    (   BuffDiss,   NumElectrodes,
                                     1,          0,
                                     reference,  referencetracks,    &ValidTracks,   dontfilterauxs ? &AuxTracks : 0,
-                                    FilterNonTemporal
+                                    0,
+                                    FilterNonTemporal   // just make sure to not activate temporal filters
                                 );
-
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // save the precious values @ [TF - 1], if we have some margin
-    if ( pseudotracks && filtermargin > 0 )
-        for ( int el = 0; el < NumElectrodes; el++ )
-            BuffDiss ( el, 0 ) = buff ( el, filtermargin - 1 );
-
-                                        // shift the data back to their original place
-//  for ( int el = 0; el < NumElectrodes; el++ ) 
-//      MoveVirtualMemory ( buff[ el ] + savedtfoffset, buff[ el ] + filtermargin, savednumtf * buff.AtomSize () );
-
-                                        // temporal filters -> unroll the margin
-    if      ( filtermargin > 0 )
-                                        // memory is contiguous, do it in 1 move - take some care about the amount of data to move to avoid out of memory access
-        MoveVirtualMemory ( buff.GetArray () + savedtfoffset,
-                            buff.GetArray () + filtermargin,
-                            buff.MemorySize () - max ( filtermargin, savedtfoffset ) * buff.AtomSize () );
-
-                                        // non-temporal filter or no filter -> unroll different offsets - shouldn't occur, everything has been done on-site
-//  else if ( savedtfoffset != tfoffset )
-//                                      // memory is contiguous, do it in 1 move - take some care about the amount of data to move to avoid out of memory access
-//      MoveVirtualMemory ( buff.GetArray () + savedtfoffset,
-//                          buff.GetArray () + tfoffset,
-//                          buff.MemorySize () - max ( filtermargin, savedtfoffset ) * buff.AtomSize () );
-
-                                        // restore original parameters
-    if ( needsmargin ) {
-        tf1         = savedtf1;
-        numtf       = savednumtf;
-        tfoffset    = savedtfoffset;
-        }
     } // post filtering
 
 
@@ -1532,23 +1439,19 @@ if ( FiltersActivated
                                         // compute pseudos
                                         // tfoffset & numtf conform to the parameters
 if ( pseudotracks ) {
-
-    double              sum;
-    double              sumsqr;
-    double              avg;
-    double              gfp;
-    double              avg2;
-    double              gfp2;
-    double              rescalevector   = IsVector ( atomtype ) ? 3 : 1;
-
                                         // count only non-aux and non-bad electrodes
     double              numt            = NonNull ( GetNumValidElectrodes () );
+    double              rescalevector   = IsVector ( atomtype ) ? 3 : 1;
+    double              avgbefore;
+    double              gfpbefore;
+
 
 
     for ( int tf = 0, tfo = tfoffset, tfo1 = tfo - 1; tf < numtf; tf++, tfo++, tfo1++ ) {
 
                                         // don't use ReferenceTracks, as we can be in an overriding case
-        sum     = 0;
+        double      sum     = 0;
+        double      avg     = 0;
 
         for ( int el = 0; el < NumElectrodes; el++ ) 
             if ( ValidTracks[ el ] )
@@ -1560,8 +1463,11 @@ if ( pseudotracks ) {
         if ( gfpnotcentered )
             avg   = 0;                  // don't center on the average - GFP actually becomes RMS
 
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compute GFP with average ref
-        sumsqr  = 0;
+        double      sumsqr  = 0;
+        double      gfp     = 0;
 
         for ( int el = 0; el < NumElectrodes; el++ ) 
             if ( ValidTracks[ el ] )
@@ -1572,42 +1478,44 @@ if ( pseudotracks ) {
                                         // real GFP has been saved already, now avoid some 0 division
         if ( gfp == 0 )     gfp  = 1;
 
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compute DIS
         if ( tf == 0 ) {                // first occurence of the loop, i.e. no previous data?
 
-            if ( tf1 == 0 )             // TF 0?
+            if ( tf1 == 0 ) {           // TF 0?
 
                 buff ( OffDis, tfo )   = 0;    // previous value doesn't exist
-                
+                }
             else {                      // use local 1 TF buffer, compute again AVG, GFP, then the DIS
 
-                sum     = 0;
+                double      sum     = 0;
 
                 for ( int el = 0; el < NumElectrodes; el++ ) 
                     if ( ValidTracks[ el ] )
                         sum    += BuffDiss ( el, 0 );
                 
-                avg2  = gfpnotcentered ? 0 : sum / numt;
+                avgbefore   = gfpnotcentered ? 0 : sum / numt;
+
+
+                double      sumsqr  = 0;
+
+                for ( int el = 0; el < NumElectrodes; el++ ) 
+                    if ( ValidTracks[ el ] )
+                        sumsqr += Square ( BuffDiss ( el, 0 ) - avgbefore );
+
+                gfpbefore   = sqrt ( sumsqr / numt * rescalevector );
+
+
+                if ( ! gfpbefore )  gfpbefore = 1;
 
 
                 sumsqr  = 0;
 
                 for ( int el = 0; el < NumElectrodes; el++ ) 
                     if ( ValidTracks[ el ] )
-                        sumsqr += Square ( BuffDiss ( el, 0 ) - avg2 );
-
-                gfp2 = sqrt ( sumsqr / numt * rescalevector );
-
-
-                if ( ! gfp2 )   gfp2 = 1;
-
-
-                sumsqr  = 0;
-
-                for ( int el = 0; el < NumElectrodes; el++ ) 
-                    if ( ValidTracks[ el ] )
-                        sumsqr += Square ( ( buff     ( el, tfo  ) - avg  ) / gfp
-                                         - ( BuffDiss ( el, 0    ) - avg2 ) / gfp2 );
+                        sumsqr += Square ( ( buff     ( el, tfo  ) - avg       ) / gfp
+                                         - ( BuffDiss ( el, 0    ) - avgbefore ) / gfpbefore );
 
                 buff ( OffDis, tfo )   = sqrt ( sumsqr / numt * rescalevector );
 
@@ -1617,26 +1525,29 @@ if ( pseudotracks ) {
         else {                          // tf != 0 - NOT the first occurence in the loop
 
             sumsqr  = 0;
-                                        // avg2 and gfp2 exist!
+                                        // avgbefore and gfpbefore exist!
             for ( int el = 0; el < NumElectrodes; el++ ) 
                 if ( ValidTracks[ el ] )
-                    sumsqr += Square ( ( buff ( el, tfo  ) - avg  ) / gfp
-                                     - ( buff ( el, tfo1 ) - avg2 ) / gfp2 );
+                    sumsqr += Square ( ( buff ( el, tfo  ) - avg       ) / gfp
+                                     - ( buff ( el, tfo1 ) - avgbefore ) / gfpbefore );
 
             buff ( OffDis, tfo )   = sqrt ( sumsqr / numt * rescalevector );
             }
 
 
-        gfp2    = gfp;                  // store previous values for the next tf
-        avg2    = avg;
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // store current values for the next tf
+        avgbefore   = avg;
+        gfpbefore   = gfp;
         } // for tf
 
     } // if pseudotracks
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // optional ROIing
+                                        // optional ROI-ing
 if ( rois )
+
     rois->Average ( buff, tfoffset, tfoffset + numtf - 1, FilterTypeMean );
 }
 
