@@ -1394,7 +1394,7 @@ if ( pseudotracks ) {
 
         BuffDiss.ResetMemory ();                // by safety
 
-    else if ( tf1 > 0 && ! dotemporalfilters )  // unmodified tf1 > 0 - read an additional time point @ tf1-1 as there is addition margin from any filter here
+    else if ( ! dotemporalfilters && tf1 > 0 )  // unmodified tf1 > 0 - read an additional time point @ tf1-1 as there is addition margin from any filter here
 
         ReadRawTracks ( tf1 - 1, tf1 - 1, BuffDiss );
     }
@@ -1415,16 +1415,16 @@ if ( FiltersActivated && Filters.HasAnyFilter ()
     Filters.ApplyFilters    (   buff,       NumElectrodes,  
                                 numtf,      tfoffset,
                                 reference,  referencetracks,    &ValidTracks,   dontfilterauxs ? &AuxTracks : 0,
-                                pseudotracks && tf1 > 0 && dotemporalfilters ? &BuffDiss : 0,   // we can legally retrieve data @ tf1-1
+                                pseudotracks && dotemporalfilters ? &BuffDiss : 0,  // recover data @ tf1-1
                                 AllFilters
                             );
 
     if ( dotemporalfilters )
 
-        Filters.RestoreTimeRange    (   tf1,    tf2,    numtf,  tfoffset    );  // !restore original values!
+        Filters.RestoreTimeRange    (   tf1,    tf2,    numtf,  tfoffset    );  // !restore original time limits!
 
 
-    if ( pseudotracks && tf1 > 0 && ! dotemporalfilters )
+    if ( pseudotracks && ! dotemporalfilters && tf1 > 0 )
 
         Filters.ApplyFilters    (   BuffDiss,   NumElectrodes,
                                     1,          0,
