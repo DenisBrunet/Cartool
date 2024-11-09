@@ -632,7 +632,6 @@ if      (   HasThresholdKeepAbove () &&   HasThresholdKeepBelow () ) {
 
     else                                                                FilterThreshold.Set ( FilterClipAboveOrBelow,  ThresholdKeepAboveValue, ThresholdKeepBelowValue );
     }
-
 else if (   HasThresholdKeepAbove () && ! HasThresholdKeepBelow () )    FilterThreshold.Set ( FilterClipBelow,         ThresholdKeepAboveValue );
 
 else if ( ! HasThresholdKeepAbove () &&   HasThresholdKeepBelow () )    FilterThreshold.Set ( FilterClipAbove,         ThresholdKeepBelowValue );

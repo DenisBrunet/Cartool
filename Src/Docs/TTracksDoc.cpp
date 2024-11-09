@@ -1390,11 +1390,11 @@ Filters.SetBuffer   (   buff,
                                         // We have to care for an optional 1 TF buffer used for dissimilarity computation
 if ( pseudotracks ) {
     
-    if ( tf1 == 0 )                     // original or modified tf1 - Dissimilarity can not be computed 
+    if      ( tf1 == 0 )                        // original or modified tf1 - Dissimilarity can not be computed 
 
-        BuffDiss.ResetMemory ();        // by safety
+        BuffDiss.ResetMemory ();                // by safety
 
-    else if ( ! dotemporalfilters )     // unmodified tf1 > 0 - read an additional time point @ tf1-1 as there is addition margin from any filter here
+    else if ( tf1 > 0 && ! dotemporalfilters )  // unmodified tf1 > 0 - read an additional time point @ tf1-1 as there is addition margin from any filter here
 
         ReadRawTracks ( tf1 - 1, tf1 - 1, BuffDiss );
     }
@@ -1483,11 +1483,11 @@ if ( pseudotracks ) {
                                         // compute DIS
         if ( tf == 0 ) {                // first occurence of the loop, i.e. no previous data?
 
-            if ( tf1 == 0 ) {           // TF 0?
+            if ( tf1 == 0 ) {           // first real tf: dissimilarity does not exist
 
                 buff ( OffDis, tfo )   = 0;    // previous value doesn't exist
                 }
-            else {                      // use local 1 TF buffer, compute again AVG, GFP, then the DIS
+            else {                      // tf1 > 0 - use local 1 TF buffer, compute again AVG, GFP, then the DIS
 
                 double      sum     = 0;
 
@@ -1519,10 +1519,11 @@ if ( pseudotracks ) {
 
                 buff ( OffDis, tfo )   = sqrt ( sumsqr / numt * rescalevector );
 
-                } // else tf1 != 0
+                } // else tf1 > 0
+
             } // tf == 0
 
-        else {                          // tf != 0 - NOT the first occurence in the loop
+        else {                          // tf > 0 - NOT the first occurence in the loop
 
             sumsqr  = 0;
                                         // avgbefore and gfpbefore exist!
