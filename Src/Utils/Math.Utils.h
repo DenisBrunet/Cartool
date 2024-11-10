@@ -446,6 +446,10 @@ template <typename T>
 inline T        NonNull                 ( T      v )                                { return  v != 0 ? v : 1; }             // v non-null -> v, else 1
 template <typename T>
 inline T        AbsNonNull              ( T      v )                                { return  v > 0 ? v : v < 0 ? -v : 1; } // v non-null -> |v|, else 1
+template <typename T>
+inline void     NonNulled               ( T&     v )                                { if ( v == 0 ) v = 1; }
+template <typename T>
+inline void     AbsNonNulled            ( T&     v )                                { if ( v < 0 ) v = -v; else if ( v == 0 ) v = 1; }
 double          Fraction                ( double v );
 int             Truncate                ( double v );
 double          TruncateTo              ( double v, double precision );
