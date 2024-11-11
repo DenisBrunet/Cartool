@@ -299,6 +299,7 @@ ThresholdKeepBelowValue     = op.ThresholdKeepBelowValue;
 SamplingFrequency           = op.SamplingFrequency;
 FreqMin                     = op.FreqMin;
 FreqMax                     = op.FreqMax;
+
                                         // these might not be needed, they will be overwritten at each SetFilters calls(?)
 FilterBaseline              = op.FilterBaseline;
 FilterButterworthLowPass    = op.FilterButterworthLowPass;
@@ -306,13 +307,18 @@ FilterButterworthHighPass   = op.FilterButterworthHighPass;
 FilterButterworthBandPass   = op.FilterButterworthBandPass;
 FilterNotches               = op.FilterNotches;
 FilterEnvelope              = op.FilterEnvelope;
+
 FilterSpatial               = op.FilterSpatial;
 FilterRanking               = op.FilterRanking;
+FilterReference             = op.FilterReference;
 FilterRectification         = op.FilterRectification;
 FilterThreshold             = op.FilterThreshold;
 
                                         // also copy the data from the dialog itself
 CopyVirtualMemory ( (void *) &FiltersParam, (void *) &op.FiltersParam, sizeof ( FiltersParam ) );
+
+                                        // private, for internal use - reset them, but we don't need to copy them
+ResetMargin ();
 }
 
 
@@ -358,6 +364,7 @@ ThresholdKeepBelowValue     = op2.ThresholdKeepBelowValue;
 SamplingFrequency           = op2.SamplingFrequency;
 FreqMin                     = op2.FreqMin;
 FreqMax                     = op2.FreqMax;
+
                                         // these might not be needed, they will be overwritten at each SetFilters calls(?)
 FilterBaseline              = op2.FilterBaseline;
 FilterButterworthLowPass    = op2.FilterButterworthLowPass;
@@ -365,13 +372,19 @@ FilterButterworthHighPass   = op2.FilterButterworthHighPass;
 FilterButterworthBandPass   = op2.FilterButterworthBandPass;
 FilterNotches               = op2.FilterNotches;
 FilterEnvelope              = op2.FilterEnvelope;
+
 FilterSpatial               = op2.FilterSpatial;
 FilterRanking               = op2.FilterRanking;
+FilterReference             = op2.FilterReference;
 FilterRectification         = op2.FilterRectification;
 FilterThreshold             = op2.FilterThreshold;
 
                                         // also copy the data from the dialog itself
 CopyVirtualMemory ( (void *) &FiltersParam, (void *) &op2.FiltersParam, sizeof ( FiltersParam ) );
+
+                                        // private, for internal use - reset them, but we don't need to copy them
+ResetMargin ();
+
 
 return  *this;
 }
