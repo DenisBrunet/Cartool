@@ -189,14 +189,16 @@ private:
     TArray3<double> NeighDist;                      // Neighborhood distances for Spatial Filtering
 
                                         // For ApplyFilters
-    long            FilterMargin;       // can be used as a flag
+    long            FilterMargin;       // will also be used as a flag
     long            SavedTf1;
     long            SavedTf2;
     long            SavedNumTf;
     long            SavedTfOffset;
     long            MirrorLeft;
     long            MirrorRight;
-    void            ResetMargin     ();
+
+    void            ResetMargin             ();
+    bool            HasUpdatedTimeRange     ()  const   { return FilterMargin > 0; }    // UpdateTimeRange has been called
 
 };
 
@@ -497,7 +499,7 @@ void    TTracksFilters<TypeD>::UpdateTimeRange  (   TArray2<float>&     buff,
                                                     long&               tf1,            long&           tf2,            long&       numtf,  int&        tfoffset 
                                                 )
 {
-//if ( FilterMargin > 0 )
+//if ( HasUpdatedTimeRange () )
 //    problem;
 
 ResetMargin ();
@@ -557,7 +559,7 @@ else
 template <class TypeD>
 void    TTracksFilters<TypeD>::RestoreTimeRange (   long&       tf1,    long&       tf2,    long&       numtf,      int&        tfoffset  )
 {
-if ( FilterMargin == 0 )
+if ( ! HasUpdatedTimeRange () )
     return;
 
 tf1             = SavedTf1;
@@ -822,10 +824,10 @@ SetFilters ( fsamp, silent );
 
 
 //----------------------------------------------------------------------------
-                                        // The exact sequence of filters, with branches according to:
-                                        // temporal / non-temporal  x  pre- / post-reference
-                                        // The caller sets the flags according to his needs
-                                        // Must call UpdateTimeRange beforehand in case of temporal filters so to properly account for the needed extra margins
+                                        // Running the various filters in their exact sequence, with optional control on Temporal vs Non-Temporal filters
+                                        // Caller must therefor set the flags according to his/her needs
+                                        // UpdateTimeRange  must be called before in case of temporal filters to adjust the time limits for extra margins
+                                        // RestoreTimeRange must be called after to reset temporary modified time limits
 template <class TypeD>
 void    TTracksFilters<TypeD>::ApplyFilters (   TArray2<TypeD>&     data,       int                 numel,      
                                                 long                numtf,      int                 tfoffset,
@@ -840,7 +842,7 @@ if ( filterprecedence == UnknownPrecedence )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( FilterMargin > 0 && ( MirrorLeft > 0 || MirrorRight > 0 ) ) {
+if ( HasUpdatedTimeRange () && ( MirrorLeft > 0 || MirrorRight > 0 ) ) {
                                         // UpdateTimeRange was called to extend the processed time range, and some data mirroring is needed
 
                                         // last position with real data, BEFORE the right mirroring part
@@ -967,7 +969,7 @@ OmpParallelEnd
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( FilterMargin > 0 ) {
+if ( HasUpdatedTimeRange () ) {
                                         // UpdateTimeRange was called to extend the processed time range, now we need to get rid of the extra data
 
                                         // Before losing that extra data, caller might have requested to save the data @ tf1-1
@@ -988,7 +990,7 @@ if ( FilterMargin > 0 ) {
                         data.GetArray () + FilterMargin,
                         data.MemorySize () - max ( FilterMargin, SavedTfOffset ) * data.AtomSize () );
 
-    } // if FilterMargin
+    } // if HasUpdatedTimeRange
 
 }
 
