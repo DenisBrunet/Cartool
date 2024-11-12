@@ -1362,28 +1362,29 @@ if ( gfpnotcentered && IsVector ( atomtype ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // !Filters can exist but user could have deactivated them!
-bool                dotemporalfilters   =     FiltersActivated && Filters.HasTemporalFilter ();
-                                        // Also depends from user's wish
-bool                dontfilterauxs      = ! ( FiltersActivated && CheckToBool ( Filters.FiltersParam.FilterAuxs ) );
+bool                doanyfilter         = FiltersActivated && Filters.HasAnyFilter ();
+bool                dotemporalfilters   = doanyfilter && Filters.HasTemporalFilter ();
+bool                dofilterauxs        = doanyfilter && CheckToBool ( Filters.FiltersParam.FilterAuxs );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // wrapping up all the handling of time limits & data mirroring for temporal filters
+TTracksFiltersLimits<float>  timelimits;
 
 long                numtf               = tf2 - tf1 + 1;
 
 
 if ( dotemporalfilters )
                                         // Adjust the time parameters and set the time margins for temporal filtering
-    Filters.UpdateTimeRange (   buff, 
-                                pseudotracks ? NumElectrodes + NumPseudoTracks : NumElectrodes, NumTimeFrames,
-                                tf1,    tf2,    numtf,  tfoffset    // !update values with new limits!
-                            );
+    timelimits.UpdateTimeRange  (   tf1,        tf2,        numtf,      tfoffset,   // !update values with new limits!
+                                    AtLeast ( 1, Filters.GetSafeMargin () ),        // !make sure it has at least 1 TF so we don't need BuffDiss!
+                                    NumTimeFrames
+                                );
 
-                                        // Caller doesn't have to worry about the necessary margin, it will be adjusted here!
-                                        // Note that the previous content will be lost, though this usually is not a problem, as for filtered data, the buffer is usually evaluated as a whole
-Filters.SetBuffer   (   buff, 
-                        pseudotracks ? NumElectrodes + NumPseudoTracks : NumElectrodes, numtf
-                    );
+                                        // Adjust buffer to either original or expanded limits
+                                        // Note that the previous content could be lost, though this usually is not a problem, as for filtered data, the buffer is usually evaluated as a whole
+buff.Resize (   AtLeast ( buff.GetDim1 (), NumElectrodes + ( pseudotracks ? NumPseudoTracks : 0 ) ),
+                AtLeast ( buff.GetDim2 (), (int) numtf                                            )  );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1408,31 +1409,39 @@ ReadRawTracks ( tf1, tf2, buff, tfoffset );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Filters & reference
-if ( FiltersActivated && Filters.HasAnyFilter ()
+if ( doanyfilter
   || IsEffectiveReference ( reference ) ) { // !filters semantic do not include the reference for the moment!
 
-                                        // do ALL filters at once, including reference, with the correct sequence
-    Filters.ApplyFilters    (   buff,       NumElectrodes,  
-                                numtf,      tfoffset,
-                                reference,  referencetracks,    &ValidTracks,   dontfilterauxs ? &AuxTracks : 0,
-                                pseudotracks && dotemporalfilters ? &BuffDiss : 0,  // recover data @ tf1-1
-                                AllFilters
-                            );
 
     if ( dotemporalfilters )
 
-        Filters.RestoreTimeRange    (   tf1,    tf2,    numtf,  tfoffset    );  // !restore original time limits!
+        timelimits.MirrorData       (   buff,   NumElectrodes,  
+                                        numtf,  tfoffset        );
+
+                                            // do ALL filters at once, including reference, with the correct sequence
+    Filters.ApplyFilters    (   buff,       NumElectrodes,  
+                                numtf,      tfoffset,
+                                reference,  referencetracks,    &ValidTracks,   dofilterauxs ? 0 : &AuxTracks,
+                                doanyfilter ? AllFilters : NoFilter
+                            );
+
+
+    if ( dotemporalfilters )
+
+        timelimits.RestoreTimeRange (   buff,       NumElectrodes,  
+                                        tf1,        tf2,        numtf,      tfoffset,       // !restore original time limits!
+                                        pseudotracks && dotemporalfilters ? &BuffDiss : 0   // recover data @ tf1-1
+                                    );
 
 
     if ( pseudotracks && ! dotemporalfilters && tf1 > 0 )
 
         Filters.ApplyFilters    (   BuffDiss,   NumElectrodes,
                                     1,          0,
-                                    reference,  referencetracks,    &ValidTracks,   dontfilterauxs ? &AuxTracks : 0,
-                                    0,
-                                    FilterNonTemporal   // just make sure to not activate temporal filters
+                                    reference,  referencetracks,    &ValidTracks,   dofilterauxs ? 0 : &AuxTracks,
+                                    doanyfilter ? FilterNonTemporal : NoFilter              // just to make sure we skip the temporal filters
                                 );
-    } // post filtering
+    } // filter or reference
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -222,8 +222,9 @@ public:
     virtual void                SetBadTracks    ( TSelection *bad, bool notify = true );
     virtual const TSelection&   GetAuxTracks    ()      const   { return AuxTracks; }
     virtual void                SetAuxTracks    ( TSelection *aux, bool notify = true );
-    virtual void                ResetAuxTracks ();
-    virtual void                SetValidTracks ();      // Update ValidTracks from BadTracks and AuxTracks
+    virtual void                ResetAuxTracks  ();
+    virtual const TSelection&   GetValidTracks  ()      const   { return ValidTracks; }
+    virtual void                SetValidTracks  ();      // Update ValidTracks from BadTracks and AuxTracks
 
 
     virtual const char*         GetElectrodeName    ( int e = 0 )   const   { return  ElectrodesNames[ e ]; }

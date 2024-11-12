@@ -50,7 +50,7 @@ constexpr int       MaxNotches                      = 32;
                                         // It could also be possible to define something like FiltersTimely / FiltersUntimely
 enum                FilterPrecedence
                     {
-                    UnknownPrecedence   = 0x00,
+                    NoFilter            = 0x00,
                                         // Breaking-up filters into Temporal and Non-Temporal ones: convenient for buffer allocation or extra temporal margin, and fine-tuning calls
                     FilterTemporal      = 0x01,
                     FilterNonTemporal   = 0x02,
@@ -60,6 +60,45 @@ enum                FilterPrecedence
 
 
 constexpr FilterTypes   TracksFiltersEnvelope   = FilterTypeEnvelopeGapBridging;
+
+
+//----------------------------------------------------------------------------
+                                        // Class to handle the updating of time limits needed for temporal filters
+                                        // It conveniently locally saves 
+template <class TypeD>
+class   TTracksFiltersLimits
+{
+public:
+                    TTracksFiltersLimits ()             { Reset (); }
+
+
+    bool            HasMargin               ()  const   { return FilterMargin > 0;                                      }
+    bool            HasMirroring            ()  const   { return HasMargin () && ( MirrorLeft > 0 || MirrorRight > 0 ); }
+
+    void            Reset                   ();
+    void            UpdateTimeRange         (   long&               tf1,            long&           tf2,            long&       numtf,      int&        tfoffset,
+                                                int                 margin,
+                                                int                 numtimeframes
+                                            );
+    void            MirrorData              (   TArray2<TypeD>&     data,       int                 numel,      
+                                                long                numtf,      int&                tfoffset 
+                                            );
+    void            RestoreTimeRange        (   TArray2<TypeD>&     data,       int                 numel,  
+                                                long&               tf1,        long&               tf2,            long&       numtf,      int&        tfoffset,
+                                                TArray2<TypeD>*     dataprevtf
+                                            );
+
+private:
+
+    long            FilterMargin;       // margin is extra data used on left and right of a given time range
+    long            MirrorLeft;         // mirroring applies ONLY when that extra margin goes beyond the data limits
+    long            MirrorRight;
+    long            SavedTf1;           // saved original time limits before UpdateTimeRange is applied
+    long            SavedTf2;
+    long            SavedNumTf;
+    long            SavedTfOffset;
+
+};
 
 
 //----------------------------------------------------------------------------
@@ -119,13 +158,6 @@ public:
     int             GetOrder                ()  const;
     int             GetSpatialFilterDim     ()  const   { return FilterSpatial.IsAllocated () ? FilterSpatial.GetNumPoints () : 0; }
 
-    void            SetBuffer               (   TArray2<float>&     buff,   int     numchannels,    int     numtf )   const;
-    void            UpdateTimeRange         (   TArray2<float>&     buff, 
-                                                int                 numchannels,    int             numtimeframes,
-                                                long&               tf1,            long&           tf2,            long&       numtf,  int&        tfoffset 
-                                            );
-    void            RestoreTimeRange        (   long&       tf1,    long&       tf2,    long&       numtf,      int&        tfoffset  );
-;
 
     char*           ParametersToText        (       char* text )                const;
     void            TextToParameters        ( const char* text, const char* xyzfile, double fsamp );
@@ -158,7 +190,6 @@ public:
     void            ApplyFilters            (   TArray2<TypeD>&     data,       int                 numel,      
                                                 long                numtf,      int                 tfoffset,
                                                 ReferenceType       reference,  const TSelection*   referencetracks,    const TSelection*   validtracks,    const TSelection*   auxtracks,
-                                                TArray2<TypeD>*     datadiss,
                                                 FilterPrecedence    filterprecedence
                                             );
 
@@ -188,23 +219,172 @@ private:
 
     TArray3<double> NeighDist;                      // Neighborhood distances for Spatial Filtering
 
-                                        // For ApplyFilters
-    long            FilterMargin;       // will also be used as a flag
-    long            SavedTf1;
-    long            SavedTf2;
-    long            SavedNumTf;
-    long            SavedTfOffset;
-    long            MirrorLeft;
-    long            MirrorRight;
-
-    void            ResetMargin             ();
-    bool            HasUpdatedTimeRange     ()  const   { return FilterMargin > 0; }    // UpdateTimeRange has been called
-
 };
 
 
 //----------------------------------------------------------------------------
 // Implementation
+//----------------------------------------------------------------------------
+template <class TypeD>
+void    TTracksFiltersLimits<TypeD>::Reset ()
+{
+FilterMargin                = 0;
+MirrorLeft                  = 0;
+MirrorRight                 = 0;
+SavedTf1                    = 0;
+SavedTf2                    = 0;
+SavedNumTf                  = 0;
+SavedTfOffset               = 0;
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Adjust time limits so to include some additional margins used for temporal filtering
+template <class TypeD>
+void    TTracksFiltersLimits<TypeD>::UpdateTimeRange    (   long&               tf1,            long&           tf2,            long&       numtf,      int&        tfoffset,
+                                                            int                 margin,
+                                                            int                 numtimeframes
+                                                        )
+{
+//if ( HasMargin () )
+//    return;     // problem
+
+Reset ();
+
+                                        // Saving original time limits
+SavedTf1        = tf1;
+SavedTf2        = tf2;
+SavedNumTf      = numtf;
+SavedTfOffset   = tfoffset;
+
+                                        // it shouldn't
+if ( margin <= 0 )
+    return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // should be at least 1 in case of temporal filter
+FilterMargin    = margin;
+
+                                        // setting new limits with lot of cautions
+
+numtf          += 2 * FilterMargin;     // add some data points on each borders
+
+tfoffset        = 0;                    // force all data at the beginning of buffer
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+tf1            -= FilterMargin;         // shift absolute first TF to the left
+
+                                        // mirroring on the left?
+if ( tf1 < 0 ) {
+    MirrorLeft  = -tf1;                 // of this amount
+    tf1         = 0;                    // new absolute first TF
+    tfoffset    = MirrorLeft;           // temporarily make some room for beginning mirror
+    }
+else
+    MirrorLeft  = 0;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+tf2            += FilterMargin;         // shift absolute last TF to the right
+
+                                        // mirroring on the right?
+if ( tf2 > numtimeframes - 1 ) {
+    MirrorRight = tf2 - ( numtimeframes - 1 );  // of this amount
+    tf2         = numtimeframes - 1;            // new absolute last TF
+    }
+else
+    MirrorRight = 0;
+}
+
+
+//----------------------------------------------------------------------------
+                                        // After UpdateTimeRange and data filling, apply some mirroring if needed
+template <class TypeD>
+void    TTracksFiltersLimits<TypeD>::MirrorData (   TArray2<TypeD>&     data,       int                 numel,      
+                                                    long                numtf,      int&                tfoffset
+                                                )
+{
+if ( ! HasMirroring () )
+    return;
+
+                                        // last position with real data, BEFORE the right mirroring part
+long            FirstValidTf    = MirrorLeft;
+long            LastValidTf     = numtf - 1 - MirrorRight;
+
+
+for ( int el = 0; el < numel; el++ ) {
+
+//  if ( auxtracks && auxtracks->IsSelected ( el ) )    // mirror all data, even the auxiliaries(?)
+//      continue;
+
+
+    if ( MirrorLeft > 0 )               // mirror missing part, and complete with 0 if too little data
+
+        for ( int tfl = FirstValidTf - 1, tfr = FirstValidTf + 1; tfl >= 0; tfl--, tfr++ )
+                                        // don't mirror from the right mirror (if any)
+            data ( el, tfl )    = tfr <= LastValidTf ? data ( el, tfr ) : 0;    // symetrical filling - maybe set an enum and a parameter to control this?
+//          data ( el, tfl )    = data ( el, MirrorLeft );                      // constant   filling
+//          data ( el, tfl )    = 0;                                            // null       filling
+
+
+    if ( MirrorRight > 0 )              // mirror missing part, and complete with 0 if too little data
+
+        for ( int tf = 0, tfr = LastValidTf + 1, tfl = LastValidTf - 1; tf < MirrorRight; tf++, tfr++, tfl-- )
+                                        // don't mirror from the left mirror (if any)
+            data ( el, tfr )    = tfl >= FirstValidTf ? data ( el, tfl ) : 0;
+
+    } // for el
+
+
+if ( MirrorLeft > 0 )
+    tfoffset    = 0;                    // !after the left mirroring, there is no offset anymore!
+}
+
+
+//----------------------------------------------------------------------------
+                                        // After UpdateTimeRange and ApplyFilters, restore the original time limits
+template <class TypeD>
+void    TTracksFiltersLimits<TypeD>::RestoreTimeRange   (   TArray2<TypeD>&     data,       int                 numel,  
+                                                            long&               tf1,        long&               tf2,    long&       numtf,      int&        tfoffset,
+                                                            TArray2<TypeD>*     dataprevtf
+                                                        )
+{
+if ( ! HasMargin () )
+    return;
+
+                                        // Before losing that extra data, caller might have requested to save the data @ tf1-1
+if ( dataprevtf )
+    for ( int el = 0; el < numel; el++ )
+        (*dataprevtf) ( el, 0 )   = data ( el, FilterMargin - 1 );
+
+                                        // Shift the data back to their original offset:
+
+                                        // Case for tracks being non-contiguous in memory
+                                        // Repeating memory moves for each track
+//for ( int el = 0; el < NumElectrodes; el++ ) 
+//    MoveVirtualMemory ( data[ el ] + SavedTfOffset, data[ el ] + FilterMargin, savednumtf * data.AtomSize () );
+
+                                        // Case for tracks being contiguous in memory
+                                        // It can be done in a single move, but we need some extra care on the amount of data to be moved, so to avoid out of memory access
+MoveVirtualMemory ( data.GetArray () + SavedTfOffset,
+                    data.GetArray () + FilterMargin,
+                    data.MemorySize () - max ( FilterMargin, SavedTfOffset ) * data.AtomSize () );
+
+
+tf1             = SavedTf1;
+tf2             = SavedTf2;
+numtf           = SavedNumTf;
+tfoffset        = SavedTfOffset;
+
+Reset ();
+}
+
+
+//----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 template <class TypeD>
         TTracksFilters<TypeD>::TTracksFilters ()
@@ -243,22 +423,6 @@ ThresholdKeepBelowValue     = 0;
 SamplingFrequency           = 0;
 FreqMin                     = EegFilterDefaultMinFrequency;
 FreqMax                     = 0;
-
-                                        // private, for internal use - reset them, but we don't need to copy them
-ResetMargin ();
-}
-
-
-template <class TypeD>
-void    TTracksFilters<TypeD>::ResetMargin ()
-{
-FilterMargin                = 0;
-SavedTf1                    = 0;
-SavedTf2                    = 0;
-SavedNumTf                  = 0;
-SavedTfOffset               = 0;
-MirrorLeft                  = 0;
-MirrorRight                 = 0;
 }
 
 
@@ -316,9 +480,6 @@ FilterThreshold             = op.FilterThreshold;
 
                                         // also copy the data from the dialog itself
 CopyVirtualMemory ( (void *) &FiltersParam, (void *) &op.FiltersParam, sizeof ( FiltersParam ) );
-
-                                        // private, for internal use - reset them, but we don't need to copy them
-ResetMargin ();
 }
 
 
@@ -381,9 +542,6 @@ FilterThreshold             = op2.FilterThreshold;
 
                                         // also copy the data from the dialog itself
 CopyVirtualMemory ( (void *) &FiltersParam, (void *) &op2.FiltersParam, sizeof ( FiltersParam ) );
-
-                                        // private, for internal use - reset them, but we don't need to copy them
-ResetMargin ();
 
 
 return  *this;
@@ -490,97 +648,6 @@ Mined  ( margin, EegMaxFilterSide );
 
 
 return  margin;
-}
-
-
-//----------------------------------------------------------------------------
-                                        // Resize buffer without ever shrinking it
-template <class TypeD>
-void    TTracksFilters<TypeD>::SetBuffer    (   TArray2<float>&     buff,   int     numchannels,    int     numtf )   const
-{
-buff.Resize (   AtLeast ( buff.GetDim1 (), numchannels  ),      // whatever size, might account for pseudo-tracks f.ex.
-                AtLeast ( buff.GetDim2 (), numtf        )  );
-}
-
-
-//----------------------------------------------------------------------------
-                                        // Adjust time limits so to include some additional margins used for temporal filtering
-                                        // On top of that, it will set a few very private members for when ApplyFilters is to be called
-template <class TypeD>
-void    TTracksFilters<TypeD>::UpdateTimeRange  (   TArray2<float>&     buff, 
-                                                    int                 numchannels,    int             numtimeframes,
-                                                    long&               tf1,            long&           tf2,            long&       numtf,  int&        tfoffset 
-                                                )
-{
-//if ( HasUpdatedTimeRange () )
-//    problem;
-
-ResetMargin ();
-
-if ( ! HasTemporalFilter () )
-
-    return;
-
-                                        // Saving all input parameters
-SavedTf1        = tf1;
-SavedTf2        = tf2;
-SavedNumTf      = numtf;
-SavedTfOffset   = tfoffset;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // should be at least 1 in case of temporal, the only problematic case being Baseline alone so the previous TF is baseline-d correctly
-FilterMargin    = AtLeast ( 1, GetSafeMargin () );
-
-                                        // setting new limits with lot of cautions
-
-numtf          += 2 * FilterMargin;     // add some data points on each borders
-
-tfoffset        = 0;                    // force all data at the beginning of buffer
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-tf1            -= FilterMargin;         // shift absolute first TF to the left
-
-                                        // mirroring on the left?
-if ( tf1 < 0 ) {
-    MirrorLeft  = -tf1;                 // of this amount
-    tf1         = 0;                    // new absolute first TF
-    tfoffset    = MirrorLeft;           // temporarily make some room for beginning mirror
-    }
-else
-    MirrorLeft  = 0;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-tf2            += FilterMargin;         // shift absolute last TF to the right
-
-                                        // mirroring on the right?
-if ( tf2 > numtimeframes - 1 ) {
-    MirrorRight = tf2 - ( numtimeframes - 1 );  // of this amount
-    tf2         = numtimeframes - 1;            // new absolute last TF
-    }
-else
-    MirrorRight = 0;
-}
-
-
-//----------------------------------------------------------------------------
-                                        // After UpdateTimeRange and ApplyFilters, restore the original time limites
-template <class TypeD>
-void    TTracksFilters<TypeD>::RestoreTimeRange (   long&       tf1,    long&       tf2,    long&       numtf,      int&        tfoffset  )
-{
-if ( ! HasUpdatedTimeRange () )
-    return;
-
-tf1             = SavedTf1;
-tf2             = SavedTf2;
-numtf           = SavedNumTf;
-tfoffset        = SavedTfOffset;
-
-ResetMargin ();
 }
 
 
@@ -845,56 +912,15 @@ template <class TypeD>
 void    TTracksFilters<TypeD>::ApplyFilters (   TArray2<TypeD>&     data,       int                 numel,      
                                                 long                numtf,      int                 tfoffset,
                                                 ReferenceType       reference,  const TSelection*   referencetracks,    const TSelection*   validtracks,    const TSelection*   auxtracks,
-                                                TArray2<TypeD>*     dataprevtf,
                                                 FilterPrecedence    filterprecedence
                                             )
 {
-if ( filterprecedence == UnknownPrecedence )
+if ( filterprecedence == NoFilter && ! HasReference ( reference ) )
     return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-if ( HasUpdatedTimeRange () && ( MirrorLeft > 0 || MirrorRight > 0 ) ) {
-                                        // UpdateTimeRange was called to extend the processed time range, and some data mirroring is needed
-
-                                        // last position with real data, BEFORE the right mirroring part
-    long            FirstValidTf    = MirrorLeft;
-    long            LastValidTf     = numtf - 1 - MirrorRight;
-
-
-    for ( int el = 0; el < numel; el++ ) {
-
-        if ( auxtracks && auxtracks->IsSelected ( el ) )
-            continue;
-
-
-        if ( MirrorLeft > 0 )           // mirror missing part, and complete with 0 if too little data
-
-            for ( int tfl = FirstValidTf - 1, tfr = FirstValidTf + 1; tfl >= 0; tfl--, tfr++ )
-                                        // don't mirror from the right mirror (if any)
-                data ( el, tfl )    = tfr <= LastValidTf ? data ( el, tfr ) : 0;    // symetrical filling - maybe set an enum and a parameter to control this?
-//              data ( el, tfl )    = data ( el, MirrorLeft );                      // constant   filling
-//              data ( el, tfl )    = 0;                                            // null       filling
-
-
-        if ( MirrorRight > 0 )          // mirror missing part, and complete with 0 if too little data
-
-            for ( int tf = 0, tfr = LastValidTf + 1, tfl = LastValidTf - 1; tf < MirrorRight; tf++, tfr++, tfl-- )
-                                        // don't mirror from the left mirror (if any)
-                data ( el, tfr )    = tfl >= FirstValidTf ? data ( el, tfl ) : 0;
-
-        } // for el
-
-
-    if ( MirrorLeft > 0 )
-        tfoffset    = 0;                // !after the left mirroring, there is no offset anymore!
-
-    } // filling mirrored parts
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Put everything in a big block
+                                        // Put everything in a big parallel block
 OmpParallelBegin
 
                                         // Pre-Reference, Temporal filters
@@ -924,16 +950,16 @@ if ( IsFlag ( filterprecedence, FilterTemporal ) && ( HasBaseline () || HasButte
     } // FilterTemporal
 
 
-                                        // Pre-Reference Non-Temporal + Reference filters       !testing parameter reference!
-if ( IsFlag ( filterprecedence, FilterNonTemporal ) && ( HasSpatialFilter () || HasRanking () || HasReference ( reference ) ) ) {
-                                    // Allocate private objects
+                                        // Pre-Reference Non-Temporal filters
+if ( IsFlag ( filterprecedence, FilterNonTemporal ) && ( HasSpatialFilter () || HasRanking () ) ) {
+                                        // Allocate private objects
     TVector<TypeD>          temp ( numel );
 
     OmpFor
 
     for ( long tf0 = 0; tf0 < numtf; tf0++ ) {
 
-                                    // copy data to temp map
+                                        // copy data to temp map
         for ( int i = 0; i < numel; i++ )
             temp[ i ]    = data ( i, tfoffset + tf0 );
 
@@ -943,18 +969,38 @@ if ( IsFlag ( filterprecedence, FilterNonTemporal ) && ( HasSpatialFilter () || 
 
         if ( HasRanking       ()        )   FilterRanking.Apply ( temp, RankingOptions ( RankingAccountNulls | RankingMergeIdenticals ) );  // ignoring null values or not? or ignoring only for positive data?
 
-                                    // !Calling  HasReference()  with overridden parameter!
-        if ( HasReference ( reference ) )   FilterReference.Apply ( temp, reference, referencetracks, validtracks, auxtracks );
-
-                                    // copy back map results
+                                        // copy back map results
         for ( int i = 0; i < numel; i++ )
             data ( i, tfoffset + tf0 )  = temp[ i ];
         } // for tf
     } // FilterNonTemporal
 
 
+                                        // Reference: does not depend on filterprecedence / FilterTemporal / FilterNonTemporal, but only on the reference parameter
+if ( HasReference ( reference ) ) {
+                                        // Allocate private objects
+    TVector<TypeD>          temp ( numel );
+
+    OmpFor
+
+    for ( long tf0 = 0; tf0 < numtf; tf0++ ) {
+
+                                        // copy data to temp map
+        for ( int i = 0; i < numel; i++ )
+            temp[ i ]    = data ( i, tfoffset + tf0 );
+
+                                        // !Called with overridden parameter!
+        if ( HasReference ( reference ) )   FilterReference.Apply ( temp, reference, referencetracks, validtracks, auxtracks );
+
+                                        // copy back map results
+        for ( int i = 0; i < numel; i++ )
+            data ( i, tfoffset + tf0 )  = temp[ i ];
+        } // for tf
+    } // Reference
+
+
                                         // Post-Reference, both Temporal and Non-Temporal filters
-if ( HasRectification () || HasEnvelope () || HasThresholdKeepAbove () || HasThresholdKeepBelow () ) {
+if ( IsFlag ( filterprecedence, FilterPrecedence ( FilterTemporal | FilterNonTemporal ) ) && ( HasRectification () || HasEnvelope () || HasThresholdFilter () ) ) {
 
     OmpFor
 
@@ -974,37 +1020,10 @@ if ( HasRectification () || HasEnvelope () || HasThresholdKeepAbove () || HasThr
         if ( IsFlag ( filterprecedence, FilterNonTemporal ) && HasThresholdFilter ()    )   FilterThreshold     .Apply  ( data[ el ] + tfoffset, numtf );
         } // for el
 
-    } // After Reference
+    } // FilterTemporal & FilterNonTemporal after Reference
 
 
 OmpParallelEnd
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-if ( HasUpdatedTimeRange () ) {
-                                        // UpdateTimeRange was called to extend the processed time range, now we need to get rid of the extra data
-
-                                        // Before losing that extra data, caller might have requested to save the data @ tf1-1
-    if ( dataprevtf )
-        for ( int el = 0; el < numel; el++ )
-            (*dataprevtf) ( el, 0 )   = data ( el, FilterMargin - 1 );
-
-                                        // Shift the data back to their original offset:
-
-                                        // Case for tracks being non-contiguous in memory
-                                        // Repeating memory moves for each track
-//  for ( int el = 0; el < NumElectrodes; el++ ) 
-//      MoveVirtualMemory ( data[ el ] + SavedTfOffset, data[ el ] + FilterMargin, savednumtf * data.AtomSize () );
-
-                                        // Case for tracks being contiguous in memory
-                                        // It can be done in a single move, but we need some extra care on the amount of data to be moved, so to avoid out of memory access
-    MoveVirtualMemory ( data.GetArray () + SavedTfOffset,
-                        data.GetArray () + FilterMargin,
-                        data.MemorySize () - max ( FilterMargin, SavedTfOffset ) * data.AtomSize () );
-
-    } // if HasUpdatedTimeRange
-
 }
 
 
