@@ -309,7 +309,8 @@ protected:
 
                                         
     virtual bool    SetArrays               () = 0;     // Initializing arrays at opening time
-    virtual void    ElectrodesNamesCleanUp  ();
+    void            ElectrodesNamesCleanUp  ();
+    void            CheckElectrodesNamesDuplicates  ();
 };
 
 

@@ -167,6 +167,8 @@ if ( ! IsOpen () ) {
 
     InitDateTime    ();
 
+                                        // not for all files for the moment
+//  CheckElectrodesNamesDuplicates ();
                                         // safety: check offsets are not null
     if ( HasPseudoElectrodes () && OffGfp == 0 ) {
         OffGfp              = NumElectrodes + PseudoTrackOffsetGfp;
@@ -1173,6 +1175,56 @@ for ( int e = 0; e < NumElectrodes; e++ ) {
     }
 }
 
+
+//----------------------------------------------------------------------------
+                                        // Some badly defined files can have duplicate names
+void    TTracksDoc::CheckElectrodesNamesDuplicates ()
+{
+if ( NumElectrodes <= 0 || ElectrodesNames.NumStrings () < NumElectrodes )
+    return;
+
+
+TSelection          duplicates ( NumElectrodes, OrderArbitrary );
+TSelection          remaining  ( NumElectrodes, OrderArbitrary );
+char                base[ 256 ];
+
+remaining.Set ();
+
+for ( int i = 0; i < NumElectrodes; i++ ) {
+
+    if ( remaining.IsNotSelected ( i ) )
+        continue;
+        
+
+    duplicates.Reset ();
+        
+    for ( TIteratorSelectedForward selj ( remaining ); (bool) selj; ++selj )
+
+        if ( StringIs ( ElectrodesNames[ i ], ElectrodesNames[ selj() ] ) )
+
+            duplicates.Set ( selj() );
+
+                                        // more than 1 with identical name?
+    if ( (int) duplicates > 1 ) {
+
+        StringCopy  ( base, ElectrodesNames[ i ] );
+
+        if ( StringSize ( base ) + NumIntegerDigits ( (int) duplicates ) > ElectrodeNameSize )
+            StringClip  ( base, AtLeast ( 0, ( ElectrodeNameSize - 1 ) - NumIntegerDigits ( (int) duplicates ) ) );
+        
+
+        for ( TIteratorSelectedForward selj ( duplicates ); (bool) selj; ++selj )
+                                        // append relative index to base
+            StringCopy ( ElectrodesNames[ selj() ], base, IntegerToString ( selj.GetIndex () + 1 ) );
+        } // duplicates exist
+
+
+    remaining  -= duplicates;
+    }
+}
+
+
+//----------------------------------------------------------------------------
                                         // If there are some electrodes that are aux., force them
 void    TTracksDoc::InitAuxiliaries ()
 {

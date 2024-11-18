@@ -1366,6 +1366,8 @@ if ( closefile ) {
     if      ( filtersoptions == UsingCurrentFilters )   verbose.Put ( "Current filters:",   filters.ParametersToText ( buff ) );
     else if ( filtersoptions == UsingOtherFilters   )   verbose.Put ( "Filters:",           filters.ParametersToText ( buff ) );
     else                                                verbose.Put ( "Filters:",           false );
+    if      ( filtersoptions != NotUsingFilters && (bool) auxsel )       
+                                                        verbose.Put ( "Filtering auxiliary channels:",   CheckToBool ( filters.FiltersParam.FilterAuxs ) );
 
 
     verbose.NextLine ();

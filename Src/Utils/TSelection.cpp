@@ -913,14 +913,12 @@ bool                verbose         = ! IsFlag ( action, ScanTextActionSilent   
 
 
                                         // break string into tokens
-TSplitStrings       tokens ( list, UniqueStrings );
+TSplitStrings       tokens ( list, UniqueStrings /*NonUniqueStrings*/ );
 
 
 for ( int toki = 0; toki < (int) tokens; toki++ ) {
 
     toc     = tokens[ toki ];
-
-//  ShowMessage ( toc, "Token" );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -980,9 +978,15 @@ for ( int toki = 0; toki < (int) tokens; toki++ ) {
         for ( k = 0; k < maxnames; k++ ) {
 
             if ( StringStartsWith ( toc, (*dictionary)[ k ] )
-              && ( i == -1 || StringLength ( (*dictionary)[ k ] ) > StringLength ( (*dictionary)[ i ] ) ) )
+              && ( i == -1 || StringLength ( (*dictionary)[ k ] ) > StringLength ( (*dictionary)[ i ] ) ) ) {
+
+                //                            // test for degenerate case where we have a series of identical names: force select the NEXT NON-SELECTED IDENTICAL NAME
+                //if ( ArraySet[ k ] )
+                //    while ( ArraySet[ k ] && k < maxnames - 1 && StringIs ( (*dictionary)[ k ], (*dictionary)[ k + 1 ] ) )
+                //        k++;
 
                 i   = k;
+                }
             }
 
                                             // first electrode not found, abort current token
@@ -995,6 +999,8 @@ for ( int toki = 0; toki < (int) tokens; toki++ ) {
             continue;
             }
 
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                             // now, try to find a second electrode
                                             // the whole token is not the first name found
         if ( StringIsNot ( toc, (*dictionary)[ i ] ) ) {
@@ -1018,6 +1024,12 @@ for ( int toki = 0; toki < (int) tokens; toki++ ) {
             for ( k = 0; k < maxnames; k++ ) {
                                             // second part now has to match exactly another name
                 if ( StringIs ( toc2, (*dictionary)[ k ] ) ) {
+
+                    //                        // test for degenerate case where we have a series of identical names: force the second argument to be the last one of the serie
+                    //if ( k == i )
+                    //    while ( k < maxnames - 1 && StringIs ( toc2, (*dictionary)[ k + 1 ] ) )
+                    //        k++;
+
                     j   = k;
                     break;
                     }
@@ -1032,10 +1044,10 @@ for ( int toki = 0; toki < (int) tokens; toki++ ) {
                     }
                 continue;
                 }
-            }
+            } // second argument
 
-//      DBGV2 ( i, j, "Scan: Index Range" );
 
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // set according to number of names retrieved
         if ( j >=  0 )      Set   ( i, j, set );
         else                Set   ( i,    set );

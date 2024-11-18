@@ -141,7 +141,7 @@ protected:
     virtual void            Reset ( bool close = false );
     virtual void            Set   ();
 
-    virtual void            ElectrodesNamesCleanUp  ();
+    void                    ElectrodesNamesCleanUp  ();
     void                    ProjectElectrodes       ();
     void                    SetBounding             ( int space );
     void                    SetMedianDistance       ( int space );

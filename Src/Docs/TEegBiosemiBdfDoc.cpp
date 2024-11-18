@@ -602,6 +602,9 @@ if ( GetDocPath() ) {
         sscanf ( buff, "%s", ElectrodesNames[ el ] );
         }
 
+                                        // EDF files might have some very badly defined tracks names
+    CheckElectrodesNamesDuplicates ();
+
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // skip transducer type
