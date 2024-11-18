@@ -171,11 +171,12 @@ public:
     void            Clipped             ( TypeD minv, TypeD maxv );
     double          Difference          ( const TVector<TypeD> &v, bool invert = false )                                const;
     double          Dissimilarity       ( const TVector<TypeD> &v, bool centeraverage = true, bool vectorial = false )  const;
+    double          Dissimilarity       ( const TVector<TypeD> &v, const TSelection& subset, bool centeraverage = true, bool vectorial = false )  const;
     double          Dissimilarity       ( const TVector<TypeD> &v, PolarityType polarity, bool centeraverage = true )   const;  // testing for polarity inversion, if requested and if needed
     double          ExpVar              ( const TVector<TypeD> &v, bool centeraverage = true )                          const;
     PolarityType    GetPolarity         ( const TVector<TypeD> &op2 )       const;                                              // returns either PolarityInvert or PolarityDirect
     double          GlobalFieldPower    ( bool centeraverage = true, bool vectorial = false )                       const;
-    double          GlobalFieldPower    ( TSelection &subset, bool centeraverage = true, bool vectorial = false )   const;
+    double          GlobalFieldPower    ( const TSelection& subset, bool centeraverage = true, bool vectorial = false )   const;
     void            Invert              ();
     bool            IsOppositeDirection ( const TVector<TypeD> &op2 )       const;
     double          MaxCrossCorrelation ( const TVector<TypeD> &v, int &T ) const;              // return the max and shift
@@ -2558,6 +2559,27 @@ return  Clip ( sqrt ( sum / Dim1 * ( vectorial ? 3 : 1 ) ), 0.0, 2.0 );
 }
 
 
+template <class TypeD>
+double  TVector<TypeD>::Dissimilarity ( const TVector<TypeD> &v, const TSelection& subset, bool centeraverage, bool vectorial )     const
+{
+double              avg1            = centeraverage ?   Average ( subset ) : 0;
+double              avg2            = centeraverage ? v.Average ( subset ) : 0;
+double              gfp1            = NonNull (   GlobalFieldPower ( subset, centeraverage, vectorial ) );
+double              gfp2            = NonNull ( v.GlobalFieldPower ( subset, centeraverage, vectorial ) );
+double              sum             = 0;
+
+
+for ( TIteratorSelectedForward seli ( subset ); (bool) seli; ++seli )
+
+    if ( seli() < Dim1 )
+                                        // Euclidean distance between standardized vectors
+        sum    += Square ( (   Array[ seli() ] - avg1 ) / gfp1 
+                         - ( v.Array[ seli() ] - avg2 ) / gfp2 );
+
+
+return  Clip ( sqrt ( sum / Dim1 * ( vectorial ? 3 : 1 ) ), 0.0, 2.0 );
+}
+
                                         // Wrapper around regular Correlation, then testing for polarities
 template <class TypeD>
 double  TVector<TypeD>::Dissimilarity ( const TVector<TypeD> &v, PolarityType polarity, bool centeraverage )  const
@@ -2594,7 +2616,7 @@ return      sqrt ( sum / Dim1 * ( vectorial ? 3 : 1 ) );
 
 
 template <class TypeD>
-double  TVector<TypeD>::GlobalFieldPower ( TSelection &subset, bool centeraverage, bool vectorial )     const
+double  TVector<TypeD>::GlobalFieldPower ( const TSelection& subset, bool centeraverage, bool vectorial )     const
 {
 double              avg             = centeraverage ? Average ( subset ) : 0;
 double              sum             = 0;

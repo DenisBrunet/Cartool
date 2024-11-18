@@ -174,6 +174,20 @@ return  Tokens.PartiallyContains ( str )
 
 
 //----------------------------------------------------------------------------
+bool    TSplitStrings::Intersect ( const TSplitStrings& splitstring )    const
+{
+for ( int i = 0; i <             GetNumTokens (); i++ )
+for ( int j = 0; j < splitstring.GetNumTokens (); j++ )
+
+    if ( StringIs ( splitstring[ j ], Tokens[ i ] ) )
+
+        return  true;
+
+return  false;
+}
+
+
+//----------------------------------------------------------------------------
 void    TSplitStrings::Show ( const char* title )   const
 {
 Tokens.Show ( StringIsEmpty ( title ) ? "Tokens" : title );

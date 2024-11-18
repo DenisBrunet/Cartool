@@ -144,6 +144,8 @@ DEFINE_RESPONSE_TABLE1 ( TExportTracksDialog, TBaseDialog )
     EV_COMMAND_ENABLE           ( IDC_TRIGGERSTOKEEPLIST,   CmTriggersEnable ),
     EV_COMMAND_ENABLE           ( IDC_TRIGGERSTOEXCLUDELIST,CmTriggersExclEnable ),
 
+    EV_COMMAND_ENABLE           ( IDC_ADDCHANNELS,          CmAddChannelsEnable ),
+
     EV_COMMAND_ENABLE           ( IDC_REFLIST,              CmOtherRefEnable ),
     EV_COMMAND_ENABLE           ( IDC_RESCALE_VALUE,        CmRescaledByEnable ),
 //  EV_COMMAND_ENABLE           ( IDC_EXPMARKERS,           CmTimeSequenceEnable ),
@@ -645,6 +647,7 @@ if ( RoisDoc->ROIs->GetDimension () != EEGDoc->GetNumElectrodes() ) {
 
     ClearString     ( ExportTracksTransfer.RoisDocFile );
     SetBaseFilename ();
+
     return;
     }
 
@@ -666,6 +669,8 @@ if ( ! ( CheckToBool ( ExportTracksTransfer.ExportRois ) && *ExportTracksTransfe
     if ( StringIsSpace ( ExportTracksTransfer.InfixFilename ) )
         StringCopy ( ExportTracksTransfer.InfixFilename, "Export" );
 
+    TransferData ( tdSetData );
+
     return;
     }
 
@@ -677,8 +682,6 @@ StringCopy ( roiname, ExportTracksTransfer.RoisDocFile );
 GetFilename ( roiname );
 
 StringShrink ( roiname, match, min ( (int) ( 4 + StringLength ( roiname ) / 2 ), 17 ) );
-
-//DBGM ( match, "match" );
 
 
 /*
@@ -705,6 +708,8 @@ else
 
 
 StringCopy ( ExportTracksTransfer.InfixFilename, match );
+
+TransferData ( tdSetData );
 }
 
 
@@ -730,6 +735,12 @@ tce.Enable ( CheckToBool ( TriggersToKeep->GetCheck() ) );
 void    TExportTracksDialog::CmTriggersExclEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( CheckToBool ( TriggersToExclude->GetCheck() ) );
+}
+
+
+void    TExportTracksDialog::CmAddChannelsEnable ( TCommandEnabler &tce )
+{
+tce.Enable ( ! CheckToBool ( ExportRois->GetCheck() ) );
 }
 
 
@@ -978,100 +989,41 @@ if ( tracksoptions == ProcessRois ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Time parameters
-TimeOptions         timeoptions      = CheckToBool ( transfer->TimeInterval      ) ? ExportTimeInterval
-                                     : CheckToBool ( transfer->TriggersToKeep    ) ? ExportTimeTriggers
-                                     : CheckToBool ( transfer->TriggersToExclude ) ? ExcludeTimeTriggers
-                                     :                                               UnknownTimeProcessing;
+TimeOptions         timeoptions     = CheckToBool ( transfer->TimeInterval      ) ? ExportTimeInterval
+                                    : CheckToBool ( transfer->TriggersToKeep    ) ? ExportTimeTriggers
+                                    : CheckToBool ( transfer->TriggersToExclude ) ? ExcludeTimeTriggers
+                                    :                                               UnknownTimeProcessing;
 
 
-bool                endoffile           = CheckToBool ( transfer->EndOfFile );
-long                timemin             = timeoptions == ExportTimeInterval ? StringToInteger ( transfer->TimeMin )
-                                                                            : 0;
-long                timemax             = timeoptions == ExportTimeInterval ? ( endoffile ? lasttimeframe /*or Highest ( timemax )*/
-                                                                                          : StringToInteger ( transfer->TimeMax ) )
-                                                                            : 0;
+bool                endoffile       = CheckToBool ( transfer->EndOfFile );
+long                timemin         = timeoptions == ExportTimeInterval ? StringToInteger ( transfer->TimeMin )
+                                                                        : 0;
+long                timemax         = timeoptions == ExportTimeInterval ? ( endoffile ? lasttimeframe /*Highest ( timemax )*/
+                                                                                      : StringToInteger ( transfer->TimeMax ) )
+                                                                        : 0;
 
 Clipped ( timemin, timemax, (long) 0, lasttimeframe );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TSplitStrings       addedchannels ( transfer->AddChannels, NonUniqueStrings );
-
-int                 numaddedchannels    = addedchannels.GetNumTokens ();
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Clone electrodes names, but keep the pseudo from the EEG (case of RMS instead of GFP)
-TStrings            ElectrodesNames;
-
-
-ElectrodesNames.Set ( EEGDoc->GetTotalElectrodes () + numaddedchannels, ElectrodeNameSize );
-
-                                        // copy regular electrode names, preferably from the XYZ
-for ( int ei = EEGDoc->GetFirstRegularIndex (); ei <= EEGDoc->GetLastRegularIndex (); ei++ )
-
-    StringCopy ( ElectrodesNames[ ei ], XYZDoc.IsOpen () ? XYZDoc->GetElectrodeName ( ei ) : EEGDoc->GetElectrodeName ( ei ) );
-
-                                        // copy pseudo names, always from EEG
-for ( int ei = EEGDoc->GetFirstPseudoIndex (); ei <= EEGDoc->GetLastPseudoIndex (); ei++ )
-
-    StringCopy ( ElectrodesNames[ ei ], EEGDoc->GetElectrodeName ( ei ) );
-
-                                        // finally, add the optional null tracks
-for ( int ni = 0, ei = EEGDoc->GetLastPseudoIndex () + 1; ni < numaddedchannels; ni++, ei++ )
-
-    StringCopy ( ElectrodesNames[ ei ], addedchannels[ ni ] );
-
-
-//for ( int i = 0; i < ElectrodesNames.GetDim1 (); i++ )
-//    DBGV ( i + 1, ElectrodesNames[ i ] );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Sequence parameters                                                !HasAnyFilter ()  makes implicit use of  AreFiltersActivated()!
-FiltersOptions          filtersoptions  = CheckToBool ( transfer->CurrentFilters ) && EEGDoc  ->GetFilters ()->HasAnyFilter () ? UsingCurrentFilters
-                                        : CheckToBool ( transfer->OtherFilters   ) && transfer->Filters.       HasAnyFilter () ? UsingOtherFilters
-                                        :                                                                                        NotUsingFilters;
+                                        // Sequence parameters                                             HasAnyFilter ()  makes implicit use of  AreFiltersActivated ()
+FiltersOptions      filtersoptions  = CheckToBool ( transfer->CurrentFilters ) && EEGDoc  ->GetFilters ()->HasAnyFilter () ? UsingCurrentFilters
+                                    : CheckToBool ( transfer->OtherFilters   ) && transfer->Filters.       HasAnyFilter () ? UsingOtherFilters
+                                    :                                                                                        NotUsingFilters;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Setting data type, reference, and reading parameters
 AtomType         	datatype        = EEGDoc->GetAtomType ( AtomTypeUseOriginal );
 
-                                        // choose the right reference
-ReferenceType       ref             = ReferenceAsInFile;
-TSelection          refsel ( numtotalel, OrderSorted    );
-
+                                        // Pick the right reference
+                                        // Note that there is no check on RefList anymore, allowing to account for any added channels - this will be handled by ReprocessTracks
+ReferenceType       ref;
 
 if      ( CheckToBool ( transfer->CurrentRef ) )    ref = ReferenceUsingCurrent;
-//else if ( IsPositive ( datatype )
-//       || IsAngular  ( datatype )
-//       || CheckToBool ( transfer->NoRef    ) )    ref = ReferenceAsInFile;
-else if ( CheckToBool ( transfer->NoRef      ) )    ref = ReferenceAsInFile;
 else if ( CheckToBool ( transfer->AveRef     ) )    ref = ReferenceAverage;
-else if ( CheckToBool ( transfer->OtherRef   ) ) {
-
-    refsel.Reset ();
-
-    refsel.Set    ( transfer->RefList, &ElectrodesNames, CartoolApplication->IsInteractive () );
-
-                                        // that should not be...
-    if ( refsel.NumSet () == 0 ) {
-
-        ref     = ReferenceAsInFile;    // either setting to no reference, as is currently done in  TTracksDoc::SetReferenceType
-                                        
-        //CloseXyz  ();                 // or aborting?
-        //CloseRois ();
-        //CmCancel  ();
-        }
-    else {
-
-        ref     = ReferenceArbitraryTracks;
-
-        refsel.ToText ( transfer->RefList, &ElectrodesNames, AuxiliaryTracksNames );
-        }
-    }
+else if ( CheckToBool ( transfer->OtherRef   ) )    ref = ReferenceArbitraryTracks;
+else                                                ref = ReferenceAsInFile;
 
                                         // Allow any sort of re-referencing
 //CheckReference ( ref, datatype );
@@ -1082,6 +1034,7 @@ else if ( CheckToBool ( transfer->OtherRef   ) ) {
 bool                baselinecorr        = CheckToBool ( transfer->BaselineCorr ) 
                                        && timeoptions == ExportTimeInterval;
 bool                baselinecorreof     = CheckToBool ( transfer->BaselineCorrEof );
+
 long                baselinecorrpre     = baselinecorr ? StringToInteger ( transfer->BaselineCorrPre  ) 
                                                        : 0;
 long                baselinecorrpost    = baselinecorr ? baselinecorreof ? lasttimeframe 

@@ -500,6 +500,7 @@ void    TRois::Average ( TArray2<float>& datainout, long tf1, long tf2, FilterTy
 OmpParallelFor
 
 for ( int r = 0; r < NumRois; r++ )    // dataout dimension is the number of rois
+
     Rois[ r ].Average ( datainout, tf1, tf2, how, dataout ? (*dataout)[ r ] : 0 );
 
                                         // set to 0 the atoms not in any ROI

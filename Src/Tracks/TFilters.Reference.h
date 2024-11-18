@@ -113,6 +113,7 @@ ReferenceTracks     = referencetracks;
 
 
 //----------------------------------------------------------------------------
+                                        // validtracks and auxtracks must have sizes >= dim; referencetracks could be whatever size, though
 template <class TypeD>
 void    TFilterReference<TypeD>::Apply ( TypeD* data, int dim, ReferenceType reference, const TSelection* referencetracks, const TSelection* validtracks, const TSelection* auxtracks )
 {
@@ -145,13 +146,22 @@ double              refvalue        = 0;
 
 if      ( reference == ReferenceAverage ) {
     
-    if ( validtracks ) {
+    if      ( validtracks ) {
                                         // validtracks is not empty
         for ( int i = 0; i < dim; i++ )
             if ( (*validtracks)[ i ] )  // using only non-bad, non-aux and non-pseudos channels
                 refvalue   += data[ i ];
 
         refvalue   /= validtracks->NumSet ();
+        }
+
+    else if ( auxtracks ) {
+                                        // validtracks is empty, but we have auxtracks
+        for ( int i = 0; i < dim; i++ )
+            if ( ! (*auxtracks)[ i ] )  // using only non-aux channels
+                refvalue   += data[ i ];
+
+        refvalue   /= dim - auxtracks->NumSet ();
         }
 
     else {

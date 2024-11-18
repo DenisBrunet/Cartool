@@ -112,6 +112,8 @@ ExcludeCLIOptions       ( reprocsub,        __keeptriggers,     __excludetrigger
 
 DefineCLIOptionString   ( reprocsub,        "",     __nulltracks,           "List of null tracks to append" );
 
+ExcludeCLIOptions       ( reprocsub,        __nulltracks,   __roisfile );
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Reprocess Tracks filters options
 DefineCLIOptionString   ( reprocsub,        "",     __filters,              "A whole string of filtering options, in double quote, as coming from a verbose file" )

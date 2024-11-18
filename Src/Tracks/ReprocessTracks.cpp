@@ -78,8 +78,8 @@ if (   EEGDoc           == 0
 
     return  false;
 
-
-if ( tracksoptions == ProcessRois && roisdoc == 0 )
+                                        // Fail if ROIs are not correctly set - fallback is not easy to make
+if ( tracksoptions == ProcessRois && ( roisdoc == 0 || roisdoc->ROIs == 0 ) )
     return  false;
 
                                         // Off, as this will be checked later on
@@ -90,17 +90,15 @@ if ( tracksoptions == ProcessRois && roisdoc == 0 )
 if ( timeoptions == ExportTimeTriggers && StringIsEmpty ( triggerstokeeplist ) )
     return  false;
 
-
-if ( filtersoptions == UsingOtherFilters && altfilters == 0 )
-    return  false;
-
-                                        // reset flag if there are indeed no filters set / activated in altfilters
-if ( filtersoptions == UsingOtherFilters && altfilters->HasNoFilters () )
-    filtersoptions = NotUsingFilters;
-
-                                        // if EEGDoc has existing BUT deactivated filters, reset use of filters - Note that this preferably be addressed by caller beforehand...
-if ( filtersoptions == UsingCurrentFilters && ! EEGDoc->AreFiltersActivated () )
-    filtersoptions = NotUsingFilters;
+                                        // Off, as this will be checked later on
+//if ( filtersoptions == UsingOtherFilters && altfilters == 0 )
+//    return  false;
+// 
+//if ( filtersoptions == UsingOtherFilters && altfilters->HasNoFilters () )
+//    filtersoptions = NotUsingFilters;
+// 
+//if ( filtersoptions == UsingCurrentFilters && ! EEGDoc->AreFiltersActivated () )
+//    filtersoptions = NotUsingFilters;
 
                                         // Off, as this will be checked later on
 //if ( ref == ReferenceArbitraryTracks && StringIsEmpty ( reflist ) )
@@ -140,48 +138,70 @@ bool                isfrequency         = IsExtensionAmong ( EEGDoc->GetDocPath 
                                        || StringIsNotEmpty ( freqinfix );
 
 
-int                 numregel            = EEGDoc->GetNumElectrodes   ();
-int                 numtotalel          = EEGDoc->GetTotalElectrodes ();
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // We already asserted that ROIs will be != 0 for ProcessRois option...
+const TRois*        ROIs                = tracksoptions == ProcessRois && roisdoc ? roisdoc->ROIs : 0;
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Electrodes / Data layout will be:
+                                        //      Original Regular Electrodes
+                                        //   -> Optional Null Tracks <-
+                                        //      Pseudo Tracks
+
+                                        // number of electrodes in file
+int                 numorigels          = EEGDoc->GetNumElectrodes   ();
+int                 firstorig           = 0;
+int                 lastorig            = numorigels - 1;
+
+                                        // number of added null channels - mechanism could be upgraded to adding other types of channels, though
+                                        // we currently disallow adding channels AND ROIs, because consistency starts to be difficult to assert
 TSplitStrings       addedchannels ( addingnullchannels, NonUniqueStrings );
-int                 numaddedchannels    = addedchannels.GetNumTokens ();
+int                 numaddedels         = tracksoptions == ProcessRois ? 0 : addedchannels.GetNumTokens ();
+int                 firstadded          = numaddedels > 0 ? numorigels                   : -1;
+int                 lastadded           = numaddedels > 0 ? numorigels + numaddedels - 1 : -1;
+
+                                        // our new number of electrodes for computation and saving, but not reading
+int                 numels              = numorigels + numaddedels;
+
+                                        // pseudo-tracks indexes
+int                 gfpoff              = numels + 0;
+int                 disoff              = numels + 1;
+int                 avgoff              = numels + 2;
+int                 firstpseudo         = numels;
+int                 lastpseudo          = numels + NumPseudoTracks - 1;
+
+                                        // grand total of tracks, for buffers allocation
+int                 numtotalels         = numels + NumPseudoTracks;
+
 
 long                numtimeframes       = EEGDoc->GetNumTimeFrames   ();
 long                lasttimeframe       = numtimeframes - 1;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-const TRois*        ROIs                = tracksoptions == ProcessRois && roisdoc ? roisdoc->ROIs : 0;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Clone electrodes names, but keep the pseudo from the EEG (case of RMS instead of GFP)
 TStrings            ElectrodesNames;
 
+                                        // copy the regular electrodes names, preferably from the XYZ
+for ( int ei = 0; ei < numorigels; ei++ )
 
-ElectrodesNames.Set ( EEGDoc->GetTotalElectrodes () + numaddedchannels, ElectrodeNameSize );
+    ElectrodesNames.Add ( xyzdoc ? xyzdoc->GetElectrodeName ( ei ) : EEGDoc->GetElectrodeName ( ei ) );
 
-                                        // copy regular electrode names, preferably from the XYZ
-for ( int ei = EEGDoc->GetFirstRegularIndex (); ei <= EEGDoc->GetLastRegularIndex (); ei++ )
+                                        // add the optional null tracks
+for ( int ni = 0; ni < numaddedels; ni++ )
 
-    StringCopy ( ElectrodesNames[ ei ], xyzdoc ? xyzdoc->GetElectrodeName ( ei ) : EEGDoc->GetElectrodeName ( ei ) );
+    ElectrodesNames.Add ( addedchannels[ ni ] );
 
-                                        // copy pseudo names, always from EEG
-for ( int ei = EEGDoc->GetFirstPseudoIndex (); ei <= EEGDoc->GetLastPseudoIndex (); ei++ )
-
-    StringCopy ( ElectrodesNames[ ei ], EEGDoc->GetElectrodeName ( ei ) );
-
-                                        // finally, add the optional null tracks
-for ( int ni = 0, ei = EEGDoc->GetLastPseudoIndex () + 1; ni < numaddedchannels; ni++, ei++ )
-
-    StringCopy ( ElectrodesNames[ ei ], addedchannels[ ni ] );
+                                        // add pseudo names, taking extra-care for positive data
+ElectrodesNames.Add ( EEGDoc->IsAbsolute ( AtomTypeUseOriginal ) ? TrackNameRMS     : TrackNameGFP );
+ElectrodesNames.Add ( EEGDoc->IsAbsolute ( AtomTypeUseOriginal ) ? TrackNameDISPlus : TrackNameDIS );
+ElectrodesNames.Add ( TrackNameAVG );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // list of channels -> TSelection
-TSelection          elsel  ( numtotalel + numaddedchannels, OrderArbitrary );
-TSelection          refsel ( numtotalel, OrderSorted    );
+                                        // Set the selected channels
+TSelection          elsel  ( numtotalels, OrderArbitrary );     // electrodes selection includes ALL tracks
 char                buff[ EditSizeTextLong ];
 
 ClearString ( buff );
@@ -189,38 +209,111 @@ StringCopy  ( buff, tracks );
 
 elsel.Reset ();
 
-                                        // force to all regular electrodes, only
-if ( tracksoptions == ProcessRois || StringIsSpace ( buff ) )
 
-    EEGDoc->SetRegular ( elsel );
-
-else if ( StringContains ( (const char*) buff, "*" ) ) {
-                                        // bypass the '*' of TSelection with only our regular electrodes
-    EEGDoc->SetRegular ( elsel );
-
-                                        // but also look for a remaining selection
-    ReplaceChars ( buff, "*", " " );
-
-    TSelection          elselother ( numtotalel, OrderArbitrary );
-
-    elselother.Set ( buff, &ElectrodesNames, ! silent );
-
-    elsel      += elselother;
+if      ( tracksoptions == ProcessRois ) {
+                                        // only the regular electrodes for ROIs
+    elsel.Set ( firstorig, lastorig );
+    }
+                                        // ProcessTracks cases:
+else if ( StringIsSpace ( buff ) ) {
+                                        // the regular electrodes
+    elsel.Set ( firstorig, lastorig );
+                                        // ..plus the nulls
+    if ( numaddedels > 0 )
+        elsel.Set ( firstadded, lastadded );
     }
 
-else                                    // get electrodes list
+else if ( StringContains ( (const char*) buff, "*" ) ) {
+                                        // caller requested all electrodes, but it may also be mixed with others: pseudos and/or nulls, and at any position
+
+    TSplitStrings       tokens ( buff, UniqueStrings );
+
+    bool        nonulls     = numaddedels > 0 && ! tokens.Intersect ( addedchannels );
+
+    for ( int toki = 0; toki < (int) tokens; toki++ ) {
+                                        // insertion will follow the input sequence
+        if      ( StringIs ( tokens[ toki ], "*" ) ) {
+                                        // bypass the '*' of TSelection with only our regular electrodes
+            elsel.Set ( firstorig, lastorig );
+                                        // if no nulls specified, inserted them now
+            if ( nonulls )
+                elsel.Set ( firstadded, lastadded );
+            }
+        else // just insert whatever comes next
+
+            elsel.Set ( tokens[ toki ], &ElectrodesNames, ! silent );
+        }
+    } // "*"
+
+else if ( numaddedels > 0 ) {
+                                        // inserting the nulls at the right place - not that straightforward as you can see...
+
+    TSelection      usersel ( numtotalels, OrderArbitrary );
+
+    usersel.Set ( buff, &ElectrodesNames, ! silent );
+
+    bool            hasregular  = usersel.NumSet ( firstorig,   lastorig   );
+    bool            haspseudos  = usersel.NumSet ( firstpseudo, lastpseudo );
+    bool            hasnulls    = usersel.NumSet ( firstadded,  lastadded  );
+                                            
+
+    if      (    hasnulls &&   haspseudos       // user explicitly specified nulls AND pseudos
+              || hasnulls && ! haspseudos   ) { // user specified (some) nulls, fair enough
+            
+        elsel   = usersel;
+        }
+    else if ( hasregular && ! hasnulls && haspseudos ){
+                                                // user asked for some regular tracks and some pseudos, but forgot about the nulls
+                                                // so insert the null tracks before the pseudos - order might change in the process...
+
+                                    // split selection in 2: regular and pseudos
+        TSelection      userselreg    ( usersel );  userselreg   .Reset ( lastorig + 1, numtotalels - 1 );
+        TSelection      userselpseudo ( usersel );  userselpseudo.Reset ( firstorig,    firstpseudo - 1 );
+
+        elsel  += userselreg;                   // user regulars
+        elsel.Set ( firstadded, lastadded );    // introduce the added tracks here
+        elsel  += userselpseudo;                // user pseudos
+        }
+
+    else if ( hasregular && ! hasnulls && ! haspseudos ) {
+                                                // user asked for some regular tracks and no pseudos, but forgot about the nulls
+        elsel   = usersel; 
+        elsel.Set ( firstadded, lastadded ); 
+        }
+
+    else {                                      // only some pseudos, no regular and no nulls - don't add the nulls!
+        elsel   = usersel; 
+        }
+
+    } // numaddedels > 0
+
+else { // numaddedels == 0
+                                        // no added tracks, just set from user
     elsel.Set ( buff, &ElectrodesNames, ! silent );
-
-                                        // ?does it work with rois?
-if ( tracksoptions != ProcessRois )
-
-    for ( int ni = 0, ei = EEGDoc->GetLastPseudoIndex () + 1; ni < numaddedchannels; ni++, ei++ )
-
-        elsel.Set ( ei );
+    }
 
                                         // aborting now?
 if ( tracksoptions == ProcessTracks && elsel.NumSet () == 0 )
+
     return  false;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Just for verbose output
+TSelection          badsel ( numels,     OrderSorted    );
+badsel     += EEGDoc->GetBadTracks ();
+
+                                        // Auxiliaries are limited to the original input for the moment, adding aux is not allowed
+TSelection          auxsel ( numels,     OrderSorted    );
+auxsel     += EEGDoc->GetAuxTracks ();
+
+                                        // We need to upgrade the valid tracks to the new null tracks
+TSelection          validsel ( numels,     OrderSorted    );
+validsel   += EEGDoc->GetValidTracks ();
+
+if ( numaddedels > 0 )
+
+    validsel.Set ( firstadded, lastadded );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -267,13 +360,9 @@ if ( baselinecorr ) {
 
 bool                haspseudos          = EEGDoc->HasPseudoElectrodes ();
 
-bool                dopseudos           = haspseudos 
+bool                dopseudos           = haspseudos                                    // we could totally bypass this, as we are computing the pseudo-tracks locally
                                        && tracksoptions == ProcessTracks 
-                                       && ( EEGDoc->GetNumSelectedPseudo ( elsel ) > 0 );   // can we / do we need to handle the pseudos?
-
-int                 gfpoff              = EEGDoc->GetGfpIndex ();
-int                 disoff              = EEGDoc->GetDisIndex ();
-int                 avgoff              = EEGDoc->GetAvgIndex ();
+                                       && elsel.NumSet ( firstpseudo, lastpseudo );     // can we / do we need to handle the pseudos?
 
                                         // triggers only allowed to mimick the original file, i.e. time intervals or excluded markers
 bool                outputtriggers      = outputmarkers
@@ -286,8 +375,6 @@ bool                createfile          = concatenateoptions == NoConcatenateTim
 bool                closefile           = concatenateoptions == NoConcatenateTime                       // single file
                                        || concatenateoptions == ConcatenateTime && IsBatchLastCall;     // concatenation and last file
 
-TTracksFilters<float>   oldfilters;
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -299,7 +386,6 @@ TMarker             marker;
 TMarkers            remaintags;
 TMarkers            timechunks;         // this list will hold all valid time intervals to process, even for the sequential case
 long                maxtimechunk    = 0;
-long                chunklength;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -313,31 +399,34 @@ if ( createfile )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Setting data type, reference, and reading parameters
-AtomType         	datatype        = EEGDoc->GetAtomType ( AtomTypeUseOriginal );
-char                reflistclean    [ EditSizeText ];
+AtomType         	datatype        = EEGDoc->GetAtomType ( AtomTypeUseOriginal );  // AtomTypeUseCurrent(?)
 
-                                        // force reset reference?
+                                        // force reset reference? not for the moment
 //if (    IsPositive ( datatype )
-//     || IsAngular  ( datatype ) )   ref = ReferenceAsInFile;
+//     || IsAngular  ( datatype ) )   
+//    ref     = ReferenceAsInFile;
 
 
-if ( ref == ReferenceArbitraryTracks ) {
+TSelection          refsel ( numels,      OrderSorted    );     // reference selection does NOT include pseudo tracks
+
+                                        // resolve this before we use it
+if      ( ref == ReferenceUsingCurrent ) {
+
+    ref     = EEGDoc->GetReferenceType   ();
+    refsel  = EEGDoc->GetReferenceTracks ();    // TSelection size will be from the original EEG, but code is OK with that
+    }
+
+else if ( ref == ReferenceArbitraryTracks ) {
 
     refsel.Reset ();
+    refsel.Set   ( reflist, &ElectrodesNames, ! silent );   // could make use of the null tracks
+    }
 
-    refsel.Set    ( reflist, &ElectrodesNames, ! silent );
-
-                                        // that should not be...
-    if ( refsel.NumSet () == 0 ) {
+                                        // safety check
+if ( ref == ReferenceArbitraryTracks && refsel.NumSet () == 0 )
 
         ref     = ReferenceAsInFile;    // either setting to no reference, as is currently done in  TTracksDoc::SetReferenceType
 //      return  false;                  // or exiting?
-        }
-    else {
-
-        refsel.ToText ( reflistclean, &ElectrodesNames, AuxiliaryTracksNames );
-        }
-    }
 
                                         // Allow any sort of re-referencing
 //CheckReference ( ref, datatype );
@@ -378,6 +467,9 @@ if ( createfile ) {
     if ( ! IsExtension ( filename, SavingEegFileExtPreset[ filetype ] ) )
 
         AddExtension ( filename, SavingEegFileExtPreset[ filetype ] );
+
+
+    CheckNoOverwrite ( filename );
 
                                         // test file creation - don't ask before overwriting
     if ( ! CanOpenFile ( filename, CanOpenFileWrite ) )
@@ -691,7 +783,7 @@ if ( samplfreq <= 0 && defaultsamplingfrequency > 0 )
                                         // 4) at that point, we have to stop and ask user
 if ( samplfreq <= 0 && samplingfreqout && ! silent ) {
                                         // Not thread-safe but still OK-ish, we are not supposed to run this in concurrent threads, or are we?
-    if ( ! GetValueFromUser ( "Missing sampling frequency, please provide one:", (char *) EEGDoc->GetTitle (), defaultsamplingfrequency, "1000" ) ) {
+    if ( ! GetValueFromUser ( "Missing sampling frequency, please provide one:", EEGDoc->GetTitle (), defaultsamplingfrequency, "1000" ) ) {
 //      return  false;
         }
 
@@ -721,20 +813,19 @@ if ( samplfreq > 0 ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Silently setting the filtering state
-if      ( filtersoptions == UsingCurrentFilters )
 
-    oldfilters  = *EEGDoc->GetFilters ();
+                                        // Consistency checks that should have been addressed by the caller beforehand...
+if ( filtersoptions == UsingOtherFilters   && ( altfilters == 0 || altfilters->HasNoFilters () )    // no filters set / activated in altfilters
+  || filtersoptions == UsingCurrentFilters && ! EEGDoc->AreFiltersActivated () )                    // EEGDoc has filters BUT they are deactivated
+                                        
+    filtersoptions = NotUsingFilters;
 
-else if ( filtersoptions == UsingOtherFilters ) {
+                                        // New approach is to have a local filter object, so we know for sure it will NOT interfere with EEGDoc state
+TTracksFilters<float>   filters;
 
-    oldfilters  = *EEGDoc->GetFilters ();
-
-    EEGDoc->SetFilters ( altfilters, 0, true );
-    }
-
-                                        // if we modify the filters in an already opened file, we need to restore them to this state once we are done
-bool                oldfiltersactivated = filtersoptions == NotUsingFilters ? EEGDoc->DeactivateFilters ( true ) 
-                                                                            : EEGDoc->ActivateFilters   ( true );
+if      ( filtersoptions == UsingCurrentFilters )   filters     = *EEGDoc->GetFilters ();
+else if ( filtersoptions == UsingOtherFilters   )   filters     = *altfilters;
+//else if ( filtersoptions == NotUsingFilters   )   filters.Reset ();
 
 
 if ( downsample )
@@ -745,24 +836,18 @@ if ( downsample )
                                         // Buffers allocation
 
 if ( baselinecorr )                     // also check for baseline length!
-    maxtimechunk    = max ( (long) baselinecorrnum, maxtimechunk );
+    Maxed ( maxtimechunk, baselinecorrnum );
 
-                                        // output # of tracks - elsel already accounted for numaddedchannels
-int                 outnumtracks    = tracksoptions == ProcessRois && ROIs ? ROIs->GetNumRois () + numaddedchannels: (int) elsel;
+                                        // output # of tracks - elsel already accounted for numaddedels
+int                 outnumtracks    = tracksoptions == ProcessRois ? ROIs->GetNumRois () : (int) elsel;
 
                                         // allocate a max chunk buffer
-TTracks<float>      eegb ( numtotalel + numaddedchannels, maxtimechunk );
+TTracks<float>      eegb        ( numtotalels, maxtimechunk );
+                                        // some more optional buffers
+TVector<double>     eegbavg     ( sequenceoptions == AverageProcessing ? numels : 0 );
 
-                                        // some more buffers, if needed
-TVector<double>     eegbavg;
-TArray2<float>      eegbrois;
-
-
-if ( sequenceoptions == AverageProcessing )
-    eegbavg .Resize ( numregel );
-
-if ( tracksoptions == ProcessRois )
-    eegbrois.Resize ( outnumtracks, maxtimechunk );
+TArray2<float>      eegbrois    ( tracksoptions == ProcessRois ? outnumtracks : 0, 
+                                  tracksoptions == ProcessRois ? maxtimechunk : 0  );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -779,25 +864,81 @@ if ( ! silent ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Compute baseline correction values - this is not part of our time chunks
-TVector<float>      baseline;
+                                        // Simplified version of TTracksDoc::GetTracks
+                                        // It allows for EEG buffer to have MORE TRACKS than the original input EEG, allowing us to include any added null channels in the processing
+auto    GetTracks   =   [   &EEGDoc, 
+                            &eegb,          &numels,    &numtimeframes,
+                            &filters,       &ref,       &refsel,        &validsel,      &auxsel
+                        ] ( long tf1, long tf2, long numtf, int tfoffset )
+{
+                                        // atom type, reference and filters have been resolved and set
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+bool                doanyfilter         = filters.HasAnyFilter ();
+bool                dotemporalfilters   = doanyfilter && filters.HasTemporalFilter ();
+bool                dofilterauxs        = doanyfilter && CheckToBool ( filters.FiltersParam.FilterAuxs );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TTracksFiltersLimits<float>  timelimits;
+
+if ( dotemporalfilters )
+                                        // Adjust the time parameters and set the time margins for temporal filtering
+    timelimits.UpdateTimeRange  (   tf1,        tf2,        numtf,      tfoffset,   // !update values with new limits!
+                                    AtLeast ( 1, filters.GetSafeMargin () ),        // !make sure it has at least 1 TF so we don't need BuffDiss!
+                                    numtimeframes
+                                );
+
+                                        // Adjust buffer to either original or expanded limits
+                                        // Note that the previous content could be lost, though this usually is not a problem, as for filtered data, the buffer is usually evaluated as a whole
+eegb.Resize (             eegb.GetDim1 (),
+                AtLeast ( eegb.GetDim2 (), (int) numtf )  );
+
+                                        // making sure any added channels will be 0
+eegb.ResetMemory ();
+
+
+EEGDoc->ReadRawTracks ( tf1, tf2, eegb, tfoffset );
+
+
+if ( doanyfilter
+  || IsEffectiveReference ( ref ) ) {   // !filters semantic do not include the reference for the moment!
+
+
+    if ( dotemporalfilters )
+
+        timelimits.MirrorData       (   eegb,   numels,
+                                        numtf,  tfoffset    );
+
+                                            // do ALL filters at once, including reference, with the correct sequence
+    filters.ApplyFilters    (   eegb,       numels,  
+                                numtf,      tfoffset,
+                                ref,        &refsel,    &validsel,  dofilterauxs ? 0 : &auxsel,
+                                doanyfilter ? AllFilters : NoFilter
+                            );
+
+
+    if ( dotemporalfilters )
+
+        timelimits.RestoreTimeRange (   eegb,       numels,  
+                                        tf1,        tf2,        numtf,      tfoffset,       // !restore original time limits!
+                                        0
+                                    );
+    } // filter or reference
+};
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Compute baseline correction values - this is not part of our time chunks
+TVector<float>      baseline ( baselinecorr ? numels : 0 );
 
 if ( baselinecorr ) {
-                                        // create the buffer, only on real electrodes (no pseudos)
-    baseline.Resize ( numregel );
-
-                                        // get the baseline chunk only, no need for pseudos
-                                        // vectorial RIS converted to norm
-    EEGDoc->GetTracks   (   baselinecorrpre,    baselinecorrpost, 
-                            eegb,               0, 
-                            AtomTypeUseCurrent, 
-                            NoPseudoTracks /*dopseudos*/, 
-                            ref,                &refsel
-                        );
+                                        // get the baseline chunk only
+    GetTracks   ( baselinecorrpre, baselinecorrpost, baselinecorrnum, 0 );
 
 
-    for ( int e = 0; e < numregel; e++ )
+    for ( int  e   = 0; e   < numels;          e++   )
     for ( long tfi = 0; tfi < baselinecorrnum; tfi++ )
 
         baseline[ e ]  += eegb ( e , tfi );
@@ -812,25 +953,20 @@ if ( rescalingoptions == GfpRescaling ) {
                                         // compute average Gfp across selected TFs, using current ref & filters
     rescalingfactor = 0;
 
-    TMap            map ( numregel );
+    TMap            map ( numels );
 
                                         // have to loop through all our valid time chunks
     for ( int i = 0; i < timechunks.GetNumMarkers (); i++ ) {
                                         // read chunk
-        EEGDoc->GetTracks   (   timechunks[ i ]->From,  timechunks[ i ]->To, 
-                                eegb,                   0,
-                                AtomTypeUseCurrent, 
-                                NoPseudoTracks /*dopseudos*/, 
-                                ref,                    &refsel
-                            );
+        long            numtf           = timechunks[ i ]->Length ();
 
-        chunklength     = timechunks[ i ]->Length ();
+        GetTracks   ( timechunks[ i ]->From, timechunks[ i ]->To, numtf, 0 );
 
 
-        for ( long tfi = 0; tfi < chunklength; tfi++ ) {
+        for ( long tfi = 0; tfi < numtf; tfi++ ) {
 
             map.GetColumn ( eegb, tfi );
-                                        // at that point, we might have a baseline correction to apply
+                                        // at that point, we might have a baseline correction to apply, in case we don't use the average reference formula
             if ( baselinecorr )
                 map    -= baseline;
                                         // get GFP
@@ -839,8 +975,8 @@ if ( rescalingoptions == GfpRescaling ) {
 
         } // timechunks
 
-                                        // here is the average Gfp factor
-    rescalingfactor = rescalingfactor ? intimenum / rescalingfactor : 0;
+                                        // here is the inverse average Gfp factor
+    rescalingfactor = rescalingfactor != 0 ? intimenum / rescalingfactor : 0;
     }
 
 
@@ -863,18 +999,19 @@ if ( createfile ) {
                                         // specific variables
     if ( tracksoptions == ProcessTracks ) {
 
-        expfile.NumAuxTracks    = ( elsel & EEGDoc->GetAuxTracks () ).NumSet ()
-                                  + EEGDoc->GetNumSelectedPseudo ( elsel );
-
         expfile.SelTracks       = elsel;
-                                        // !currently, adding null tracks interferes with TExportTracks aux detection!
-        if ( numaddedchannels == 0 )
-            expfile.AuxTracks       = EEGDoc->GetAuxTracks ();
+
+        expfile.AuxTracks       = auxsel;
+        expfile.NumAuxTracks    = ( elsel & auxsel ).NumSet ()                  // original auxiliaries which are to be saved
+                                  + elsel.NumSet ( firstpseudo, lastpseudo );   // pseudo-tracks that will be saved among the other channels
 
         expfile.ElectrodesNames = ElectrodesNames;
         }
     else if ( tracksoptions == ProcessRois ) {
 
+        expfile.SelTracks.Initialize ();
+
+        expfile.AuxTracks.Initialize ();
         expfile.NumAuxTracks    = 0;
 
         expfile.ElectrodesNames = *ROIs->GetRoiNames ();
@@ -933,33 +1070,25 @@ if ( concatenateoptions == ConcatenateTime && IsBatchFirstCall )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-int                 numtimechuncks  = timechunks.GetNumMarkers ();
-bool                lastchunk;
-
                                         // loop through all our valid time chunks
+
+
 for ( int i = 0; i < timechunks.GetNumMarkers (); i++ ) {
 
+    bool            lastchunk       = i == timechunks.GetNumMarkers () - 1;
+
                                         // read chunk, store to relative origin TF 0
-    EEGDoc->GetTracks   (   timechunks[ i ]->From, timechunks[ i ]->To, 
-                            eegb,                   0,
-                            AtomTypeUseCurrent, 
-                            NoPseudoTracks /*dopseudos*/, 
-                            ref,                    &refsel
-                        );
+    long            numtf           = timechunks[ i ]->Length ();
 
-
-    chunklength     = timechunks[ i ]->Length ();
-
-    lastchunk       = i == numtimechuncks - 1;
+    GetTracks   ( timechunks[ i ]->From, timechunks[ i ]->To, numtf, 0 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Apply previously computed baseline correction on compacted data
     if ( baselinecorr ) {
                                         // subtract baseline correction - only on regular electrodes
-        for ( int   e   = 0; e   < numregel;    e++   )
-        for ( long tfi = 0; tfi < chunklength; tfi++ )
+        for ( int  e   = 0; e   < numels;   e++ )
+        for ( long tfi = 0; tfi < numtf;    tfi++ )
 
             eegb ( e , tfi )   -= baseline[ e ];
 
@@ -970,8 +1099,8 @@ for ( int i = 0; i < timechunks.GetNumMarkers (); i++ ) {
                                         // apply rescaling, if any
     if ( rescalingoptions != NotRescaled ) {
 
-        for ( int   e   = 0; e   < numregel;    e++   )
-        for ( long tfi = 0; tfi < chunklength; tfi++ )
+        for ( int  e   = 0; e   < numels;   e++ )
+        for ( long tfi = 0; tfi < numtf;    tfi++ )
 
             eegb ( e , tfi )   *= rescalingfactor;
 
@@ -985,8 +1114,10 @@ for ( int i = 0; i < timechunks.GetNumMarkers (); i++ ) {
         Gauge.Next ( 0, SuperGaugeUpdateTitle );
 
 
-        for ( int   e   = 0; e   < numregel;    e++   )
-        for ( long tfi = 0; tfi < chunklength; tfi++ )
+        eegbavg.ResetMemory ();
+
+        for ( int  e   = 0; e   < numels;   e++ )
+        for ( long tfi = 0; tfi < numtf;    tfi++ )
 
             eegbavg[ e ]   += eegb ( e , tfi );     // cumulate values
 
@@ -995,11 +1126,11 @@ for ( int i = 0; i < timechunks.GetNumMarkers (); i++ ) {
                                         // finalize the averaging
             eegbavg    /= intimenum;
                                         // transfer to eegb
-            for ( int e = 0; e < numregel; e++ )
+            for ( int e = 0; e < numels; e++ )
 
                 eegb ( e , 0 )  = eegbavg[ e ];
                                         // update our new local chunk length
-            chunklength     = 1;
+            numtf   = 1;
             }
         else {
 
@@ -1013,19 +1144,19 @@ for ( int i = 0; i < timechunks.GetNumMarkers (); i++ ) {
     else if ( /*sequenceoptions == SequenceProcessing &&*/ downsample ) {
 
                                         // cumulate within same buffer (can)
-        for ( int   e   = 0; e   < numregel;    e++   )
-        for ( long tfi = 0; tfi < chunklength; tfi++ )
+        for ( int  e   = 0; e   < numels;   e++ )
+        for ( long tfi = 0; tfi < numtf;    tfi++ )
 
             if ( ( tfi % downsampleratio ) == 0 )   eegb[ e ][ tfi / downsampleratio ]  = eegb ( e , tfi ); // set @ beginning of bucket
             else                                    eegb[ e ][ tfi / downsampleratio ] += eegb ( e , tfi ); // cumulate the other values
 
 
                                         // update our new local chunk length
-        chunklength     = chunklength / downsampleratio;
+        numtf   = numtf / downsampleratio;
 
 
-        for ( int   e   = 0; e   < numregel;    e++   )
-        for ( long tfi = 0; tfi < chunklength; tfi++ )
+        for ( int  e   = 0; e   < numels;   e++ )
+        for ( long tfi = 0; tfi < numtf;    tfi++ )
 
             eegb ( e , tfi )   /= downsampleratio;
 
@@ -1034,21 +1165,21 @@ for ( int i = 0; i < timechunks.GetNumMarkers (); i++ ) {
         double              eegbdowntf0;
         double              eegbdowntfp1;
 
-        for ( int e = 0; e < numregel; e++ ) {
+        for ( int e = 0; e < numels; e++ ) {
   
             eegbdowntf0     = eegb ( e , 0 );
 
-            for ( long tfi = 0; tfi < chunklength; tfi++ ) {
+            for ( long tfi = 0; tfi < numtf; tfi++ ) {
 
                 eegbdowntfm1        = eegbdowntf0;
                 eegbdowntf0         = eegb ( e , tfi );
-                eegbdowntfp1        = eegb ( e , tfi < chunklength - 1 ? tfi + 1 : tfi );
+                eegbdowntfp1        = eegb ( e , tfi < numtf - 1 ? tfi + 1 : tfi );
                 eegb ( e , tfi )    = ( 18 * eegbdowntf0 - ( eegbdowntfm1 + eegbdowntfp1 ) ) / 16;
                 }
 
                                         // if data is KNWOWN to be positive, better avoiding slightly negative results!
             if ( EEGDoc->IsAbsolute ( AtomTypeUseOriginal ) /*EEGDoc->IsPositive ()*/ )
-                for ( long tfi = 0; tfi < chunklength; tfi++ )
+                for ( long tfi = 0; tfi < numtf; tfi++ )
                     Maxed ( eegb ( e , tfi ), (float) 0 );
             } // for e
 
@@ -1056,49 +1187,48 @@ for ( int i = 0; i < timechunks.GetNumMarkers (); i++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // here, chunklength has been updated to the output size
+                                        // here, numtf has been updated to the actual output size
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Final pseudos (we haven't needed any pseudo before this point..)
+                                        // Finally, compute our pseudos (we haven't needed any pseudo before this point..)
     if ( dopseudos ) {
 
-        bool                dogfp               = dopseudos && elsel[ gfpoff ]; // we can be selective to skip useless & costly computations
-        bool                dodis               = dopseudos && elsel[ disoff ];
-        bool                doavg               = dopseudos && elsel[ avgoff ];
-        TVector<float>      map1 ( numregel );
-        TVector<float>      map2 ( numregel );
+        TVector<float>      map1 ( numels );
+        TVector<float>      map2 ( numels );
 
                                         // here, we don't have access to previous TF
         map1.GetColumn ( eegb, 0 );
                                         // here, we have access to data @ (intimemin - 1), so we can compute the actual Dis
-//          map1.GetColumn ( eegb, intimemin ? intimemin - 1 : 0 ); // for first TF, will do dissimilarity with itself = 0
-//          for ( int e = 0; e < numregel; e++ )
-//              map1[ e ]  -= baseline[ e ];
+//      map1.GetColumn ( eegb, intimemin ? intimemin - 1 : 0 ); // for first TF, will do dissimilarity with itself = 0
+//      for ( int e = 0; e < numels; e++ )
+//          map1[ e ]  -= baseline[ e ];
 
 
-        for ( long tfi = 0; tfi < chunklength; tfi++ ) {
+        for ( long tfi = 0; tfi < numtf; tfi++ ) {
 
             map2    = map1;
 
             map1.GetColumn ( eegb, tfi );
 
-            if ( dogfp )    eegb ( gfpoff , tfi )   = map1.GlobalFieldPower (       ! IsAbsolute ( datatype ), IsVector ( datatype ) );
-            if ( dodis )    eegb ( disoff , tfi )   = map1.Dissimilarity    ( map2, ! IsAbsolute ( datatype ), IsVector ( datatype ) );
-            if ( doavg )    eegb ( avgoff , tfi )   = map1.Average          ();
+            if ( elsel[ gfpoff ] )  eegb ( gfpoff, tfi )    = map1.GlobalFieldPower (       validsel, ! IsAbsolute ( datatype ), IsVector ( datatype ) );
+            if ( elsel[ disoff ] )  eegb ( disoff, tfi )    = map1.Dissimilarity    ( map2, validsel, ! IsAbsolute ( datatype ), IsVector ( datatype ) );
+            if ( elsel[ avgoff ] )  eegb ( avgoff, tfi )    = map1.Average          (       validsel );
             }
 
         } // dopseudos
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // ROIs
-    if ( tracksoptions == ProcessRois && ROIs )
 
-        ROIs->Average ( eegb, 0, chunklength - 1, FilterTypeMean, &eegbrois );
+    if ( tracksoptions == ProcessRois )
+                                        // It can not see any of our additional null tracks, as roidoc was opened before
+        ROIs->Average ( eegb, 0, numtf - 1, FilterTypeMean, &eegbrois );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Output loop
-    for ( long tfi = 0; tfi < chunklength; tfi++ ) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    for ( long tfi = 0; tfi < numtf; tfi++ ) {
 
         Gauge.Next ( 0, SuperGaugeUpdateTitle );
 
@@ -1107,7 +1237,7 @@ for ( int i = 0; i < timechunks.GetNumMarkers (); i++ ) {
                                         // this can include the optional null tracks, which are not computed, hence 0's
             for ( TIteratorSelectedForward seli ( elsel ); (bool) seli; ++seli )
 
-                expfile.Write ( eegb    [ seli() ][ tfi ] );
+                expfile.Write ( eegb ( seli(), tfi ) );
 
         else // tracksoptions == ProcessRois
                                         // !NOT tested for optional null tracks!
@@ -1124,6 +1254,9 @@ for ( int i = 0; i < timechunks.GetNumMarkers (); i++ ) {
                                         // verbose file filling, one per new file, or only one in case of concatenation
                                         // wait for last batch call to have full time extends
 if ( closefile ) {
+
+    string          auxsandnulls    = AuxiliaryTracksNames + ( numaddedels ? " " + string ( addingnullchannels ) : "" );
+
 
     TFileName       verbosefilename ( filename );
     AddExtension    ( verbosefilename, FILEEXT_VRB );
@@ -1144,14 +1277,14 @@ if ( closefile ) {
         verbose.NextLine ();
         }
     else
-        verbose.Put ( "Input   File         :", EEGDoc->GetDocPath() );
+        verbose.Put ( "Input   File         :", EEGDoc->GetDocPath () );
 
     verbose.Put ( "Output  File         :", filename );
     verbose.Put ( "Verbose File (this)  :", verbosefilename );
 
     verbose.NextLine ();
-    verbose.Put ( "Using electrode names from file:", xyzdoc  ? xyzdoc ->GetDocPath() : "No" );
-    verbose.Put ( "Using ROIs            from file:", roisdoc ? roisdoc->GetDocPath() : "No" );
+    verbose.Put ( "Using electrode names from file:", xyzdoc  ? xyzdoc ->GetDocPath () : "No" );
+    verbose.Put ( "Using ROIs            from file:", roisdoc ? roisdoc->GetDocPath () : "No" );
     if ( concatenateoptions == ConcatenateTime )
         verbose.Put ( "Concatenate into 1 file:", concatenateoptions == ConcatenateTime );
     }
@@ -1160,8 +1293,8 @@ if ( closefile ) {
     verbose.NextTopic ( "Exporting:" );
     {
     if ( EEGDoc->GetNumSessions () > 1 ) {
-        verbose.Put ( "Session exported:", EEGDoc->GetCurrentSession () );
-        verbose.Put ( "Total number of sessions:", EEGDoc->GetNumSessions () );
+        verbose.Put ( "Session exported:",          EEGDoc->GetCurrentSession () );
+        verbose.Put ( "Total number of sessions:",  EEGDoc->GetNumSessions () );
         verbose.NextLine ();
         }
 
@@ -1170,9 +1303,10 @@ if ( closefile ) {
     if      ( tracksoptions == ProcessTracks ) {
     //  verbose.Put ( "Writing tracks:", transfer->Tracks );
         verbose.Put ( "Number of tracks:", outnumtracks );
-        verbose.Put ( "Track names:",      elsel.ToText ( buff, &ElectrodesNames, AuxiliaryTracksNames ) );
+                                                                            // always enumerate the added channels
+        verbose.Put ( "Track names:",   elsel.ToText ( buff, &ElectrodesNames, auxsandnulls.c_str () ) );
         }
-    else if ( tracksoptions == ProcessRois && ROIs ) {
+    else if ( tracksoptions == ProcessRois ) {
         verbose.Put ( "Number of ROIs:", outnumtracks );
         verbose.Put ( "ROIs names:",     ROIs->RoiNamesToText ( buff ) );
         }
@@ -1183,6 +1317,17 @@ if ( closefile ) {
         verbose.NextTopic ( "Frequency:" );
         verbose.Put ( "Frequency:", freqinfix );
         }
+
+
+    verbose.NextTopic ( "Input Tracks:" );
+    {
+    TSelection      insel ( numels,     OrderSorted    );    EEGDoc->SetRegular ( insel );
+
+    verbose.Put ( "Input channels:",            (bool) insel    ? insel   .ToText ( buff, &ElectrodesNames, auxsandnulls.c_str () ) : "None" );
+    verbose.Put ( "Input auxiliary channels:",  (bool) auxsel   ? auxsel  .ToText ( buff, &ElectrodesNames, auxsandnulls.c_str () ) : "None" );
+    verbose.Put ( "Input bad channels:",        (bool) badsel   ? badsel  .ToText ( buff, &ElectrodesNames, auxsandnulls.c_str () ) : "None" );
+    verbose.Put ( "Input valid channels:",      (bool) validsel ? validsel.ToText ( buff, &ElectrodesNames, auxsandnulls.c_str () ) : "None" );
+    }
 
 
     verbose.NextTopic ( "Input Time Period:" );
@@ -1209,15 +1354,17 @@ if ( closefile ) {
 
     verbose.NextTopic ( "Processing Parameters:" );
     {
-    if      ( datatype == AtomTypeScalar )
-        verbose.Put ( "Data type:", "Signed Data" );
-    else if ( datatype == AtomTypePositive )
-        verbose.Put ( "Data type:", "Positive Data" );
+    if      ( datatype == AtomTypeScalar    )   verbose.Put ( "Data type:", "Signed Data" );
+    else if ( datatype == AtomTypePositive  )   verbose.Put ( "Data type:", "Positive Data" );
 
 
     verbose.NextLine ();
-    if      ( filtersoptions == UsingCurrentFilters )   verbose.Put ( "Current filters:",   oldfilters. ParametersToText ( buff ) );
-    else if ( filtersoptions == UsingOtherFilters   )   verbose.Put ( "Filters:",           altfilters->ParametersToText ( buff ) );
+    verbose.Put ( "Adding null tracks:", numaddedels > 0 ? addingnullchannels : "No" );
+
+
+    verbose.NextLine ();
+    if      ( filtersoptions == UsingCurrentFilters )   verbose.Put ( "Current filters:",   filters.ParametersToText ( buff ) );
+    else if ( filtersoptions == UsingOtherFilters   )   verbose.Put ( "Filters:",           filters.ParametersToText ( buff ) );
     else                                                verbose.Put ( "Filters:",           false );
 
 
@@ -1225,15 +1372,12 @@ if ( closefile ) {
     if      ( datatype == AtomTypePositive
            || ref == ReferenceAsInFile          )       verbose.Put ( "Reference:", "No reference, as in file" );
     else if ( ref == ReferenceAverage           )       verbose.Put ( "Reference:", "Average reference" );
-    else if ( ref == ReferenceArbitraryTracks   )       verbose.Put ( "Reference:", reflistclean );
+    else if ( ref == ReferenceArbitraryTracks   )       verbose.Put ( "Reference:", refsel.ToText ( buff, &ElectrodesNames, auxsandnulls.c_str () ) );
     else if ( ref == ReferenceUsingCurrent      ) {
 
         if      ( EEGDoc->GetReferenceType () == ReferenceAverage  )    verbose.Put ( "Current reference:", "Average reference" );
         else if ( EEGDoc->GetReferenceType () == ReferenceAsInFile )    verbose.Put ( "Current reference:", "No reference, as in file" );
-        else {
-            EEGDoc->GetReferenceTracks ().ToText ( buff, &ElectrodesNames, AuxiliaryTracksNames );
-                                                                        verbose.Put ( "Current reference:", buff );
-            }
+        else                                                            verbose.Put ( "Current reference:", EEGDoc->GetReferenceTracks ().ToText ( buff, &ElectrodesNames, auxsandnulls.c_str () ) );
         }
     else                                                verbose.Put ( "Reference:", "Unknown" );
 
@@ -1264,6 +1408,19 @@ if ( closefile ) {
     }
 
 
+    verbose.NextTopic ( "Output Tracks:" );
+    {
+    TSelection      outauxsel   = elsel & auxsel;
+    TSelection      outbadsel   = elsel & badsel;
+    TSelection      outvalidsel = elsel & validsel;
+
+    verbose.Put ( "Output channels:",           (bool) elsel        ? elsel      .ToText ( buff, &ElectrodesNames, auxsandnulls.c_str () ) : "None" );
+    verbose.Put ( "Output auxiliary channels:", (bool) outauxsel    ? outauxsel  .ToText ( buff, &ElectrodesNames, auxsandnulls.c_str () ) : "None" );
+    verbose.Put ( "Output bad channels:",       (bool) outbadsel    ? outbadsel  .ToText ( buff, &ElectrodesNames, auxsandnulls.c_str () ) : "None" );
+    verbose.Put ( "Output valid channels:",     (bool) outvalidsel  ? outvalidsel.ToText ( buff, &ElectrodesNames, auxsandnulls.c_str () ) : "None" );
+    }
+
+
     verbose.NextTopic ( "Output Time:" );
     {
     if ( concatenateoptions == ConcatenateTime )
@@ -1286,30 +1443,22 @@ if ( closefile ) {
 
 
     verbose.NextTopic ( "Processing Summary:" );
-    (ofstream&) verbose << "Data are processed according to this sequence (& depending on user's choice):" << fastendl;
-    (ofstream&) verbose                                                         << fastendl;
-    (ofstream&) verbose << "    * Reading data from file"                       << fastendl;
-    (ofstream&) verbose << "    * Filtering"                                    << fastendl;
-    (ofstream&) verbose << "    * Applying new reference"                       << fastendl;
-    (ofstream&) verbose << "    * Applying baseline correction"                 << fastendl;
-    (ofstream&) verbose << "    * Rescaling data levels"                        << fastendl;
-    (ofstream&) verbose << "    * Time downsampling, or computing time average" << fastendl;
-    (ofstream&) verbose << "    * Computing ROIs"                               << fastendl;
+    (ofstream&) verbose << "Data is processed according to this sequence:" << fastendl;
+    (ofstream&) verbose                                                             << fastendl;
+    (ofstream&) verbose << "    * Reading Raw Data from file"                       << fastendl;
+    (ofstream&) verbose << "    * Adding Null Tracks"                               << fastendl;
+    (ofstream&) verbose << "    * Pre-Reference Filtering"                          << fastendl;
+    (ofstream&) verbose << "    * Re-referencing"                                   << fastendl;
+    (ofstream&) verbose << "    * Post-Reference Filtering"                         << fastendl;
+    (ofstream&) verbose << "    * Applying baseline correction"                     << fastendl;
+    (ofstream&) verbose << "    * Rescaling"                                        << fastendl;
+    (ofstream&) verbose << "    * Temporal Downsampling or Computing Time Average"  << fastendl;
+    (ofstream&) verbose << "    * Computing ROIs"                                   << fastendl;
 
 
     verbose.NextLine ();
     verbose.NextLine ();
     } // verbose file
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Silently restoring previous filtering state - User shouldn't see anything
-if ( filtersoptions == UsingOtherFilters )
-
-    EEGDoc->SetFilters ( &oldfilters, 0, true );
-
-
-EEGDoc->SetFiltersActivated ( oldfiltersactivated, true );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

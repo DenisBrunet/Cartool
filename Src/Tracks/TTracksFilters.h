@@ -150,6 +150,7 @@ public:
     double          FreqMax;                    // allowed for filters
 
 
+    void            Reset                   ();
 
     void            SetFromStruct           ( double fsamp = 0, bool silent = true );   // calls SetFilters     - converts a struct to variables
     void            SetFilters              ( double fsamp,     bool silent = true );   // init each relevant TFilterXXX objects; calls SetSamplingFrequency & check frequency ranges correctness
@@ -215,10 +216,6 @@ private:
     TFilterReference            <TypeD>     FilterReference;
     TFilterRectification        <TypeD>     FilterRectification;
     TFilterThreshold            <TypeD>     FilterThreshold;
-
-
-    TArray3<double> NeighDist;                      // Neighborhood distances for Spatial Filtering
-
 };
 
 
@@ -389,6 +386,15 @@ Reset ();
 template <class TypeD>
         TTracksFilters<TypeD>::TTracksFilters ()
 {
+Reset ();
+}
+
+
+template <class TypeD>
+void    TTracksFilters<TypeD>::Reset ()
+{
+FiltersParam.ResetAll ();
+
 Baseline                    = false;
 
 ButterworthHigh             = 0;
@@ -410,6 +416,7 @@ SpatialFilter               = SpatialFilterDefault;
 Ranking                     = false;
 
 Reference                   = ReferenceAsInFile;
+ReferenceTracks.Initialize ();  // deallocate selection
 
 Rectification               = 0;
 EnvelopeWidth               = 0;
@@ -423,6 +430,19 @@ ThresholdKeepBelowValue     = 0;
 SamplingFrequency           = 0;
 FreqMin                     = EegFilterDefaultMinFrequency;
 FreqMax                     = 0;
+
+                                        // Not needed?
+FilterBaseline              .Reset ();
+FilterButterworthLowPass    .Reset ();
+FilterButterworthHighPass   .Reset ();
+FilterButterworthBandPass   .Reset ();
+FilterNotches               .Reset ();
+FilterEnvelope              .Reset ();
+FilterSpatial               .Reset ();
+FilterRanking               .Reset ();
+FilterReference             .Reset ();
+FilterRectification         .Reset ();
+FilterThreshold             .Reset ();
 }
 
 
@@ -908,6 +928,7 @@ SetFilters ( fsamp, silent );
                                         // Caller must therefor set the flags according to his/her needs
                                         // UpdateTimeRange  must be called before in case of temporal filters to adjust the time limits for extra margins
                                         // RestoreTimeRange must be called after to reset temporary modified time limits
+                                        // validtracks and auxtracks must have sizes >= numel; referencetracks could be whatever size, though
 template <class TypeD>
 void    TTracksFilters<TypeD>::ApplyFilters (   TArray2<TypeD>&     data,       int                 numel,      
                                                 long                numtf,      int                 tfoffset,

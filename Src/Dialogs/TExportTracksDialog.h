@@ -202,6 +202,8 @@ protected:
 //  void                CmExportRoisEnable          ( owl::TCommandEnabler &tce );
     void                CmRoisEnable                ( owl::TCommandEnabler &tce );
 
+    void                CmAddChannelsEnable         ( owl::TCommandEnabler &tce );
+
     void                CmIntervalEnable            ( owl::TCommandEnabler &tce );
     void                CmTimeMaxEnable             ( owl::TCommandEnabler &tce );
     void                CmTriggersEnable            ( owl::TCommandEnabler &tce );

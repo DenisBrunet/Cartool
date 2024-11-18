@@ -65,6 +65,7 @@ public:
     void            CompactSpaces       ();
 
     bool            Contains            ( const char* str )         const;
+    bool            Intersect           ( const TSplitStrings& splitstring )    const;
     bool            PartiallyContains   ( const char* str )         const;
     char*           ToString            ( char* str, bool verbose ) const;
     void            Show                ( const char* title = 0 )   const;
