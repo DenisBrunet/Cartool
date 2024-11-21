@@ -985,7 +985,7 @@ if ( IsFlag ( filterprecedence, FilterNonTemporal ) && ( HasSpatialFilter () || 
             temp[ i ]    = data ( i, tfoffset + tf0 );
 
 
-        if ( HasSpatialFilter ()        )   FilterSpatial.Apply ( temp );                       // could also make use auxtracks?
+        if ( HasSpatialFilter ()        )   FilterSpatial.Apply ( temp );   // could also make use of auxtracks?
 
 
         if ( HasRanking       ()        )   FilterRanking.Apply ( temp, RankingOptions ( RankingAccountNulls | RankingMergeIdenticals ) );  // ignoring null values or not? or ignoring only for positive data?
@@ -1052,6 +1052,12 @@ OmpParallelEnd
 template <class TypeD>
 char   *TTracksFilters<TypeD>::ParametersToText ( char *text )    const
 {
+if ( HasNoFilters () ) {
+    StringCopy ( text, "No filters" );
+    return text;
+    }
+
+
 constexpr char*     TextSeparator   = ", ";
 
 ClearString ( text );
@@ -1167,10 +1173,6 @@ if ( HasThresholdKeepBelow () ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-if ( StringIsEmpty ( text ) )
-    StringCopy ( text, "No filters" );
-
 
 return text;
 }

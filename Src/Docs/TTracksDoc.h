@@ -53,16 +53,6 @@ constexpr char*     NonAuxiliaryTracksNames             = "VREF REF CZ tempo";
 
 constexpr char*     TracksPreferenceNoAuxs              = "No Auxiliaries";
 
-                                        // Tracks have currently 3 additional tracks
-enum                PseudoTracksIndex
-                    {
-                    PseudoTrackOffsetGfp,
-                    PseudoTrackOffsetDis,
-                    PseudoTrackOffsetAvg,
-
-                    NumPseudoTracks,
-                    };
-
 
 //----------------------------------------------------------------------------
                                         // max number of points to be displayed

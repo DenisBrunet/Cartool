@@ -468,8 +468,8 @@ if ( createfile ) {
 
         AddExtension ( filename, SavingEegFileExtPreset[ filetype ] );
 
-
-    CheckNoOverwrite ( filename );
+                                        // maybe not a good idea, if we expect an exact output file name(?)
+//  CheckNoOverwrite ( filename );
 
                                         // test file creation - don't ask before overwriting
     if ( ! CanOpenFile ( filename, CanOpenFileWrite ) )
@@ -826,6 +826,27 @@ TTracksFilters<float>   filters;
 if      ( filtersoptions == UsingCurrentFilters )   filters     = *EEGDoc->GetFilters ();
 else if ( filtersoptions == UsingOtherFilters   )   filters     = *altfilters;
 //else if ( filtersoptions == NotUsingFilters   )   filters.Reset ();
+
+                                        // We can check here if the filter we got is really compatible with our current data
+bool                spatialfiltererror  = filters.HasSpatialFilter () && filters.GetSpatialFilterDim () != numels;
+
+if ( spatialfiltererror ) {
+                                        // disable Spatial Filter
+    filters.SpatialFiltering    = false;
+
+    if ( ! silent ) {
+
+        StringCopy (    buff,
+                        "Spatial Filter has been disabled due to dimensions mismatch:"                          NewLine
+                        NewLine
+                        Tab "Spatial Filter Dimension = ", IntegerToString ( filters.GetSpatialFilterDim () ),  NewLine
+                        Tab "Number of Tracks = ", IntegerToString ( numels ),                                  NewLine
+                        NewLine
+                        "Try using the  'Other Filters'  option with an appropriate XYZ file."
+                        );
+        ShowMessage ( buff, EEGDoc->GetTitle (), ShowMessageWarning );
+        }
+    }
 
 
 if ( downsample )
@@ -1364,10 +1385,11 @@ if ( closefile ) {
 
     verbose.NextLine ();
     if      ( filtersoptions == UsingCurrentFilters )   verbose.Put ( "Current filters:",   filters.ParametersToText ( buff ) );
-    else if ( filtersoptions == UsingOtherFilters   )   verbose.Put ( "Filters:",           filters.ParametersToText ( buff ) );
+    else if ( filtersoptions == UsingOtherFilters   )   verbose.Put ( "Other filters:",     filters.ParametersToText ( buff ) );
     else                                                verbose.Put ( "Filters:",           false );
     if      ( filtersoptions != NotUsingFilters && (bool) auxsel )       
                                                         verbose.Put ( "Filtering auxiliary channels:",   CheckToBool ( filters.FiltersParam.FilterAuxs ) );
+    if ( spatialfiltererror )                           verbose.Put ( "", "Spatial filter has been disabled due to dimensions mismatch" );
 
 
     verbose.NextLine ();

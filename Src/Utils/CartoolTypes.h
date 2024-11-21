@@ -448,6 +448,18 @@ CheckVectorReference    ( ref, at );
 
 
 //----------------------------------------------------------------------------
+                                        // Tracks have currently 3 additional tracks
+enum                PseudoTracksIndex
+                    {
+                    PseudoTrackOffsetGfp,
+                    PseudoTrackOffsetDis,
+                    PseudoTrackOffsetAvg,
+
+                    NumPseudoTracks,
+                    };
+
+
+//----------------------------------------------------------------------------
                                         // How to handle maps possible polarity inversion
 enum                PolarityType
                     {

@@ -151,17 +151,17 @@ public:
     void            Set     ( SpatialFilterType how, const char* filexyz, int maxnumneigh, double maxnumdist );
 
 
-    bool            IsAllocated     ()                              const   { return  NeighDist.IsAllocated    ();              }
-    bool            IsNotAllocated  ()                              const   { return  NeighDist.IsNotAllocated ();              }
-    bool            IsDimensionOK   ( const TVector<TypeD>& map  )  const   { return  map .GetDim1 ()       == GetNumPoints (); }   // exact dimensions
-    bool            IsDimensionOK   ( const TMaps&          maps )  const   { return  maps.GetDimension ()  == GetNumPoints (); }   // exact dimensions
-    bool            IsDimensionOK   ( const TArray2<TypeD>& data )  const   { return  data.GetDim1 ()       == GetNumPoints () 
-                                                                                   || data.GetDim1 ()       == GetNumPoints () + NumPseudoTracks; } // can account for array with pseudo-tracks
+    inline  bool    IsAllocated     ()                              const   { return  NeighDist.IsAllocated    ();              }
+    inline  bool    IsNotAllocated  ()                              const   { return  NeighDist.IsNotAllocated ();              }
 
-    int             GetNumPoints    ()                              const   { return  NeighDist.GetDim1 (); }
+    inline  bool    IsDimensionOK   ( const TVector<TypeD>& map  )  const   { return  _IsDimensionOK ( map .GetDim1 ()      );  }
+    inline  bool    IsDimensionOK   ( const TMaps&          maps )  const   { return  _IsDimensionOK ( maps.GetDimension () );  }
+    inline  bool    IsDimensionOK   ( const TArray2<TypeD>& data )  const   { return  _IsDimensionOK ( data.GetDim1 ()      );  }
+
+    inline  int     GetNumPoints    ()                              const   { return  NeighDist.GetDim1 (); }
 
 
-//  void            Apply                               ( TypeD*          data, int numpts ) {}             // to shut-up compiler
+//  inline  void    Apply                               ( TypeD*          data, int numpts ) {}             // to shut-up compiler
     inline  bool    Apply                               ( TVector<TypeD>& map );                            // automatic redirection
     inline  void    Apply                               ( TArray2<TypeD> &data, int numtf, int tfoffset );
     inline  void    Apply                               ( TMaps&          maps, int nummaps = -1 );
@@ -184,6 +184,9 @@ protected:
     double              MaxDistNeigh;
     TArray3<double>     NeighDist;
     TFileName           File;
+
+                                                                                   // exact dimension           + 3 pseudo tracks                           lazy test                   exact dimension           + 1 null tracks               + 3 pseudo tracks                           + 1 null tracks + 3 pseudo tracks
+    inline  bool       _IsDimensionOK   ( int dim )                 const   { return  dim == GetNumPoints () || dim == GetNumPoints () + NumPseudoTracks; /*dim >= GetNumPoints ();*/ /*dim == GetNumPoints () || dim == GetNumPoints () + 1 || dim == GetNumPoints () + NumPseudoTracks || dim == GetNumPoints () + 1 + NumPseudoTracks;*/ }
 
 };
 
@@ -392,7 +395,7 @@ if ( How == SpatialFilterNone )
 if ( map.IsNotAllocated () || neighindex.IsNotAllocated () || neighindex.GetDim1 () != map.GetDim1 () )
     return  false;
 
-int                 Dim1            = map.GetDim1 ();
+int                 numpoints       = GetNumPoints ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -406,7 +409,7 @@ TEasyStats          stat ( statstorage ? neighindex.GetDim2 () - 1 : 0 );
 TVector<TypeD>      temp ( map );
 
 
-for ( int i = 0; i < Dim1; i++ ) {
+for ( int i = 0; i < numpoints; i++ ) {
 
     stat.Reset ();
 
@@ -424,7 +427,7 @@ for ( int i = 0; i < Dim1; i++ ) {
     else if ( How == SpatialFilterInterquartileMean  )   map[ i ]   = stat.InterQuartileMean ();
     else if ( How == SpatialFilterMinMax             )   map[ i ]   = stat.MinMax ( stat[ 0 ] );    // !stat not sorted yet, so first element is the central one (distance == 0)!
 
-    } // for Dim1
+    } // for numpoints
 
 
 return  true;
@@ -445,7 +448,7 @@ if ( ! (    How == SpatialFilterMedian
 //if ( ! IsDimensionOK ( map ) )
 //    return  false;
 
-int                 Dim1            = map.GetDim1 ();
+int                 numpoints       = GetNumPoints ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -455,7 +458,7 @@ TEasyStats          stat ( MaxNumNeigh + 1 /*NeighDist.GetDim2 ()*/ );
 TVector<TypeD>      temp ( map );
 
 
-for ( int i = 0; i < Dim1; i++ ) {
+for ( int i = 0; i < numpoints; i++ ) {
 
 
     stat.Reset ();
@@ -478,7 +481,7 @@ for ( int i = 0; i < Dim1; i++ ) {
     else if ( How == SpatialFilterInterquartileMean  )  map[ i ]    = stat.InterQuartileMean ();
     else if ( How == SpatialFilterMinMax             )  map[ i ]    = stat.MinMax ( stat[ 0 ] );    // !stat not sorted yet, so first element is the central one (distance == 0)!
 
-    } // for Dim1
+    } // for numpoints
 
 
 return  true;
@@ -497,7 +500,7 @@ if ( How != SpatialFilterOutlier )
 //if ( ! IsDimensionOK ( map ) )
 //    return  false;
 
-int                 Dim1            = map.GetDim1 ();
+int                 numpoints       = GetNumPoints ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -508,7 +511,7 @@ double              delta;
 double              reasonmin;
 double              reasonmax;
                                         // for distance and value sort
-TArray2<double>     neigh ( Dim1, /*NumNeighborhoodInfo*/ NumNeighborhoodInfoExt );
+TArray2<double>     neigh ( numpoints, /*NumNeighborhoodInfo*/ NumNeighborhoodInfoExt );
 
 
 int                 maxneigh;
@@ -519,7 +522,7 @@ double              sumv;
 TVector<TypeD>      temp ( map );
 
 
-for ( int i = 0; i < Dim1; i++ ) {
+for ( int i = 0; i < numpoints; i++ ) {
 
 
     stat.Reset ();
@@ -552,7 +555,7 @@ for ( int i = 0; i < Dim1; i++ ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    neigh       = DBL_MAX;              // sorting will be ascending
+    neigh       = Highest<double> ();   // sorting will be ascending
     maxneigh    = 0;
 
                                         // stat of all neighbors, including central value, below radius
@@ -595,7 +598,7 @@ for ( int i = 0; i < Dim1; i++ ) {
 
 
     map[ i ]    = sumv / NonNull ( sumw );
-    } // for Dim1
+    } // for numpoints
 
 
 return  true;
@@ -615,12 +618,12 @@ if ( ! (    How == SpatialFilterOutliersGaussianMean
 //if ( ! IsDimensionOK ( map ) )
 //    return  false;
 
-int                 Dim1            = map.GetDim1 ();
+int                 numpoints       = GetNumPoints ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Identify the bads electrodes first
-TVector<TypeD>      bads ( Dim1 );
+TVector<TypeD>      bads ( numpoints );
 
 TEasyStats          stat ( MaxNumNeigh /*NeighDist.GetDim2 ()*/ );
 double              delta;
@@ -630,7 +633,7 @@ double              reasonmax;
 TVector<TypeD>      temp ( map );
 
 
-for ( int i = 0; i < Dim1; i++ ) {
+for ( int i = 0; i < numpoints; i++ ) {
 
 
     stat.Reset ();
@@ -656,7 +659,7 @@ for ( int i = 0; i < Dim1; i++ ) {
     bads[ i ]   = ! IsInsideLimits ( (double) temp[ i ], reasonmin, reasonmax )         // if central point is not within a reasonable margin from its neighbors
                ||   fabs ( stat.ZScoreRobust ( temp[ i ] ) ) > SpatialFilterZScoreMin;  // or Z-Score is not satisfying - Note that the robust version indeed works better
 
-    } // for Dim1
+    } // for numpoints
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -666,7 +669,7 @@ double              w;
 double              sumw;
 double              sumv;
 
-for ( int i = 0; i < Dim1; i++ ) {
+for ( int i = 0; i < numpoints; i++ ) {
                                         // use all data, which are supposed to be "not bad"
     sumv    = 0;
     sumw    = 0;
@@ -698,7 +701,7 @@ for ( int i = 0; i < Dim1; i++ ) {
                                         // check there remain (enough?) values in...
     if ( sumw /*maxneigh*/ > 0 )
         map[ i ]    = sumv / NonNull ( sumw );
-    } // for Dim1
+    } // for numpoints
 
 
 return  true;
@@ -725,12 +728,12 @@ if ( ! (    How == SpatialFilterInterseptileWeightedMean
 //if ( ! IsDimensionOK ( map ) )
 //    return  false;
 
-int                 Dim1            = map.GetDim1 ();
+int                 numpoints       = GetNumPoints ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // for distance and value sort
-TArray2<double>     neigh ( Dim1, /*NumNeighborhoodInfo*/ NumNeighborhoodInfoExt );
+TArray2<double>     neigh ( numpoints, /*NumNeighborhoodInfo*/ NumNeighborhoodInfoExt );
 
 
 int                 maxneigh;
@@ -741,10 +744,10 @@ double              sumv;
 TVector<TypeD>      temp ( map );
 
 
-for ( int i = 0; i < Dim1; i++ ) {
+for ( int i = 0; i < numpoints; i++ ) {
 
 
-    neigh       = DBL_MAX;            // sorting will be ascending
+    neigh       = Highest<double> ();   // sorting will be ascending
     maxneigh    = 0;
 
                                         // stat of all neighbors, including central value, below radius
@@ -794,7 +797,7 @@ for ( int i = 0; i < Dim1; i++ ) {
 
 
     map[ i ]    = sumv / NonNull ( sumw );
-    } // for Dim1
+    } // for numpoints
 
 
 return  true;
