@@ -320,7 +320,7 @@ TSelection  TSelection::operator& ( const TSelection &op2 )     const
 {
 int                 mini            = max ( MinValue (), op2.MinValue () );
 int                 maxi            = min ( MaxValue (), op2.MaxValue () );
-TSelection          temp ( maxi, OrderSorted ); // IsSorted () && op2.IsSorted ()
+TSelection          temp ( max ( Size (), op2.Size () ), OrderSorted ); // IsSorted () && op2.IsSorted ()
 
 temp.Reset ();
 
