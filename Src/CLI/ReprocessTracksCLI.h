@@ -54,7 +54,7 @@ constexpr char*     __order             = "--order";
 constexpr char*     __causal            = "--causal";
 constexpr char*     __notches           = "--notches";
 constexpr char*     __harmonics         = "--harmonics";
-constexpr char*     __spatial           = "--spatial";
+constexpr char*     __spatialfilter     = "--spatialfilter";
 constexpr char*     __ranking           = "--ranking";
 constexpr char*     __rectification     = "--rectification";
 constexpr char*     __envelope          = "--envelope";
@@ -173,8 +173,8 @@ DefineCLIFlag           ( reprocsub,        "",     __harmonics,            "Add
 NeedsCLIOption          ( reprocsub,        __harmonics,    __notches );
 
 
-DefineCLIOptionString   ( reprocsub,        "",     __spatial,              "Spatial filter" );
-NeedsCLIOption          ( reprocsub,        __spatial,      __xyzfile )
+DefineCLIOptionString   ( reprocsub,        "",     __spatialfilter,        "Spatial filter" );
+NeedsCLIOption          ( reprocsub,        __spatialfilter,    __xyzfile )
                                             // Case sensitive, but allows a nice listing when requesting Help
 ->TypeOfOption          ( "ENUM" )
 ->DefaultString         ( SpatialFilterShortName[ SpatialFilterDefault ] )
@@ -426,10 +426,10 @@ if ( HasCLIOption ( reprocsub, __notches ) ) {
     }
 
 
-if ( HasCLIOption ( reprocsub, __spatial )
-  && HasCLIOption ( reprocsub, __xyzfile ) ) {
+if ( HasCLIOption ( reprocsub, __spatialfilter )
+  && HasCLIOption ( reprocsub, __xyzfile       ) ) {
 
-    altfilters.SpatialFilter    = TextToSpatialFilterType ( GetCLIOptionString ( reprocsub, __spatial ).c_str () );
+    altfilters.SpatialFilter    = TextToSpatialFilterType ( GetCLIOptionString ( reprocsub, __spatialfilter ).c_str () );
 
     fp.SetSpatialFiltering ( XYZDoc->GetDocPath () );
     }
