@@ -840,10 +840,11 @@ if ( spatialfiltererror ) {
                         "Spatial Filter has been disabled due to dimensions mismatch:"                          NewLine
                         NewLine
                         Tab "Spatial Filter Dimension = ", IntegerToString ( filters.GetSpatialFilterDim () ),  NewLine
-                        Tab "Number of Tracks = ", IntegerToString ( numels ),                                  NewLine
+                        Tab "Actual Number of Tracks  = ", IntegerToString ( numels ),                          NewLine
                         NewLine
                         "Try using the  'Other Filters'  option with an appropriate XYZ file."
-                        );
+                    );
+
         ShowMessage ( buff, EEGDoc->GetTitle (), ShowMessageWarning );
         }
     }

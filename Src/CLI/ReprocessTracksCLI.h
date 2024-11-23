@@ -87,8 +87,7 @@ if ( reprocsub == 0 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Parameters appearance follow the dialog's visual design
-DefineCLIOptionString   ( reprocsub,        "",     __tracks,               "Tracks to export" Tab Tab Tab Tab "Special values: 'gfp', 'dis' and 'avg'" )
-->ShowDefault           ( "Default:All" );
+DefineCLIOptionString   ( reprocsub,        "",     __tracks,               "Tracks to export" Tab Tab Tab Tab "Special values: * gfp dis avg" );
 
 DefineCLIOptionString   ( reprocsub,        "",     __xyzfile,              "Using electrodes names from a XYZ electrodes coordinates file" );
 DefineCLIOptionString   ( reprocsub,        "",     __roisfile,             "Computing ROIs & using ROIs names from a ROIs file" );
@@ -97,10 +96,9 @@ ExcludeCLIOptions       ( reprocsub,        __xyzfile,      __roisfile );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionInt      ( reprocsub,        "",     __timemin,              "Exporting from Time Frame" )
-->ShowDefault           ( "Default:0" );
-DefineCLIOptionInt      ( reprocsub,        "",     __timemax,              "Exporting to Time Frame" )
-->ShowDefault           ( "Default:End-of-file" );
+DefineCLIOptionInt      ( reprocsub,        "",     __timemin,              "Exporting from Time Frame" );
+DefineCLIOptionInt      ( reprocsub,        "",     __timemax,              "Exporting to Time Frame" );
+
 DefineCLIOptionString   ( reprocsub,        "",     __keeptriggers,         "Exporting only the data from a triggers / markers list" );
 DefineCLIOptionString   ( reprocsub,        "",     __excludetriggers,      "Exporting all data but from a triggers / markers list" );
 
@@ -149,7 +147,7 @@ ExcludeCLIOptions       ( reprocsub,        __bandpass,         __highpass,     
 
 
 DefineCLIOptionInt      ( reprocsub,        "",     __order,                "Butterworth filter order" )
-->ShowDefault           ( "Default:" + string ( IntegerToString ( TFilterDefaultOrder ) ) + " or " + string ( IntegerToString ( 2 * TFilterDefaultOrder )  ) )
+->DefaultString         ( string ( IntegerToString ( TFilterDefaultOrder ) ) + " or " + string ( IntegerToString ( 2 * TFilterDefaultOrder )  ) )
 ->CheckOption           ( [ &reprocsub ]( const string& str )   
     {   int         o               = StringToInteger ( str.c_str () );
         bool        orderevenok     = IsEven         ( o );
@@ -175,11 +173,11 @@ DefineCLIFlag           ( reprocsub,        "",     __harmonics,            "Add
 NeedsCLIOption          ( reprocsub,        __harmonics,    __notches );
 
 
-DefineCLIOptionString   ( reprocsub,        "",     __spatial,              "Spatial filter" )
-->ShowDefault           ( "Default:" + string ( SpatialFilterShortName[ SpatialFilterDefault ] ) );
+DefineCLIOptionString   ( reprocsub,        "",     __spatial,              "Spatial filter" );
 NeedsCLIOption          ( reprocsub,        __spatial,      __xyzfile )
                                             // Case sensitive, but allows a nice listing when requesting Help
 ->TypeOfOption          ( "ENUM" )
+->DefaultString         ( SpatialFilterShortName[ SpatialFilterDefault ] )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( SpatialFilterShortName + SpatialFilterOutlier, SpatialFilterShortName + NumSpatialFilterTypes ) ) )
                                             // Allowing for case insensitive (and even the long names, although not advertized), but Help is not helping
 //->CheckOption         ( []( const string& str )   {   string      allspatial  = "{"; 
@@ -235,7 +233,7 @@ DefineCLIOptionString   ( reprocsub,        "",     __infix,                "Inf
 
 DefineCLIOptionString   ( reprocsub,        __ext,  __extension,            "Output file extension" )
 ->TypeOfOption          ( "ENUM" )
-->ShowDefault           ( "Default:" + string ( SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] ) )
+->DefaultString         ( SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -317,6 +315,9 @@ else if ( HasCLIOption ( reprocsub, __excludetriggers ) ) {
     excludetriggers = GetCLIOptionString ( reprocsub, __excludetriggers );
     }
 
+else // no options provided
+    timeoptions     = ExportTimeInterval;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // For total safety, it is convenient to have a default sampling frequency at hand, which could be passed to EEGs that lack one
@@ -395,6 +396,8 @@ if ( HasCLIOption ( reprocsub, __order ) ) {
 
     if ( fp.IsBandPass () )
         order  /= 2;                // set half the band-pass order
+    
+    order   = Clip ( RoundToEven ( order ), TFilterMinOrder, TFilterMaxOrder );
 
     fp.SetOrderHigh ( IntegerToString ( order ) );
     fp.SetOrderLow  ( IntegerToString ( order ) );
@@ -425,12 +428,8 @@ if ( HasCLIOption ( reprocsub, __notches ) ) {
 
 if ( HasCLIOption ( reprocsub, __spatial )
   && HasCLIOption ( reprocsub, __xyzfile ) ) {
-                                    // we will fill the missing value with the default option
-    if ( GetCLIOptionString ( reprocsub, __spatial ).empty () )
-        altfilters.SpatialFilter    = SpatialFilterDefault;
-    else
-        altfilters.SpatialFilter    = TextToSpatialFilterType ( GetCLIOptionString ( reprocsub, __spatial ).c_str () );
 
+    altfilters.SpatialFilter    = TextToSpatialFilterType ( GetCLIOptionString ( reprocsub, __spatial ).c_str () );
 
     fp.SetSpatialFiltering ( XYZDoc->GetDocPath () );
     }

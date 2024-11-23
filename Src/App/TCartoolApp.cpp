@@ -687,7 +687,7 @@ DefineCLIFlag           ( toapp,                    "",     "--nosplash",       
 
 DefineCLIOptionString   ( toapp,                    "",     "--mainwindow",         "Main window initial state" )
 ->TypeOfOption          ( "ENUM" )
-->ShowDefault           ( "Default:" + string ( DefaultWindowState == SW_SHOWMAXIMIZED ? "Maximized" : DefaultWindowState == SW_SHOWMINIMIZED ? "Minimized" : "Normal" ) )
+->DefaultString         ( DefaultWindowState == SW_SHOWMAXIMIZED ? "maximized" : DefaultWindowState == SW_SHOWMINIMIZED ? "minimized" : "normal" )
 ->CheckOption           ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
 
 DefineCLIOptionInts     ( toapp,            2,      "",     "--mainwindowsize",     "Main window size W,H"     );
@@ -696,7 +696,7 @@ DefineCLIOptionInts     ( toapp,            2,      "",     "--mainwindowpos",  
 
 DefineCLIOptionStrings  ( toapp,           -1,      "",     "--childwindow",        "Next child window state(s) "    Tab Tab "(could be repeated for each file)" )
 ->TypeOfOption          ( "ENUMS" )
-->ShowDefault           ( "Default:Normal" )
+->DefaultString         ( "normal" )
 ->CheckOption           ( CLI::IsMember ( { "minimized", "maximized", "normal" } ) );
 
 DefineCLIOptionInts     ( toapp,           -1,      "",     "--childwindowsize",    "Next child window size(s) W,H " Tab Tab "(could be repeated for each file)" )
@@ -708,7 +708,7 @@ DefineCLIOptionInts     ( toapp,           -1,      "",     "--childwindowpos", 
 
 DefineCLIOptionInt      ( toapp,                    "",     "--monitor",            "On which monitor to open the program" )
 ->TypeOfOption          ( "INDEX" )
-->ShowDefault           ( "Default:1" );
+->DefaultInteger        ( 1 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
