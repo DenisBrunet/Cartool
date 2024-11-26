@@ -25,7 +25,18 @@ namespace crtl {
                                         // These structs / classes need to be byte-aligned for proper read/write to file
 BeginBytePacking
 
-                                        // .bin files
+                                        // .bin file structure:
+//      TEegEgi_Mff_Bin_HeaderFixed
+// ns * TEegEgi_Mff_Bin_HeaderVariable1
+// ns * TEegEgi_Mff_Bin_HeaderVariable2
+//      TEegEgi_Mff_Bin_HeaderOptionalLength
+//      TEegEgi_Mff_Bin_HeaderOptional - optional
+//      1 Block of data
+// or, repeating last block infos:
+//      (UINT) 0
+//      1 Block of data
+
+
 struct  TEegEgi_Mff_Bin_HeaderFixed
 {
     UINT            Version;
@@ -34,21 +45,25 @@ struct  TEegEgi_Mff_Bin_HeaderFixed
     UINT            NumTracks;
 };                                      // 4 * 4 = 16 bytes
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // offset of each track within each block
+using   TEegEgi_Mff_Bin_HeaderVariable1         = UINT;
+                                        // 4 bytes
 
-struct  TEegEgi_Mff_Bin_HeaderVariable1
-{
-    UINT            Offset;             // of each track, after the header
-};                                      // 4 bytes
-
-
+                                        // info for each track
 struct  TEegEgi_Mff_Bin_HeaderVariable2
 {
     UCHAR           BitsPerTracks;
-    UCHAR           TrackFrequency[ 3 ];   // yes, integer on 3 bytes
+    UCHAR           TrackFrequency[ 3 ];// yes, here is a 3 bytes integer for you sir
 
-                                        // insert the 3 bytes unsigned integer into a 4 bytes unsigned integer
+                                        // converting the 3 bytes unsigned integer into a 4 bytes unsigned integer
     UINT            GetTrackFrequency ()    { UINT f = 0; *((char *) &f) = TrackFrequency[ 0 ]; *((char *) &f + 1) = TrackFrequency[ 1 ]; *((char *) &f + 2) = TrackFrequency[ 2 ]; return f; }
 };                                      // 4 bytes
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+using   TEegEgi_Mff_Bin_HeaderOptionalLength    = UINT;
+                                        // 4 bytes
 
 
 struct  TEegEgi_Mff_Bin_HeaderOptional
@@ -59,6 +74,7 @@ struct  TEegEgi_Mff_Bin_HeaderOptional
     UINT            NumTracks;
 };                                      // 2 * 4 + 2 * 8 = 24 bytes
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 class   TEegEgi_Mff_Bin_Channel
 {
@@ -75,13 +91,14 @@ public:
 class   TEegEgi_Mff_Bin_Block
 {
 public:
-    ULONG               FileOrigin;         // where data starts in file (absolute position)
+    std::streamoff      FileOrigin;         // where data starts in file (absolute position)
     ULONG               TimeFrameOrigin;    // what is the absolute first time frame of this block
     ULONG               NumTimeFrames;      // maximum length of this block
     UINT                SamplingFrequency;  // maximum sampling frequency of this block
-    std::vector<TEegEgi_Mff_Bin_Channel>    ChannelsSpec;   // every channel info for this block
+    TArray1<TEegEgi_Mff_Bin_Channel>    ChannelsSpec;   // every channel info for this block
 };
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Not linked to a specific file, just an internal structure to browse the sequences
 class   TEegEgi_Mff_Session
 {

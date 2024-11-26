@@ -153,8 +153,6 @@ ifstream            fiv;
 
 for ( int i = 0; i < (int) eventsfiles; i++ ) {
 
-//    DBGM ( eventsfiles[ i ], "events file" );
-
     fiv.open ( eventsfiles[ i ], ios::binary );
 
     if ( fiv.fail () )
@@ -175,7 +173,6 @@ for ( int i = 0; i < (int) eventsfiles; i++ ) {
 
                                         // global type of triggers within this file: "STIM", "PAT ", "EVNT"
     if ( XMLGetElement  ( fiv, "trackType", "eventTrack", element ) ) {
-//        DBGM ( element, "type of triggers" );
 
         filemarkertype  = StringIs ( element, "STIM" ) ? MarkerTypeTrigger
                         : StringIs ( element, "PAT " ) ? MarkerTypeEvent      // what is this?
@@ -220,9 +217,6 @@ for ( int i = 0; i < (int) eventsfiles; i++ ) {
         tf1         = MicrosecondsToTimeFrame ( deltatime                                             + 0.5, SamplingFrequency );
         tf2         = MicrosecondsToTimeFrame ( deltatime + DurationStringToMicroseconds ( duration ) - 0.5, SamplingFrequency );
 //      tf2         = tf1;              // do this if some rounding problems occur
-
-//        if ( tf1 > 0 && tf1 < NumTimeFrames && tf1 != tf2 )
-//            DBGV2 ( tf1, tf2, "tf1 tf2" );
 
                                         // within current sequence time range?
         if ( tf1 >= 0 && tf2 < NumTimeFrames ) {
@@ -448,29 +442,32 @@ if ( GetDocPath () ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    size_t          filesize    = GetFileSize ( GetDocPath () );
-
-                                        // optional header (should be there for the first block!)
-                                        // has important infos: (total # of TF) # of blocks
-    int             optheaderlength;
                                         // jump to optional header
-    InputStream->seekg ( 2 * sizeof ( TEegEgi_Mff_Bin_HeaderVariable1 ) * NumElectrodes, ios::cur );
+    InputStream->seekg ( NumElectrodes * sizeof ( TEegEgi_Mff_Bin_HeaderVariable1 )
+                       + NumElectrodes * sizeof ( TEegEgi_Mff_Bin_HeaderVariable2 ), ios::cur );
+
+                                        // optional header (should be there for the first block!) has important infos: (total # of TF) # of blocks
+    TEegEgi_Mff_Bin_HeaderOptionalLength    optheaderlength;
 
     InputStream->read  ( (char *)(&optheaderlength), sizeof ( optheaderlength ) );
 
                                         // get number of blocks
-    if ( optheaderlength ) {
+    if ( optheaderlength != 0 ) {
 
         TEegEgi_Mff_Bin_HeaderOptional    mffbinheaderopt;
+
+        if ( optheaderlength != sizeof ( TEegEgi_Mff_Bin_HeaderOptional ) )
+            ShowMessage ( "Error in Optional Header, file might be corrupted...", "File Open", ShowMessageWarning );
 
         InputStream->read ( (char *)(&mffbinheaderopt), sizeof ( mffbinheaderopt ) );
 
 //      if ( mffbinheaderopt.Type == 1 ) { // assume this is always the case, no doc on other options for now
-        NumBlocks       = mffbinheaderopt.NumberOfBlocks;
-//      NumTimeFrames   = mffbinheaderopt.TotalNumberOfSamples;    // this is the sum of all blocks (ie all sequences)
+
+            NumBlocks       = mffbinheaderopt.NumberOfBlocks;
+//          NumTimeFrames   = mffbinheaderopt.TotalNumberOfSamples;    // this is the sum of all blocks (ie all sequences)
+//          }
         }
-    else {                              // oops, this is not good news...
+    else {                              // hu-ho, bad news...
 
                                         // we have to search for the # of blocks ourselves, with an iterative search through all file
         InputStream->seekg ( 0, ios::beg );
@@ -480,8 +477,6 @@ if ( GetDocPath () ) {
                                         // get next header
                                         // is it possible that mffbinheader.Version could be 0 here? it doesn't really make sense, and it would complicate some more the scan..
             InputStream->read ( (char *)(&mffbinheader), sizeof ( mffbinheader ) );
-
-//            DBGV5 ( NumBlocks, mffbinheader.Version, mffbinheader.HeaderSize, mffbinheader.DataSize, mffbinheader.NumTracks, "NumBlocks, mffbinheader.Version, mffbinheader.HeaderSize, mffbinheader.DataSize, mffbinheader.NumTracks" );
 
                                         // eof?
             if ( ! InputStream->good () )
@@ -503,7 +498,7 @@ if ( GetDocPath () ) {
 //      ShowMessage ( "MFF file is missing the number of time blocks,\nreading file might give some unexpected results...", "File Open", ShowMessageWarning );
 //      NumBlocks       = 1;            // fallback to a single block
 //      NumTimeFrames   = MaxSamplesPerBlock;
-        }
+        } // optheaderlength == 0
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -511,10 +506,10 @@ if ( GetDocPath () ) {
     Blocks.resize ( NumBlocks );
 
 
-    TArray1<uint>       TrackOffset ( NumElectrodes + 1 );
-    TEegEgi_Mff_Bin_HeaderVariable2   mffbinheaderv2;
-    TArray1<uchar>      bits      ( NumElectrodes );
-    TArray1<uint>       frequency ( NumElectrodes );
+    TArray1<TEegEgi_Mff_Bin_HeaderVariable1>    TrackOffset ( NumElectrodes + 1 );
+    TEegEgi_Mff_Bin_HeaderVariable2             mffbinheaderv2;
+    TArray1<UCHAR>                              bits        ( NumElectrodes );
+    TArray1<UINT>                               frequency   ( NumElectrodes );
 
 
     InputStream->seekg ( 0, ios::beg );
@@ -522,47 +517,85 @@ if ( GetDocPath () ) {
                                         // fill the block structure
     for ( int b = 0; b < NumBlocks; b++ ) {
 
-//        DBGV2 ( b + 1, (ulong) InputStream->tellg (), "Block#  ->  Input Stream position" );
+                                        // local function to check if the stream is still viable
+        auto CheckStream = [ &b, this ] ( const char* message = 0 ) {
 
+            if ( InputStream->good () ) return true;
+
+            ShowMessage ( StringIsEmpty ( message ) ?  "Error in Block format, file might be corrupted..." : message, StringPrepend ( IntegerToString ( b + 1 ), "Block #" ), ShowMessageWarning );
+                                        // reset stream
+            delete  InputStream;
+            InputStream     = InStream ( ofRead | ofBinary );
+            InputStream->seekg ( 0, ios::beg );
+                                        // tough clipping seems necessary so we can still open the beginning of the file
+            NumBlocks   = AtLeast ( 1, b / 2 );
+
+            return  false;
+            };
+
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // allocate channel info
-        Blocks[ b ].ChannelsSpec.resize ( NumElectrodes );
+        TEegEgi_Mff_Bin_Block&      block       = Blocks[ b ];
+
+        block.ChannelsSpec.Resize ( NumElectrodes );
 
 
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // read only the Version part, as the header could be missing
         InputStream->read ( (char *)(&mffbinheader.Version), sizeof ( mffbinheader.Version ) );
 
+        if ( ! CheckStream ( b == 0 ? "Error in main header version..." : "Error in repeated header version..." ) )
+            break;
 
+                                        // To save space, a missing header means repeating the last one
         if ( mffbinheader.Version == 0 ) {
-                                        // header is missing, so we rely on the previous one
-//            DBGV ( b + 1, "Block#, missing header" );
                                         // this is where data begin
-            Blocks[ b ].FileOrigin          = (ulong) InputStream->tellg ();
+            block.FileOrigin          = InputStream->tellg ();
                                         // copy from previous block
-            Blocks[ b ].NumTimeFrames       = Blocks[ b - 1 ].NumTimeFrames;
-            Blocks[ b ].SamplingFrequency   = Blocks[ b - 1 ].SamplingFrequency;
+            block.NumTimeFrames       = Blocks[ b - 1 ].NumTimeFrames;
+
+            block.SamplingFrequency   = Blocks[ b - 1 ].SamplingFrequency;
                                         // also copy channel info from previous block
             for ( int el = 0; el < NumElectrodes; el++ )
-                Blocks[ b ].ChannelsSpec[ el ]  = Blocks[ b - 1 ].ChannelsSpec[ el ];
+                block.ChannelsSpec[ el ]  = Blocks[ b - 1 ].ChannelsSpec[ el ];
+
                                         // skip block data
             InputStream->seekg ( mffbinheader.DataSize, ios::cur );
+
+            if ( ! CheckStream ( "Error in repeated block header..." ) )
+                break;
+
 
             continue;
             }
 
+//      else if ( mffbinheader.Version != 1 ) 
+//          problem;
 
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // not null -> read the remaining part of the block header
         InputStream->read  ( (char *)(&mffbinheader) + sizeof ( mffbinheader.Version ), sizeof ( mffbinheader ) - sizeof ( mffbinheader.Version ) );
 
+        if ( ! CheckStream ( "Error in main header..." ) )
+            break;
 
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // header, variable part 1
         for ( int el = 0; el < NumElectrodes; el++ )
-            InputStream->read ( (char *)(&TrackOffset[ el ]), TrackOffset.AtomSize () );
+            InputStream->read ( (char *)(&TrackOffset[ el ]), sizeof ( TEegEgi_Mff_Bin_HeaderVariable1 ) );
                                         // ends with one more = block size
         TrackOffset[ NumElectrodes ]    = mffbinheader.DataSize;
 
+        if ( ! CheckStream ( "Error in tracks offsets..." ) )
+            break;
 
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // header, variable part 2
-        Blocks[ b ].SamplingFrequency   = 0;
+        block.SamplingFrequency   = 0;
 
         for ( int el = 0; el < NumElectrodes; el++ ) {
 
@@ -570,40 +603,60 @@ if ( GetDocPath () ) {
 
             bits     [ el ] = mffbinheaderv2.BitsPerTracks;
             frequency[ el ] = mffbinheaderv2.GetTrackFrequency ();
-
-//            DBGV3 ( b, el, mffbinheaderv2.GetTrackFrequency (), "block | electrode -> mffbinheaderv2.GetTrackFrequency ()" );
                                         // store max sampling frequency of block
-            Blocks[ b ].SamplingFrequency   = max ( frequency[ el ], Blocks[ b ].SamplingFrequency );
+            Maxed ( block.SamplingFrequency, frequency[ el ] );
             }
 
+        if ( ! CheckStream ( "Error in tracks format..." ) )
+            break;
 
-        Blocks[ b ].NumTimeFrames   = 0;
+
+        block.NumTimeFrames   = 0;
                                         // fill channel info with gathered evidences
         for ( int el = 0; el < NumElectrodes; el++ ) {
                                         // size of sample
-            Blocks[ b ].ChannelsSpec[ el ].BytesPerSample   = bits[ el ] / 8;
+            block.ChannelsSpec[ el ].BytesPerSample   = bits[ el ] / 8;
                                         // space between next signal and current gives the size, in bytes
-            Blocks[ b ].ChannelsSpec[ el ].ChannelSize      = TrackOffset[ el + 1 ] - TrackOffset[ el ];
+            block.ChannelsSpec[ el ].ChannelSize      = TrackOffset[ el + 1 ] - TrackOffset[ el ];
                                         // -> # of samples
-            Blocks[ b ].ChannelsSpec[ el ].SamplesPerBlock  = Blocks[ b ].ChannelsSpec[ el ].ChannelSize / Blocks[ b ].ChannelsSpec[ el ].BytesPerSample;
+            block.ChannelsSpec[ el ].SamplesPerBlock  = block.ChannelsSpec[ el ].ChannelSize / block.ChannelsSpec[ el ].BytesPerSample;
 
                                         // channel size in bytes per block
                                         // keep max # of samples
-            Blocks[ b ].NumTimeFrames   = max ( Blocks[ b ].NumTimeFrames, Blocks[ b ].ChannelsSpec[ el ].SamplesPerBlock );
+            Maxed ( block.NumTimeFrames, block.ChannelsSpec[ el ].SamplesPerBlock );
             }
 
-//        DBGV3 ( b, Blocks[ b ].SamplingFrequency, Blocks[ b ].NumTimeFrames, "block -> SF #TF" );
 
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // skip optional header, already read
         InputStream->read  ( (char *)(&optheaderlength), sizeof ( optheaderlength ) );
-        if ( optheaderlength )
-            InputStream->seekg ( sizeof ( TEegEgi_Mff_Bin_HeaderOptional ), ios::cur );
 
-                                        // this is where data begin
-        Blocks[ b ].FileOrigin      = (ulong) InputStream->tellg ();
+        if ( ! CheckStream ( "Error in optional header length..." ) )
+            break;
+
+
+        if ( optheaderlength != 0 ) {
+
+            //if ( optheaderlength != sizeof ( TEegEgi_Mff_Bin_HeaderOptional ) )
+            //    ShowMessage ( "Error in Optional Header, file might be corrupted...", "File Open", ShowMessageWarning );
+
+            InputStream->seekg ( optheaderlength, ios::cur );
+
+            if ( ! CheckStream ( "Error in optional header..." ) )
+                break;
+            }
+
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // finally, this is where data begin
+        block.FileOrigin      = InputStream->tellg ();
 
                                         // skip block data
         InputStream->seekg ( mffbinheader.DataSize, ios::cur );
+
+        if ( ! CheckStream ( "Error in data block..." ) )
+            break;
+
         } // for block
 
 
@@ -613,11 +666,8 @@ if ( GetDocPath () ) {
     EqualTracks         = true;
 
     for ( int b = 0; b < NumBlocks; b++ ) {
-
-//      DBGV3 ( b + 1, Blocks[ b ].NumTimeFrames, Blocks[ b ].TimeFrameOrigin, "Block#  ->  #TF  TF origin" );
-
                                         // max block length
-        MaxSamplesPerBlock  = max ( MaxSamplesPerBlock, Blocks[ b ].NumTimeFrames );
+        Maxed ( MaxSamplesPerBlock, Blocks[ b ].NumTimeFrames );
 
 
         for ( int el = 0; el < NumElectrodes; el++ ) {
@@ -664,14 +714,11 @@ if ( GetDocPath () ) {
     if ( XMLGotoElement ( fi, "fileInfo",   0,          0,  true   )
       && XMLGetElement  ( fi, "mffVersion", "fileInfo", element ) ) {
 
-//        DBGM ( element, "info.xml / mffVersion" );
-
         Version     = StringToInteger ( element );
         }
     else                                // if marker does not exist, then this is version 0
         Version     = 0;
 
-//    DBGV ( Version, "fileInfo::Version" );
 
     if ( Version > 3 ) {
         ShowMessage ( "MFF info.xml file version not recognized,\nreading file might give some unexpected results...", "File Open", ShowMessageWarning );
@@ -685,8 +732,6 @@ if ( GetDocPath () ) {
       && XMLGetElement  ( fi, "recordTime", "fileInfo", element ) ) {
                                         // f.ex.: "2009-08-10T15:29:32.368000000-08:00"
                                         // last -08:00 refers to UTC time
-//        DBGM ( element, "info.xml / recordTime" );
-
         int                 yyyy,   MM,     dd;
         int                 hh,     mm;
         double              ss;
@@ -734,8 +779,6 @@ if ( GetDocPath () ) {
             if ( ! XMLGotoElement ( fix, "channels", "calibration", 0 ) )
                 continue;               // no channels info?
 
-//          DBGV ( XMLCountElement ( fix, "ch", "channels" ), "counting channels" );
-
 
             if ( StringIs ( element, "GCAL" ) ) {
 
@@ -748,8 +791,6 @@ if ( GetDocPath () ) {
                     index   = (int) attr > 2 && StringIs ( attr[ 0 ], "n" ) ? StringToInteger ( attr[ 1 ] ) - 1 : el;
 
                     Gains[ index ]  = value;
-
-                    //DBGV2 ( index + 1, Gains[ index ], attr[ 1 ] );
                     }
                 } // Gains
 
@@ -764,8 +805,6 @@ if ( GetDocPath () ) {
                     index   = (int) attr > 2 && StringIs ( attr[ 0 ], "n" ) ? StringToInteger ( attr[ 1 ] ) - 1 : el;
 
                     Zeros[ index ]  = value;
-
-                    //DBGV2 ( index + 1, Zeros[ index ], attr[ 1 ] );
                     }
                 } // Zeros
 /*
@@ -780,8 +819,6 @@ if ( GetDocPath () ) {
                     index   = (int) attr > 2 && StringIs ( attr[ 0 ], "n" ) ? StringToInteger ( attr[ 1 ] ) - 1 : el;
 
                     Impedances[ index ] = value;
-
-//                    DBGV2 ( index + 1, Impedances[ index ], attr[ 1 ] );
                     }
                 } // Impedances
 */
@@ -804,8 +841,6 @@ if ( GetDocPath () ) {
 //  else
 //      needshighpass   = true;
 
-//    DBGM ( BoolToString ( needshighpass ), "needshighpass" );
-
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // type of signal?
@@ -827,8 +862,6 @@ if ( GetDocPath () ) {
 //      isjtf       = StringContains ( (const char*) element, (const char*) "JTF" );
 //      istvalues   = StringContains ( (const char*) element, (const char*) "tValues" );
         }
-
-//    DBGM2 ( BoolToString ( iseeg ), BoolToString ( ispns ), "EEG? PNS?" );
 
     fix.close ();
 
@@ -924,7 +957,6 @@ if ( GetDocPath () ) {
             XMLGetElement ( fie, "endTime",    "epoch", endtime    );
             XMLGetElement ( fie, "firstBlock", "epoch", firstblock );
             XMLGetElement ( fie, "lastBlock",  "epoch", lastblock  );
-//            DBGM4 ( begintime, endtime, firstblock, lastblock, "begintime, endtime, firstblock, lastblock" );
 
                                         // process info into useful sequence structure
 
@@ -956,16 +988,15 @@ if ( GetDocPath () ) {
                 Blocks[ b ].TimeFrameOrigin     = b == Sequences[ i ].FirstBlock ? 0 : Blocks[ b - 1 ].TimeFrameOrigin + Blocks[ b - 1 ].NumTimeFrames;
                 } // for block
 
-//          DBGV5 ( i, NumBlocks, Sequences[ i ].FirstBlock, Sequences[ i ].LastBlock, Sequences[ i ].NumTimeFrames, "Sequence# NumBlocks-> firstblock, lastblock, #TF" );
             } // for epoch
-        }
-    else {
+
+        } // epochs
+
+    else { // no epochs
         ShowMessage ( "MFF file 'epochs.xml' seems incomplete," NewLine "Cartool can not proceed any further, sorry...", "File Open", ShowMessageWarning );
         delete  InputStream; InputStream = 0;
         return  false;
         }
-
-//    DBGV ( NumSequences, "NumSequences" );
 
     fie.close ();
 
@@ -1071,7 +1102,7 @@ for ( ; block <= blockmax; tfoffset      += numtfinblock /*Blocks[ block ].NumTi
 
     int         maxtfperblock   = Blocks[ block ].NumTimeFrames - 1;
                                         // origin of next full track to be read
-    ULONG       nextelpos       = Blocks[ block ].FileOrigin;
+    streamoff   nextelpos       = Blocks[ block ].FileOrigin;
 
     ULONG       tfremainingread = tf2 - firsttf + 1;
 
@@ -1079,14 +1110,16 @@ for ( ; block <= blockmax; tfoffset      += numtfinblock /*Blocks[ block ].NumTi
 
 
                                         // in the block, values for one electrode are consecutives
-    auto&       toch            = Blocks[ block ].ChannelsSpec;
+    const TEegEgi_Mff_Bin_Channel*      toch        = Blocks[ block ].ChannelsSpec.GetArray ();
 
     for ( int el = 0; el < NumElectrodes; el++ ) {
 
                                         // get that channel length
         int         tfpertrack      = toch[ el ].SamplesPerBlock - 1;
+
                                         // get the complete line for this electrode - very inefficient
-//      InputStream->read ( (char*) Tracks.GetArray (), toch->ChannelSize );
+        //InputStream->read ( (char*) Tracks.GetArray (), toch[ el ].ChannelSize );
+
                                         // optimal jump to where data are
         InputStream->seekg ( nextelpos + firsttfinblock * sizeof ( float ), ios::beg );
                                         // so that we can read the min # of data: min of remaining block or remaining data
