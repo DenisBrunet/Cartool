@@ -623,6 +623,8 @@ if      ( IsAbsolute ( datatype ) ) {
 
 else { // if ( IsScalar ( datatype ) )  // all other cases
                                         // ?Note: purely negative volumes could have their own type of color scale?
+    ColorTable.SetTableAllowed ( SignedColorTable_BlackWhiteBlack );
+    ColorTable.SetTableAllowed ( SignedColorTable_WhiteBlackWhite );
     ColorTable.SetTableAllowed ( SignedColorTable_BlueWhiteRed );
     ColorTable.SetTableAllowed ( SignedColorTable_CyanBlackYellow );
     ColorTable.SetTableAllowed ( SignedColorTable_MagentaBlueCyanGrayGreenYellowRed );

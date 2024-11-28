@@ -334,6 +334,7 @@ bool    TGLColorTable::IsLuminance ()   const
 return  TableType == AbsColorTable_BlackWhite
      || TableType == AbsColorTable_WhiteBlack
      || TableType == SignedColorTable_BlackWhiteBlack
+     || TableType == SignedColorTable_WhiteBlackWhite
      || TableType == SignedColorTable_BlackGrayWhite;
 }
 
@@ -718,6 +719,15 @@ switch ( tabletype ) {
     InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 1.00   ) );
     InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( GLColorNearlyWhite, 0.00 ), InterpolateColorsLogForward,  20 );
     InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 1.00   ), InterpolateColorsLogBackward, 20 );
+
+    break;
+
+
+  case SignedColorTable_WhiteBlackWhite:
+
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00 ) );
+    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00   ), InterpolateColorsLogForward,  20 );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00 ), InterpolateColorsLogBackward, 20 );
 
     break;
 

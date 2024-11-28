@@ -113,14 +113,14 @@ enum    ColorTablesEnum
                                         // Absolute data tables
         AbsColorTableMin                    = 0,
         AbsColorTable_BlackWhite            = AbsColorTableMin,     // 2 colors
-        AbsColorTable_WhiteBlack,                                   //
-        AbsColorTable_BlackYellowWhite,                             //
-        AbsColorTable_GrayYellow,                                   //
+        AbsColorTable_WhiteBlack,
+        AbsColorTable_BlackYellowWhite,
+        AbsColorTable_GrayYellow,
         AbsColorTable_BlackYellowWhiteMRIcro,                       // contrasty brightness
         AbsColorTable_BlackRed,                                     // contrasty black then full red
         AbsColorTable_GrayGreenYellowRed,                           // 4 colors
         AbsColorTable_DarkRedYellowGreenCyanBlueMagenta,            // 6 colors
-        AbsColorTable_MagentaBlueCyanGrayGreenYellowRed,            //
+        AbsColorTable_MagentaBlueCyanGrayGreenYellowRed,
         AbsColorTable_SingleBump,                                   // a single bump in the middle, to show a narrow range of values
 
                                         // Cyclic/angular data tables
@@ -133,9 +133,10 @@ enum    ColorTablesEnum
                                         // Signed data tables
         SignedColorTableMin,
         SignedColorTable_BlackWhiteBlack    = SignedColorTableMin,  // 3 colors
-        SignedColorTable_BlackGrayWhite,                            //
-        SignedColorTable_BlueWhiteRed,                              //
-        SignedColorTable_CyanBlackYellow,                           //
+        SignedColorTable_WhiteBlackWhite,
+        SignedColorTable_BlackGrayWhite,
+        SignedColorTable_BlueWhiteRed,
+        SignedColorTable_CyanBlackYellow,
         SignedColorTable_GrayGreenYellowRed,                        // 4 colors
         SignedColorTable_MagentaBlueCyanGrayGreenYellowRed,         // 7 colors
         SignedColorTable_NeuroscanColors,                           // 13 colors
