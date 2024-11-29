@@ -417,7 +417,8 @@ inline double   Cube                    ( double v )                            
 inline double   Power10                 ( double p )                                { return  pow ( 10, p ); }
 inline double   SquareRoot              ( double v )                                { return  v > 0 ? sqrt ( v ) : 0; }
 inline double   CubicRoot               ( double v )                                { return  v > 0 ? cbrt ( v ) : 0; }
-inline double   GeometricalMean         ( double v1, double v2 )                    { return  sqrt ( ( fabs ( v1 ) + 1 ) * ( fabs ( v2 ) + 1 ) ) - 1; }
+inline double   GeometricMean           ( double v1, double v2 )                    { return  sqrt ( ( abs ( v1 ) + 1 ) * ( abs ( v2 ) + 1 ) ) - 1; }
+inline double   GeometricMean           ( double v1, double v2, double v3 )         { return  cbrt ( ( abs ( v1 ) + 1 ) * ( abs ( v2 ) + 1 ) * ( abs ( v3 ) + 1 ) ) - 1; }
 
                                         // Percentage of Variance to SNR, and vice-versa
 inline  double  PercentageToSnr         ( double percentage )   {  return  10 * Log10 ( 1 / percentage ); }

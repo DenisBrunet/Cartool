@@ -744,7 +744,7 @@ TVector3Double      InitScale;
                                         // use a common scale, only using the x and y scaling estimates
     InitScale.X =
     InitScale.Y =
-    InitScale.Z = GeometricalMean ( InitScale.Y, InitScale.X ) * 1.06;
+    InitScale.Z = GeometricMean ( InitScale.Y, InitScale.X ) * 1.06;
 
                                         // use a common scale for all dimensions?
 //  InitScale.X =

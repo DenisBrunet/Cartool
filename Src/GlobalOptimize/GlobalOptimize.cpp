@@ -1523,7 +1523,7 @@ for ( Iteration = 0; Iteration < GOMaxIterations; Iteration++ ) {
                                         // finally, the precision of the current iteration
 //  double      iterprecision       = max ( paramsradius, valuesradius );               // worst (max) of these 2 estimates
     double      iterprecision       = min ( paramsradius, valuesradius );               // best (min) of these 2 estimates
-//  double      iterprecision       = GeometricalMean ( paramsradius, valuesradius );   // mix'em both
+//  double      iterprecision       = GeometricMean ( paramsradius, valuesradius );     // mix'em both
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
