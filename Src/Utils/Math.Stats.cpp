@@ -878,8 +878,9 @@ if ( IsAllocated () ) {
     return  var / ( NumItems - 1 );
     }
 else
-                                        // regular variance
-    return  Variance ();
+                                        
+    return  center == 0 ? AtLeast ( 0.0, CacheSum2 / ( NumItems - 1 ) ) // the only case we can answer correctly here
+                        : 0 /*Variance ()*/;                            // otherwise, return the (wrong) regular variance(?)
 
 
 //return  NumItems > 1 ? CacheSum == DBL_MAX ? 1e100
