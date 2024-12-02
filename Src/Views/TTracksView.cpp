@@ -453,11 +453,12 @@ SelSize             = EEGDoc->GetTotalElectrodes ();
 
 TFCursor            = TTFCursor ( EEGDoc,
                                   CDPt.GetLimitMin (), CDPt.GetLimitMax (),
-                                  EEGDoc->IsContentType ( ContentTypeSeg )
-                               || EEGDoc->IsP ()     
-//                             || EEGDoc->IsContentType ( ContentTypeData ) && ! EEGDoc->IsP ()     // .error.data: nope, use fake MaxGfpTF, which is the last track, the best criterion
-                               || EEGDoc->IsTemplates () ? CDPt.GetLimitMin ()
-                                                         : EEGDoc->GetMaxGfpTF ()
+                                  CDPt.GetLimitMin ()                           // opening all files at the beginning
+//                                  EEGDoc->IsContentType ( ContentTypeSeg )
+//                               || EEGDoc->IsP ()     
+////                             || EEGDoc->IsContentType ( ContentTypeData ) && ! EEGDoc->IsP ()     // .error.data: nope, use fake MaxGfpTF, which is the last track, the best criterion
+//                               || EEGDoc->IsTemplates () ? CDPt.GetLimitMin ()
+//                                                         : EEGDoc->GetMaxGfpTF ()
                                  );
 
 if ( EEGDoc->IsContentType ( ContentTypeData ) && EEGDoc->GetNumMarkers () >= 1 )
@@ -503,11 +504,6 @@ ShowHorizScaleLegal = EEGDoc->IsContentType ( ContentTypeHistogram )    ? TimeDi
 ShowBaseline        = true;
 ShowDate            = EEGDoc->DateTime.IsOriginDateAvailable ();
 ShowTime            = EEGDoc->GetSamplingFrequency ();
-
-                                        // set the absolute limits
-SetScalingLimits   ( EEGGLVIEW_STVMIN, EEGGLVIEW_STVMAX );
-SetScaling         ( ( EEGDoc->IsAbsolute ( AtomTypeUseCurrent ) ? 1.5 : 1 ) * EEGGLVIEW_STVINIT );
-SetScalingContrast ( ColorTableToScalingContrast ( 1.0 ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -634,7 +630,7 @@ LastVisibleTrack    = 0;
 ScaleTracks.Resize ( EEGDoc->GetTotalElectrodes () );
 
 if ( ! isderived ) {
-    ReloadBuffers ();
+    ReloadBuffers    ();
     ResetScaleTracks ();
     }
 
@@ -695,7 +691,6 @@ TFileName           ext2;
 StringCopy      ( ext2, EEGDoc->GetTitle () );
 RemoveExtension ( ext2 );
 GetExtension    ( ext2, ext2 );
-//DBGM ( ext2, "second extension" );
 
                                         // .t .p .sd  etc...
 if ( EEGDoc->IsSpecialInfix () 
@@ -710,15 +705,6 @@ if ( EEGDoc->IsSpecialInfix ()
                                         // or intensity mode?
         SetIntensitySquareMode ();
         ScalingAuto     = ScalingAutoSymmetric;
-
-        if ( EEGDoc->IsP () || IsStringAmong ( ext2, InfixP ) )
-            SetScalingContrast ( ColorTableToScalingContrast ( 10 ) );
-        else if ( IsStringAmong ( ext2, InfixT " " InfixDelta ) )
-            SetScalingContrast ( ColorTableToScalingContrast ( 0.25 ) );
-
-                                        // we want to clearly see the P values, with no overlaps
-//      if ( EEGDoc->GetNumElectrodes () < Attr.H ) // enough room?
-            SetScaling ( EEGGLVIEW_STVINIT * 0.007 * Attr.H / (double) NonNull ( sqrt ( (double) SelTracks.NumSet () ) ) );
 
 //      if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
 //          Attr.H      = min ( Width ( CartoolMdiClient ), Height ( CartoolMdiClient ) ) * WindowHeightRatio;
@@ -759,12 +745,11 @@ else if ( EEGDoc->IsContentType ( ContentTypeSeg ) ) {
         SelTracks.Set ();
 
                                         // get max GEV for a good color scaling
-    double      maxgev = -1;
+    float       maxgev      = 0;
     for ( int e = 0; e < EEGDoc->GetTotalElectrodes (); e++ )
         if ( StringStartsWith ( GetElectrodeName ( e ), TrackNameGEV ) )
             for ( int tf = 0; tf < BuffSize; tf++ )
-                if ( EegBuff[ e ][ tf ] > maxgev )
-                    maxgev = EegBuff[ e ][ tf ];
+                Maxed ( maxgev, EegBuff[ e ][ tf ] );
 
 
     for ( int e = 0; e < EEGDoc->GetTotalElectrodes (); e++ ) {
@@ -822,10 +807,6 @@ else if ( EEGDoc->IsContentType ( ContentTypeSeg ) ) {
 
     SetIntensityPrecise ();
 
-//  SetScaling ( ( EEGDoc->IsAbsolute ( AtomTypeUseCurrent ) ? 1.5 : 0.75 ) * EEGGLVIEW_STVINIT );
-    SetScaling ( EEGGLVIEW_STVINIT * 0.008 * Attr.H / sqrt ( (double) SelTracks.NumSet () ) );
-
-
                                         // does it have at least one discrete segment?
     bool    isdiscrete = false;
 
@@ -845,10 +826,6 @@ else if ( EEGDoc->IsContentType ( ContentTypeSeg ) ) {
 
 else if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
                                         // like .error.data from Segmentation
-
-//  SetScaling ( EEGGLVIEW_STVINIT * 0.015 * Attr.H / EEGDoc->GetNumElectrodes () );
-
-
     SelTracks.Reset ();
 
     for ( int i=0; i < EEGDoc->GetTotalElectrodes(); i++ ) {
@@ -906,8 +883,6 @@ else if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
     Attr.H     *= Clip ( (int) SelTracks + 1, 1, 10 ) / 8.0;
 
 //  Attr.W      = Attr.H / WindowHeightToWidthRatio * 1.414;
-
-    SetScaling ( EEGGLVIEW_STVINIT * /*0.020*/ /*0.012*/ 0.015 * Attr.H / NonNull ( (int) SelTracks ) );
     } // Data file
 
 
@@ -926,9 +901,6 @@ else if ( EEGDoc->IsContentType ( ContentTypeHistogram ) ) {
     Attr.H     *= Clip ( sqrt ( (double) SelTracks.NumSet () ) + 1, 1.0, 10.0 ) / 4.0;
     Mined ( Attr.H, MaxWindowHeight );
 
-
-    SetScaling ( EEGGLVIEW_STVINIT * 0.030 * Attr.H / (double) NonNull ( NoMore ( 50, (int) SelTracks ) ) );
-
     ShowHorizScale  = ShowHorizScaleLegal;
     }
 
@@ -946,6 +918,15 @@ else {
         ScalingAuto     = ScalingAutoSymmetric;
         }
     }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Setting scaling absolute limits
+SetScalingLimits    ( EEGGLVIEW_STVMIN, EEGGLVIEW_STVMAX );
+                                        // Needs SelTracks and Attr
+ResetScalingLevel   ();
+
+ResetScalingContrast();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -975,6 +956,69 @@ if ( ! isderived ) {
         GetViewMenu ()->InsertMenu ( CM_OPENSTATSFITTING,       MF_BYCOMMAND, CM_OPENFITTINGTEMPLATES2, "Open F&itting Dialog for this segmentation" );
         }
     }
+}
+
+
+//----------------------------------------------------------------------------
+void    TTracksView::ResetScalingLevel ()
+{
+                                        // General case first
+//SetScaling ( EEGGLVIEW_STVINIT * ( EEGDoc->IsAbsolute ( AtomTypeUseCurrent ) ? 1.5 : 1 ) ); // old formula
+
+double          winheight       = Clip ( Attr.H / (double) MmToPixels ( 200 ), 0.10, 1.00 );    // formula accounts only for a window height between 2 and 20 cm
+double          winwidth        = Clip ( Attr.W / (double) MmToPixels ( 300 ), 0.50, 1.00 ) ;   // formula accounts only for a window width between 15 and 30 cm
+double          pagesize        = Clip ( CDPt.GetLength () / 500.0,            0.20, 1.00 );    // formula accounts only for a number of points between 100 and 500
+
+SetScaling ( ( EEGGLVIEW_STVINIT * winheight * winwidth ) / ( 2.5 * pagesize ) );
+
+                                        // Then we can refine for specific contents:
+if ( EEGDoc->IsSpecialInfix () 
+  || EEGDoc->IsP ()            ) {
+
+    TFileName           ext2;
+                                        // get second-to-last "extension"
+    StringCopy      ( ext2, EEGDoc->GetTitle () );
+    RemoveExtension ( ext2 );
+    GetExtension    ( ext2, ext2 );
+
+
+    if ( EEGDoc->IsP () 
+      || IsStringAmong ( ext2, InfixP " " InfixT " " InfixDelta ) ) {
+                                        // we want to clearly see the P values, with no overlaps
+//      if ( EEGDoc->GetNumElectrodes () < Attr.H ) // enough room?
+            SetScaling ( EEGGLVIEW_STVINIT * Attr.H / (double) NonNull ( 142 * sqrt ( (int) SelTracks ) ) );
+        }
+    } // SpecialFilesInfix
+
+else if ( EEGDoc->IsContentType ( ContentTypeSeg        ) ) SetScaling ( EEGGLVIEW_STVINIT * Attr.H / (double) NonNull ( 125 * sqrt (       (int) SelTracks ) ) );
+else if ( EEGDoc->IsContentType ( ContentTypeData       ) ) SetScaling ( EEGGLVIEW_STVINIT * Attr.H / (double) NonNull (  66 *              (int) SelTracks )   );  
+else if ( EEGDoc->IsContentType ( ContentTypeHistogram  ) ) SetScaling ( EEGGLVIEW_STVINIT * Attr.H / (double) NonNull (  33 * NoMore ( 50, (int) SelTracks ) ) );
+}
+
+
+void    TTracksView::ResetScalingContrast ()
+{
+                                        // General case first
+SetScalingContrast ( ColorTableToScalingContrast (  1.0  ) );
+
+                                        // .t .p .sd  etc...
+if ( EEGDoc->IsSpecialInfix () 
+  || EEGDoc->IsP ()            ) {
+
+    TFileName           ext2;
+                                            // get second-to-last "extension"
+    StringCopy      ( ext2, EEGDoc->GetTitle () );
+    RemoveExtension ( ext2 );
+    GetExtension    ( ext2, ext2 );
+
+
+    if      ( EEGDoc->IsP () 
+           || IsStringAmong ( ext2, InfixP                ) )   SetScalingContrast ( ColorTableToScalingContrast ( 10.0  ) );
+
+    else if ( IsStringAmong ( ext2, InfixT " " InfixDelta ) )   SetScalingContrast ( ColorTableToScalingContrast (  0.25 ) );
+    } // SpecialFilesInfix
+
+//else if ( EEGDoc->IsAngular ( AtomTypeUseCurrent ) )          SetScalingContrast ( ColorTableToScalingContrast (  1.0  ) );
 }
 
 
@@ -1126,6 +1170,9 @@ SetOrient ( XYZDoc );
 
 //AnimCursor  = TTimer ( GetHandle (), TimerCursor, 500, INT_MAX );
 //AnimCursor.Set ();
+
+                                        // Window sometime "forgets" to draw itself if the opening time seems too long
+Invalidate ( false );
 }
 
 
@@ -2235,7 +2282,7 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
         allnames    = toslot->ToUp.Norm() * numTracksR > SFont->GetHeight();    // enough room for text?
 
         scaleh      = CurrentDisplaySpace == DisplaySpaceNone && ! OneMoreHoriz () ? (double) ( toslot->ToRight.Norm() - margin - 1 ) / ( nump > 1 ? nump - 1 : 1 )
-                                                                                : (double) ( toslot->ToRight.Norm() - margin     ) /   nump ;
+                                                                                   : (double) ( toslot->ToRight.Norm() - margin     ) /   nump ;
 
                                         // smart superimpose: asked / not enough space / not pseudo tracks
         trackssuper =  ! IsIntensityModes () 
@@ -6462,7 +6509,7 @@ else {                                  // case 3: deltamin < 0 && deltamax > 0 
 //----------------------------------------------------------------------------
                                         // regular tracks relative scaling set to 1
                                         // the others are relatively scaled to an average ratio
-void    TTracksView::ResetScaleTracks ( TSelection *sel )
+void    TTracksView::ResetScaleTracks ( const TSelection *sel )
 {
 long                fromtf          = 0;
 long                totf            = CDPt.GetLength() - 1;
@@ -6479,6 +6526,7 @@ if      ( EEGDoc->IsContentType ( ContentTypeSeg ) ) {
                         scaleev,
                         scalepol,
                         scaleseg,
+                        scaleothers,
                         numscales,
                         };
 
@@ -6499,7 +6547,8 @@ if      ( EEGDoc->IsContentType ( ContentTypeSeg ) ) {
         else if ( StringStartsWith ( GetElectrodeName ( e ), TrackNameEV        ) )     si  = scaleev;
         else if ( StringStartsWith ( GetElectrodeName ( e ), TrackNamePolarity  ) )     si  = scalepol;
         else if ( StringStartsWith ( GetElectrodeName ( e ), TrackNameSeg       ) )     si  = scaleseg;
-                                        // remember for later
+        else                                                                            si  = scaleothers;
+                                        // store this for later
         scaleindex ( e )    = si;
                                         // we know the scaling for these variables
         if ( si == scalecorr || si == scaleev || si == scalepol || si == scaleseg )
@@ -6510,67 +6559,55 @@ if      ( EEGDoc->IsContentType ( ContentTypeSeg ) ) {
         }
 
                                         // force scaling
-    int                 NumClusters     = AtLeast ( 1, dynamic_cast< TSegDoc * > ( EEGDoc )->GetNumClusters () );
+    int                 NumClusters     = AtLeast ( 1, dynamic_cast<TSegDoc*> ( EEGDoc )->GetNumClusters () );
 
-    scale ( scalecorr ).Add ( 1           );
-    scale ( scaleev   ).Add ( 1           );
-    scale ( scalepol  ).Add ( 3           );    // no need to show this full scale
-    scale ( scaleseg  ).Add ( NumClusters );
+    scale ( scalecorr ).Add ( 1,           ThreadSafetyIgnore );
+    scale ( scaleev   ).Add ( 1,           ThreadSafetyIgnore );
+    scale ( scalepol  ).Add ( 3,           ThreadSafetyIgnore );    // no need to show this at full scale
+    scale ( scaleseg  ).Add ( NumClusters, ThreadSafetyIgnore );
 
                                         // set the scaling with the right stat
     for ( int e = 0; e < EEGDoc->GetTotalElectrodes (); e++ )
 
         ScaleTracks[ e ]    = 1.0 / NonNull ( scale ( scaleindex ( e ) ).AbsoluteMax () );
-
-
-//  for ( int e = 0; e < EEGDoc->GetTotalElectrodes (); e++ )
-//      DBGV2 ( e + 1, 1.0 / ScaleTracks[ e ], "max tracks" );
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // .t .p spectrum and the like will have a common scale
 else if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
                                         // Give each track its own scaling
     TGoEasyStats        scale       ( EEGDoc->GetTotalElectrodes () );
-    bool                onescale    = EEGDoc->IsSpecialInfix () || EEGDoc->IsP ();  // special case: join all scales
+    bool                singlescale = EEGDoc->IsSpecialInfix () || EEGDoc->IsP ();  // special case: join all scales
 
 
     for ( int e = 0; e < EEGDoc->GetTotalElectrodes (); e++ )
     for ( int tf = fromtf; tf <= totf; tf++ )
 
-//      scale ( onescale ? 0 : e ).Add ( EegBuff[ e ][ tf ] );
+//      scale ( singlescale ? 0 : e ).Add ( EegBuff[ e ][ tf ], ThreadSafetyIgnore );
                                         // either 1 common scale, or 1 scale for each of the first 3 tracks, then a common one
-        scale ( onescale ? 0 : NoMore ( 3, e ) ).Add ( EegBuff[ e ][ tf ] );
+        scale ( singlescale ? 0 : NoMore ( 3, e ) ).Add ( EegBuff[ e ][ tf ], ThreadSafetyIgnore );
 
 
                                         // set the scaling with the right stat
     for ( int e = 0; e < EEGDoc->GetTotalElectrodes (); e++ )
 
-//      ScaleTracks[ e ]    = 1.0 / NonNull ( scale ( onescale ? 0 : e ).AbsoluteMax () );
-        ScaleTracks[ e ]    = 1.0 / NonNull ( scale ( onescale ? 0 : NoMore ( 3, e ) ).AbsoluteMax () );
-
-
-//    for ( int e = 0; e < EEGDoc->GetTotalElectrodes (); e++ )
-//        DBGV2 ( e + 1, 1.0 / ScaleTracks[ e ], "max tracks" );
+//      ScaleTracks[ e ]    = 1.0 / NonNull ( scale ( singlescale ? 0 : e ).AbsoluteMax () );
+        ScaleTracks[ e ]    = 1.0 / NonNull ( scale ( singlescale ? 0 : NoMore ( 3, e ) ).AbsoluteMax () ) * 0.80;
     }
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 else {                                  // regular file
-    double              maxt            = -1;
-    double              maxp;
-    double              v;
     TEasyStats          stats;
     TDownsampling       downtf ( fromtf, totf, NumScanTracksScaling );
+    double              v;
 
-                                        // get the average of all regular tracks
+                                        // stats on the absolute values of all the regular tracks together
     for ( int e = 0; e < EEGDoc->GetNumElectrodes (); e++ ) {
 
         if ( BadTracks[ e ] || AuxTracks[ e ] ) continue;
 
-        stats.Reset ();
-
-//        for ( int tf = downtf.From; tf <= downtf.To; tf += downtf.Step ) {
-//            if ( ( v = fabs ( EegBuff[ e ][ tf ] ) ) > maxt )
-//                maxt = v;
 
         for ( int tf = downtf.From; tf <= downtf.To; tf += downtf.Step ) {
 
@@ -6591,36 +6628,32 @@ else {                                  // regular file
                 v   = fabs ( EegBuff[ e ][ tf ] );
 
             if ( v )
-                stats.Add ( v );
+                stats.Add ( v, ThreadSafetyIgnore );
             } // for tf
-
-
-//      maxt    = max ( 4 * stats.SD (), maxt );
-//      maxt    = max ( 4 * stats.Average (), maxt );
-//      maxt    = max ( stats.AbsoluteMax (), maxt );
-        Maxed ( maxt, stats.IsNotEmpty () ? max ( 4 * stats.SD (), 4 * stats.Average (), stats.AbsoluteMax () ) : 0 );
         } // for e
 
+                                        // Mixing multiple measures for max tracks
+    double          maxtracks       = NonNull ( GeometricMean ( 4 * stats.Average (), 4 * stats.SD (), stats.AbsoluteMax () ) );
 
-    if ( maxt <= 0 )    maxt = NonNull ( EEGDoc->GetAbsMaxValue () );
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     for ( int e = 0; e < EEGDoc->GetTotalElectrodes (); e++ ) {
 
         if ( sel && sel->IsNotSelected ( e ) )  continue;
 
+
         if ( e <= EEGDoc->GetLastRegularIndex () 
-          && ! ( BadTracks[ e ] || AuxTracks[ e ] ) )
+          && ! ( BadTracks[ e ] || AuxTracks[ e ] ) ) {
 
-            ScaleTracks[ e ]    = 1.0 / maxt;
+            ScaleTracks[ e ]    = 1 / maxtracks;
+            }
 
-        else {                          // auxs and bads are scaled individually, as to be "neutralized"
-            maxp    = -1;
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+        else {                          // auxs and bads are scaled individually
+
             stats.Reset ();
-
-//            for ( int tf = 0; tf < BuffSize; tf++ )
-//                if ( ( v = fabs ( EegBuff[ e ][ tf ] ) ) > max )
-//                    max = v;
 
             for ( int tf = fromtf; tf <= totf; tf++ ) {
 
@@ -6641,29 +6674,22 @@ else {                                  // regular file
                     v   = fabs ( EegBuff[ e ][ tf ] );
 
                 if ( v )
-                    stats.Add ( v );
+                    stats.Add ( v, ThreadSafetyIgnore );
                 } // for tf
 
+                                        // Scale for current track
+            double          maxtrack        = GeometricMean ( 4 * stats.Average (), 4 * stats.SD (), stats.AbsoluteMax () );
 
-//          maxp    = max ( 4 * stats.SD (), maxp );
-//          maxp    = max ( 4 * stats.Average (), maxp );
-//          maxp    = max ( stats.AbsoluteMax (), maxp );
-            Maxed ( maxp, stats.IsNotEmpty () ? max ( 4 * stats.SD (), 4 * stats.Average (), stats.AbsoluteMax () ) : 0 );
+            ScaleTracks[ e ]    = 1 / NonNull ( maxtrack );
 
+                                        // slight adjustments for pseudo-tracks:
+            if      ( e == EEGDoc->GetGfpIndex () )     ScaleTracks[ e ]   *= 2.0;
+            else if ( e == EEGDoc->GetDisIndex () )     ScaleTracks[ e ]   *= 1.5;
+            else if ( e == EEGDoc->GetAvgIndex () 
+                   && maxtrack / NonNull ( EEGDoc->GetAbsMaxValue () ) < 1e-6 )     // nearly 0?
+                                                        ScaleTracks[ e ]    = 1;    // then reset scaling, to avoid showing a noisy line
 
-            maxp    = NonNull ( maxp );
-
-
-            if ( BadTracks[ e ] || AuxTracks[ e ] )
-                ScaleTracks[ e ]    = 1.0 / maxp * 0.80;   // shrink a bit
-            else
-                ScaleTracks[ e ]    = maxp / NonNull ( EEGDoc->GetAbsMaxValue () ) < 1e-6 ? 1.0                // reset scaling if it looks like noise close to 0 (not nice to see)
-                                                                                          : 1.0 / maxp * 0.80; // shrink a bit pseudos
-
-//            DBGV4 ( e, maxt, maxp, ScaleTracks[ e ], "track  global scale  local scale  rel scale" );
             } // special electrode
-
-    //     ScaleTracks[ e ] = 1.0;
         } // for e
     } // regular file
 }
@@ -7769,6 +7795,9 @@ else if ( w == CM_EEGRESETSCALING ) {   // reset relative tracks scaling
         ResetScaleTracks ( &Highlighted );
     else
         ResetScaleTracks ();
+
+                                        // reset global scaling, too
+    ResetScalingLevel ();
     }
 
 

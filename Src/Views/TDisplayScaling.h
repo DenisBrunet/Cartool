@@ -46,17 +46,23 @@ enum    ScalingAutoType
 class   TDisplayScaling
 {
 public:
-    inline          TDisplayScaling ();
+    inline          TDisplayScaling ()          { ResetScaling (); }
 
 
-    double          ScalingLevel;
     double          ScalingLimitMin;    // ABSOLUTE limits for ScalingLevel
     double          ScalingLimitMax;
-    double          ScalingContrast;    // 1 max contrast, 0 low contrast (linear)
+    double          ScalingLevel;
     double          ScalingPMax;        // current positive intensity Max
     double          ScalingNMax;        // current negative intensity Max
+
+    double          ScalingContrast;    // 1 max contrast, 0 low contrast (linear)
+
     ScalingAutoType ScalingAuto;        // adaptative scaling
 
+
+    virtual inline  void    ResetScaling        ();
+    virtual inline  void    ResetScalingLevel   ();
+    virtual inline  void    ResetScalingContrast();
 
     virtual inline void     SetScalingLimits    ( double absminv, double absmaxv );
     virtual inline void     SetScaling          ( double scaling );
@@ -73,15 +79,29 @@ protected:
 //----------------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------------
-        TDisplayScaling::TDisplayScaling ()
+void    TDisplayScaling::ResetScaling ()
 {
-ScalingLimitMin     = SingleFloatEpsilon;
-ScalingLimitMax     = 1;
-ScalingLevel        = ScalingLimitMin + ( ScalingLimitMax - ScalingLimitMin ) * ScalingLevelInit;
-ScalingContrast     = ScalingMinContrast;
-ScalingPMax         = ScalingLevel;
-ScalingNMax         = - ScalingPMax;
+SetScalingLimits    ( SingleFloatEpsilon, 1 );
+
+ResetScalingLevel   ();
+
+UpdateScaling       ();
+
+ResetScalingContrast();
+
 ScalingAuto         = ScalingAutoOff;
+}
+
+
+void    TDisplayScaling::ResetScalingLevel ()
+{
+ScalingLevel        = ScalingLimitMin + ( ScalingLimitMax - ScalingLimitMin ) * ScalingLevelInit;
+}
+
+
+void    TDisplayScaling::ResetScalingContrast ()
+{
+ScalingContrast     = ScalingMinContrast;
 }
 
 
@@ -89,8 +109,8 @@ ScalingAuto         = ScalingAutoOff;
                                         // Absolute values
 void    TDisplayScaling::SetScalingLimits ( double absminv, double absmaxv )
 {
-absminv         = fabs ( absminv );
-absmaxv         = fabs ( absmaxv );
+absminv         = abs ( absminv );
+absmaxv         = abs ( absmaxv );
 
 CheckOrder ( absminv, absmaxv );
 
@@ -103,9 +123,17 @@ ScalingLimitMax = absmaxv;
                                         // Absolute value
 void    TDisplayScaling::SetScaling ( double scaling )
 {
-ScalingLevel    = Clip ( fabs ( scaling ), ScalingLimitMin, ScalingLimitMax );
+ScalingLevel    = Clip ( abs ( scaling ), ScalingLimitMin, ScalingLimitMax );
 
 UpdateScaling ();
+}
+
+
+void    TDisplayScaling::UpdateScaling ()
+{
+                                        // update these variables - ScalingLevel is always positive (a member with a good attitude)
+ScalingPMax =   ScalingLevel;
+ScalingNMax = - ScalingLevel;
 }
 
 
@@ -114,10 +142,10 @@ UpdateScaling ();
 void    TDisplayScaling::SetScaling ( double negv, double posv, bool forcesymetric )
 {
                                         // force positive
-ScalingPMax         =   fabs ( posv );
+ScalingPMax         =   abs ( posv );
 
                                         // force negative
-ScalingNMax         = - fabs ( negv );
+ScalingNMax         = - abs ( negv );
 
                                         // keep biggest scaling (most significant if one is actually 0) + clipping to safe values
 ScalingLevel        = Clip ( max ( ScalingPMax, -ScalingNMax ), ScalingLimitMin, ScalingLimitMax );
@@ -139,16 +167,6 @@ ScalingContrast     = Clip ( contrast, ScalingMinContrast, ScalingMaxContrast );
 UpdateScaling ();
 
 return  osc;
-}
-
-
-//----------------------------------------------------------------------------
-
-void    TDisplayScaling::UpdateScaling ()
-{
-                                        // update these variables - ScalingLevel is always positive (a member with a good attitude)
-ScalingPMax =   ScalingLevel;
-ScalingNMax = - ScalingLevel;
 }
 
 

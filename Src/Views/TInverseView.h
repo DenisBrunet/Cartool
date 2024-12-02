@@ -265,8 +265,9 @@ protected:
     TGLVolume               VolumeIs;
 
                                         // TDisplayScaling
-    void                    SetScaling              ( double scaling );
-    void                    SetScaling              ( double negv, double posv, bool forcesymetric = true );
+    void                    SetScaling              ( double scaling )                                      final;
+    void                    SetScaling              ( double negv, double posv, bool forcesymetric = true ) final;
+    void                    UpdateScaling           ()                                                      final;
 
     bool                    ValidView               ();
     inline int              NumVisiblePlanes        ();
@@ -276,7 +277,6 @@ protected:
     void                    SetTotalSlices          ();
     void                    SetItemsInWindow        ();
     void                    FitItemsInWindow        ( int numitems, owl::TSize itemsize, int &byx, int &byy, owl::TRect *winrect = 0 );
-    void                    UpdateScaling           ();
     void                    SetColorTable           ( AtomType datatype );
     void                    InitMri                 ();
     void                    ReloadRoi               ();

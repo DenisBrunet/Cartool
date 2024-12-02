@@ -452,7 +452,7 @@ protected:
     virtual void        UpdateBuffers               ( long oldtfmin, long oldtfmax, long newtfmin, long newtfmax );
     void                ReloadBuffers               ();
     virtual bool        IsStandDevAvail             ()                          const   { return ShowSD && EEGDoc->IsStandDevAvail (); }
-    virtual void        ResetScaleTracks            ( TSelection *sel = 0 );
+    virtual void        ResetScaleTracks            ( const TSelection *sel = 0 );
     double              ScalingContrastToColorTable ( double scalingcontrast )  const   { return    0.1 + 999.9 * scalingcontrast * scalingcontrast; }
     double              ColorTableToScalingContrast ( double contrast        )  const   { return    sqrt ( ( contrast - 0.1 ) / 999.9 ); }
 
@@ -464,6 +464,10 @@ protected:
 //  void                ScanTracksNoisy             (  TArray2<float> &data, TSelection &goodtf, bool lownoise );
     void                ScanTracksGfp               ( TArray2<float> &data, TSelection &goodtf );
 //  void                ScanTracksSD                ( TArray2<float> &data, TSelection &goodtf );
+
+                                        // TDisplayScaling
+    void                ResetScalingLevel       ()  final;
+    void                ResetScalingContrast    ()  final;
 
 
     void                ReloadXyz               ();
