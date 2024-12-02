@@ -343,10 +343,28 @@ void    TTracksDoc::InitLimits ( bool precise )
 ResetLimits ();
 
 
-long                fromtf          = 0;
-long                totf            = NoMore ( (long) EegMaxPointsDisplay, NumTimeFrames ) - 1;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // range of time frames to scan
+constexpr int       OneMinuteMaxTimeFrames      = 60 * 1000;                    // 1 minute  recording @ 1000Hz
+long                fromtf;
+long                totf;
+
+if      ( NumTimeFrames >= OneMinuteMaxTimeFrames ) {
+                                        // long enough file, or recording-like EEG: pick the central part
+    fromtf          = NumTimeFrames / 2 - OneMinuteMaxTimeFrames / 2;
+    totf            = fromtf            + OneMinuteMaxTimeFrames - 1;
+    }
+else {
+                                        // small-ish file: pick the whole range
+    fromtf          = 0;
+    totf            = NumTimeFrames - 1;
+    }
+
+                                        // setting the density of the scan
 TDownsampling       downtf ( fromtf, totf, precise ? 100 : 7 );
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TTracks<float>      EegBuff ( TotalElectrodes, 1 );
 
@@ -382,7 +400,7 @@ for ( long tf = downtf.From; tf <= downtf.To; tf += downtf.Step ) {
 
         v   = EegBuff ( e, 0 );
 
-        stat.Add ( v );
+        stat.Add ( v, ThreadSafetyIgnore );
 
         if ( fabs ( v ) > AbsMaxValue ) { 
             AbsMaxValue = fabs ( v ); 

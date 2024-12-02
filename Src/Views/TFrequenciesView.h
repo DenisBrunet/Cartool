@@ -119,16 +119,17 @@ public:
 
 
     TFreqDoc*       GetFreqDoc          ()              { return FreqDoc; }
-    void            UpdateCaption       ();   // with time of cursor
-    void            DrawTFCursor        ( bool undrawold, bool localhdc = true );
+    void            UpdateCaption       ()                                          final;
+    void            DrawTFCursor        ( bool undrawold, bool localhdc = true )    final;
     void            GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane );
-    void            DrawHighlighted     ( int i, bool highlight );
+    void            DrawHighlighted     ( int i, bool highlight )                   final;
                                         // return the electrode name by priority: montage, xyz, pseudo-tracks, then original name
-    const char*         GetElectrodeName    ( int eli, bool mtg = true )    const;
-    const TStrings*     GetElectrodesNames  ()                              const;
+    const char*         GetElectrodeName    ( int eli, bool mtg = true )            final;
+    const TStrings*     GetElectrodesNames  ()                                const final;
 //  virtual void    Set3DMode ();
 
-    void            GetTracks ( long tf1, long tf2, TArray2<float> &buff, ReferenceType ref = ReferenceUsingCurrent );
+
+    void            GetTracks ( long tf1, long tf2, TArray2<float> &buff, ReferenceType ref = ReferenceUsingCurrent )   final;
 
 
     void            HintsPaint  ();
@@ -136,12 +137,12 @@ public:
     void            EvKeyDown   ( owl::uint key, owl::uint repeatCount, owl::uint flags );
     void            EvKeyUp     ( owl::uint key, owl::uint repeatCount, owl::uint flags );
 
-    bool            VnReloadData        ( int what );
-//  bool            VnNewTFCursor       ( TTFCursor *tfcursor );
-//  bool            VnNewSelection      ( TSelection *sel );
-//  bool            VnNewHighlighted    ( TSelection *hl );
-    bool            VnNewBadSelection   ( TSelection *bad );
-    bool            VnNewAuxSelection   ( TSelection *bad );
+    bool            VnReloadData        ( int what )                                final;
+//  bool            VnNewTFCursor       ( TTFCursor *tfcursor )                     final;
+//  bool            VnNewSelection      ( TSelection *sel )                         final;
+//  bool            VnNewHighlighted    ( TSelection *hl )                          final;
+    bool            VnNewBadSelection   ( TSelection *bad )                         final;
+    bool            VnNewAuxSelection   ( TSelection *bad )                         final;
     void            EvLButtonDown       ( owl::uint, const owl::TPoint &p );
     void            EvLButtonUp         ( owl::uint, const owl::TPoint &p );
     void            EvMouseMove         ( owl::uint, const owl::TPoint &p );
@@ -194,16 +195,16 @@ protected:
     void            EvKillFocus         ( HWND );
 
     bool            ValidView           ()              { return FreqDoc && FreqDoc->GetNumTimeFrames() > 0 && FreqDoc->GetNumElectrodes() > 0; }
-    void            SetPartWindows      ( TSelection &sel, bool refresh = true );
-    void            UpdateBuffers       ( long oldtfmin, long oldtfmax, long newtfmin, long newtfmax );
-    bool            IsStandDevAvail     ()              { return false; }
-    void            ResetScaleTracks    ( TSelection *sel = 0 );
+    void            SetPartWindows      ( TSelection &sel, bool refresh = true )                        final;
+    void            UpdateBuffers       ( long oldtfmin, long oldtfmax, long newtfmin, long newtfmax )  final;
+    bool            IsStandDevAvail     ()  const final { return false; }
+    void            ResetScaleTracks    ( const TSelection* sel = 0 )                                   final;
     void            ResetScaleFreqs     ();
 //  void            BestXYZBox          ();
 //  void            ScrollCursor        ( int desiredPoints, bool forward );
 //  void            ScrollDisplay       ( int numpoints );
     void            RefreshLinkedWindow ( bool force = false ); // if it exists, used for implicit link by XE view
-    void            SetupHorizontalGrid ( double &hgridorg, double &hgridstep );
+    void            SetupHorizontalGrid ( double &hgridorg, double &hgridstep )                         final;
 
                                         // a few internal functions to make things a bit simpler
     void            SetCDP              ();
@@ -211,17 +212,17 @@ protected:
     void            SetColorTable       ( AtomType datatype );
 
 
-    void            CmSetRenderingMode      ();
+    void            CmSetRenderingMode      ()                  final;
     void            CmSetScalingAdapt       ();
-    void            CmSetFrequencyMode      ( owlwparam w );
-    void            CmNextFrequency         ( owlwparam w );
-    void            CmZoomVert              ( owlwparam w );
-    void            CmZoomHorz              ( owlwparam w );
-    void            CmForward               ( owlwparam w );
-    void            CmBackward              ( owlwparam w );
-    void            CmShiftTracks           ( owlwparam w );
-    void            CmChangeNumTracks       ( owlwparam w );
-    void            CmChangeNumPseudoTracks ( owlwparam w );
+    void            CmSetFrequencyMode      ( owlwparam w );    
+    void            CmNextFrequency         ( owlwparam w );    
+    void            CmZoomVert              ( owlwparam w )     final;
+    void            CmZoomHorz              ( owlwparam w )     final;
+    void            CmForward               ( owlwparam w )     final;
+    void            CmBackward              ( owlwparam w )     final;
+    void            CmShiftTracks           ( owlwparam w )     final;
+    void            CmChangeNumTracks       ( owlwparam w )     final;
+    void            CmChangeNumPseudoTracks ( owlwparam w )     final;
     void            CmChangeNumFreqs        ( owlwparam w );
     void            CmSetFreqNormalize      ();
     void            CmSetManageRangeCursor  ( owlwparam w );

@@ -123,8 +123,8 @@ for ( CurrentFrequency = downfreq.From; CurrentFrequency <= downfreq.To; Current
 
 //  alwayspos   = alwayspos && IsPositive ( AtomTypeUseOriginal );
 
-    Mined ( MinValue, currMinValue );
-    Maxed ( MaxValue, currMaxValue );
+    Mined ( currMinValue, MinValue );
+    Maxed ( currMaxValue, MaxValue );
 
     if ( AbsMaxValue > currAbsMaxValue ) {
         currAbsMaxValue = AbsMaxValue;
