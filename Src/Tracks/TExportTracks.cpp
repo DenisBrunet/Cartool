@@ -340,7 +340,7 @@ of->seekp ( EndOfHeader, ios::beg );
 
 //----------------------------------------------------------------------------
                                         // Compute the correct position for EDF files
-inline  long    TExportTracks::EDFseekp ( long tf, long e )
+LONGLONG    TExportTracks::EDFseekp ( long tf, long e )
 {
 return      EdfDataOrg 
         + ( tf / EdfTfPerRec ) * EdfBlockSize                               // block position
@@ -357,6 +357,7 @@ if ( IsOpen () && Type == ExportTracksEdf ) {
     if ( EdfTrailingTF ) {
 
         TIteratorSelectedForward    seli ( SelTracks );
+
         for ( int i = SelTracks.IsNotAllocated () ? 0 : seli(), j = 0; i >= 0 && ( SelTracks.IsAllocated () || i < NumTracks ); i = SelTracks.IsNotAllocated () ? i + 1 : ++seli, j++ ) {
 
             for ( long tfi = NumTime; tfi < NumTime + EdfTrailingTF; tfi++ ) {
@@ -549,7 +550,7 @@ if ( ! dummyheader )                    // a dummy header means unknown size, so
 
 
 //----------------------------------------------------------------------------
-char*   TExportTracks::GetElectrodeName ( int i, char *name, int maxlen )
+const char*     TExportTracks::GetElectrodeName ( int i, char *name, int maxlen )
 {
 if ( ElectrodesNames.IsNotEmpty () && i < ElectrodesNames.NumStrings () )
                                         // get the provided name
@@ -569,7 +570,7 @@ return  name;
 
 
 //----------------------------------------------------------------------------
-char*   TExportTracks::GetFrequencyName ( int i, char *name, int maxlen )
+const char*     TExportTracks::GetFrequencyName ( int i, char *name, int maxlen )
 {
 if ( FrequencyNames.IsNotEmpty () && i < FrequencyNames.NumStrings () )
                                         // get the provided name
@@ -663,7 +664,7 @@ if      ( Type == ExportTracksEdf ) {
 
             if ( ofs.IsOpen () )
 
-                ofs.Write ( EDFseekp ( tf - TimeMin, NumTracks ), EdfValue  );
+                ofs.Write ( EDFseekp ( tf - TimeMin, NumTracks ), EdfValue );
 
             else {
                 of->seekp ( EDFseekp ( tf - TimeMin, NumTracks ) );
@@ -1119,7 +1120,7 @@ else if ( Type == ExportTracksEdf ) {
     EdfDataOrg              = ( numelinfile + 1 ) * 256;
 
     SetString ( buff, ' ', 8 );
-    sprintf ( buff, "%0ld", EdfDataOrg );
+    sprintf ( buff, "%0lld", EdfDataOrg );
     *StringEnd ( buff ) = ' ';
     of->write ( buff, 8 );
 
@@ -1233,10 +1234,10 @@ else if ( Type == ExportTracksEdf ) {
     of->write ( buff, 8 );
 
                                         // tracks rescaling
-    double          physicalmax     =   MaxValue;       // what we expect
-    double          physicalmin     = - MaxValue;
-    int             digitalmax      =  SHRT_MAX * 0.90; // what is actually written in file, as if coming from an ADC converter - added some margin in case of real-time output
-    int             digitalmin      = -digitalmax;
+    double          physicalmax     =   EdfPhysicalMaxMargin * MaxValue;// !boost the actual expected value so to avoid clipping as much as possible!
+    double          physicalmin     = - physicalmax;
+    int             digitalmax      =   EdfDigitalMax;                  // what is actually written in file, as if coming from an ADC converter - !also added some margin in case of real-time output!
+    int             digitalmin      = - digitalmax;
 
                                         // convert values to strings
     char            physicalmaxtxt  [ 16 ];
@@ -1253,8 +1254,8 @@ else if ( Type == ExportTracksEdf ) {
 
     FloatToFixedWidthString ( physicalmaxtxt, physicalmax, 8 );
     FloatToFixedWidthString ( physicalmintxt, physicalmin, 8 );
-    IntegerToString         ( digitalmaxtxt, digitalmax );
-    IntegerToString         ( digitalmintxt, digitalmin );
+    IntegerToString         ( digitalmaxtxt,  digitalmax );
+    IntegerToString         ( digitalmintxt,  digitalmin );
 
 
     physicalmax     = StringToDouble ( physicalmaxtxt );    // converting float to string has introduced some rounding error, so we have to recompute the new physical min / max

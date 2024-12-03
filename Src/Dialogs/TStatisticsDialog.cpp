@@ -3679,7 +3679,7 @@ for ( int proci = 0; proci < numprocessings; proci++ ) {
         expt->NumTracks             = writenumvars;
         expt->NumTime               = writenumtf;
         expt->SamplingFrequency     = samplfreq;
-        expt->MaxValue              = 10 * maxvalue;
+        expt->MaxValue              = maxvalue;
 
         if      ( IsTAnova ( processing ) ) expt->ElectrodesNames   = TAnovaName;
         else if ( outputvarnames )          expt->ElectrodesNames   = VarNames;
@@ -3695,7 +3695,7 @@ for ( int proci = 0; proci < numprocessings; proci++ ) {
         expd->NumTracks             = writenumvars;
         expd->NumTime               = writenumtf;
         expd->SamplingFrequency     = samplfreq;
-        expd->MaxValue              = 10 * maxvalue;
+        expd->MaxValue              = maxvalue;
 
         if      ( IsTAnova ( processing ) ) expd->ElectrodesNames   = TAnovaName;
         else if ( outputvarnames )          expd->ElectrodesNames   = VarNames;

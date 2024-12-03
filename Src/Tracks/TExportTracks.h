@@ -73,7 +73,6 @@ ExportTracksType    GetExportType ( const char* file, bool isext );
 
 //----------------------------------------------------------------------------
 
-
 enum            ExportTriggers
                 {
                 NoTriggersNoMarkers = 0x00,
@@ -102,7 +101,14 @@ enum            ExportTracksTransposed
 
 
 //----------------------------------------------------------------------------
-                                        // Centralized calss to save tracks to file
+                                        // EDF file format needs some extra care
+constexpr double    EdfPhysicalMaxMargin    = 10;       // Boosting the max value with this factor, as the given max might be approximate
+constexpr int       EdfDigitalMax           = 0x77FF;   // Digital max value, a little less than 0x7FFF / SHRT_MAX
+
+
+//----------------------------------------------------------------------------
+                                        // Centralized class to save tracks to file
+
 class   TExportTracks :   public  TDataFormat
 {
 public:
@@ -201,14 +207,15 @@ public:
                     operator    std::ofstream&   ()     { return  *of; }
     
 protected:
+
     std::ofstream*  of;
     int             CurrentPositionTrack;
     long            CurrentPositionTime;
     bool            DoneBegin;
-    long            EndOfHeader;
+    LONGLONG        EndOfHeader;
 
                                         // Used for convenient Edf generation
-    long            EdfDataOrg;
+    LONGLONG        EdfDataOrg;
     long            EdfBlockSize;
     long            EdfTrailingTF;
     long            EdfNumRecords;
@@ -223,11 +230,11 @@ protected:
     void            CloseStream ();                             // close stream - Called automatically
     void            PreFillFile ();
 
-    char           *GetElectrodeName ( int i, char *name, int maxlen );
-    char           *GetFrequencyName ( int i, char *name, int maxlen );
+    const char*     GetElectrodeName ( int i, char *name, int maxlen );
+    const char*     GetFrequencyName ( int i, char *name, int maxlen );
 
     void            WriteBrainVisionMarkerFile ( const char* fileoutmrk, const char* filenameout );
-    inline  long    EDFseekp ( long tf, long e );
+    inline LONGLONG EDFseekp ( long tf, long e );
 
 };
 

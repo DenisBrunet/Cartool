@@ -1066,7 +1066,7 @@ if ( createfile ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // for EDF, BV
-    expfile.MaxValue            = EEGDoc->GetAbsMaxValue () * ( rescalingfactor ? abs ( rescalingfactor ) : 2 );
+    expfile.MaxValue            = ( rescalingfactor ? abs ( rescalingfactor ) : 1 ) * EEGDoc->GetAbsMaxValue ();
     expfile.NumTags             = EEGDoc->GetNumMarkers ();
     expfile.TimeMin             = 0;              // sequenceoptions == AverageProcessing ? ( intimemin + intimenum / 2 ) : outtimemin;  // !we re-process the output triggers/markers position, now starting from 0!
     expfile.TimeMax             = outtimenum - 1; // sequenceoptions == AverageProcessing ? ( intimemin + intimenum / 2 ) : outtimemax;
