@@ -56,7 +56,10 @@ constexpr char*     TracksPreferenceNoAuxs              = "No Auxiliaries";
 
 //----------------------------------------------------------------------------
                                         // max number of points to be displayed
-constexpr int       EegMaxPointsDisplay                 = 15 * 60 * 1000;   // 15 minutes recording @ 1000Hz - memory can sustain much more, but file access delays are more of a concern
+constexpr int       OneMinuteMaxTimeFrames              = 60 * 1000;        // 1 minute  recording @ 1000Hz
+constexpr int       FifteenMinutesMaxTimeFrames         = 15 * OneMinuteMaxTimeFrames;
+
+constexpr int       EegMaxPointsDisplay                 = FifteenMinutesMaxTimeFrames;  // 15 minutes recording @ 1000Hz - memory can sustain much more, but file access delays are more of a concern
 
 constexpr int       EegNumPointsWideDisplay             = 3000;             // how big a file must be until considered a recording / raw file
 

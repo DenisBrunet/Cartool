@@ -114,7 +114,7 @@ TDownsampling       downfreq ( 0, NumFrequencies / 2, 17 ); // focusing on the l
 //bool              alwayspos           = true;
 
 
-precise         = precise && NumTimeFrames < EegMaxPointsDisplay;
+precise         = true; // precise && NumTimeFrames < EegMaxPointsDisplay;
 
 
 for ( CurrentFrequency = downfreq.From; CurrentFrequency <= downfreq.To; CurrentFrequency += downfreq.Step ) {

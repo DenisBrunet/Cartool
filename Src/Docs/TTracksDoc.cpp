@@ -338,30 +338,18 @@ return  true;
 //----------------------------------------------------------------------------
                                         // Estimate the type of data, like positive or signed (display scaling is each view's business)
                                         // We can not spend much time in here, as it can be called at each filtering / reference change
-void    TTracksDoc::InitLimits ( bool precise )
+void    TTracksDoc::InitLimits ( bool /*precise*/ )
 {
 ResetLimits ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // range of time frames to scan
-constexpr int       OneMinuteMaxTimeFrames      = 60 * 1000;                    // 1 minute  recording @ 1000Hz
-long                fromtf;
-long                totf;
+long                fromtf          = 0;
+long                totf            = NoMore ( (long) FifteenMinutesMaxTimeFrames, NumTimeFrames ) - 1;
 
-if      ( NumTimeFrames >= OneMinuteMaxTimeFrames ) {
-                                        // long enough file, or recording-like EEG: pick the central part
-    fromtf          = NumTimeFrames / 2 - OneMinuteMaxTimeFrames / 2;
-    totf            = fromtf            + OneMinuteMaxTimeFrames - 1;
-    }
-else {
-                                        // small-ish file: pick the whole range
-    fromtf          = 0;
-    totf            = NumTimeFrames - 1;
-    }
-
-                                        // setting the density of the scan
-TDownsampling       downtf ( fromtf, totf, precise ? 100 : 7 );
+                                        // setting the density of the scan - currently ignored, as we may miss important features
+TDownsampling       downtf ( fromtf, totf, 100 /*precise ? 100 : 7*/ );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
