@@ -92,13 +92,13 @@ enum        TFileStreamEnums
             FileStreamUpdate,
             };
 
-
                                         // Wraps Windows system-level function CreateFile, which has more security options, and is supposed to be faster than fopen/streams
                                         // It could later use memory mapping, which is said to be the ultimate faster way to write files
                                         // Class also offers to update an existing file (without resetting it of course) to poke some data in
 class   TFileStream
 {
 public:
+
     inline          TFileStream     ();
     inline          TFileStream     ( const char* file, TFileStreamEnums flags );
     inline         ~TFileStream     ();
@@ -109,14 +109,14 @@ public:
     inline bool     Open            ( const char* file, TFileStreamEnums flags );
     inline void     Close           ();
 
-    inline void     Seek            ( long long pos );
-    inline void     Seek            ( long      pos );
+    inline void     Seek            ( const LARGE_INTEGER& pos );
+    inline void     Seek            ( LONGLONG pos );
 
-    inline  void    Read            (           LPVOID  data, DWORD sizeofdata );
+    inline  void    Read            (               LPVOID  data, DWORD sizeofdata );
 
-    inline  void    Write           (           LPCVOID data, DWORD sizeofdata );
-    inline  void    Write           ( long pos, LPCVOID data, DWORD sizeofdata );
-    inline  void    Write           ( long pos, short   data );
+    inline  void    Write           (               LPCVOID data, DWORD sizeofdata );
+    inline  void    Write           ( LONGLONG pos, LPCVOID data, DWORD sizeofdata );
+    inline  void    Write           ( LONGLONG pos, short   data );
 
 
     inline          operator bool   ()  const           { return    IsOpen (); }
@@ -391,27 +391,26 @@ return  true;
 
 //----------------------------------------------------------------------------
 
-void    TFileStream::Seek ( long long pos )
+void    TFileStream::Seek ( const LARGE_INTEGER& pos )
 {
 //if ( ! IsOpen () )
 //    return;
 
 SetFilePointerEx    (   hfile,
-//                      ToLargeInt ( pos ),
-                        LONGLONGTOLARGEINT ( pos ),
+                        pos,
                         0,
                         FILE_BEGIN
                     );
 }
 
 
-void    TFileStream::Seek ( long pos )
+void    TFileStream::Seek ( LONGLONG pos )
 {
 //if ( ! IsOpen () )
 //    return;
 
 SetFilePointerEx    (   hfile,
-                        ToLargeInt ( pos ),
+                        LONGLONGTOLARGEINT ( pos ), // ToLargeInt ( pos ),
                         0,
                         FILE_BEGIN
                     );
@@ -431,7 +430,7 @@ WriteFile   (   hfile,
 }
 
                                         // Any write at given position
-void    TFileStream::Write  ( long pos, LPCVOID data, DWORD sizeofdata )
+void    TFileStream::Write  ( LONGLONG pos, LPCVOID data, DWORD sizeofdata )
 {
 Seek    ( pos );
 
@@ -439,7 +438,7 @@ Write   ( data, sizeofdata );
 }
 
                                         // Write short at given position
-void    TFileStream::Write  ( long pos, short data )
+void    TFileStream::Write  ( LONGLONG pos, short data )
 {
 Seek    ( pos );
 
