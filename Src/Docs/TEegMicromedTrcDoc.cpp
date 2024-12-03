@@ -32,13 +32,12 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-        TEegMicromedTrcDoc::TEegMicromedTrcDoc (TDocument *parent)
+        TEegMicromedTrcDoc::TEegMicromedTrcDoc ( TDocument* parent )
       : TTracksDoc ( parent )
 {
 InputStream         = 0;
 
 BuffSize            = 0;
-DataOrg             = 0;
 DataType            = 0;
 }
 
@@ -527,8 +526,6 @@ if ( GetDocPath () ) {
         NumSequences++;
         }
 
-//  DBGV3 ( DataOrg, NumTimeFrames, NumSequences, "DataOrg, NumTimeFrames, NumSequences" );
-
                                         // allocate sequence info
     if ( NumSequences ) {
 
@@ -653,12 +650,13 @@ InputStream->seekg ( DataOrg + BuffSize * tf1, ios::beg );
 
 
 if      ( DataType == 2 ) {
-    ushort             *toTus;
+
+    ushort*         toTus;
 
     for ( long tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++ ) {
 
         InputStream->read ( (char *) &Tracks[ 0 ], BuffSize );
-        toTus   = (ushort *) &Tracks[ 0 ];
+        toTus   = (ushort*) Tracks.GetArray ();
 
         for ( int el = 0; el < NumElectrodes; el++, toTus++ )
             buff ( el, tf ) = ( *toTus - Offset[ el ] ) * Gain[ el ];
@@ -666,12 +664,13 @@ if      ( DataType == 2 ) {
     }
 
 else if ( DataType == 1 ) {
-    uchar              *toTub;
+
+    uchar*          toTub;
 
     for ( long tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++ ) {
 
         InputStream->read ( (char *) &Tracks[ 0 ], BuffSize );
-        toTub   = (uchar *) &Tracks[ 0 ];
+        toTub   = (uchar*) Tracks.GetArray ();
 
         for ( int el = 0; el < NumElectrodes; el++, toTub++ )
             buff ( el, tf ) = ( *toTub - Offset[ el ] ) * Gain[ el ];

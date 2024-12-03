@@ -94,13 +94,13 @@ struct  TFreqFrequencyName
 
 /*                                        // These could be useful to have direct access in file on disk
                                         // Also would be better as functions...
-int                 DataOrg     = sizeof ( TFreqHeader )
+LONGLONG            DataOrg     = sizeof ( TFreqHeader )
                                 + numel  * sizeof ( TFreqChannel       )
                                 + numf   * sizeof ( TFreqFrequencyName );
 
-int                 ElNamesOrg  = sizeof ( TFreqHeader );
+LONGLONG            ElNamesOrg  = sizeof ( TFreqHeader );
 
-int                 FreqNamesOrg= sizeof ( TFreqHeader )
+LONGLONG            FreqNamesOrg= sizeof ( TFreqHeader )
                                 + numel  * sizeof ( TFreqChannel );
 #define GetFreqValue(f,el,tf)   ( ifd.seekg ( DataOrg       + ( ( numel * tf + el  ) * numf + f ) * sizeof ( data ), ios::beg ), ifd.read ( (char *) &data, sizeof ( data ) ), data )
 #define GetFreqName(f)          ( ifd.seekg ( FreqNamesOrg  + f  * sizeof ( freqname ), ios::beg ),                              ifd.read ( (char *) &freqname, sizeof ( freqname ) ), freqname.FrequencyName[ MaxCharFrequencyName    - 1 ] = 0, freqname.FrequencyName )
@@ -138,7 +138,6 @@ protected:
     owl::TInStream* InputStream;
 
     int             Version;
-    long            DataOrg;
 
     TArray1<float>  Spectrum;
     size_t          SpectrumSize;

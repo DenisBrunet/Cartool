@@ -36,8 +36,6 @@ namespace crtl {
       : TTracksDoc (parent)
 {
 BuffSize            = 0;
-
-DataOrg             = 0;
 }
 
 
@@ -233,7 +231,7 @@ return true;
 void    TEegCartoolSefDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float> &buff, int tfoffset )
 {
 int                 el;
-float              *toT;
+float*              toT;
 
                                         // set file to first TF
 FileStream.Seek ( DataOrg + BuffSize * tf1 );

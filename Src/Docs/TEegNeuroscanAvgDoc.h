@@ -40,7 +40,6 @@ public:
 
 protected:
 
-    long            DataOrg;
     TArray1<double> Gains;
     TArray1<double> Zeros;
 

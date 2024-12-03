@@ -161,7 +161,6 @@ public:
 protected:
 
     owl::TInStream* InputStream;
-    long            DataOrg;
 
     TArray1<long>   Tracks;
     TArray1<double> Gains;
@@ -176,7 +175,7 @@ protected:
     bool            SetArrays           ()  final;
     void            ReadNativeMarkers   ()  final;
     void            ProcessTracks       ( long reltf, bool firsttrack );
-    inline void     TfToBlockOffset     ( const int& tf, int& block, long& offset )     const;
+    inline void     TfToBlockOffset     ( const int& tf, LONGLONG& block, long& offset )     const;
 
 };
 

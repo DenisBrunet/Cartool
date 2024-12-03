@@ -618,7 +618,7 @@ EndBytePacking
 class   TEegMicromedSession
 {
 public:
-    ULONG           DataOrg;
+    LONGLONG        DataOrg;
     ULONG           NumTimeFrames;
     ULONG           OffsetTimeFrames;
     TDateTime       DateTime;
@@ -652,7 +652,6 @@ protected:
     TArray1<double> Offset;
     TArray1<double> Gain;
     int             BuffSize;
-    long            DataOrg;
     int             DataType;
 
     TArray1<TEegMicromedSession>	Sequences;

@@ -37,7 +37,6 @@ namespace crtl {
 {
 InputStream         = 0;
 
-DataOrg             = 0;
 Compressed          = false;
 NeedSwap            = false;
 NumRecords          = 0;
@@ -200,7 +199,7 @@ if ( GetDocPath() ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    DataOrg             = ifs.tellg();
+    DataOrg             = ifs.tellg ();
     TFRecord            = rawheader.rh_recsize;
 
                                         // either the real (not compressed) or max buffer size (compressed)
@@ -230,7 +229,7 @@ if ( GetDocPath() ) {
     else {
         ifs.seekg ( 0, ios::end );
 
-        NumRecords  = ( (ulong) ifs.tellg () - DataOrg + 1 ) / BuffSize;
+        NumRecords  = ( (LONGLONG) ifs.tellg () - DataOrg + 1 ) / BuffSize;
         }
 
 
@@ -461,7 +460,7 @@ else {  // not Compressed
 
 //----------------------------------------------------------------------------
 
-void    TEegERPSSRdfDoc::TfToBlockOffset ( const int& tf, int& block, long& offset )     const
+void    TEegERPSSRdfDoc::TfToBlockOffset ( const int& tf, LONGLONG& block, long& offset )     const
 {
 block   = DataOrg + sizeof ( RAWRHDR );
 offset  = tf;
@@ -479,7 +478,7 @@ int                 tf;
 long                tfi;
 long                tfoff;
 long*               toT;
-int                 Block;
+LONGLONG            Block;
 double*             toG;
 int                 reci;
 bool                firsttrack  = true;

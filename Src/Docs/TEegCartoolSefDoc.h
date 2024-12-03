@@ -91,8 +91,6 @@ public:
 
 protected:
 
-    long            DataOrg;
-
     TArray1<float>  Tracks;
     long            BuffSize;
 

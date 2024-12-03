@@ -338,8 +338,6 @@ protected:
 
     owl::TInStream* InputStream;
 
-    long            DataOrg;
-
     int             NumElectrodesInFile;
     TArray1<float>  Tracks;
     TArray1<short>  FileBuff;

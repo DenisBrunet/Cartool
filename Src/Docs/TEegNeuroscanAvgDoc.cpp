@@ -36,7 +36,6 @@ namespace crtl {
         TEegNeuroscanAvgDoc::TEegNeuroscanAvgDoc ( TDocument *parent )
       : TEegCartoolEpDoc ( parent )
 {
-DataOrg             = 0;
 }
 
 

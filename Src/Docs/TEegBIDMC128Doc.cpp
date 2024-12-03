@@ -33,7 +33,7 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-void    TEegBIDMC128Doc::TfToBlockOffset ( const int& tf, int& block, int& offset )  const
+void    TEegBIDMC128Doc::TfToBlockOffset ( const int& tf, LONGLONG& block, int& offset )  const
 {
 block   = DataOrg + ( tf / EEG128DOC_TFPERRECORD ) * sizeof ( T128FileRec );
 offset  =             tf % EEG128DOC_NUMCHANNELS;
@@ -51,8 +51,6 @@ SamplingFrequency   = 0;
 Reference           = ReferenceAsInFile;
 
 InputStream         = 0;
-
-DataOrg             = 0;
 
 ClearVirtualMemory ( &FileBuff, sizeof ( T128FileRec ) );
 Block               = 0;
@@ -269,7 +267,7 @@ if ( GetDocPath () ) {
     SamplingFrequency   = EEG128DOC_SAMPLFREQUENCY;
 
     InputStream->getline ( buff, 256 );
-    sscanf ( buff, "%*s %*s %s %ld", ver, &DataOrg );
+    sscanf ( buff, "%*s %*s %s %lld", ver, &DataOrg );
 
     if ( StringIsNot ( ver, EEG128DOC_FILEVERSION ) ) {
 
@@ -360,7 +358,7 @@ if ( GetDocPath () ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compute the # of TF
     InputStream->seekg ( 0, ios::end );
-    NumTimeFrames       = ((int) ( (ulong) InputStream->tellg() - DataOrg ) / sizeof ( T128FileRec ) ) * EEG128DOC_TFPERRECORD ;
+    NumTimeFrames       = ( ( InputStream->tellg () - DataOrg ) / sizeof ( T128FileRec ) ) * EEG128DOC_TFPERRECORD;
 
     delete  InputStream;
     InputStream     = InStream ( ofRead | ofBinary );

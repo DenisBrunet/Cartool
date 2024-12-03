@@ -38,7 +38,6 @@ SpectrumSize        = 0;
 AtomSize            = 0;
 
 Version             = 0;
-DataOrg             = 0;
 }
 
 

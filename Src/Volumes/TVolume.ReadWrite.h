@@ -615,9 +615,9 @@ else if ( freqformat ) {
 
 //    BuffSize            = NumFrequencies * sizeof ( float ); // * NumElectrodes;
 
-    long    DataOrg     =                             sizeof ( TFreqHeader )
-                        + freqheader.NumChannels    * sizeof ( TFreqChannel )
-                        + freqheader.NumFrequencies * ( IsMagicNumber ( freqheader.Version, FREQBIN_MAGICNUMBER1 ) ? sizeof ( TFreqFrequency ) : sizeof ( TFreqFrequencyName ) );
+    LONGLONG    DataOrg     = sizeof ( TFreqHeader )
+                            + freqheader.NumChannels    * sizeof ( TFreqChannel )
+                            + freqheader.NumFrequencies * ( IsMagicNumber ( freqheader.Version, FREQBIN_MAGICNUMBER1 ) ? sizeof ( TFreqFrequency ) : sizeof ( TFreqFrequencyName ) );
 
                                         // jump to data
     ifs.seekg ( DataOrg, ios::beg );

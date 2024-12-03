@@ -105,10 +105,8 @@ protected:
 
     owl::TInStream* InputStream;
 
-    long            DataOrg;
-
     T128FileRec     FileBuff;
-    int             Block;
+    LONGLONG        Block;
     int             Offset;
     TSelection      ValidElectrodes;    // some channels are turned off
     int             MarkerIndex;
@@ -116,7 +114,7 @@ protected:
 
     bool            SetArrays           ()  final;
     void            ReadNativeMarkers   ()  final;
-    inline void     TfToBlockOffset     ( const int& tf, int& block, int& offset )  const;
+    inline void     TfToBlockOffset     ( const int& tf, LONGLONG& block, int& offset )  const;
 
 };
 

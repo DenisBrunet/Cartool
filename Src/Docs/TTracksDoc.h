@@ -258,6 +258,7 @@ public:
 protected:
 
     TFileStream     FileStream;         // Wrapper to some low-level file access (currently used only in TEegCartoolSefDoc for faster R/W)
+    LONGLONG        DataOrg;            // All files will need a direct access to the data
 
                                         // Typology of tracks
     ReferenceType&  Reference           = Filters.Reference;        // now stored in Filters - we use some "aliases" to (temporarily) keep the code as is

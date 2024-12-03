@@ -50,7 +50,6 @@ return is;
 {
 InputStream         = 0;
 
-DataOrg             = 0;
 StartingPacketNumber= 0;
 FileBuff            = 0;
 BuffSize            = 0;
@@ -190,7 +189,6 @@ if ( ifs.fail () )  return false;
 TEBMarker       mrk;
 
                                     // and get infos as a startup
-ULONG           DataOrg         = 0;
 int             NumElectrodes;
 int             NumAuxElectrodes;
 int             TotalElectrodes;
@@ -303,7 +301,7 @@ if ( GetDocPath () ) {
     ifstream    ifseeg ( TFileName ( GetDocPath (), TFilenameExtendedPath ), ios::binary );
 
                                         // and get infos as a startup
-    DataOrg = 0;
+    DataOrg     = 0;
 
     do {
                                         // read a standard marker
@@ -433,10 +431,10 @@ if ( GetDocPath () ) {
                                         // 1 in EEG file
                 StartingPacketNumber    = mrk.marker_point_num;
                                         // data immediately follow this marker
-                DataOrg = ifseeg.tellg();
+                DataOrg = ifseeg.tellg ();
 
                 ifseeg.seekg ( 0, ios::end );
-                NumTimeFrames   = ( (ulong) ifseeg.tellg() - DataOrg + 1 ) / BuffSize;
+                NumTimeFrames   = ( (LONGLONG) ifseeg.tellg () - DataOrg + 1 ) / BuffSize;
 
                                         // time in seconds since 1-1-1970
                 TDate   pcstart ( 1, 1970 );
@@ -686,8 +684,6 @@ return true;
 void    TEegBioLogicDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float> &buff, int tfoffset )
 {
 int                 el;
-int                 tf;
-long                tfi;
 float              *toT;
 short              *toFB;
 double             *toG;
@@ -696,7 +692,7 @@ double             *toG;
 InputStream->seekg ( DataOrg + BuffSize * tf1, ios::beg );
 
 
-for ( tfi=tf1, tf=0; tfi <= tf2; tfi++, tf++ ) {
+for ( int tfi = tf1, tf = 0; tfi <= tf2; tfi++, tf++ ) {
 
     *InputStream >> *FileBuff;
 

@@ -93,6 +93,8 @@ const char          DimensionNames[ NumDimensionTypes ][ ContentTypeMaxChars ] =
         TTracksDoc::TTracksDoc ( TDocument *parent )
       : TBaseDoc ( parent ), TMarkers ( this )
 {
+DataOrg             = 0;
+
 Reference           = ReferenceAsInFile;
 
 ExtraContentType    = TracksContentUnknown;

@@ -49,7 +49,6 @@ BlockStructure      = false;
 PackedDatas         = false;
 Zero                = 0;
 Unit                = 1;
-DataOrg             = 0;
 ExtHeaderOrg        = 0;
 
 XHCalibration       = false;

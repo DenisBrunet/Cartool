@@ -42,7 +42,6 @@ NumElectrodesInFile = 0;
 NumTimeFrames       = 0;
 NumElectrodes       = 0;
 TotalElectrodes     = 0;
-DataOrg             = 0;
 NumEvents           = 0;
 
 SamplingFrequency   = 0;

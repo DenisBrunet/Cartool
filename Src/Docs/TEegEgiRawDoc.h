@@ -68,8 +68,6 @@ public:
 protected:
     owl::TInStream*     InputStream;
 
-    long                DataOrg;
-
     int                 NumElectrodesInFile;
     std::vector<float>  Tracks;
     std::vector<char>   FileBuff;

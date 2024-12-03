@@ -312,7 +312,7 @@ protected:
 class   TEBSeq
 {
 public:
-    ULONG           DataOrg;
+    LONGLONG        DataOrg;
     ULONG           NumTimeFrames;
     ULONG           StartingPacketNumber;
     ULONG           EndingPacketNumber;
@@ -346,7 +346,6 @@ public:
 protected:
 
     owl::TInStream* InputStream;
-    ULONG           DataOrg;
 
     TArray1<float>  Tracks;
     TArray1<double> Gains;

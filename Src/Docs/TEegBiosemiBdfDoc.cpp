@@ -42,7 +42,6 @@ InputStream         = 0;
 FileType            = UnknownBdfEdf;
 MaxSamplesPerBlock  = 0;
 BlockSize           = 0;
-DataOrg             = 0;
 
 NumElectrodesInFile = 0;
 }

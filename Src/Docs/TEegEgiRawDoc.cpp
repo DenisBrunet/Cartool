@@ -41,7 +41,6 @@ BuffSize            = 0;
 NumTimeFrames       = 0;
 NumElectrodes       = 0;
 TotalElectrodes     = 0;
-DataOrg             = 0;
 NumEvents           = 0;
 ScaleData           = 1;
 ScaleDataCalibrated = 1;
@@ -104,7 +103,7 @@ for ( e = 0; e < NumEvents; e++ ) {
     }
 
 ifs.seekg ( DataOrg, ios::beg );
-ifs.read ( FileBuff.data (),  BuffSize );
+ifs.read  ( FileBuff.data (),  BuffSize );
 
 for ( e=0; e < NumEvents; e++ ) {
 

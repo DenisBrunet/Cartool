@@ -115,7 +115,6 @@ protected:
     bool                PackedDatas;
     double              Zero;
     double              Unit;
-    long                DataOrg;
     long                ExtHeaderOrg;
     bool                XHCalibration;
 
