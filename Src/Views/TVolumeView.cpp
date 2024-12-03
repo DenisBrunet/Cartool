@@ -597,14 +597,14 @@ ColorTable.SetTableAllowed ( NoTables );
                                         // Positive and Vectorial data
 if      ( IsAbsolute ( datatype ) ) {
 
-    ColorTable.SetTableAllowed ( AbsColorTable_BlackWhite );
-    ColorTable.SetTableAllowed ( AbsColorTable_WhiteBlack );
-    ColorTable.SetTableAllowed ( AbsColorTable_BlackYellowWhite );
-    ColorTable.SetTableAllowed ( AbsColorTable_BlackRed );
-    ColorTable.SetTableAllowed ( AbsColorTable_GrayGreenYellowRed );
-    ColorTable.SetTableAllowed ( AbsColorTable_GrayYellow );
-    ColorTable.SetTableAllowed ( AbsColorTable_MagentaBlueCyanGrayGreenYellowRed );
-    ColorTable.SetTableAllowed ( AbsColorTable_SingleBump );  // trial
+    ColorTable.SetTableAllowed ( AbsColorTable_BlackWhite                           );
+    ColorTable.SetTableAllowed ( AbsColorTable_WhiteBlack                           );
+    ColorTable.SetTableAllowed ( AbsColorTable_BlackYellowWhite                     );
+    ColorTable.SetTableAllowed ( AbsColorTable_GrayYellow                           );
+    ColorTable.SetTableAllowed ( AbsColorTable_BlackRed                             );
+    ColorTable.SetTableAllowed ( AbsColorTable_GrayGreenYellowRed                   );
+    ColorTable.SetTableAllowed ( AbsColorTable_MagentaBlueCyanGrayGreenYellowRed    );
+    ColorTable.SetTableAllowed ( AbsColorTable_SingleBump                           );
 
 
 //  if ( ColorTableIndex[ datatype ] == UnknownTable ) {    // forgetting about current preset, too?
@@ -623,11 +623,14 @@ if      ( IsAbsolute ( datatype ) ) {
 
 else { // if ( IsScalar ( datatype ) )  // all other cases
                                         // ?Note: purely negative volumes could have their own type of color scale?
-    ColorTable.SetTableAllowed ( SignedColorTable_BlackWhiteBlack );
-    ColorTable.SetTableAllowed ( SignedColorTable_WhiteBlackWhite );
-    ColorTable.SetTableAllowed ( SignedColorTable_BlueWhiteRed );
-    ColorTable.SetTableAllowed ( SignedColorTable_CyanBlackYellow );
+    ColorTable.SetTableAllowed ( SignedColorTable_WhiteBlackWhite                   );
+    ColorTable.SetTableAllowed ( SignedColorTable_BlackWhiteBlack                   );
+    ColorTable.SetTableAllowed ( SignedColorTable_WhiteYellowBlackYellowWhite       );
+    ColorTable.SetTableAllowed ( SignedColorTable_RedBlackRed                       );
+    ColorTable.SetTableAllowed ( SignedColorTable_RedYellowGreenGrayGreenYellowRed  );
     ColorTable.SetTableAllowed ( SignedColorTable_MagentaBlueCyanGrayGreenYellowRed );
+    ColorTable.SetTableAllowed ( SignedColorTable_BlueWhiteRed                      );
+    ColorTable.SetTableAllowed ( SignedColorTable_WhiteBlueBlackRedWhite            );
 
     if ( ColorTableIndex[ datatype ] == UnknownTable )
         ColorTableIndex[ datatype ] = SignedColorTable_BlueWhiteRed;

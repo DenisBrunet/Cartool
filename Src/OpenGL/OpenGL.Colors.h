@@ -132,14 +132,19 @@ enum    ColorTablesEnum
 
                                         // Signed data tables
         SignedColorTableMin,
-        SignedColorTable_BlackWhiteBlack    = SignedColorTableMin,  // 3 colors
-        SignedColorTable_WhiteBlackWhite,
+        SignedColorTable_WhiteBlackWhite    = SignedColorTableMin,  // 2 colors
+        SignedColorTable_BlackWhiteBlack,
+        SignedColorTable_WhiteYellowBlackYellowWhite,
+        SignedColorTable_WhiteYellowBlackYellowWhiteMRIcro,
+        SignedColorTable_RedBlackRed,
         SignedColorTable_BlackGrayWhite,
-        SignedColorTable_BlueWhiteRed,
-        SignedColorTable_CyanBlackYellow,
-        SignedColorTable_GrayGreenYellowRed,                        // 4 colors
+        SignedColorTable_RedYellowGreenGrayGreenYellowRed,          // 4 colors
+        SignedColorTable_HalfGrayGreenYellowRed,                        
         SignedColorTable_MagentaBlueCyanGrayGreenYellowRed,         // 7 colors
         SignedColorTable_NeuroscanColors,                           // 13 colors
+        SignedColorTable_BlueWhiteRed,                              // 3 colors
+        SignedColorTable_WhiteBlueBlackRedWhite,
+        SignedColorTable_CyanBlackYellow,
 
         NumColorTables,
         };

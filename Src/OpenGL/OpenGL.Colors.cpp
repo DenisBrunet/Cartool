@@ -333,8 +333,8 @@ bool    TGLColorTable::IsLuminance ()   const
 {
 return  TableType == AbsColorTable_BlackWhite
      || TableType == AbsColorTable_WhiteBlack
-     || TableType == SignedColorTable_BlackWhiteBlack
      || TableType == SignedColorTable_WhiteBlackWhite
+     || TableType == SignedColorTable_BlackWhiteBlack
      || TableType == SignedColorTable_BlackGrayWhite;
 }
 
@@ -487,6 +487,10 @@ Index1      = -1;
 Color1.Set ( 0, 0, 0 );
 
 
+constexpr double    WhiteEndRatio   = 0.84;
+constexpr double    WhiteEndRatioS  = 0.94;
+
+
 switch ( tabletype ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -509,7 +513,6 @@ switch ( tabletype ) {
 
 
   case AbsColorTable_BlackYellowWhite:
-    #define     WhiteEndRatio   0.84
 
     InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 0 ),                     TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00          ) );
     InterpolateColors ( Round ( ZeroIndex + DeltaIndex * WhiteEndRatio ),         TGLColor<GLfloat> ( 1.00, 1.00, 0.00, WhiteEndRatio ), InterpolateColorsLinear         );
@@ -669,6 +672,7 @@ switch ( tabletype ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Cyclic tables
+
   case CyclicColorTable_WhiteBlackWhite:
 
     InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 0.00 ),                  TGLColor<GLfloat> ( 1.00, 1.00, 1.00, 1.00 ) );
@@ -712,16 +716,7 @@ switch ( tabletype ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Signed tables
-
-  case SignedColorTable_BlackWhiteBlack:
-
-    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 1.00   ) );
-    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( GLColorNearlyWhite, 0.00 ), InterpolateColorsLogForward,  20 );
-    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 1.00   ), InterpolateColorsLogBackward, 20 );
-
-    break;
-
+                                        // Signed / symmetric tables
 
   case SignedColorTable_WhiteBlackWhite:
 
@@ -732,44 +727,81 @@ switch ( tabletype ) {
     break;
 
 
+  case SignedColorTable_BlackWhiteBlack:
+
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 1.00   ) );
+    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( GLColorNearlyWhite, 0.00 ), InterpolateColorsLogForward,  20 );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 1.00   ), InterpolateColorsLogBackward, 20 );
+
+    break;
+
+
+  case SignedColorTable_WhiteYellowBlackYellowWhite:
+
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00         ) );
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * WhiteEndRatioS ),        TGLColor<GLfloat> ( 1.00, 1.00, 0.00, WhiteEndRatioS ), InterpolateColorsLogForward,  20 );
+    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00           ), InterpolateColorsLinear          );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * WhiteEndRatioS ),        TGLColor<GLfloat> ( 1.00, 1.00, 0.00, WhiteEndRatioS ), InterpolateColorsLinear          );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00         ), InterpolateColorsLogBackward, 20 );
+
+    break;
+
+
+  case SignedColorTable_WhiteYellowBlackYellowWhiteMRIcro:
+
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1.00 ),                  TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00  ) );
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 0.85 ),                  TGLColor<GLfloat> ( 0.90, 0.90, 0.00, 1.00    ), InterpolateColorsLogForward,   20 );
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 0.60 ),                  TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.90    ), InterpolateColorsLogForward,  200 );
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 0.50 ),                  TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00    ), InterpolateColorsLogForward,  200 );
+    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00    ), InterpolateColorsLinear           );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 0.50 ),                  TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00    ), InterpolateColorsLinear           );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 0.60 ),                  TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.90    ), InterpolateColorsLogBackward, 200 );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 0.85 ),                  TGLColor<GLfloat> ( 0.90, 0.90, 0.00, 1.00    ), InterpolateColorsLogBackward, 200 );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1.00 ),                  TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00  ), InterpolateColorsLogBackward,  20 );
+
+    NormalizeColors ( 0, GLColorTableSize - 1, 100 );
+
+    break;
+
+
+  case SignedColorTable_RedBlackRed:
+
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 2 / 2.0 ),             TGLColor<GLfloat> ( 1.00, 0.00, 0.00, 1.00          ) );
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 / 2.0 ),             TGLColor<GLfloat> ( 1.00, 0.00, 0.00, 1.00          ), InterpolateColorsLinear );
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 / 2.0 - 1 ),         TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00          ), InterpolateColorsLinear );
+    InterpolateColors ( ZeroIndex,                                              TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00          ), InterpolateColorsLinear );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 / 2.0 - 1 ),         TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00          ), InterpolateColorsLinear );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 / 2.0 ),             TGLColor<GLfloat> ( 1.00, 0.00, 0.00, 1.00          ), InterpolateColorsLinear );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 2 / 2.0 ),             TGLColor<GLfloat> ( 1.00, 0.00, 0.00, 1.00          ), InterpolateColorsLinear );
+
+    break;
+
+
   case SignedColorTable_BlackGrayWhite:
 
     InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 1.00   ) );
-    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.65, 0.65, 0.65, 0.00   ), InterpolateColorsLogForward, 20 );
-    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00 ), InterpolateColorsLogForward, 20 );
+    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.65, 0.65, 0.65, 0.00   ), InterpolateColorsLogForward,  20 );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00 ), InterpolateColorsLogBackward, 20 );
 
     break;
 
 
-  case SignedColorTable_BlueWhiteRed:
+  case SignedColorTable_RedYellowGreenGrayGreenYellowRed:
 
-    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.00, 0.00, 1.00, 1.00   ) );
-    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( GLColorNearlyWhite, 0.00 ), InterpolateColorsLogForward,  20 );
-    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 1.00, 0.00, 0.00, 1.00   ), InterpolateColorsLogBackward, 20 );
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 3 / 3.0 ),               TGLColor<GLfloat> ( 1.00, 0.00, 0.00, 3 / 3.0 ) );
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 2 / 3.0 ),               TGLColor<GLfloat> ( 0.86, 0.86, 0.00, 2 / 3.0 ), InterpolateColorsLinear );
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 / 3.0 ),               TGLColor<GLfloat> ( 0.00, 0.71, 0.00, 1 / 3.0 ), InterpolateColorsLinear );
+    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.51, 0.51, 0.51, 0 / 3.0 ), InterpolateColorsLinear );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 / 3.0 ),               TGLColor<GLfloat> ( 0.00, 0.71, 0.00, 1 / 3.0 ), InterpolateColorsLinear );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 2 / 3.0 ),               TGLColor<GLfloat> ( 0.86, 0.86, 0.00, 2 / 3.0 ), InterpolateColorsLinear );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 3 / 3.0 ),               TGLColor<GLfloat> ( 1.00, 0.00, 0.00, 3 / 3.0 ), InterpolateColorsLinear );
 
-    NormalizeColors ( 0, GLColorTableSize - 1, 95 );
-
-    break;
-
-
-  case SignedColorTable_CyanBlackYellow:
-    #define     WhiteEndRatioS  0.94
-
-//  InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.00, 1.00, 1.00, 1.00 ) );
-//  InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00 ), InterpolateColorsLogForward, 100 );
-//  InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 1.00, 1.00, 0.00, 1.00 ), InterpolateColorsLogBackward, 100 );
-
-
-    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 1.00, 1.00, 1.00, 1.00   ) );
-    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * WhiteEndRatioS ),        TGLColor<GLfloat> ( 0.00, 0.80, 1.00, 1.00   ), InterpolateColorsLogForward, 20 );
-    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00   ), InterpolateColorsLinear         );
-    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * WhiteEndRatioS ),        TGLColor<GLfloat> ( 1.00, 1.00, 0.00, 1.00   ), InterpolateColorsLinear         );
-    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00 ), InterpolateColorsLogForward, 20 );
+    NormalizeColors ( 0, GLColorTableSize - 1, 100 );
 
     break;
 
 
-  case SignedColorTable_GrayGreenYellowRed:
+  case SignedColorTable_HalfGrayGreenYellowRed:
                                         // don't show negative part, used for templates which have been average referenced and we don't want to show negative data
     InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.51, 0.51, 0.51, 0.00    ) );
     InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.51, 0.51, 0.51, 0.00    ), InterpolateColorsLinear );
@@ -799,23 +831,23 @@ switch ( tabletype ) {
 
 
   case SignedColorTable_NeuroscanColors:
-/*                                      // discrete version
-InterpolateColors ( LutSpNsColor,  TColor(   0,   0, 128), TColor(   0,   0, 128), 0,                          LUT_SP_SIZE     / 13,       InterpolateColorsLinear );
-InterpolateColors ( LutSpNsColor,  TColor(   0,   0, 255), TColor(   0,   0, 255), LUT_SP_SIZE     / 13,       LUT_SP_SIZE * 2 / 13,       InterpolateColorsLinear );
-InterpolateColors ( LutSpNsColor,  TColor(   0,  64, 255), TColor(   0,  64, 255), LUT_SP_SIZE * 2 / 13,       LUT_SP_SIZE * 3 / 13,       InterpolateColorsLinear );
-InterpolateColors ( LutSpNsColor,  TColor(   0, 128, 255), TColor(   0, 128, 255), LUT_SP_SIZE * 3 / 13,       LUT_SP_SIZE * 4 / 13,       InterpolateColorsLinear );
-InterpolateColors ( LutSpNsColor,  TColor(   0, 255, 255), TColor(   0, 255, 255), LUT_SP_SIZE * 4 / 13,       LUT_SP_SIZE * 5 / 13,       InterpolateColorsLinear );
-InterpolateColors ( LutSpNsColor,  TColor(   0, 255, 128), TColor(   0, 255, 128), LUT_SP_SIZE * 5 / 13,       LUT_SP_SIZE * 6 / 13,       InterpolateColorsLinear );
+                                        // discrete version
+//  InterpolateColors ( LutSpNsColor,  TColor(   0,   0, 128), TColor(   0,   0, 128), 0,                          LUT_SP_SIZE     / 13,       InterpolateColorsLinear );
+//  InterpolateColors ( LutSpNsColor,  TColor(   0,   0, 255), TColor(   0,   0, 255), LUT_SP_SIZE     / 13,       LUT_SP_SIZE * 2 / 13,       InterpolateColorsLinear );
+//  InterpolateColors ( LutSpNsColor,  TColor(   0,  64, 255), TColor(   0,  64, 255), LUT_SP_SIZE * 2 / 13,       LUT_SP_SIZE * 3 / 13,       InterpolateColorsLinear );
+//  InterpolateColors ( LutSpNsColor,  TColor(   0, 128, 255), TColor(   0, 128, 255), LUT_SP_SIZE * 3 / 13,       LUT_SP_SIZE * 4 / 13,       InterpolateColorsLinear );
+//  InterpolateColors ( LutSpNsColor,  TColor(   0, 255, 255), TColor(   0, 255, 255), LUT_SP_SIZE * 4 / 13,       LUT_SP_SIZE * 5 / 13,       InterpolateColorsLinear );
+//  InterpolateColors ( LutSpNsColor,  TColor(   0, 255, 128), TColor(   0, 255, 128), LUT_SP_SIZE * 5 / 13,       LUT_SP_SIZE * 6 / 13,       InterpolateColorsLinear );
+//
+//  InterpolateColors ( LutSpNsColor,  TColor(   0, 255,   0), TColor(   0, 255,   0), LUT_SP_SIZE * 6 / 13,       LUT_SP_SIZE * 7 / 13,       InterpolateColorsLinear );
+//
+//  InterpolateColors ( LutSpNsColor,  TColor( 128, 255,   0), TColor( 128, 255,   0), LUT_SP_SIZE * 7 / 13,       LUT_SP_SIZE * 8 / 13,       InterpolateColorsLinear );
+//  InterpolateColors ( LutSpNsColor,  TColor( 255, 255,   0), TColor( 255, 255,   0), LUT_SP_SIZE * 8 / 13,       LUT_SP_SIZE * 9 / 13,       InterpolateColorsLinear );
+//  InterpolateColors ( LutSpNsColor,  TColor( 255, 192,   0), TColor( 255, 192,   0), LUT_SP_SIZE * 9 / 13,       LUT_SP_SIZE * 10/ 13,       InterpolateColorsLinear );
+//  InterpolateColors ( LutSpNsColor,  TColor( 255, 128,   0), TColor( 255, 128,   0), LUT_SP_SIZE * 10/ 13,       LUT_SP_SIZE * 11/ 13,       InterpolateColorsLinear );
+//  InterpolateColors ( LutSpNsColor,  TColor( 255,  64,   0), TColor( 255,  64,   0), LUT_SP_SIZE * 11/ 13,       LUT_SP_SIZE * 12/ 13,       InterpolateColorsLinear );
+//  InterpolateColors ( LutSpNsColor,  TColor( 255,   0, 128), TColor( 255,   0, 128), LUT_SP_SIZE * 12/ 13,       LUT_SP_SIZE-1,              InterpolateColorsLinear );
 
-InterpolateColors ( LutSpNsColor,  TColor(   0, 255,   0), TColor(   0, 255,   0), LUT_SP_SIZE * 6 / 13,       LUT_SP_SIZE * 7 / 13,       InterpolateColorsLinear );
-
-InterpolateColors ( LutSpNsColor,  TColor( 128, 255,   0), TColor( 128, 255,   0), LUT_SP_SIZE * 7 / 13,       LUT_SP_SIZE * 8 / 13,       InterpolateColorsLinear );
-InterpolateColors ( LutSpNsColor,  TColor( 255, 255,   0), TColor( 255, 255,   0), LUT_SP_SIZE * 8 / 13,       LUT_SP_SIZE * 9 / 13,       InterpolateColorsLinear );
-InterpolateColors ( LutSpNsColor,  TColor( 255, 192,   0), TColor( 255, 192,   0), LUT_SP_SIZE * 9 / 13,       LUT_SP_SIZE * 10/ 13,       InterpolateColorsLinear );
-InterpolateColors ( LutSpNsColor,  TColor( 255, 128,   0), TColor( 255, 128,   0), LUT_SP_SIZE * 10/ 13,       LUT_SP_SIZE * 11/ 13,       InterpolateColorsLinear );
-InterpolateColors ( LutSpNsColor,  TColor( 255,  64,   0), TColor( 255,  64,   0), LUT_SP_SIZE * 11/ 13,       LUT_SP_SIZE * 12/ 13,       InterpolateColorsLinear );
-InterpolateColors ( LutSpNsColor,  TColor( 255,   0, 128), TColor( 255,   0, 128), LUT_SP_SIZE * 12/ 13,       LUT_SP_SIZE-1,              InterpolateColorsLinear );
-*/
 
     InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 6 / 6.0 ),               TGLColor<GLfloat> ( 0.00, 0.00, 0.50, 1.00 ) );
     InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 5 / 6.0 ),               TGLColor<GLfloat> ( 0.00, 0.00, 1.00, 0.83 ), InterpolateColorsLinear );
@@ -832,6 +864,44 @@ InterpolateColors ( LutSpNsColor,  TColor( 255,   0, 128), TColor( 255,   0, 128
     InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 6 / 6.0 ),               TGLColor<GLfloat> ( 1.00, 0.00, 0.50, 1.00 ), InterpolateColorsLinear );
 
     break;
+
+
+  case SignedColorTable_BlueWhiteRed:
+
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.00, 0.00, 1.00, 1.00   ) );
+    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( GLColorNearlyWhite, 0.00 ), InterpolateColorsLogForward,  20 );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 1.00, 0.00, 0.00, 1.00   ), InterpolateColorsLogBackward, 20 );
+
+    NormalizeColors ( 0, GLColorTableSize - 1, 95 );
+
+    break;
+
+
+  case SignedColorTable_WhiteBlueBlackRedWhite:
+
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1.00 ),                  TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00         ) );
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * WhiteEndRatioS ),        TGLColor<GLfloat> ( 0.00, 0.00, 1.00, WhiteEndRatioS ), InterpolateColorsLogForward,  20 );
+    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00           ), InterpolateColorsLinear          );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * WhiteEndRatioS ),        TGLColor<GLfloat> ( 1.00, 0.00, 0.00, WhiteEndRatioS ), InterpolateColorsLinear          );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1.00 ),                  TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00         ), InterpolateColorsLogBackward, 20 );
+
+    break;
+
+
+  case SignedColorTable_CyanBlackYellow:
+
+//  InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 0.00, 1.00, 1.00, 1.00 ) );
+//  InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00 ), InterpolateColorsLogForward,  100 );
+//  InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 1.00, 1.00, 0.00, 1.00 ), InterpolateColorsLogBackward, 100 );
+
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * 1 ),                     TGLColor<GLfloat> ( 1.00, 1.00, 1.00, 1.00   ) );
+    InterpolateColors ( Round ( ZeroIndex - DeltaIndex * WhiteEndRatioS ),        TGLColor<GLfloat> ( 0.00, 0.80, 1.00, 1.00   ), InterpolateColorsLogForward,  20 );
+    InterpolateColors ( ZeroIndex,                                                TGLColor<GLfloat> ( 0.00, 0.00, 0.00, 0.00   ), InterpolateColorsLinear          );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * WhiteEndRatioS ),        TGLColor<GLfloat> ( 1.00, 1.00, 0.00, 1.00   ), InterpolateColorsLinear          );
+    InterpolateColors ( Round ( ZeroIndex + DeltaIndex * 1 ),                     TGLColor<GLfloat> ( GLColorNearlyWhite, 1.00 ), InterpolateColorsLogBackward, 20 );
+
+    break;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
