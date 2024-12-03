@@ -115,9 +115,11 @@ int                 blockmax        = ( NumTimeFrames - 1 ) / MaxSamplesPerBlock
 char                triggername[ 8 ];
 long                starttf         = 0;    // global, to allow final unfinished trigger test
 long                l               = 0;
+long                oldl            = 0;
 
                                         // for relative access
 ifs.seekg ( DataOrg + cellsize * NumElectrodes * MaxSamplesPerBlock, ios::beg );
+
 
 
 for ( int   block     = 0,
@@ -138,7 +140,6 @@ for ( int   block     = 0,
 
 
     UCHAR*              toT             = Tracks.GetArray ();
-    long                oldl            = 0;
 
     for ( int tfi = firsttf, tf0 = 0; tf0 < MaxSamplesPerBlock && tfi < NumTimeFrames; tfi++, tf0++ ) {
 

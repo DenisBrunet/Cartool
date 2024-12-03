@@ -86,7 +86,7 @@ protected:
     owl::TInStream* InputStream;
 
     EdfType         FileType;
-    long            DataOrg;
+    LONGLONG        DataOrg;
     int             MaxSamplesPerBlock;
     int             BlockSize;
     TArray1<double> Gains;
