@@ -106,6 +106,7 @@ public:
 
     inline bool     IsOpen          ()  const           { return  hfile != 0;   }
     inline bool     IsOK            ()  const           { return  OK;           }
+    inline bool     IsEndOfFile     ()  const           { return  EndOfFile;    }   // only after Read
 
     inline bool     Open            ( const char* file, TFileStreamEnums flags );
     inline void     Close           ();
@@ -131,6 +132,7 @@ protected:
 
     HANDLE          hfile;
     bool            OK;             // = open and no error
+    bool            EndOfFile;      // valid only after Read
 };
 
 
@@ -310,13 +312,13 @@ of->flush ();
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
         TFileStream::TFileStream ()
-      : hfile ( 0 ), OK ( false )
+      : hfile ( 0 ), OK ( false ), EndOfFile ( true )
 {
 }
 
 
         TFileStream::TFileStream ( const char* file, TFileStreamEnums flags )
-      : hfile ( 0 ), OK ( false )
+      : hfile ( 0 ), OK ( false ), EndOfFile ( true )
 {
 Open ( file, flags );
 }
@@ -389,11 +391,14 @@ else if ( flags == FileStreamUpdate )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( hfile == INVALID_HANDLE_VALUE ) {
-    hfile   = 0;
-    OK      = false;
+    hfile       = 0;
+    OK          = false;
+    EndOfFile   = true;
     }
-else
-    OK      = true;
+else {
+    OK          = true;
+    EndOfFile   = false;    // not that it means anything
+    }
 
 return  OK;
 }
@@ -453,12 +458,17 @@ return  Seek ( LONGLONG_to_LARGE_INTEGER ( pos ) /*To_LARGE_INTEGER ( pos )*/, F
                                         // General case, at current position
 bool    TFileStream::Read   ( LPVOID data, DWORD sizeofdata )
 {
+DWORD               numberofbytesread;
+
 OK  = ReadFile  (   hfile,
                     data,
                     sizeofdata,
-                    NULL,
+                    &numberofbytesread,
                     NULL
                 );
+
+EndOfFile   = ! OK || numberofbytesread == 0;
+
 return  OK;
 }
 

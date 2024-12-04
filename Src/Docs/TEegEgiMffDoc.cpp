@@ -473,8 +473,10 @@ if ( GetDocPath () ) {
         do {
                                         // get next header
                                         // is it possible that mffbinheader.Version could be 0 here? it doesn't really make sense, and it would complicate some more the scan..
-            if ( ! FileStream.Read ( &mffbinheader, sizeof ( mffbinheader ) ) )
-                break;                  // eof
+            FileStream.Read ( &mffbinheader, sizeof ( mffbinheader ) );
+
+            if ( FileStream.IsEndOfFile () )
+                break;
 
                                         // no, we are good
             NumBlocks++;
