@@ -80,7 +80,6 @@ convertnext3digits ( sec      );
         TEegEgiMffDoc::TEegEgiMffDoc ( TDocument *parent )
       : TTracksDoc ( parent )
 {
-InputStream         = 0;
 Version             = 0;
 
 NumBlocks           = 0;
@@ -93,10 +92,7 @@ Reference           = ReferenceAsInFile;
 
 bool	TEegEgiMffDoc::Close ()
 {
-if ( InputStream ) {
-    delete  InputStream;
-    InputStream = 0;
-    }
+FileStream.Close ();
 
 return  TFileDocument::Close ();
 }
@@ -399,40 +395,41 @@ if ( GetDocPath () ) {
 
 
     if ( ! CanOpenFile ( fileinfo,  CanOpenFileRead ) ) {
-        ShowMessage ( "MFF file 'info.xml' is missing,\nwill do without it...", "File Open", ShowMessageWarning );
+        ShowMessage ( "MFF file 'info.xml' is missing," NewLine "will do without it...", "File Open", ShowMessageWarning );
 //      return  false;
         }
 
     if ( ! CanOpenFile ( fileinfox,  CanOpenFileRead ) ) {
-        ShowMessage ( "MFF file 'infoX.xml' is missing,\ncalibration might be wrong...", "File Open", ShowMessageWarning );
+        ShowMessage ( "MFF file 'infoX.xml' is missing," NewLine "calibration might be wrong...", "File Open", ShowMessageWarning );
 //      return  false;
         }
 
     if ( ! CanOpenFile ( fileepochs,  CanOpenFileRead ) ) {
-        ShowMessage ( "MFF file 'epochs.xml' is missing,\nCartool can not proceed any further, sorry...", "File Open", ShowMessageWarning );
+        ShowMessage ( "MFF file 'epochs.xml' is missing," NewLine "Cartool can not proceed any further, sorry...", "File Open", ShowMessageWarning );
         return  false;  // or not?
         }
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    InputStream     = InStream ( ofRead | ofBinary );
-
-    if ( ! InputStream ) return false;
+    if ( ! FileStream.Open ( GetDocPath(), FileStreamRead ) )
+        return false;
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // fixed header
     TEegEgi_Mff_Bin_HeaderFixed   mffbinheader;
 
-    InputStream->read ( (char *)(&mffbinheader), sizeof ( mffbinheader ) );
+    FileStream.Read ( &mffbinheader, sizeof ( mffbinheader ) );
 
                                         // there sould be a full header, with Version != 0, at the beginning
                                         // though later repetitions of this header, for other blocks, might have a Version == 0
     if ( mffbinheader.Version != 1 ) {
                                         // does not seem to really matter..
-        ShowMessage ( "MFF .bin file version not recognized,\nreading file might give some unexpected results...", "File Open", ShowMessageWarning );
-//      delete  InputStream; InputStream = 0;
+        ShowMessage ( "MFF .bin file version not recognized," NewLine "reading file might give some unexpected results...", "File Open", ShowMessageWarning );
+
+//      FileStream.Close ();
+// 
 //      return false;
         }
 
@@ -443,13 +440,13 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // jump to optional header
-    InputStream->seekg ( NumElectrodes * sizeof ( TEegEgi_Mff_Bin_HeaderVariable1 )
-                       + NumElectrodes * sizeof ( TEegEgi_Mff_Bin_HeaderVariable2 ), ios::cur );
+    FileStream.SeekCurrent  ( NumElectrodes * sizeof ( TEegEgi_Mff_Bin_HeaderVariable1 )
+                            + NumElectrodes * sizeof ( TEegEgi_Mff_Bin_HeaderVariable2 ) );
 
                                         // optional header (should be there for the first block!) has important infos: (total # of TF) # of blocks
     TEegEgi_Mff_Bin_HeaderOptionalLength    optheaderlength;
 
-    InputStream->read  ( (char *)(&optheaderlength), sizeof ( optheaderlength ) );
+    FileStream.Read ( &optheaderlength, sizeof ( optheaderlength ) );
 
                                         // get number of blocks
     if ( optheaderlength != 0 ) {
@@ -459,7 +456,7 @@ if ( GetDocPath () ) {
         if ( optheaderlength != sizeof ( TEegEgi_Mff_Bin_HeaderOptional ) )
             ShowMessage ( "Error in Optional Header, file might be corrupted...", "File Open", ShowMessageWarning );
 
-        InputStream->read ( (char *)(&mffbinheaderopt), sizeof ( mffbinheaderopt ) );
+        FileStream.Read ( &mffbinheaderopt, sizeof ( mffbinheaderopt ) );
 
 //      if ( mffbinheaderopt.Type == 1 ) { // assume this is always the case, no doc on other options for now
 
@@ -470,32 +467,29 @@ if ( GetDocPath () ) {
     else {                              // hu-ho, bad news...
 
                                         // we have to search for the # of blocks ourselves, with an iterative search through all file
-        InputStream->seekg ( 0, ios::beg );
+        FileStream.SeekBegin ();
         NumBlocks   = 0;
 
         do {
                                         // get next header
                                         // is it possible that mffbinheader.Version could be 0 here? it doesn't really make sense, and it would complicate some more the scan..
-            InputStream->read ( (char *)(&mffbinheader), sizeof ( mffbinheader ) );
-
-                                        // eof?
-            if ( ! InputStream->good () )
-                break;
+            if ( ! FileStream.Read ( &mffbinheader, sizeof ( mffbinheader ) ) )
+                break;                  // eof
 
                                         // no, we are good
             NumBlocks++;
 
                                         // skip block of data, and repeat
-            InputStream->seekg ( mffbinheader.DataSize + mffbinheader.HeaderSize - sizeof ( mffbinheader ), ios::cur );
+            FileStream.SeekCurrent ( mffbinheader.DataSize + mffbinheader.HeaderSize - sizeof ( mffbinheader ) );
 
             } while ( true );
 
                                         // we basically crashed the stream, so re-open it
-        delete  InputStream;
+        FileStream.Close ();
+        FileStream.Open  ( GetDocPath(), FileStreamRead );
 
-        InputStream     = InStream ( ofRead | ofBinary );
 
-//      ShowMessage ( "MFF file is missing the number of time blocks,\nreading file might give some unexpected results...", "File Open", ShowMessageWarning );
+//      ShowMessage ( "MFF file is missing the number of time blocks," NewLine "reading file might give some unexpected results...", "File Open", ShowMessageWarning );
 //      NumBlocks       = 1;            // fallback to a single block
 //      NumTimeFrames   = MaxSamplesPerBlock;
         } // optheaderlength == 0
@@ -512,29 +506,10 @@ if ( GetDocPath () ) {
     TArray1<UINT>                               frequency   ( NumElectrodes );
 
 
-    InputStream->seekg ( 0, ios::beg );
+    FileStream.SeekBegin ();
 
                                         // fill the block structure
     for ( int b = 0; b < NumBlocks; b++ ) {
-
-                                        // local function to check if the stream is still viable
-        auto CheckStream = [ &b, this ] ( const char* message = 0 ) {
-
-            if ( InputStream->good () ) return true;
-
-            ShowMessage ( StringIsEmpty ( message ) ?  "Error in Block format, file might be corrupted..." : message, StringPrepend ( IntegerToString ( b + 1 ), "Block #" ), ShowMessageWarning );
-                                        // reset stream
-            delete  InputStream;
-            InputStream     = InStream ( ofRead | ofBinary );
-            InputStream->seekg ( 0, ios::beg );
-                                        // tough clipping seems necessary so we can still open the beginning of the file
-            NumBlocks   = AtLeast ( 1, b / 2 );
-
-            return  false;
-            };
-
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // allocate channel info
         TEegEgi_Mff_Bin_Block&      block       = Blocks[ b ];
 
@@ -543,15 +518,12 @@ if ( GetDocPath () ) {
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // read only the Version part, as the header could be missing
-        InputStream->read ( (char *)(&mffbinheader.Version), sizeof ( mffbinheader.Version ) );
-
-        if ( ! CheckStream ( b == 0 ? "Error in main header version..." : "Error in repeated header version..." ) )
-            break;
+        FileStream.Read ( &mffbinheader.Version, sizeof ( mffbinheader.Version ) );
 
                                         // To save space, a missing header means repeating the last one
         if ( mffbinheader.Version == 0 ) {
                                         // this is where data begin
-            block.FileOrigin          = InputStream->tellg ();
+            block.FileOrigin          = FileStream.Tell ();
                                         // copy from previous block
             block.NumTimeFrames       = Blocks[ b - 1 ].NumTimeFrames;
 
@@ -561,11 +533,7 @@ if ( GetDocPath () ) {
                 block.ChannelsSpec[ el ]  = Blocks[ b - 1 ].ChannelsSpec[ el ];
 
                                         // skip block data
-            InputStream->seekg ( mffbinheader.DataSize, ios::cur );
-
-            if ( ! CheckStream ( "Error in repeated block header..." ) )
-                break;
-
+            FileStream.SeekCurrent ( mffbinheader.DataSize );
 
             continue;
             }
@@ -576,21 +544,15 @@ if ( GetDocPath () ) {
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // not null -> read the remaining part of the block header
-        InputStream->read  ( (char *)(&mffbinheader) + sizeof ( mffbinheader.Version ), sizeof ( mffbinheader ) - sizeof ( mffbinheader.Version ) );
-
-        if ( ! CheckStream ( "Error in main header..." ) )
-            break;
+        FileStream.Read  ( (char *)(&mffbinheader) + sizeof ( mffbinheader.Version ), sizeof ( mffbinheader ) - sizeof ( mffbinheader.Version ) );
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // header, variable part 1
         for ( int el = 0; el < NumElectrodes; el++ )
-            InputStream->read ( (char *)(&TrackOffset[ el ]), sizeof ( TEegEgi_Mff_Bin_HeaderVariable1 ) );
+            FileStream.Read ( &TrackOffset[ el ], sizeof ( TEegEgi_Mff_Bin_HeaderVariable1 ) );
                                         // ends with one more = block size
         TrackOffset[ NumElectrodes ]    = mffbinheader.DataSize;
-
-        if ( ! CheckStream ( "Error in tracks offsets..." ) )
-            break;
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -599,16 +561,13 @@ if ( GetDocPath () ) {
 
         for ( int el = 0; el < NumElectrodes; el++ ) {
 
-            InputStream->read ( (char *)(&mffbinheaderv2), sizeof ( mffbinheaderv2 ) );
+            FileStream.Read ( &mffbinheaderv2, sizeof ( mffbinheaderv2 ) );
 
             bits     [ el ] = mffbinheaderv2.BitsPerTracks;
             frequency[ el ] = mffbinheaderv2.GetTrackFrequency ();
                                         // store max sampling frequency of block
             Maxed ( block.SamplingFrequency, frequency[ el ] );
             }
-
-        if ( ! CheckStream ( "Error in tracks format..." ) )
-            break;
 
 
         block.NumTimeFrames   = 0;
@@ -629,10 +588,7 @@ if ( GetDocPath () ) {
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // skip optional header, already read
-        InputStream->read  ( (char *)(&optheaderlength), sizeof ( optheaderlength ) );
-
-        if ( ! CheckStream ( "Error in optional header length..." ) )
-            break;
+        FileStream.Read  ( &optheaderlength, sizeof ( optheaderlength ) );
 
 
         if ( optheaderlength != 0 ) {
@@ -640,23 +596,16 @@ if ( GetDocPath () ) {
             //if ( optheaderlength != sizeof ( TEegEgi_Mff_Bin_HeaderOptional ) )
             //    ShowMessage ( "Error in Optional Header, file might be corrupted...", "File Open", ShowMessageWarning );
 
-            InputStream->seekg ( optheaderlength, ios::cur );
-
-            if ( ! CheckStream ( "Error in optional header..." ) )
-                break;
+            FileStream.SeekCurrent ( optheaderlength );
             }
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // finally, this is where data begin
-        block.FileOrigin      = InputStream->tellg ();
+        block.FileOrigin      = FileStream.Tell ();
 
                                         // skip block data
-        InputStream->seekg ( mffbinheader.DataSize, ios::cur );
-
-        if ( ! CheckStream ( "Error in data block..." ) )
-            break;
-
+        FileStream.SeekCurrent ( mffbinheader.DataSize );
         } // for block
 
 
@@ -675,7 +624,9 @@ if ( GetDocPath () ) {
             if ( Blocks[ b ].ChannelsSpec[ el ].BytesPerSample != 4 ) {
 
                 ShowMessage ( "Only single float (4 bytes) data type is suppported for now...", "File Open", ShowMessageWarning );
-                delete  InputStream; InputStream = 0;
+
+                FileStream.Close ();
+
                 return false;
                 }
 
@@ -697,7 +648,9 @@ if ( GetDocPath () ) {
 
                                         // space allocation + default names
     if ( ! SetArrays () ) {
-        delete  InputStream; InputStream = 0;
+
+        FileStream.Close ();
+
         return false;
         }
 
@@ -721,8 +674,10 @@ if ( GetDocPath () ) {
 
 
     if ( Version > 3 ) {
-        ShowMessage ( "MFF info.xml file version not recognized,\nreading file might give some unexpected results...", "File Open", ShowMessageWarning );
-//      delete  InputStream; InputStream = 0;
+        ShowMessage ( "MFF info.xml file version not recognized," NewLine "reading file might give some unexpected results...", "File Open", ShowMessageWarning );
+
+//      FileStream.Close ();
+// 
 //      return false;
         }
 
@@ -826,9 +781,9 @@ if ( GetDocPath () ) {
         }
 
                                         // Give some feedbacks, but maybe only for Gains, as Zeros seem to be always missing(?)
-  //if ( ! (bool) Gains &&   (bool) Zeros )     ShowMessage ( "MFF xml file is missing Gains,\nreading file might give some unexpected results...", ToFileName ( fileinfox ), ShowMessageWarning );
-  //if (   (bool) Gains && ! (bool) Zeros )     ShowMessage ( "MFF xml file is missing Zeros,\nreading file might give some unexpected results...", ToFileName ( fileinfox ), ShowMessageWarning );
-  //if ( ! (bool) Gains && ! (bool) Zeros )     ShowMessage ( "MFF xml file is missing both Zeros and Gains,\nreading file might give some unexpected results...", ToFileName ( fileinfox ), ShowMessageWarning );
+  //if ( ! (bool) Gains &&   (bool) Zeros )     ShowMessage ( "MFF xml file is missing Gains," NewLine "reading file might give some unexpected results...", ToFileName ( fileinfox ), ShowMessageWarning );
+  //if (   (bool) Gains && ! (bool) Zeros )     ShowMessage ( "MFF xml file is missing Zeros," NewLine "reading file might give some unexpected results...", ToFileName ( fileinfox ), ShowMessageWarning );
+  //if ( ! (bool) Gains && ! (bool) Zeros )     ShowMessage ( "MFF xml file is missing both Zeros and Gains," NewLine "reading file might give some unexpected results...", ToFileName ( fileinfox ), ShowMessageWarning );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -994,7 +949,9 @@ if ( GetDocPath () ) {
 
     else { // no epochs
         ShowMessage ( "MFF file 'epochs.xml' seems incomplete," NewLine "Cartool can not proceed any further, sorry...", "File Open", ShowMessageWarning );
-        delete  InputStream; InputStream = 0;
+
+        FileStream.Close ();
+
         return  false;
         }
 
@@ -1007,7 +964,9 @@ if ( GetDocPath () ) {
         if ( Blocks[ b - 1 ].SamplingFrequency != Blocks[ b ].SamplingFrequency ) {
 
             ShowMessage ( "MFF file seems to have different sampling frequencies within the same sequence," NewLine "Cartool can not proceed any further, sorry...", "File Open", ShowMessageWarning );
-            delete  InputStream; InputStream = 0;
+
+            FileStream.Close ();
+
             return  false;
             }
 
@@ -1102,12 +1061,11 @@ for ( ; block <= blockmax; tfoffset      += numtfinblock /*Blocks[ block ].NumTi
 
     int         maxtfperblock   = Blocks[ block ].NumTimeFrames - 1;
                                         // origin of next full track to be read
-    streamoff   nextelpos       = Blocks[ block ].FileOrigin;
+    LONGLONG    nextelpos       = Blocks[ block ].FileOrigin;
 
     ULONG       tfremainingread = tf2 - firsttf + 1;
 
-//  InputStream->seekg ( nextelpos, ios::beg );
-
+  //FileStream.SeekBegin ( nextelpos );
 
                                         // in the block, values for one electrode are consecutives
     const TEegEgi_Mff_Bin_Channel*      toch        = Blocks[ block ].ChannelsSpec.GetArray ();
@@ -1118,14 +1076,14 @@ for ( ; block <= blockmax; tfoffset      += numtfinblock /*Blocks[ block ].NumTi
         int         tfpertrack      = toch[ el ].SamplesPerBlock - 1;
 
                                         // get the complete line for this electrode - very inefficient
-        //InputStream->read ( (char*) Tracks.GetArray (), toch[ el ].ChannelSize );
+      //FileStream.Read ( Tracks.GetArray (), toch[ el ].ChannelSize );
 
                                         // optimal jump to where data are
-        InputStream->seekg ( nextelpos + firsttfinblock * sizeof ( float ), ios::beg );
+        FileStream.SeekBegin ( nextelpos + firsttfinblock * sizeof ( float ) );
                                         // so that we can read the min # of data: min of remaining block or remaining data
         ULONG       tfminread       = min ( toch[ el ].SamplesPerBlock - firsttfinblock, tfremainingread );
                                         // still put the data at offset position
-        InputStream->read ( (char*) ( Tracks.GetArray () + firsttfinblock ), tfminread * sizeof ( float ) );
+        FileStream.Read ( Tracks.GetArray () + firsttfinblock, tfminread * sizeof ( float ) );
                                         // next channel beginning
                     nextelpos      += toch[ el ].ChannelSize;
 

@@ -91,10 +91,10 @@ public:
 class   TEegEgi_Mff_Bin_Block
 {
 public:
-    std::streamoff      FileOrigin;         // where data starts in file (absolute position)
-    ULONG               TimeFrameOrigin;    // what is the absolute first time frame of this block
-    ULONG               NumTimeFrames;      // maximum length of this block
-    UINT                SamplingFrequency;  // maximum sampling frequency of this block
+    LONGLONG        FileOrigin;         // where data starts in file (absolute position)
+    ULONG           TimeFrameOrigin;    // what is the absolute first time frame of this block
+    ULONG           NumTimeFrames;      // maximum length of this block
+    UINT            SamplingFrequency;  // maximum sampling frequency of this block
     TArray1<TEegEgi_Mff_Bin_Channel>    ChannelsSpec;   // every channel info for this block
 };
 
@@ -138,8 +138,6 @@ public:
 
 
 protected:
-
-    owl::TInStream* InputStream;
 
     TVector<float>                      Tracks;
     TVector<double>                     Gains;
