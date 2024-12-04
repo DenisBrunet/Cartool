@@ -234,7 +234,7 @@ int                 el;
 float*              toT;
 
                                         // set file to first TF
-FileStream.Seek ( DataOrg + BuffSize * tf1 );
+FileStream.SeekBegin ( DataOrg + BuffSize * tf1 );
 
 
 for ( long tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++ ) {

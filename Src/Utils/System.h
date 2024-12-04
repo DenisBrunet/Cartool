@@ -181,7 +181,7 @@ if ( createconsole )
 
 //----------------------------------------------------------------------------
                                         // long long conversion, the correct way
-inline  LARGE_INTEGER   ToLargeInt ( long long pos )
+inline  LARGE_INTEGER       To_LARGE_INTEGER ( LONGLONG pos )
 {
 LARGE_INTEGER       li;
 
@@ -190,8 +190,7 @@ li.QuadPart         = pos;
 return  li;
 }
 
-
-inline  LARGE_INTEGER   ToLargeInt ( long pos )
+inline  LARGE_INTEGER       To_LARGE_INTEGER ( long pos )
 {
 LARGE_INTEGER       li;
 
@@ -200,9 +199,10 @@ li.LowPart          = pos;
 
 return  li;
 }
-
                                         // and the dirty way, directly casting the long long to the matching union
-inline LARGE_INTEGER    LONGLONGTOLARGEINT  ( const LONGLONG& ll )  { return  *( (LARGE_INTEGER*) (&ll) ); }
+inline const LARGE_INTEGER& LONGLONG_to_LARGE_INTEGER   ( const LONGLONG&      ll )     { return  *( (LARGE_INTEGER*) (&ll) ); }
+
+inline const LONGLONG&      LARGE_INTEGER_to_LONGLONG   ( const LARGE_INTEGER& li )     { return  li.QuadPart;                 }
 
                                         // Extracting the low and high ulong's from a 64 bits pointer - Inspired from LOWORD / HIWORD macros
 inline ULONG            LOULONG             ( const void* ll )      { return (ULONG) ( (   (ULONG_PTR)(ll) )         & 0xffffffff ); }

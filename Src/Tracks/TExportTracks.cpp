@@ -664,7 +664,7 @@ if      ( Type == ExportTracksEdf ) {
 
             if ( ofs.IsOpen () )
 
-                ofs.Write ( EDFseekp ( tf - TimeMin, NumTracks ), EdfValue );
+                ofs.WriteBegin ( EDFseekp ( tf - TimeMin, NumTracks ), EdfValue );
 
             else {
                 of->seekp ( EDFseekp ( tf - TimeMin, NumTracks ) );

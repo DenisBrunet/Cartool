@@ -21,10 +21,10 @@ limitations under the License.
 #include    <io.h>
 #include    <fstream>
 
-#include    "System.h"                  // LONGLONGTOLARGEINT
+#include    "System.h"                  // LONGLONG_to_LARGE_INTEGER, LARGE_INTEGER_to_LONGLONG
 
 #include    "Strings.Utils.h"
-#include    "Files.Utils.h"                   // TFilenameFlags
+#include    "Files.Utils.h"             // TFilenameFlags
 
 namespace crtl {
 
@@ -104,27 +104,33 @@ public:
     inline         ~TFileStream     ();
 
 
-    inline bool     IsOpen          ()  const           { return    hfile != 0; }
+    inline bool     IsOpen          ()  const           { return  hfile != 0;   }
+    inline bool     IsOK            ()  const           { return  OK;           }
 
     inline bool     Open            ( const char* file, TFileStreamEnums flags );
     inline void     Close           ();
 
-    inline void     Seek            ( const LARGE_INTEGER& pos );
-    inline void     Seek            ( LONGLONG pos );
 
-    inline  void    Read            (               LPVOID  data, DWORD sizeofdata );
+    inline LONGLONG Tell            ();
+    inline bool     Seek            ( const LARGE_INTEGER& pos, DWORD where );
+    inline bool     SeekBegin       ( LONGLONG             pos = 0 );
+    inline bool     SeekCurrent     ( LONGLONG             pos     );
+    inline bool     SeekEnd         ( LONGLONG             pos = 0 );
 
-    inline  void    Write           (               LPCVOID data, DWORD sizeofdata );
-    inline  void    Write           ( LONGLONG pos, LPCVOID data, DWORD sizeofdata );
-    inline  void    Write           ( LONGLONG pos, short   data );
+    inline  bool    Read            ( LPVOID  data, DWORD sizeofdata );
+
+    inline bool     Write           ( LPCVOID data, DWORD sizeofdata );
+    inline bool     Write           ( const LARGE_INTEGER& pos, DWORD where, LPCVOID data, DWORD sizeofdata );
+    inline bool     WriteBegin      ( LONGLONG pos, short data );
 
 
-    inline          operator bool   ()  const           { return    IsOpen (); }
+    inline          operator bool   ()  const           { return  OK;           }
 
 
 protected:
 
     HANDLE          hfile;
+    bool            OK;             // = open and no error
 };
 
 
@@ -303,15 +309,14 @@ of->flush ();
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-
         TFileStream::TFileStream ()
-      : hfile ( 0 )
+      : hfile ( 0 ), OK ( false )
 {
 }
 
 
         TFileStream::TFileStream ( const char* file, TFileStreamEnums flags )
-      : hfile ( 0 )
+      : hfile ( 0 ), OK ( false )
 {
 Open ( file, flags );
 }
@@ -330,6 +335,7 @@ if ( IsOpen ()  )
     CloseHandle ( hfile );
     
 hfile       = 0;
+OK          = false;
 }
 
 
@@ -338,10 +344,11 @@ bool    TFileStream::Open ( const char* file, TFileStreamEnums flags )
 {
 Close ();
 
-
 if ( StringIsEmpty ( file ) )
     return  false;
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // All files are open in random access mode, as this is our most common use
 if      ( flags == FileStreamRead )
 
@@ -379,83 +386,110 @@ else if ( flags == FileStreamUpdate )
                             );
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 if ( hfile == INVALID_HANDLE_VALUE ) {
-    hfile       = 0;
-    return  false;
+    hfile   = 0;
+    OK      = false;
     }
+else
+    OK      = true;
 
-
-return  true;
+return  OK;
 }
 
 
 //----------------------------------------------------------------------------
+                                        // Retrieve current position
+LONGLONG    TFileStream::Tell ()
+{
+LARGE_INTEGER       currpos;
 
-void    TFileStream::Seek ( const LARGE_INTEGER& pos )
+OK  = SetFilePointerEx  (   hfile,
+                            { 0 },              // distance of 0
+                            &currpos,
+                            FILE_CURRENT
+                        );
+
+return  OK ? LARGE_INTEGER_to_LONGLONG ( currpos ) : -1;
+}
+
+
+//----------------------------------------------------------------------------
+                                        // General case
+bool    TFileStream::Seek ( const LARGE_INTEGER& pos, DWORD where )
 {
 //if ( ! IsOpen () )
-//    return;
+//    return ( OK = false );
 
-SetFilePointerEx    (   hfile,
-                        pos,
-                        0,
-                        FILE_BEGIN
-                    );
+OK  = SetFilePointerEx  (   hfile,
+                            pos,
+                            0,
+                            where
+                        );
+return  OK;
+}
+
+                                        // Special cases
+bool    TFileStream::SeekBegin ( LONGLONG pos )
+{
+return  Seek ( LONGLONG_to_LARGE_INTEGER ( pos ) /*To_LARGE_INTEGER ( pos )*/, FILE_BEGIN );
 }
 
 
-void    TFileStream::Seek ( LONGLONG pos )
+bool    TFileStream::SeekCurrent ( LONGLONG pos )
 {
-//if ( ! IsOpen () )
-//    return;
-
-SetFilePointerEx    (   hfile,
-                        LONGLONGTOLARGEINT ( pos ), // ToLargeInt ( pos ),
-                        0,
-                        FILE_BEGIN
-                    );
+return  Seek ( LONGLONG_to_LARGE_INTEGER ( pos ) /*To_LARGE_INTEGER ( pos )*/, FILE_CURRENT );
 }
 
 
-//----------------------------------------------------------------------------
-                                        // Any write at current position
-void    TFileStream::Write  ( LPCVOID data, DWORD sizeofdata )
+bool    TFileStream::SeekEnd ( LONGLONG pos )
 {
-WriteFile   (   hfile,
-                data,
-                sizeofdata,
-                NULL,
-                NULL
-            );
-}
-
-                                        // Any write at given position
-void    TFileStream::Write  ( LONGLONG pos, LPCVOID data, DWORD sizeofdata )
-{
-Seek    ( pos );
-
-Write   ( data, sizeofdata );
-}
-
-                                        // Write short at given position
-void    TFileStream::Write  ( LONGLONG pos, short data )
-{
-Seek    ( pos );
-
-Write   ( &data, sizeof ( short ) );
+return  Seek ( LONGLONG_to_LARGE_INTEGER ( pos ) /*To_LARGE_INTEGER ( pos )*/, FILE_END );
 }
 
 
 //----------------------------------------------------------------------------
-                                        // Any read at current position
-void    TFileStream::Read   ( LPVOID data, DWORD sizeofdata )
+                                        // General case, at current position
+bool    TFileStream::Read   ( LPVOID data, DWORD sizeofdata )
 {
-ReadFile    (   hfile,
-                data,
-                sizeofdata,
-                NULL,
-                NULL
-            );
+OK  = ReadFile  (   hfile,
+                    data,
+                    sizeofdata,
+                    NULL,
+                    NULL
+                );
+return  OK;
+}
+
+
+//----------------------------------------------------------------------------
+                                        // General case, at current position
+bool    TFileStream::Write  ( LPCVOID data, DWORD sizeofdata )
+{
+OK  = WriteFile (   hfile,
+                    data,
+                    sizeofdata,
+                    NULL,
+                    NULL
+                );
+return  OK;
+}
+
+                                        // General case, at any position
+bool    TFileStream::Write  ( const LARGE_INTEGER& pos, DWORD where, LPCVOID data, DWORD sizeofdata )
+{
+bool        seekok      = Seek  ( pos,  where      );
+bool        writeok     = seekok && Write ( data, sizeofdata );
+
+return  writeok;
+}
+
+
+                                        // Special cases
+bool    TFileStream::WriteBegin ( LONGLONG pos, short data )
+{
+return  Write ( LONGLONG_to_LARGE_INTEGER ( pos ), FILE_BEGIN, &data, sizeof ( short ) );
 }
 
 
