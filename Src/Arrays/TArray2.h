@@ -55,6 +55,8 @@ public:
 
     TypeD           GetMinValue         ()          const;
     TypeD           GetMaxValue         ()          const;
+    TypeD           GetAbsMaxValue      ()          const;
+    void            GetMinMaxValues     ( TypeD& minvalue, TypeD& maxvalue )    const;
 
 
     void            SortRows            ( int column, SortDirection direction, int numitems = -1 );
@@ -154,14 +156,9 @@ Array           = (TypeD *) AllocateMemory ( MemorySize () );
 template <class TypeD>
 TypeD   TArray2<TypeD>::GetMaxValue ()  const
 {
-if ( IsNotAllocated () )
-    return  0;
-
-
-TypeD               maxvalue        = Array[ 0 ];
+TypeD               maxvalue        = Lowest  ( maxvalue );
 
 for ( int i = 0; i < LinearDim; i++ )
-
     Maxed ( maxvalue, Array[ i ] );
 
 return  maxvalue;
@@ -171,17 +168,38 @@ return  maxvalue;
 template <class TypeD>
 TypeD   TArray2<TypeD>::GetMinValue ()  const
 {
-if ( IsNotAllocated () )
-    return  0;
-
-
-TypeD               minvalue        = Array[ 0 ];
+TypeD               minvalue        = Highest ( minvalue );
 
 for ( int i = 0; i < LinearDim; i++ )
-
     Mined ( minvalue, Array[ i ] );
 
 return  minvalue;
+}
+
+
+template <class TypeD>
+TypeD   TArray2<TypeD>::GetAbsMaxValue ()  const
+{
+TypeD               minvalue;
+TypeD               maxvalue;
+
+GetMinMaxValues ( minvalue, maxvalue );
+
+return  max ( abs ( minvalue ), abs ( maxvalue ) ); 
+}
+
+
+template <class TypeD>
+void    TArray2<TypeD>::GetMinMaxValues     (   TypeD&      minvalue,   TypeD&      maxvalue    )   const
+{
+minvalue    = Highest ( minvalue );
+maxvalue    = Lowest  ( maxvalue );
+
+for ( int i = 0; i < LinearDim; i++ ) {
+
+    Mined ( minvalue, Array[ i ] );
+    Maxed ( maxvalue, Array[ i ] );
+    }
 }
 
 

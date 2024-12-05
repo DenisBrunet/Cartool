@@ -1215,33 +1215,6 @@ verbose.NextLine ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Setting the exported file
-TExportTracks     expfile;
-
-StringCopy ( expfile.Filename, neweegfile );
-
-//StringCopy ( expfile.Type, fileoutext );
-
-expfile.SetAtomType ( AtomTypeScalar );
-expfile.NumTracks           = DestPoints.GetNumPoints ();
-expfile.NumAuxTracks        = 0;
-expfile.NumTime             = eegdoc->GetNumTimeFrames ();
-expfile.SamplingFrequency   = eegdoc->GetSamplingFrequency ();
-
-expfile.DateTime            = eegdoc->DateTime;
-
-expfile.ElectrodesNames     = DestPointsNames;
-
-expfile.MaxValue            = eegdoc->GetAbsMaxValue ();   // interpolated shouldn't be very far from that value...
-
-expfile.OutputTriggers      = (ExportTriggers) ( TriggersAsTriggers | MarkersAsMarkers );
-expfile.Markers             = *eegdoc;
-expfile.NumTags             = eegdoc->GetNumMarkers ();
-expfile.TimeMin             = 0;
-expfile.TimeMax             = expfile.NumTime - 1;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 enum                {
                     gaugeinterpolglobal  = 0,
@@ -1489,6 +1462,35 @@ for ( int tf = 0; tf < maxtf; tf++ ) {
     } // for tf
 
 OmpParallelEnd
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Setting the exported file
+TExportTracks     expfile;
+
+StringCopy ( expfile.Filename, neweegfile );
+
+//StringCopy ( expfile.Type, fileoutext );
+
+expfile.SetAtomType ( AtomTypeScalar );
+expfile.NumTracks           = DestPoints.GetNumPoints ();
+expfile.NumAuxTracks        = 0;
+expfile.NumTime             = eegdoc->GetNumTimeFrames ();
+expfile.SamplingFrequency   = eegdoc->GetSamplingFrequency ();
+
+expfile.DateTime            = eegdoc->DateTime;
+
+expfile.ElectrodesNames     = DestPointsNames;
+
+DBGV2 ( eegdoc->GetAbsMaxValue (), dataout.GetAbsMaxValue (), "MaxValue Old New" );
+                                        // here we have the exact value
+expfile.MaxValue            = dataout.GetAbsMaxValue (); // eegdoc->GetAbsMaxValue ();
+
+expfile.OutputTriggers      = (ExportTriggers) ( TriggersAsTriggers | MarkersAsMarkers );
+expfile.Markers             = *eegdoc;
+expfile.NumTags             = eegdoc->GetNumMarkers ();
+expfile.TimeMin             = 0;
+expfile.TimeMax             = expfile.NumTime - 1;
 
                                         // this should use some fast disk write
 expfile.Write ( dataout );

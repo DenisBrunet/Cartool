@@ -296,7 +296,6 @@ expfile.SamplingFrequency   = SamplingFrequency;
 expfile.NumAuxTracks        = GetNumAuxElectrodes ();
 expfile.DateTime            = DateTime;
 expfile.ElectrodesNames     = *GetElectrodesNames ();
-expfile.MaxValue            = GetAbsMaxValue ();
 
 expfile.OutputTriggers      = (ExportTriggers) ( TriggersAsTriggers | MarkersAsMarkers );
 expfile.Markers             = *this;
@@ -314,6 +313,9 @@ GetTracks   (   0,              NumTimeFrames - 1,
                 pseudotracks,
                 reference
             );
+
+                                        // here we have the exact value
+expfile.MaxValue            = EegBuff.GetAbsMaxValue ();    // GetAbsMaxValue ();
 
                                         // works for both scalar and 3D vectorial data (x0,y0,z0,x1,y1,z1...)
 expfile.Write ( EegBuff, Transposed );

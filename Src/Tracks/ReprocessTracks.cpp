@@ -970,8 +970,12 @@ if ( baselinecorr ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Compute rescaling factor
-if ( rescalingoptions == GfpRescaling ) {
+                                        // Compute rescaling factor and/or global max value
+TMapAtomType        maxvalue        = EEGDoc->GetAbsMaxValue ();    // only an approximate value
+
+
+if ( rescalingoptions == GfpRescaling
+  || createfile && IsExtension ( filename, FILEEXT_EEGEDF ) ) {
                                         // compute average Gfp across selected TFs, using current ref & filters
     rescalingfactor = 0;
 
@@ -991,14 +995,19 @@ if ( rescalingoptions == GfpRescaling ) {
                                         // at that point, we might have a baseline correction to apply, in case we don't use the average reference formula
             if ( baselinecorr )
                 map    -= baseline;
+
                                         // get GFP
-            rescalingfactor    += map.GlobalFieldPower ( ! IsAbsolute ( datatype ), IsVector ( datatype ) );
+            if ( rescalingoptions == GfpRescaling )
+                rescalingfactor    += map.GlobalFieldPower ( ! IsAbsolute ( datatype ), IsVector ( datatype ) );
+
+                                        // compute exact maxvalue, including baseline
+            Maxed ( maxvalue, map.GetAbsMaxValue () );
             }
 
         } // timechunks
 
                                         // here is the inverse average Gfp factor
-    rescalingfactor = rescalingfactor != 0 ? intimenum / rescalingfactor : 0;
+    rescalingfactor = rescalingfactor == 0 ? 0 : intimenum / rescalingfactor;
     }
 
 
@@ -1066,7 +1075,8 @@ if ( createfile ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // for EDF, BV
-    expfile.MaxValue            = ( rescalingfactor ? abs ( rescalingfactor ) : 1 ) * EEGDoc->GetAbsMaxValue ();
+    expfile.MaxValue            = rescalingoptions == NotRescaled ? maxvalue
+                                                                  : maxvalue * NonNull ( abs ( rescalingfactor ) );
     expfile.NumTags             = EEGDoc->GetNumMarkers ();
     expfile.TimeMin             = 0;              // sequenceoptions == AverageProcessing ? ( intimemin + intimenum / 2 ) : outtimemin;  // !we re-process the output triggers/markers position, now starting from 0!
     expfile.TimeMax             = outtimenum - 1; // sequenceoptions == AverageProcessing ? ( intimemin + intimenum / 2 ) : outtimemax;
@@ -1076,9 +1086,9 @@ if ( createfile ) {
                                         // until the end, prevent any trigger and any marker to be written
     expfile.OutputTriggers      = NoTriggersNoMarkers;
 
-    if ( concatenateoptions == ConcatenateTime ) {  // don't know the full time yet
+    if ( concatenateoptions == ConcatenateTime ) {      // don't know the full time yet
         expfile.NumTime         = Highest ( expfile.NumTime );
-        expfile.MaxValue       *= 2;    // EDF may clip while running through all files, so raise the limit somehow
+        expfile.MaxValue       *= EdfPhysicalMaxMargin; // EDF might clip while running through all files, so raise the limit somehow by an educated guess scaling factor
         }
 
     } // if createfile

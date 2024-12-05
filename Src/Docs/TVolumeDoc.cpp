@@ -339,7 +339,7 @@ void    TVolumeDoc::InitLimits ( bool /*precise*/ )
 ResetLimits ();
 
 
-Data.GetMinMaxValues ( MinValue, MaxValue, &MinPosition, &MaxPosition );
+Data.GetMinMaxValues ( MinValue, MaxValue, MinPosition, MaxPosition );
 
 
 AbsMaxValue     = max ( abs ( MinValue ), abs ( MaxValue ) );

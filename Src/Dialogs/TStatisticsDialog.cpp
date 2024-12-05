@@ -3661,9 +3661,9 @@ for ( int proci = 0; proci < numprocessings; proci++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // export t / delta / p
-    TExportTracks      *expt        = exporttfile ? new TExportTracks : 0;
-    TExportTracks      *expd        = exportdfile ? new TExportTracks : 0;
-    TExportTracks      *expp        = exportpfile ? new TExportTracks : 0;
+    TExportTracks*      expt        = exporttfile ? new TExportTracks : 0;
+    TExportTracks*      expd        = exportdfile ? new TExportTracks : 0;
+    TExportTracks*      expp        = exportpfile ? new TExportTracks : 0;
 
 
     int                 writenumvars    = IsTAnova ( processing ) ? 1 : numvars;
@@ -3679,7 +3679,7 @@ for ( int proci = 0; proci < numprocessings; proci++ ) {
         expt->NumTracks             = writenumvars;
         expt->NumTime               = writenumtf;
         expt->SamplingFrequency     = samplfreq;
-        expt->MaxValue              = maxvalue;
+        expt->MaxValue              = 2 * maxvalue;
 
         if      ( IsTAnova ( processing ) ) expt->ElectrodesNames   = TAnovaName;
         else if ( outputvarnames )          expt->ElectrodesNames   = VarNames;
@@ -3695,7 +3695,7 @@ for ( int proci = 0; proci < numprocessings; proci++ ) {
         expd->NumTracks             = writenumvars;
         expd->NumTime               = writenumtf;
         expd->SamplingFrequency     = samplfreq;
-        expd->MaxValue              = maxvalue;
+        expd->MaxValue              = 2 * maxvalue;
 
         if      ( IsTAnova ( processing ) ) expd->ElectrodesNames   = TAnovaName;
         else if ( outputvarnames )          expd->ElectrodesNames   = VarNames;
@@ -3748,9 +3748,9 @@ for ( int proci = 0; proci < numprocessings; proci++ ) {
                                         // output transposed (put within verbose)?
     if ( writenumtf == 1 && csvoutnummaps > 0 ) {
 
-        TExportTracks      *exptdata        = iscsvfile && IsTTest         ( processing )   ? new TExportTracks : 0;
-        TExportTracks      *expddata        = iscsvfile && IsRandomization ( processing )   ? new TExportTracks : 0;
-        TExportTracks      *exppdata        = iscsvfile                             ? new TExportTracks : 0;
+        TExportTracks*      exptdata        = iscsvfile && IsTTest         ( processing )   ? new TExportTracks : 0;
+        TExportTracks*      expddata        = iscsvfile && IsRandomization ( processing )   ? new TExportTracks : 0;
+        TExportTracks*      exppdata        = iscsvfile                                     ? new TExportTracks : 0;
         int                 numvars         = writenumvars / NonNull ( csvoutnummaps ); // number of output variables (without maps and groups) - All variables for Markov
 
                                         // init error.data files
@@ -3925,7 +3925,7 @@ for ( int proci = 0; proci < numprocessings; proci++ ) {
     expmore->NumAuxTracks       = 0;
     expmore->NumTime            = writenumtf;
     expmore->SamplingFrequency  = samplfreq;
-    expmore->MaxValue           = maxvalue;
+    expmore->MaxValue           = 2 * maxvalue;
 
     if ( outputvarnames )
         expmore->ElectrodesNames= VarNames;

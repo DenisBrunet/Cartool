@@ -1234,9 +1234,9 @@ else if ( Type == ExportTracksEdf ) {
     of->write ( buff, 8 );
 
                                         // tracks rescaling
-    double          physicalmax     =   EdfPhysicalMaxMargin * MaxValue;// !boost the actual expected value so to avoid clipping as much as possible!
+    double          physicalmax     =   MaxValue;       // trust the caller...  EdfPhysicalMaxMargin * MaxValue;
     double          physicalmin     = - physicalmax;
-    int             digitalmax      =   EdfDigitalMax;                  // what is actually written in file, as if coming from an ADC converter - !also added some margin in case of real-time output!
+    int             digitalmax      =   EdfDigitalMax;  // what is actually written in file, as if coming from an ADC converter - !also added some margin in case of real-time output!
     int             digitalmin      = - digitalmax;
 
                                         // convert values to strings

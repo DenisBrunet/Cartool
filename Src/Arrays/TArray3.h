@@ -89,7 +89,8 @@ public:
     TypeD           GetMaxValue         ()                                                                  const;
     TypeD           GetMinValue         ()                                                                  const;
     TypeD           GetAbsMaxValue      ()                                                                  const;
-    void            GetMinMaxValues     ( double& minvalue, double& maxvalue, TPointFloat* minpos = 0, TPointFloat* maxpos = 0 )    const;
+    void            GetMinMaxValues     ( double& minvalue, double& maxvalue )                              const;
+    void            GetMinMaxValues     ( double& minvalue, double& maxvalue, TPointFloat& minpos, TPointFloat& maxpos )  const;
     void            GetMaxPosition      ( float *pos )                                                      const;
     void            GetMinPosition      ( float *pos )                                                      const;
 
@@ -451,10 +452,9 @@ for ( int i = 0; i < LinearDim; i++ )
 template <class TypeD>
 TypeD   TArray3<TypeD>::GetMaxValue ()  const
 {
-TypeD               maxvalue        = Array[ 0 ];
+TypeD               maxvalue        = Lowest  ( maxvalue );
 
 for ( int i = 0; i < LinearDim; i++ )
-
     Maxed ( maxvalue, Array[ i ] );
 
 return  maxvalue;
@@ -464,10 +464,9 @@ return  maxvalue;
 template <class TypeD>
 TypeD   TArray3<TypeD>::GetMinValue ()  const
 {
-TypeD               minvalue        = Array[ 0 ];
+TypeD               minvalue        = Highest ( minvalue );
 
 for ( int i = 0; i < LinearDim; i++ )
-
     Mined ( minvalue, Array[ i ] );
 
 return  minvalue;
@@ -477,35 +476,53 @@ return  minvalue;
 template <class TypeD>
 TypeD   TArray3<TypeD>::GetAbsMaxValue ()  const
 {
-return  (TypeD) max ( fabs ( GetMinValue () ), fabs ( GetMaxValue () ) ); 
+double              minvalue;
+double              maxvalue;
+
+GetMinMaxValues ( minvalue, maxvalue );
+
+return  (TypeD) max ( abs ( minvalue ), abs ( maxvalue ) ); 
+}
+
+
+template <class TypeD>
+void    TArray3<TypeD>::GetMinMaxValues     (   double&     minvalue,   double&     maxvalue    )   const
+{
+minvalue    = Highest ( minvalue );
+maxvalue    = Lowest  ( maxvalue );
+
+for ( int i = 0; i < LinearDim; i++ ) {
+
+    Mined ( minvalue, (double) Array[ i ] );
+    Maxed ( maxvalue, (double) Array[ i ] );
+    }
 }
 
 
 template <class TypeD>
 void    TArray3<TypeD>::GetMinMaxValues     (   double&         minvalue,   double&         maxvalue, 
-                                                TPointFloat*    minpos,     TPointFloat*    maxpos
+                                                TPointFloat&    minpos,     TPointFloat&    maxpos
                                             )   const
 {
 minvalue    = Highest ( minvalue );
 maxvalue    = Lowest  ( maxvalue );
 
-if ( minpos )   minpos->Reset ();
-if ( maxpos )   maxpos->Reset ();
+minpos.Reset ();
+maxpos.Reset ();
 
 
 for ( int i = 0; i < LinearDim; i++ ) {
 
     if ( Array[ i ] < minvalue ) {
         minvalue    = Array[ i ];
-        if ( minpos )   LinearIndexToXYZ ( i, *minpos );
+        LinearIndexToXYZ ( i, minpos );
         }
 
     if ( Array[ i ] > maxvalue ) {
         maxvalue    = Array[ i ];
-        if ( maxpos )   LinearIndexToXYZ ( i, *maxpos );
+        LinearIndexToXYZ ( i, maxpos );
         }
     }
-
 }
 
 
