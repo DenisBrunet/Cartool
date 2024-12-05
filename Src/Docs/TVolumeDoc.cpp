@@ -342,7 +342,7 @@ ResetLimits ();
 Data.GetMinMaxValues ( MinValue, MaxValue, &MinPosition, &MaxPosition );
 
 
-AbsMaxValue     = max ( fabs ( MinValue ), fabs ( MaxValue ) );
+AbsMaxValue     = max ( abs ( MinValue ), abs ( MaxValue ) );
 
 
 AbsMaxTF        = 0;                    // useless here

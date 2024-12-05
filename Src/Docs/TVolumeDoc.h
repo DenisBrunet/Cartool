@@ -128,7 +128,7 @@ public:
     bool            Revert  ( bool force = false );
 
                                         // TLimits
-    void            InitLimits ( bool precise = false );
+    void            InitLimits ( bool precise = false ) final;
 
                                         // TVolumeDoc
     void            ResetThenSetMri ( MriInitFlags flags = MriInitDetect, double backgroundvalue = 0 );

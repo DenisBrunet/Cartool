@@ -100,7 +100,7 @@ public:
     bool            IsOpen	                    ()              const       { return  NumFrequencies > 0; }
 
                                         // TLimits
-    void            InitLimits                  ( bool precise = false )    override;
+    void            InitLimits                  ( bool precise = false )    final;
 
                                         // TTracksDoc
     void            SetReferenceType            ( ReferenceType ref, const char* tracks = 0, const TStrings* elnames = 0, bool verbose = true ) final   { Reference = ReferenceAsInFile; }  // re-referencing not allowed

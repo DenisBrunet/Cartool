@@ -132,8 +132,7 @@ EegBuff.Resize ( EEGDoc->GetTotalElectrodes(), 1 );
 
 
 SelTracks           = TSelection ( EEGDoc->GetTotalElectrodes(), OrderSorted );
-if ( EEGDoc->GetNumElectrodes() != EEGDoc->GetTotalElectrodes(), OrderSorted )
-    SelTracks.Reset ( EEGDoc->GetNumElectrodes(), EEGDoc->GetTotalElectrodes() - 1 );
+EEGDoc->ClearPseudo ( SelTracks );
 
 
 ManageRangeCursor   = EEGDoc->IsTemplates () ? MRCSequence : MRCAverage;
@@ -394,10 +393,9 @@ if ( precise ) {
 
     TSuperGauge         Gauge ( "Scanning Levels", downtf.NumDownData );
 
-    float               v;
-    minValue        =  FLT_MAX;
-    maxValue        = -FLT_MAX;
-    absmaxValue     =  0;
+    minValue        = Highest ( minValue );
+    maxValue        = Lowest  ( maxValue );
+    absmaxValue     = 0;
 
     for ( long tf = downtf.From ; tf <= downtf.To; tf += downtf.Step ) {
 
@@ -409,7 +407,7 @@ if ( precise ) {
                                         // don't account for bad tracks
             if ( BadTracks[ e ] || AuxTracks[ e ] ) continue;
 
-            v           = EegBuff ( e, 0 );
+            float       v       = EegBuff ( e, 0 );
 
             Mined ( minValue, v );
             Maxed ( maxValue, v );

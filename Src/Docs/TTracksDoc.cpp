@@ -157,13 +157,13 @@ if ( ! IsOpen () ) {
     
     InitMarkers     ();
 
-    InitLimits      ( true );
+    InitLimits      ( true );           // sets both min/max limits and AtomType
 
-//  InitAtomType    ();
+//  InitAtomType    ();                 // currently done in InitLimits
 
-    InitContentType ();
+    InitContentType ();                 // needs AtomType
 
-    InitReference   ();
+    InitReference   ();                 // needs AtomType
 
     InitFilters     ();
 
@@ -296,7 +296,7 @@ expfile.SamplingFrequency   = SamplingFrequency;
 expfile.NumAuxTracks        = GetNumAuxElectrodes ();
 expfile.DateTime            = DateTime;
 expfile.ElectrodesNames     = *GetElectrodesNames ();
-expfile.MaxValue            = GetMaxValue ();
+expfile.MaxValue            = GetAbsMaxValue ();
 
 expfile.OutputTriggers      = (ExportTriggers) ( TriggersAsTriggers | MarkersAsMarkers );
 expfile.Markers             = *this;
@@ -340,23 +340,40 @@ return  true;
 //----------------------------------------------------------------------------
                                         // Estimate the type of data, like positive or signed (display scaling is each view's business)
                                         // We can not spend much time in here, as it can be called at each filtering / reference change
-void    TTracksDoc::InitLimits ( bool /*precise*/ )
+void    TTracksDoc::InitLimits ( bool precise )
 {
 ResetLimits ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // range of time frames to scan
+                                        // Range of time frames to scan - for very long recording, just focus on the first 15 minutes
 long                fromtf          = 0;
-long                totf            = NoMore ( (long) FifteenMinutesMaxTimeFrames, NumTimeFrames ) - 1;
+long                totf            = NoMore ( (int) NumTimeFrames, Truncate ( MinutesToTimeFrame ( 15, SamplingFrequency ) ) ) - 1;
 
-                                        // setting the density of the scan - currently ignored, as we may miss important features
-TDownsampling       downtf ( fromtf, totf, 100 /*precise ? 100 : 7*/ );
+                                        // how many TF SAMPLES we wish to scan - this is different from the range to scan
+int                 numtfsamples    = NoMore ( (int) NumTimeFrames, 50000 );
+
+                                        // block size: using a bigger block in case of filtering so to amortize the cost of adding margins
+int                 blocksize       = NoMore ( (int) NumTimeFrames, AtLeast ( 1000, Filters.GetSafeMargin () / 2 ) );
+
+                                        // estimate the number of blocks - but up to a hard limit
+int                 numblocks       = Clip ( numtfsamples / blocksize, 1, NoMore ( 10, (int) NumTimeFrames / blocksize ) );
+
+
+//if ( precise ) {
+//    fromtf      = 0;
+//    totf        = NumTimeFrames - 1;
+//    blocksize   = NumTimeFrames;
+//    numblocks   = 1;
+//    }
+
+                                        // finally, get a downsampling, in BLOCKS
+TDownsampling       downblock ( fromtf / blocksize, totf / blocksize, numblocks );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TTracks<float>      EegBuff ( TotalElectrodes, 1 );
+TTracks<float>      EegBuff ( TotalElectrodes, blocksize + 2 * Filters.GetSafeMargin () );
 
                                         // scanning for the actual data: current filters
 AtomType            atomtype        = IsUnknownType ( AtomTypeUseCurrent )  ? AtomTypeScalar        : GetAtomType ( AtomTypeUseCurrent );   // at initialization, we still don't know the type, switch to scalar
@@ -364,18 +381,17 @@ PseudoTracksType    pseudotracks    = HasPseudoElectrodes ()                ? Co
 ReferenceType       reference       = IsUnknownType ( AtomTypeUseCurrent )  ? ReferenceAsInFile     : ReferenceUsingCurrent;                // first time, use no reference - other times, use actual reference
 
 TEasyStats          stat;
-double              v;
 int                 gfpindex        = OffGfp ? OffGfp : NumElectrodes - 1;  // a bit of a trick: if no pseudo-tracks, compute on the last track
 
 
 AbsMaxValue     = 0;                    // always positive
 MaxGfp          = 0;                    // always positive
 
-                                        // scan TFs
-for ( long tf = downtf.From; tf <= downtf.To; tf += downtf.Step ) {
-                                        // get tracks, but allows filtering
-                                        // !Reading vectorial RIS data will return the norm, which is >= 0!
-    GetTracks   (   tf,         tf,
+                                        // scan blocks of TFs
+for ( int block = downblock.From; block <= downblock.To; block += downblock.Step ) {
+
+                                        // reading + filtering tracks -  !Reading vectorial RIS data will return the norm, which is >= 0!
+    GetTracks   (   block * blocksize,  ( block + 1 ) * blocksize - 1,
                     EegBuff,    0, 
                     atomtype,
                     pseudotracks,
@@ -383,36 +399,39 @@ for ( long tf = downtf.From; tf <= downtf.To; tf += downtf.Step ) {
                 );
 
 
-    for ( int e = 0; e < NumElectrodes; e++ ) {
-                                        // skip bads for min / max
-        if ( BadTracks[ e ] /* ! ValidTracks[ e ] */ )
-            continue;
+    for ( int tf0 = 0, tf = block * blocksize; tf0 < blocksize; tf0++, tf++ ) {
 
-        v   = EegBuff ( e, 0 );
+        for ( int e = 0; e < NumElectrodes; e++ ) {
+                                            // skip bads for min / max
+            if ( BadTracks[ e ] /* ! ValidTracks[ e ] */ )
+                continue;
 
-        stat.Add ( v, ThreadSafetyIgnore );
+            double      v   = EegBuff ( e, tf0 );
 
-        if ( fabs ( v ) > AbsMaxValue ) { 
-            AbsMaxValue = fabs ( v ); 
-            AbsMaxTF    = tf; 
+            stat.Add ( v, ThreadSafetyIgnore );
+
+            if ( abs ( v ) > AbsMaxValue ) { 
+                AbsMaxValue = abs ( v ); 
+                AbsMaxTF    = tf; 
+                }
+            } // for electrode
+
+
+        double      v   = EegBuff ( gfpindex, tf0 );
+
+        if ( v > MaxGfp ) {
+            MaxGfp      = v; 
+            MaxGfpTF    = tf; 
             }
-        } // for electrode
+        } // for tf
+
+    } // for block
 
 
-    v   = EegBuff ( gfpindex, 0 );
-
-    if ( v > MaxGfp ) {
-        MaxGfp      = v; 
-        MaxGfpTF    = tf; 
-        }
-    }
-
-
-MinValue    = stat.Min (); // NoMore  ( 0.0, stat.Min ); // was: always negative
-MaxValue    = stat.Max (); // AtLeast ( 0.0, stat.Max ); // was: always positive
+MinValue    = stat.Min ();  // could be positive
+MaxValue    = stat.Max ();  // could be negative
 
 //stat.Show ( "InitLimits::stat" );
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Merged InitAtomType here, as we already have the stats at hand...
@@ -484,12 +503,10 @@ if      ( dynamic_cast< TFreqDoc* > ( this ) ) {
                                         // don't offset if there is a time origin set
     if ( Dim2Type == DimensionTypeWindow && ! DateTime.IsOriginTimeAvailable ()  )
         StartingTimeFrame   = 1;        // start from window "1"
-
-//    DBGV3 ( freqdoc->GetSamplingFrequency (), freqdoc->GetOriginalSamplingFrequency (), Dim2Type == DimensionTypeWindow, "SF,  Orig SF,  IsWindow" );
     }
 
 
-else if ( dynamic_cast< TRisDoc * > ( this ) ) {
+else if ( dynamic_cast< TRisDoc* > ( this ) ) {
 
     ContentType         = ContentTypeRis;
     Dim2Type            = DimensionTypeTime;
@@ -499,7 +516,7 @@ else if ( dynamic_cast< TRisDoc * > ( this ) ) {
     }
 
 
-else if ( dynamic_cast< TSegDoc * > ( this ) ) {
+else if ( dynamic_cast< TSegDoc* > ( this ) ) {
 
     if      ( IsExtension ( GetTitle (), FILEEXT_SEG  ) ) {
         ContentType         = ContentTypeSeg;
@@ -513,7 +530,7 @@ else if ( dynamic_cast< TSegDoc * > ( this ) ) {
     }
 
 
-else if ( dynamic_cast< TTracksDoc * > ( this ) ) {
+else if ( dynamic_cast< TTracksDoc* > ( this ) ) {
                                         // all derived class have been tested above
     ContentType         = ContentTypeEeg;
     Dim2Type            = DimensionTypeTime;

@@ -30,23 +30,24 @@ public:
     inline              TLimits ()                  { ResetLimits (); }
 
 
-    inline virtual void ResetLimits ();
-    inline virtual void InitLimits  ( bool precise = false ) = 0;
+    inline void         ResetLimits     ();
+    inline virtual void InitLimits      ( bool precise = false ) = 0;   // overriding methods are responsible to set all fields
 
 
-    inline double       GetMinValue     ()  const   { return MinValue; }
-    inline double       GetMaxValue     ()  const   { return MaxValue; }
-    inline double       GetAbsMaxValue  ()  const   { return AbsMaxValue; }
+    inline double       GetMinValue     ()  const   { return MinValue;      }
+    inline double       GetMaxValue     ()  const   { return MaxValue;      }
+    inline double       GetAbsMaxValue  ()  const   { return AbsMaxValue;   }
 
-    inline long         GetAbsMaxTF     ()  const   { return AbsMaxTF; }
-    inline double       GetMaxGfp       ()  const   { return MaxGfp; }
-    inline long         GetMaxGfpTF     ()  const   { return MaxGfpTF; }
-    inline TPointFloat  GetMinPosition  ()  const   { return MinPosition; }
-    inline TPointFloat  GetMaxPosition  ()  const   { return MaxPosition; }
+    inline long         GetAbsMaxTF     ()  const   { return AbsMaxTF;      }
+    inline double       GetMaxGfp       ()  const   { return MaxGfp;        }
+    inline long         GetMaxGfpTF     ()  const   { return MaxGfpTF;      }
+    inline TPointFloat  GetMinPosition  ()  const   { return MinPosition;   }
+    inline TPointFloat  GetMaxPosition  ()  const   { return MaxPosition;   }
 
 
     inline              TLimits         ( const TLimits& op  );
     inline TLimits&     operator    =   ( const TLimits& op2 );
+
 
 protected:
                                         // Values
@@ -54,10 +55,11 @@ protected:
     double          MaxValue;
     double          AbsMaxValue;
                                         // Positions - use might vary according to class
-    long            AbsMaxTF;           // Time
+    long            AbsMaxTF;           // Time positions
     double          MaxGfp;
     long            MaxGfpTF;
-    TPointFloat     MinPosition;        // 3D
+
+    TPointFloat     MinPosition;        // 3D positions
     TPointFloat     MaxPosition;
 };
 

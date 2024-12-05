@@ -148,8 +148,8 @@ public:
     bool            CanClose        ()                          { return  TBaseDoc::CanClose ( true   ); }  // force it to be silent, so that filtered (or any other edit) EEG will not request from user
     bool            CanClose        ( bool silent )             { return  TBaseDoc::CanClose ( silent ); }
 
-                                        // TLimits
-    void            InitLimits      ( bool precise = false );
+
+    void            InitLimits      ( bool precise = false )    override;   // TLimits
     void            InitContentType ();
 //  void            InitAtomType    ();
     void            InitReference   ();
