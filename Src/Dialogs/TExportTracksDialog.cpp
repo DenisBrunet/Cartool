@@ -305,10 +305,10 @@ TDialog::SetupWindow ();
 if ( ! BatchProcessing ) {              // in case files were provided before call (ProcessCurrent)
 
     if ( CheckToBool ( ExportTracks->GetCheck() ) )
-        CmXyzChange ();
+        CmXyzChange  ();
 
     if ( CheckToBool ( ExportRois->GetCheck() ) )
-        CmRoiChange ();
+        CmRoiChange  ();
     }
 }
 
@@ -443,21 +443,6 @@ if ( (bool) remainingfiles )
 
 
 //----------------------------------------------------------------------------
-void    TExportTracksDialog::CmBrowseXyzDoc ()
-{
-static GetFileFromUser  getfile ( "Electrodes Coordinates File", AllCoordinatesFilesFilter, 1, GetFileRead );
-
-
-if ( ! getfile.Execute ( ExportTracksTransfer.XyzDocFile ) )
-    return;
-
-
-TransferData ( tdSetData );             // this will activate CmXyzChange (but not SetText ( .. ) )
-//Transfer ( (void *) &ExportTracksTransfer, tdSetData );
-
-XyzDocFile->ResetCaret;
-}
-
 /*
 void    TExportTracksDialog::CmExportTracksEnable ( TCommandEnabler &tce )
 {
@@ -493,48 +478,96 @@ tce.Enable ( CheckToBool ( ExportTracks->GetCheck() )
 }
 
 
+//----------------------------------------------------------------------------
+void    TExportTracksDialog::CmBrowseXyzDoc ()
+{
+static GetFileFromUser  getfile ( "Electrodes Coordinates File", AllCoordinatesFilesFilter, 1, GetFileRead );
+
+
+if ( ! getfile.Execute ( ExportTracksTransfer.XyzDocFile ) )
+    return;
+
+
+TransferData ( tdSetData );             // this will activate CmXyzChange (but not SetText ( .. ) )
+//Transfer ( (void *) &ExportTracksTransfer, tdSetData );
+
+XyzDocFile->ResetCaret;
+}
+
+                                        // !Not directly setting ExportTracksTransfer buffer - Reading is OK, though!
 void    TExportTracksDialog::CmXyzChange ()
 {
+                                        // extra-care to avoid re-entrant code
+static bool         busy            = false;
+
+if ( busy )
+    return;
+
+busy    = true;
+
                                         // this is subtly better than disabling, showing it's active, but not editable
 XyzDocFile->SetReadOnly ( ExportTracksTransfer.XyzLinked );
 
 
-if ( BatchProcessing || ! CheckToBool ( ExportTracks->GetCheck() ) || ! ExportTracksTransfer.ChannelsSel )
-    return;
+if (   BatchProcessing 
+  || ! CheckToBool ( ExportTracks->GetCheck() ) 
+  ||   StringIsEmpty ( ExportTracksTransfer.XyzDocFile ) 
+  || ! ExportTracksTransfer.ChannelsSel ) {
 
+    busy    = false;
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check XYZ document is correct
                                         // then update tracks text from selection
-char            buff[ EditSizeTextLong ];
-
+char                buff[ EditSizeTextLong ];
 
                                         // set default text
 ExportTracksTransfer.ChannelsSel->ToText ( buff, EEGDoc->GetElectrodesNames(), AuxiliaryTracksNames );
 Tracks->SetText ( buff );
 
-                                        // no XYZ concerned?
-XyzDocFile->GetText ( buff, EditSizeText );
 
-if ( StringIsEmpty ( buff ) || ! CheckToBool ( UseXyzDoc->GetCheck () ) )
-    return;
+TFileName           xyzfile;
+                                        // no XYZ business?
+XyzDocFile->GetText ( xyzfile, EditSizeText );
 
+if ( StringIsEmpty ( xyzfile ) || ! CheckToBool ( UseXyzDoc->GetCheck () ) ) {
 
-                                        // test file silently
-if ( ! CanOpenFile ( buff ) ) {
-    XyzDocFile->SetText ( "" );
+    busy    = false;
     return;
     }
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // test file silently
+if ( ! CanOpenFile ( xyzfile ) ) {
+
+    XyzDocFile->SetText     ( "" );
+    UseXyzDoc ->SetCheck    ( BoolToCheck ( false ) );
+
+    busy    = false;
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // ok, now try to open as document
-TOpenDoc<TElectrodesDoc>    XYZDoc ( buff, OpenDocHidden );
+TOpenDoc<TElectrodesDoc>    XYZDoc ( xyzfile, OpenDocHidden );
 
                                         // either incorrect file, or not a .xyz one
 if ( ! XYZDoc.IsOpen () ) {
+
     XyzDocFile->SetText     ( "" );
     UseXyzDoc ->SetCheck    ( BoolToCheck ( false ) );
+
+    busy    = false;
     return;
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // now check for compatibily
 if ( XYZDoc->GetNumElectrodes () != EEGDoc->GetNumElectrodes() ) {
 
@@ -549,16 +582,20 @@ if ( XYZDoc->GetNumElectrodes () != EEGDoc->GetNumElectrodes() ) {
 
     XyzDocFile->SetText     ( "" );
     UseXyzDoc ->SetCheck    ( BoolToCheck ( false ) );
+
+    busy    = false;
     return;
     }
 
 
-                                        // so we made it! transform the selection through the XYZ
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // XYZ is good here - use it to translate current selection
 ExportTracksTransfer.ChannelsSel->ToText ( buff, XYZDoc->GetElectrodesNames(), AuxiliaryTracksNames );
 Tracks->SetText ( buff );
 
-
 XYZDoc.Close ();
+
+busy    = false;
 }
 
 
@@ -590,51 +627,84 @@ void    TExportTracksDialog::CmRoisEnable ( TCommandEnabler &tce )
 tce.Enable ( CheckToBool ( ExportRois->GetCheck() ) );
 }
 
-
+                                        // !Not directly setting ExportTracksTransfer buffer - Reading is OK, though!
 void    TExportTracksDialog::CmRoiChange ()
 {
+                                        // extra-care to avoid re-entrant code
+static bool         busy            = false;
+
+if ( busy )
+    return;
+
+busy    = true;
+
                                         // this is subtly better than disabling, showing it's active, but not editable
 RoisDocFile->SetReadOnly ( ExportTracksTransfer.RoiLinked );
 
 
-//ExportTracksTransfer.FileTypes.Select ( PresetFileTypeDefaultEEG );
+//FileTypes->SetSelIndex ( PresetFileTypeDefaultEEG );
 
 
-if ( BatchProcessing || ! CheckToBool ( ExportTracksTransfer.ExportRois ) ) {
+if (   BatchProcessing 
+  || ! CheckToBool   ( ExportRois->GetCheck () )
+  ||   StringIsEmpty ( ExportTracksTransfer.RoisDocFile ) ) {
+
     SetBaseFilename ();
+
+    busy    = false;
     return;
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check ROIs document is correct
                                         // then update tracks text from selection
-char            buff[ EditSizeTextLong ];
+TFileName           roifile;
 
-                                        // no ROIs concerned?
-StringCopy ( buff, ExportTracksTransfer.RoisDocFile );
+                                        // no ROIs business?
+RoisDocFile->GetText ( roifile, EditSizeText );
 
-if ( StringIsEmpty ( buff ) )
+if ( StringIsEmpty ( roifile ) ) {
+
+    busy    = false;
     return;
+    }
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // test file silently
-if ( ! CanOpenFile ( buff ) ) {
-    ClearString ( ExportTracksTransfer.RoisDocFile );
+if ( ! CanOpenFile ( roifile ) ) {
+
+    RoisDocFile->SetText ( "" );
+
     SetBaseFilename ();
+
+    busy    = false;
     return;
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // ok, now try to open as document
-TOpenDoc<TRoisDoc>  RoisDoc ( buff, OpenDocHidden );
+TOpenDoc<TRoisDoc>  RoisDoc ( roifile, OpenDocHidden );
 
-                                        // either incorrect file, or not a .xyz one
+                                        // either incorrect file, or not a .rois one
 if ( ! RoisDoc.IsOpen () ) {
-    ClearString     ( ExportTracksTransfer.RoisDocFile );
+
+    RoisDocFile->SetText ( "" );
+
     SetBaseFilename ();
+
+    busy    = false;
     return;
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check for compatibily
 if ( RoisDoc->ROIs->GetDimension () != EEGDoc->GetNumElectrodes() ) {
+    
+    char        buff[ 256 ];
 
     StringCopy  ( buff, "File and ROIs don't have the same dimension: " NewLine 
                         NewLine 
@@ -645,17 +715,22 @@ if ( RoisDoc->ROIs->GetDimension () != EEGDoc->GetNumElectrodes() ) {
 
     RoisDoc.Close ();
 
-    ClearString     ( ExportTracksTransfer.RoisDocFile );
+    RoisDocFile->SetText ( "" );
+
     SetBaseFilename ();
 
+    busy    = false;
     return;
     }
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // ROIs are good here!
 RoisDoc.Close ();
 
-
 SetBaseFilename ();
+
+busy    = false;
 }
 
 
@@ -663,25 +738,42 @@ SetBaseFilename ();
                                         // generate a smart base name
 void    TExportTracksDialog::SetBaseFilename ()
 {
+                                        // don't overwrite existing name
+if ( StringIsNotEmpty ( ExportTracksTransfer.InfixFilename ) )
+    return;
 
-if ( ! ( CheckToBool ( ExportTracksTransfer.ExportRois ) && *ExportTracksTransfer.RoisDocFile ) ) {
+                                        // extra-care to avoid re-entrant code
+static bool         busy            = false;
 
-    if ( StringIsSpace ( ExportTracksTransfer.InfixFilename ) )
+if ( busy )
+    return;
+
+busy    = true;
+
+
+if ( ! ( CheckToBool ( ExportTracksTransfer.ExportRois ) && StringIsNotEmpty ( ExportTracksTransfer.RoisDocFile ) ) ) {
+
+    if ( StringIsSpace ( ExportTracksTransfer.InfixFilename ) ) {
+
         StringCopy ( ExportTracksTransfer.InfixFilename, "Export" );
+        TransferData ( tdSetData );     // !this call will refresh the dialog, hence calling CmXyzChange and CmRoiChange!
+        }
 
-    TransferData ( tdSetData );
-
+    busy    = false;
     return;
     }
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 TFileName           roiname;
 TFileName           match;
 
-StringCopy ( roiname, ExportTracksTransfer.RoisDocFile );
-GetFilename ( roiname );
+RoisDocFile->GetText ( roiname, EditSizeText );
 
-StringShrink ( roiname, match, min ( (int) ( 4 + StringLength ( roiname ) / 2 ), 17 ) );
+GetFilename     ( roiname );
+
+StringShrink    ( roiname, match, min ( (int) ( 4 + StringLength ( roiname ) / 2 ), 17 ) );
 
 
 /*
@@ -706,10 +798,10 @@ else
     StringAppend ( basename, ".Triggers" );
 */
 
-
 StringCopy ( ExportTracksTransfer.InfixFilename, match );
+TransferData ( tdSetData );     // !this call will refresh the dialog, hence calling CmXyzChange and CmRoiChange!
 
-TransferData ( tdSetData );
+busy    = false;
 }
 
 
