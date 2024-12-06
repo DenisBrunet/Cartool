@@ -157,7 +157,7 @@ if ( ! IsOpen () ) {
     
     InitMarkers     ();
 
-    InitLimits      ( true );           // sets both min/max limits and AtomType
+    InitLimits      ( InitFast );       // sets both min/max limits and AtomType
 
 //  InitAtomType    ();                 // currently done in InitLimits
 
@@ -342,32 +342,48 @@ return  true;
 //----------------------------------------------------------------------------
                                         // Estimate the type of data, like positive or signed (display scaling is each view's business)
                                         // We can not spend much time in here, as it can be called at each filtering / reference change
-void    TTracksDoc::InitLimits ( bool precise )
+void    TTracksDoc::InitLimits ( InitType how )
 {
 ResetLimits ();
 
+                                        // overriding for the moment
+how     = InitFast;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Range of time frames to scan - for very long recording, just focus on the first 15 minutes
-long                fromtf          = 0;
-long                totf            = NoMore ( (int) NumTimeFrames, Truncate ( MinutesToTimeFrame ( 15, SamplingFrequency ) ) ) - 1;
+                                        
+long                fromtf;             // Range of time frames to scan
+long                totf;
+int                 numtfsamples;       // how many TF SAMPLES we wish to scan - this is different from the range to scan
+int                 blocksize;          // block size to read each time
+int                 numblocks;          // number of blocks to read
 
-                                        // how many TF SAMPLES we wish to scan - this is different from the range to scan
-int                 numtfsamples    = NoMore ( (int) NumTimeFrames, 50000 );
 
-                                        // block size: using a bigger block in case of filtering so to amortize the cost of adding margins
-int                 blocksize       = NoMore ( (int) NumTimeFrames, AtLeast ( 1000, Filters.GetSafeMargin () / 2 ) );
+if ( how == InitExact ) {
+                                        // Whole range of data - actually, we might lose a bit on the trailing end...
+    fromtf          = 0;
+    totf            = NumTimeFrames - 1;
 
+    numtfsamples    = NumTimeFrames;
+
+  //blocksize       = NoMore ( (int) NumTimeFrames, AtLeast ( 1000, Filters.GetSafeMargin () / 2 ) );   // way too many small blocks
+    blocksize       = NoMore ( (int) NumTimeFrames, max ( NoMore  ( 50000, (int) NumTimeFrames / 50     ),
+                                                          AtLeast (  1000, Filters.GetSafeMargin () / 2 ) ) );
+
+    numblocks       = AtLeast ( 1, numtfsamples / blocksize );
+    }
+else { // how == InitFast 
+                                        // For very long recording, just focus on the first 15 minutes
+    fromtf          = 0;
+    totf            = NoMore ( (int) NumTimeFrames, Truncate ( MinutesToTimeFrame ( 15, SamplingFrequency ) ) ) - 1;
+
+    numtfsamples    = NoMore ( (int) NumTimeFrames, 50000 );
+                                        // using a bigger block in case of filtering so to amortize the cost of adding margins
+    blocksize       = NoMore ( (int) NumTimeFrames, AtLeast ( 1000, Filters.GetSafeMargin () / 2 ) );
                                         // estimate the number of blocks - but up to a hard limit
-int                 numblocks       = Clip ( numtfsamples / blocksize, 1, NoMore ( 10, (int) NumTimeFrames / blocksize ) );
+    numblocks       = Clip ( numtfsamples / blocksize, 1, NoMore ( 10, (int) NumTimeFrames / blocksize ) );
+    }
 
-
-//if ( precise ) {
-//    fromtf      = 0;
-//    totf        = NumTimeFrames - 1;
-//    blocksize   = NumTimeFrames;
-//    numblocks   = 1;
-//    }
                                         // even more checks for downsampling limits, as we will read 'blocksize' data from the last TF
 int                 fromblock       =                     fromtf                       / blocksize;
 int                 toblock         = AtLeast ( fromtf, ( totf   - ( blocksize - 1 ) ) / blocksize );
@@ -1188,7 +1204,7 @@ switch ( Reference ) {
     };
 
 
-InitLimits ();
+InitLimits ( InitFast );
 }
 
 
@@ -1314,7 +1330,7 @@ FiltersActivated    = activate;
 
 if ( ! silent ) {                       // something has changed, notify
 
-    InitLimits ();
+    InitLimits      ( InitFast );
 
     NotifyViews     ( vnReloadData, EV_VN_RELOADDATA_FILTERS );
     NotifyDocViews  ( vnReloadData, EV_VN_RELOADDATA_EEG     );
@@ -1370,7 +1386,7 @@ if ( SamplingFrequency <= 0 && Filters.SamplingFrequency > 0 )
                                         // SetFiltersActivated does not notify in this case
 if ( /*oldfiltersactivated &&*/ FiltersActivated && ! silent ) {
 
-    InitLimits ();
+    InitLimits      ( InitFast );
 
     NotifyViews     ( vnReloadData, EV_VN_RELOADDATA_FILTERS );
     NotifyDocViews  ( vnReloadData, EV_VN_RELOADDATA_EEG     );

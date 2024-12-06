@@ -186,7 +186,7 @@ void    TVolumeDoc::SetMri (   MriInitFlags    flags,  double  backgroundvalue
                             )
 {
 
-InitLimits ();                          // scan limits, f.ex. if some filtering has been applied
+InitLimits ( InitExact );               // scan limits, f.ex. if some filtering has been applied
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -334,7 +334,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-void    TVolumeDoc::InitLimits ( bool /*precise*/ )
+void    TVolumeDoc::InitLimits ( InitType /*how*/ )
 {
 ResetLimits ();
 

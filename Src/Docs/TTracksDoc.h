@@ -149,7 +149,7 @@ public:
     bool            CanClose        ( bool silent )             { return  TBaseDoc::CanClose ( silent ); }
 
 
-    void            InitLimits      ( bool precise = false )    override;   // TLimits
+    void            InitLimits      ( InitType how )    override;   // TLimits
     void            InitContentType ();
 //  void            InitAtomType    ();
     void            InitReference   ();

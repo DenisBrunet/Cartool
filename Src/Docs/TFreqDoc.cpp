@@ -98,7 +98,7 @@ return  true;
 
 //----------------------------------------------------------------------------
                                         // do the job in different frequencies
-void    TFreqDoc::InitLimits ( bool precise )
+void    TFreqDoc::InitLimits ( InitType how )
 {
 ResetLimits ();
 
@@ -114,12 +114,13 @@ TDownsampling       downfreq ( 0, NumFrequencies / 2, 17 ); // focusing on the l
 //bool              alwayspos           = true;
 
 
-precise         = precise && NumTimeFrames < EegMaxPointsDisplay;
+if ( NumTimeFrames > EegMaxPointsDisplay )
+    how     = InitFast;
 
 
 for ( CurrentFrequency = downfreq.From; CurrentFrequency <= downfreq.To; CurrentFrequency += downfreq.Step ) {
 
-    TTracksDoc::InitLimits ( precise );
+    TTracksDoc::InitLimits ( how );
 
 //  alwayspos   = alwayspos && IsPositive ( AtomTypeUseOriginal );
 

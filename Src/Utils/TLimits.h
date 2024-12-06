@@ -22,6 +22,13 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
+
+enum        InitType
+            {
+            InitFast,
+            InitExact,
+            };
+
                                         // Simply handles the limits: storage and simple management
 class   TLimits
 {
@@ -31,7 +38,7 @@ public:
 
 
     inline void         ResetLimits     ();
-    inline virtual void InitLimits      ( bool precise = false ) = 0;   // overriding methods are responsible to set all fields
+    inline virtual void InitLimits      ( InitType how )    = 0;   // overriding methods are responsible to set all fields
 
 
     inline double       GetMinValue     ()  const   { return MinValue;      }
