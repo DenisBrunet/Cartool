@@ -368,9 +368,12 @@ int                 numblocks       = Clip ( numtfsamples / blocksize, 1, NoMore
 //    blocksize   = NumTimeFrames;
 //    numblocks   = 1;
 //    }
+                                        // even more checks for downsampling limits, as we will read 'blocksize' data from the last TF
+int                 fromblock       =                     fromtf                       / blocksize;
+int                 toblock         = AtLeast ( fromtf, ( totf   - ( blocksize - 1 ) ) / blocksize );
 
                                         // finally, get a downsampling, in BLOCKS
-TDownsampling       downblock ( fromtf / blocksize, totf / blocksize, numblocks );
+TDownsampling       downblock ( fromblock, toblock, numblocks );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
