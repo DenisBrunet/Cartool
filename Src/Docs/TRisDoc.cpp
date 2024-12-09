@@ -171,11 +171,11 @@ return  TFileDocument::Close ();
 //----------------------------------------------------------------------------
 bool	TRisDoc::ReadFromHeader ( const char* file, ReadFromHeaderType what, void* answer )
 {
-ifstream        ifs ( TFileName ( file, TFilenameExtendedPath ), ios::binary );
+ifstream            ifs ( TFileName ( file, TFilenameExtendedPath ), ios::binary );
 if ( ifs.fail() ) return false;
 
 
-TRisHeader  risheader;
+TRisHeader          risheader;
 ifs.read ( (char *)(&risheader), sizeof ( risheader ) );
 
 
@@ -224,19 +224,20 @@ SetDirty ( false );
 
 if ( GetDocPath () ) {
 
-    TInStream*          is              = InStream ( ofRead | ofBinary );
-
-    if ( !is )  return false;
+    if ( ! FileStream.Open ( GetDocPath(), FileStreamRead ) )
+        return false;
 
 
     TRisHeader          risheader;
 
-    is->read ( (char *) (&risheader), sizeof ( risheader ) );
+    FileStream.Read ( &risheader, sizeof ( risheader ) );
 
     if ( ! IsMagicNumber ( risheader.Magic, RISBIN_MAGICNUMBER1 ) ) {
 
         ShowMessage ( "Can not recognize this file (unknown magic number)!", "Open file", ShowMessageWarning );
-        delete is;
+
+        FileStream.Close ();
+
         return false;
         }
 
@@ -268,29 +269,22 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // read in the values
-    if ( IsVector ( AtomTypeUseOriginal ) )
+    TArray1<float>      onetf ( NumTracks );
 
-        for ( int tf=0; tf < NumTimeFrames; tf++ )
-        for ( int el=0; el < NumElectrodes; el++ ) {
+    for ( int tf=0; tf < NumTimeFrames; tf++ ) {
 
-            is->read ( (char *) &Tracks ( 3 * el     , tf ), Tracks.AtomSize () );
-            is->read ( (char *) &Tracks ( 3 * el + 1 , tf ), Tracks.AtomSize () );
-            is->read ( (char *) &Tracks ( 3 * el + 2 , tf ), Tracks.AtomSize () );
-            }
-    else
+        FileStream.Read ( onetf.GetArray (), onetf.MemorySize () );
 
-        for ( int tf=0; tf < NumTimeFrames; tf++ )
-        for ( int el=0; el < NumElectrodes; el++ )
-
-            is->read ( (char *) &Tracks ( el , tf ), Tracks.AtomSize () );
+        for ( int el=0; el < NumTracks; el++ )
+            Tracks ( el, tf )   = onetf ( el );
+        }
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check for auxiliaries
     InitAuxiliaries ();
 
-
-    delete      is;
+    FileStream.Close ();
     }
 else {                                  // can not create a RIS file here
     return false;
