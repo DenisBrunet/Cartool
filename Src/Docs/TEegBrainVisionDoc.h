@@ -84,7 +84,7 @@ public:
 
 protected:
 
-    owl::TInStream* InputStream;
+    ifstream        InputStream;
 
     bool            Multiplexed;        // yep, data can be either multiplexed or vectorized
     int             AscSkipLines;
@@ -92,7 +92,7 @@ protected:
 
     BrainVisionDataType DataType;       // recognized data types
     int                 BinTypeSize;    // binary case: size of an atomic data
-    int                 BuffSize;       // binary case: size of one "line" of data (channels or TFs), ascii case: all data
+    LONGLONG            BuffSize;       // binary case: size of one "line" of data (channels or TFs), ascii case: all data
 
     TArray1<char>   Tracks;
     TArray1<double> Gain;

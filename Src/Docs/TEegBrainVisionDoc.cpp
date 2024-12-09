@@ -36,8 +36,6 @@ namespace crtl {
         TEegBrainVisionDoc::TEegBrainVisionDoc ( TDocument *parent )
       : TTracksDoc ( parent )
 {
-InputStream         = 0;
-
 Multiplexed         = true;
 AscSkipLines        = 0;
 AscSkipColumns      = 0;
@@ -52,8 +50,7 @@ Reference           = ReferenceAsInFile;
 
 bool	TEegBrainVisionDoc::Close ()
 {
-if ( InputStream )
-    delete  InputStream, InputStream = 0;
+InputStream.close ();
 
 return  TFileDocument::Close ();
 }
@@ -558,18 +555,18 @@ if ( GetDocPath () ) {
 
                     if ( Multiplexed )
 
-                        BuffSize    = BinTypeSize * NumElectrodes;
+                        BuffSize    = (LONGLONG) BinTypeSize * NumElectrodes;
                     else
-//                      BuffSize    = BinTypeSize * NumTimeFrames;
+//                      BuffSize    = (LONGLONG) BinTypeSize * NumTimeFrames;
                                         // load all data in memory, for access efficiency
-                        BuffSize    = BinTypeSize * NumTimeFrames * NumElectrodes;
+                        BuffSize    = (LONGLONG) BinTypeSize * NumTimeFrames * NumElectrodes;
                     }
                 else // BVTypeAscMask - load all data in memory, as random access is not possible
 
-                    BuffSize        = BinTypeSize * NumElectrodes * NumTimeFrames;
+                    BuffSize        = (LONGLONG) BinTypeSize * NumElectrodes * NumTimeFrames;
 
 
-                Tracks.Resize ( BuffSize );
+                Tracks.Resize ( BuffSize        );
                 Gain  .Resize ( TotalElectrodes );
                 Gain                = 1;    // set default value
 
@@ -660,9 +657,9 @@ if ( GetDocPath () ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // open EEG file
-    InputStream     = InStream ( ofRead | ( IsFlag ( DataType, BVTypeBinMask ) ? ofBinary : 0 ) );
+    InputStream.open ( GetDocPath (), ofRead | ( IsFlag ( DataType, BVTypeBinMask ) ? ofBinary : 0 ) );
 
-    if ( ! InputStream )
+    if ( InputStream.fail () )
         return false;
 
                                         // check for auxilliary
@@ -674,10 +671,10 @@ if ( GetDocPath () ) {
 
                                         // skip required lines (kind of header, I guess)
         for ( int skipl = 0; skipl < AscSkipLines; skipl++ )
-            InputStream->ignore ( 1000000, '\n' );
+            InputStream.ignore ( 1000000, '\n' );
 
                                         // use the same loops for both multiplexed and vectorized
-        float              *toT         = (float *) &Tracks[ 0 ];
+        float*              toT         = (float *) Tracks.GetArray ();
         int                 numlines    = Multiplexed ? NumTimeFrames : NumElectrodes;
         int                 numcols     = Multiplexed ? NumElectrodes : NumTimeFrames;
 
@@ -687,12 +684,12 @@ if ( GetDocPath () ) {
                                         // skip required columns
             for ( int skipc = 0; skipc < AscSkipColumns; skipc++ )
 
-                GetToken ( InputStream, buff );
+                GetToken ( &InputStream, buff );
 
                                         // now the real data
             for ( int col = 0; col < numcols; col++, toT++ ) {
 
-                GetToken ( InputStream, buff );
+                GetToken ( &InputStream, buff );
 
                 if ( *ascdec != '.' )
                     StringReplace ( buff, ascdec, "." );
@@ -702,14 +699,15 @@ if ( GetDocPath () ) {
             }
 
                                         // shut down the stream, everything is in memory now
-        delete  InputStream, InputStream = 0;
+        InputStream.close ();
+
         } // BVTypeAscMask
 
     else if ( IsFlag ( DataType, BVTypeBinMask ) && ! Multiplexed ) {
                                         // load everything in our array, which is precisely demultiplexed
-        InputStream->read ( &Tracks[ 0 ], BuffSize );
+        InputStream.read ( Tracks.GetArray (), BuffSize );
                                         // shut down the stream, everything is in memory now
-        delete  InputStream, InputStream = 0;
+        InputStream.close ();
 
         } // BVTypeBinMask && Vectorized
 
@@ -750,48 +748,52 @@ void    TEegBrainVisionDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float> &
 {
 if ( Multiplexed ) {
                                         // set file to first TF
-    if ( InputStream )
-        InputStream->seekg ( BuffSize * tf1, ios::beg );
+    if ( InputStream.is_open () )
+        InputStream.seekg ( BuffSize * tf1, ios::beg );
 
 
     if      ( DataType == BVTypeFloat32 ) {
-        float              *toTf;
+
+        float*          toTf;
 
         for ( long tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++ ) {
 
-            InputStream->read ( &Tracks[ 0 ], BuffSize );
-            toTf    = (float *) &Tracks[ 0 ];
+            InputStream.read  ( Tracks.GetArray (), BuffSize );
+            toTf    = (float *) Tracks.GetArray ();
 
             for ( int el = 0; el < NumElectrodes; el++, toTf++ )
                 buff ( el, tf ) = Gain[ el ] * *toTf;
             }
         }
     else if ( DataType == BVTypeInt16 ) {
-        short              *toTs;
+
+        short*          toTs;
 
         for ( long tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++ ) {
 
-            InputStream->read ( &Tracks[ 0 ], BuffSize );
-            toTs    = (short *) &Tracks[ 0 ];
+            InputStream.read  ( Tracks.GetArray (), BuffSize );
+            toTs    = (short *) Tracks.GetArray ();
 
             for ( int el = 0; el < NumElectrodes; el++, toTs++ )
                 buff ( el, tf ) = Gain[ el ] * *toTs;
             }
         }
     else if ( DataType == BVTypeUint16 ) {
-        ushort             *toTus;
+
+        ushort*         toTus;
 
         for ( long tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++ ) {
 
-            InputStream->read ( &Tracks[ 0 ], BuffSize );
-            toTus   = (ushort *) &Tracks[ 0 ];
+            InputStream.read   ( Tracks.GetArray (), BuffSize );
+            toTus   = (ushort *) Tracks.GetArray ();
 
             for ( int el = 0; el < NumElectrodes; el++, toTus++ )
                 buff ( el, tf ) = Gain[ el ] * *toTus;
             }
         }
     else if ( DataType == BVTypeAscii ) {
-        float              *toTf = ((float *) &Tracks[ 0 ]) + tf1 * NumElectrodes;
+
+        float*          toTf = ((float *) Tracks.GetArray ()) + tf1 * NumElectrodes;
 
         for ( long tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++ ) {
             for ( int el = 0; el < NumElectrodes; el++, toTf++ )
@@ -800,40 +802,41 @@ if ( Multiplexed ) {
         }
     } // Multiplexed
 
-else { // ! Multiplexed
-                                        // set file to first electrode
-//  if ( InputStream )                  // not used anymore in this case
-//      InputStream->seekg ( 0, ios::beg );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+else { // ! Multiplexed
 
     if      ( DataType == BVTypeFloat32 ) {
-        float              *toTf;
+
+        float*          toTf;
 
         for ( int el = 0; el < NumElectrodes; el++ ) {
 
-            toTf    = ((float *) &Tracks[ 0 ]) + el * NumTimeFrames + tf1;
+            toTf    = ((float *) Tracks.GetArray ()) + el * NumTimeFrames + tf1;
 
             for ( long tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++, toTf++ )
                 buff ( el, tf ) = Gain[ el ] * *toTf;
             }
         }
     else if ( DataType == BVTypeInt16 ) {
-        short              *toTs;
+
+        short*          toTs;
 
         for ( int el = 0; el < NumElectrodes; el++ ) {
 
-            toTs    = ((short *) &Tracks[ 0 ]) + el * NumTimeFrames + tf1;
+            toTs    = ((short *) Tracks.GetArray ()) + el * NumTimeFrames + tf1;
 
             for ( long tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++, toTs++ )
                 buff ( el, tf ) = Gain[ el ] * *toTs;
             }
         }
     else if ( DataType == BVTypeUint16 ) {
-        ushort              *toTus;
+
+        ushort*         toTus;
 
         for ( int el = 0; el < NumElectrodes; el++ ) {
 
-            toTus   = ((ushort *) &Tracks[ 0 ]) + el * NumTimeFrames + tf1;
+            toTus   = ((ushort *) Tracks.GetArray ()) + el * NumTimeFrames + tf1;
 
             for ( long tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++, toTus++ )
                 buff ( el, tf ) = Gain[ el ] * *toTus;
@@ -841,11 +844,12 @@ else { // ! Multiplexed
 
         }
     else if ( DataType == BVTypeAscii ) {
-        float              *toTf;
+
+        float*          toTf;
 
         for ( int el = 0; el < NumElectrodes; el++ ) {
 
-            toTf    = ((float *) &Tracks[ 0 ]) + el * NumTimeFrames + tf1;
+            toTf    = ((float *) Tracks.GetArray ()) + el * NumTimeFrames + tf1;
 
             for ( long tfi = tf1, tf = tfoffset; tfi <= tf2; tfi++, tf++, toTf++ )
                 buff ( el, tf ) = Gain[ el ] * *toTf;
