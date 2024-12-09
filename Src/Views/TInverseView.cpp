@@ -30,8 +30,6 @@ limitations under the License.
 #include    "Dialogs.TSuperGauge.h"
 #include    "Files.PreProcessFiles.h"
 
-#include    "TExportTracks.h"
-
 #include    "TRisDoc.h"
 #include    "TLinkManyDoc.h"
 
