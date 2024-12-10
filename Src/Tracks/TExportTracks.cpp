@@ -1900,8 +1900,10 @@ else
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray2<float>& values, const TMarkers* keeplist )
+void    TExportTracks::Write ( const TArray2<float>& values, const TMarkers* keeplist, AnimationEnum animation )
 {
+TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? (int) (*keeplist) : 0 );
+
                                         // compute / update number of time frames - !Note that it could be less than that due to TimeMin/TimeMax test!
 NumTime     = keeplist->GetMarkersTotalLength ();
 
@@ -1909,25 +1911,24 @@ NumTime     = keeplist->GetMarkersTotalLength ();
 if ( ! DoneBegin )
     Begin ();
 
-
-const TMarker*      tomarker;
                                         // n intervals
                                         // Overlapping is not tested here, so it technically can save non-ordered and/or overlapping epochs
 for ( int ki = 0; ki < (int) (*keeplist); ki++ ) {
 
-    UpdateApplication;
+    if ( Gauge.IsAlive () )     Gauge.Next ();
+    else                        UpdateApplication
 
-    tomarker   = (*keeplist)[ ki ];
 
+    const TMarker*  tomarker   = (*keeplist)[ ki ];
                                         // skip markers not inside limit
     if ( ! tomarker->IsInsideLimits ( TimeMin, TimeMax ) )
         continue;
 
-    for ( long tf = tomarker->From; tf <= tomarker->To; tf++ ) {
 
-        for ( int el = 0; el < NumTracks; el++)
-            Write ( values ( el, tf ) );
-        }
+    for ( long tf = tomarker->From; tf <= tomarker->To; tf++ )
+    for ( int el = 0; el < NumTracks; el++ )
+
+        Write ( values ( el, tf ) );
 
     } // for keeplist
 
@@ -1999,17 +2000,21 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TSetArray2<float>& values )
+void    TExportTracks::Write ( const TSetArray2<float>& values, AnimationEnum animation )
 {
+TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+
+
 if ( ! DoneBegin )
     Begin ();
 
 
-for ( long tf   = 0; tf   < NumTime;         tf++   )
-for ( int  e    = 0; e    < NumTracks;       e++    ) {
+for ( long tf = 0; tf < NumTime; tf++ ) {
 
-    UpdateApplication;
+    if ( Gauge.IsAlive () )     Gauge.Next ();
+    else                        UpdateApplication
 
+    for ( int e    = 0; e    < NumTracks;       e++    )
     for ( int freq = 0; freq < NumFrequencies ; freq++ )
 
         Write ( values ( freq, e, tf ), tf, e, freq );
@@ -2025,51 +2030,63 @@ End ();
                                         //   Dim 1: Electrodes, downward
                                         //   Dim 2: Time,       rightward
                                         //   Dim 3: Frequency,  upward
-void    TExportTracks::Write ( const TArray3<float>& values, ExportTracksTransposed transpose )
+void    TExportTracks::Write ( const TArray3<float>& values, ExportTracksTransposed transpose, AnimationEnum animation )
 {
+TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+
+
 if ( ! DoneBegin )
     Begin ();
 
 
 if ( transpose ) {
                                         // no optimization possible
-    for ( long tf   = 0; tf   < NumTime;         tf++   )
-    for ( int  e    = 0; e    < NumTracks;       e++    ) {
+    for ( long tf = 0; tf < NumTime; tf++ ) {
 
-        UpdateApplication;
+        if ( Gauge.IsAlive () )     Gauge.Next ();
+        else                        UpdateApplication
 
+        for ( int e    = 0; e    < NumTracks;       e++    )
         for ( int freq = 0; freq < NumFrequencies ; freq++ )
 
             Write ( values ( e, tf, freq ), tf, e, freq );
         }
-    }
-else {
+    } // Transposed
+
+else { // NotTransposed
                                         // optimized write - no checks on dimensions, so we can write complex data f.ex.
     if      ( Type == ExportTracksFreq
             ) {
 
-        UpdateApplication;
+        if ( Gauge.IsAlive () )     Gauge.SetValue ( 0, NumTime / 2 );
+        else                        UpdateApplication
+
 
         of->seekp ( EndOfHeader, ios::beg );
                                         // send the whole array at once - caller is trusted to send the right amount of data here
         of->write ( (char *) values.GetMemoryAddress (), values.GetMemorySize () );
 
 //      of->flush ();
+
+
+        if ( Gauge.IsAlive () )     Gauge.SetValue ( 0, NumTime );
+        else                        UpdateApplication
         }
 
     else {
 
-        for ( long tf   = 0; tf   < NumTime;         tf++   )
-        for ( int  e    = 0; e    < NumTracks;       e++    ) {
+        for ( long tf = 0; tf < NumTime; tf++ ) {
 
-            UpdateApplication;
+            if ( Gauge.IsAlive () )     Gauge.Next ();
+            else                        UpdateApplication
 
+            for ( int e    = 0; e    < NumTracks;       e++    )
             for ( int freq = 0; freq < NumFrequencies ; freq++ )
 
                 Write ( values ( tf, e, freq ), tf, e, freq );
             }
         }
-    }
+    } // NotTransposed
 
 
 End ();
@@ -2077,17 +2094,21 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray3<double>& values )
+void    TExportTracks::Write ( const TArray3<double>& values, AnimationEnum animation )
 {
+TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+
+
 if ( ! DoneBegin )
     Begin ();
 
 
-for ( long tf   = 0; tf   < NumTime;         tf++   )
-for ( int  e    = 0; e    < NumTracks;       e++    ) {
+for ( long tf = 0; tf < NumTime; tf++ ) {
 
-    UpdateApplication;
+    if ( Gauge.IsAlive () )     Gauge.Next ();
+    else                        UpdateApplication
 
+    for ( int e    = 0; e    < NumTracks;       e++    )
     for ( int freq = 0; freq < NumFrequencies ; freq++ )
 
         Write ( values ( e, tf, freq ), tf, e, freq );
@@ -2099,15 +2120,19 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray2<double>& values, ExportTracksTransposed transpose )
+void    TExportTracks::Write ( const TArray2<double>& values, ExportTracksTransposed transpose, AnimationEnum animation )
 {
+TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+
+
 if ( ! DoneBegin )
     Begin ();
 
 
 for ( long tf = 0; tf < NumTime; tf++ ) {
 
-    UpdateApplication;
+    if ( Gauge.IsAlive () )     Gauge.Next ();
+    else                        UpdateApplication
 
     for ( int el = 0; el < NumTracks * NumFiles; el++ )
 
@@ -2121,15 +2146,19 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray2<bool>& values, ExportTracksTransposed transpose )
+void    TExportTracks::Write ( const TArray2<bool>& values, ExportTracksTransposed transpose, AnimationEnum animation )
 {
+TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+
+
 if ( ! DoneBegin )
     Begin ();
 
 
 for ( long tf = 0; tf < NumTime; tf++ ) {
 
-    UpdateApplication;
+    if ( Gauge.IsAlive () )     Gauge.Next ();
+    else                        UpdateApplication
 
     for ( int el = 0; el < NumTracks * NumFiles; el++ )
 
@@ -2143,15 +2172,19 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray2<long>& values, ExportTracksTransposed transpose )
+void    TExportTracks::Write ( const TArray2<long>& values, ExportTracksTransposed transpose, AnimationEnum animation )
 {
+TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+
+
 if ( ! DoneBegin )
     Begin ();
 
 
 for ( long tf = 0; tf < NumTime; tf++ ) {
 
-    UpdateApplication;
+    if ( Gauge.IsAlive () )     Gauge.Next ();
+    else                        UpdateApplication
 
     for ( int el = 0; el < NumTracks * NumFiles; el++ )
 
@@ -2166,8 +2199,11 @@ End ();
 
 //----------------------------------------------------------------------------
                                         // This version not fully tested
-void    TExportTracks::Write ( const TMaps& maps )
+void    TExportTracks::Write ( const TMaps& maps, AnimationEnum animation )
 {
+TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+
+
 if ( ! DoneBegin )
     Begin ();
 
@@ -2187,7 +2223,8 @@ bool                savevector      = IsVector ( AtomTypeUseOriginal ) && NumTra
 
 for ( long tf = 0; tf < NumTime; tf++) {
 
-    UpdateApplication;
+    if ( Gauge.IsAlive () )     Gauge.Next ();
+    else                        UpdateApplication
 
 
     if ( savevector )
@@ -2336,7 +2373,7 @@ End ();
                                         // Input parameters:
                                         // EEGDoc*, TimeMin, TimeMax, Type (option), Filename (option)
                                         // Processing is either interval or markers mode
-void    TExportTracks::Write ( TRisDoc* RISDoc, int reg, const TMarkers* keeplist )
+void    TExportTracks::Write ( const TRisDoc* RISDoc, int reg, const TMarkers* keeplist )
 {
 if ( RISDoc == 0 )
     return;

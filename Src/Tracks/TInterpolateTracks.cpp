@@ -1481,8 +1481,6 @@ expfile.SamplingFrequency   = eegdoc->GetSamplingFrequency ();
 expfile.DateTime            = eegdoc->DateTime;
 
 expfile.ElectrodesNames     = DestPointsNames;
-
-DBGV2 ( eegdoc->GetAbsMaxValue (), dataout.GetAbsMaxValue (), "MaxValue Old New" );
                                         // here we have the exact value
 expfile.MaxValue            = dataout.GetAbsMaxValue (); // eegdoc->GetAbsMaxValue ();
 

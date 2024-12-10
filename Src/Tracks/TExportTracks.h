@@ -186,29 +186,35 @@ public:
     void            Write ( float                   value, long t, int e );     // !Does not update CurrentPositionTrack nor CurrentPositionTime -> caller handles the loops & indexes!
     void            Write ( const TVector3Float&    vector );                   // mostly to write vectorial ris files
     void            Write ( const TVector3Float&    vector, long t, int e );    // mostly to write vectorial ris files
+
+                                        // Writing full 1D array at once
     void            Write ( const TArray1<float>&   values );                   // write full array at once, in sequence, without caring for output dimension (1xn or nx1 f.ex.)
     void            Write ( const TArray1<double>&  values );                   // write full array at once, in sequence, without caring for output dimension (1xn or nx1 f.ex.)
     void            Write ( const TArray1<long>&    values );                   // write full array at once, in sequence, without caring for output dimension (1xn or nx1 f.ex.)
     void            Write ( const TArray1<TVector3Float>&   vec3 );             // write full array at once, in sequence, without caring for output dimension (1xn or nx1 f.ex.)
     void            Write ( const TMap&             map    );                   // write whole map at once
-    void            Write ( const TArray2<float>&   values, const TMarkers* keeplist );         // write a full array, but only at some positions
-    void            Write ( const TArray2<float>&   values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );   // write a full array at once
-    void            Write ( const TArray2<double>&  values, ExportTracksTransposed transpose ); // write a full array at once
-    void            Write ( const TArray2<bool>&    values, ExportTracksTransposed transpose ); // write a full array at once
-    void            Write ( const TArray2<long>&    values, ExportTracksTransposed transpose ); // write a full array at once
-    void            Write ( const TMaps& maps );                                                // write a full array at once
-    void            Write ( TTracksDoc*             EEGDoc,     const TMarkers* keeplist = 0 );             // write & crop an EEG Doc
-    void            Write ( TRisDoc*                RISDoc,     int reg,    const TMarkers* keeplist = 0 ); // write & crop an RIS Doc
-    void            Write ( const char*     file,               const TMarkers* keeplist = 0 );             // wrapper to function above
+
+                                        // Writing full 2D array at once
+    void            Write ( const TArray2<float>&   values, const TMarkers* keeplist,         AnimationEnum animation = NoAnimation );
+    void            Write ( const TArray2<float>&   values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );
+    void            Write ( const TArray2<double>&  values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );
+    void            Write ( const TArray2<bool>&    values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );
+    void            Write ( const TArray2<long>&    values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );
+    void            Write ( const TMaps& maps,                                                AnimationEnum animation = NoAnimation );
+
+                                        // Writing full EEG / RIS Doc at once
+    void            Write (       TTracksDoc*       EEGDoc,     const TMarkers* keeplist = 0 );             // write & crop an EEG Doc
+    void            Write ( const TRisDoc*          RISDoc,     int reg,    const TMarkers* keeplist = 0 ); // write & crop an RIS Doc
+    void            Write ( const char*             file,       const TMarkers* keeplist = 0 );             // wrapper to function above
 
                                         // !Frequency files only!
-    void            Write ( float value, long t, int e, int f );                    // FREQ only! Does not update CurrentPositionTrack nor CurrentPositionTime -> caller handles the loops & indexes!
-    void            Write ( std::complex<float> comp, long t, int e, int f );       // FREQ only! Does not update CurrentPositionTrack nor CurrentPositionTime -> caller handles the loops & indexes!
-    void            Write ( float realpart, float imagpart, long t, int e, int f ); // FREQ only! Does not update CurrentPositionTrack nor CurrentPositionTime -> caller handles the loops & indexes!
-    void            Write ( const TVector<float>        v, long t, int f );         // FREQ only! Does not update CurrentPositionTrack nor CurrentPositionTime -> caller handles the loops & indexes!
-    void            Write ( const TSetArray2<float>&    values );                   // FREQ only! write a full array at once
-    void            Write ( const TArray3<float>&       values, ExportTracksTransposed transpose ); // FREQ only! write a full array at once
-    void            Write ( const TArray3<double>&      values );                   // FREQ only! write a full array at once
+    void            Write ( float value,                    long t, int e, int f ); // FREQ only! Does not update CurrentPositionTrack nor CurrentPositionTime -> caller handles the loops & indexes!
+    void            Write ( std::complex<float> comp,       long t, int e, int f );
+    void            Write ( float realpart, float imagpart, long t, int e, int f );
+    void            Write ( const TVector<float>        v,  long t,        int f );
+    void            Write ( const TSetArray2<float>&    values,                                   AnimationEnum animation = NoAnimation );  // FREQ only! write a full array at once
+    void            Write ( const TArray3<float>&       values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );
+    void            Write ( const TArray3<double>&      values,                                   AnimationEnum animation = NoAnimation );
 
                                                             // Copying all variables, as well as the ofstream* which is still debatable
     TExportTracks                           ( const TExportTracks &op  );   // copy constructor
