@@ -100,6 +100,16 @@ enum            ExportTracksTransposed
                 };
 
 
+enum            AnimationEnum
+                {
+                NoAnimation,
+                ShowAnimation,
+
+                Silently    = NoAnimation,
+                Verbosy     = ShowAnimation,
+                };
+
+
 //----------------------------------------------------------------------------
                                         // EDF file format needs some extra care
 constexpr double    EdfPhysicalMaxMargin    = 5;        // Boosting the max value with this factor, as the given max might be approximate
@@ -182,7 +192,7 @@ public:
     void            Write ( const TArray1<TVector3Float>&   vec3 );             // write full array at once, in sequence, without caring for output dimension (1xn or nx1 f.ex.)
     void            Write ( const TMap&             map    );                   // write whole map at once
     void            Write ( const TArray2<float>&   values, const TMarkers* keeplist );         // write a full array, but only at some positions
-    void            Write ( const TArray2<float>&   values, ExportTracksTransposed transpose ); // write a full array at once
+    void            Write ( const TArray2<float>&   values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );   // write a full array at once
     void            Write ( const TArray2<double>&  values, ExportTracksTransposed transpose ); // write a full array at once
     void            Write ( const TArray2<bool>&    values, ExportTracksTransposed transpose ); // write a full array at once
     void            Write ( const TArray2<long>&    values, ExportTracksTransposed transpose ); // write a full array at once

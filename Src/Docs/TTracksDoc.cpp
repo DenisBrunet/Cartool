@@ -318,7 +318,7 @@ GetTracks   (   0,              NumTimeFrames - 1,
 expfile.MaxValue            = EegBuff.GetAbsMaxValue ();    // GetAbsMaxValue ();
 
                                         // works for both scalar and 3D vectorial data (x0,y0,z0,x1,y1,z1...)
-expfile.Write ( EegBuff, Transposed );
+expfile.Write ( EegBuff, Transposed, ShowAnimation );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

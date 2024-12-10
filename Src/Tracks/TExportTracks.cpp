@@ -1414,7 +1414,7 @@ WriteMarkers ();
                                         // The versatile work-horse, not optimized but safe
 void    TExportTracks::Write ( float value )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1500,7 +1500,7 @@ if ( CurrentPositionTime >= NumTime )   // this should be the end!
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( long value )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1533,7 +1533,7 @@ else
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( double value )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1568,7 +1568,7 @@ else
 
 void    TExportTracks::Write ( float value, long t, int e )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1622,7 +1622,7 @@ else if ( Type == ExportTracksEdf ) {
 
 void    TExportTracks::Write ( float value, long t, int e, int f )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1669,7 +1669,7 @@ Write ( comp.real (), comp.imag (), t, e, f );
                                         // it used to be using the complex structure, which is long double, which makes files too big
 void    TExportTracks::Write ( float realpart, float imagpart, long t, int e, int f )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1722,7 +1722,7 @@ for ( int el = 0; el < v.GetDim (); el++ ) {
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( const TVector3Float& vector )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1750,7 +1750,7 @@ else
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( const TVector3Float& vector, long t, int e )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1792,7 +1792,7 @@ else if ( Type == ExportTracksEdf ) {
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( const TArray1<float>& values )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
                                         // optimized write
@@ -1822,7 +1822,7 @@ else
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( const TArray1<double>& values )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1838,7 +1838,7 @@ for ( long tf = 0; tf < values.GetDim1 (); tf++ ) {
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( const TArray1<long>& values )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1854,7 +1854,7 @@ for ( long tf = 0; tf < values.GetDim1 (); tf++ ) {
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( const TArray1<TVector3Float>& vec3 )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1871,7 +1871,7 @@ for ( long tf = 0; tf < vec3.GetDim1 (); tf++ ) {
                                         // !NOT for vectorial!
 void    TExportTracks::Write ( const TMap& map )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
                                         // optimized write
@@ -1906,7 +1906,7 @@ void    TExportTracks::Write ( const TArray2<float>& values, const TMarkers* kee
 NumTime     = keeplist->GetMarkersTotalLength ();
 
 
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -1937,45 +1937,61 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray2<float>& values, ExportTracksTransposed transpose )
+void    TExportTracks::Write ( const TArray2<float>& values, ExportTracksTransposed transpose, AnimationEnum animation )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+                                        // TSuperGauge will handle the non-interactive case by itself
+TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+
+
+if ( ! DoneBegin )
     Begin ();
 
 
-if ( transpose )    // the "\n" is not handled correctly, user must swap NumTime and NumTracks values to have it work correctly
+if ( transpose == Transposed ) {        // the "\n" is not handled correctly, caller must swap NumTime and NumTracks values to have it work correctly
 
     for ( long tf = 0; tf < NumTime; tf++ ) {
 
-        UpdateApplication;
-
+        if ( Gauge.IsAlive () )     Gauge.Next ();
+        else                        UpdateApplication
+        
         for ( int el = 0; el < NumTracks * NumFiles; el++ )
             Write ( values ( el, tf ) );
         }
-else {
+    } // Transposed
+
+else { // NotTransposed
                                         // optimized write - only for float case
     if      ( Type == ExportTracksSef
            || Type == ExportTracksBv
            || Type == ExportTracksRis /*&& ! IsVector ( AtomTypeUseOriginal )*/   // caller's responsibility to send a multiplexed array
             ) {
 
-        UpdateApplication;
+        if ( Gauge.IsAlive () )     Gauge.SetValue ( 0, NumTime / 2 );
+        else                        UpdateApplication
+
                                         // send the whole array at once
         of->write ( (char *) values.GetMemoryAddress (), values.GetMemorySize () );
 
 //      of->flush ();
-        }
 
-    else
+
+        if ( Gauge.IsAlive () )     Gauge.SetValue ( 0, NumTime );
+        else                        UpdateApplication
+        } // optimized
+
+    else { // not optimized
 
         for ( long tf = 0; tf < NumTime; tf++ ) {
 
-            UpdateApplication;
+            if ( Gauge.IsAlive () )     Gauge.Next ();
+            else                        UpdateApplication
 
             for ( int el = 0; el < NumTracks * NumFiles; el++ )
                 Write ( values ( tf, el ) );
             }
-    }
+        } // not optimized
+
+    } // NotTransposed
 
 
 End ();
@@ -1985,7 +2001,7 @@ End ();
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( const TSetArray2<float>& values )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -2011,7 +2027,7 @@ End ();
                                         //   Dim 3: Frequency,  upward
 void    TExportTracks::Write ( const TArray3<float>& values, ExportTracksTransposed transpose )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -2063,7 +2079,7 @@ End ();
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( const TArray3<double>& values )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -2085,7 +2101,7 @@ End ();
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( const TArray2<double>& values, ExportTracksTransposed transpose )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -2107,7 +2123,7 @@ End ();
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( const TArray2<bool>& values, ExportTracksTransposed transpose )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -2129,7 +2145,7 @@ End ();
 //----------------------------------------------------------------------------
 void    TExportTracks::Write ( const TArray2<long>& values, ExportTracksTransposed transpose )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
 
@@ -2152,7 +2168,7 @@ End ();
                                         // This version not fully tested
 void    TExportTracks::Write ( const TMaps& maps )
 {
-if ( ! DoneBegin )                      // remove the hassle from the caller
+if ( ! DoneBegin )
     Begin ();
 
                                         // check we are really good to save vectorial data
