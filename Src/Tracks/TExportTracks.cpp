@@ -521,20 +521,24 @@ if ( ! OpenStream () ) {
 
 WriteHeader ();
 
-
+/*                                      // Not needed anymore, as previous call to WriteHeader does the trick already
 if ( dummyheader ) {                    // enough to overwrite this case
 
     if ( Type == ExportTracksEph ) {
 
+        char        buff[ 256 ];
+
+        StringRepeat ( buff, ' ', /* WidthInt32 + WidthInt32 + WidthFloat64 - 1 * / EndOfHeader - 2 );
+
         of->seekp ( 0, ios::beg );
                                         // writing as much spaces as the real header will need later on
-        *of << string ( ' ', WidthInt32 + WidthInt32 + WidthFloat64 ) << fastendl;
+        *of << buff << fastendl;
         }
                                         // not implemented
 //  else if ( Type == ExportTracksData
 //         || Type == ExportTracksSeg  ) {}
     }
-
+*/
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

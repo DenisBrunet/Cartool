@@ -260,7 +260,8 @@ return  numtokens;
 
 //----------------------------------------------------------------------------
                                         // Fast allocation on disk
-void    AllocateFileSpace   (   ofstream*   of,     size_t      sizetoallocate,     DWORD   fromwhere   )
+                                        // Currently always use  FILE_CURRENT
+void    AllocateFileSpace   (   ofstream*   of,     size_t      sizetoallocate,     DWORD   /*fromwhere*/   )
 {
 if  ( ! of || sizetoallocate <= 0 )
     return;
@@ -290,12 +291,10 @@ if ( seoferr == 0 ) {
 */
 
                                         // Somehow optimized, and universal
-//#define             RestBlockSize       KiloByte
-#define             RestBlockSize       8192
+constexpr size_t    RestBlockSize       = 8 * KiloByte;
 
-char                buff[ RestBlockSize ];
+TArray1<char>       buff ( RestBlockSize );
 
-ClearVirtualMemory  ( buff, RestBlockSize );
                                         // write by blocks first
 for ( size_t i = 0; i < sizetoallocate / RestBlockSize; i++ )
     of->write ( buff, RestBlockSize );
