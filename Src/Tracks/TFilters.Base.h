@@ -88,6 +88,9 @@ protected:
     TFilter<TypeD>* Filters[ TGoFiltersMaxFilters ];    // fixed array of pointers - faster, and also thread-friendly
     int             NumFilters;
 
+
+    TFilter<TypeD>* Clone           ( const TFilter<TypeD>* filter )    const;  // Duplicate a filter object from its base class pointer
+
 };
 
 
@@ -128,11 +131,35 @@ NumFilters  = 0;
 }
 
 
+//----------------------------------------------------------------------------
+                                        // Duplicate a derived filter object by calling the appropriate constructor, while knowing only its base pointer
+template <class TypeD>
+TFilter<TypeD>*     TFilters<TypeD>::Clone ( const TFilter<TypeD>* filter )     const
+{
+if ( filter == 0 )
+    return  0;
+
+                                        // Not the best solution, but we actually only care about TFilterButterworthBandStop
+if      ( typeid ( *filter ) == typeid ( TFilterBaseline           <TypeD>    ) )   return  new TFilterBaseline           <TypeD> ( *dynamic_cast<const TFilterBaseline           <TypeD>*> ( filter ) );
+else if ( typeid ( *filter ) == typeid ( TFilterButterworthBandPass<TypeD>    ) )   return  new TFilterButterworthBandPass<TypeD> ( *dynamic_cast<const TFilterButterworthBandPass<TypeD>*> ( filter ) );
+else if ( typeid ( *filter ) == typeid ( TFilterButterworthBandStop<TypeD>    ) )   return  new TFilterButterworthBandStop<TypeD> ( *dynamic_cast<const TFilterButterworthBandStop<TypeD>*> ( filter ) );
+else if ( typeid ( *filter ) == typeid ( TFilterButterworthHighPass<TypeD>    ) )   return  new TFilterButterworthHighPass<TypeD> ( *dynamic_cast<const TFilterButterworthHighPass<TypeD>*> ( filter ) );
+else if ( typeid ( *filter ) == typeid ( TFilterButterworthLowPass <TypeD>    ) )   return  new TFilterButterworthLowPass <TypeD> ( *dynamic_cast<const TFilterButterworthLowPass <TypeD>*> ( filter ) );
+else if ( typeid ( *filter ) == typeid ( TFilterEnvelope           <TypeD>    ) )   return  new TFilterEnvelope           <TypeD> ( *dynamic_cast<const TFilterEnvelope           <TypeD>*> ( filter ) );
+else if ( typeid ( *filter ) == typeid ( TFilterRanking            <TypeD>    ) )   return  new TFilterRanking            <TypeD> ( *dynamic_cast<const TFilterRanking            <TypeD>*> ( filter ) );
+else if ( typeid ( *filter ) == typeid ( TFilterRectification      <TypeD>    ) )   return  new TFilterRectification      <TypeD> ( *dynamic_cast<const TFilterRectification      <TypeD>*> ( filter ) );
+else if ( typeid ( *filter ) == typeid ( TFilterReference          <TypeD>    ) )   return  new TFilterReference          <TypeD> ( *dynamic_cast<const TFilterReference          <TypeD>*> ( filter ) );
+else if ( typeid ( *filter ) == typeid ( TFilterSpatial            <TypeD>    ) )   return  new TFilterSpatial            <TypeD> ( *dynamic_cast<const TFilterSpatial            <TypeD>*> ( filter ) );
+else if ( typeid ( *filter ) == typeid ( TFilterThreshold          <TypeD>    ) )   return  new TFilterThreshold          <TypeD> ( *dynamic_cast<const TFilterThreshold          <TypeD>*> ( filter ) );
+else                                                                                return  0; // assert ( false );
+}
+
+
 template <class TypeD>
             TFilters<TypeD>::TFilters ( const TFilters& op )
 {
 for ( int i = 0; i < op.GetNumFilters (); i++ )
-    Add ( new TFilter<TypeD> ( *op.Filters[ i ] ) );
+    Add ( Clone ( op.Filters[ i ] ) );
 }
 
 
@@ -145,10 +172,11 @@ if ( &op2 == this )
 Reset ();
 
 for ( int i = 0; i < op2.GetNumFilters (); i++ )
-    Add ( new TFilter<TypeD> ( *op2.Filters[ i ] ) );
+    Add ( Clone ( op2.Filters[ i ] ) );
 
 return  *this;
 }
+
 
 //----------------------------------------------------------------------------
 template <class TypeD>

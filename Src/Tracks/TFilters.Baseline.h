@@ -27,13 +27,35 @@ class   TFilterBaseline : public TFilter<TypeD>
 {
 public:
 
+    using           TFilter::TFilter;       // using default constructor
+
     void            Apply                   ( TypeD* data, int numpts );
 
+                        TFilterBaseline     ( const TFilterBaseline& op  );
+    TFilterBaseline&    operator    =       ( const TFilterBaseline& op2 );
 };
 
 
 //----------------------------------------------------------------------------
 // Implementation
+//----------------------------------------------------------------------------
+
+template <class TypeD>
+            TFilterBaseline<TypeD>::TFilterBaseline ( const TFilterBaseline& /*op*/ )
+{
+}
+
+
+template <class TypeD>
+TFilterBaseline<TypeD>& TFilterBaseline<TypeD>::operator= ( const TFilterBaseline& op2 )
+{
+if ( &op2 == this )
+    return  *this;
+
+return  *this;
+}
+
+
 //----------------------------------------------------------------------------
 
 template <class TypeD>

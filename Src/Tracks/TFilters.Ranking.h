@@ -33,7 +33,7 @@ class   TFilterRanking  : public TFilter<TypeD>
 {
 public:
 
-                    TFilterRanking ()       {}
+    using           TFilter::TFilter;       // using default constructor
 
 
 //  inline  void    Apply                   ( TypeD*          data, int numpts ) {}                                 // to shut-up compiler
@@ -56,7 +56,6 @@ public:
 template <class TypeD>
             TFilterRanking<TypeD>::TFilterRanking ( const TFilterRanking& /*op*/ )
 {
-                                        // not copying temp variables
 }
 
 
@@ -65,8 +64,6 @@ TFilterRanking<TypeD>& TFilterRanking<TypeD>::operator= ( const TFilterRanking& 
 {
 if ( &op2 == this )
     return  *this;
-
-                                        // not copying temp variables
 
 return  *this;
 }
