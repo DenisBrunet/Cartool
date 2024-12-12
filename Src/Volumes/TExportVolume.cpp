@@ -102,9 +102,9 @@ MaxValue            = 0;
                                         // Not resetting these Nifti options:  NiftiTransform, NiftiIntentCode, NiftiIntentParameters, NiftiIntentName
 
                                         // internal variables
-CurrentPosition     = 0;
 DoneBegin           = false;
 EndOfHeader         = 0;
+CurrentPosition     = 0;
 AtomSize            = 1;
 }
 
@@ -130,17 +130,14 @@ if ( ! DoneBegin )
     return;                             // this should called right after the header has been written
 
 
-
 of->seekp ( EndOfHeader, ios::beg );
 
                                         // compute the correct size to be filled after the header
-size_t              sizetoreset     = Dim[ 0 ] * Dim[ 1 ] * Dim[ 2 ] /** Dim[ 3 ]*/ * AtomSize;
+size_t              sizetoreset     = (LONGLONG) Dim[ 0 ] * Dim[ 1 ] * Dim[ 2 ] /** Dim[ 3 ]*/ * AtomSize;
 
 
 AllocateFileSpace   ( of, sizetoreset, FILE_CURRENT );
 
-
-//of->flush ();
                                         // go back to data origin
 of->seekp ( EndOfHeader, ios::beg );
 }
@@ -150,6 +147,7 @@ of->seekp ( EndOfHeader, ios::beg );
 void    TExportVolume::End ()
 {
 if ( IsOpen () ) {
+
 //  of->flush ();
     of->close ();
     delete  of;

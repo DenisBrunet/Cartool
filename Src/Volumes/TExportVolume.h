@@ -188,36 +188,36 @@ public:
 
                                         // Either create a new object each time: calling Write will do the all the job
                                         // Or use 1 object multiple times, then call in sequence: Reset, Begin, Write, End
-    void            Reset  ();
-    bool            IsOpen              ()              const   { return  of != 0; }
-    void            CheckVolumeFormat ();
+    void            Reset               ();
+    bool            IsOpen              ()      const   { return  of != 0; }
+    void            CheckVolumeFormat   ();
 
 
-    void            Begin       ();     // checks, create stream, call write header - Called automatically
-    void            WriteHeader ();     // separate the function, in case we need to call it more than once (overwrite/update)
+    void            Begin               ();     // checks, create stream, call write header - Called automatically
+    void            WriteHeader         ();     // separate the function, in case we need to call it more than once (overwrite/update)
 
-//  void            Write ( int    value );     // a TVolume could cast itself to int and call this
-    void            Write ( double value );
-    void            Write ( const TVolume<UCHAR>&  vol, ExportArrayOrder arrayorder );   // write a full array at once
-    void            Write ( const TVolume<UINT>&   vol, ExportArrayOrder arrayorder );   // write a full array at once
-    void            Write ( const TVolume<float>&  vol, ExportArrayOrder arrayorder );   // write a full array at once
-    void            Write ( const TVolume<double>& vol, ExportArrayOrder arrayorder );   // write a full array at once
+//  void            Write               ( int    value );                                               // off: a TVolume could cast itself to int and call this
+    void            Write               ( double value );
+    void            Write               ( const TVolume<UCHAR>&  vol, ExportArrayOrder arrayorder );    // write a full array at once
+    void            Write               ( const TVolume<UINT>&   vol, ExportArrayOrder arrayorder );
+    void            Write               ( const TVolume<float>&  vol, ExportArrayOrder arrayorder );
+    void            Write               ( const TVolume<double>& vol, ExportArrayOrder arrayorder );
     
-    void            End ();                 // close stream - Called automatically
+    void            End                 ();                 // close stream - Called automatically
 
 
-                    operator std::ofstream* ()       { return of; }
+                    operator std::ofstream* ()          { return of; }
 
 protected:
 
     std::ofstream*  of;
     bool            DoneBegin;
-    long            EndOfHeader;
-    long            CurrentPosition;
+    LONGLONG        EndOfHeader;
+    LONGLONG        CurrentPosition;
     size_t          AtomSize;
 
 
-    void            PreFillFile ();
+    void            PreFillFile         ();
 };
 
 
