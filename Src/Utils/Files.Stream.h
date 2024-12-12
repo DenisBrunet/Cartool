@@ -292,12 +292,11 @@ if ( seoferr == 0 ) {
 
                                         // Somehow optimized, and universal
 constexpr size_t    RestBlockSize       = 8 * KiloByte;
-
-TArray1<char>       buff ( RestBlockSize );
+TMemory             buff ( RestBlockSize );
 
                                         // write by blocks first
 for ( size_t i = 0; i < sizetoallocate / RestBlockSize; i++ )
-    of->write ( buff, RestBlockSize );
+    of->write ( (char*) buff.GetMemoryAddress (), RestBlockSize );
 
                                         // then finish byte by byte
 for ( size_t i = 0; i < sizetoallocate % RestBlockSize; i++ )
