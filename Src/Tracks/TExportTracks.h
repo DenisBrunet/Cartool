@@ -112,6 +112,7 @@ enum            AnimationEnum
 
 //----------------------------------------------------------------------------
                                         // EDF file format needs some extra care
+constexpr double    EdfPhysicalMaxDefault   = 100;      // Default physical max
 constexpr double    EdfPhysicalMaxMargin    = 5;        // Boosting the max value with this factor, as the given max might be approximate
 constexpr int       EdfDigitalMax           = 0x77FF;   // Digital max value, a little less than 0x7FFF / SHRT_MAX
 

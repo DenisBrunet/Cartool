@@ -971,7 +971,7 @@ if ( baselinecorr ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Compute rescaling factor and/or global max value
-TMapAtomType        maxvalue        = EEGDoc->GetAbsMaxValue ();    // only an approximate value
+TMapAtomType        maxvalue        = EEGDoc->GetAbsMaxValue ();    // this is only an approximate value, as the EEG might not have been fully scanned
 
 
 if ( rescalingoptions == GfpRescaling
@@ -1075,8 +1075,15 @@ if ( createfile ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // for EDF, BV
+
+                                        // file is only 0's, try to see if caller has set MaxValue before calling?
+    if ( maxvalue <= 0 )    maxvalue    = expfile.MaxValue;
+                                        // if still not OK, set a fall-back value - we really don't want a null value
+    if ( maxvalue <= 0 )    maxvalue    = EdfPhysicalMaxDefault;
+
     expfile.MaxValue            = rescalingoptions == NotRescaled ? maxvalue
                                                                   : maxvalue * NonNull ( abs ( rescalingfactor ) );
+
     expfile.NumTags             = EEGDoc->GetNumMarkers ();
     expfile.TimeMin             = 0;              // sequenceoptions == AverageProcessing ? ( intimemin + intimenum / 2 ) : outtimemin;  // !we re-process the output triggers/markers position, now starting from 0!
     expfile.TimeMax             = outtimenum - 1; // sequenceoptions == AverageProcessing ? ( intimemin + intimenum / 2 ) : outtimemax;

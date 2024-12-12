@@ -1434,6 +1434,18 @@ return  maxvalue;
 }
 
 
+TMapAtomType    TGoMaps::GetAbsMaxValue () const
+{
+TMapAtomType    maxvalue        = 0;
+
+for ( int gofi = 0; gofi < (int) Group; gofi++ )
+
+    crtl::Maxed ( maxvalue, Group[ gofi ]->GetAbsMaxValue () );
+
+return  maxvalue;
+}
+
+
 //----------------------------------------------------------------------------
 void    TMaps::Random   ( double    minv,   double      maxv )
 {

@@ -347,6 +347,7 @@ public:
     double          ComputeGfpNormalization     ( AtomType datatype );
     void            ApplyGfpNormalization       ( double gfpnorm );
     TMaps           ComputeCentroids            ( CentroidType centroid, AtomType datatype, PolarityType polarity )    const;
+    TMapAtomType    GetAbsMaxValue              ()                                  const;
 
 
     void            ReadFiles       ( const TGoF& gof, AtomType datatype, ReferenceType reference, TStrings* tracksnames = 0 );
