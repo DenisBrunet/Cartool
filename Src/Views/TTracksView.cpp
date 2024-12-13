@@ -9798,19 +9798,23 @@ if ( markersdirty ) {                      // some markers added?
 //----------------------------------------------------------------------------
 void    TTracksView::CmFilter ()
 {
-                                        // does allow filtering?
+                                        // is filtering allowed?
 if ( ! EEGDoc->CanFilter () )
     return;
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool                dialogok        = false;
 
 if ( IsCommandSender () ) {
                                         // Optionally provide a .xyz or .spi file name if it is already available from a link many file
     bool            senderris       = dynamic_cast<TRisDoc*> ( CartoolApplication->LastActiveBaseView->BaseDoc );
 
                                         // pick the one coordinate file relevant to current file type
-    if      (   senderris && GODoc && GODoc->GetNumSpDoc  () )  EEGDoc->SetFilters   ( 0, GODoc->GetSpDoc  ( CurrSp  )->GetDocPath () );
-    else if ( ! senderris && GODoc && GODoc->GetNumXyzDoc () )  EEGDoc->SetFilters   ( 0, GODoc->GetXyzDoc ( CurrXyz )->GetDocPath () );
-    else                                                        EEGDoc->SetFilters   ( 0 );
+    if      (   senderris && GODoc && GODoc->GetNumSpDoc  () )  dialogok    = EEGDoc->SetFilters   ( 0, GODoc->GetSpDoc  ( CurrSp  )->GetDocPath () );
+    else if ( ! senderris && GODoc && GODoc->GetNumXyzDoc () )  dialogok    = EEGDoc->SetFilters   ( 0, GODoc->GetXyzDoc ( CurrXyz )->GetDocPath () );
+    else                                                        dialogok    = EEGDoc->SetFilters   ( 0 );
     }
 
 else { // IsCommandReceiver ()          // commands cloning AND a receiving cloned view -> forward the parameters set by caller view
@@ -9826,17 +9830,24 @@ else { // IsCommandReceiver ()          // commands cloning AND a receiving clon
         if ( senderris ^ receiverris )   return;
 
                                         // we can already forward some  TTracksFilters*
-        EEGDoc->SetFilters   ( sendereeg->GetFilters (), 0 );
+        dialogok    = EEGDoc->SetFilters   ( sendereeg->GetFilters (), 0 );
         }
     }
 
+                                        // user cancelled dialog?
+if ( ! dialogok )
+    return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // activate filters
 EEGDoc->ActivateFilters ();
 
 //ButtonGadgetSetState ( IDB_FILTER, EEGDoc->AreFiltersActivated () );
-
                                         // does change the display too much?
 ResetScaleTracks ();
+
+ResetScalingLevel();
 
 SetColorTable ( EEGDoc->GetAtomType ( AtomTypeUseCurrent ) );
 }
