@@ -1078,9 +1078,10 @@ for ( ; block <= blockmax; tfoffset      += numtfinblock /*Blocks[ block ].NumTi
         int         tfpertrack      = toch[ el ].SamplesPerBlock - 1;
 
                                         // get the complete line for this electrode - very inefficient
-      //FileStream.Read ( Tracks.GetArray (), toch[ el ].ChannelSize );
+        //FileStream.SeekBegin ( nextelpos );
+        //FileStream.Read ( Tracks.GetArray (), toch[ el ].ChannelSize );
 
-                                        // optimal jump to where data are
+                                        // optimal jump to where data actually is
         FileStream.SeekBegin ( nextelpos + firsttfinblock * sizeof ( float ) );
                                         // so that we can read the min # of data: min of remaining block or remaining data
         ULONG       tfminread       = min ( toch[ el ].SamplesPerBlock - firsttfinblock, tfremainingread );

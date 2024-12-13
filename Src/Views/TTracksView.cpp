@@ -629,8 +629,10 @@ AuxTracks           = EEGDoc->GetAuxTracks ();
 LastVisibleTrack    = 0;
 ScaleTracks.Resize ( EEGDoc->GetTotalElectrodes () );
 
-if ( ! isderived ) {
+if ( ! isderived ) { // i.e. tracks display, not frequency display
+
     ReloadBuffers    ();
+
     ResetScaleTracks ();
     }
 
@@ -6509,7 +6511,7 @@ else {                                  // case 3: deltamin < 0 && deltamax > 0 
 //----------------------------------------------------------------------------
                                         // regular tracks relative scaling set to 1
                                         // the others are relatively scaled to an average ratio
-void    TTracksView::ResetScaleTracks ( const TSelection *sel )
+void    TTracksView::ResetScaleTracks ( const TSelection* sel )
 {
 long                fromtf          = 0;
 long                totf            = CDPt.GetLength() - 1;
@@ -6601,7 +6603,7 @@ else if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
 else {                                  // regular file
     TEasyStats          stats;
     TDownsampling       downtf ( fromtf, totf, NumScanTracksScaling );
-    double              v;
+    constexpr double    defaultscaletracks  = 100;
 
                                         // stats on the absolute values of all the regular tracks together
     for ( int e = 0; e < EEGDoc->GetNumElectrodes (); e++ ) {
@@ -6616,25 +6618,23 @@ else {                                  // regular file
                 if ( (bool) Montage[ e ] ) {
 
                     if ( Montage[ e ].TwoTracks () )
-                        v   = fabs ( Montage[ e ].ToData1[ tf ] - Montage[ e ].ToData2[ tf ] );
+                        stats.Add ( fabs ( Montage[ e ].ToData1[ tf ] - Montage[ e ].ToData2[ tf ] ), ThreadSafetyIgnore );
                     else
-                        v   = fabs ( Montage[ e ].ToData1[ tf ] );
+                        stats.Add ( fabs ( Montage[ e ].ToData1[ tf ] ),                              ThreadSafetyIgnore );
                     }
-                else // montage, but they are all auxiliaries
-                    v   = 0;
+                //else // montage, but they are all auxiliaries
+                //    v   = 0;
                 } // if montage
 
             else // no Montage
-                v   = fabs ( EegBuff[ e ][ tf ] );
+                stats.Add ( fabs ( EegBuff[ e ][ tf ] ), ThreadSafetyIgnore );
 
-            if ( v )
-                stats.Add ( v, ThreadSafetyIgnore );
             } // for tf
         } // for e
 
                                         // Mixing multiple measures for max tracks
-    double          maxtracks       = NonNull ( GeometricMean ( 4 * stats.Average (), 4 * stats.SD (), stats.AbsoluteMax () ) );
-
+    double          maxtracks       = stats.AbsoluteMax () == 0 ? defaultscaletracks 
+                                                                : NonNull ( GeometricMean ( 4 * stats.Average (), 4 * stats.SD (), stats.AbsoluteMax () ) );
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -6662,23 +6662,21 @@ else {                                  // regular file
                     if ( (bool) Montage[ e ] ) {
 
                         if ( Montage[ e ].TwoTracks () )
-                            v   = fabs ( Montage[ e ].ToData1[ tf ] - Montage[ e ].ToData2[ tf ] );
+                            stats.Add ( fabs ( Montage[ e ].ToData1[ tf ] - Montage[ e ].ToData2[ tf ] ), ThreadSafetyIgnore );
                         else
-                            v   = fabs ( Montage[ e ].ToData1[ tf ] );
+                            stats.Add ( fabs ( Montage[ e ].ToData1[ tf ] ),                              ThreadSafetyIgnore );
                         }
-                    else // montage, but they are all auxiliaries
-                        v   = 0;
+                    //else // montage, but they are all auxiliaries
+                    //    v   = 0;
                     } // if montage
 
                 else // no Montage, or pseudo electrode
-                    v   = fabs ( EegBuff[ e ][ tf ] );
-
-                if ( v )
-                    stats.Add ( v, ThreadSafetyIgnore );
+                    stats.Add ( fabs ( EegBuff[ e ][ tf ] ), ThreadSafetyIgnore );
                 } // for tf
 
                                         // Scale for current track
-            double          maxtrack        = GeometricMean ( 4 * stats.Average (), 4 * stats.SD (), stats.AbsoluteMax () );
+            double          maxtrack        = stats.AbsoluteMax () == 0 ? defaultscaletracks 
+                                                                        : GeometricMean ( 4 * stats.Average (), 4 * stats.SD (), stats.AbsoluteMax () );
 
             ScaleTracks[ e ]    = 1 / NonNull ( maxtrack );
 
@@ -7789,13 +7787,8 @@ if ( w == CM_EEGUSERSCALE ) {           // set global scaling
     }
 else if ( w == CM_EEGRESETSCALING ) {   // reset relative tracks scaling
 
-    //SetScaling ( EEGGLVIEW_STVINIT );
-
-    if ( (int) Highlighted )
-        ResetScaleTracks ( &Highlighted );
-    else
-        ResetScaleTracks ();
-
+    if ( (bool) Highlighted )   ResetScaleTracks ( &Highlighted );
+    else                        ResetScaleTracks ();
                                         // reset global scaling, too
     ResetScalingLevel ();
     }
