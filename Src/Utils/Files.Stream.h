@@ -25,6 +25,7 @@ limitations under the License.
 
 #include    "Strings.Utils.h"
 #include    "Files.Utils.h"             // TFilenameFlags
+//#include    "Dialogs.Input.h"
 
 namespace crtl {
 
@@ -309,6 +310,10 @@ of->flush ();
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
+
+//#define     ASSERT_TFileStream
+#undef      ASSERT_TFileStream
+
         TFileStream::TFileStream ()
       : hfile ( 0 ), OK ( false ), EndOfFile ( true )
 {
@@ -331,8 +336,14 @@ Close ();
 //----------------------------------------------------------------------------
 void    TFileStream::Close ()
 {
-if ( IsOpen ()  )
-    CloseHandle ( hfile );
+if ( IsOpen () ) {
+
+    bool        closeok     = CloseHandle ( hfile );
+
+    #if defined(ASSERT_TFileStream)
+    if ( ! closeok ) DBGM ( "Close error", "TFileStream" );
+    #endif
+    }
     
 hfile       = 0;
 OK          = false;
@@ -344,8 +355,14 @@ bool    TFileStream::Open ( const char* file, TFileStreamEnums flags )
 {
 Close ();
 
-if ( StringIsEmpty ( file ) )
+if ( StringIsEmpty ( file ) ) {
+
+    #if defined(ASSERT_TFileStream)
+    DBGM ( "Open error, empty file", "TFileStream" );
+    #endif
+
     return  false;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -398,6 +415,10 @@ else {
     EndOfFile   = false;    // not that it means anything
     }
 
+#if defined(ASSERT_TFileStream)
+if ( ! OK ) DBGM ( "Open error", "TFileStream" );
+#endif
+
 return  OK;
 }
 
@@ -413,6 +434,10 @@ OK  = SetFilePointerEx  (   hfile,
                             &currpos,
                             FILE_CURRENT
                         );
+
+#if defined(ASSERT_TFileStream)
+if ( ! OK ) DBGM ( "Tell error", "TFileStream" );
+#endif
 
 return  OK ? LARGE_INTEGER_to_LONGLONG ( currpos ) : -1;
 }
@@ -430,6 +455,11 @@ OK  = SetFilePointerEx  (   hfile,
                             0,
                             where
                         );
+
+#if defined(ASSERT_TFileStream)
+if ( ! OK ) DBGM ( "Seek error", "TFileStream" );
+#endif
+
 return  OK;
 }
 
@@ -467,6 +497,10 @@ OK  = ReadFile  (   hfile,
 
 EndOfFile   = ! OK || numberofbytesread == 0;
 
+#if defined(ASSERT_TFileStream)
+if ( ! OK ) DBGM ( "Read error", "TFileStream" );
+#endif
+
 return  OK;
 }
 
@@ -481,6 +515,11 @@ OK  = WriteFile (   hfile,
                     NULL,
                     NULL
                 );
+
+#if defined(ASSERT_TFileStream)
+if ( ! OK ) DBGM ( "Write error", "TFileStream" );
+#endif
+
 return  OK;
 }
 
