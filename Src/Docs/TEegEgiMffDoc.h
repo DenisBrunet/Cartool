@@ -126,7 +126,7 @@ public:
 
     bool            CanClose        ();
     bool            Close           ();
-    bool            IsOpen          ()  const           { return NumElectrodes > 0; }
+    bool            IsOpen          ()          const   { return NumElectrodes > 0; }
     bool            Open            ( int mode, const char *path = 0 );
 
 
@@ -134,7 +134,7 @@ public:
     bool            UpdateSession   ( int newsession )                                              final;
     void            UpdateTitle     ()                                                              final;
 
-    bool            IsNanoSecondsPrecision ()       { return Version == 0; }    // else micro-seconds (!)
+    bool            IsNanoSecondsPrecision ()   const   { return Version == 0; }    // else micro-seconds (!)
 
 
 protected:
@@ -153,9 +153,9 @@ protected:
     bool            SetArrays           ()  final;
     void            ReadNativeMarkers   ()  final;
 
-    void            DateTimeStringToFields          ( char *datetime, int &year, int &month, int &day, int &hour, int &minute, double &second );
-    double          DurationStringToMicroseconds    ( char *duration );
-    void            DurationStringToFields          ( char *duration, int &sec, int &millisec, int &microsec, int &nanosec );
+    void            DateTimeStringToFields          ( const char* datetime, int &year, int &month, int &day, int &hour, int &minute, double &second )   const;
+    double          DurationStringToMicroseconds    ( const char* duration )    const;
+    void            DurationStringToFields          ( const char* duration, int &sec, int &millisec, int &microsec, int &nanosec )  const;
 };
 
 

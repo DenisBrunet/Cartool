@@ -36,34 +36,40 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
                                         // unfold a date & time string to fields - note the seconds are in double, with potentially a fractional part
-void    TEegEgiMffDoc::DateTimeStringToFields ( char *datetime, int &year, int &month, int &day, int &hour, int &minute, double &second )
+void    TEegEgiMffDoc::DateTimeStringToFields ( const char* datetime, int &year, int &month, int &day, int &hour, int &minute, double &second ) const
 {
                                         // format is well known, just the seconds could be micro or nano seconds, but we don't care as it remains in the fraction!
 sscanf ( datetime, "%4d-%2d-%2dT%2d:%2d:%lf", &year, &month, &day, &hour, &minute, &second );
 }
 
                                         // converts a duration string to micro-seconds, with potentially a fractional part
-double  TEegEgiMffDoc::DurationStringToMicroseconds ( char *duration )
+double  TEegEgiMffDoc::DurationStringToMicroseconds ( const char* duration )    const
 {
 return  StringToDouble ( duration ) / ( IsNanoSecondsPrecision () ? 1000 : 1 );
 }
 
                                         // unfold a duration string up to seconds fields (which should be enough precision wise)
-void    TEegEgiMffDoc::DurationStringToFields ( char* duration, int& sec, int& millisec, int& microsec, int& nanosec )
+void    TEegEgiMffDoc::DurationStringToFields ( const char* duration, int& sec, int& millisec, int& microsec, int& nanosec )  const
 {
-sec     = millisec  = microsec  = nanosec   = 0;
+sec         = 0;
+millisec    = 0;
+microsec    = 0;
+nanosec     = 0;
 
 
-int                l                = StringLength ( duration );
+char                buff        [ 256 ];
+StringCopy  ( buff, duration );
 
-auto                convertnext3digits  = [ &l, &duration ] ( int& v ) 
+int                l                = StringLength ( buff );
+
+auto                convertnext3digits  = [ &l, &buff ] ( int& v ) 
 {
 if ( l == 0 )    
     return;
 
-l               = AtLeast ( 0, l - 3 );
-v               = StringToInteger ( duration + l );
-duration[ l ]   = EOS;      // clip the used end of string
+l           = AtLeast ( 0, l - 3 );
+v           = StringToInteger ( buff + l );
+buff[ l ]   = EOS;  // clip the used end of string
 };
 
                                         // conversion is from end of string back to beginning
@@ -935,12 +941,14 @@ if ( GetDocPath () ) {
                                         // some microseconds included in starting date or high sampling frequency?
             Sequences[ i ].DateTime.MicrosecondPrecision    = DateTime.MicrosecondPrecision || Sequences[ i ].SamplingFrequency > 1000.0;
 
-            Sequences[ i ].NumTimeFrames        = 0;
+
+            //ULONG       computednumtimeframes   = 0;
+            Sequences[ i ].NumTimeFrames        = MicrosecondsToTimeFrame ( DurationStringToMicroseconds ( endtime ) - DurationStringToMicroseconds ( begintime ), Sequences[ i ].SamplingFrequency );
 
                                         // look for all blocks that belong to this sequence
             for ( int b = Sequences[ i ].FirstBlock; b <= Sequences[ i ].LastBlock; b++ ) {
                                         // sum up all TFs
-                Sequences[ i ].NumTimeFrames   += Blocks[ b ].NumTimeFrames;
+                //computednumtimeframes          += Blocks[ b ].NumTimeFrames;
                                         // compute relative TF origin for each block
                 Blocks[ b ].TimeFrameOrigin     = b == Sequences[ i ].FirstBlock ? 0 : Blocks[ b - 1 ].TimeFrameOrigin + Blocks[ b - 1 ].NumTimeFrames;
                 } // for block

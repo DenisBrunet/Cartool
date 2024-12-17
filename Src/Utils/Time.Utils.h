@@ -67,6 +67,7 @@ inline double   MinutesToTimeFrame      ( double m,   double samplingfrequency )
 inline double   SecondsToTimeFrame      ( double s,   double samplingfrequency );
 inline double   MillisecondsToTimeFrame ( double ms,  double samplingfrequency );
 inline double   MicrosecondsToTimeFrame ( double mus, double samplingfrequency );
+inline double   NanosecondsToTimeFrame  ( double ns,  double samplingfrequency );
 
 
 //----------------------------------------------------------------------------
@@ -146,6 +147,12 @@ return  samplingfrequency > 0 ? ms / 1e3 * samplingfrequency : ms;
 double          MicrosecondsToTimeFrame ( double mus, double samplingfrequency )
 {
 return  samplingfrequency > 0 ? mus / 1e6 * samplingfrequency : mus;
+}
+
+
+double          NanosecondsToTimeFrame ( double ns, double samplingfrequency )
+{
+return  samplingfrequency > 0 ? ns / 1e9 * samplingfrequency : ns;
 }
 
 
