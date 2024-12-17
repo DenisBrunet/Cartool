@@ -696,7 +696,7 @@ if ( GetDocPath () ) {
         DateTimeStringToFields ( element, yyyy, MM, dd, hh, mm, ss );
                                                                    // seconds include fractions, get it up to the micro-second
                                                                    // nanoseconds, if any (Version 0), will simply be ignored by Cartool after the rounding...
-        DateTime            = TDateTime ( yyyy, MM, dd, hh, mm, 0, 0, Round ( ss * 1000000 ) );
+        DateTime            = TDateTime ( yyyy, MM, dd, hh, mm, 0, 0, Truncate ( ss * 1000000 ) );
 
                                         // some microseconds included in starting date?
         if ( Fraction ( ss * 1000 ) > 0 )
@@ -930,7 +930,7 @@ if ( GetDocPath () ) {
                                                               DateTime.GetSecond      () + sec,
                                                               DateTime.GetMillisecond () + millisec,
                                                               DateTime.GetMicrosecond () + microsec
-                                                                                         + Round ( nanosec / 1000.0 ) );
+                                                                                         + Truncate ( nanosec / 1000.0 ) );
 
                                         // some microseconds included in starting date or high sampling frequency?
             Sequences[ i ].DateTime.MicrosecondPrecision    = DateTime.MicrosecondPrecision || Sequences[ i ].SamplingFrequency > 1000.0;
