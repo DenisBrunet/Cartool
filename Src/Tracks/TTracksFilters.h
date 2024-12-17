@@ -47,7 +47,9 @@ constexpr int       EegMinLowFilterSide             = 25;
 
 constexpr int       MaxNotches                      = 32;
 
-                                        // It could also be possible to define something like FiltersTimely / FiltersUntimely
+                                        // Filters can be qualified as temporal and non-temporal
+                                        // Non-temporal filters run faster, as the temporal ones will need additional data margins
+                                        // We also used to differentiate between filters that happen before vs after the re-referencing, but now it is all wrapped up in ApplyFilters
 enum                FilterPrecedence
                     {
                     NoFilter            = 0x00,
@@ -994,6 +996,7 @@ if ( IsFlag ( filterprecedence, FilterNonTemporal ) && ( HasSpatialFilter () || 
         for ( int i = 0; i < numel; i++ )
             data ( i, tfoffset + tf0 )  = temp[ i ];
         } // for tf
+
     } // FilterNonTemporal
 
 
@@ -1017,6 +1020,7 @@ if ( HasReference ( reference ) ) {
         for ( int i = 0; i < numel; i++ )
             data ( i, tfoffset + tf0 )  = temp[ i ];
         } // for tf
+
     } // Reference
 
 

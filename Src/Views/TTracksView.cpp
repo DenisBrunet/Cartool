@@ -580,11 +580,10 @@ if ( ! ValidView () ) {
 
 
 if ( ! isderived ) {
-                                        
-    EegBuff.Resize ( 1, EEGDoc->GetTotalElectrodes (), BuffSize );
-
-    if ( EEGDoc->IsStandDevAvail () )
-        SdBuff.Resize ( EEGDoc->GetTotalElectrodes (), BuffSize );
+                                        // will be allocated on-demand                                        
+    //EegBuff.Resize ( 1, EEGDoc->GetTotalElectrodes (), BuffSize );
+    //if ( EEGDoc->IsStandDevAvail () )
+    //    SdBuff.Resize ( EEGDoc->GetTotalElectrodes (), BuffSize );
     }
 
 TFCursor.SentTo            = 0;
@@ -6027,7 +6026,7 @@ return true;
 }
 
 
-
+//----------------------------------------------------------------------------
 bool    TTracksView::VnNewTFCursor ( TTFCursor *tfc )
 {
 #ifdef CARTOOL_DEBUGMESSAGES
@@ -6075,6 +6074,7 @@ return  true;
 }
 
 
+//----------------------------------------------------------------------------
 bool    TTracksView::VnNewSelection ( TSelection *sel )
 {
 if ( SelTracks != *sel ) {
@@ -6090,6 +6090,7 @@ return  true;
 }
 
 
+//----------------------------------------------------------------------------
 bool    TTracksView::VnNewHighlighted ( TSelection *sel )
 {
     // message can be either for electrodes or SPs                                if 0, accept all
@@ -6121,6 +6122,7 @@ return  true;
 }
 
 
+//----------------------------------------------------------------------------
 bool    TTracksView::VnNewBadSelection ( TSelection *sel )
 {
   // if 0, accept all
@@ -6142,6 +6144,7 @@ return  true;
 }
 
 
+//----------------------------------------------------------------------------
 bool    TTracksView::VnNewAuxSelection ( TSelection *sel )
 {
 //if ( sel->SentFrom != LinkedViewId )
@@ -6162,6 +6165,7 @@ return  true;
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksView::CheckCDPtAndTFCursor ( bool fromtfcursor )
 {
 if ( !SyncCDPtTFCursor )                // not my business?
@@ -6314,8 +6318,8 @@ int                 numel           = EEGDoc->GetNumElectrodes ();
 int                 numtf           = tf2 - tf1 + 1;
 
                                         // + room for pseudo tracks (although only average might be used here)
-buff.Resize (   max ( numel + NumPseudoTracks,   buff.GetDim1 () ), 
-                max ( numtf,                     buff.GetDim2 () ) );
+buff.Resize (   AtLeast ( buff.GetDim1 (), numel + NumPseudoTracks ),
+                AtLeast ( buff.GetDim2 (), numtf                   )  );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -6390,8 +6394,7 @@ int                 offset;
 PseudoTracksType    pseudotracks    = EEGDoc->HasPseudoElectrodes () ? ComputePseudoTracks : NoPseudoTracks;
 TRois              *rois            = IsRoiMode () && Rois && AverageRois ? Rois : 0;
 
-                                        // reload everything ?
-                                        // in case of some filters, reload everything
+                                        // reload everything: upon request, or in case of temporal filters
 if ( newtfmin > oldtfmax 
   || newtfmax < oldtfmin
   || EEGDoc->AreFiltersActivated () && EEGDoc->GetFilters ()->HasTemporalFilter () ) {  // only temporal filters need to care for margins and full reload
@@ -9845,11 +9848,11 @@ EEGDoc->ActivateFilters ();
 
 //ButtonGadgetSetState ( IDB_FILTER, EEGDoc->AreFiltersActivated () );
                                         // does change the display too much?
-ResetScaleTracks ();
+ResetScaleTracks    ();
 
-ResetScalingLevel();
+ResetScalingLevel   ();
 
-SetColorTable ( EEGDoc->GetAtomType ( AtomTypeUseCurrent ) );
+SetColorTable       ( EEGDoc->GetAtomType ( AtomTypeUseCurrent ) );
 }
 
 

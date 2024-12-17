@@ -134,7 +134,7 @@ if ( ! IsOpen () ) {
         return  true; // false;         // should be false, but here to avoid the annoying message
 
                                         // here, we can define this buffer, needed in InitLimits
-    if ( dynamic_cast< TFreqDoc* > (this ) )
+    if ( dynamic_cast<TFreqDoc*> (this ) )
         BuffDiss.Resize ( dynamic_cast< TFreqDoc* > (this )->GetNumFrequencies (), TotalElectrodes, 1 );
     else
         BuffDiss.Resize ( 1, TotalElectrodes, 1 );
@@ -373,9 +373,19 @@ if ( how == InitExact ) {
     numblocks       = AtLeast ( 1, numtfsamples / blocksize );
     }
 else { // how == InitFast 
+
+    const TTracksView*  tracksview      = dynamic_cast<const TTracksView*> ( GetViewList () );
+
+    if ( tracksview ) {
+                                        // use current display range, which is more relevant to what user is currently seeing
+        fromtf      = tracksview->GetCDP ()->GetMin ();
+        totf        = tracksview->GetCDP ()->GetMax ();
+        }
+    else {
                                         // For very long recording, just focus on the first 15 minutes
-    fromtf          = 0;
-    totf            = NoMore ( (int) NumTimeFrames, Truncate ( MinutesToTimeFrame ( 15, SamplingFrequency ) ) ) - 1;
+        fromtf      = 0;
+        totf        = NoMore ( (int) NumTimeFrames, Truncate ( MinutesToTimeFrame ( 15, SamplingFrequency ) ) ) - 1;
+        }
 
     numtfsamples    = NoMore ( (int) NumTimeFrames, 50000 );
                                         // using a bigger block in case of filtering so to amortize the cost of adding margins
