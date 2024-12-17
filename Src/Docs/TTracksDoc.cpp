@@ -385,8 +385,8 @@ else { // how == InitFast
     }
 
                                         // even more checks for downsampling limits, as we will read 'blocksize' data from the last TF
-int                 fromblock       =                     fromtf                       / blocksize;
-int                 toblock         = AtLeast ( fromtf, ( totf   - ( blocksize - 1 ) ) / blocksize );
+int                 fromblock       =                              fromtf                       / blocksize;
+int                 toblock         = AtLeast ( fromblock, (int) ( totf   - ( blocksize - 1 ) ) / blocksize );
 
                                         // finally, get a downsampling, in BLOCKS
 TDownsampling       downblock ( fromblock, toblock, numblocks );
