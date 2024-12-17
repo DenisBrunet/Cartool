@@ -1036,6 +1036,7 @@ return true;
 //----------------------------------------------------------------------------
 void    TEegEgiMffDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float> &buff, int tfoffset )
 {
+/*                                      // More general case for blocks of variable sizes
 int                 blockmax        = -1;
 int                 block;
 
@@ -1044,7 +1045,8 @@ if ( Sequences[ CurrSequence ].FirstBlock == Sequences[ CurrSequence ].LastBlock
 
     block   = blockmax  = Sequences[ CurrSequence ].FirstBlock;
 
-else
+else {
+
     for ( block = Sequences[ CurrSequence ].LastBlock; block >= Sequences[ CurrSequence ].FirstBlock; block-- ) {
 
         if ( (ulong) tf2 >= Blocks[ block ].TimeFrameOrigin && blockmax == -1 )
@@ -1053,6 +1055,13 @@ else
         if ( (ulong) tf1 >= Blocks[ block ].TimeFrameOrigin )
             break;
         }
+    }
+*/
+                                        // Assuming blocks all have the same size WITHIN the same sequence - code still allows for different sizes ACROSS sequences, though
+ULONG               firstblock      = Sequences[ CurrSequence ].FirstBlock;
+ULONG               blockduration   = Blocks[ firstblock ].NumTimeFrames;
+int                 block           = firstblock + tf1 / blockduration;
+int                 blockmax        = firstblock + tf2 / blockduration;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
