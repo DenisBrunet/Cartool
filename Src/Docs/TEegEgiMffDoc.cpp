@@ -533,7 +533,7 @@ if ( GetDocPath () ) {
                                         // this is where data begin
             block.FileOrigin          = FileStream.Tell ();
                                         // copy from previous block
-            block.NumTimeFrames       = Blocks[ b - 1 ].NumTimeFrames;
+            block.BlockDuration       = Blocks[ b - 1 ].BlockDuration;
 
             block.SamplingFrequency   = Blocks[ b - 1 ].SamplingFrequency;
                                         // also copy channel info from previous block
@@ -578,7 +578,7 @@ if ( GetDocPath () ) {
             }
 
 
-        block.NumTimeFrames   = 0;
+        block.BlockDuration   = 0;
                                         // fill channel info with gathered evidences
         for ( int el = 0; el < NumElectrodes; el++ ) {
                                         // size of sample
@@ -590,7 +590,7 @@ if ( GetDocPath () ) {
 
                                         // channel size in bytes per block
                                         // keep max # of samples
-            Maxed ( block.NumTimeFrames, block.ChannelsSpec[ el ].SamplesPerBlock );
+            Maxed ( block.BlockDuration, block.ChannelsSpec[ el ].SamplesPerBlock );
             }
 
 
@@ -624,7 +624,7 @@ if ( GetDocPath () ) {
 
     for ( int b = 0; b < NumBlocks; b++ ) {
                                         // max block length
-        Maxed ( MaxSamplesPerBlock, Blocks[ b ].NumTimeFrames );
+        Maxed ( MaxSamplesPerBlock, Blocks[ b ].BlockDuration );
 
 
         for ( int el = 0; el < NumElectrodes; el++ ) {
@@ -942,16 +942,12 @@ if ( GetDocPath () ) {
             Sequences[ i ].DateTime.MicrosecondPrecision    = DateTime.MicrosecondPrecision || Sequences[ i ].SamplingFrequency > 1000.0;
 
 
-            //ULONG       computednumtimeframes   = 0;
             Sequences[ i ].NumTimeFrames        = MicrosecondsToTimeFrame ( DurationStringToMicroseconds ( endtime ) - DurationStringToMicroseconds ( begintime ), Sequences[ i ].SamplingFrequency );
 
                                         // look for all blocks that belong to this sequence
-            for ( int b = Sequences[ i ].FirstBlock; b <= Sequences[ i ].LastBlock; b++ ) {
-                                        // sum up all TFs
-                //computednumtimeframes          += Blocks[ b ].NumTimeFrames;
-                                        // compute relative TF origin for each block
-                Blocks[ b ].TimeFrameOrigin     = b == Sequences[ i ].FirstBlock ? 0 : Blocks[ b - 1 ].TimeFrameOrigin + Blocks[ b - 1 ].NumTimeFrames;
-                } // for block
+            //ULONG       computednumtimeframes   = 0;
+            //for ( int b = Sequences[ i ].FirstBlock; b <= Sequences[ i ].LastBlock; b++ ) 
+            //    computednumtimeframes          += Blocks[ b ].BlockDuration;
 
             } // for epoch
 
@@ -1036,82 +1032,56 @@ return true;
 //----------------------------------------------------------------------------
 void    TEegEgiMffDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float> &buff, int tfoffset )
 {
-/*                                      // More general case for blocks of variable sizes
-int                 blockmax        = -1;
-int                 block;
+ULONG               firstblock          = Sequences[ CurrSequence ].FirstBlock;
+ULONG               firstblockduration  = Blocks[ firstblock ].BlockDuration;       // all blocks, except last block, have the same duration
 
-                                        // get first & last block indexes
-if ( Sequences[ CurrSequence ].FirstBlock == Sequences[ CurrSequence ].LastBlock )
-
-    block   = blockmax  = Sequences[ CurrSequence ].FirstBlock;
-
-else {
-
-    for ( block = Sequences[ CurrSequence ].LastBlock; block >= Sequences[ CurrSequence ].FirstBlock; block-- ) {
-
-        if ( (ulong) tf2 >= Blocks[ block ].TimeFrameOrigin && blockmax == -1 )
-            blockmax    = block;
-
-        if ( (ulong) tf1 >= Blocks[ block ].TimeFrameOrigin )
-            break;
-        }
-    }
-*/
-                                        // Assuming blocks all have the same size WITHIN the same sequence - code still allows for different sizes ACROSS sequences, though
-ULONG               firstblock      = Sequences[ CurrSequence ].FirstBlock;
-ULONG               blockduration   = Blocks[ firstblock ].NumTimeFrames;
-int                 block           = firstblock + tf1 / blockduration;
-int                 blockmax        = firstblock + tf2 / blockduration;
+int                 blockmin            = firstblock + tf1 / firstblockduration;    // get blocks indexes - OK for last block
+int                 blockmax            = firstblock + tf2 / firstblockduration;
+                                        
+int                 blocktforigin       = TruncateTo ( tf1, firstblockduration );   // first time frame of the first block - OK for last block
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // get first time frame within first block
-int                 firsttfinblock  = tf1 - Blocks[ block ].TimeFrameOrigin;
-int                 numtfinblock    = 0;
+
+int                 firsttfinblock  = tf1 - blocktforigin;                      // where tf1 lies within first block
+int                 numtfinblock;
 
                                         // loop through all blocks
-for ( ; block <= blockmax; tfoffset      += numtfinblock /*Blocks[ block ].NumTimeFrames - firsttfinblock*/,
-                           block++,
-                           firsttfinblock = 0 ) {
+for ( int block = blockmin; block <= blockmax; block++ ) {
 
-    int         firsttf         = Blocks[ block ].TimeFrameOrigin + firsttfinblock;
-                                        // max number of tf to be read in this block
-                numtfinblock    = Blocks[ block ].NumTimeFrames   - firsttfinblock;
+    ULONG       blockduration   = Blocks[ block ].BlockDuration;                // current block duration
 
-    int         maxtfperblock   = Blocks[ block ].NumTimeFrames - 1;
-                                        // origin of next full track to be read
-    LONGLONG    nextelpos       = Blocks[ block ].FileOrigin;
+    int         firsttf         = blocktforigin + firsttfinblock;               // first tf within current block
 
-    ULONG       tfremainingread = tf2 - firsttf + 1;
+                numtfinblock    = blockduration - firsttfinblock;               // max number of tf to be read in this block
 
-  //FileStream.SeekBegin ( nextelpos );
+    ULONG       tfremainingread = tf2 - firsttf + 1;                            // total, global remaining number of tf to read
+
+    LONGLONG    nextelfilepos   = Blocks[ block ].FileOrigin;                   // origin of next full track to be read
+
+  //FileStream.SeekBegin ( nextelfilepos );                                     // used for complete line of electrode
 
                                         // in the block, values for one electrode are consecutives
     const TEegEgi_Mff_Bin_Channel*      toch        = Blocks[ block ].ChannelsSpec.GetArray ();
 
     for ( int el = 0; el < NumElectrodes; el++ ) {
 
-                                        // get that channel length
-        int         tfpertrack      = toch[ el ].SamplesPerBlock - 1;
+      //FileStream.Read ( Tracks.GetArray (), toch[ el ].ChannelSize );         // get the complete line for this electrode - very inefficient
 
-                                        // get the complete line for this electrode - very inefficient
-        //FileStream.SeekBegin ( nextelpos );
-        //FileStream.Read ( Tracks.GetArray (), toch[ el ].ChannelSize );
+                                        
+        FileStream.SeekBegin ( nextelfilepos + firsttfinblock * sizeof ( float ) );                         // optimal jump to where the data actually is..
 
-                                        // optimal jump to where data actually is
-        FileStream.SeekBegin ( nextelpos + firsttfinblock * sizeof ( float ) );
-                                        // so that we can read the min # of data: min of remaining block or remaining data
-        ULONG       tfminread       = min ( toch[ el ].SamplesPerBlock - firsttfinblock, tfremainingread );
-                                        // still put the data at offset position
-        FileStream.Read ( Tracks.GetArray () + firsttfinblock, tfminread * sizeof ( float ) );
-                                        // next channel beginning
-                    nextelpos      += toch[ el ].ChannelSize;
+        ULONG       tfminread       = min ( toch[ el ].SamplesPerBlock - firsttfinblock, tfremainingread ); // ..so that we can read the minimum amount of data: min of remaining block OR of remaining data
+                                        
+        FileStream.Read ( Tracks.GetArray () + firsttfinblock, tfminread * sizeof ( float ) );              // put the data at the correct offset position
+                                        
+                    nextelfilepos  += toch[ el ].ChannelSize;                                               // next channel beginning
 
 
         for ( int tfi = firsttf, tf = 0; tfi <= tf2 && tf < numtfinblock; tfi++, tf++ ) {
 
-            float*  toF = Tracks.GetArray () + ( EqualTracks ? firsttfinblock + tf 
-                                                             : Round ( ( ( firsttfinblock + tf ) / (double) maxtfperblock ) * tfpertrack ) );
+            float*  toF = Tracks.GetArray () + ( EqualTracks ?             firsttfinblock + tf
+                                                             : Round ( ( ( firsttfinblock + tf ) / (double) ( blockduration - 1 ) ) * ( toch[ el ].SamplesPerBlock - 1 ) ) );
 
 //          if ( IsNotAProperNumber ( *toF ) )
 //              buff ( el, tfoffset + tf ) = 0;
@@ -1122,8 +1092,13 @@ for ( ; block <= blockmax; tfoffset      += numtfinblock /*Blocks[ block ].NumTi
                                             :                 (bool) Zeros  ?   *toF - Zeros[ el ]
                                                                             :   *toF;
             } // for tfi
+
         } // for el
 
+
+    tfoffset       += numtfinblock;
+    blocktforigin  += blockduration;
+    firsttfinblock = 0;
     } // for block
 }
 
