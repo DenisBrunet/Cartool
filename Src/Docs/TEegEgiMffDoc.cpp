@@ -401,17 +401,23 @@ if ( GetDocPath () ) {
 
 
     if ( ! CanOpenFile ( fileinfo,  CanOpenFileRead ) ) {
-        ShowMessage ( "MFF file 'info.xml' is missing," NewLine "will do without it...", "File Open", ShowMessageWarning );
+        ShowMessage (   "MFF file 'info.xml' is missing," NewLine 
+                        "will do without it...", 
+                        "File Open", ShowMessageWarning );
 //      return  false;
         }
 
     if ( ! CanOpenFile ( fileinfox,  CanOpenFileRead ) ) {
-        ShowMessage ( "MFF file 'infoX.xml' is missing," NewLine "calibration might be wrong...", "File Open", ShowMessageWarning );
+        ShowMessage (   "MFF file 'infoX.xml' is missing," NewLine 
+                        "calibration might be wrong...",
+                        "File Open", ShowMessageWarning );
 //      return  false;
         }
 
     if ( ! CanOpenFile ( fileepochs,  CanOpenFileRead ) ) {
-        ShowMessage ( "MFF file 'epochs.xml' is missing," NewLine "Cartool can not proceed any further, sorry...", "File Open", ShowMessageWarning );
+        ShowMessage (   "MFF file 'epochs.xml' is missing," NewLine 
+                        "Cartool can not proceed any further, sorry...", 
+                        "File Open", ShowMessageWarning );
         return  false;  // or not?
         }
 
@@ -906,6 +912,21 @@ if ( GetDocPath () ) {
     if ( XMLGotoElement ( fie, "epochs", 0, 0, true )
       && ( NumSequences = XMLCountElement ( fie, "epoch", "epochs" ) ) != 0 ) {
 
+                                        // Rough estimate of full file duration
+        INT64       filesize                = GetFileSize ( GetDocPath () );
+        INT32       filesizeduration        = ( filesize - Blocks[ 0 ].FileOrigin ) / ( NumElectrodes * sizeof ( float ) );
+                    filesizeduration        = TruncateTo ( filesizeduration, Blocks[ 0 ].BlockDuration );   // last valid block size is always equal or smaller than all previous block sizes
+
+                                        // we can compare the total duration found in main header, but only if there is only 1 sequence
+        bool        headertotaldurationOK   = headertotalduration != 0 
+                                           && NumSequences == 1;
+
+                                        // we can compare the file size estimated duration only for 1 sequence
+        bool        filesizedurationOK      = headertotaldurationOK
+                                           && ( headertotalduration - filesizeduration ) > Blocks[ 0 ].BlockDuration    // difference between header duration and file size duration should be significant
+                                           && NumSequences == 1;
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // allocate sequence info
         Sequences.resize ( NumSequences );
 
@@ -952,46 +973,63 @@ if ( GetDocPath () ) {
 
             //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // conmputing duration from all blocks within this sequence
-            INT32       computednumtimeframes   = 0;
+            INT32       sumblocksduration   = 0;
 
             for ( int b = Sequences[ i ].FirstBlock; b <= Sequences[ i ].LastBlock; b++ ) 
-                computednumtimeframes          += Blocks[ b ].BlockDuration;
+                sumblocksduration          += Blocks[ b ].BlockDuration;
 
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // conmputing duration from all blocks within this sequence
                                         // computing duration from tags
-            INT32       headernumtimeframes     = MicrosecondsToTimeFrame (   DurationStringToMicroseconds ( endtime   )
-                                                                            - DurationStringToMicroseconds ( begintime ), 
-                                                                            Sequences[ i ].SamplingFrequency );
+            INT32       epochsduration      = MicrosecondsToTimeFrame (   DurationStringToMicroseconds ( endtime   )
+                                                                        - DurationStringToMicroseconds ( begintime ), 
+                                                                        Sequences[ i ].SamplingFrequency );
 
-                                        // we can compare the total duration found in main header, but only if there is only 1 sequence
-            bool        headertotaldurationvalid    = headertotalduration != 0 && NumSequences == 1;
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // We can have between 2 to 4 different durations(!), pick the smallest value from the valid ones
+                                        // Note: it seems good enough to just clip NumTimeFrames, which will prevent access to the suspcious blocks,
+                                        // without the need to actually remove them from the Blocks structure
 
-                                        // we can have up to 3 different durations - by safety, pick the smallest of them all...
-            if ( headertotaldurationvalid )
-                Sequences[ i ].NumTimeFrames        = min ( computednumtimeframes, headernumtimeframes, headertotalduration );
-            else
-                Sequences[ i ].NumTimeFrames        = min ( computednumtimeframes, headernumtimeframes );
+                                        // First, get the min duration from the current sequence
+            Sequences[ i ].NumTimeFrames        = min ( sumblocksduration, epochsduration );
 
-                                        // any discrepancy between the 3 numbers?
-            if ( headertotalduration   != computednumtimeframes && headertotaldurationvalid
-              || headertotalduration   != headernumtimeframes   && headertotaldurationvalid
-              || computednumtimeframes != headernumtimeframes                               ) {
+                                        // Then the min with any of the global durations, if valids
+            if ( headertotaldurationOK )
+                Mined ( Sequences[ i ].NumTimeFrames, headertotalduration );
 
-                char        buff[ 256 ];
 
-                StringCopy      ( buff, "Found some MFF file duration inconsistencies:"   NewLine NewLine );
-                StringAppend    ( buff, Tab "Sequence #", IntegerToString ( i + 1 ), " sum blocks = ",   IntegerToString ( computednumtimeframes ),  NewLine );
-                StringAppend    ( buff, Tab "Sequence #", IntegerToString ( i + 1 ), " duration     = ", IntegerToString ( headernumtimeframes ),    NewLine );
-                if ( headertotaldurationvalid )
-                    StringAppend    ( buff, Tab "Total duration                 = ",                         IntegerToString ( headertotalduration ),    NewLine );
-                StringAppend    ( buff, NewLine "Proceeding with the file opening, but you might encounter some reading errors." );
+            if ( filesizedurationOK )
+                Mined ( Sequences[ i ].NumTimeFrames, filesizeduration );
+
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // any discrepancy between the 4 numbers?
+            if ( headertotalduration   != sumblocksduration && headertotaldurationOK
+              || headertotalduration   != epochsduration    && headertotaldurationOK
+              || headertotalduration   != filesizeduration  && headertotaldurationOK && filesizedurationOK
+              || filesizeduration      != sumblocksduration                          && filesizedurationOK
+              || filesizeduration      != epochsduration                             && filesizedurationOK
+              || sumblocksduration     != epochsduration                                                           
+               ) {
+
+                char        buff[ KiloByte ];
+
+                StringCopy      ( buff, "Found some MFF file duration inconsistencies:" NewLine );
+                StringAppend    ( buff, NewLine " - " "Sequence #", IntegerToString ( i + 1 ), " sum of blocks     : ", IntegerToString ( sumblocksduration ) );
+                StringAppend    ( buff, NewLine " - " "Sequence #", IntegerToString ( i + 1 ), " epochs duration : ",   IntegerToString ( epochsduration ) );
+
+                if ( headertotaldurationOK )
+                    StringAppend    ( buff, NewLine " - " "Total header duration              : ",                      IntegerToString ( headertotalduration ) );
+
+                if ( filesizedurationOK )
+                    StringAppend    ( buff, NewLine " - " "File size duration                     : ",                  IntegerToString ( filesizeduration ) );
+
+                StringAppend    ( buff, NewLine NewLine "Settling for duration                   : ",                   IntegerToString ( Sequences[ i ].NumTimeFrames ), " [TF]" );
+
+                //StringAppend    ( buff, NewLine NewLine "Proceeding with the file opening, but you might encounter some reading errors." );
 
                 ShowMessage     ( buff, "File Open", ShowMessageWarning );
-
-                                        // clip last block?
-                //Blocks[ Sequences[ i ].LastBlock ].BlockDuration   -= computednumtimeframes - headernumtimeframes;
-                                        // remove last block?
-                //Sequences[ i ].NumTimeFrames    = computednumtimeframes - Blocks[ Sequences[ i ].LastBlock ].BlockDuration;
-                //Sequences[ i ].LastBlock--;
                 }
 
             } // for epoch
@@ -1008,6 +1046,8 @@ if ( GetDocPath () ) {
 
     fie.close ();
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check all sequences have a consistent sampling frequency (though it can vary from sequence to sequence)
     for ( int i = 0; i < NumSequences; i++ )
     for ( int b = Sequences[ i ].FirstBlock + 1; b <= Sequences[ i ].LastBlock; b++ )
