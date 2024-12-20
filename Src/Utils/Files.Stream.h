@@ -341,7 +341,7 @@ if ( IsOpen () ) {
     bool        closeok     = CloseHandle ( hfile );
 
     #if defined(ASSERT_TFileStream)
-    if ( ! closeok ) DBGM ( "Close error", "TFileStream" );
+    if ( ! closeok ) ShowMessage ( "Close error", "TFileStream", ShowMessageWarning );
     #endif
     }
     
@@ -358,7 +358,7 @@ Close ();
 if ( StringIsEmpty ( file ) ) {
 
     #if defined(ASSERT_TFileStream)
-    DBGM ( "Open error, empty file", "TFileStream" );
+    ShowMessage ( "Open error, empty file", "TFileStream", ShowMessageWarning );
     #endif
 
     return  false;
@@ -416,7 +416,7 @@ else {
     }
 
 #if defined(ASSERT_TFileStream)
-if ( ! OK ) DBGM ( "Open error", "TFileStream" );
+if ( ! OK ) ShowMessage ( "Open error", "TFileStream", ShowMessageWarning );
 #endif
 
 return  OK;
@@ -436,7 +436,7 @@ OK  = SetFilePointerEx  (   hfile,
                         );
 
 #if defined(ASSERT_TFileStream)
-if ( ! OK ) DBGM ( "Tell error", "TFileStream" );
+if ( ! OK ) ShowMessage ( "Tell error", "TFileStream", ShowMessageWarning );
 #endif
 
 return  OK ? LARGE_INTEGER_to_LONGLONG ( currpos ) : -1;
@@ -457,7 +457,7 @@ OK  = SetFilePointerEx  (   hfile,
                         );
 
 #if defined(ASSERT_TFileStream)
-if ( ! OK ) DBGM ( "Seek error", "TFileStream" );
+if ( ! OK ) ShowMessage ( "Seek error", "TFileStream", ShowMessageWarning );
 #endif
 
 return  OK;
@@ -498,7 +498,7 @@ OK  = ReadFile  (   hfile,
 EndOfFile   = ! OK || numberofbytesread == 0;
 
 #if defined(ASSERT_TFileStream)
-if ( ! OK ) DBGM ( "Read error", "TFileStream" );
+if ( ! OK ) ShowMessage ( "Read error", "TFileStream", ShowMessageWarning );
 #endif
 
 return  OK;
@@ -517,7 +517,7 @@ OK  = WriteFile (   hfile,
                 );
 
 #if defined(ASSERT_TFileStream)
-if ( ! OK ) DBGM ( "Write error", "TFileStream" );
+if ( ! OK ) ShowMessage ( "Write error", "TFileStream", ShowMessageWarning );
 #endif
 
 return  OK;

@@ -432,7 +432,9 @@ if ( GetDocPath () ) {
                                         // though later repetitions of this header, for other blocks, might have a Version == 0
     if ( mffbinheader.Version != 1 ) {
                                         // does not seem to really matter..
-        ShowMessage ( "MFF .bin file version not recognized," NewLine "reading file might give some unexpected results...", "File Open", ShowMessageWarning );
+        ShowMessage (   "MFF .bin file version not recognized," NewLine 
+                        "reading file might give some unexpected results...", 
+                        "File Open", ShowMessageWarning );
 
 //      FileStream.Close ();
 // 
@@ -440,7 +442,7 @@ if ( GetDocPath () ) {
         }
 
                                         // first block gives number of tracks
-    NumElectrodes       = mffbinheader.NumTracks;
+    NumElectrodes       = mffbinheader.NumberSignals;
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
 
 
@@ -454,6 +456,9 @@ if ( GetDocPath () ) {
 
     FileStream.Read ( &optheaderlength, sizeof ( optheaderlength ) );
 
+
+    INT32       headertotalduration     = 0;
+
                                         // get number of blocks
     if ( optheaderlength != 0 ) {
 
@@ -464,10 +469,10 @@ if ( GetDocPath () ) {
 
         FileStream.Read ( &mffbinheaderopt, sizeof ( mffbinheaderopt ) );
 
-//      if ( mffbinheaderopt.Type == 1 ) { // assume this is always the case, no doc on other options for now
+//      if ( mffbinheaderopt.EGIType == 1 ) { // assume this is always the case, no doc on other options for now
 
-            NumBlocks       = mffbinheaderopt.NumberOfBlocks;
-//          NumTimeFrames   = mffbinheaderopt.TotalNumberOfSamples;    // this is the sum of all blocks (ie all sequences)
+            NumBlocks           = mffbinheaderopt.NumberOfBlocks;
+            headertotalduration = mffbinheaderopt.NumberOfSamples;  // this is the sum of all blocks (ie all sequences)
 //          }
         }
     else {                              // hu-ho, bad news...
@@ -488,7 +493,7 @@ if ( GetDocPath () ) {
             NumBlocks++;
 
                                         // skip block of data, and repeat
-            FileStream.SeekCurrent ( mffbinheader.DataSize + mffbinheader.HeaderSize - sizeof ( mffbinheader ) );
+            FileStream.SeekCurrent ( mffbinheader.DataBlockSize + mffbinheader.HeaderSize - sizeof ( mffbinheader ) );
 
             } while ( true );
 
@@ -510,8 +515,8 @@ if ( GetDocPath () ) {
 
     TArray1<TEegEgi_Mff_Bin_HeaderVariable1>    TrackOffset ( NumElectrodes + 1 );
     TEegEgi_Mff_Bin_HeaderVariable2             mffbinheaderv2;
-    TArray1<UCHAR>                              bits        ( NumElectrodes );
-    TArray1<UINT>                               frequency   ( NumElectrodes );
+    TArray1<UINT8>                              bits        ( NumElectrodes );
+    TArray1<INT32>                              frequency   ( NumElectrodes );
 
 
     FileStream.SeekBegin ();
@@ -541,7 +546,7 @@ if ( GetDocPath () ) {
                 block.ChannelsSpec[ el ]  = Blocks[ b - 1 ].ChannelsSpec[ el ];
 
                                         // skip block data
-            FileStream.SeekCurrent ( mffbinheader.DataSize );
+            FileStream.SeekCurrent ( mffbinheader.DataBlockSize );
 
             continue;
             }
@@ -560,7 +565,7 @@ if ( GetDocPath () ) {
         for ( int el = 0; el < NumElectrodes; el++ )
             FileStream.Read ( &TrackOffset[ el ], sizeof ( TEegEgi_Mff_Bin_HeaderVariable1 ) );
                                         // ends with one more = block size
-        TrackOffset[ NumElectrodes ]    = mffbinheader.DataSize;
+        TrackOffset[ NumElectrodes ]    = mffbinheader.DataBlockSize;
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -613,7 +618,7 @@ if ( GetDocPath () ) {
         block.FileOrigin      = FileStream.Tell ();
 
                                         // skip block data
-        FileStream.SeekCurrent ( mffbinheader.DataSize );
+        FileStream.SeekCurrent ( mffbinheader.DataBlockSize );
         } // for block
 
 
@@ -668,7 +673,7 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Reading info file
-    char                element [ 65 * KiloByte ];
+    char                element [ 64 * KiloByte ];
     ifstream            fi  ( TFileName ( fileinfo, TFilenameExtendedPath ),  ios::binary );
 
                                         // Note: Version field is from TProductInfo
@@ -682,7 +687,10 @@ if ( GetDocPath () ) {
 
 
     if ( Version > 3 ) {
-        ShowMessage ( "MFF info.xml file version not recognized," NewLine "reading file might give some unexpected results...", "File Open", ShowMessageWarning );
+
+        ShowMessage (   "MFF info.xml file version not recognized," NewLine 
+                        "reading file might give some unexpected results...", 
+                        "File Open", ShowMessageWarning );
 
 //      FileStream.Close ();
 // 
@@ -927,9 +935,9 @@ if ( GetDocPath () ) {
             DurationStringToFields ( begintime, sec, millisec, microsec, nanosec );
 
 
-            Sequences[ i ].FirstBlock           = Clip ( (ULONG) StringToInteger ( firstblock ) - 1, (ULONG) 0, NumBlocks - 1 );    // clip by security, in case NumBlocks might not have been set correctly
-            Sequences[ i ].LastBlock            = Clip ( (ULONG) StringToInteger ( lastblock  ) - 1, (ULONG) 0, NumBlocks - 1 );
-            Sequences[ i ].SamplingFrequency    = Blocks[ (int) Sequences[ i ].FirstBlock ].SamplingFrequency;            // pick first sampling frequency, a full check is done below
+            Sequences[ i ].FirstBlock           = Clip ( StringToInteger ( firstblock ) - 1, 0, NumBlocks - 1 );    // clipping by safety
+            Sequences[ i ].LastBlock            = Clip ( StringToInteger ( lastblock  ) - 1, 0, NumBlocks - 1 );
+            Sequences[ i ].SamplingFrequency    = Blocks[ Sequences[ i ].FirstBlock ].SamplingFrequency;            // pick first sampling frequency, a full check is done below
             Sequences[ i ].DateTime             = TDateTime ( DateTime.GetYear (), DateTime.GetMonth (), DateTime.GetDay (),
                                                               DateTime.GetHour        (),
                                                               DateTime.GetMinute      (),
@@ -942,12 +950,49 @@ if ( GetDocPath () ) {
             Sequences[ i ].DateTime.MicrosecondPrecision    = DateTime.MicrosecondPrecision || Sequences[ i ].SamplingFrequency > 1000.0;
 
 
-            Sequences[ i ].NumTimeFrames        = MicrosecondsToTimeFrame ( DurationStringToMicroseconds ( endtime ) - DurationStringToMicroseconds ( begintime ), Sequences[ i ].SamplingFrequency );
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // conmputing duration from all blocks within this sequence
+            INT32       computednumtimeframes   = 0;
 
-                                        // look for all blocks that belong to this sequence
-            //ULONG       computednumtimeframes   = 0;
-            //for ( int b = Sequences[ i ].FirstBlock; b <= Sequences[ i ].LastBlock; b++ ) 
-            //    computednumtimeframes          += Blocks[ b ].BlockDuration;
+            for ( int b = Sequences[ i ].FirstBlock; b <= Sequences[ i ].LastBlock; b++ ) 
+                computednumtimeframes          += Blocks[ b ].BlockDuration;
+
+                                        // computing duration from tags
+            INT32       headernumtimeframes     = MicrosecondsToTimeFrame (   DurationStringToMicroseconds ( endtime   )
+                                                                            - DurationStringToMicroseconds ( begintime ), 
+                                                                            Sequences[ i ].SamplingFrequency );
+
+                                        // we can compare the total duration found in main header, but only if there is only 1 sequence
+            bool        headertotaldurationvalid    = headertotalduration != 0 && NumSequences == 1;
+
+                                        // we can have up to 3 different durations - by safety, pick the smallest of them all...
+            if ( headertotaldurationvalid )
+                Sequences[ i ].NumTimeFrames        = min ( computednumtimeframes, headernumtimeframes, headertotalduration );
+            else
+                Sequences[ i ].NumTimeFrames        = min ( computednumtimeframes, headernumtimeframes );
+
+                                        // any discrepancy between the 3 numbers?
+            if ( headertotalduration   != computednumtimeframes && headertotaldurationvalid
+              || headertotalduration   != headernumtimeframes   && headertotaldurationvalid
+              || computednumtimeframes != headernumtimeframes                               ) {
+
+                char        buff[ 256 ];
+
+                StringCopy      ( buff, "Found some MFF file duration inconsistencies:"   NewLine NewLine );
+                StringAppend    ( buff, Tab "Sequence #", IntegerToString ( i + 1 ), " sum blocks = ",   IntegerToString ( computednumtimeframes ),  NewLine );
+                StringAppend    ( buff, Tab "Sequence #", IntegerToString ( i + 1 ), " duration     = ", IntegerToString ( headernumtimeframes ),    NewLine );
+                if ( headertotaldurationvalid )
+                    StringAppend    ( buff, Tab "Total duration                 = ",                         IntegerToString ( headertotalduration ),    NewLine );
+                StringAppend    ( buff, NewLine "Proceeding with the file opening, but you might encounter some reading errors." );
+
+                ShowMessage     ( buff, "File Open", ShowMessageWarning );
+
+                                        // clip last block?
+                //Blocks[ Sequences[ i ].LastBlock ].BlockDuration   -= computednumtimeframes - headernumtimeframes;
+                                        // remove last block?
+                //Sequences[ i ].NumTimeFrames    = computednumtimeframes - Blocks[ Sequences[ i ].LastBlock ].BlockDuration;
+                //Sequences[ i ].LastBlock--;
+                }
 
             } // for epoch
 
@@ -969,7 +1014,9 @@ if ( GetDocPath () ) {
 
         if ( Blocks[ b - 1 ].SamplingFrequency != Blocks[ b ].SamplingFrequency ) {
 
-            ShowMessage ( "MFF file seems to have different sampling frequencies within the same sequence," NewLine "Cartool can not proceed any further, sorry...", "File Open", ShowMessageWarning );
+            ShowMessage (   "MFF file seems to have different sampling frequencies within the same sequence," NewLine 
+                            "Cartool can not proceed any further, sorry...", 
+                            "File Open", ShowMessageWarning );
 
             FileStream.Close ();
 
@@ -1032,32 +1079,32 @@ return true;
 //----------------------------------------------------------------------------
 void    TEegEgiMffDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float> &buff, int tfoffset )
 {
-ULONG               firstblock          = Sequences[ CurrSequence ].FirstBlock;
-ULONG               firstblockduration  = Blocks[ firstblock ].BlockDuration;       // all blocks, except last block, have the same duration
+INT32               firstblock          = Sequences[ CurrSequence ].FirstBlock;
+INT32               firstblockduration  = Blocks[ firstblock ].BlockDuration;       // all blocks, except last block, have the same duration
 
-int                 blockmin            = firstblock + tf1 / firstblockduration;    // get blocks indexes - OK for last block
-int                 blockmax            = firstblock + tf2 / firstblockduration;
+INT32               blockmin            = firstblock + tf1 / firstblockduration;    // get blocks indexes - OK for last block
+INT32               blockmax            = firstblock + tf2 / firstblockduration;
                                         
-int                 blocktforigin       = TruncateTo ( tf1, firstblockduration );   // first time frame of the first block - OK for last block
+INT32               blocktforigin       = TruncateTo ( tf1, firstblockduration );   // first time frame of the first block - OK for last block
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                 firsttfinblock  = tf1 - blocktforigin;                      // where tf1 lies within first block
-int                 numtfinblock;
+INT32               firsttfinblock  = tf1 - blocktforigin;                      // where tf1 lies within first block
+INT32               numtfinblock;
 
                                         // loop through all blocks
-for ( int block = blockmin; block <= blockmax; block++ ) {
+for ( INT32 block = blockmin; block <= blockmax; block++ ) {
 
-    ULONG       blockduration   = Blocks[ block ].BlockDuration;                // current block duration
+    INT32       blockduration   = Blocks[ block ].BlockDuration;                // current block duration - some file can have a whole duration which make the last block "shorter"
 
-    int         firsttf         = blocktforigin + firsttfinblock;               // first tf within current block
+    INT32       firsttf         = blocktforigin + firsttfinblock;               // first tf within current block
 
                 numtfinblock    = blockduration - firsttfinblock;               // max number of tf to be read in this block
 
-    ULONG       tfremainingread = tf2 - firsttf + 1;                            // total, global remaining number of tf to read
+    INT32       tfremainingread = tf2 - firsttf + 1;                            // total, global remaining number of tf to read
 
-    LONGLONG    nextelfilepos   = Blocks[ block ].FileOrigin;                   // origin of next full track to be read
+    INT64       nextelfilepos   = Blocks[ block ].FileOrigin;                   // origin of next full track to be read
 
   //FileStream.SeekBegin ( nextelfilepos );                                     // used for complete line of electrode
 
@@ -1071,7 +1118,7 @@ for ( int block = blockmin; block <= blockmax; block++ ) {
                                         
         FileStream.SeekBegin ( nextelfilepos + firsttfinblock * sizeof ( float ) );                         // optimal jump to where the data actually is..
 
-        ULONG       tfminread       = min ( toch[ el ].SamplesPerBlock - firsttfinblock, tfremainingread ); // ..so that we can read the minimum amount of data: min of remaining block OR of remaining data
+        INT32       tfminread       = min ( toch[ el ].SamplesPerBlock - firsttfinblock, tfremainingread ); // ..so that we can read the minimum amount of data: min of remaining block OR of remaining data
                                         
         FileStream.Read ( Tracks.GetArray () + firsttfinblock, tfminread * sizeof ( float ) );              // put the data at the correct offset position
                                         
@@ -1096,9 +1143,11 @@ for ( int block = blockmin; block <= blockmax; block++ ) {
         } // for el
 
 
-    tfoffset       += numtfinblock;
-    blocktforigin  += blockduration;
-    firsttfinblock = 0;
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // next block
+    tfoffset       += numtfinblock;     // next tf insertion
+    blocktforigin  += blockduration;    // next block's origin
+    firsttfinblock = 0;                 // for all subsequent blocks, first tf to consider is always the first one
     } // for block
 }
 

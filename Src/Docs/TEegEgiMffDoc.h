@@ -36,64 +36,68 @@ BeginBytePacking
 //      (UINT) 0
 //      1 Block of data
 
-
+                                        // Note: documentation does not specify if these are signed or unsigned integers, but just their sizes in byte
 struct  TEegEgi_Mff_Bin_HeaderFixed
 {
-    UINT            Version;
-    UINT            HeaderSize;
-    UINT            DataSize;
-    UINT            NumTracks;
+    INT32           Version;
+    INT32           HeaderSize;
+    INT32           DataBlockSize;
+    INT32           NumberSignals;
 };                                      // 4 * 4 = 16 bytes
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // offset of each track within each block
-using   TEegEgi_Mff_Bin_HeaderVariable1         = UINT;
+using   TEegEgi_Mff_Bin_HeaderVariable1         = INT32;
                                         // 4 bytes
 
                                         // info for each track
 struct  TEegEgi_Mff_Bin_HeaderVariable2
 {
-    UCHAR           BitsPerTracks;
-    UCHAR           TrackFrequency[ 3 ];// yes, here is a 3 bytes integer for you sir
+    UINT8           BitsPerTracks;
+    UINT8           SignalFrequency[ 3 ];// yes, here is a 3 bytes integer for you sir
 
                                         // converting the 3 bytes unsigned integer into a 4 bytes unsigned integer
-    UINT            GetTrackFrequency ()    { UINT f = 0; *((char *) &f) = TrackFrequency[ 0 ]; *((char *) &f + 1) = TrackFrequency[ 1 ]; *((char *) &f + 2) = TrackFrequency[ 2 ]; return f; }
+    INT32           GetTrackFrequency ()    { INT32 f = 0; *((UINT8 *) &f) = SignalFrequency[ 0 ]; *((UINT8 *) &f + 1) = SignalFrequency[ 1 ]; *((UINT8 *) &f + 2) = SignalFrequency[ 2 ]; return f; }
 };                                      // 4 bytes
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-using   TEegEgi_Mff_Bin_HeaderOptionalLength    = UINT;
+using   TEegEgi_Mff_Bin_HeaderOptionalLength    = INT32;
                                         // 4 bytes
 
 
 struct  TEegEgi_Mff_Bin_HeaderOptional
 {
-    UINT            Type;
-    ULONGLONG       NumberOfBlocks;
-    ULONGLONG       TotalNumberOfSamples;
-    UINT            NumTracks;
+    INT32           EGIType;
+    INT64           NumberOfBlocks;
+    INT64           NumberOfSamples;
+    INT32           NumberDistinctSignals;
 };                                      // 2 * 4 + 2 * 8 = 24 bytes
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+EndBytePacking
+
+//----------------------------------------------------------------------------
+                                        // Cartool structures
+                                        // Number of blocks, block size and number of time frames all fit in INT32
 class   TEegEgi_Mff_Bin_Channel
 {
 public:
                     TEegEgi_Mff_Bin_Channel ()   { SamplesPerBlock = ChannelSize = BytesPerSample = 0; }
 
 
-    ULONG           SamplesPerBlock;    // # of samples for this channel
-    UINT            ChannelSize;        // size in bytes
-    UINT            BytesPerSample;     // 4...
+    INT32           SamplesPerBlock;    // # of samples for this channel
+    INT32           ChannelSize;        // size in bytes
+    INT32           BytesPerSample;     // currently only 4
 };
                                         // Each block can have a different size (!),
                                         // and each track of the block, too, can have different sizes
 class   TEegEgi_Mff_Bin_Block
 {
 public:
-    LONGLONG        FileOrigin;         // where data starts in file (absolute position)
-    ULONG           BlockDuration;      // maximum length of this block
-    UINT            SamplingFrequency;  // maximum sampling frequency of this block
+    INT64           FileOrigin;         // where data starts in file (absolute position)
+    INT32           BlockDuration;      // maximum length of this block
+    INT32           SamplingFrequency;  // maximum sampling frequency of this block
     TArray1<TEegEgi_Mff_Bin_Channel>    ChannelsSpec;   // every channel info for this block
 };
 
@@ -102,15 +106,13 @@ public:
 class   TEegEgi_Mff_Session
 {
 public:
-    ULONG           FirstBlock;
-    ULONG           LastBlock;
-    ULONG           NumTimeFrames;
-    UINT            SamplingFrequency;
+    INT32           FirstBlock;
+    INT32           LastBlock;
+    INT32           NumTimeFrames;
+    INT32           SamplingFrequency;
     TDateTime       DateTime;
 };
 
-
-EndBytePacking
 
 //----------------------------------------------------------------------------
                                         // The latest iteration of file formats from EGI
@@ -144,8 +146,8 @@ protected:
 
     std::vector<TEegEgi_Mff_Session>    Sequences;
     std::vector<TEegEgi_Mff_Bin_Block>  Blocks;
-    ULONG           NumBlocks;
-    ULONG           MaxSamplesPerBlock;
+    INT32           NumBlocks;
+    INT32           MaxSamplesPerBlock;
     bool            EqualTracks;
 
 
