@@ -62,6 +62,7 @@ inline double   TimeFrameToMilliseconds ( double tf,  double samplingfrequency )
 inline double   TimeFrameToMicroseconds ( double tf,  double samplingfrequency );
 
 
+inline double   DaysToTimeFrame         ( double d,   double samplingfrequency );   
 inline double   HoursToTimeFrame        ( double h,   double samplingfrequency );   
 inline double   MinutesToTimeFrame      ( double m,   double samplingfrequency );
 inline double   SecondsToTimeFrame      ( double s,   double samplingfrequency );
@@ -120,9 +121,15 @@ return  samplingfrequency > 0 ? tf / samplingfrequency * 1e6 : tf;
 
 
 //----------------------------------------------------------------------------
+double          DaysToTimeFrame ( double d, double samplingfrequency )
+{
+return  samplingfrequency > 0 ?  d * ( 24 * 60 * 60 ) * samplingfrequency : d;
+}
+
+
 double          HoursToTimeFrame ( double h, double samplingfrequency )
 {
-return  samplingfrequency > 0 ?  h * 60 * 60 * samplingfrequency : h;
+return  samplingfrequency > 0 ?  h * ( 60 * 60 ) * samplingfrequency : h;
 }
 
 

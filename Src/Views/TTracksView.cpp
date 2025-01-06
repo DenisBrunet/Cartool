@@ -10830,32 +10830,38 @@ if ( IsCommandSender () ) {
 
                                             // build a contextully dependent input message
     StringCopy  (   message, 
-                    "Go to absolute time position, with any of these syntaxes (strings in bracket are optional):" NewLine 
-                    Tab "XXXX [ TF ]"   NewLine 
-                    Tab "[ HH: ]MM:SS"  NewLine 
-                    Tab "[ HH hour ] [ MM min ] [ SS sec ] [ mm msec ]" );
+                    "Go to ", EEGDoc->DateTime.RelativeTime ? "relative" : "absolute", " time position, with any of these syntaxes (strings in bracket are optional):" NewLine
+                );
 
-
-
-    if ( EEGDoc->DateTime.RelativeTime )
-        StringReplace ( message, "absolute", "relative" );
+    StringAppend(   message, 
+                    Tab "XXXX [TF]"   NewLine 
+                    Tab "[HH:]MM:SS"  NewLine 
+                    Tab "[HH hour] [MM min] [SS sec] [mm msec]"
+                );
 
 
     if ( ! GetInputFromUser ( message, "GoTo Time", buff, "", this ) )
         return;
 
-                                            // convert user input
+                                        // convert user input
     gototf      = Truncate ( StringToTimeFrame ( buff, EEGDoc->GetSamplingFrequency (), &answerintf ) );
 
-                                            // update with a shift only if NOT TF answer
-    if ( ! answerintf )
+                                        // update with a shift only if NOT TF answer
+    if ( ! answerintf ) {
 
-        if ( EEGDoc->DateTime.RelativeTime )
-                                            // arbitrary relative origin
+        if ( EEGDoc->DateTime.RelativeTime ) {
+                                        // arbitrary relative origin
             gototf     -= Truncate ( MicrosecondsToTimeFrame ( EEGDoc->DateTime.RelativeTimeOffset,        EEGDoc->GetSamplingFrequency () ) );
+            }
     
-        else                                    // account for an absolute residual offset in ms
+        else {                          // account for an absolute residual offset in ms
             gototf     -= Truncate ( MicrosecondsToTimeFrame ( EEGDoc->DateTime.GetAbsoluteTimeOffset (),  EEGDoc->GetSamplingFrequency () ) );
+
+            if ( gototf < 0 )
+                                        // absolute time can wrap around midnight - add a (single) full day
+                gototf += DaysToTimeFrame ( 1, EEGDoc->GetSamplingFrequency () );
+            }
+        }
     }
 else {                                  // commands cloning AND a receiving cloned view -> forward the parameters set by caller view
                       

@@ -1081,31 +1081,31 @@ return  0;
                                         // seconds:         s sec second seconds '' ´´ "
                                         // milliseconds:    ms msec millisec millisecond milliseconds
 
-                                        //      Syntax and example for 500Hz:
-                                        // 123          -> 123 TF
-                                        // 123 TF       -> 123 TF
-                                        // 10  [ms]     -> 5 TF
-                                        // 1   [s]      -> 500 TF
-                                        // 1.5 [s]      -> 750 TF
-                                        // 1   [m]      -> 30000 TF
-                                        // 1.5 [m]      -> 45000 TF
+                                        //      Syntax and examples, for a 500Hz sampling frequency:
+                                        // 123          ->     123 TF
+                                        // 123 TF       ->     123 TF
+                                        // 10  [ms]     ->       5 TF
+                                        // 1   [s]      ->     500 TF
+                                        // 1.5 [s]      ->     750 TF
+                                        // 1   [m]      ->   30000 TF
+                                        // 1.5 [m]      ->   45000 TF
                                         // 1   [h]      -> 1800000 TF
-                                        // 0.1 [h]      -> 180000 TF
+                                        // 0.1 [h]      ->  180000 TF
                                         // XX:          -> XX minutes
                                         // XX:YY        -> XX minutes YY seconds
                                         // XXsYY        -> XX seconds YY milliseconds
                                         // XXmYY        -> XX minutes YY seconds
-                                        // XXhYY        -> XX hours YY minutes
+                                        // XXhYY        -> XX hours   YY minutes
                                         // XX:YY:       -> XX minutes YY seconds
                                         // XXsYYms      -> XX seconds YY milliseconds
                                         // XXmYYs       -> XX minutes YY seconds
                                         // XXmYYsZZms   -> XX minutes YY seconds ZZ milliseconds
-                                        // XXhYYm       -> XX hours YY minutes
-                                        // XX:YY:ZZ     -> XX hours YY minutes ZZ seconds (note that XX, YY or ZZ can be floats, like 0.1:00:00!)
-                                        // XXhYYmZZ     -> XX hours YY minutes ZZ seconds
-                                        // XXhYYmZZs    -> XX hours YY minutes ZZ seconds
-                                        // XXhYYmZZsMM  -> XX hours YY minutes ZZ seconds MM milliseconds
-                                        // XXhYYmZZsMMms-> XX hours YY minutes ZZ seconds MM milliseconds
+                                        // XXhYYm       -> XX hours   YY minutes
+                                        // XX:YY:ZZ     -> XX hours   YY minutes ZZ seconds (note that XX, YY or ZZ can be floats, like 0.1:00:00)
+                                        // XXhYYmZZ     -> XX hours   YY minutes ZZ seconds
+                                        // XXhYYmZZs    -> XX hours   YY minutes ZZ seconds
+                                        // XXhYYmZZsMM  -> XX hours   YY minutes ZZ seconds MM milliseconds
+                                        // XXhYYmZZsMMms-> XX hours   YY minutes ZZ seconds MM milliseconds
 
 double  StringToTimeFrame ( char* string, double samplingfrequency, bool* answerintf )
 {
