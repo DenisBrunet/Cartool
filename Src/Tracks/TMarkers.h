@@ -92,6 +92,7 @@ public:
 
 
     long            Length ()                                                       const   { return To - From + 1; }
+    long            Center ()                                                       const   { return ( From + To ) / 2; }
 
 
     void            Set ( long pos )                                                        { From = To = pos; }
@@ -179,6 +180,8 @@ public:
     int             GetNumMarkers       ( MarkerType type )               const;
 
     bool            HasMarker           ( const TMarker& marker );     // !test for equivalent content, NOT pointers!
+
+    const TMarker*  GetMarker           ( const char*    markername )   const;
                                                         
     bool            GetNextMarker       ( TMarker& marker, bool forward = true, MarkerType type = AllMarkerTypes )  const;  // currently skipping duplicate markers
     bool            GetNextMarker       ( const TTFCursor* tfc, TMarker& marker, bool forward = true, MarkerType type = AllMarkerTypes )  const;

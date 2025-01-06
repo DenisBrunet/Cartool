@@ -10827,8 +10827,8 @@ long                gototf          = 0;
 
 if ( IsCommandSender () ) {
 
+    static char         answer  [ 256 ];
     char                message [ 256 ];
-    char                buff    [ 256 ];
     bool                answerintf;
 
                                             // build a contextully dependent input message
@@ -10836,35 +10836,45 @@ if ( IsCommandSender () ) {
                     "Go to ", EEGDoc->DateTime.RelativeTime ? "relative" : "absolute", " time position, with any of these syntaxes (strings in bracket are optional):" NewLine
                 );
 
-    StringAppend(   message, 
-                    Tab "XXXX [TF]"   NewLine 
-                    Tab "[HH:]MM:SS"  NewLine 
-                    Tab "[HH hour] [MM min] [SS sec] [mm msec]"
+    StringAppend(   message,
+                    NewLine
+                    Tab "XXXX [TF]"                             NewLine 
+                    Tab "[HH:]MM:SS"                            NewLine 
+                    Tab "[HH hour] [MM min] [SS sec] [mm msec]" NewLine
+                    Tab "marker name"
                 );
 
 
-    if ( ! GetInputFromUser ( message, "GoTo Time", buff, "", this ) )
+    if ( ! GetInputFromUser ( message, "GoTo Time", answer, answer, this ) )
         return;
 
                                         // convert user input
-    gototf      = Truncate ( StringToTimeFrame ( buff, EEGDoc->GetSamplingFrequency (), &answerintf ) );
+    gototf      = Truncate ( StringToTimeFrame ( answer, EEGDoc->GetSamplingFrequency (), &answerintf ) );
 
-                                        // update with a shift only if NOT TF answer
-    if ( ! answerintf ) {
+                                        // new alternative to Find Marker: allowing goto <marker_name>
+    if ( gototf == 0 && EEGDoc->GetMarker ( answer ) ) {
 
-        if ( EEGDoc->DateTime.RelativeTime ) {
-                                        // arbitrary relative origin
-            gototf     -= Truncate ( MicrosecondsToTimeFrame ( EEGDoc->DateTime.RelativeTimeOffset,        EEGDoc->GetSamplingFrequency () ) );
-            }
+        gototf  = EEGDoc->GetMarker ( answer )->Center ();
+        } // marker syntax
     
-        else {                          // account for an absolute residual offset in ms
-            gototf     -= Truncate ( MicrosecondsToTimeFrame ( EEGDoc->DateTime.GetAbsoluteTimeOffset (),  EEGDoc->GetSamplingFrequency () ) );
+    else { // time syntax
+                                        // update with a shift only if NOT TF answer
+        if ( ! answerintf ) {
 
-            if ( gototf < 0 )
+            if ( EEGDoc->DateTime.RelativeTime ) {
+                                        // arbitrary relative origin
+                gototf     -= Truncate ( MicrosecondsToTimeFrame ( EEGDoc->DateTime.RelativeTimeOffset,        EEGDoc->GetSamplingFrequency () ) );
+                }
+    
+            else {                      // account for an absolute residual offset in ms
+                gototf     -= Truncate ( MicrosecondsToTimeFrame ( EEGDoc->DateTime.GetAbsoluteTimeOffset (),  EEGDoc->GetSamplingFrequency () ) );
+
+                if ( gototf < 0 )
                                         // absolute time can wrap around midnight - add a (single) full day
-                gototf += DaysToTimeFrame ( 1, EEGDoc->GetSamplingFrequency () );
+                    gototf += DaysToTimeFrame ( 1, EEGDoc->GetSamplingFrequency () );
+                }
             }
-        }
+        } // time syntax
     }
 else {                                  // commands cloning AND a receiving cloned view -> forward the parameters set by caller view
                       
@@ -10881,14 +10891,16 @@ else {                                  // commands cloning AND a receiving clon
 TFCursor.SetPos ( gototf );
 
 
-if ( TFCursor.GetPosMin() < CDPt.GetMin () || TFCursor.GetPosMin() > CDPt.GetMax () )
+if ( TFCursor.GetPosMin () < CDPt.GetMin ()
+  || TFCursor.GetPosMin () > CDPt.GetMax () )
+
     CDPt.SetMin ( TFCursor.GetPosMin() - CDPt.GetLength() * 0.1, true );
+
 
 if ( SyncCDPtTFCursor )
     CheckCDPtAndTFCursor ( true );
 else
     ReloadBuffers ();
-
                                         // send the new cursor to friend views
                                         // forwarding message is a bit tricky, as temporal messages are processed separately - let's try this
 if ( GetCommandsCloning () || HasOtherFriendship () )

@@ -741,6 +741,19 @@ return  false;
 
 
 //----------------------------------------------------------------------------
+const TMarker*  TMarkers::GetMarker ( const char* markername )  const
+{
+for ( int i = 0; i < (int) Markers; i++ )
+
+    if ( StringIs ( Markers[ i ]->Name, markername ) )
+
+        return  Markers[ i ];
+
+return  0;
+}
+
+
+//----------------------------------------------------------------------------
 void    TMarkers::AppendMarker ( const TMarker& marker, bool commit )
 {
 if ( TracksDoc && marker.IsNotOverlappingInterval ( (long) 0, TracksDoc->GetNumTimeFrames () - 1 ) )

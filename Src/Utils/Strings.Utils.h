@@ -123,7 +123,7 @@ TFileName           FloatToString    (          double f );
 double              GetFirstNumber   ( const char* string );
 bool                IsInteger        ( const char* string );
 bool                IsFloat          ( const char* string );
-double              StringToTimeFrame( char* string, double samplingfrequency, bool* answerintf = 0 );
+double              StringToTimeFrame( const char* string, double samplingfrequency, bool* answerintf = 0 );
 
 char*               StringToUppercase   ( char* s );
 char*               StringToLowercase   ( char* s );

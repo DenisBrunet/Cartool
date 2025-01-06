@@ -1134,7 +1134,7 @@ return  0;
                                         // XXhYYmZZsMM  -> XX hours   YY minutes ZZ seconds MM milliseconds
                                         // XXhYYmZZsMMms-> XX hours   YY minutes ZZ seconds MM milliseconds
 
-double  StringToTimeFrame ( char* string, double samplingfrequency, bool* answerintf )
+double  StringToTimeFrame ( const char* string, double samplingfrequency, bool* answerintf )
 {
 if ( answerintf )   *answerintf     = true;
 
@@ -1142,51 +1142,56 @@ if ( StringIsEmpty ( string ) )
     return  0;
 
 
+char                buff    [ 256 ];
+
+StringCopy ( buff, string );
+
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Re-code all recognized time strings to simplified ones
                                         // !do the longest strings first!
 
-StringReplace ( string, "TIME FRAMES",      "TF"    );
-StringReplace ( string, "TIME FRAME",       "TF"    );
-StringReplace ( string, "TIMEFRAMES",       "TF"    );
-StringReplace ( string, "TIMEFRAME",        "TF"    );
+StringReplace ( buff, "TIME FRAMES",      "TF"    );
+StringReplace ( buff, "TIME FRAME",       "TF"    );
+StringReplace ( buff, "TIMEFRAMES",       "TF"    );
+StringReplace ( buff, "TIMEFRAME",        "TF"    );
 
-StringReplace ( string, "MILLISECONDS",     "L"     );  // not "S" nor "M"
-StringReplace ( string, "MILLISECOND",      "L"     );
-StringReplace ( string, "MILLISEC",         "L"     );
-StringReplace ( string, "MSEC",             "L"     );
-StringReplace ( string, "MS",               "L"     );
+StringReplace ( buff, "MILLISECONDS",     "L"     );  // not "S" nor "M"
+StringReplace ( buff, "MILLISECOND",      "L"     );
+StringReplace ( buff, "MILLISEC",         "L"     );
+StringReplace ( buff, "MSEC",             "L"     );
+StringReplace ( buff, "MS",               "L"     );
 
-StringReplace ( string, "SECONDS",          "S"     );
-StringReplace ( string, "SECOND",           "S"     );
-StringReplace ( string, "SEC",              "S"     );
-StringReplace ( string, "''",               "S"     );
-StringReplace ( string, "´´",               "S"     );
-StringReplace ( string, "\"",               "S"     );
+StringReplace ( buff, "SECONDS",          "S"     );
+StringReplace ( buff, "SECOND",           "S"     );
+StringReplace ( buff, "SEC",              "S"     );
+StringReplace ( buff, "''",               "S"     );
+StringReplace ( buff, "´´",               "S"     );
+StringReplace ( buff, "\"",               "S"     );
 
-StringReplace ( string, "MINUTES",          "M"     );
-StringReplace ( string, "MINUTE",           "M"     );
-StringReplace ( string, "MIN",              "M"     );
-StringReplace ( string, "'",                "M"     );
-StringReplace ( string, "´",                "M"     );
+StringReplace ( buff, "MINUTES",          "M"     );
+StringReplace ( buff, "MINUTE",           "M"     );
+StringReplace ( buff, "MIN",              "M"     );
+StringReplace ( buff, "'",                "M"     );
+StringReplace ( buff, "´",                "M"     );
 
-StringReplace ( string, "HOURS",            "H"     );
-StringReplace ( string, "HOUR",             "H"     );
-StringReplace ( string, "HR",               "H"     );
+StringReplace ( buff, "HOURS",            "H"     );
+StringReplace ( buff, "HOUR",             "H"     );
+StringReplace ( buff, "HR",               "H"     );
 
                                         // These are the recognized local strings: TF L S M H :
                                         // add some space separators for TSplitStrings to do a proper job
-StringReplace ( string, "TF",               " TF "  );
-StringReplace ( string, "L",                " L "   );
-StringReplace ( string, "S",                " S "   );
-StringReplace ( string, "M",                " M "   );
-StringReplace ( string, "H",                " H "   );
-StringReplace ( string, ":",                " : "   );
+StringReplace ( buff, "TF",               " TF "  );
+StringReplace ( buff, "L",                " L "   );
+StringReplace ( buff, "S",                " S "   );
+StringReplace ( buff, "M",                " M "   );
+StringReplace ( buff, "H",                " H "   );
+StringReplace ( buff, ":",                " : "   );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TSplitStrings       split ( string, NonUniqueStrings, " \t\n" );
+TSplitStrings       split ( buff, NonUniqueStrings, " \t\n" );
 double              tf              = 0;
 
 if ( answerintf )   *answerintf     = false;
