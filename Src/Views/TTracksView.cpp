@@ -1238,8 +1238,7 @@ Clipped ( TextMargin, (double) TextMarginMin, (double) TextMarginMax );
 
 
 //----------------------------------------------------------------------------
-                                        // format to text a length in TF
-                                        // and optionally format it to a time string, if Doc allows it
+                                        // Format duration from TF to text, and optionally to a time string, too
 void    TTracksView::TFToString (   long        tf, 
                                     char*       stf, 
                                     char*       stime,  TimeDisplayEnum     horizscale, 
@@ -1251,11 +1250,12 @@ if ( ! interval /*&& ( EEGDoc->IsTemplates () || EEGDoc->IsContentType ( Content
     tf      = EEGDoc->RelToAbsTime ( tf );  // add first "TF" value
 
 
-                                        // format the TFs (same for frequencies)
-if      ( tf < 1000       ) sprintf ( stf, "%0d",                                               tf        );
-else if ( tf < 1000000    ) sprintf ( stf, "%0d'%03d",                      tf / 1000,          tf % 1000 );
-else if ( tf < 1000000000 ) sprintf ( stf, "%0d'%03d'%03d", tf / 1000000, ( tf / 1000 ) % 1000, tf % 1000 );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // format time frames - also OK for frequency display
+TimeFrameToString ( stf, tf );
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // optionally format the time
 if ( stime ) {
 
@@ -1283,14 +1283,17 @@ if ( stime ) {
         } // sampling frequency
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // optionally format the date
-if ( sdate )
+if ( sdate ) {
 
     if ( interval || EEGDoc->GetDim2Type () == DimensionTypeFrequency )
 
         ClearString ( sdate );
     else
         EEGDoc->DateTime.GetStringDate ( sdate );
+    }
 }
 
 

@@ -953,6 +953,33 @@ return  s;
 
 
 //----------------------------------------------------------------------------
+                                        // Separating string by clusters of 3 digits
+char*   TimeFrameToString ( char* s, int tf )
+{
+if ( ! s )                              // null pointer
+    return  "";                         // to avoid crashing, caller still might need some string
+
+
+if      ( tf < 1000       ) sprintf ( s, "%0d",                                                                                 tf        );
+else if ( tf < 1000000    ) sprintf ( s, "%0d'%03d",                                                        tf / 1000,          tf % 1000 );
+else if ( tf < 1000000000 ) sprintf ( s, "%0d'%03d'%03d",                          tf / 1000000,          ( tf / 1000 ) % 1000, tf % 1000 );
+else                        sprintf ( s, "%0d'%03d'%03d'%03d",  tf / 1000000000, ( tf / 1000000 ) % 1000, ( tf / 1000 ) % 1000, tf % 1000 );
+
+return  s;
+}
+
+
+TFileName   TimeFrameToString ( int tf )
+{
+TFileName           s;
+
+TimeFrameToString ( s, tf );
+
+return  s;
+}
+
+
+//----------------------------------------------------------------------------
 char*   FloatToString ( char* s, double f, int width, int precision )
 {
 if ( ! s )                              // null pointer

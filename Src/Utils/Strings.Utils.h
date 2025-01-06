@@ -112,6 +112,8 @@ float               StringToFloat    ( const char* string );
 double              StringToDouble   ( const char* string );
 char*               IntegerToString  ( char* s, int i, int width = 0 );
 TFileName           IntegerToString  (          int i, int width = 0 );
+char*               TimeFrameToString( char* s, int tf );
+TFileName           TimeFrameToString(          int tf );
 char*               FloatToString    ( char* s, double f, int width, int precision );   // width AND size parameter
 TFileName           FloatToString    (          double f, int width, int precision );
 char*               FloatToString    ( char* s, double f, int precision );              // precision: 7 for float, 16 for double

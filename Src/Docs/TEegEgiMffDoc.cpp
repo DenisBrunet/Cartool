@@ -1016,18 +1016,16 @@ if ( GetDocPath () ) {
                 char        buff[ KiloByte ];
 
                 StringCopy      ( buff, "Found some MFF file duration inconsistencies:" NewLine );
-                StringAppend    ( buff, NewLine " - " "Sequence #", IntegerToString ( i + 1 ), " sum of blocks     : ", IntegerToString ( sumblocksduration ) );
-                StringAppend    ( buff, NewLine " - " "Sequence #", IntegerToString ( i + 1 ), " epochs duration : ",   IntegerToString ( epochsduration ) );
+                StringAppend    ( buff, NewLine " - " "Sequence #", IntegerToString ( i + 1 ), " sum of blocks     : ", TimeFrameToString ( sumblocksduration ),            " [TF]" );
+                StringAppend    ( buff, NewLine " - " "Sequence #", IntegerToString ( i + 1 ), " epochs duration : ",   TimeFrameToString ( epochsduration ),               " [TF]" );
 
                 if ( headertotaldurationOK )
-                    StringAppend    ( buff, NewLine " - " "Total header duration              : ",                      IntegerToString ( headertotalduration ) );
+                    StringAppend    ( buff, NewLine " - " "Total header duration              : ",                      TimeFrameToString ( headertotalduration ),          " [TF]" );
 
                 if ( filesizedurationOK )
-                    StringAppend    ( buff, NewLine " - " "File size duration                     : ",                  IntegerToString ( filesizeduration ) );
+                    StringAppend    ( buff, NewLine " - " "File size duration                     : ",                  TimeFrameToString ( filesizeduration ),             " [TF]" );
 
-                StringAppend    ( buff, NewLine NewLine "Settling for duration                   : ",                   IntegerToString ( Sequences[ i ].NumTimeFrames ), " [TF]" );
-
-                //StringAppend    ( buff, NewLine NewLine "Proceeding with the file opening, but you might encounter some reading errors." );
+                StringAppend    ( buff, NewLine NewLine "Opting for duration                    : ",                    TimeFrameToString ( Sequences[ i ].NumTimeFrames ), " [TF]" );
 
                 ShowMessage     ( buff, "File Open", ShowMessageWarning );
                 }
@@ -1037,7 +1035,9 @@ if ( GetDocPath () ) {
         } // epochs
 
     else { // no epochs
-        ShowMessage ( "MFF file 'epochs.xml' seems incomplete," NewLine "Cartool can not proceed any further, sorry...", "File Open", ShowMessageWarning );
+        ShowMessage (   "MFF file 'epochs.xml' seems incomplete," NewLine 
+                        "Cartool can not proceed any further, sorry...", 
+                        "File Open", ShowMessageWarning );
 
         FileStream.Close ();
 
