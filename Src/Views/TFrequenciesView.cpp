@@ -3372,10 +3372,6 @@ switch ( key ) {
             CmSetScalingAdapt ();
         break;
 
-    case HotKeyIntensity:
-        CmSetFrequencyMode ( IDB_DISPLAYINTENSITY );
-        break;
-
     case 'N':
         CmSetFreqNormalize ();
         break;
@@ -3384,20 +3380,20 @@ switch ( key ) {
         FrequenciesOverride = true;
         break;
 
+    case HotKeyIntensity:
+        CmSetFrequencyMode ( IDB_DISPLAYINTENSITY );
+        break;
+
     case VK_ADD:                        // VK_ADD doesn't seem to fire when Shift and F are also pressed?!
 
-        if ( FrequenciesOverride )
-            CmChangeNumFreqs ( IDB_MOREFREQS );
-        else
-            TTracksView::EvKeyDown ( key, repeatCount, flags );
+        if ( FrequenciesOverride )  CmChangeNumFreqs ( IDB_MOREFREQS );
+        else                        TTracksView::EvKeyDown ( key, repeatCount, flags );
         break;
 
     case VK_SUBTRACT:
 
-        if ( FrequenciesOverride )
-            CmChangeNumFreqs ( IDB_LESSFREQS );
-        else
-            TTracksView::EvKeyDown ( key, repeatCount, flags );
+        if ( FrequenciesOverride )  CmChangeNumFreqs ( IDB_LESSFREQS );
+        else                        TTracksView::EvKeyDown ( key, repeatCount, flags );
         break;
 
 

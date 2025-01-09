@@ -4408,10 +4408,8 @@ switch ( key ) {
         break;
 
     case    'A':
-        if ( ControlKey )
-            CmSelectAllTime ();
-        else
-            CmSetReference ( IDB_SETAVGREF );
+        if ( ControlKey )   CmSelectAllTime ();
+        else                CmSetReference ( IDB_SETAVGREF );
         break;
 
     case    'C':
@@ -4419,10 +4417,8 @@ switch ( key ) {
         break;
 
     case    'D':
-        if ( IsIntensityModes () )
-            CmSetScalingAdapt ();
-        else if ( EEGDoc->IsStandDevAvail() )
-            CmShowSD ();
+        if      ( IsIntensityModes () )         CmSetScalingAdapt ();
+        else if ( EEGDoc->IsStandDevAvail() )   CmShowSD ();
         break;
 
     case    'E':
@@ -4430,17 +4426,13 @@ switch ( key ) {
         break;
 
     case    'F':
-        if ( ControlKey )
-            CmSearchMarker ( CM_EEGMRKSEARCH );
-        else
-            CmFilter ();
+        if ( ControlKey )   CmSearchMarker ( CM_EEGMRKSEARCH );
+        else                CmFilter ();
         break;
 
     case    'G':
-        if ( ControlKey )
-            CmGotoTime ();
-        else
-            CmMagnifier ();
+        if ( ControlKey )   CmGotoTime ();
+        else                CmMagnifier ();
         break;
 
     case    'H':
@@ -4449,10 +4441,8 @@ switch ( key ) {
         break;
 
     case    'I':
-        if ( ControlKey )
-            CmNextSession ();
-        else
-            CmSetIntensityMode ();
+        if ( ControlKey )   CmNextSession ();
+        else                CmSetIntensityMode ();
         break;
 
     case    'M':
@@ -4469,10 +4459,8 @@ switch ( key ) {
         break;
 
     case    'R':
-        if ( ControlKey )
-            CmRenameOverwriteMarker ();
-        else
-            CmSetRenderingMode ();
+        if ( ControlKey )   CmRenameOverwriteMarker ();
+        else                CmSetRenderingMode ();
         break;
 
     case    VK_NUMPAD1:
@@ -4536,35 +4524,25 @@ switch ( key ) {
         break;
 
     case VK_RIGHT:
-        if ( ShiftKey )
-            CmZoomHorz ( IDB_EXTTRACKSH );
-        else
-            CmForward ( IDB_FORWARD );
+        if ( ShiftKey )     CmZoomHorz ( IDB_EXTTRACKSH );
+        else                CmForward ( IDB_FORWARD );
         break;
 
     case VK_LEFT:
-        if ( ShiftKey )
-            CmZoomHorz ( IDB_COMPTRACKSH );
-        else
-            CmBackward ( IDB_BACKWARD );
+        if ( ShiftKey )     CmZoomHorz ( IDB_COMPTRACKSH );
+        else                CmBackward ( IDB_BACKWARD );
         break;
 
     case VK_UP:
-        if ( ControlKey )
-            CmZoomVert ( IDB_EXTTRACKSV );
-        else if ( IsIntensityModes () )
-            CmSetContrast ( IDB_ISINCCONTRAST );
-        else
-            CmShiftTracks ( IDB_UP );
+        if      ( ControlKey )                      CmZoomVert    ( IDB_EXTTRACKSV );
+        else if ( ShiftKey && IsIntensityModes () ) CmSetContrast ( IDB_ISINCCONTRAST );
+        else                                        CmShiftTracks ( IDB_UP );
         break;
 
     case VK_DOWN:
-        if ( ControlKey )
-            CmZoomVert ( IDB_COMPTRACKSV );
-        else if ( IsIntensityModes () )
-            CmSetContrast ( IDB_ISDECCONTRAST );
-        else
-            CmShiftTracks ( IDB_DOWN );
+        if      ( ControlKey )                      CmZoomVert    ( IDB_COMPTRACKSV );
+        else if ( ShiftKey && IsIntensityModes () ) CmSetContrast ( IDB_ISDECCONTRAST );
+        else                                        CmShiftTracks ( IDB_DOWN );
          break;
 
     case VK_NEXT:
@@ -4584,23 +4562,16 @@ switch ( key ) {
         break;
 
     case VK_ADD:
-//      if ( ControlKey || ( ! (bool) Highlighted && SelTracks.NumSet ( 0, EEGDoc->GetLastRegularIndex () ) == EEGDoc->GetNumElectrodes () ) )
-        if ( ControlKey )
-            CmChangeNumPseudoTracks ( IDB_MOREPSEUDOTRACKS );
-        else
-            CmChangeNumTracks ( IDB_MORETRACKS );
+        if ( ControlKey )   CmChangeNumPseudoTracks ( IDB_MOREPSEUDOTRACKS );
+        else                CmChangeNumTracks ( IDB_MORETRACKS );
         break;
 
     case VK_SUBTRACT:
-//      if ( ControlKey || ! SelTracks.NumSet ( 0, EEGDoc->GetLastRegularIndex () ) )
-        if ( ControlKey )
-            CmChangeNumPseudoTracks ( IDB_LESSPSEUDOTRACKS );
-        else
-            CmChangeNumTracks ( IDB_LESSTRACKS );
+        if ( ControlKey )   CmChangeNumPseudoTracks ( IDB_LESSPSEUDOTRACKS );
+        else                CmChangeNumTracks ( IDB_LESSTRACKS );
         break;
 
     case VK_RETURN:
-//        EvLButtonDblClk ( 0, TPoint() );
         if ( CartoolDocManager->GetView ( LinkedViewId ) != 0 )
             CartoolDocManager->GetView ( LinkedViewId )->SetFocusBack ( GetViewId () );
         break;
@@ -4610,18 +4581,13 @@ switch ( key ) {
         break;
 
     case VK_TAB:
-        if ( SelFilling )
-            CmNextSegment ( ShiftKey ? CM_PREVSEGMENT : CM_NEXTSEGMENT );
-        else
-            if ( ShowTags )
-                CmPreviousNextMarker ( ShiftKey ? IDB_PREVMARKER : IDB_NEXTMARKER );
+        if      ( SelFilling )  CmNextSegment ( ShiftKey ? CM_PREVSEGMENT : CM_NEXTSEGMENT );
+        else if ( ShowTags )    CmPreviousNextMarker ( ShiftKey ? IDB_PREVMARKER : IDB_NEXTMARKER );
         break;
 
     case VK_F3:
-        if ( ShiftKey )
-            CmSearchMarker ( CM_EEGMRKSEARCHPREVIOUS );
-        else
-            CmSearchMarker ( CM_EEGMRKSEARCHNEXT     );
+        if ( ShiftKey )     CmSearchMarker ( CM_EEGMRKSEARCHPREVIOUS );
+        else                CmSearchMarker ( CM_EEGMRKSEARCHNEXT     );
         break;
 
     case VK_DELETE:
