@@ -881,10 +881,7 @@
 #define IDC_SIMPLEFFT                   5908
 #define IDC_POWERMAPS                   5909
 #define IDC_FFTAPPROXIMATION            5910
-#define IDC_WRITECOMPLEX                5911
-#define IDC_WRITENORM                   5912
-#define IDC_WRITENORM2                  5913
-#define IDC_WRITEREAL                   5914
+#define IDC_WRITETYPE                   5911
 #define IDC_CLIPPEDTIMEMAX              5915
 #define IDC_SEQUENCE                    5916
 #define IDC_WINDOWOVERLAP0              5917
@@ -902,13 +899,13 @@
 #define IDC_SAVEBANDS                   5929
 #define IDC_SAVEBANDSVALUE              5930
 #define IDC_CREATESUBDIR                5931
-#define IDC_WRITEPHASE                  5932
 #define IDC_WINDOWINGHANNINGBORDER      5933
 #define IDC_DECADESTEP                  5934
 #define IDC_OPTIMALDOWNSAMPLING         5935
 #define IDC_SPLITBYSPECTRUM             5936
 #define IDC_SPLITBYELECTRODE            5937
 #define IDC_SPLITBYFREQUENCY            5938
+#define IDC_FFTNORMALIZATION            5939
 #define IDC_BASELINE                    6001
 #define IDC_BUTTERWORTHHIGH             6002
 #define IDC_BUTTERWORTHHIGHVALUE        6003
@@ -1311,7 +1308,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        104
+#define _APS_NEXT_RESOURCE_VALUE        105
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101

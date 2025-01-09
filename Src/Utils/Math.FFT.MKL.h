@@ -19,6 +19,7 @@ limitations under the License.
 #include    "mkl_dfti.h"                // Intel MKL library
 #include    "mkl_service.h"
 #include    "Math.Armadillo.h"
+#include    "FrequencyAnalysis.h"       // FFTRescalingType
                                         // Isolate this into its own namespace
 namespace mkl {
 
@@ -57,29 +58,16 @@ enum    MklProcessing
         BackToReal,
         BackToComplex,
         };
-
-                                        // Controling either FFT or FFTI rescaling
-enum    MklRescaling
-        {
-        NoRescaling,
-        SqrtRescaling,
-        FullRescaling,
-
-        ForwardRescaling            = NoRescaling,
-        BackwardRescaling           = FullRescaling,    // default rescaling used for forward AND backward (FFT then FFTI) to get back to original scaling
-        ForwardRescalingParseval    = FullRescaling,    // FFT forward only Parseval rescaling, which preserves the energy of the signal - still be careful of real signal "folded" output
-        };
-
                                         // Wrap descriptor handle & hide ugly settings
                                         // MKL documentation asserts all MKL routines (except one in LAPACK) are indeed thread-safe, so caller could totally use a single object instance in parrallel blocks
 class   TMklFft
 {
 public:
                     TMklFft     ();
-                    TMklFft     ( MklProcessing how, MklRescaling rescaling, int numdata );
+                    TMklFft     ( MklProcessing how, crtl::FFTRescalingType rescaling, int numdata );
                    ~TMklFft     ();
 
-    void            Set         ( MklProcessing how, MklRescaling rescaling, int numdata );
+    void            Set         ( MklProcessing how, crtl::FFTRescalingType rescaling, int numdata );
     void            Reset       ();
                                         // independent if FFT or FFTI, what is the size of original vs frequency domains:
     int             GetDirectDomainSize     ()  const                       { return DataSize; }

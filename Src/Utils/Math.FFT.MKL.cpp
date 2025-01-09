@@ -63,7 +63,7 @@ Reset ();
 }
 
 
-        TMklFft::TMklFft ( MklProcessing how, MklRescaling rescaling, int numdata )
+        TMklFft::TMklFft ( MklProcessing how, FFTRescalingType rescaling, int numdata )
 {
 mklh        = NULL;
 Set ( how, rescaling, numdata );
@@ -88,7 +88,7 @@ Status      = 0;
 }
 
                                         // A nice property of descriptor is that it can be reused multiple times, even while changing its parameters
-void    TMklFft::Set ( MklProcessing how, MklRescaling rescaling, int numdata )
+void    TMklFft::Set ( MklProcessing how, FFTRescalingType rescaling, int numdata )
 {
 Reset ();
 
@@ -118,21 +118,21 @@ switch ( How ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // MKL is kind enough to offer any kind of rescaling to the caller
-if ( rescaling != NoRescaling ) {
+if ( rescaling != FFTRescalingNone ) {
 
     if      ( How == FromReal  
            || How == FromComplex )
 
-        DftiSetValue ( mklh, DFTI_FORWARD_SCALE,  rescaling == SqrtRescaling    ? 1 / sqrt ( (double) DataSize ) 
-                                                : rescaling == FullRescaling    ? 1 /        (double) DataSize
-                                                :            /*NoRescaling*/      1                              );
+        DftiSetValue ( mklh, DFTI_FORWARD_SCALE,  rescaling == FFTRescalingSqrtWindowSize   ? 1 / sqrt ( (double) DataSize ) 
+                                                : rescaling == FFTRescalingWindowSize       ? 1 /        (double) DataSize
+                                                :            /*FFTRescalingNone*/             1                              );
 
     else if ( How == BackToReal 
            || How == BackToComplex )
 
-        DftiSetValue ( mklh, DFTI_BACKWARD_SCALE, rescaling == SqrtRescaling    ? 1 / sqrt ( (double) DataSize ) 
-                                                : rescaling == FullRescaling    ? 1 /        (double) DataSize
-                                                :            /*NoRescaling*/      1                              );
+        DftiSetValue ( mklh, DFTI_BACKWARD_SCALE, rescaling == FFTRescalingSqrtWindowSize   ? 1 / sqrt ( (double) DataSize ) 
+                                                : rescaling == FFTRescalingWindowSize       ? 1 /        (double) DataSize
+                                                :            /*FFTRescalingNone*/             1                              );
     } // some rescaling
 
 

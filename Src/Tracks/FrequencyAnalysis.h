@@ -54,16 +54,33 @@ enum    FreqOutputBands
         OutputBands,
         };
 
+                                        // Controlling how the FFT results should be rescaled / divided
+enum    FFTRescalingType
+        {
+        FFTRescalingNone,
+        FFTRescalingSqrtWindowSize,
+        FFTRescalingWindowSize,
+        NumFFTRescalingType,
 
+        FFTRescalingForward         = FFTRescalingNone,
+        FFTRescalingBackward        = FFTRescalingWindowSize,   // default rescaling used for forward AND backward (FFT then FFTI) to get back to original scaling
+        FFTRescalingParseval        = FFTRescalingWindowSize,   // FFT forward only Parseval rescaling, which preserves the energy of the signal - still be careful of real signal "folded" output
+        };
+
+extern const char   FFTRescalingString[ NumFFTRescalingType ][ 64 ];
+
+                                        // Controlling how the FFT complex values are written to file
 enum    FreqOutputAtomType
         {
-        UnknownFreqOutputAtom,
         OutputAtomReal,
         OutputAtomNorm,
         OutputAtomNorm2,
         OutputAtomComplex,
         OutputAtomPhase,
+        NumFreqOutputAtomType
         };
+
+extern const char   FreqOutputAtomString[ NumFreqOutputAtomType ][ 32 ];
 
 
 enum    FreqWindowingType
@@ -109,7 +126,9 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 long                timemin,            long                timemax,            bool                endoffile,
                                 double              samplingfrequency,
                                 int                 numblocks,          int                 blocksize,          int                 blockstep,          double              blocksoverlap,
-                                FreqOutputBands     outputbands,        FreqOutputAtomType  outputatomtype,
+                                FFTRescalingType    fftnorm,
+                                FreqOutputBands     outputbands,
+                                FreqOutputAtomType  outputatomtype,
                                 bool                outputmarkers,      MarkerType          outputmarkerstype,
                                 const char*         outputbandslist,
                                 double              outputfreqmin,      double              outputfreqmax,      double              outputfreqstep,     

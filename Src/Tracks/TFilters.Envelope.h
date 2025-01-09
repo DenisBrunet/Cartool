@@ -20,6 +20,7 @@ limitations under the License.
 
 #include    "Math.Utils.h"
 #include    "Math.FFT.MKL.h"
+#include    "FrequencyAnalysis.h"
 
 namespace crtl {
 
@@ -449,8 +450,8 @@ int                 lastfreqi           = numpts / 2;
                                         // We need the Hilbert transform, so we go through some Fourier to do that
 
                                         // ?can we put this as fields?
-mkl::TMklFft        fft  ( mkl::FromReal,      mkl::ForwardRescaling,  numpts );
-mkl::TMklFft        ffti ( mkl::BackToComplex, mkl::BackwardRescaling, numpts );
+mkl::TMklFft        fft  ( mkl::FromReal,      FFTRescalingForward,  numpts );
+mkl::TMklFft        ffti ( mkl::BackToComplex, FFTRescalingBackward, numpts );
 
 
 TVector<AReal>      X ( numpts );

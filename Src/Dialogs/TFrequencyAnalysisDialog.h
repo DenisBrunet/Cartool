@@ -21,9 +21,18 @@ limitations under the License.
 #include    "System.h"
 #include    "TBaseDialog.h"
 
+#include    "FrequencyAnalysis.h"       // FFTRescalingType, FreqOutputAtomType
+
 namespace crtl {
 
 //----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+
+constexpr   FFTRescalingType        DefaultFFTRescaling     = FFTRescalingParseval;
+
+constexpr   FreqOutputAtomType      DefaultFreqOutputAtom   = OutputAtomNorm2;
+
+
 //----------------------------------------------------------------------------
 
 enum        FreqPresetsEnum
@@ -177,11 +186,9 @@ public:
     TRadioButtonData    Mean;
     TRadioButtonData    Sequence;
 
-    TRadioButtonData    WriteNorm;
-    TRadioButtonData    WriteNorm2;
-    TRadioButtonData    WriteReal;
-    TRadioButtonData    WriteComplex;
-    TRadioButtonData    WritePhase;
+    TComboBoxData       FFTNormalization;
+
+    TComboBoxData       WriteType;
 
     TRadioButtonData    NoRef;
     TRadioButtonData    CurrentRef;
@@ -278,11 +285,9 @@ protected:
     owl::TRadioButton   *Mean;
     owl::TRadioButton   *Sequence;
 
-    owl::TRadioButton   *WriteNorm;
-    owl::TRadioButton   *WriteNorm2;
-    owl::TRadioButton   *WriteReal;
-    owl::TRadioButton   *WriteComplex;
-    owl::TRadioButton   *WritePhase;
+    owl::TComboBox      *FFTNormalization;
+
+    owl::TComboBox      *WriteType;
 
     owl::TRadioButton   *NoRef;
     owl::TRadioButton   *CurrentRef;
@@ -345,9 +350,9 @@ protected:
     void                CmEndOfFile                     ();
     void                CmSetAnalysis                   ();
     void                CmSetFreqBands                  ();
-    void                CmWriteRealEnable               ( owl::TCommandEnabler &tce );
-    void                CmWriteComplexEnable            ( owl::TCommandEnabler &tce );
-    void                CmWriteNormEnable               ( owl::TCommandEnabler &tce );
+    void                CmWriteType                     ();
+    void                CmFFTNormalizationEnable        ( owl::TCommandEnabler &tce );
+    void                CmWriteTypeEnable               ( owl::TCommandEnabler &tce );
     void                CmReferenceEnable               ( owl::TCommandEnabler &tce );
     void                CmWindowOverlapChange           ();
     void                CmMeanOrSequence                ();
@@ -364,7 +369,6 @@ protected:
     void                CmXyzEnable                     ( owl::TCommandEnabler &tce );
     void                CmAnalysisTypeEnable            ( owl::TCommandEnabler &tce );
     void                CmSplitEnable                   ( owl::TCommandEnabler &tce );
-    void                CmComplexOrPhase                ();
 
     DECLARE_RESPONSE_TABLE ( TFrequencyAnalysisDialog );
 };

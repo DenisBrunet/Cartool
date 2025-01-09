@@ -17,7 +17,6 @@ limitations under the License.
 #include    <owl/pch.h>
 
 #include    "TFrequencyAnalysisDialog.h"
-#include    "FrequencyAnalysis.h"
 
 #include    "Math.FFT.h"
 #include    "Dialogs.Input.h"
@@ -43,18 +42,18 @@ TFrequencyAnalysisStructEx  FrequencyAnalysisTransfer;
 const char  FreqPresetsString[ NumFreqPresets ][ 128 ] =
             {
             "EEG / Surface / FFT (Power Maps)",
-            "EEG / Surface / FFT Average Spectrum",
+            "EEG / Surface / FFT (Power Maps) Average Spectrum",
             "EEG / Surface / Short-Term FFT (Power Maps)",
             "EEG / Surface / FFT Approximation",
             "EEG / Surface / Short-Term FFT Approximation",
             "EEG / Surface / Wavelet (S-Transform)",
-            "EEG / Surface / Wavelet (S-Transform) for Inverse Solution",
+            "EEG / Surface / Wavelet (S-Transform) for Sources Localization",
             "",
             "EEG / Intra-Cranial / FFT",
             "EEG / Intra-Cranial / FFT Average Spectrum",
             "EEG / Intra-Cranial / Short-Term FFT",
             "EEG / Intra-Cranial / Wavelet (S-Transform)",
-            "EEG / Intra-Cranial / Wavelet (S-Transform) for Phase analysis",
+            "EEG / Intra-Cranial / Wavelet (S-Transform) for Phase Analysis",
             "",
             "General case / FFT",
             "General case / FFT Average Spectrum",
@@ -111,11 +110,14 @@ WindowingHanning    = BoolToCheck ( true  );
 Mean                = BoolToCheck ( false );
 Sequence            = BoolToCheck ( true  );
 
-WriteNorm           = BoolToCheck ( false );
-WriteNorm2          = BoolToCheck ( true  );
-WriteReal           = BoolToCheck ( false );
-WriteComplex        = BoolToCheck ( false );
-WritePhase          = BoolToCheck ( false );
+
+FFTNormalization.Clear ();
+for ( int i = 0; i < NumFFTRescalingType; i++ )
+    FFTNormalization.AddString ( FFTRescalingString[ i ], i == DefaultFFTRescaling );
+
+WriteType.Clear ();
+for ( int i = 0; i < NumFreqOutputAtomType; i++ )
+    WriteType.AddString ( FreqOutputAtomString[ i ], i == DefaultFreqOutputAtom );
 
 NoRef               = BoolToCheck ( false );
 CurrentRef          = BoolToCheck ( false );
@@ -204,15 +206,11 @@ DEFINE_RESPONSE_TABLE1 ( TFrequencyAnalysisDialog, TBaseDialog )
     EV_COMMAND_ENABLE           ( IDC_MEAN,                     CmSequenceMeanEnable ),
     EV_COMMAND_ENABLE           ( IDC_SEQUENCE,                 CmSequenceMeanEnable ),
 
-    EV_COMMAND                  ( IDC_SAVEBANDS,                CmSetFreqBands ),
-    EV_COMMAND                  ( IDC_WRITECOMPLEX,             CmComplexOrPhase ),
-    EV_COMMAND                  ( IDC_WRITEPHASE,               CmComplexOrPhase ),
+    EV_COMMAND_ENABLE           ( IDC_FFTNORMALIZATION,         CmFFTNormalizationEnable ),
 
-    EV_COMMAND_ENABLE           ( IDC_WRITEREAL,                CmWriteRealEnable ),
-    EV_COMMAND_ENABLE           ( IDC_WRITENORM,                CmWriteNormEnable ),
-    EV_COMMAND_ENABLE           ( IDC_WRITENORM2,               CmWriteNormEnable ),
-    EV_COMMAND_ENABLE           ( IDC_WRITECOMPLEX,             CmWriteComplexEnable ),
-    EV_COMMAND_ENABLE           ( IDC_WRITEPHASE,               CmWriteComplexEnable ),
+    EV_COMMAND                  ( IDC_SAVEBANDS,                CmSetFreqBands ),
+    EV_CBN_SELCHANGE            ( IDC_WRITETYPE,                CmWriteType ),
+    EV_COMMAND_ENABLE           ( IDC_WRITETYPE,                CmWriteTypeEnable ),
 
     EV_COMMAND_ENABLE           ( IDC_NOREF,                    CmReferenceEnable ),
     EV_COMMAND_ENABLE           ( IDC_CURRENTREF,               CmReferenceEnable ),
@@ -284,11 +282,9 @@ WindowingHanning    = new TRadioButton ( this, IDC_WINDOWINGHANNING );
 Mean                = new TRadioButton ( this, IDC_MEAN );
 Sequence            = new TRadioButton ( this, IDC_SEQUENCE );
 
-WriteNorm           = new TRadioButton ( this, IDC_WRITENORM );
-WriteNorm2          = new TRadioButton ( this, IDC_WRITENORM2 );
-WriteReal           = new TRadioButton ( this, IDC_WRITEREAL );
-WriteComplex        = new TRadioButton ( this, IDC_WRITECOMPLEX );
-WritePhase          = new TRadioButton ( this, IDC_WRITEPHASE );
+FFTNormalization    = new TComboBox ( this, IDC_FFTNORMALIZATION );
+
+WriteType           = new TComboBox ( this, IDC_WRITETYPE );
 
 NoRef               = new TRadioButton ( this, IDC_NOREF );
 CurrentRef          = new TRadioButton ( this, IDC_CURRENTREF );
@@ -328,7 +324,7 @@ if ( init ) {
     }
 else
                                         // restore previous preset
-    CurrentPreset   = FrequencyAnalysisTransfer.Presets.GetSelIndex ();
+    CurrentPreset   = GetIndex ( FrequencyAnalysisTransfer.Presets );
 }
 
 
@@ -428,8 +424,8 @@ delete  Fft;                delete  FftApproximation;
 delete  STransform;
 delete  WindowingNone;      delete  WindowingHanning;
 delete  Mean;               delete  Sequence;
-delete  WriteNorm;          delete  WriteNorm2;
-delete  WriteReal;          delete  WriteComplex;       delete  WritePhase;
+delete  FFTNormalization;
+delete  WriteType;
 delete  NoRef;              delete  CurrentRef;         delete  AvgRef;
 delete  OtherRef;           delete  RefList;
 delete  InfixFilename;
@@ -513,13 +509,34 @@ return blocksize;
 //----------------------------------------------------------------------------
 void    TFrequencyAnalysisDialog::EvPresetsChange ()
 {
-if ( StringIsEmpty ( FreqPresetsString[ Presets->GetSelIndex () ] ) )
+if ( StringIsEmpty ( FreqPresetsString[ GetIndex ( Presets ) ] ) )
     return;
 
 
 PreviousPreset  = CurrentPreset;
-CurrentPreset   = Presets->GetSelIndex ();
+CurrentPreset   = GetIndex ( Presets );
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Taking care not to overwrite user's choice of the FFT Normalization
+static int      CurrentFFTNormalization     = DefaultFFTRescaling;
+
+                                        // Saving current state when not in S-Transform
+if      ( ! IsSTransform ( PreviousPreset ) && ! IsSTransform ( CurrentPreset ) )
+    CurrentFFTNormalization     = GetIndex ( FFTNormalization );
+
+                                        // Quitting S-Transform settings, restore saved state
+else if (   IsSTransform ( PreviousPreset ) && ! IsSTransform ( CurrentPreset ) )
+    SetIndex    ( FFTNormalization, CurrentFFTNormalization );
+
+                                        // Entering S-Transform, save old state then reset it
+else if ( ! IsSTransform ( PreviousPreset ) &&   IsSTransform ( CurrentPreset ) ) {
+    CurrentFFTNormalization     = GetIndex ( FFTNormalization );
+    SetIndex    ( FFTNormalization, FFTRescalingNone );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 //CmSetAnalysis ( owlwparam w );
 
@@ -535,19 +552,12 @@ ResetCheck  ( STransform       );
 ResetCheck  ( Mean             );
 SetCheck    ( Sequence         );
 
-ResetCheck  ( WriteNorm        );
-ResetCheck  ( WriteNorm2       );
-ResetCheck  ( WriteReal        );
-ResetCheck  ( WriteComplex     );
-ResetCheck  ( WritePhase       );
-
 //if ( ! IsGeneralCaseAnalysis ( CurrentPreset ) ) {
     ResetCheck  ( NoRef        );
     ResetCheck  ( CurrentRef   );
     ResetCheck  ( AvgRef       );
     ResetCheck  ( OtherRef     );
 //    }
-
 
                                         // then set only the right ones
 switch ( CurrentPreset ) {
@@ -556,14 +566,14 @@ switch ( CurrentPreset ) {
         SetCheck    ( Fft              );
         SetCheck    ( AvgRef           );
         SetCheck    ( WindowOverlap75  );
-        SetCheck    ( WriteNorm2       );
+        SetIndex    ( WriteType, OutputAtomNorm2 );
         break;
 
     case    FreqPresetSurfacePowermapsAvg :
         SetCheck    ( Fft              );
         SetCheck    ( AvgRef           );
         SetCheck    ( WindowOverlap75  );
-        SetCheck    ( WriteNorm2       );
+        SetIndex    ( WriteType, OutputAtomNorm2 );
                                        
         SetCheck    ( Mean             );
         ResetCheck  ( Sequence         );
@@ -573,7 +583,7 @@ switch ( CurrentPreset ) {
         SetCheck    ( Fft              );
         SetCheck    ( AvgRef           );
         SetCheck    ( WindowOverlapMax );
-        SetCheck    ( WriteNorm2       );
+        SetIndex    ( WriteType, OutputAtomNorm2 );
         break;
 
 
@@ -581,14 +591,14 @@ switch ( CurrentPreset ) {
         SetCheck    ( FftApproximation );
         SetCheck    ( AvgRef           );
         SetCheck    ( WindowOverlap75  );
-        SetCheck    ( WriteReal        );
+        SetIndex    ( WriteType, OutputAtomReal );
         break;
 
     case    FreqPresetSurfaceFftapproxSt:
         SetCheck    ( FftApproximation );
         SetCheck    ( AvgRef           );
         SetCheck    ( WindowOverlapMax );
-        SetCheck    ( WriteReal        );
+        SetIndex    ( WriteType, OutputAtomReal );
         break;
 
 
@@ -596,14 +606,14 @@ switch ( CurrentPreset ) {
         SetCheck    ( STransform       );
         SetCheck    ( AvgRef           );
         SetCheck    ( WindowOverlap0   );
-        SetCheck    ( WriteNorm2       );
+        SetIndex    ( WriteType, OutputAtomNorm2 );
         break;
 
     case    FreqPresetSurfaceStransfForESI:
         SetCheck    ( STransform       );
         SetCheck    ( AvgRef           );
         SetCheck    ( WindowOverlap0   );
-        SetCheck    ( WriteComplex     );
+        SetIndex    ( WriteType, OutputAtomComplex );
         break;
 
 
@@ -612,7 +622,7 @@ switch ( CurrentPreset ) {
         SetCheck    ( Fft              );
         SetCheck    ( NoRef            );
         SetCheck    ( WindowOverlap75  );
-        SetCheck    ( WriteNorm2       );
+        SetIndex    ( WriteType, OutputAtomNorm2 );
         break;
 
     case    FreqPresetIntraFftAvg:
@@ -620,7 +630,7 @@ switch ( CurrentPreset ) {
         SetCheck    ( Fft              );
         SetCheck    ( NoRef            );
         SetCheck    ( WindowOverlap75  );
-        SetCheck    ( WriteNorm2       );
+        SetIndex    ( WriteType, OutputAtomNorm2 );
 
         SetCheck    ( Mean             );
         ResetCheck  ( Sequence         );
@@ -631,7 +641,7 @@ switch ( CurrentPreset ) {
         SetCheck    ( Fft              );
         SetCheck    ( NoRef            );
         SetCheck    ( WindowOverlapMax );
-        SetCheck    ( WriteNorm2       );
+        SetIndex    ( WriteType, OutputAtomNorm2 );
         break;
 
 
@@ -646,10 +656,10 @@ switch ( CurrentPreset ) {
             SetCheck    ( SaveInterval     );
             ResetCheck  ( SaveBands        );
 
-            SetCheck    ( WritePhase       );
+            SetIndex    ( WriteType, OutputAtomPhase );
             }
         else {
-            SetCheck    ( WriteNorm2       );
+            SetIndex    ( WriteType, OutputAtomNorm2 );
             }
         break;
     }
@@ -923,20 +933,6 @@ tce.Enable (   BatchProcessing && IsProcessEnable () );
 
 
 //----------------------------------------------------------------------------
-void    TFrequencyAnalysisDialog::CmMeanOrSequence ()
-{
-if ( IsChecked ( Mean ) ) {
-
-    if ( IsChecked ( WriteComplex ) 
-      || IsChecked ( WritePhase   ) ) {
-        ResetCheck  ( WriteComplex );
-        ResetCheck  ( WritePhase   );
-        SetCheck    ( WriteNorm2   );
-        }
-    }
-}
-
-
 void    TFrequencyAnalysisDialog::CmMarkersEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( IsChecked ( Sequence ) );
@@ -1458,7 +1454,7 @@ CmTimeLimitsChange ();
 
 
 //----------------------------------------------------------------------------
-                                        // set/reset correct parameters
+                                        // set/reset correct parameters - Makes use of transfer buffer
 void    TFrequencyAnalysisDialog::CmSetAnalysis ()
 {
 TransferData ( tdGetData );
@@ -1482,21 +1478,16 @@ if ( IsPowerMaps        ( CurrentPreset )
     }*/
 
                                         // set output format
-if      ( IsRegularFFT ( CurrentPreset ) && CheckToBool ( transfer.WriteReal )
+if      ( IsRegularFFT ( CurrentPreset ) && IsIndex ( transfer.WriteType, OutputAtomReal )
        || IsPowerMaps  ( CurrentPreset ) 
        || IsSTransform ( CurrentPreset ) ) {
-    transfer.WriteReal      = BoolToCheck ( false );
-    transfer.WriteComplex   = BoolToCheck ( false );
-    transfer.WritePhase     = BoolToCheck ( false );
-    transfer.WriteNorm      = BoolToCheck ( false );
-    transfer.WriteNorm2     = BoolToCheck ( true  );
+
+    SetIndex ( transfer.WriteType, OutputAtomNorm2 );
     }
+
 else if ( IsFFTApproximation ( CurrentPreset ) ) {
-    transfer.WriteComplex   = BoolToCheck ( false );
-    transfer.WritePhase     = BoolToCheck ( false );
-    transfer.WriteNorm      = BoolToCheck ( false );
-    transfer.WriteNorm2     = BoolToCheck ( false );
-    transfer.WriteReal      = BoolToCheck ( true  );
+
+    SetIndex ( transfer.WriteType, OutputAtomReal );
     }
 
                                         // other settings
@@ -1535,64 +1526,110 @@ CmEndOfFile ();
 
 
 //----------------------------------------------------------------------------
-                                        // these 2 functions works together
-void    TFrequencyAnalysisDialog::CmSetFreqBands ()
+                                        // These 3 methods work together to assess the consistency between output type and other options.
+                                        // They used to correct the parameters silently, now they warn the user.
+void    TFrequencyAnalysisDialog::CmMeanOrSequence ()
 {
-if ( IsChecked ( WriteComplex ) || IsChecked ( WritePhase ) )  {
-    ResetCheck  ( WriteComplex );
-    ResetCheck  ( WritePhase   );
-    SetCheck    ( WriteNorm2   );
+if (  ( IsIndex   ( WriteType, OutputAtomComplex )
+     || IsIndex   ( WriteType, OutputAtomPhase   ) )
+   &&   IsChecked ( Mean )                         ) {
+
+    ShowMessage ( "Can not compute the average of" NewLine "Complex or Phase values!", FrequencyAnalysisTitle, ShowMessageWarning );
+
+    EvPresetsChange ();
     }
 }
 
 
-void    TFrequencyAnalysisDialog::CmComplexOrPhase ()
+void    TFrequencyAnalysisDialog::CmSetFreqBands ()
 {
-if ( IsChecked ( WriteComplex ) || IsChecked ( WritePhase ) )
+if ( IsIndex ( WriteType, OutputAtomComplex ) 
+  || IsIndex ( WriteType, OutputAtomPhase   ) ) {
+
+    ShowMessage ( "Can not save Complex or Phase values" NewLine "for Bands of Frequencies!", FrequencyAnalysisTitle, ShowMessageWarning );
+
+    EvPresetsChange ();
+    }
+}
+
+
+void    TFrequencyAnalysisDialog::CmWriteType ()
+{
+                                        // Counterpart of CmMeanOrSequence and CmSetFreqBands
+if ( IsIndex ( WriteType, OutputAtomComplex ) 
+  || IsIndex ( WriteType, OutputAtomPhase   ) ) {
+
     if ( IsChecked ( SaveBands ) ) {
+
+        ShowMessage ( "Can not save Complex or Phase values" NewLine "for Bands of Frequencies!", FrequencyAnalysisTitle, ShowMessageWarning );
+
         ResetCheck  ( SaveBands    );
         SetCheck    ( SaveInterval );
         }
+
+    if ( IsChecked ( Mean ) ) {
+
+        ShowMessage ( "Can not compute the average of" NewLine "Complex or Phase values!", FrequencyAnalysisTitle, ShowMessageWarning );
+
+        ResetCheck  ( Mean     );
+        SetCheck    ( Sequence );
+        }
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // User changed type from drop-down
+if      (    IsIndex ( WriteType, OutputAtomReal )
+        && ! IsFFTApproximation ( CurrentPreset  ) ) {
+
+    ShowMessage ( "Can not save Real components if not for FFT Approximation case!", FrequencyAnalysisTitle, ShowMessageWarning );
+
+    EvPresetsChange ();
+    }
+                                        // does not currently happen because CmWriteTypeEnable prevents this
+else if (  ( IsIndex ( WriteType, OutputAtomNorm  ) 
+          || IsIndex ( WriteType, OutputAtomNorm2 ) )
+      && ! ( IsRegularFFT ( CurrentPreset ) 
+          || IsSTransform ( CurrentPreset )
+          || IsPowerMaps  ( CurrentPreset ) )         ) {
+
+    ShowMessage ( "Can not save Norm/Power values if not for FFT or S-Transform cases!", FrequencyAnalysisTitle, ShowMessageWarning );
+
+    EvPresetsChange ();
+    }
+                                        // does not currently happen because CmWriteTypeEnable prevents this
+else if (    IsIndex ( WriteType, OutputAtomComplex )
+      && ! ( IsRegularFFT ( CurrentPreset ) 
+          || IsSTransform ( CurrentPreset )
+          || IsPowerMaps  ( CurrentPreset ) )         ) {
+
+    ShowMessage ( "Can not save Complex values if not for FFT or S-Transform cases!", FrequencyAnalysisTitle, ShowMessageWarning );
+
+    EvPresetsChange ();
+    }
+}
+
+
+void    TFrequencyAnalysisDialog::CmWriteTypeEnable ( TCommandEnabler &tce )
+{
+tce.Enable ( ! ( IsFFTApproximation ( CurrentPreset ) 
+              || CurrentPreset == FreqPresetSurfaceStransfForESI
+              || CurrentPreset == FreqPresetIntraStransfPhase    ) );
 }
 
 
 //----------------------------------------------------------------------------
-void    TFrequencyAnalysisDialog::CmWriteRealEnable ( TCommandEnabler &tce )
+void    TFrequencyAnalysisDialog::CmFFTNormalizationEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( IsFFTApproximation ( CurrentPreset ) );
+tce.Enable ( ! IsSTransform ( CurrentPreset ) );
 }
 
 
-void    TFrequencyAnalysisDialog::CmWriteNormEnable ( TCommandEnabler &tce )
-{
-tce.Enable ( IsRegularFFT ( CurrentPreset ) 
-          || IsSTransform ( CurrentPreset )
-          || IsPowerMaps  ( CurrentPreset ) );
-//tce.Enable ( ! IsSurfaceAnalysis ( CurrentPreset ) );
-}
-
-
-void    TFrequencyAnalysisDialog::CmWriteComplexEnable ( TCommandEnabler &tce )
-{
-tce.Enable ( IsChecked ( Sequence     )
-          && IsChecked ( SaveInterval )
-          && ( IsRegularFFT ( CurrentPreset ) 
-            || IsSTransform ( CurrentPreset )
-            || IsPowerMaps  ( CurrentPreset ) ) );
-}
-
-
+//----------------------------------------------------------------------------
 void    TFrequencyAnalysisDialog::CmReferenceEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( IsGeneralCaseAnalysis ( CurrentPreset ) );
 }
-
-
-//void    TFrequencyAnalysisDialog::CmWriteComplexEnable ( TCommandEnabler &tce )
-//{
-//tce.Enable ( IsRegularFFT       ( CurrentPreset ) 
-//          || IsFFTApproximation ( CurrentPreset ) );
-//}
 
                                         // user can't push analysis buttons anymore, everything is done throuh the Presets
 void    TFrequencyAnalysisDialog::CmAnalysisTypeEnable ( TCommandEnabler &tce )
@@ -1609,7 +1646,7 @@ if ( ! EEGDoc )
     return;
 
 
-TFrequencyAnalysisStructEx*     transfer    = usetransfer ? (TFrequencyAnalysisStructEx *) usetransfer : &FrequencyAnalysisTransfer;
+TFrequencyAnalysisStructEx*     transfer    = usetransfer ? (TFrequencyAnalysisStructEx*) usetransfer : &FrequencyAnalysisTransfer;
 
 if ( ! transfer )
     return;
@@ -1726,13 +1763,11 @@ FreqOutputBands     outputbands         = CheckToBool ( transfer->SaveInterval  
                                         : CheckToBool ( transfer->SaveBands        ) ?                                             OutputBands
                                         :                                                                                          UnknownFreqOutput;
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-FreqOutputAtomType  outputatomtype      = CheckToBool ( transfer->WriteReal    ) ? OutputAtomReal
-                                        : CheckToBool ( transfer->WriteNorm    ) ? OutputAtomNorm
-                                        : CheckToBool ( transfer->WriteNorm2   ) ? OutputAtomNorm2
-                                        : CheckToBool ( transfer->WriteComplex ) ? OutputAtomComplex
-                                        : CheckToBool ( transfer->WritePhase   ) ? OutputAtomPhase
-                                        :                                          UnknownFreqOutputAtom;
+FFTRescalingType    fftnorm             = (FFTRescalingType)    GetIndex ( FFTNormalization );
+
+FreqOutputAtomType  outputatomtype      = (FreqOutputAtomType)  GetIndex ( WriteType );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1889,7 +1924,9 @@ FrequencyAnalysis   (   EEGDoc,
                         timemin,            timemax,            endoffile,
                         samplingfrequency,
                         numblocks,          blocksize,          blockstep,      blocksoverlap,
-                        outputbands,        outputatomtype,
+                        fftnorm,
+                        outputbands,
+                        outputatomtype,
                         outputmarkers,      outputmarkerstype,
                         transfer->SaveBandsValue,
                         outputfreqmin,      outputfreqmax,      outputfreqstep,     

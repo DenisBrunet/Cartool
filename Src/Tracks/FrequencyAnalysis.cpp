@@ -48,6 +48,26 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
+
+const char  FFTRescalingString[ NumFFTRescalingType ][ 64 ] =
+            {
+            "No Rescaling",
+            "Dividing by Square Root of Window Size",
+            "Dividing by Window Size (Parseval)",
+            };
+
+
+const char  FreqOutputAtomString[ NumFreqOutputAtomType ][ 32 ] =
+            {
+            "Real part",
+            "Norm",
+            "Power (Squared Norm)",
+            "Complex",
+            "Phase",
+            };
+
+
+//----------------------------------------------------------------------------
                                         // Used internally to keep tracks of real / truncated / index of frequencies
 class   TOneFrequencyBand
 {
@@ -341,7 +361,9 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 long                timemin,            long                timemax,            bool                endoffile,
                                 double              samplingfrequency,
                                 int                 numblocks,          int                 blocksize,          int                 blockstep,          double              blocksoverlap,
-                                FreqOutputBands     outputbands,        FreqOutputAtomType  outputatomtype,
+                                FFTRescalingType    fftnorm,
+                                FreqOutputBands     outputbands,
+                                FreqOutputAtomType  outputatomtype,
                                 bool                outputmarkers,      MarkerType          outputmarkerstype,
                                 const char*         outputbandslist,
                                 double              outputfreqmin,      double              outputfreqmax,      double              outputfreqstep,     
@@ -363,9 +385,7 @@ if ( ! eegdoc )
 
 
 if ( analysis       == UnknownFreqAnalysis
-  || outputbands    == UnknownFreqOutput
-  || outputatomtype == UnknownFreqOutputAtom )
-
+  || outputbands    == UnknownFreqOutput     )
     return  false;
 
 
@@ -378,6 +398,14 @@ Clipped ( blocksoverlap, 0.0, 1.0 );
 
 if ( analysis == FreqAnalysisSTransform )
     outputsequential    = true;
+
+
+if ( analysis != FreqAnalysisFFTApproximation && outputatomtype == OutputAtomReal )
+    outputatomtype  = OutputAtomNorm2;
+
+
+if ( analysis == FreqAnalysisSTransform && fftnorm != FFTRescalingNone )
+    fftnorm         = FFTRescalingNone;
 
                                         // recover output files flags
 bool                savefreq            = fileoutfreq      != 0;
@@ -767,7 +795,6 @@ if ( timedown == 1 )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // something went wrong in the parameters?
 if (   analysis       == UnknownFreqAnalysis 
-    || outputatomtype == UnknownFreqOutputAtom 
     || numblocks <= 0 
     || blocksize <= 0 ) {
 
@@ -775,9 +802,6 @@ if (   analysis       == UnknownFreqAnalysis
 
         if ( analysis == UnknownFreqAnalysis )
             ShowMessage ( "Frequency Analysis type seems to be incorrect...", FrequencyAnalysisTitle, ShowMessageWarning );
-
-        if ( outputatomtype == UnknownFreqOutputAtom )
-            ShowMessage ( "Output format seems to be incorrect...", FrequencyAnalysisTitle, ShowMessageWarning );
 
         if ( numblocks <= 0 || blocksize <= 0 )
             ShowMessage ( "Number of windows or window size seem to be incorrect...", FrequencyAnalysisTitle, ShowMessageWarning );
@@ -1003,12 +1027,10 @@ verbose.Put ( "Number of Time Frames:", (int) timenum );
 if ( analysis != FreqAnalysisSTransform ) {
 
     verbose.NextLine ();
-    verbose.Put ( "Windows size [TF]:", blocksize );
-
-    if      ( blocksoverlap == 0.00 )   verbose.Put ( "Windows step:", "100% Window" );
-    else if ( blocksoverlap == 0.75 )   verbose.Put ( "Windows step:", "25% Window" );
-    else                                verbose.Put ( "Windows step:", "1 TF" );            // blocksoverlap = ( blocksize - 1 ) / blocksize
-
+    verbose.Put ( "Windows size:", blocksize, 0, " [TF]" );
+    verbose.Put ( "Windows step:", blocksoverlap == 0.00 ? "100% Window" 
+                                 : blocksoverlap == 0.75 ? "25% Window" 
+                                 :                         "1 TF"       );  // blocksoverlap = ( blocksize - 1 ) / blocksize
     verbose.Put ( "Windows step duration:", TimeFrameToMilliseconds ( blockstep, samplingfrequency ), 2, " [ms]" );
     verbose.Put ( "Number of windows:", numblocks );
     }
@@ -1098,10 +1120,10 @@ else if     ( outputbands == OutputBands
 
 verbose.NextTopic ( "Analysis:" );
 {
-if          ( analysis == FreqAnalysisPowerMaps )           verbose.Put ( "Type of frequency analysis:", "Power Maps" );
+if          ( analysis == FreqAnalysisFFT )                 verbose.Put ( "Type of frequency analysis:", "FFT" );
+else if     ( analysis == FreqAnalysisPowerMaps )           verbose.Put ( "Type of frequency analysis:", "FFT (Power Maps)" );
 else if     ( analysis == FreqAnalysisFFTApproximation )    verbose.Put ( "Type of frequency analysis:", "FFT Approximation" );
-else if     ( analysis == FreqAnalysisFFT )                 verbose.Put ( "Type of frequency analysis:", "FFT" );
-else if     ( analysis == FreqAnalysisSTransform )          verbose.Put ( "Type of frequency analysis:", "S-Transform" );
+else if     ( analysis == FreqAnalysisSTransform )          verbose.Put ( "Type of frequency analysis:", "Wavelet (S-Transform)" );
 else                                                        verbose.Put ( "Type of frequency analysis:", "Unknown" );
 
 verbose.Put ( "Windowing function:", windowing != FreqWindowingNone ? "Hanning" : "None / Flat Top" );
@@ -1110,9 +1132,12 @@ if ( windowing )
                                          : windowing == FreqWindowingHanningBorder  ? "the block's borders only" 
                                          :                                            "unknwown windowing" );
 
+verbose.NextLine ();
 
 if ( analysis != FreqAnalysisSTransform ) {
-    verbose.Put ( "Windows results are:", outputsequential ? "Written sequentially" : "Averaged" );
+
+    verbose.Put ( "FFT Time Windows rescaling:", FFTRescalingString[ fftnorm ] );
+    verbose.Put ( "Time Windows results are:", outputsequential ? "Written sequentially" : "Averaged" );
 
     if ( ! outputsequential )
         if ( analysis == FreqAnalysisFFTApproximation )
@@ -1121,12 +1146,7 @@ if ( analysis != FreqAnalysisSTransform ) {
             verbose.Put ( "Averaging is done:", "After normalization to Real" );
     }
 
-if      ( outputatomtype == OutputAtomComplex )     verbose.Put ( "Output format:", "Complex" );
-else if ( outputatomtype == OutputAtomNorm    )     verbose.Put ( "Output format:", "Norm" );
-else if ( outputatomtype == OutputAtomNorm2   )     verbose.Put ( "Output format:", "Squared Norm" );
-else if ( outputatomtype == OutputAtomReal    )     verbose.Put ( "Output format:", "Real" );
-else if ( outputatomtype == OutputAtomPhase   )     verbose.Put ( "Output format:", "Phase" );
-else                                                verbose.Put ( "Output format:", "Unknown" );
+verbose.Put ( "Output values:", FreqOutputAtomString[ outputatomtype ] );
 }
 
 
@@ -1150,10 +1170,10 @@ else                                                verbose.Put ( "Reference:", 
 
 verbose.NextTopic ( "Options:" );
 {
-verbose.Put ( "Saving all freqs into a single file:", savefreq );
-verbose.Put ( "Splitting results per electrode:", splitelectrode );
-verbose.Put ( "Splitting results per frequency:", splitfrequency );
-verbose.Put ( "Splitting results per spectrum :", splitspectrum );
+verbose.Put ( "Saving all freqs into a single file:",   savefreq );
+verbose.Put ( "Splitting results per electrode:",       splitelectrode );
+verbose.Put ( "Splitting results per frequency:",       splitfrequency );
+verbose.Put ( "Splitting results per spectrum :",       splitspectrum );
 //verbose.Put ( "Creating sub-directory for results:", createsubdir );
 
 verbose.NextLine ();
@@ -1455,17 +1475,13 @@ mkl::TMklFft        fft;
 mkl::TMklFft        ffti;
 
 if ( analysis == FreqAnalysisSTransform ) {
-
-    fft .Set ( mkl::FromReal,      mkl::ForwardRescaling,           blocksize );
-    ffti.Set ( mkl::BackToComplex, mkl::BackwardRescaling,          blocksize );
+                                        // There is no available FFT rescaling option here, as we do the full (forward -> backward) transform
+    fft .Set ( mkl::FromReal,      FFTRescalingForward,     blocksize );
+    ffti.Set ( mkl::BackToComplex, FFTRescalingBackward,    blocksize );
     }
-else if ( analysis == FreqAnalysisFFTApproximation ) {
-                                        // Single FFT rescaling for Parseval equality
-    fft .Set ( mkl::FromReal,      mkl::ForwardRescalingParseval,   blocksize );
-    }
-else { // all other FFT analysis
-                                        // Single FFT rescaling for Parseval equality
-    fft .Set ( mkl::FromReal,      mkl::ForwardRescalingParseval,   blocksize );
+else { // FFT, Power Maps (also FFT), FFT Approximation
+                                        // Recommended FFT rescaling is FFTRescalingParseval
+    fft .Set ( mkl::FromReal,      fftnorm,                 blocksize );
     }
 
 
