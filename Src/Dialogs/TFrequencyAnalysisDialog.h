@@ -28,16 +28,9 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-constexpr   FFTRescalingType        DefaultFFTRescaling     = FFTRescalingParseval;
-
-constexpr   FreqOutputAtomType      DefaultFreqOutputAtom   = OutputAtomNorm2;
-
-
-//----------------------------------------------------------------------------
-
 enum        FreqPresetsEnum
             {
-            FreqPresetSurfacePowermaps      = 0,
+            FreqPresetSurfacePowermaps,
             FreqPresetSurfacePowermapsAvg,
             FreqPresetSurfacePowermapsSt,
             FreqPresetSurfaceFftapprox,
@@ -103,8 +96,7 @@ return  IsInsideLimits ( preset, (int) FreqPresetSurfacePowermaps, (int) FreqPre
                                         // Only Frequency Approximation FFT
 inline  bool    IsFFTApproximation  ( int preset )
 {
-return  preset  == FreqPresetSurfaceFftapprox
-     || preset  == FreqPresetSurfaceFftapproxSt;
+return  IsInsideLimits ( preset, (int) FreqPresetSurfaceFftapprox, (int) FreqPresetSurfaceFftapproxSt );
 }
 
                                         // Other FFTs than Power Maps or FFT Approx
@@ -224,9 +216,12 @@ EndBytePacking
 
 //----------------------------------------------------------------------------
 
-constexpr int       MinBlockSize                =    4;
-constexpr int       MaxInitBlockSize            = 2000;
-constexpr double    DefaultWindowOverlap        = 0.75;
+constexpr FFTRescalingType      DefaultFFTRescaling     = FFTRescalingParseval;
+constexpr FreqOutputAtomType    DefaultFreqOutputAtom   = OutputAtomNorm2;
+
+constexpr int                   MinBlockSize            =    4;
+constexpr int                   MaxInitBlockSize        = 2000;
+constexpr double                DefaultWindowOverlap    = 0.75;
 
 
 int                 ComputeTimeMax ( bool isstransform, bool windowoverlapmax, int timemin, int blocksize, double blocksoverlap, int numblocks );

@@ -38,17 +38,15 @@ constexpr double    HanningRescaling            = 2.0;
 
 enum    FreqAnalysisType
         {
-        UnknownFreqAnalysis,
         FreqAnalysisFFT,
         FreqAnalysisPowerMaps,          // FFT for surface EEG: Average Reference, Norm^2
-        FreqAnalysisFFTApproximation,
+        FreqAnalysisFFTApproximation,   // FFT projected on a single Real axis
         FreqAnalysisSTransform,         // Stockwell transform, a sort of Wavelet very close to Morlet's
         };
 
 
 enum    FreqOutputBands
         {
-        UnknownFreqOutput,
         OutputLinearInterval,
         OutputLogInterval,
         OutputBands,

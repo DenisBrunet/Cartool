@@ -384,11 +384,6 @@ if ( ! eegdoc )
     return  false;
 
 
-if ( analysis       == UnknownFreqAnalysis
-  || outputbands    == UnknownFreqOutput     )
-    return  false;
-
-
 if ( numblocks <= 0
   || blocksize <= 0 )
     return  false;
@@ -794,14 +789,10 @@ if ( timedown == 1 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // something went wrong in the parameters?
-if (   analysis       == UnknownFreqAnalysis 
-    || numblocks <= 0 
+if (   numblocks <= 0 
     || blocksize <= 0 ) {
 
     if ( ! silent ) {
-
-        if ( analysis == UnknownFreqAnalysis )
-            ShowMessage ( "Frequency Analysis type seems to be incorrect...", FrequencyAnalysisTitle, ShowMessageWarning );
 
         if ( numblocks <= 0 || blocksize <= 0 )
             ShowMessage ( "Number of windows or window size seem to be incorrect...", FrequencyAnalysisTitle, ShowMessageWarning );
@@ -1143,7 +1134,7 @@ if ( analysis != FreqAnalysisSTransform ) {
         if ( analysis == FreqAnalysisFFTApproximation )
             verbose.Put ( "Averaging is done:", "After polarity check" );
         else
-            verbose.Put ( "Averaging is done:", "After normalization to Real" );
+            verbose.Put ( "Averaging is done:", "After taking norm" );
     }
 
 verbose.Put ( "Output values:", FreqOutputAtomString[ outputatomtype ] );

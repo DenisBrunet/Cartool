@@ -1674,7 +1674,10 @@ FreqAnalysisType    analysis            = IsRegularFFT       ( CurrentPreset )  
                                         : IsPowerMaps        ( CurrentPreset )  ? FreqAnalysisPowerMaps
                                         : IsFFTApproximation ( CurrentPreset )  ? FreqAnalysisFFTApproximation
                                         : IsSTransform       ( CurrentPreset )  ? FreqAnalysisSTransform
-                                        :                                         UnknownFreqAnalysis;
+                                        :                                         (FreqAnalysisType) -1;
+
+if ( analysis == (FreqAnalysisType) -1 )
+    return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1761,7 +1764,11 @@ long                timenum             = ( timemax - timemin + 1 );
 FreqOutputBands     outputbands         = CheckToBool ( transfer->SaveInterval     ) ? CheckToBool ( transfer->SaveLogInterval ) ? OutputLogInterval 
                                                                                                                                  : OutputLinearInterval
                                         : CheckToBool ( transfer->SaveBands        ) ?                                             OutputBands
-                                        :                                                                                          UnknownFreqOutput;
+                                        :                                                                                          (FreqOutputBands) -1;
+
+if ( outputbands == (FreqOutputBands) -1 )
+    return;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
