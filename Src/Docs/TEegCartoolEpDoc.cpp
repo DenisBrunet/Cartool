@@ -312,7 +312,7 @@ return  SDEDoc != 0;
 }
 
 
-void    TEegCartoolEpDoc::GetStandDev ( long tf1, long tf2, TArray2<float>& buff, int tfoffset, TRois* rois )
+void    TEegCartoolEpDoc::GetStandDev ( long tf1, long tf2, TArray2<float>& buff, int tfoffset, const TRois* rois )
 {
 if ( IsStandDevAvail () )
 

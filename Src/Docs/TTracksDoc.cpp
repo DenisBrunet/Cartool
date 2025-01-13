@@ -1431,12 +1431,12 @@ return true;
 // * Post-filtering: Envelope, Threshold
 
 
-void    TTracksDoc::GetTracks   (   long                tf1,            long            tf2,
-                                    TArray2<float>&     buff,           int             tfoffset, 
+void    TTracksDoc::GetTracks   (   long                tf1,            long                tf2,
+                                    TArray2<float>&     buff,           int                 tfoffset, 
                                     AtomType            atomtype,
                                     PseudoTracksType    pseudotracks,
-                                    ReferenceType       reference,      TSelection*     referencetracks,
-                                    TRois*              rois      
+                                    ReferenceType       reference,      const TSelection*   referencetracks,
+                                    const TRois*        rois      
                                 )
 {
                                         // Checking parameters consistency

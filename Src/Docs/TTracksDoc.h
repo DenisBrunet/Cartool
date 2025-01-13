@@ -235,11 +235,11 @@ public:
     virtual void    ReadRawTracks       ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )    = 0;
 
                                         // Retrieving tracks with optional filter / re-reference / pseudo-tracks / ROIs computation
-    virtual void    GetTracks           ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencetracks = 0, TRois *rois = 0 );
+    virtual void    GetTracks           ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, const TSelection* referencetracks = 0, const TRois *rois = 0 );
 
 
     virtual bool    IsStandDevAvail     ()                      { return false; }
-    virtual void    GetStandDev         ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, TRois *rois = 0 )     {}
+    virtual void    GetStandDev         ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, const TRois *rois = 0 )   {}
 
 
     virtual bool    CanFilter           ()              const   { return true; }                                                // can / will be overriden by files where filtering is not allowed

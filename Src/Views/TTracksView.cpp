@@ -579,12 +579,12 @@ if ( ! ValidView () ) {
     }                
 
 
-if ( ! isderived ) {
-                                        // will be allocated on-demand                                        
-    //EegBuff.Resize ( 1, EEGDoc->GetTotalElectrodes (), BuffSize );
-    //if ( EEGDoc->IsStandDevAvail () )
-    //    SdBuff.Resize ( EEGDoc->GetTotalElectrodes (), BuffSize );
-    }
+//if ( ! isderived ) {
+//
+//    EegBuff.Resize ( 1, EEGDoc->GetTotalElectrodes (), BuffSize );
+//    if ( EEGDoc->IsStandDevAvail () )
+//        SdBuff.Resize ( EEGDoc->GetTotalElectrodes (), BuffSize );  // !force Dim1 with pseudo-tracks so both buffers have exactly the same memory footprint!
+//    }
 
 TFCursor.SentTo            = 0;
 TFCursor.SentFrom          = GetViewId ();
@@ -6354,14 +6354,14 @@ if ( oldtfmin == newtfmin && oldtfmax == newtfmax )
     return;
 
                                         // trick: in case of 2D5 buffer, this will still do the current page
-auto                bigblock        = [ & ] ()  { return  ( EegBuff.GetDim1 () * EegBuff.GetDim2 () ); };
+auto                bigblock        = [] ( const TArray2<float>& buff ) -> size_t   { return  buff.GetDim1 () * buff.GetDim2 (); };
 
 int                 deltamin        = newtfmin - oldtfmin;
 int                 deltamax        = newtfmax - oldtfmax;
-int                 tomove;
+size_t              tomove;
 int                 offset;
 PseudoTracksType    pseudotracks    = EEGDoc->HasPseudoElectrodes () ? ComputePseudoTracks : NoPseudoTracks;
-TRois              *rois            = IsRoiMode () && Rois && AverageRois ? Rois : 0;
+const TRois*        rois            = IsRoiMode () && Rois && AverageRois ? Rois : 0;
 
                                         // reload everything: upon request, or in case of temporal filters
 if ( newtfmin > oldtfmax 
@@ -6384,20 +6384,24 @@ if ( newtfmin > oldtfmax
 
 if ( deltamin >= 0 && deltamax <= 0 ) { // (shrink)
 
-    tomove  = bigblock () - deltamin + deltamax;
+    tomove  = bigblock ( EegBuff ) - deltamin + deltamax;
 
     MoveVirtualMemory ( EegBuff[0], EegBuff[0] + deltamin, tomove * EegBuff.AtomSize () );
 
-    if ( IsStandDevAvail () )
+    if ( IsStandDevAvail () ) {
+
+        tomove  = bigblock ( SdBuff ) - deltamin + deltamax;
+
         MoveVirtualMemory ( SdBuff[0], SdBuff[0] + deltamin, tomove * SdBuff.AtomSize () );
+        }
 
     return;
     }
                                         // intersect partly, for sure
 else if ( deltamin >= 0 ) {             // case 1 (shift buffer left)
 
-    tomove  = bigblock () - deltamin;
-    offset  = oldtfmax    - newtfmin + 1;
+    tomove  = bigblock ( EegBuff ) - deltamin;
+    offset  = oldtfmax - newtfmin + 1;
 
     MoveVirtualMemory ( EegBuff[0], EegBuff[0] + deltamin, tomove * EegBuff.AtomSize () );
 
@@ -6411,6 +6415,8 @@ else if ( deltamin >= 0 ) {             // case 1 (shift buffer left)
 
     if ( IsStandDevAvail () ) {
 
+        tomove  = bigblock ( SdBuff ) - deltamin;
+
         MoveVirtualMemory ( SdBuff[0], SdBuff[0] + deltamin, tomove * SdBuff.AtomSize () );
 
         EEGDoc->GetStandDev ( oldtfmax + 1, newtfmax, SdBuff, offset, rois );
@@ -6420,7 +6426,8 @@ else if ( deltamin >= 0 ) {             // case 1 (shift buffer left)
     }
 
 else if ( deltamax <= 0 ) {             // case 2 (shift buffer right)
-    tomove  = bigblock () + deltamin;
+
+    tomove  = bigblock ( EegBuff ) + deltamin;
 
     MoveVirtualMemory ( EegBuff[0] - deltamin, EegBuff[0], tomove * EegBuff.AtomSize () );
 
@@ -6435,6 +6442,8 @@ else if ( deltamax <= 0 ) {             // case 2 (shift buffer right)
 
     if ( IsStandDevAvail () ) {
 
+        tomove  = bigblock ( SdBuff ) + deltamin;
+
         MoveVirtualMemory ( SdBuff[0] - deltamin, SdBuff[0], tomove * SdBuff.AtomSize () );
 
         EEGDoc->GetStandDev ( newtfmin, oldtfmin - 1, SdBuff,  0, rois );
@@ -6444,8 +6453,9 @@ else if ( deltamax <= 0 ) {             // case 2 (shift buffer right)
     }
 
 else {                                  // case 3: deltamin < 0 && deltamax > 0 (expand)
-    tomove  = bigblock () + deltamin;
-    offset  = oldtfmax    - newtfmin + 1;
+
+    tomove  = bigblock ( EegBuff ) + deltamin;
+    offset  = oldtfmax - newtfmin + 1;
 
     MoveVirtualMemory ( EegBuff[0] - deltamin, EegBuff[0], tomove * EegBuff.AtomSize () );
 
@@ -6468,6 +6478,9 @@ else {                                  // case 3: deltamin < 0 && deltamax > 0 
 
 
     if ( IsStandDevAvail () ) {
+
+        tomove  = bigblock ( SdBuff ) + deltamin;
+
         MoveVirtualMemory ( SdBuff[0] - deltamin, SdBuff[0], tomove * SdBuff.AtomSize () );
 
         EEGDoc->GetStandDev ( newtfmin, oldtfmin - 1, SdBuff, 0,      rois );

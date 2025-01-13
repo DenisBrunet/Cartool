@@ -171,12 +171,12 @@ if ( notifyviews )
 //----------------------------------------------------------------------------
                                         // A simplified version of TTracksDoc::GetTracks
                                         // It returns tracks from the CURRENT selected frequency
-void    TFreqDoc::GetTracks (   long                tf1,            long            tf2,
-                                TArray2<float>&     buff,           int             tfoffset, 
+void    TFreqDoc::GetTracks (   long                tf1,            long                tf2,
+                                TArray2<float>&     buff,           int                 tfoffset, 
                                 AtomType            atomtype,
                                 PseudoTracksType    pseudotracks,
-                                ReferenceType       /*reference*/,  TSelection*     /*referencetracks*/,
-                                TRois*              rois      
+                                ReferenceType       /*reference*/,  const TSelection*   /*referencetracks*/,
+                                const TRois*        rois      
                             )
 {
                                         // Checking parameters consistency

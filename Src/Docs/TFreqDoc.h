@@ -106,7 +106,7 @@ public:
     void            SetReferenceType            ( ReferenceType ref, const char* tracks = 0, const TStrings* elnames = 0, bool verbose = true ) final   { Reference = ReferenceAsInFile; }  // re-referencing not allowed
     bool            CanFilter                   ()              const               final   { return false; }                   // filtering not allowed
     bool            SetFiltersActivated         ( bool state, bool silent = false ) final   { FiltersActivated = false; return FiltersActivated; }
-    void            GetTracks                   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, TSelection* referencetracks = 0, TRois *rois = 0 )  override;
+    void            GetTracks                   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, const TSelection* referencetracks = 0, const TRois *rois = 0 )  override;
 
                                         // TFreqDoc
     virtual int     GetNumFrequencies           ()              const   { return NumFrequencies; }

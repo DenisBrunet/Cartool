@@ -37,7 +37,7 @@ public:
 
     static bool     ReadFromHeader      ( const char* file, ReadFromHeaderType what, void* answer );
     void            ReadRawTracks       ( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0 )                                  final;
-    void            GetStandDev         ( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0, TRois* rois = 0 )                 final;
+    void            GetStandDev         ( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0, const TRois* rois = 0 )           final;
     bool            IsStandDevAvail     ()                                                                                              final;
     void            SetReferenceType    ( ReferenceType ref, const char* tracks = 0, const TStrings* elnames = 0, bool verbose = true ) final;
 

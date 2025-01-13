@@ -260,15 +260,15 @@ void    TSegDoc::GetTracks  (   long                tf1,            long        
                                 TArray2<float>&     buff,           int             tfoffset, 
                                 AtomType            /*atomtype*/,
                                 PseudoTracksType    /*pseudotracks*/,
-                                ReferenceType       /*reference*/,  TSelection*     /*referencetracks*/,
-                                TRois*              /*rois*/
+                                ReferenceType       /*reference*/,  const TSelection*   /*referencetracks*/,
+                                const TRois*        /*rois*/
                             )
 {
 TTracksDoc::GetTracks   (   tf1,                tf2,
                             buff,               tfoffset,
                             AtomTypeUseCurrent, 
-                            NoPseudoTracks,             // always overriding
-                            ReferenceAsInFile,        0,      // always overriding
+                            NoPseudoTracks,                 // always overriding
+                            ReferenceAsInFile,        0,    // always overriding
                             0
                         );
 }
