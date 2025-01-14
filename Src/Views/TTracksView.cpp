@@ -3004,7 +3004,7 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                                         // no SD if montage - test EEGDoc directly, if painting for an outer EEG
             if (   ShowSD 
                 && IsTracksMode () 
-                && EEGDoc->IsStandDevAvail() 
+                && EEGDoc->IsStandDevAvail () 
                 && regel 
                 && ! (bool) Montage          ) {
 
@@ -3402,7 +3402,7 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                                         // in BarsMode, we have to draw the SD on top of the bars
             if (   ShowSD 
                 && IsBarsMode () 
-                && EEGDoc->IsStandDevAvail() 
+                && EEGDoc->IsStandDevAvail () 
                 && regel 
                 && ! (bool) Montage          ) {
 
@@ -4418,7 +4418,7 @@ switch ( key ) {
 
     case    'D':
         if      ( IsIntensityModes () )         CmSetScalingAdapt ();
-        else if ( EEGDoc->IsStandDevAvail() )   CmShowSD ();
+        else if ( EEGDoc->IsStandDevAvail () )  CmShowSD ();
         break;
 
     case    'E':
@@ -9864,7 +9864,7 @@ RefreshLinkedWindow () ;
 
 void    TTracksView::CmShowSDEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( EEGDoc->IsStandDevAvail() );
+tce.Enable ( EEGDoc->IsStandDevAvail () );
 }
 
 

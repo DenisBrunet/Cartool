@@ -156,6 +156,7 @@ public:
     void            InitFilters     ();
     virtual void    InitDateTime    ();
     void            InitAuxiliaries ();
+    void            InitSD          ();
 
 
     bool            IsSpontaneous   ()                  const   { return IsExtraContentType ( TracksContentEEGRecording ); }
@@ -238,8 +239,8 @@ public:
     virtual void    GetTracks           ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, const TSelection* referencetracks = 0, const TRois *rois = 0 );
 
 
-    virtual bool    IsStandDevAvail     ()                      { return false; }
-    virtual void    GetStandDev         ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, const TRois *rois = 0 )   {}
+    virtual bool    IsStandDevAvail     ()              const   { return SDBuff.IsAllocated (); }
+    void            GetStandDev         ( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0, const TRois* rois = 0 )   const;
 
 
     virtual bool    CanFilter           ()              const   { return true; }                                                // can / will be overriden by files where filtering is not allowed
@@ -294,6 +295,8 @@ protected:
     bool                    FiltersActivated;   // applying or not said filters
 
     int             NumInverseSolutions;
+
+    TTracks<float>  SDBuff;             // Standard Deviation or Standard Error buffer
 
                                                        // ignore No Reference and Average Reference, which is quite common
     bool            DirtyReference ()       { return  ! ( Reference == ReferenceAsInFile || Reference == ReferenceAverage ); }

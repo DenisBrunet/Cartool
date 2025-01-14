@@ -37,30 +37,11 @@ namespace crtl {
         TEegCartoolEpDoc::TEegCartoolEpDoc ( TDocument *parent )
       : TTracksDoc ( parent )
 {
-SDEDoc              = 0;
 CreatingEP          = false;
 }
 
 
 //----------------------------------------------------------------------------
-bool	TEegCartoolEpDoc::Close ()
-{
-if ( IsOpen () ) {
-
-    if ( SDEDoc ) {
-
-        SDEDoc->RemoveLink ( this );
-
-        CartoolDocManager->CloseDoc ( SDEDoc, false );
-
-        SDEDoc  = 0;
-        }
-    }
-
-return  TTracksDoc::Close ();
-}
-
-
 bool    TEegCartoolEpDoc::CanClose ()
 {                                       // if creating an EP, no closing allowed
 if ( CreatingEP )
@@ -153,7 +134,7 @@ if ( GetDocPath () ) {
     char                buff[ 256 ];
 
                                         // any header?
-    if ( IsExtensionAmong ( GetDocPath (), FILEEXT_EEGEPH " " FILEEXT_EEGEPSD " " FILEEXT_EEGEPSE ) ) {
+    if ( IsExtensionAmong ( FILEEXT_EEGEPH " " FILEEXT_EEGEPSD " " FILEEXT_EEGEPSE ) ) {
         is->getline ( buff, 255 );
         buff[255]   = 0;
         sscanf ( buff, "%d %ld %lf", &NumElectrodes, &NumTimeFrames, &SamplingFrequency );
@@ -215,41 +196,6 @@ else {                                  // new file -> choose how to create it
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // try to open a standard deviation / error
-if ( ! (   ExtensionIs ( FILEEXT_EEGEPSE ) 
-        || ExtensionIs ( FILEEXT_EEGEPSD ) ) ) {
-
-    TFileName           filesde;
-    int                 ne              = 0;
-    int                 ntf             = 0;
-    double              sf              = 0;
-
-    for ( int sde = 0; sde < 2; sde++ ) {
-
-        StringCopy      ( filesde, GetDocPath() );
-        ReplaceExtension( filesde, sde == 0 ? FILEEXT_EEGEPSE : FILEEXT_EEGEPSD );
-
-        if ( CanOpenFile ( filesde ) ) {
-
-            ReadFromHeader ( filesde, ReadNumElectrodes,     &ne  );
-            ReadFromHeader ( filesde, ReadNumTimeFrames,     &ntf );
-            ReadFromHeader ( filesde, ReadSamplingFrequency, &sf  );
-
-            if (   ne  == NumElectrodes 
-                && ntf == NumTimeFrames 
-                && sf  == SamplingFrequency ) {
-
-                SDEDoc  = (TTracksDoc*) CartoolDocManager->OpenDoc ( filesde, dtOpenOptions );
-
-                SDEDoc->AddLink ( this );
-
-                SDEDoc->GetViewList ()->WindowMinimize ();
-
-                break;
-                }
-            }
-        } // for sde
-    }
 
 return true;
 }
@@ -297,32 +243,11 @@ else
 //----------------------------------------------------------------------------
 void    TEegCartoolEpDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float>& buff, int tfoffset )
 {
-size_t              numtf           = tf2 - tf1 + 1;
+long                numtf           = tf2 - tf1 + 1;
 
 for ( int el = 0; el < NumElectrodes; el++ )
 
     CopyVirtualMemory ( buff[ el ] + tfoffset, Tracks[ el ] + tf1, numtf * Tracks.AtomSize () );
-}
-
-
-//----------------------------------------------------------------------------
-bool    TEegCartoolEpDoc::IsStandDevAvail ()
-{
-return  SDEDoc != 0;
-}
-
-
-void    TEegCartoolEpDoc::GetStandDev ( long tf1, long tf2, TArray2<float>& buff, int tfoffset, const TRois* rois )
-{
-if ( IsStandDevAvail () )
-
-    SDEDoc->GetTracks   (   tf1,                tf2, 
-                            buff,               tfoffset,
-                            AtomTypeUseCurrent,
-                            NoPseudoTracks,
-                            ReferenceAsInFile,        0,
-                            rois 
-                        );
 }
 
 

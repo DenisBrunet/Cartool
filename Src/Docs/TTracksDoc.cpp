@@ -169,6 +169,8 @@ if ( ! IsOpen () ) {
 
     InitDateTime    ();
 
+    InitSD          ();                 // optional Standard Deviation / Error data
+
                                         // not for all files for the moment
 //  CheckElectrodesNamesDuplicates ();
                                         // safety: check offsets are not null
@@ -249,7 +251,7 @@ if ( ! ( IsDirty () || force ) )
     return  true;
 
 
-if ( ! IsExtensionAmong ( GetDocPath (), AllCommitTracksExt ) ) {
+if ( ! IsExtensionAmong ( AllCommitTracksExt ) ) {
     ShowMessage (   "Can not save with this file extension!" NewLine 
                     "Try one of these extensions " AllCommitTracksExt, 
                     "Saving Tracks", ShowMessageWarning );
@@ -602,7 +604,7 @@ else {
                                         // Consider some special cases
 
                                         // .t .p .sd etc...
-if ( IsExtensionAmong ( filename, SpecialFilesInfix ) ) {
+if ( crtl::IsExtensionAmong ( filename, SpecialFilesInfix ) ) {
 
     ExtraContentType    = TracksContentSpecialInfix;
 
@@ -992,6 +994,72 @@ if ( SamplingFrequency > 0 ) {          // either high SF, or a SF that gives no
 
 
 //----------------------------------------------------------------------------
+                                        // See if a buddy file corresponding to either SE or SD exists, and load it in memory (previous way was to open it as a document)
+                                        // Buddy files can now have 4 different syntaxes (first 2 are new way), instead of 2 previously (last 2 are old way)
+void    TTracksDoc::InitSD ()
+{
+                                        // any recognized SD or SE configuration
+static TStringGrep  grepeegsdse (   "("
+                                        "\\.(" InfixSE "|" InfixSD ")\\.([A-Za-z]+)$"
+                                    "|"
+                                        "\\.(" FILEEXT_EEGEPSE "|" FILEEXT_EEGEPSD ")$"
+                                    ")", GrepOptionDefaultFiles );
+
+                                        // any recognized Mean configuration ("Average" is not used since long)
+static TStringGrep  grepeegmean ( "\\." InfixMean "\\.([A-Za-z]+)$", GrepOptionDefaultFiles );
+
+                                        // no SD on a SD file itself, avoiding recursion
+if ( grepeegsdse.Matched ( GetDocPath () ) )
+    return;
+
+
+TFileName           filesd;
+
+for ( int sdi = 0; sdi < 4; sdi++ ) {
+
+    filesd  = GetDocPath ();
+                                        // Checking for various buddy files configurations:
+
+    if      ( sdi == 0 ) {              // file.Mean.ext    -> file.SE.ext
+        if ( grepeegmean.Matched ( GetDocPath () ) )    StringReplace   ( filesd, InfixMean, InfixSE );
+        else                                            continue;
+        }
+    else if ( sdi == 1 ) {              // file.Mean.ext    -> file.SD.ext
+        if ( grepeegmean.Matched ( GetDocPath () ) )    StringReplace   ( filesd, InfixMean, InfixSD );
+        else                                            continue;
+        }
+                                        // file.ext         -> file.EPSE
+    else if ( sdi == 2 )                                ReplaceExtension( filesd, FILEEXT_EEGEPSE );
+
+                                        // file.ext         -> file.EPSD
+    else if ( sdi == 3 )                                ReplaceExtension( filesd, FILEEXT_EEGEPSD );
+
+                                        // Trying to open file and see?
+    TOpenDoc<TTracksDoc>    SDEDoc ( filesd, OpenDocHidden );
+
+    if ( SDEDoc.IsNotOpen () )
+        continue;
+
+                                        // Is candidate compatible with current EEG?
+    if (   SDEDoc->GetNumElectrodes     () == NumElectrodes 
+        && SDEDoc->GetNumTimeFrames     () == NumTimeFrames 
+        && SDEDoc->GetSamplingFrequency () == SamplingFrequency ) {
+
+        SDEDoc->GetTracks   (   0,                  NumTimeFrames - 1, 
+                                SDBuff,             0,
+                                AtomTypeUseCurrent,
+                                NoPseudoTracks,
+                                ReferenceAsInFile,  0,
+                                0 
+                            );
+
+        break;
+        }
+    } // for sdi
+}
+
+
+//----------------------------------------------------------------------------
                                         // Default function opens the document and retrieves the requested variable
                                         // This is a lengthy but safe approach
                                         // Another benefit is that the Open function usually tries to select the first meaningful session of the file
@@ -1143,6 +1211,8 @@ if ( tracksview ) {
 UpdateTitle ();
 }
 
+
+//----------------------------------------------------------------------------
                                         // Default update with current sequence #, if any
 void    TTracksDoc::UpdateTitle ()
 {
@@ -1655,6 +1725,33 @@ if ( pseudotracks ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // optional ROI-ing
+if ( rois )
+
+    rois->Average ( buff, tfoffset, tfoffset + numtf - 1, FilterTypeMean );
+}
+
+
+//----------------------------------------------------------------------------
+void    TTracksDoc::GetStandDev ( long tf1, long tf2, TArray2<float>& buff, int tfoffset, const TRois* rois )   const
+{
+if ( ! IsStandDevAvail () ) {
+    buff.ResetMemory ();
+    return;
+    }
+
+
+long                numtf           = tf2 - tf1 + 1;
+
+                                        // Mimick GetTracks by also adjusting the buffer size if needed
+buff.Resize (   AtLeast ( buff.GetDim1 (), NumElectrodes ),
+                AtLeast ( buff.GetDim2 (), (int) numtf   )  );
+
+                                        // All SD data is already loaded into our own buffer, just copy the requested bits
+for ( int el = 0; el < NumElectrodes; el++ )
+
+    CopyVirtualMemory ( buff[ el ] + tfoffset, SDBuff[ el ] + tf1, numtf * SDBuff.AtomSize () );
+
+                                        // Mimick GetTracks by also computing an optional ROIs
 if ( rois )
 
     rois->Average ( buff, tfoffset, tfoffset + numtf - 1, FilterTypeMean );

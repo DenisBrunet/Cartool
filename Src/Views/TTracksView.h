@@ -453,8 +453,8 @@ protected:
     void                ReloadBuffers               ();
     virtual bool        IsStandDevAvail             ()                          const   { return ShowSD && EEGDoc->IsStandDevAvail (); }
     virtual void        ResetScaleTracks            ( const TSelection *sel = 0 );
-    double              ScalingContrastToColorTable ( double scalingcontrast )  const   { return    0.1 + 999.9 * scalingcontrast * scalingcontrast; }
-    double              ColorTableToScalingContrast ( double contrast        )  const   { return    sqrt ( ( contrast - 0.1 ) / 999.9 ); }
+    double              ScalingContrastToColorTable ( double scalingcontrast )  const   { return 0.1 + 999.9 * scalingcontrast * scalingcontrast; }
+    double              ColorTableToScalingContrast ( double contrast        )  const   { return sqrt ( ( contrast - 0.1 ) / 999.9 ); }
 
 
     void                UpdateTimeRange             ( TArray2<float> &data, TSelection &goodtf );

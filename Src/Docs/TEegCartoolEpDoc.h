@@ -30,21 +30,16 @@ public:
 
 
     bool            CanClose            ();
-    bool            Close	            ();
     bool            IsOpen              ()  const           { return NumElectrodes > 0; }
     bool            Open 	            ( int mode, const char* path = 0 );
 
 
     static bool     ReadFromHeader      ( const char* file, ReadFromHeaderType what, void* answer );
     void            ReadRawTracks       ( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0 )                                  final;
-    void            GetStandDev         ( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0, const TRois* rois = 0 )           final;
-    bool            IsStandDevAvail     ()                                                                                              final;
     void            SetReferenceType    ( ReferenceType ref, const char* tracks = 0, const TStrings* elnames = 0, bool verbose = true ) final;
 
 
 protected:
-
-    TTracksDoc*     SDEDoc;         // points to the Standard Deviation
 
     TTracks<float>  Tracks;
     bool            CreatingEP;

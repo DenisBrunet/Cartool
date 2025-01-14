@@ -71,7 +71,8 @@ public:
     virtual bool        CanSync             ( owl::TWindow* towin ) const;
 
     virtual const char* GetDefaultExtension ()                              { return GetTemplate ()->GetDefaultExt (); }
-    virtual bool        ExtensionIs         ( const char* ext )     const   { return IsExtension ( GetDocPath (), ext ); /*StringIs ( GetDefaultExtension (), ext );*/  }
+    virtual bool        ExtensionIs         ( const char* ext )     const   { return crtl::IsExtension      ( GetDocPath (), ext ); /*StringIs ( GetDefaultExtension (), ext );*/  }
+    virtual bool        IsExtensionAmong    ( const char* exts )    const   { return crtl::IsExtensionAmong ( GetDocPath (), exts ); }
 
     virtual char*       GetBaseFileName     ( char* basefilename )  const;  // the base name to be used for any processing ouput (removing extension, caring for mff directory...)
 

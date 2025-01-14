@@ -184,37 +184,37 @@ else {                                  // create -> ask which files to link thr
 
         char*   tof     = getfiles[ i ];
 
-        if ( IsExtensionAmong ( tof, AllEegFreqFilesExt ) ) {
+        if ( crtl::IsExtensionAmong ( tof, AllEegFreqFilesExt ) ) {
             lm.leeg.Add ( tof );
             continue;
             }
 
-        if ( IsExtensionAmong ( tof, AllCoordinatesFilesExt ) ) {
+        if ( crtl::IsExtensionAmong ( tof, AllCoordinatesFilesExt ) ) {
             lm.lxyz.Add ( tof );
             continue;
             }
 
-        if ( IsExtensionAmong ( tof, AllSolPointsFilesExt ) ) {
+        if ( crtl::IsExtensionAmong ( tof, AllSolPointsFilesExt ) ) {
             lm.lsp.Add ( tof );
             continue;
             }
 
-        if ( IsExtensionAmong ( tof, AllInverseFilesExt ) ) {
+        if ( crtl::IsExtensionAmong ( tof, AllInverseFilesExt ) ) {
             lm.lis.Add ( tof );
             continue;
             }
 
-        if ( IsExtensionAmong ( tof, AllRisFilesExt ) ) {
+        if ( crtl::IsExtensionAmong ( tof, AllRisFilesExt ) ) {
             lm.lris.Add ( tof );
             continue;
             }
 
-        if ( IsExtensionAmong ( tof, AllRoisFilesExt ) ) {
+        if ( crtl::IsExtensionAmong ( tof, AllRoisFilesExt ) ) {
             lm.lrois.Add ( tof );
             continue;
             }
 
-        if ( IsExtensionAmong ( tof, AllMriFilesExt ) ) {
+        if ( crtl::IsExtensionAmong ( tof, AllMriFilesExt ) ) {
             lm.lmri.Add ( tof );
             continue;
             }
@@ -1278,35 +1278,35 @@ enum                LmFilesAdded { addeeg, addfreq, addxyz, addsp, addis, addris
 LmFilesAdded        adding;
 
 
-if      ( IsExtensionAmong ( buff, AllEegFilesExt ) ) {
+if      ( crtl::IsExtensionAmong ( buff, AllEegFilesExt ) ) {
     adding = addeeg;
     leeg.Add ( buff );
     }
-else if ( IsExtensionAmong ( buff, AllFreqFilesExt ) ) {
+else if ( crtl::IsExtensionAmong ( buff, AllFreqFilesExt ) ) {
     adding = addfreq;
     leeg.Add ( buff );
     }
-else if ( IsExtensionAmong ( buff, AllCoordinatesFilesExt ) ) {
+else if ( crtl::IsExtensionAmong ( buff, AllCoordinatesFilesExt ) ) {
     adding = addxyz;
     lxyz.Add ( buff );
     }
-else if ( IsExtensionAmong ( buff, AllSolPointsFilesExt ) ) {
+else if ( crtl::IsExtensionAmong ( buff, AllSolPointsFilesExt ) ) {
     adding = addsp;
     lsp .Add ( buff );
     }
-else if ( IsExtensionAmong ( buff, AllInverseFilesExt ) ) {
+else if ( crtl::IsExtensionAmong ( buff, AllInverseFilesExt ) ) {
     adding = addis;
     lis .Add ( buff );
     }
-else if ( IsExtensionAmong ( buff, AllRisFilesExt ) ) {
+else if ( crtl::IsExtensionAmong ( buff, AllRisFilesExt ) ) {
     adding = addris;
     lris.Add ( buff );
     }
-else if ( IsExtensionAmong ( buff, AllRoisFilesExt ) ) {
+else if ( crtl::IsExtensionAmong ( buff, AllRoisFilesExt ) ) {
     adding = addroi;
     lrois.Add ( buff );
     }
-else if ( IsExtensionAmong ( buff, AllMriFilesExt ) ) {
+else if ( crtl::IsExtensionAmong ( buff, AllMriFilesExt ) ) {
     adding = addmri;
     lmri.Add ( buff );
     }

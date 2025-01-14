@@ -1346,9 +1346,9 @@ return  StringIs ( ToExtension ( filename ), ext );
 }
 
 
-bool    IsExtensionAmong ( const char* filename, const char* ext )
+bool    IsExtensionAmong ( const char* filename, const char* exts )
 {
-return  IsStringAmong ( ToExtension ( filename ), ext );
+return  IsStringAmong ( ToExtension ( filename ), exts );
 }
 
 

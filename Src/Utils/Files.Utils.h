@@ -139,7 +139,7 @@ char*               RemoveExtension         ( char* filename, int num = 1 );
 char*               AddExtension            ( char* filename, const char* ext );
 char*               AddExtensionFromFile    ( char* filename, char* filewithext );
 bool                IsExtension             ( const char* filename, const char* ext );
-bool                IsExtensionAmong        ( const char* filename, const char* ext );
+bool                IsExtensionAmong        ( const char* filename, const char* exts );
 
 
 //----------------------------------------------------------------------------
