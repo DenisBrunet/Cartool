@@ -47,7 +47,7 @@ if ( ! ( IsDirty () || force ) )
 
 
                                         // downgrading the els format?
-if ( ! IsExtension ( (char *) GetDocPath (), (char *) GetDefaultExtension () ) ) {
+if ( ! IsExtension ( GetDefaultExtension () ) ) {
 
     if ( ! GetAnswerFromUser ( "Do you really want to save this document to another format?\n(some informations might be either lost or missing in the new format)\n\nIf you proceed with this operation, it is advised to close and reopen the new file.", "Save As" ) )
         return  true;

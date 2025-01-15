@@ -282,7 +282,7 @@ if ( IsGeodesicsMFFPath ( basefilename ) ) {
                                         // remove the "\signal*.bin" part
     RemoveFilename ( basefilename );
                                         // also remove any useless .mff extension
-    if ( IsExtension ( basefilename, FILEEXT_EEGMFFDIR ) )
+    if ( crtl::IsExtension ( basefilename, FILEEXT_EEGMFFDIR ) )
         RemoveExtension ( basefilename );
     }
 else

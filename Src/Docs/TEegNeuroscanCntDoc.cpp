@@ -223,7 +223,7 @@ switch ( what ) {
         NumElectrodesInFile     = setup.nchannels + ( setup.ContinousType == ContinousType2ExtraChannels ? 2 : 0 );
         NumElectrodes           = setup.nchannels;
 
-        if ( IsExtension ( file, FILEEXT_EEGNSCNT ) )
+        if ( crtl::IsExtension ( file, FILEEXT_EEGNSCNT ) )
             NumTimeFrames           = ( setup.EventTablePos - ( sizeof ( setup ) + NumElectrodes * sizeof ( TNsElectLoc ) ) ) / ( sizeof ( short ) * NumElectrodesInFile );
         else
             NumTimeFrames           = setup.pnts;

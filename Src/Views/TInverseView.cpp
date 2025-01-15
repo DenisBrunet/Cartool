@@ -235,7 +235,7 @@ InitMri ();
 SetOrient ( MRIDocBackg );
 
 
-OnlyRis             = EEGDoc->ExtensionIs ( FILEEXT_RIS );
+OnlyRis             = EEGDoc->IsExtension ( FILEEXT_RIS );
 
 if ( OnlyRis ) {                        // not allowed to GetIs, cause EEG is RIS here !
 

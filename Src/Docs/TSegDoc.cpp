@@ -73,7 +73,7 @@ switch ( what ) {
 
     case ReadNumElectrodes :
 
-        if ( IsExtension ( file, FILEEXT_SEG ) )
+        if ( crtl::IsExtension ( file, FILEEXT_SEG ) )
             sscanf ( buff, "%*d %d", &numfiles );
         else
             sscanf ( buff, "%d", &numfiles );
@@ -90,7 +90,7 @@ switch ( what ) {
 
     case ReadNumTimeFrames :
 
-        if ( IsExtension ( file, FILEEXT_SEG ) )
+        if ( crtl::IsExtension ( file, FILEEXT_SEG ) )
             sscanf ( buff, "%*d %*d %d", (int *) answer );
         else
             sscanf ( buff, "%*d %d", (int *) answer );
@@ -99,7 +99,7 @@ switch ( what ) {
 
     case ReadNumClusters :
 
-        if ( IsExtension ( file, FILEEXT_SEG ) )
+        if ( crtl::IsExtension ( file, FILEEXT_SEG ) )
             sscanf ( buff, "%d", (int *) answer );
         else
             return  false;
@@ -137,7 +137,7 @@ if ( GetDocPath() ) {
 
     ifs.getline ( buff, 256 );
 
-    if ( ExtensionIs ( FILEEXT_SEG ) )
+    if ( IsExtension ( FILEEXT_SEG ) )
         sscanf ( buff, "%d %d %d", &NumClusters, &NumFiles, &NumTimeFrames );
     else {
         NumClusters     = 1;
@@ -190,7 +190,7 @@ if ( GetDocPath() ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // set first cluster
-    if ( ExtensionIs ( FILEEXT_SEG ) )
+    if ( IsExtension ( FILEEXT_SEG ) )
 
         StartingTimeFrame   = 0;
     else {

@@ -65,7 +65,7 @@ if ( ifs.fail() ) return false;
 char            buff[ 256 ];
 
 
-if ( IsExtension  ( file, FILEEXT_EEGEP ) ) {
+if ( crtl::IsExtension  ( file, FILEEXT_EEGEP ) ) {
 
     switch ( what ) {
 
@@ -170,10 +170,10 @@ if ( GetDocPath () ) {
                                         // fill product info
     StringCopy ( CompanyName, CartoolRegistryCompany );
 
-    if      ( ExtensionIs ( FILEEXT_EEGEP   ) ) StringCopy ( ProductName, FILEEXT_EEGEP   );
-    else if ( ExtensionIs ( FILEEXT_EEGEPH  ) ) StringCopy ( ProductName, FILEEXT_EEGEPH  );
-    else if ( ExtensionIs ( FILEEXT_EEGEPSD ) ) StringCopy ( ProductName, FILEEXT_EEGEPSD );
-    else if ( ExtensionIs ( FILEEXT_EEGEPSE ) ) StringCopy ( ProductName, FILEEXT_EEGEPSE );
+    if      ( IsExtension ( FILEEXT_EEGEP   ) ) StringCopy ( ProductName, FILEEXT_EEGEP   );
+    else if ( IsExtension ( FILEEXT_EEGEPH  ) ) StringCopy ( ProductName, FILEEXT_EEGEPH  );
+    else if ( IsExtension ( FILEEXT_EEGEPSD ) ) StringCopy ( ProductName, FILEEXT_EEGEPSD );
+    else if ( IsExtension ( FILEEXT_EEGEPSE ) ) StringCopy ( ProductName, FILEEXT_EEGEPSE );
     Version             = 1;
     Subversion          = NumElectrodes;
 
@@ -185,8 +185,8 @@ if ( GetDocPath () ) {
 
 else {                                  // new file -> choose how to create it
                                         // stand. dev. not created here!
-    if ( ExtensionIs ( FILEEXT_EEGEPSD )
-      || ExtensionIs ( FILEEXT_EEGEPSE ) ) {
+    if ( IsExtension ( FILEEXT_EEGEPSD )
+      || IsExtension ( FILEEXT_EEGEPSE ) ) {
         return false;
         }
 
@@ -231,8 +231,8 @@ return true;
 //----------------------------------------------------------------------------
 void        TEegCartoolEpDoc::SetReferenceType ( ReferenceType ref, const char* tracks, const TStrings* elnames, bool verbose )
 {
-if ( ExtensionIs ( FILEEXT_EEGEPSD )
-  || ExtensionIs ( FILEEXT_EEGEPSE ) )  // stand. err.: no average reference
+if ( IsExtension ( FILEEXT_EEGEPSD )
+  || IsExtension ( FILEEXT_EEGEPSE ) )  // stand. err.: no average reference
 
     TTracksDoc::SetReferenceType ( ReferenceAsInFile );
 else

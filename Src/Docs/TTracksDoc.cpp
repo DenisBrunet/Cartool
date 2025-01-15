@@ -135,7 +135,7 @@ if ( ! IsOpen () ) {
 
                                         // here, we can define this buffer, needed in InitLimits
     if ( dynamic_cast<TFreqDoc*> (this ) )
-        BuffDiss.Resize ( dynamic_cast< TFreqDoc* > (this )->GetNumFrequencies (), TotalElectrodes, 1 );
+        BuffDiss.Resize ( dynamic_cast<TFreqDoc*> (this )->GetNumFrequencies (), TotalElectrodes, 1 );
     else
         BuffDiss.Resize ( 1, TotalElectrodes, 1 );
 
@@ -261,10 +261,10 @@ if ( ! IsExtensionAmong ( AllCommitTracksExt ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Special case for RIS data
-TRisDoc*            RISDoc          = dynamic_cast< TRisDoc* > ( this );
+TRisDoc*            RISDoc          = dynamic_cast<TRisDoc*> ( this );
 
                                         // We need to disambiguate how to write vectorial data: either as vectors or as norm
-if ( RISDoc && ExtensionIs ( FILEEXT_RIS ) && IsVector ( AtomTypeUseOriginal ) )
+if ( RISDoc && IsExtension ( FILEEXT_RIS ) && IsVector ( AtomTypeUseOriginal ) )
                                         // we could also suggest Scalar without filtering
     if ( GetOptionFromUser (    "Saving Vectorial RIS file as:" NewLine 
                                 NewLine 
@@ -507,11 +507,9 @@ void    TTracksDoc::InitContentType ()
 TFileName           filename;
 TFileName           ext2;
 
-StringCopy      ( filename, GetTitle () );
+StringCopy      ( filename, GetDocPath () );
 RemoveExtension ( filename );
 GetExtension    ( ext2, filename );
-
-//DBGM2 ( filename, ext2, GetTitle () );
 
 
 bool                lookforcutpaste         = false;    // file can be the result of "Cut & Paste", like exporting Max of GFP
@@ -521,9 +519,9 @@ bool                lookfortemplates        = false;    // file can hold templat
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Test all classes derived from TTracksDoc first
 
-if      ( dynamic_cast< TFreqDoc* > ( this ) ) {
+if      ( dynamic_cast<TFreqDoc*> ( this ) ) {
 
-    TFreqDoc*       freqdoc     = dynamic_cast< TFreqDoc * > ( this );
+    TFreqDoc*       freqdoc     = dynamic_cast<TFreqDoc*> ( this );
 
     ContentType         = ContentTypeFreq;
 
@@ -539,7 +537,7 @@ if      ( dynamic_cast< TFreqDoc* > ( this ) ) {
     }
 
 
-else if ( dynamic_cast< TRisDoc* > ( this ) ) {
+else if ( dynamic_cast<TRisDoc*> ( this ) ) {
 
     ContentType         = ContentTypeRis;
     Dim2Type            = DimensionTypeTime;
@@ -549,13 +547,13 @@ else if ( dynamic_cast< TRisDoc* > ( this ) ) {
     }
 
 
-else if ( dynamic_cast< TSegDoc* > ( this ) ) {
+else if ( dynamic_cast<TSegDoc*> ( this ) ) {
 
-    if      ( IsExtension ( GetTitle (), FILEEXT_SEG  ) ) {
+    if      ( IsExtension ( FILEEXT_SEG  ) ) {
         ContentType         = ContentTypeSeg;
         Dim2Type            = DimensionTypeTime;
         }
-    else if ( IsExtension ( GetTitle (), FILEEXT_DATA ) ) {
+    else if ( IsExtension ( FILEEXT_DATA ) ) {
         ContentType         = ContentTypeData;
 
         Dim2Type            = StringIs ( ext2, InfixError ) ? DimensionTypeSegmentation : DimensionTypeTime;
@@ -563,13 +561,13 @@ else if ( dynamic_cast< TSegDoc* > ( this ) ) {
     }
 
 
-else if ( dynamic_cast< TTracksDoc* > ( this ) ) {
+else if ( dynamic_cast<TTracksDoc*> ( this ) ) {
                                         // all derived class have been tested above
     ContentType         = ContentTypeEeg;
     Dim2Type            = DimensionTypeTime;
 
                                         // refine the type of EEG
-    if      ( dynamic_cast< TEegCartoolEpDoc  * > ( this ) ) {
+    if      ( dynamic_cast<TEegCartoolEpDoc*> ( this ) ) {
         ExtraContentType    = TracksContentERP;
 
         lookforcutpaste     = true;
@@ -577,9 +575,9 @@ else if ( dynamic_cast< TTracksDoc* > ( this ) ) {
         }
                                         // Sef, Edf files are not quite sure...
                                         // See definition of AllCommitTracksExt for files that can be exported
-    else if (  dynamic_cast< TEegCartoolSefDoc * > ( this )
-            || dynamic_cast< TEegBrainVisionDoc  * > ( this )
-            || IsExtension ( GetTitle (), FILEEXT_EEGEDF ) ) {
+    else if (  dynamic_cast<TEegCartoolSefDoc*>  ( this )
+            || dynamic_cast<TEegBrainVisionDoc*> ( this )
+            || IsExtension ( FILEEXT_EEGEDF ) ) {
                                         // big enough should be Spontaneous, else can't assert if it's an ERP, an Epoch...
         ExtraContentType    = NumTimeFrames >= EegNumPointsWideDisplay ? TracksContentEEGRecording : TracksContentUnknown;
 
@@ -637,7 +635,7 @@ if ( ( StringIs ( ext2, InfixP       )
 
     ExtraContentType    = TracksContentPValues;
 
-    if ( IsExtension ( GetTitle (), FILEEXT_DATA ) )
+    if ( IsExtension ( FILEEXT_DATA ) )
         Dim2Type        = DimensionTypeTemplate;
 
     lookforcutpaste     = false;
@@ -916,7 +914,7 @@ if ( ! needshighpass ) {
 
                                         // 3) Biosemi always need a high pass filter
 //if ( ! needshighpass ) {
-//    needshighpass   = ExtensionIs ( FILEEXT_EEGBDF );
+//    needshighpass   = IsExtension ( FILEEXT_EEGBDF );
 
 
 //DBGV5 ( stats.Average (), stats.SD (), stats.CoV (), stats.Range (), needshighpass, "Avg SD CoV Range -> needshighpass" );
@@ -1184,7 +1182,7 @@ InitMarkers ();
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // save some of the display states, if view exists
                                                                      // should search better for the last/current view of this doc
-TTracksView*        tracksview      = dynamic_cast< TTracksView * > ( GetViewList () );
+TTracksView*        tracksview      = dynamic_cast<TTracksView*> ( GetViewList () );
 
 
 if ( tracksview ) {

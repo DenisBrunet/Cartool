@@ -78,7 +78,7 @@ if ( ! ( IsDirty () || force ) )
     return  true;
 
 
-if ( IsExtension ( (char *) GetDocPath (), FILEEXT_LOC ) ) {
+if ( IsExtension ( FILEEXT_LOC ) ) {
 
     if ( ! GetAnswerFromUser ( "Can not save this type of file!\nShould I rather use file type  '" FILEEXT_SPIRR "'  instead?", GetTitle () ) )
         return  false;
@@ -89,7 +89,7 @@ if ( IsExtension ( (char *) GetDocPath (), FILEEXT_LOC ) ) {
     ReplaceExtension ( filename, FILEEXT_SPIRR );
     SetDocPath       ( filename );
     }
-else if ( ! IsExtension ( (char *) GetDocPath (), (char *) GetDefaultExtension () ) ) {
+else if ( ! IsExtension ( GetDefaultExtension () ) ) {
 
     if ( ! GetAnswerFromUser ( "Do you really want to save this document to another format?\n(some informations might be either lost or missing in the new format)\n\nIf you proceed with this operation, it is advised to close and reopen the new file.", "Save As" ) )
         return  true;
