@@ -314,6 +314,9 @@ limitations under the License.
                                         // "Epoch" or "Concat" or "Concatenate" strings could be used exchangeably
 #define     InfixEpochConcatGrep        "(\\.|_)?" "(Epoch|Concat|Concatenate)s? *[0-9]*" "(\\.|_)?"
 
+                                        // Known extensions don't include locale chars
+#define     InfixAnyExtensionGrep       "\\.([A-Za-z]+)$"
+
                                         // Histograms
 #define     InfixHistogramLong      "Histogram"
 #define     InfixHistogramShort     "Histo"

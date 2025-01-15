@@ -996,15 +996,15 @@ if ( SamplingFrequency > 0 ) {          // either high SF, or a SF that gives no
                                         // Buddy files can now have 4 different syntaxes (first 2 are new way), instead of 2 previously (last 2 are old way)
 void    TTracksDoc::InitSD ()
 {
-                                        // any recognized SD or SE configuration
+                                        // any recognized SD or SE configuration?
 static TStringGrep  grepeegsdse (   "("
-                                        "\\.(" InfixSE "|" InfixSD ")\\.([A-Za-z]+)$"
+                                        "\\.(" InfixSE "|" InfixSD ")( [0-9]+)?" InfixAnyExtensionGrep
                                     "|"
                                         "\\.(" FILEEXT_EEGEPSE "|" FILEEXT_EEGEPSD ")$"
                                     ")", GrepOptionDefaultFiles );
 
                                         // any recognized Mean configuration ("Average" is not used since long)
-static TStringGrep  grepeegmean ( "\\." InfixMean "\\.([A-Za-z]+)$", GrepOptionDefaultFiles );
+static TStringGrep  grepeegmean ( "\\." InfixMean "( [0-9]+)?" InfixAnyExtensionGrep, GrepOptionDefaultFiles );
 
                                         // no SD on a SD file itself, avoiding recursion
 if ( grepeegsdse.Matched ( GetDocPath () ) )
@@ -1013,7 +1013,7 @@ if ( grepeegsdse.Matched ( GetDocPath () ) )
 
 TFileName           filesd;
 
-for ( int sdi = 0; sdi < 4; sdi++ ) {
+for ( int sdi = 0; sdi < 6; sdi++ ) {
 
     filesd  = GetDocPath ();
                                         // Checking for various buddy files configurations:
@@ -1026,11 +1026,17 @@ for ( int sdi = 0; sdi < 4; sdi++ ) {
         if ( grepeegmean.Matched ( GetDocPath () ) )    StringReplace   ( filesd, InfixMean, InfixSD );
         else                                            continue;
         }
+                                        // file.ext         -> file.SE.ext
+    else if ( sdi == 2 )                                PostfixFilename ( filesd, "." InfixSE );
+
+                                        // file.ext         -> file.SD.ext
+    else if ( sdi == 3 )                                PostfixFilename ( filesd, "." InfixSD );
+
                                         // file.ext         -> file.EPSE
-    else if ( sdi == 2 )                                ReplaceExtension( filesd, FILEEXT_EEGEPSE );
+    else if ( sdi == 4 )                                ReplaceExtension( filesd, FILEEXT_EEGEPSE );
 
                                         // file.ext         -> file.EPSD
-    else if ( sdi == 3 )                                ReplaceExtension( filesd, FILEEXT_EEGEPSD );
+    else if ( sdi == 5 )                                ReplaceExtension( filesd, FILEEXT_EEGEPSD );
 
                                         // Trying to open file and see?
     TOpenDoc<TTracksDoc>    SDEDoc ( filesd, OpenDocHidden );

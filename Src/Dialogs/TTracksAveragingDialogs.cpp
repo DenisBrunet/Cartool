@@ -2352,6 +2352,7 @@ TFileName           BaseDir;
 TFileName           BaseFileName;
 TFileName           GroupBaseFileName;
 TFileName           EpochsDir;
+TFileName           TriggerFileName;
 TFileName           fileoutprefix;
 TFileName           fileoutext;
 TFileName           fileoutavg;
@@ -2368,6 +2369,7 @@ TFileName           fileoutsplit;
 TFileName           fileoutsplitmrk;
 TFileName           fileoutmrk;
 TFileName           filefiltered;
+TFileName           file;
 
 
 TSplitStrings       alltriggers;
@@ -2475,8 +2477,8 @@ StringCopy  ( fileoutsplitmrk,  fileoutsplit,                                   
 StringCopy  ( fileoutvrb,       fileoutavg,                                                     ".",    FILEEXT_VRB );
 StringCopy  ( fileoutxyz,       BaseFileName,           "." InfixExcl,                          ".",    usexyz ? ToExtension ( transfer.XyzDocFile ) : FILEEXT_XYZ );
 
-StringCopy  ( fileoutsd,        BaseFileName,                                                   ".",    FILEEXT_EEGEPSD );
-StringCopy  ( fileoutse,        BaseFileName,                                                   ".",    FILEEXT_EEGEPSE );
+StringCopy  ( fileoutsd,        BaseFileName,           "." InfixSD,                            ".",    fileoutext );
+StringCopy  ( fileoutse,        BaseFileName,           "." InfixSE,                            ".",    fileoutext );
 
 
                                         // can create all requested files?
@@ -2757,7 +2759,7 @@ verbose.NextLine ();
 verbose.Put ( "Save average:", SaveAverage );
 verbose.Put ( "Save sum:", SaveSum );
 verbose.Put ( "Save standard deviation:", SaveSD );
-verbose.Put ( "Save standard error:", SaveSE );
+verbose.Put ( "Save standard error:",     SaveSE );
 verbose.Put ( "Save epochs in separate files:", SaveEpochsMultiFiles );
 verbose.Put ( "Save epochs in 1 file:", SaveEpochsSingleFile );
 verbose.NextLine ();
@@ -2766,37 +2768,48 @@ verbose.NextLine ();
 if ( MergeTriggers && SaveAverage )
     verbose.Put ( "Merged file    - Average:", fileoutavg );
 if ( MergeTriggers && SaveSum )
-    verbose.Put ( "Merged file    - Sum:", fileoutsum );
+    verbose.Put ( "Merged file    - Sum:",     fileoutsum );
 
 if ( MergeTriggers && SaveSD )
     verbose.Put ( "Merged file    - Standard Deviation:", fileoutsd );
 if ( MergeTriggers && SaveSE )
-    verbose.Put ( "Merged file    - Standard Error:", fileoutse );
+    verbose.Put ( "Merged file    - Standard Error:",     fileoutse );
 
 if ( MergeTriggers )
     verbose.NextLine ();
 
 
 if ( SplitTriggers ) {
+                                        // sub-directory for split triggers - at that point, we don't know the fill path names
+    TriggerFileName     = BaseDir + "\\" InfixTrigger " *" "\\";
+
+    if ( IsFreqLoop () )    TriggerFileName    += fileoutprefix + "." + FreqName + "." InfixTrigger " *";
+    else                    TriggerFileName    += fileoutprefix                  + "." InfixTrigger " *";
+
 
     if ( SaveAverage ) {
-        sprintf ( buff, "%s\\" InfixTrigger " *\\%s." InfixTrigger " *.%s", (char*) BaseDir, (char*) fileoutprefix, (char*) fileoutext );
-        verbose.Put ( "Split  file(s) - Average:", buff );
+        file    = TriggerFileName + "." + fileoutext;
+
+        verbose.Put ( "Split  file(s) - Average:", file );
         }
 
     if ( SaveSum ) {
-        sprintf ( buff, "%s\\" InfixTrigger " *\\%s." InfixTrigger " *.%s (#epochs).%s", (char*) BaseDir, (char*) fileoutprefix, InfixSum, (char*) fileoutext );
-        verbose.Put ( "Split  file(s) - Sum:", buff );
+        if ( IsFreqLoop () )    file    = TriggerFileName + "." + InfixSum                + "." + fileoutext;
+        else                    file    = TriggerFileName + "." + InfixSum + " (#epochs)" + "." + fileoutext;
+
+        verbose.Put ( "Split  file(s) - Sum:", file );
         }
 
     if ( SaveSD ) {
-        sprintf ( buff, "%s\\" InfixTrigger " *\\%s." InfixTrigger " *.%s", (char*) BaseDir, (char*) fileoutprefix, FILEEXT_EEGEPSD );
-        verbose.Put ( "Split  file(s) - Standard Deviation:", buff );
+        file    = TriggerFileName + "." InfixSD "." + fileoutext;
+
+        verbose.Put ( "Split  file(s) - Standard Deviation:", file );
         }
 
     if ( SaveSE ) {
-        sprintf ( buff, "%s\\" InfixTrigger " *\\%s." InfixTrigger " *.%s", (char*) BaseDir, (char*) fileoutprefix, FILEEXT_EEGEPSE );
-        verbose.Put ( "Split  file(s) - Standard Error:", buff );
+        file    = TriggerFileName + "." InfixSE "." + fileoutext;
+
+        verbose.Put ( "Split  file(s) - Standard Error:", file );
         }
 
     verbose.NextLine ();
@@ -3540,7 +3553,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
         if ( triggerOrigin == EpochOriginTriggerReactionTime )
             (ofstream&) verbose << "Error! Can not compute the epoch origin based on reaction time, tva file is missing!\n"
-                               << "       trigger will be used as the origin\n\n";
+                                << "       trigger will be used as the origin\n\n";
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -4460,7 +4473,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                                         // initialize the output objects
     if ( SaveEpochsSingleFile && ! exp1epoch.IsOpen () && CanOpenFile ( fileout1epoch, CanOpenFileWrite ) ) {
 
-        StringCopy ( exp1epoch.Filename, fileout1epoch );
+        exp1epoch.Filename              = fileout1epoch;
         exp1epoch.SetAtomType ( AtomTypeScalar );
         exp1epoch.NumTracks             = NumElectrodes;
         exp1epoch.NumTime               = INT_MAX;      // still not known here
@@ -4480,7 +4493,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
     if ( SplitTriggers && ! expsplit.IsOpen () && CanOpenFile ( fileoutsplit, CanOpenFileWrite ) ) {
 
-        StringCopy ( expsplit.Filename, fileoutsplit );
+        expsplit.Filename               = fileoutsplit;
         expsplit.SetAtomType ( AtomTypeScalar );
         expsplit.NumTracks              = NumElectrodes;
         expsplit.NumTime                = INT_MAX;
@@ -4996,7 +5009,7 @@ if ( MergeTriggers && ( SaveAverage || SaveSum ) ) {
     if ( SaveAverage ) {
         expavg      = new TExportTracks;
 
-        StringCopy ( expavg->Filename, fileoutavg );
+        expavg->Filename            = fileoutavg;
         expavg->SetAtomType ( AtomTypeScalar );
         expavg->NumTracks           = NumElectrodes;
         expavg->NumTime             = NumTimeFrames;
@@ -5005,7 +5018,7 @@ if ( MergeTriggers && ( SaveAverage || SaveSum ) ) {
         expavg->ElectrodesNames     = ElectrodesNames;
 
 
-        sprintf ( fileoutmrk, "%s.%s", (char*) fileoutavg, FILEEXT_MRK );
+        fileoutmrk  = fileoutavg + "." + FILEEXT_MRK;
 
         if ( writeoriginmrk && durationPre > 0 ) {
             ofstream        ofmrk ( TFileName ( fileoutmrk, TFilenameExtendedPath ) );
@@ -5026,7 +5039,7 @@ if ( MergeTriggers && ( SaveAverage || SaveSum ) ) {
     if ( SaveSum ) {
         expsum      = new TExportTracks;
 
-        StringCopy ( expsum->Filename, fileoutsum );
+        expsum->Filename            = fileoutsum;
         expsum->SetAtomType ( AtomTypeScalar );
         expsum->NumTracks           = NumElectrodes;
         expsum->NumTime             = NumTimeFrames;
@@ -5035,7 +5048,7 @@ if ( MergeTriggers && ( SaveAverage || SaveSum ) ) {
         expsum->ElectrodesNames     = ElectrodesNames;
 
 
-        sprintf ( fileoutmrk, "%s.%s", (char*) fileoutsum, FILEEXT_MRK );
+        fileoutmrk  = fileoutsum + "." + FILEEXT_MRK;
 
         if ( writeoriginmrk && durationPre > 0 ) {
             ofstream        ofmrk ( TFileName ( fileoutmrk, TFilenameExtendedPath ) );
@@ -5070,14 +5083,14 @@ if ( MergeTriggers && ( SaveAverage || SaveSum ) ) {
                                         // save the SD or SE to file
 if ( MergeTriggers && ( SaveSD || SaveSE ) ) {
 
-    TExportTracks    *expsd       = 0;
-    TExportTracks    *expse       = 0;
+    TExportTracks*      expsd       = 0;
+    TExportTracks*      expse       = 0;
 
 
     if ( SaveSD ) {
         expsd   = new TExportTracks;
 
-        StringCopy ( expsd->Filename, fileoutsd );
+        expsd->Filename             = fileoutsd;
         expsd->SetAtomType ( AtomTypeScalar );
         expsd->NumTracks            = NumElectrodes;
         expsd->NumTime              = NumTimeFrames;
@@ -5090,7 +5103,7 @@ if ( MergeTriggers && ( SaveSD || SaveSE ) ) {
     if ( SaveSE ) {
         expse   = new TExportTracks;
 
-        StringCopy ( expse->Filename, fileoutse );
+        expse->Filename             = fileoutse;
         expse->SetAtomType ( AtomTypeScalar );
         expse->NumTracks            = NumElectrodes;
         expse->NumTime              = NumTimeFrames;
@@ -5171,10 +5184,10 @@ if ( SaveEpochsSingleFile && exp1epoch.IsOpen () && totalnumtriggacc > 0 ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool                dosplit         = SplitTriggers && expsplit.IsOpen () && totalnumtriggacc > 0 && (bool) alltriggers;
+bool                dosplittriggers = SplitTriggers && expsplit.IsOpen () && totalnumtriggacc > 0 && (bool) alltriggers;
 
 
-if ( dosplit ) {
+if ( dosplittriggers ) {
 
                                         // set again all variables + the real time length
     expsplit.NumTracks              = NumElectrodes;
@@ -5199,7 +5212,6 @@ if ( dosplit ) {
                                         // open marker file directly, too
     TMarkers            docmarkers ( fileoutsplitmrk );
     char                trigname [ MarkerNameMaxLength ];
-    TFileName           buff2;
     const MarkersList&  markers         = docmarkers.GetMarkersList ();
 
 
@@ -5278,65 +5290,54 @@ if ( dosplit ) {
         verbose.Put ( "Total number of triggers:", numsplittrg );
 
                                         // sub-directory for split triggers
-        sprintf ( buff, "%s\\" InfixTrigger " %s", (char*) BaseDir, trigname );
-        CreatePath ( buff, false );
+        TriggerFileName     = BaseDir + "\\" InfixTrigger " " + trigname + "\\";
+        CreatePath  ( TriggerFileName, false );
 
                                         // set the base name for the current trigger
-        if ( IsFreqLoop () )
-            sprintf ( StringEnd ( buff ), "\\%s.%s." InfixTrigger " %s", (char*) fileoutprefix, FreqName, trigname );
-        else
-            sprintf ( StringEnd ( buff ), "\\%s." InfixTrigger " %s", (char*) fileoutprefix, trigname );
+        if ( IsFreqLoop () )    TriggerFileName    += fileoutprefix + "." + FreqName + "." InfixTrigger " " + trigname;
+        else                    TriggerFileName    += fileoutprefix                  + "." InfixTrigger " " + trigname;
 
 
         if ( SaveAverage ) {
-            sprintf ( buff2, "%s.%s",           buff, (char*) fileoutext );
-            verbose.Put ( "Split  file    - Average:",              buff2 );
+            file    = TriggerFileName + "." + fileoutext;
+
+            verbose.Put ( "Split  file    - Average:",              file );
             }
         if ( SaveSum ) {
-            sprintf ( buff2, "%s.%s (%0d).%s",  buff, InfixSum, numsplittrg, (char*) fileoutext );
-            verbose.Put ( "Split  file    - Sum:",                  buff2 );
+            if ( IsFreqLoop () )    file    = TriggerFileName + "." + InfixSum                                                + "." + fileoutext;
+            else                    file    = TriggerFileName + "." + InfixSum + " (" + IntegerToString ( numsplittrg ) + ")" + "." + fileoutext;
+
+            verbose.Put ( "Split  file    - Sum:",                  file );
             }
         if ( SaveSD ) {
-            sprintf ( buff2, "%s.%s",           buff, FILEEXT_EEGEPSD );
-            verbose.Put ( "Split  file    - Standard Deviation:",   buff2 );
+            file    = TriggerFileName + "." InfixSD "." + fileoutext;
+
+            verbose.Put ( "Split  file    - Standard Deviation:",   file );
             }
         if ( SaveSE ) {
-            sprintf ( buff2, "%s.%s",           buff, FILEEXT_EEGEPSE );
-            verbose.Put ( "Split  file    - Standard Error:",       buff2 );
+            file    = TriggerFileName + "." InfixSE "." + fileoutext;
+
+            verbose.Put ( "Split  file    - Standard Error:",       file );
             }
-
-
 
                                         // no epochs remain for this trigger?
         if ( numsplittrg == 0 )
             continue;
 
                                         // output files - a copy from above (except for the file names, buffers & array indexes)
-        TExportTracks    *expavg      = 0;
-        TExportTracks    *expsum      = 0;
-        TExportTracks    *expsd       = 0;
-        TExportTracks    *expse       = 0;
+        TExportTracks*      expavg      = 0;
+        TExportTracks*      expsum      = 0;
+        TExportTracks*      expsd       = 0;
+        TExportTracks*      expse       = 0;
         
-//        TExportTracks     expepoch;
-//        
-//        StringCopy      ( expepoch.Filename, buff );
-//        AddExtension    ( expepoch.Filename, fileoutext );
-//
-//        expepoch.SetAtomType ( AtomTypeScalar );
-//        expepoch.NumTracks           = NumElectrodes;
-//        expepoch.NumTime             = NumTimeFrames;
-//        expepoch.SamplingFrequency   = SamplingFrequency;
-//        expepoch.SelTracks           = OutputTracks;
-//        expepoch.ElectrodesNames     = ElectrodesNames;
 
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         if ( SaveAverage ) {
+
             expavg      = new TExportTracks;
 
-            StringCopy      ( expavg->Filename, buff );
-            AddExtension    ( expavg->Filename, fileoutext );
-
-
+            expavg->Filename            = TriggerFileName + "." + fileoutext;
             expavg->SetAtomType ( AtomTypeScalar );
             expavg->NumTracks           = NumElectrodes;
             expavg->NumTime             = NumTimeFrames;
@@ -5368,13 +5369,15 @@ if ( dosplit ) {
             }
 
 
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
         if ( SaveSum ) {
+
             expsum      = new TExportTracks;
 
-            if ( IsFreqLoop () )
-                sprintf ( expsum->Filename,  "%s.%s.%s",       buff, InfixSum,              (char*) fileoutext );
-            else
-                sprintf ( expsum->Filename,  "%s.%s (%0d).%s", buff, InfixSum, numsplittrg, (char*) fileoutext );
+            if ( IsFreqLoop () )    expsum->Filename    = TriggerFileName + "." + InfixSum                                                + "." + fileoutext;
+            else                    expsum->Filename    = TriggerFileName + "." + InfixSum + " (" + IntegerToString ( numsplittrg ) + ")" + "." + fileoutext;
+
             expsum->SetAtomType ( AtomTypeScalar );
             expsum->NumTracks           = NumElectrodes;
             expsum->NumTime             = NumTimeFrames;
@@ -5406,10 +5409,13 @@ if ( dosplit ) {
             }
 
 
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
         if ( SaveSD ) {
+
             expsd   = new TExportTracks;
 
-            sprintf ( expsd->Filename,  "%s.%s", buff, FILEEXT_EEGEPSD );
+            expsd->Filename             = TriggerFileName + "." InfixSD "." + fileoutext;
             expsd->SetAtomType ( AtomTypeScalar );
             expsd->NumTracks            = NumElectrodes;
             expsd->NumTime              = NumTimeFrames;
@@ -5419,10 +5425,13 @@ if ( dosplit ) {
             }
 
 
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
         if ( SaveSE ) {
+
             expse   = new TExportTracks;
 
-            sprintf ( expse->Filename,  "%s.%s", buff, FILEEXT_EEGEPSE );
+            expse->Filename             = TriggerFileName + "." InfixSE "." + fileoutext;
             expse->SetAtomType ( AtomTypeScalar );
             expse->NumTracks            = NumElectrodes;
             expse->NumTime              = NumTimeFrames;
@@ -5432,35 +5441,39 @@ if ( dosplit ) {
             }
 
 
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
         for ( int t = 0; t < NumTimeFrames; t++ )
         for ( int c = 0; c < NumElectrodes; c++ ) {
 
             avg     = Sum ( c, t ) / numsplittrg;
 
-            sd      = sqrt ( fabsl ( (            SumSqr ( c, t ) 
-                                       - Square ( Sum    ( c, t ) ) / numsplittrg ) 
-                                     / NonNull ( numsplittrg - 1 ) 
-                                   ) 
+            sd      = sqrt ( abs ( (            SumSqr ( c, t ) 
+                                     - Square ( Sum    ( c, t ) ) / numsplittrg ) 
+                                   / NonNull ( numsplittrg - 1 ) 
+                                 ) 
                            );
 
-            se      = sd / sqrt ( (double) numsplittrg );
+            se      = sd / sqrt ( numsplittrg );
 
 
-            if ( SaveSum     )  expsum  ->Write ( (float) Sum ( c, t )  );
-            if ( SaveAverage )  expavg  ->Write ( (float) avg           );
-            if ( SaveSD      )  expsd   ->Write ( (float) sd            );
-            if ( SaveSE      )  expse   ->Write ( (float) se            );
+            if ( expavg )   expavg->Write ( (float) avg           );
+            if ( expsum )   expsum->Write ( (float) Sum ( c, t )  );
+            if ( expsd  )   expsd ->Write ( (float) sd            );
+            if ( expse  )   expse ->Write ( (float) se            );
             }
 
 
-        if ( expavg    )    delete  expavg;
-        if ( expsum    )    delete  expsum;
-        if ( expsd     )    delete  expsd;
-        if ( expse     )    delete  expse;
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+        if ( expavg )   delete  expavg;
+        if ( expsum )   delete  expsum;
+        if ( expsd  )   delete  expsd;
+        if ( expse  )   delete  expse;
 
         } // for alltriggers
 
-    } // dosplit
+    } // dosplittriggers
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -5513,17 +5526,20 @@ if ( IsFreqLoop () && IsLastFreq () ) {
 
 
     if ( SaveSD ) {
-        sprintf ( templ, "%s\\*.%s", (char*) BaseDir, FILEEXT_EEGEPSD );
+        templ   = BaseDir + "\\*." InfixSD "." + fileoutext;
+
         MergeTracksToFreqFiles ( templ, FreqType );
         }
 
     if ( SaveSE ) {
-        sprintf ( templ, "%s\\*.%s", (char*) BaseDir, FILEEXT_EEGEPSE );
+        templ   = BaseDir + "\\*." InfixSE "." + fileoutext;
+
         MergeTracksToFreqFiles ( templ, FreqType );
         }
 
     if ( SaveSum ) {
-        sprintf ( templ, "%s\\*." InfixSum ".%s", (char*) BaseDir, (char*) fileoutext );
+        templ   = BaseDir + "\\*." InfixSum "." + fileoutext;
+
         MergeTracksToFreqFiles ( templ, FreqType, fileoutsum );
                                         // re-order results
         if ( ignorepolarity )
@@ -5531,7 +5547,8 @@ if ( IsFreqLoop () && IsLastFreq () ) {
         }
 
     if ( SaveAverage ) {
-        sprintf ( templ, "%s\\*.%s", (char*) BaseDir, (char*) fileoutext );
+        templ   = BaseDir + "\\*." + fileoutext;
+
         MergeTracksToFreqFiles ( templ, FreqType, fileoutavg );
                                         // re-order results
         if ( ignorepolarity )
@@ -5539,25 +5556,28 @@ if ( IsFreqLoop () && IsLastFreq () ) {
         }
 
 
-    if ( dosplit ) {
+    if ( dosplittriggers ) {
                                         // browse each trigger separately
         for ( int trig = 0; trig < alltriggers.GetNumTokens (); trig++ ) {
 
                                         // sub-directory for split triggers
-            sprintf ( buff, "%s\\" InfixTrigger " %s", (char*) BaseDir, alltriggers[ trig ] );
+            file    = BaseDir + "\\" InfixTrigger " " + alltriggers[ trig ];
 
             if ( SaveSD ) {
-                sprintf ( templ, "%s\\*.%s", buff, FILEEXT_EEGEPSD );
+                templ   = file + "\\*." InfixSD "." + fileoutext;
+
                 MergeTracksToFreqFiles ( templ, FreqType );
                 }
 
             if ( SaveSE ) {
-                sprintf ( templ, "%s\\*.%s", buff, FILEEXT_EEGEPSE );
+                templ   = file + "\\*." InfixSE "." + fileoutext;
+
                 MergeTracksToFreqFiles ( templ, FreqType );
                 }
 
             if ( SaveSum ) {
-                sprintf ( templ, "%s\\*." InfixSum ".%s", buff, (char*) fileoutext );
+                templ   = file + "\\*." InfixSum "." + fileoutext;
+
                 MergeTracksToFreqFiles ( templ, FreqType, freqfile );
                                         // re-order results
                 if ( ignorepolarity )
@@ -5565,7 +5585,8 @@ if ( IsFreqLoop () && IsLastFreq () ) {
                 }
 
             if ( SaveAverage ) {
-                sprintf ( templ, "%s\\*.%s", buff, (char*) fileoutext );
+                templ   = file + "\\*." + fileoutext;
+
                 MergeTracksToFreqFiles ( templ, FreqType, freqfile );
                                         // re-order results
                 if ( ignorepolarity )
@@ -5573,7 +5594,7 @@ if ( IsFreqLoop () && IsLastFreq () ) {
                 }
             }
 
-        } // dosplit
+        } // dosplittriggers
 
     } // IsLastFreq
 
@@ -5595,7 +5616,7 @@ if ( openauto ) {
         }
 
 
-    if ( dosplit ) {
+    if ( dosplittriggers ) {
 
         char            trigname [ MarkerNameMaxLength ];
         TFileName       trigfile;
@@ -5623,7 +5644,7 @@ if ( openauto ) {
                 trigfile.Open ();
                 }
             } // for trig
-        } // dosplit
+        } // dosplittriggers
 
                                         // open epochs only if 1 file, and if average was not computed
     if ( SaveEpochsSingleFile && ! IsFreqLoop ()
