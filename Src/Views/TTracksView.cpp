@@ -3439,10 +3439,12 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                     LineColor.GLize ( 0 );
 
                     glBegin ( GL_LINES );
+
                     for ( tobuff = EegBuff[ st ] + minp, p = minp; p <= maxp; p++, tobuff++ ) {
                         glVertex2f ( p,     *tobuff - OffsetTracks );
                         glVertex2f ( p + 1, *tobuff - OffsetTracks );
                         }
+
                     glEnd();
                     } // SDFilledTransparent, SDFilledOpaque
 
@@ -3452,12 +3454,14 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                     glEnable        ( GL_LINE_STIPPLE );
 
                     glBegin ( GL_LINES );
+
                     for ( tobuff = EegBuff[ st ] + minp, tosdbuff = SdBuff[ st ] + minp, p = minp; p <= maxp; p++, tobuff++, tosdbuff++ ) {
                         glVertex2f ( p,     *tobuff - *tosdbuff - OffsetTracks );
                         glVertex2f ( p + 1, *tobuff - *tosdbuff - OffsetTracks );
                         glVertex2f ( p,     *tobuff + *tosdbuff - OffsetTracks );
                         glVertex2f ( p + 1, *tobuff + *tosdbuff - OffsetTracks );
                         }
+
                     glEnd();
 
                     glDisable ( GL_LINE_STIPPLE );
