@@ -88,6 +88,8 @@ constexpr GLfloat   AutoLineWidthMax            = 5.0;
 #define HintTextBackColor                   (GLfloat) 0.50,   (GLfloat) 0.50,   (GLfloat) 0.50,   (GLfloat) 0.50
 #define ThresholdColor                      (GLfloat) 1.00,   (GLfloat) 0.00,   (GLfloat) 0.00,   (GLfloat) 0.80
 
+#define SDTransparency                      (GLfloat) 0.30
+
 
 enum    {
         EEGGLVIEW_CBG_SEP3   = NumBaseViewButtons,
@@ -219,7 +221,8 @@ enum    DisplaySDEnum
         {
         SDNone,
         SDDashed,
-        SDFilled,
+        SDFilledTransparent,
+        SDFilledOpaque,
         NumSDMode
         };
 

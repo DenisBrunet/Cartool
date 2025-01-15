@@ -3008,15 +3008,20 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                 && regel 
                 && ! (bool) Montage          ) {
 
-                glColor3f ( min ( LineColor[ 0 ].Red   + 0.50, 0.80 ),
-                            min ( LineColor[ 0 ].Green + 0.50, 0.80 ),
-                            min ( LineColor[ 0 ].Blue  + 0.50, 0.80 ) );
+                glColor4f   (   NoMore ( 0.80, LineColor[ 0 ].Red   + 0.50 ),
+                                NoMore ( 0.80, LineColor[ 0 ].Green + 0.50 ),
+                                NoMore ( 0.80, LineColor[ 0 ].Blue  + 0.50 ),
+                                ShowSD == SDFilledTransparent ? SDTransparency : 1.00
+                            );
+
                 glLineWidth ( 1.0 );
 
                                         // fill anti-aliased
-                if ( ShowSD == SDFilled ) {
+                if ( ShowSD == SDFilledTransparent
+                  || ShowSD == SDFilledOpaque ) {
 
                     glBegin ( GL_QUAD_STRIP );
+
                     for ( tobuff = EegBuff[ st ] + minp, tosdbuff = SdBuff[ st ] + minp, p = minp; p <= maxp; p++, tobuff++, tosdbuff++ ) {
                         glVertex2f ( p, *tobuff + *tosdbuff - OffsetTracks );
                         glVertex2f ( p, *tobuff - *tosdbuff - OffsetTracks );
@@ -3024,7 +3029,7 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                                         // do we have SD on top of filled (segmentation) display?
 //                  if ( IsFilling )    // 1 more step to show the last TF
                     glEnd();
-                    }
+                    } // SDFilledTransparent, SDFilledOpaque
 
                                         // draw 2 borders
                 if ( ShowSD == SDDashed ) { // either dashed or on top of the filled to emulate anti-aliasing
@@ -3406,22 +3411,28 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                 && regel 
                 && ! (bool) Montage          ) {
 
-                glColor3f ( min ( LineColor[ 0 ].Red   + 0.50, 0.80 ),
-                            min ( LineColor[ 0 ].Green + 0.50, 0.80 ),
-                            min ( LineColor[ 0 ].Blue  + 0.50, 0.80 ) );
+                glColor4f   (   NoMore ( 0.80, LineColor[ 0 ].Red   + 0.50 ),
+                                NoMore ( 0.80, LineColor[ 0 ].Green + 0.50 ),
+                                NoMore ( 0.80, LineColor[ 0 ].Blue  + 0.50 ),
+                                ShowSD == SDFilledTransparent ? SDTransparency : 1.00
+                            );
+
                 glLineWidth         ( 1.0 );
                 GLLineSmoothOff     (); // to make the lines clearer (no anti-aliasing)
 
 
-                if ( ShowSD == SDFilled ) {
+                if ( ShowSD == SDFilledTransparent
+                  || ShowSD == SDFilledOpaque ) {
 
                     glBegin ( GL_QUADS );
+
                     for ( tobuff = EegBuff[ st ] + minp, tosdbuff = SdBuff[ st ] + minp, p = minp; p <= maxp; p++, tobuff++, tosdbuff++ ) {
                         glVertex2f ( p,     *tobuff - *tosdbuff - OffsetTracks );
                         glVertex2f ( p,     *tobuff + *tosdbuff - OffsetTracks );
                         glVertex2f ( p + 1, *tobuff + *tosdbuff - OffsetTracks );
                         glVertex2f ( p + 1, *tobuff - *tosdbuff - OffsetTracks );
                         }
+
                     glEnd();
 
                                         // re-draw the lines of the data, on top of the SD
@@ -3433,7 +3444,7 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                         glVertex2f ( p + 1, *tobuff - OffsetTracks );
                         }
                     glEnd();
-                    } // SDFilled
+                    } // SDFilledTransparent, SDFilledOpaque
 
                 else { // if ( ShowSD == SDDashed ) {
 
