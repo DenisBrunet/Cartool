@@ -67,7 +67,7 @@ CheckMriExtension   ( expvol.Filename );
 SetDocPath          ( expvol.Filename );
 
 
-bool                savingvmr       = IsExtension ( expvol.Filename, FILEEXT_MRIVMR );
+bool                savingvmr       = crtl::IsExtension ( expvol.Filename, FILEEXT_MRIVMR );
 
 
 SetDocPath ( expvol.Filename );
