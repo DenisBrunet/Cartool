@@ -17,6 +17,7 @@ limitations under the License.
 #include    <stdio.h>
 
 #include    "Files.Conversions.h"
+#include    "Files.Extensions.h"
 
 #include    "Dialogs.Input.h"
 #include    "Dialogs.TSuperGauge.h"
@@ -512,8 +513,8 @@ else {
     }
 
                                         // if files were .epsd or .epse, re-introduce the extension, as to differentiate from the data themselves
-if      ( StringEndsWith ( commonend, FILEEXT_EEGEPSD ) )   PostfixFilename ( OutFileName, "." FILEEXT_EEGEPSD );
-else if ( StringEndsWith ( commonend, FILEEXT_EEGEPSE ) )   PostfixFilename ( OutFileName, "." FILEEXT_EEGEPSE );
+if      ( StringEndsWith ( commonend, FILEEXT_EEGEPSD ) )   PostfixFilename ( OutFileName, "." /*FILEEXT_EEGEPSD*/ InfixSD );
+else if ( StringEndsWith ( commonend, FILEEXT_EEGEPSE ) )   PostfixFilename ( OutFileName, "." /*FILEEXT_EEGEPSE*/ InfixSE );
 else if ( StringEndsWith ( commonend, FILEEXT_RIS     ) )   PostfixFilename ( OutFileName, "." FILEEXT_RIS     );
 
 

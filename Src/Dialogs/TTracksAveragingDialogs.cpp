@@ -320,8 +320,12 @@ else if ( (bool) tracksfiles && ! (bool) tvafiles ) {
     }
 
 else if ( (bool) tvafiles )
+
     if ( ComboEeg->GetCount () ) {
-//      ShowMessage ( "Please provide as many TVA files as of EEG / Tracks files!\nTVA and EEG Files ignored.", "Averaging Files", ShowMessageWarning );
+
+//      ShowMessage (   "Please provide as many TVA files as of EEG / Tracks files!" NewLine 
+//                      "TVA and EEG Files ignored.", 
+//                      "Averaging Files", ShowMessageWarning );
 
                                             // loop is not really used, only the last dropped will remain
         for ( int i = 0; i < (int) tvafiles; i++ ) {
@@ -332,7 +336,9 @@ else if ( (bool) tvafiles )
             }
         }
     else
-        ShowMessage ( "Dropping a single TVA file will associate it with the last EEG entered,\nbut for now, it seems your EEG list looks quite empty...", "Averaging Files", ShowMessageWarning );
+        ShowMessage (   "Dropping a single TVA file will associate it with the last EEG entered," NewLine 
+                        "but for now, it seems your EEG list looks quite empty...", 
+                        "Averaging Files", ShowMessageWarning );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -398,11 +404,14 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
 
     if ( ! ReadFromHeader ( buff, ReadNumElectrodes,     &numeleeg )
       || ! ReadFromHeader ( buff, ReadSamplingFrequency, &dsf      ) ) {
+
         if ( ! silent ) {
             sprintf ( buff, "Problem while reading EEG file!" );
             ShowMessage ( buff, "Averaging Files", ShowMessageWarning );
             }
+
         TAvgTransfer.AllFilesOk = false;
+
         return false;
         }
 
@@ -411,21 +420,36 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
         numeleeg1   = numeleeg;
         dsf1        = dsf;
         }
+
     else if ( numeleeg1 != numeleeg ) {
+
         if ( ! silent ) {
-            sprintf ( buff, "Number of electrodes does not match:\n\tEEG : %d\n\tEEG : %d", numeleeg1, numeleeg );
+
+            sprintf     ( buff, "Number of electrodes does not match:" NewLine
+                                Tab "EEG : %d" NewLine 
+                                Tab "EEG : %d", 
+                                numeleeg1, numeleeg );
             ShowMessage ( buff, "Averaging Files", ShowMessageWarning );
             }
+
         TAvgTransfer.AllFilesOk = false;
+
         return false;
         }
                                         // We choose to assume that a missing SF will be considered the same as the one we get
     else if ( dsf != 0 && dsf1 != 0 && fabs ( dsf1 - dsf ) / dsf > 1e-6 ) {
+
         if ( ! silent ) {
-            sprintf ( buff, "Sampling frequencies do not match:\n\t%4g Hz\n\t%4g Hz", dsf1, dsf );
+
+            sprintf     ( buff, "Sampling frequencies do not match:" NewLine 
+                                Tab "%4g Hz" NewLine 
+                                Tab "%4g Hz", 
+                                dsf1, dsf );
             ShowMessage ( buff, "Averaging Files", ShowMessageWarning );
             }
+
         TAvgTransfer.AllFilesOk = false;
+
         return false;
         }
 
@@ -442,12 +466,19 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
 
                                         // test eeg and xyz
     if ( somexyz && numelxyz != numeleeg ) {
+
         if ( ! silent ) {
-//          sprintf ( buff, "XYZ (%d electrodes) and EEG file (%d electrodes) do not match together.", numelxyz, numeleeg-numauxeleeg );
-            sprintf ( buff, "Number of electrodes does not match:\n\tXYZ : %d\n\tEEG : %d", numelxyz, numeleeg );
+
+//          sprintf     ( buff, "XYZ (%d electrodes) and EEG file (%d electrodes) do not match together.", numelxyz, numeleeg-numauxeleeg );
+            sprintf     ( buff, "Number of electrodes does not match:" NewLine 
+                                Tab "XYZ : %d" NewLine 
+                                Tab "EEG : %d", 
+                                numelxyz, numeleeg );
             ShowMessage ( buff, "Averaging Files", ShowMessageWarning );
             }
+
         TAvgTransfer.AllFilesOk = false;
+
         return false;
         }
     }
@@ -466,7 +497,7 @@ void    TTracksAveragingFilesDialog::CmAddToList ()
 {
             // error if no file or no trigger !
 //if ( ComboEeg->GetTextLen() == 0 || ComboTrg->GetTextLen() == 0 ) {
-//    ShowMessage ( "You must provide at least:" "\n  an eeg file," "\n  a trigger code.", "Add file", ShowMessageWarning );
+//    ShowMessage ( "You must provide at least:" NewLine "  an eeg file," NewLine "  a trigger code.", "Add file", ShowMessageWarning );
 
 if ( ComboEeg->GetTextLen() == 0 ) {
     ShowMessage ( "You must provide a file in the edit field.", "Add file", ShowMessageWarning );
@@ -495,7 +526,10 @@ if ( ! IsExtensionAmong ( fneeg, AllTracksFilesExt " " AllDataExt ) ) {
 
 
 if ( ! CanOpenFile ( fneeg, CanOpenFileRead ) ) {
-    sprintf ( mess, "Can not find the file:\n\n%s\n", fneeg );
+    sprintf     ( mess, "Can not find the file:" NewLine 
+                        NewLine 
+                        "%s" NewLine, 
+                        fneeg );
     ShowMessage ( mess, "Input File", ShowMessageWarning );
     return;
     }
@@ -503,13 +537,16 @@ if ( ! CanOpenFile ( fneeg, CanOpenFileRead ) ) {
 
 if ( StringIsNotEmpty ( fntva ) ) {
     if ( ! IsExtension ( fntva, FILEEXT_TVA ) ) {
-        sprintf ( mess, "Wrong file extension: %s", fntva );
+        sprintf     ( mess, "Wrong file extension: %s", fntva );
         ShowMessage ( mess, "TVA File", ShowMessageWarning );
         return;
         }
 
     if ( ! CanOpenFile ( fntva, CanOpenFileRead ) ) {
-        sprintf ( mess, "Can not find the file:\n\n%s\n", fneeg );
+        sprintf     ( mess, "Can not find the file:" NewLine 
+                            NewLine 
+                            "%s" NewLine, 
+                            fneeg );
         ShowMessage ( mess, "Input File", ShowMessageWarning );
         return;
         }
@@ -2910,7 +2947,7 @@ verbose.NextTopic ( "Filtering:" );
 {
 if ( filterdata ) {
     verbose.Put ( "Filters:", Filters.ParametersToText ( buff ) );
-//  *ofv << "Filters are applied:                    before summation\n";
+//  *ofv << "Filters are applied:                    before summation" fastendl;
     verbose.Put ( "Filter data (before summation):", filterdata );
     verbose.Put ( "Filter display:", filterdisplay );
     }
@@ -2945,17 +2982,18 @@ verbose.Put ( "Automatically accept all epochs/files:", acceptall );
 
 verbose.NextTopic ( "Processing Summary:" );
 {
-(ofstream&) verbose << "Data are processed according to this sequence (& depending on user's choice):\n\n";
-(ofstream&) verbose << "    * Reading data from file\n";
-(ofstream&) verbose << "    * Filtering\n";
-(ofstream&) verbose << "    * Applying average reference\n";
-(ofstream&) verbose << "    * Applying baseline correction\n";
-(ofstream&) verbose << "    * Testing data against threshold, and getting user feedback for epoch acceptation or rejection\n";
-(ofstream&) verbose << "    * Rescaling data levels\n";
-(ofstream&) verbose << "    * Optionally reversing polarity of maps (for spontaneous EEG)\n";
-(ofstream&) verbose << "    * Saving current epoch to file\n";
-(ofstream&) verbose << "    * Cumulating data into current sum\n";
-(ofstream&) verbose << "    * Dividing the whole sum by the number of accepted epochs\n";
+(ofstream&) verbose << "Data are processed according to this sequence (& depending on user's choice):"                      fastendl;
+(ofstream&) verbose <<                                                                                                      fastendl;
+(ofstream&) verbose << "    * Reading data from file"                                                                       fastendl;
+(ofstream&) verbose << "    * Filtering"                                                                                    fastendl;
+(ofstream&) verbose << "    * Applying average reference"                                                                   fastendl;
+(ofstream&) verbose << "    * Applying baseline correction"                                                                 fastendl;
+(ofstream&) verbose << "    * Testing data against threshold, and getting user feedback for epoch acceptation or rejection" fastendl;
+(ofstream&) verbose << "    * Rescaling data levels"                                                                        fastendl;
+(ofstream&) verbose << "    * Optionally reversing polarity of maps (for spontaneous EEG)"                                  fastendl;
+(ofstream&) verbose << "    * Saving current epoch to file"                                                                 fastendl;
+(ofstream&) verbose << "    * Cumulating data into current sum"                                                             fastendl;
+(ofstream&) verbose << "    * Dividing the whole sum by the number of accepted epochs"                                      fastendl;
 }
 
 
@@ -3442,7 +3480,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     verbose.NextLine ();
 
     if ( samplingfrequency == 0 && Filters.HasAnyFilter () )
-        (ofstream&) verbose << "!!! Filtering can not be applied on this file, due to unknown sampling frequency !!!\n\n";
+        (ofstream&) verbose << "!!! Filtering can not be applied on this file, due to unknown sampling frequency !!!" fastendl fastendl;
 
     verbose.Flush ();
 
@@ -3505,8 +3543,11 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
             if ( ! canopen )
                 ShowMessage ( "Warning: no output TVA file will be written.", eegfile, ShowMessageWarning );
+
             else if ( StringIs ( fileouttva, tvafile ) )
-                ShowMessage ( "Can not overwrite this file as it is currently used for output!\nChoose another file name please.", fileouttva, ShowMessageWarning );
+                ShowMessage (   "Can not overwrite this file as it is currently used for output!" NewLine 
+                                "Choose another file name please.", 
+                                fileouttva, ShowMessageWarning );
 
             } while ( canopen && StringIs ( fileouttva, tvafile ) );
 
@@ -3516,10 +3557,10 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
             oftva.open ( TFileName ( fileouttva, TFilenameExtendedPath ) );
 
-            oftva << TVATXT_MAGICNUMBER1 << "\n";
+            oftva << TVATXT_MAGICNUMBER1 << fastendl;
             }
         else
-            (ofstream&) verbose << "Error! No output TVA file!\n\n";
+            (ofstream&) verbose << "Error! No output TVA file!" fastendl fastendl;
 
         } // ! acceptall
 
@@ -3532,7 +3573,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     if ( StringIsNotEmpty ( tvafile ) ) {
 
         if ( ! CanOpenFile ( tvafile, CanOpenFileReadAndAsk ) ) {
-            (ofstream&) verbose << "Error! Can not open file " << tvafile << ", all triggers will be considered as OK!\n\n";
+            (ofstream&) verbose << "Error! Can not open file " << tvafile << ", all triggers will be considered as OK!" fastendl fastendl;
 
             iftva   = 0;
             }
@@ -3552,8 +3593,8 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     else
 
         if ( triggerOrigin == EpochOriginTriggerReactionTime )
-            (ofstream&) verbose << "Error! Can not compute the epoch origin based on reaction time, tva file is missing!\n"
-                                << "       trigger will be used as the origin\n\n";
+            (ofstream&) verbose << "Error! Can not compute the epoch origin based on reaction time, tva file is missing!" fastendl
+                                << "       trigger will be used as the origin" fastendl fastendl;
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3643,7 +3684,8 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                     iftva->getline ( buff, 256 );
 
                     if ( StringIsEmpty ( buff ) ) {
-                        (ofstream&) verbose << "Error! Early End-Of-File encountered in input TVA file " << tvafile << "!\n\n";
+
+                        (ofstream&) verbose << "Error! Early End-Of-File encountered in input TVA file " << tvafile << "!" fastendl fastendl;
                         tvaok       = true;
                         tvartms     = 0;
                         StringCopy ( tvaname, "?" );
@@ -3665,8 +3707,10 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                         tvartms         = 0;
 
                         if ( ! tvaalreadyread ) {
-                            (ofstream&) verbose << "Error! Mismatch between markers: TVA marker is " << tvaname << ", while EEG marker is " << marker.Name << ", at TF " << marker.From << ". Skipping the remaining TVA file.\n\n";
-                            sprintf ( buff, "Error in TVA file, see the verbose for more details,\nbut essentially the trigger names don't match." );
+
+                            (ofstream&) verbose << "Error! Mismatch between markers: TVA marker is " << tvaname << ", while EEG marker is " << marker.Name << ", at TF " << marker.From << ". Skipping the remaining TVA file." fastendl fastendl;
+                            sprintf     ( buff, "Error in TVA file, see the verbose for more details," NewLine 
+                                                "but essentially the trigger names don't match." );
                             ShowMessage ( buff, "Averaging Error", ShowMessageWarning );
                             }
 
@@ -3677,8 +3721,10 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                     } // if tvacartool
 
                 else {                  // ! tvacartool, always read even if not in the tested list
+
                     if ( StringIsNot ( tvaname, marker.Name ) ) {
-                        (ofstream&) verbose << "Error! Mismatch between markers: TVA marker is " << tvaname << ", while EEG marker is " << marker.Name << ", at TF " << marker.From << ". Skipping this trigger.\n\n";
+
+                        (ofstream&) verbose << "Error! Mismatch between markers: TVA marker is " << tvaname << ", while EEG marker is " << marker.Name << ", at TF " << marker.From << ". Skipping this trigger." fastendl fastendl;
                         tvaok       = false;
                         tvartms     = 0;
                         }
@@ -3874,9 +3920,9 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
         if ( ! IsInsideLimits ( tf1, tf2, (long) 0, numTimeFrames - 1 ) ) {
 
 //          *ofv << " NOT ACCESSIBLE";
-//          *ofv << "\n\nError:  trying to access beyong file limits, skipping trigger " << ( currtrigg + 1 ) << " at position " << marker.From << " TF\n";
+//          *ofv << fastendl fastendl "Error:  trying to access beyong file limits, skipping trigger " << ( currtrigg + 1 ) << " at position " << marker.From << " TF" fastendl;
 //          if ( oftva.is_open () )     // update output tva
-//              oftva << "0\t0\t" << marker.Name << "\n";
+//              oftva << "0" Tab "0" Tab << marker.Name << fastendl;
 
             numtriggrej++;
 
@@ -3885,7 +3931,10 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
             EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
 
             if ( ! ( automode == AutoAcceptAll || IsFreqLoop () ) ) {
-                sprintf ( buff, "Trying to access file at positions  %0d  to  %0d,\nwhile file limits are  %0d  to  %0d.\nTrigger rejected.", tf1, tf2, 0, numTimeFrames - 1 );
+                sprintf     ( buff, "Trying to access file at positions  %0d  to  %0d," NewLine 
+                                    "while file limits are  %0d  to  %0d." NewLine 
+                                    "Trigger rejected.", 
+                                    tf1, tf2, 0, numTimeFrames - 1 );
                 ShowMessage ( buff, "Averaging Error", ShowMessageWarning );
                 }
 
@@ -4297,7 +4346,9 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                     continue;           // all counters are reset, so it will restart
 
                 case IDC_RESTARTCURRENT :
-                    if ( ! GetAnswerFromUser ( "Are you sure you want to restart\nto the beginning of the current file?", "Restart", CartoolMainWindow ) ) {
+                    if ( ! GetAnswerFromUser (  "Are you sure you want to restart" NewLine 
+                                                "to the beginning of the current file?", 
+                                                "Restart", CartoolMainWindow ) ) {
                         choiceloopexit  = false;
                         break;
                         }
@@ -4307,12 +4358,15 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                     break;
 
                 case IDCANCEL :
-                    if ( ! GetAnswerFromUser ( "Are you sure you want to cancel\nthe whole averaging process?", "Cancel All", CartoolMainWindow ) ) {
+                    if ( ! GetAnswerFromUser (  "Are you sure you want to cancel" 
+                                                NewLine 
+                                                "the whole averaging process?", 
+                                                "Cancel All", CartoolMainWindow ) ) {
                         choiceloopexit  = false;
                         break;
                         }
 
-                    (ofstream&) verbose << "\n\n!!!!! USER BREAK, ALL RESULTS WILL BE LOST !!!!!\n\n";
+                    (ofstream&) verbose << fastendl fastendl "!!!!! USER BREAK, ALL RESULTS WILL BE LOST !!!!!" fastendl fastendl;
 
                                         // we have to delete all local variables (see the end of the loop)
                     gauge->Destroy();
@@ -4631,10 +4685,10 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
             continue;
 
                                         // trigger in list
-        (ofstream&) verbose  << "\n";
-        (ofstream&) verbose  << "Epoch #"    << setw ( 4 )   << ( currtrigg + 1 )    << ","      << "\t";
-        (ofstream&) verbose  << "origin at " << setw ( 6 )   << marker.From             << " TF,"   << "\t";
-        (ofstream&) verbose  << "trigger "                   << marker.Name             << " :"     << "\t";
+        (ofstream&) verbose  << fastendl;
+        (ofstream&) verbose  << "Epoch #"    << setw ( 4 )   << ( currtrigg + 1 )   << ","      << Tab;
+        (ofstream&) verbose  << "origin at " << setw ( 6 )   << marker.From         << " TF,"   << Tab;
+        (ofstream&) verbose  << "trigger "                   << marker.Name         << " :"     << Tab;
 
                                         // not a good trigger?
         if (      IsFlag ( marker.Code, (MarkerCode) TriggerBadEpoch ) 
@@ -4647,8 +4701,8 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
 
             if ( oftva.is_open () )     // update output tva
-//              oftva << "0\t0\t" << marker.Name << "\n";
-                oftva << "0\t" << ( marker.To / 1000.0 ) << "\t" << marker.Name << "\n";
+//              oftva << "0" Tab "0" Tab << marker.Name << fastendl;
+                oftva << "0" Tab << ( marker.To / 1000.0 ) << Tab << marker.Name << fastendl;
 
             numtriggrej++;
 
@@ -4662,8 +4716,8 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
         (ofstream&) verbose << MessageEpochOkUser;
 
         if ( oftva.is_open () )         // update output tva
-//          oftva << "1\t0\t" << marker.Name << "\n";
-            oftva << "1\t" << ( marker.To / 1000.0 ) << "\t" << marker.Name << "\n";
+//          oftva << "1" Tab "0" Tab << marker.Name << fastendl;
+            oftva << "1" Tab << ( marker.To / 1000.0 ) << Tab << marker.Name << fastendl;
 
 
                                         // set the time limits
@@ -4891,7 +4945,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     verbose.Put ( "Number of triggers rejected:", buff );
 
 //    if ( SaveEpochsMultiFiles && oldtna != totalnumtriggacc )
-//        verbose.Put ( "Epoch files:                            " << BaseFileName << ".[" << ( oldtna + 1 ) << ".." << totalnumtriggacc << "]." << fileoutext << "\n";
+//        verbose.Put ( "Epoch files:                            " << BaseFileName << ".[" << ( oldtna + 1 ) << ".." << totalnumtriggacc << "]." << fileoutext << fastendl;
 
     verbose.Flush ();
 
@@ -5157,8 +5211,8 @@ if ( usexyz ) {
     sprintf ( fileoutlm,  "%s.%s", BaseFileName, FILEEXT_LM );
     ofstream       *ofg = new ofstream ( fileoutlm );
 
-    *ofg << fileoutxyz << "\n";
-    *ofg << fileoutavg << "\n";
+    *ofg << fileoutxyz << fastendl;
+    *ofg << fileoutavg << fastendl;
 
     delete  ofg;
 
@@ -5495,7 +5549,7 @@ verbose.Put ( "Total number of triggers rejected:", buff );
 
 
 //if ( SaveEpochsMultiFiles && totalnumtriggacc > 0 )
-//    verbose.Put ( "Epoch files:                        " << BaseFileName << ".[" << 1 << ".." << totalnumtriggacc << "]." << fileoutext << "\n" << "\n";
+//    verbose.Put ( "Epoch files:                        " << BaseFileName << ".[" << 1 << ".." << totalnumtriggacc << "]." << fileoutext << fastendl fastendl;
 
 verbose.NextLine ();
 verbose.NextBlock ();
@@ -5503,16 +5557,16 @@ verbose.NextBlock ();
 
                                         // add a cookie
 switch ( rand () % 10 ) {
-    case 0 : (ofstream&) verbose << "\tCongratulation if you have read all this file (haven't you?)!\n"; break;
-    case 1 : (ofstream&) verbose << "\tThank you Cartool!\n"; break;
-    case 2 : (ofstream&) verbose << "\tThat's all folks!\n"; break;
-    case 3 : (ofstream&) verbose << "\tEt voila!\n"; break;
-    case 4 : (ofstream&) verbose << "\tHave you really understood what I've done?\n"; break;
-    case 5 : (ofstream&) verbose << "\tHonestly, it was a real pleasure to compute this for you!\n"; break;
-    case 6 : (ofstream&) verbose << "\tShouldn't I have been paid for this, how computers are treated nowadays..\n"; break;
-    case 7 : (ofstream&) verbose << "\tWow! that's already done?!\n"; break;
-    case 8 : (ofstream&) verbose << "\t;-)\n"; break;
-    case 9 : (ofstream&) verbose << "\tThis message will destruct itself in 10 seconds...\n"; break;
+    case 0 : (ofstream&) verbose << Tab "Congratulation if you have read all this file (haven't you?)!"               fastendl; break;
+    case 1 : (ofstream&) verbose << Tab "Thank you Cartool!"                                                          fastendl; break;
+    case 2 : (ofstream&) verbose << Tab "That's all folks!"                                                           fastendl; break;
+    case 3 : (ofstream&) verbose << Tab "Et voila!"                                                                   fastendl; break;
+    case 4 : (ofstream&) verbose << Tab "Have you really understood what I've done?"                                  fastendl; break;
+    case 5 : (ofstream&) verbose << Tab "Honestly, it was a real pleasure to compute this for you!"                   fastendl; break;
+    case 6 : (ofstream&) verbose << Tab "Shouldn't I have been paid for this, how computers are treated nowadays.."   fastendl; break;
+    case 7 : (ofstream&) verbose << Tab "Wow! that's already done?!"                                                  fastendl; break;
+    case 8 : (ofstream&) verbose << Tab ";-)"                                                                         fastendl; break;
+    case 9 : (ofstream&) verbose << Tab "This message will destruct itself in 10 seconds..."                          fastendl; break;
     }
 
 
