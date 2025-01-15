@@ -40,7 +40,7 @@ public:
     bool            CanFilter       ()      const final     { return IsExtension ( FILEEXT_DATA ); }
     void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
     void            GetTracks       ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, const TSelection* referencetracks = 0, const TRois *rois = 0 )  final;
-    bool            IsStandDevAvail ()      const final     { return false; }
+    bool            HasStandardDeviation () const final     { return false; }
 
 
     int             GetNumFiles     ()      const           { return NumFiles;      }

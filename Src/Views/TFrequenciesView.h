@@ -197,7 +197,7 @@ protected:
     bool            ValidView           ()              { return FreqDoc && FreqDoc->GetNumTimeFrames() > 0 && FreqDoc->GetNumElectrodes() > 0; }
     void            SetPartWindows      ( TSelection &sel, bool refresh = true )                        final;
     void            UpdateBuffers       ( long oldtfmin, long oldtfmax, long newtfmin, long newtfmax )  final;
-    bool            IsStandDevAvail     ()  const final { return false; }
+    bool            HasStandardDeviation()  const final { return false; }
     void            ResetScaleTracks    ( const TSelection* sel = 0 )                                   final;
     void            ResetScaleFreqs     ();
 //  void            BestXYZBox          ();

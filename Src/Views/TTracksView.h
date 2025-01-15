@@ -451,7 +451,7 @@ protected:
     void                SetTextMargin               ();
     virtual void        UpdateBuffers               ( long oldtfmin, long oldtfmax, long newtfmin, long newtfmax );
     void                ReloadBuffers               ();
-    virtual bool        IsStandDevAvail             ()                          const   { return ShowSD && EEGDoc->IsStandDevAvail (); }
+    virtual bool        HasStandardDeviation        ()                          const   { return ShowSD && EEGDoc->HasStandardDeviation (); }
     virtual void        ResetScaleTracks            ( const TSelection *sel = 0 );
     double              ScalingContrastToColorTable ( double scalingcontrast )  const   { return 0.1 + 999.9 * scalingcontrast * scalingcontrast; }
     double              ColorTableToScalingContrast ( double contrast        )  const   { return sqrt ( ( contrast - 0.1 ) / 999.9 ); }

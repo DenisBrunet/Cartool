@@ -107,7 +107,7 @@ public:
     bool            CanFilter                   ()              const               final   { return false; }                   // filtering not allowed
     bool            SetFiltersActivated         ( bool state, bool silent = false ) final   { FiltersActivated = false; return FiltersActivated; }
     void            GetTracks                   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, const TSelection* referencetracks = 0, const TRois *rois = 0 )  override;
-    bool            IsStandDevAvail             ()              const               final   { return false; }
+    bool            HasStandardDeviation        ()              const               final   { return false; }
 
                                         // TFreqDoc
     virtual int     GetNumFrequencies           ()              const   { return NumFrequencies; }

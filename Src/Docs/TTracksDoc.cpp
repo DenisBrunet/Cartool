@@ -1730,9 +1730,9 @@ if ( rois )
 
 
 //----------------------------------------------------------------------------
-void    TTracksDoc::GetStandDev ( long tf1, long tf2, TArray2<float>& buff, int tfoffset, const TRois* rois )   const
+void    TTracksDoc::GetStandardDeviation ( long tf1, long tf2, TArray2<float>& buff, int tfoffset, const TRois* rois )   const
 {
-if ( ! IsStandDevAvail () ) {
+if ( ! HasStandardDeviation () ) {
     buff.ResetMemory ();
     return;
     }

@@ -582,7 +582,7 @@ if ( ! ValidView () ) {
 //if ( ! isderived ) {
 //
 //    EegBuff.Resize ( 1, EEGDoc->GetTotalElectrodes (), BuffSize );
-//    if ( EEGDoc->IsStandDevAvail () )
+//    if ( EEGDoc->HasStandardDeviation () )
 //        SdBuff.Resize ( EEGDoc->GetTotalElectrodes (), BuffSize );  // !force Dim1 with pseudo-tracks so both buffers have exactly the same memory footprint!
 //    }
 
@@ -3004,7 +3004,7 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                                         // no SD if montage - test EEGDoc directly, if painting for an outer EEG
             if (   ShowSD 
                 && IsTracksMode () 
-                && EEGDoc->IsStandDevAvail () 
+                && EEGDoc->HasStandardDeviation () 
                 && regel 
                 && ! (bool) Montage          ) {
 
@@ -3402,7 +3402,7 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                                         // in BarsMode, we have to draw the SD on top of the bars
             if (   ShowSD 
                 && IsBarsMode () 
-                && EEGDoc->IsStandDevAvail () 
+                && EEGDoc->HasStandardDeviation () 
                 && regel 
                 && ! (bool) Montage          ) {
 
@@ -4417,8 +4417,8 @@ switch ( key ) {
         break;
 
     case    'D':
-        if      ( IsIntensityModes () )         CmSetScalingAdapt ();
-        else if ( EEGDoc->IsStandDevAvail () )  CmShowSD ();
+        if      ( IsIntensityModes () )                 CmSetScalingAdapt ();
+        else if ( EEGDoc->HasStandardDeviation () )     CmShowSD ();
         break;
 
     case    'E':
@@ -6376,8 +6376,8 @@ if ( newtfmin > oldtfmax
                             rois 
                         );
 
-    if ( IsStandDevAvail () )
-        EEGDoc->GetStandDev ( newtfmin, newtfmax, SdBuff, 0, rois );
+    if ( HasStandardDeviation () )
+        EEGDoc->GetStandardDeviation ( newtfmin, newtfmax, SdBuff, 0, rois );
     return;
     }
 
@@ -6388,7 +6388,7 @@ if ( deltamin >= 0 && deltamax <= 0 ) { // (shrink)
 
     MoveVirtualMemory ( EegBuff[0], EegBuff[0] + deltamin, tomove * EegBuff.AtomSize () );
 
-    if ( IsStandDevAvail () ) {
+    if ( HasStandardDeviation () ) {
 
         tomove  = bigblock ( SdBuff ) - deltamin + deltamax;
 
@@ -6413,13 +6413,13 @@ else if ( deltamin >= 0 ) {             // case 1 (shift buffer left)
                             rois 
                         );
 
-    if ( IsStandDevAvail () ) {
+    if ( HasStandardDeviation () ) {
 
         tomove  = bigblock ( SdBuff ) - deltamin;
 
         MoveVirtualMemory ( SdBuff[0], SdBuff[0] + deltamin, tomove * SdBuff.AtomSize () );
 
-        EEGDoc->GetStandDev ( oldtfmax + 1, newtfmax, SdBuff, offset, rois );
+        EEGDoc->GetStandardDeviation ( oldtfmax + 1, newtfmax, SdBuff, offset, rois );
         }
 
     return;
@@ -6440,13 +6440,13 @@ else if ( deltamax <= 0 ) {             // case 2 (shift buffer right)
                         );
 
 
-    if ( IsStandDevAvail () ) {
+    if ( HasStandardDeviation () ) {
 
         tomove  = bigblock ( SdBuff ) + deltamin;
 
         MoveVirtualMemory ( SdBuff[0] - deltamin, SdBuff[0], tomove * SdBuff.AtomSize () );
 
-        EEGDoc->GetStandDev ( newtfmin, oldtfmin - 1, SdBuff,  0, rois );
+        EEGDoc->GetStandardDeviation ( newtfmin, oldtfmin - 1, SdBuff,  0, rois );
         }
 
     return;
@@ -6477,15 +6477,15 @@ else {                                  // case 3: deltamin < 0 && deltamax > 0 
                         );
 
 
-    if ( IsStandDevAvail () ) {
+    if ( HasStandardDeviation () ) {
 
         tomove  = bigblock ( SdBuff ) + deltamin;
 
         MoveVirtualMemory ( SdBuff[0] - deltamin, SdBuff[0], tomove * SdBuff.AtomSize () );
 
-        EEGDoc->GetStandDev ( newtfmin, oldtfmin - 1, SdBuff, 0,      rois );
+        EEGDoc->GetStandardDeviation ( newtfmin, oldtfmin - 1, SdBuff, 0,      rois );
 
-        EEGDoc->GetStandDev ( oldtfmax + 1, newtfmax, SdBuff, offset, rois );
+        EEGDoc->GetStandardDeviation ( oldtfmax + 1, newtfmax, SdBuff, offset, rois );
         }
 
     return;
@@ -9851,8 +9851,8 @@ ShowSD      = NextState ( ShowSD, NumSDMode, ShiftKey );
 
                                         // refresh buffer, just in case
 //if ( ShowSD )
-if ( IsStandDevAvail () )
-    EEGDoc->GetStandDev ( CDPt.GetMin(), CDPt.GetMax(), SdBuff, 0, IsRoiMode () && Rois && AverageRois ? Rois : 0 );
+if ( HasStandardDeviation () )
+    EEGDoc->GetStandardDeviation ( CDPt.GetMin(), CDPt.GetMax(), SdBuff, 0, IsRoiMode () && Rois && AverageRois ? Rois : 0 );
 
 ButtonGadgetSetState ( IDB_SHOWSD, ShowSD );
 
@@ -9864,7 +9864,7 @@ RefreshLinkedWindow () ;
 
 void    TTracksView::CmShowSDEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( EEGDoc->IsStandDevAvail () );
+tce.Enable ( EEGDoc->HasStandardDeviation () );
 }
 
 

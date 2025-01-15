@@ -239,8 +239,8 @@ public:
     virtual void    GetTracks           ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0, AtomType atomtype = AtomTypeUseCurrent, PseudoTracksType pseudotracks = NoPseudoTracks, ReferenceType reference = ReferenceAsInFile, const TSelection* referencetracks = 0, const TRois *rois = 0 );
 
 
-    virtual bool    IsStandDevAvail     ()              const   { return SDBuff.IsAllocated (); }
-    void            GetStandDev         ( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0, const TRois* rois = 0 )   const;
+    virtual bool    HasStandardDeviation()              const   { return SDBuff.IsAllocated (); }
+    void            GetStandardDeviation( long tf1, long tf2, TArray2<float>& buff, int tfoffset = 0, const TRois* rois = 0 )   const;
 
 
     virtual bool    CanFilter           ()              const   { return true; }                                                // can / will be overriden by files where filtering is not allowed
