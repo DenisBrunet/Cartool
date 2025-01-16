@@ -3,12 +3,13 @@
 
 It enables seamless real-time integration of diverse modalities such as EEG, electrodes, and MRI. Offering an array of tools, including preprocessing for EEG, electrodes, and MRI, as well as frequency and micro-states analysis, and electrical source imaging.
 
-Developed in C++ for _Windows_, Cartool is highly optimized for parallel processing, has a very small memory footprint, and very few dependencies. It has been undergoing continuous development since 1996, thanks to the [_Functional Brain Mapping_](https://neurocenter-unige.ch/research-groups/christoph-michel/), Geneva, and [_CIBM_](https://www.cibm.ch), Lausanne.
+Developed in C++ for _Windows_, Cartool is highly optimized for parallel processing, has a very small memory footprint, and very few dependencies. It has been undergoing continuous development since 1996, thanks to the [_Functional Brain Mapping Lab_](https://neurocenter-unige.ch/research-groups/christoph-michel/), Geneva, and [_CIBM_](https://www.cibm.ch), Lausanne.
+
+## Pre-compiled releases
+The latest compiled version of Cartool can be found **[here](https://github.com/DenisBrunet/Cartool/releases/latest)**, and all previous versions **[there](https://github.com/DenisBrunet/Cartool/releases)**.
 
 ## Compiling from sources
 The [BUILDING](https://github.com/DenisBrunet/Cartool/blob/main/BUILDING.md) page describes all the steps and the necessary tools needed to fully compile Cartool from the source code.
-
-You can also find the latest stable release already compiled here: [_Cartool Community Downloads_](https://sites.google.com/site/cartoolcommunity/downloads).
 
 ## Contributing
 Our contribution policy is specified in the [CONTRIBUTING](https://github.com/DenisBrunet/Cartool/blob/main/CONTRIBUTING.md) page.
@@ -18,9 +19,10 @@ We have some citations policy, please visit the [CITATION](https://github.com/De
 
 ## Community
 There are a few resources to gather knowledge and get some help:
-- [Cartool Community](https://sites.google.com/site/cartoolcommunity)
-- [Cartool Google Group](https://groups.google.com/g/cartool)
+- [Bug Reports](https://github.com/DenisBrunet/Cartool/issues)
+- [Discussions Group](https://github.com/DenisBrunet/Cartool/discussions)
 - [Cartool YouTube](https://www.youtube.com/channel/UC7S3IgUeYplmrh3ji3ZK1Lw)
+- [Cartool Community](https://sites.google.com/site/cartoolcommunity)
 - [CIBM](https://cibm.ch/)
 
 ## License
