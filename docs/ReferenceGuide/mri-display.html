@@ -1,0 +1,1009 @@
+<HTML>
+ <HEAD>
+  <TITLE>MRIs and Volumes Display</TITLE>
+ <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css">
+  <style type="text/css">
+.auto-style1 {
+	margin-left: 40px;
+}
+.auto-style2 {
+	text-align: left;
+	margin-left: 40px;
+}
+.auto-style3 {
+	text-align: left;
+}
+</style>
+ </HEAD>
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   MRIs and Volumes Display</H1>
+  <H3>
+   Buttons</H3>
+  <H5>
+   <A HREF="windows-general-commands.html#linking"><IMG SRC="images/all.button.graphical-link.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#rendering"><IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#orientation"><IMG SRC="images/all.button.orientation.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#magnifier"><IMG SRC="images/all.button.magnifier.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#isosurface"><IMG SRC="images/mri.button.isosurface.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#isosurface-coloring"> <IMG SRC="images/mri.button.colorize-surface.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"> </A><A HREF="#editing"><IMG SRC="images/mri.button.editing.png" VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#clipping-X"><IMG SRC="images/mri.button.clip-cor.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#clipping-Y"><IMG SRC="images/mri.button.clip-tra.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#clipping-Z"><IMG SRC="images/mri.button.clip-sag.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#slice-mode"><IMG SRC="images/mri.button.slice-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#more-less-slices"><IMG SRC="images/mri.button.less-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.more-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#move-first-slice"><IMG SRC="images/mri.button.move-first-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-first-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#move-last-slice"><IMG SRC="images/mri.button.move-last-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-last-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#show-min-max"><IMG SRC="images/is.button.max-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#find-min-max-pos"><IMG SRC="images/is.button.find-min-max.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#brightness"><IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#contrast"><IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#auto-scaling"><IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#color-modes"><IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H3>
+   <A HREF="#mouse">Mouse</A></H3>
+  <H5>
+   <A HREF="#mouse">Changing Isosurface value</A></H5>
+  <H3>
+   <A HREF="#keyboard">Keyboard</A></H3>
+  <H3>
+   <A HREF="#menus">Menus</A></H3>
+  <H5>
+   <A HREF="#menu-filters">Filters menu</A><br><A HREF="#menu-options">Options menu</A></H5>
+  <UL>
+   <H5>
+    <A HREF="#menu-iso-value">New Isosurface cutting value</A><br>
+	<A HREF="#menu-iso-quality">New Isosurface quality</A><br>
+	<A HREF="#menu-set-orient">Set orientation</A><br>
+	<A HREF="#menu-new-origin">Set new origin</A><br><A HREF="#menu-show-hide">Show / hide</A><br>
+	<A HREF="#menu-depth-shift">Depth Shifting trick</A></H5>
+   </UL>
+  <H3>
+   <A HREF="#technical-points">Technical points</A></H3>
+  <H5>
+   <A HREF="#background-value">Initial background threshold value</A><br>
+   <A HREF="#guessing-content">Guessing what the volume actually is</A><br>
+   <A HREF="#search-orientation">Searching for the orientation</A><br>
+   <A HREF="#depth-shift">'Depth shifting' trick</A><br><A HREF="#talairach">Talairach coordinates in MRI</A></H5>
+  <H2>
+   <A NAME="rendering"></A>MRI - Buttons</H2>
+  <H3>
+   Rendering&nbsp; <IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Toggles between <B>4 display modes</B> (see here for basic 
+   explanations on <A HREF="windows-general-commands.html#rendering">rendering</A>):</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <A NAME="three-slices-transp"></A>Up to three orthogonal, <B>transparent
+     slices</B> (useful when superimposed on another volume!):</P>
+   <P>
+    <IMG SRC="images/mri.render2.png" ALIGN=TEXTTOP WIDTH="237" HEIGHT="229" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <P>
+    If the Volume has been <A HREF="#guessing-content">detected</A> as 
+    the results of some computations, transparency is inversely 
+    proportional to the intensity. Otherwise, transparency is constant.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Up to three orthogonal, <B>opaque slices</B>:</P>
+   <P>
+    <IMG SRC="images/mri.render1.png" ALIGN=TEXTTOP WIDTH="237" HEIGHT="229" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <P>
+    You can select which <A HREF="#clipping-X">planes</A> you want to see 
+    or hide, and move them with the <A HREF="windows-general-commands.html#moving-clipping">mouse</A>.
+     <A HREF="#brightness">Brightness</A> and <A HREF="#contrast">contrast</A> 
+    can be adjusted.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    <A NAME="transparent-iso"></A><B>Transparent </B><A HREF="terms-definitions-formulas.html#isosurface"><B>isosurface</B></A>:</P>
+   <P>
+    <IMG SRC="images/mri.render3.png" ALIGN=TEXTTOP WIDTH="237" HEIGHT="229" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <P>
+    The surface is transparently drawn, so you can <A HREF="windows-general-commands.html#linking">link
+     other windows into it</A>, and see through its surface.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Opaque </B><A HREF="terms-definitions-formulas.html#isosurface"><B>isosurface</B></A>:</P>
+   <P>
+    <IMG SRC="images/mri.render5.png" ALIGN=TEXTTOP WIDTH="237" HEIGHT="229" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <P>
+    The surface is drawn opaque, which will hide any other contained <A HREF="windows-general-commands.html#linking">linked
+     windows</A>. In this case use the previous renderings (or the 
+    infamous <A HREF="#depth-shift">&quot;Depth-shift trick&quot;</A> for 
+    the inner window).</P>
+   </UL>
+  <H3>
+   <A NAME="isosurface"></A>Change the Isosurface cutting value&nbsp; <IMG SRC="images/mri.button.isosurface.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Dynamically adjust the <A HREF="terms-definitions-formulas.html#isosurface">isosurface</A> 
+   cutting value (or <A HREF="#background-value">background threshold value</A>).
+    By holding the <A HREF="#mouse">mouse</A>'s <B>right button</B> 
+   down, moving <B>upward</B> increases the isosurface cutting value 
+   (therefor &quot;shrinking&quot; the volume appearance), and the 
+   opposite when moving <B>downward</B>.</P>
+  <P>
+   During this process, only a <B>low resolution</B> version of the 
+   volume is displayed, to gain speed. Only when releasing the button 
+   the full resolution isosurface will be computed, and displayed. You 
+   can have a short time lag before the final isosurface appears, due to 
+   this computationally expensive process. Also, some geometrical 
+   details hidden in the low resolution display will appear in the 
+   higher resolution. You will get use to it, and you can re-adjust very 
+   quickly by again using the mouse, or with the <A HREF="#menu-iso-value">options
+    menu</A>.</P>
+  <P>
+   For those interested in technical details, up to <B>6 volumes are cached</B> 
+   by the isosurface functions. The first access to the isosurface will 
+   copy the volume, then filters it, and later calls will only use this 
+   cache, again, for an overall gain in speed.</P>
+  <H3>
+   <A NAME="isosurface-coloring"></A>Colorize the exterior surface&nbsp; <IMG SRC="images/mri.button.colorize-surface.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Usually, the exterior surface of a volume appears with a predefined 
+   exterior color (kind of shiny, silver-like). When activating this 
+   button, you can<B> assign a color of your choice to the exterior surface</B>.
+    This can be helpful to discriminate between different volumes (or 
+   just because you like colors).</P>
+  <P>
+   The colors at your disposal are the ones in the current <A HREF="#color-modes">Color
+    Table</A>, so you may have to change it to have the right colors. 
+   The exterior surface actually &quot;has a value&quot; set to the 
+   current <A HREF="#isosurface">Isosurface cutting value</A>, so its 
+   color is the one picked in the color table with this value. This 
+   means that changing the Isosurface cutting value will also change the 
+   color (no headache, this is intuitive). Also, changing&nbsp; the <A HREF="#brightness">Brightness
+    level</A> (or the <A HREF="#contrast">Contrast level</A>) will also 
+   affect the color chosen, and this is rather the way to go.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Here is an example, with the same Isosurface cut, first without the 
+   colorization, then with colorization and with two different brighness levels:</P>
+  <P>
+   <IMG SRC="images/mri.colorize.none.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.colorize.color1.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.colorize.color4.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   And another example with the same brightness level, but with 
+   increased Isosurface cutting values:</P>
+  <P>
+   <IMG SRC="images/mri.colorize.color1.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.colorize.color2.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.colorize.color3.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   And finally, if a volume has been <A HREF="#guessing-content">detected
+    as a ROI volume</A>, many exterior colors are used, one for each 
+   underlying ROI values:</P>
+  <P>
+   <IMG SRC="images/mri.guess.roi-mask.png" WIDTH="235" HEIGHT="229" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="editing"></A>Editing / cutting into the volume&nbsp; <A HREF="#isosurface-coloring"><IMG SRC="images/mri.button.editing.png" VSPACE="0" HSPACE="0" BORDER="0"></A></H3>
+  <P>
+   You have here a set of tools (currently 5) to help you edit / cut / remove 
+   some unwanted parts of the current volume:</P>
+  <ul>
+	  <li>Deleting a <strong>centered sphere</strong></li>
+	  <li><strong>Blurring</strong> within a centered sphere</li>
+	  <li>Deleting a <strong>cylinder perpendicular</strong> to surface</li>
+	  <li>Deleting a <strong>sphere perpendicular</strong> to surface</li>
+	  <li>Deleting below a <strong>plane perpendicular</strong> to surface</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   You <strong>switch between these tools by repeatedly pressing on the cutting 
+   button</strong>. And you quit the editing mode after the last tool, or after 
+   pressing the <em>Esc</em> key.</P>
+  <P>
+   Every tool will graphically display itself as some sort of <strong>reddish, 
+   semi-transparent object</strong>. The tool will adapt itself in <strong>real 
+   time</strong> to the current position your pointing at.</P>
+  <P>
+   There will also be some <strong>hint showing up at the bottom of the display</strong>, 
+   to remind you in which editing mode you currently are.</P>
+  <P>
+   Finally, simply <B>Middle-clicking</B> with the mouse will <strong>apply the 
+   tool</strong> at your current position, <strong>deleting all data inside</strong>.</P>
+  <h4>
+   Deleting Centered Sphere</h4>
+  <P>
+   A reddish sphere appears:</P>
+  <ul>
+	  <li><strong>centered under the current mouse position</strong></li>
+	  <li>its <strong>radius</strong> can be adjusted with a <B>right-click
+     + moving left-right</B></li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   Useful to delete big floating blobs, or clipping some round regions in the 
+   volume:&nbsp;</P>
+  <P class="auto-style1">
+   <img height="280" SRC="images/mri.editing.tool-sphere1.png" width="293"><img height="280" SRC="images/mri.editing.tool-sphere2.png" width="293"></P>
+  <h4>
+   Blurring Centered Sphere</h4>
+  <P>
+   3 concentric reddish spheres appear:</P>
+  <ul>
+	  <li><strong>centered under the current mouse position</strong></li>
+	  <li>their <strong>radiuses</strong> can be adjusted with a <B>right-click
+     + moving left-right</B></li>
+	  <li>The <strong>inner sphere</strong> shows where the maximum blurring 
+	  will occur.<br>No blurring will be applied past the <strong>outer sphere</strong>.<br>
+	  The <strong>in-between sphere</strong> shows the half-blurring limit.</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   Very useful to anonymize a full head, so that the individual's face could not 
+   be recognizable anymore. You might have to apply the filter a few times to 
+   achieve the desired level of blurriness, while changing location a bit while 
+   doing so. And of course, work on a copy of the original head!</P>
+  <P>
+   Note that the <strong>internal parts</strong> of the MRI get also blurred, 
+   and not only the face, which might also affect the brain itself. So don't 
+   attempt to extract the brain on the blurred head, the latter is <strong>
+   merely for display and not other processing</strong>!</P>
+  <P class="auto-style1">
+   <img height="280" SRC="images/mri.editing.tool-sphere-blur1.png" width="293"><img height="280" SRC="images/mri.editing.tool-sphere-blur2.png" width="293"></P>
+  <h4>
+   Deleting Cylinder perpendicular to surface</h4>
+  <P>
+   A reddish cylinder appears:</P>
+  <ul>
+	  <li><strong>centered under the current mouse position</strong></li>
+	  <li>its <strong>radius</strong> can be adjusted with a <B>right-click
+     + moving left-right</B></li>
+	  <li>its <strong>length</strong> can be adjusted with a <B>right-click
+     + moving up-down</B></li>
+	  <li>its <strong>direction</strong> is the <strong>local gradient</strong> 
+	  (&quot;perpendicular&quot; to data)</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   This is useful to punch all sorts of holes that are not spherically shaped:</P>
+  <P>
+   <img class="auto-style1" height="280" SRC="images/mri.editing.tool-cylinder1.png" width="293"><img height="280" SRC="images/mri.editing.tool-cylinder2.png" width="293"></P>
+  <h4>
+   Deleting Sphere perpendicular to surface</h4>
+  <P>
+   A reddish sphere appears:</P>
+  <ul>
+	  <li>it is <strong>tangent to the current surface it touches</strong>, 
+	  always <strong>pointing outwardly</strong></li>
+	  <li>its <strong>radius</strong> can be adjusted with a <B>right-click
+     + moving left-right</B></li>
+	  <li>it uses the <strong>local gradient</strong> (&quot;perpendicular&quot; to data) 
+	  to point &quot;outside&quot;</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   This sphere differs from the first one by how it lands on the data. First one 
+   is centered on the position you point. While this one simply touches the 
+   surface of the volume. This is useful to delete stuff floating <em>outside</em> 
+   of an object of interest (which will remain intact):</P>
+  <P>
+   <img class="auto-style1" height="280" SRC="images/mri.editing.tool-sphere-out1.png" width="293"><img height="280" SRC="images/mri.editing.tool-sphere-out2.png" width="293"></P>
+  <h4>
+   Deleting below plane perpendicular to surface</h4>
+  <P>
+   A reddish plane appears, shown as a big disk:</P>
+  <ul>
+	  <li><strong>centered under the current mouse position</strong></li>
+	  <li>its normal is the <strong>local gradient</strong> (&quot;perpendicular&quot; to 
+	  data)</li>
+	  <li>it might be necessary to zoom out the object to have a better view of 
+	  the cutting plane whereabout</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   This will cut all data on the one side of the plane shown by the gradient 
+   vector:</P>
+  <P>
+   <img class="auto-style1" height="280" SRC="images/mri.editing.tool-plane1.png" width="293"><img height="280" SRC="images/mri.editing.tool-plane2.png" width="293"></P>
+  <h4>
+   Other hints</h4>
+  <UL>
+      <LI CLASS="mvd-P">
+      <P>
+    The cutting tools are all <B>fully in 3D</B>, you might need to rotate your 
+	  object at hand to get the right view and the right shot!</P>
+	  <LI CLASS="mvd-P">
+      <P>
+      If you use some <A HREF="#clipping-X">clipping plane</a>, then you can 
+	  totally cut <strong>inside</strong> the volume...</P>
+	  <LI CLASS="mvd-P">
+      <P>
+      Before you begin, <B>make and use a copy of the volume you want to edit</B>, so as to 
+    not alter the original file!</P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Save file often</B>, every time when you are fine with the current results. 
+	Then you can use the&nbsp; <FONT FACE="Arial Black,Arial,Helvetica">File | Revert</FONT>&nbsp; 
+	to <strong>undo the last operation</strong>!</P>
+   <LI CLASS="mvd-P">
+   <P>
+    All operations incorporate some kind of <strong>anti-aliasing</strong>, so 
+	that the resulting cuts look natural.<br>However this <strong>does <em>not</em> 
+	apply to masks</strong>, which are rather cut &quot;sharply&quot;. This is to prevent 
+	creating new intermediate values, a definitive no-no for
+	<A HREF="#guessing-content">masks or ROIs</a>.</P>
+   </UL>
+  <H3>
+   <A NAME="clipping-X"></A>Clipping plane Coronal&nbsp; <IMG SRC="images/mri.button.clip-cor.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Select a Coronal clipping (&quot;cutting&quot;) plane (see below).</P>
+  <H3>
+   <A NAME="clipping-Y"></A>Clipping plane Transverse&nbsp; <IMG SRC="images/mri.button.clip-tra.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Select a Transverse clipping (&quot;cutting&quot;) plane (see below).</P>
+  <H3>
+   <A NAME="clipping-Z"></A>Clipping plane Sagittal&nbsp; <IMG SRC="images/mri.button.clip-sag.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Select a Sagittal clipping (&quot;cutting&quot;) plane.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   If in <A HREF="#three-slices-transp">the slice rendering modes</A>, 
+   it simply toggles the planes <B>on</B> or <B>off</B>:</P>
+  <P>
+   <IMG SRC="images/mri.clip1.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.clip2.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.clip3.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   If in <A HREF="#transparent-iso">the volume rendering modes</A>, it 
+   cuts the volume, showing <B>one half</B> first, then the <B>second half</B>,
+    and then <B>off</B> again:</P>
+  <P>
+   <IMG SRC="images/mri.clip4.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.clip7.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.clip8.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   In the case above the clippping planes can also be <B>cumulated</B>, 
+   then only the intersection of the 2 or 3 planes are clipped (note 
+   that it will become more computationally demanding):</P>
+  <P>
+   <IMG SRC="images/mri.clip4.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.clip5.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.clip6.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   All in all, you have 8 clipping combinations, 2 in each axis, 
+   allowing to clip any octant.</P>
+  <P>
+   See also the related topic of <A HREF="#search-orientation">searching 
+   and displaying the orientation</A>.</P>
+  <H3>
+   <A NAME="slice-mode"></A>Slice mode&nbsp; <IMG SRC="images/mri.button.slice-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   You switch to a serie of 2D slices:</P>
+  <P>
+   <IMG SRC="images/mri.slicedisplay.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   By pressing many times on the button, you have access to coronal, 
+   transverse and sagittal displays.</P>
+  <P>
+   The previous 3D display is still used (and might be <A HREF="#rendering">modified</A> 
+   as well), following the last slice, as to give an idea of&nbsp; where 
+   the slices are actually cutting.</P>
+  <P>
+   You can still <A HREF="windows-general-commands.html#mouse-rotating">rotate</A> 
+   the slices, if the orientation does not fit your taste.</P>
+  <H3>
+   <A NAME="more-less-slices"></A>More or less slices&nbsp; <IMG SRC="images/mri.button.less-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.more-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   While keeping the first and last slices position fixed, this will 
+   either add or remove intermediate slices. If pressing the <I>Shift</I> 
+   key at the same time, it either add all the slices between the 
+   current extremes, or remove all slices at once.</P>
+  <H3>
+   <A NAME="move-first-slice"></A>Move first slice&nbsp; <IMG SRC="images/mri.button.move-first-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-first-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Move the first slice forward or backward, the meaning of it being 
+   dependent of what is the current slice mode (coronal, transverse or 
+   sagittal). If pressing the <I>Shift</I> key at the same time, it will 
+   step faster each time.</P>
+  <H3>
+   <A NAME="move-last-slice"></A>Move last slice&nbsp; <IMG SRC="images/mri.button.move-last-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-last-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Move the last slice forward or backward, the meaning of it being 
+   dependent of what is the current slice mode (coronal, transverse or 
+   sagittal). If pressing the <I>Shift</I> key at the same time, it will 
+   step faster each time.</P>
+  <H3>
+   <A NAME="show-min-max"></A>Show Max&nbsp; <IMG SRC="images/is.button.max-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   <B>Draws a symbol</B> at the maximum position, which can be either:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A <B>transparent circle</B>, <B>always on top</B> of the display / 
+    volume, even if the <I>max itself is not directly in sight</I>:</P>
+   <P>
+    <IMG SRC="images/mri.show-min-max-1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.show-min-max-2.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <LI CLASS="mvd-P">
+   <P>
+    A <B>solid 3D cross</B>, visible <I>only</I> if the perspective 
+    allows it:</P>
+   <P>
+    <IMG SRC="images/mri.show-min-max-3.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.show-min-max-4.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </UL>
+  <P>
+   The slices are <I>not</I> automatically positionned at the max. If 
+   you want to do that use the <A HREF="#find-min-max-pos">Find Max 
+   position button</A> (below).</P>
+  <H3>
+   <A NAME="find-min-max-pos"></A>Find Max position&nbsp; <IMG SRC="images/is.button.find-min-max.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   This will <B>position the current cutting plane(s) at the maximum position</B>.</P>
+  <P>
+   It will <I>not</I> automatically show <I>where</I> the max is on the 
+   cutting plane, though. To that aim, use the <A HREF="#show-min-max">Show
+    Max button</A> (above).</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Here the <A HREF="#show-min-max">max is shown as a 3D cross</A>, and 
+   the Find Max position is <I>not</I> activated (top pictures), <I>then</I> 
+   activated (bottom pictures):</P>
+  <P>
+   <IMG SRC="images/mri.show-min-max-5.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.show-min-max-6.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   <IMG SRC="images/mri.show-min-max-3.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.show-min-max-7.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   &nbsp;</P>
+  <H3>
+   <A NAME="brightness"></A>Brightness&nbsp; <IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Only when you have some <A HREF="#clipping-X">clipping planes</A> 
+   active, it changes the brightness of the slices displayed. It also 
+   works in the special case of <A HREF="#isosurface-coloring">isosurface
+    coloring</A>.</P>
+  <P>
+   Technically, there is a mapping from values to colors, and increasing 
+   the brightness decreases the maximum value (indicated above the color 
+   scale) mapped to the maximum color, therefor making lower values 
+   appear brighter:</P>
+  <P>
+   <IMG SRC="images/mri.bright1.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.bright2.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.bright3.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="contrast"></A>Contrast&nbsp; <IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Contrast does not change the maximum value mapped to the maximum 
+   color, but changes the <B>slope of the mapping</B>, increasing or 
+   decreasing the color differences between low and high values.</P>
+  <P>
+   Low contrast is achieved through a linear mapping of the values to 
+   the colors. Higher contrasts are done by an exponential mapping (as a 
+   Gamma correction), making low values appear dimmer, and high values 
+   appear brighter:</P>
+  <P>
+   <IMG SRC="images/mri.contrast1.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.contrast2.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.contrast3.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   Note in the pictures above, that the maximum mapped value has not 
+   changed. Though the appearance of the color scale (on the right) has 
+   changed, correctly reflecting the non-linear color mapping (more 
+   colors for higher values when increasing contrast).</P>
+  <H3>
+   <A NAME="auto-scaling"></A>Color auto scaling&nbsp; <IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Sets the maximum volume value to the maximum color value. Put it 
+   another way: automatically sets the brightness to match and correctly 
+   display the data. Consequently, the <A HREF="#brightness">brightness</A> 
+   buttons become inactive, but still the <A HREF="#contrast">contrast</A> 
+   can be adjusted.</P>
+  <H3>
+   <A NAME="color-modes"></A>Color modes&nbsp; <IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Cycles through different color tables (black to white, white to 
+   black, black to yellow to white, etc...):</P>
+  <P>
+   <IMG SRC="images/mri.color-table-1.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.color-table-2.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.color-table-3.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.color-table-4.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.color-table-5.png" WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H2>
+   <A NAME="mouse"></A>MRI - Mouse</H2>
+  <P>
+   Go <A HREF="windows-general-commands.html#mouse">here</A> for the mouse actions 
+   common to all views.</P>
+  <H3>
+   Changing the Isosurface cutting value</H3>
+  <P>
+   While in <A HREF="#isosurface">Isosurface mode</A>, by holding the 
+   mouse's <B>right button</B> down, moving <B>upward</B> will increase 
+   the isosurface cutting value, therefore &quot;shrinking&quot; the 
+   volume. Conversely, moving <B>downward</B> will increase the 
+   isosurface cutting value, &quot;inflating&quot; the volume.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The <A HREF="windows-general-commands.html#mouse-hints">visual hints</A> 
+   associated with the isosurface:</P>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <IMG SRC="images/vishint.22.png" WIDTH="236" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.23.png" WIDTH="236" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </CENTER>
+  <H2>
+   <A NAME="keyboard"></A>MRI - Keyboard</H2>
+  <P>
+   See <A HREF="windows-general-commands.html#keyboard">the general 3D keyboard</A> 
+   and <A HREF="general-concepts.html#using-views">basic window keyboard</A> actions.</P>
+  <H2>
+   <A NAME="menus"></A>MRI - Menus</H2>
+  <H3>
+   <A NAME="menu-filters"></A>Filters menu</H3>
+  <P>
+   A whole bunch of filters are here for you to play with, enjoy!</P>
+  <P>
+   The filters apply to the current MRI at its current state. Here are 
+   the main families of filters:</P>
+  <P>
+   &nbsp;</P>
+  <UL>
+   <P>
+    <B>Denoising</B></P>
+   <UL>
+    <P>
+     All you need for cleaning up MRIs: Gaussian, Median, Mean...</P>
+    </UL>
+   <P>
+    <B>Arithmetic</B></P>
+   <UL>
+    <P>
+     Arithmetic operation like intensity rescaling.</P>
+    </UL>
+   <P>
+    <B>Histogram</B></P>
+   <UL>
+    <P>
+     Comuting histograms, Equalization, Compacting equalized histograms.</P>
+    </UL>
+   <P>
+    <B>Mask</B></P>
+   <UL>
+    <P>
+     Thresholding, binarization, combining &amp; applying masks, plus a 
+     bunch of operations on the neighborhood density.</P>
+    </UL>
+   <P>
+    <B>Morphology</B></P>
+   <UL>
+    <P>
+     Classical Dilate / Erode / Open / Close, plus some more like 
+     Thinning, Waterfall...</P>
+    </UL>
+   <P>
+    <B>Partial Derivatives</B></P>
+   <UL>
+    <P>
+     Gradient, Laplacian, Hessian, k Curvature...</P>
+    </UL>
+   <P>
+    <B>Statistics</B></P>
+   <UL>
+    <P>
+     Mean, SD, Coefficient of variation, Median, Mode, MAD, IQR, Entropy etc...</P>
+    </UL>
+   <P>
+    <B>Brain processing</B></P>
+   <UL>
+    <P>
+     Bias Field Correction</P>
+    <P>
+     Grey Matter segmentation</P>
+    <P>
+     White &amp; Grey matter segmentation</P>
+    <P>
+     Skull stripping</P>
+    </UL>
+   </UL>
+  <H3>
+   <A NAME="menu-options"></A>Options menu</H3>
+  <UL>
+   <P>
+    <B><A NAME="menu-iso-value"></A>Specify another Isosurface thresold value</B>
+    <UL>
+     Ask the user for the new <A HREF="terms-definitions-formulas.html#isosurface">Isosurface</A> 
+     (or <A HREF="#background-value">background threshold</A>) cutting 
+     value. This is equivalent to the <A HREF="#isosurface">interactive isosurface</A> 
+     modifications, plus the ability to reset to the default value.</P>
+    </UL>
+   <P>
+    <B><A NAME="menu-iso-quality"></A>Specify another Isosurface 
+    downsampling quality</B>
+    <UL>
+     Big MRI's or volumes (dimensions &gt; 128) have a downsampled 
+     isosurface by default. It does not affect the data displayed on <A HREF="#three-slices-transp">slices</A>,
+      but just the outer look of the surface. Downsampling makes the 
+     surface lighter and faster in memory, at the expense of a loss of 
+     spatial precision. If you want maximum precision (for that nice 
+     snapshot...), change this downsampling to 1 (can eat up to 50 M of 
+     memory!), and on the contrary, if you don't bother, you might 
+     increase it (though not so useful above 2).</P>
+    <P>
+     &nbsp;</P>
+    </UL>
+   <P>
+    <B><A NAME="menu-set-orient"></A>Set orientation flags</B>
+    <UL>
+     Force Cartool to assign an orientation meaning to the X,Y and Z axis, 
+     like X pointing to the Right, Y pointing Anterior, and Z pointing up.</P>
+    </UL>
+   <P>
+    <B>Reset orientation flags</B>
+    <UL>
+     Cancel the orientation specified by the user.</P>
+    </UL>
+   <P>
+    <B><A NAME="menu-new-origin"></A>Set new Origin</B>
+    <UL>
+     Set the voxel of origin, i.e. the one that will become coordinates (0,0,0).</P>
+    <P>
+     &nbsp;</P>
+    </UL>
+   <P>
+    <B><A NAME="menu-show-hide"></A>Show/hide informations</B>
+    <UL>
+     Show or hides some summary about the data.</P>
+    </UL>
+   <P>
+    <B>Show/hide color scaling</B>
+    <UL>
+     Does what it says (the color scaling is the thing on the right).</P>
+    </UL>
+   <P>
+    <B>Show/hide axis</B>
+    <UL>
+     Show or hides the X, Y, Z axis.</P>
+    </UL>
+   <P>
+    <B><A NAME="menu-show-orient"></A>Show/hide orientation</B>
+    <UL>
+     Toggles on or off the orientation cues (top, bottom, left, right, 
+     front, back) displayed on the sides of the window.</P>
+    </UL>
+   <P>
+    &nbsp;</P>
+   <P>
+    <B>Flip along X axis</B>
+    <UL>
+     Permute the data along the X axis.</P>
+    </UL>
+   <P>
+    <B>Flip along Y axis</B>
+    <UL>
+     Permute the data along the Y axis.</P>
+    </UL>
+   <P>
+    <B>Flip along Z axis</B>
+    <UL>
+     Permute the data along the Z axis.</P>
+    </UL>
+   <P>
+    <B>Flip X and Y axis</B>
+    <UL>
+     Permute the data along the X and Y axis.</P>
+    </UL>
+   <P>
+    <B>Flip Y and Z axis</B>
+    <UL>
+     Permute the data along the Y and Z axis.</P>
+    </UL>
+   <P>
+    <B>Flip X and Z axis</B>
+    <UL>
+     Permute the data along the X and Z axis.</P>
+    </UL>
+   <P>
+    &nbsp;</P>
+   <P>
+    <B><A NAME="menu-depth-shift"></A>'Depth shifting' trick </B>(see <A HREF="#depth-shift">here</A> 
+    for full explanations)
+    <UL>
+     <B>Off</B>
+     <UL>
+      turn it off, back to normal behavior.</P>
+     </UL>
+    <P>
+     <B>Light</B>
+     <UL>
+      allow a depth shift up to 12% of the maximum depth.</P>
+     </UL>
+    <P>
+     <B>Medium</B>
+     <UL>
+      allow a depth shift up to 25% of the maximum depth.</P>
+     </UL>
+    <P>
+     <B>High</B>
+     <UL>
+      allow a depth shift up to 37% of the maximum depth.</P>
+     </UL>
+    <P>
+     <B>Maximum</B>
+     <UL>
+      allow a depth shift up to 50% of the maximum depth (half of the volume).</P>
+     </UL>
+    </UL>
+   </UL>
+  <H2>
+   <A NAME="technical-points"></A>MRI - Technical points</H2>
+  <H3>
+   <A NAME="background-value"></A>Initial background threshold value</H3>
+  <P>
+   When opening (or modifying) a volume, it is needed to estimate the 
+   value below which is only noise (or null data), and above which are 
+   significant data. This value is called the <B>background threshold value</B>,
+    and is also used as the inital <A HREF="#isosurface">isosurface 
+   cutting value</A>.</P>
+  <P>
+   Though it seems very intuitive to you when a looking at the data, 
+   remember you are using a very complex image analysis processing 
+   called the human visual system. But when it comes to an automatic 
+   process, things get tougher, so here is the method currently in use:</P>
+  <P>
+   Cartool first computes a downsampled histogram of the volume, then 
+   cuts at the first valley following the first peak. The first peak 
+   usually designates the background voxels values, which are more or 
+   less the most numerous low values voxels. So cutting just after the 
+   peak end usually leads to the best results.</P>
+  <H4>
+   Remarks:</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    The algorithm also cares for the special case where a volume has been 
+    partially extracted and embeded into another one. This could give 2 
+    low values peaks, one for value 0 (null/empty background), and 
+    another one with the original, noisy background.<BR>
+    <LI CLASS="mvd-P">It also behaves nicely (usually) even when values 
+    have been redistributed over the full range of possible values, 
+    modifying the dynamic range of the data, and giving a comb-like histogram.<BR>
+    <LI CLASS="mvd-P">Finally, Cartool will restrain the background 
+    threshold value not to exceed 25% of the whole dynamic range of the 
+    data (it is supposed to be a <I>background</I> value).</P>
+   </UL>
+  <P>
+   Background threshold value can be modified later on, either through 
+   this <A HREF="#menu-iso-value">option</A>, or by the <A HREF="#isosurface">interactive
+    isosurface</A> process.</P>
+  <P>
+   Background threshold value is implicitly used when searching for the <A HREF="#search-orientation">orientation</A>,
+    and can therefor affect its proper detection.</P>
+  <H3>
+   <A NAME="guessing-content"></A>Guessing what the volume actually is</H3>
+  <P>
+   Though not a vital point, Cartool tries to guess what the heck is 
+   that volume you just opened! It has absolutely <B>no influence on the 
+   content itself</B>, and it will <B>not modify anything</B> in it! 
+   However, Cartool uses its guess to tune up a few parameters for a 
+   better display, like the isosurface smoothness, the isosurface 
+   cutting value, the colors, etc...</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Cartool will &quot;guess&quot; between these different types of volumes:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A <B>Full Head</B>, that means, an original scan that has not been 
+    (that much) modified. The surface is made &quot;smooth&quot;, with 
+    default black-to-white colors:</P>
+   </UL>
+  <CENTER>
+   <P class="auto-style2">
+    <IMG SRC="images/mri.guess.full-head.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </CENTER>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A <B>Segmented Brain</B>, that is an original scan that has been 
+    clipped to some of its parts (grey matter, white matter, etc...). The 
+    surface is made &quot;smooth&quot;, with black-to-white colors:</P>
+   </UL>
+  <CENTER>
+   <P class="auto-style3">
+    <IMG SRC="images/mri.guess.brain.png" VSPACE="0" HSPACE="0" BORDER="0" class="auto-style1"></P>
+   </CENTER>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A <B>Binary Mask</B>, which contains only 2 values (0 and whatever). 
+    The surface is made to look &quot;LEGO-like&quot; as to reflect the 
+    idea of a mask, and with black-to-white colors:</P>
+   </UL>
+  <CENTER>
+   <P class="auto-style3">
+    <IMG SRC="images/mri.guess.binary-mask.png" VSPACE="0" HSPACE="0" BORDER="0" class="auto-style1"></P>
+   </CENTER>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A <B>ROI Mask</B>, which is made of regions with arbitrary fixed 
+    values. The surface is made to look &quot;LEGO-like&quot; as to 
+    reflect the idea of a mask, with an <A HREF="#isosurface-coloring">external
+     coloring</A> done from the ROI's values, and with rainbow-ish colors:</P>
+   </UL>
+  <CENTER>
+   <P class="auto-style3">
+    <IMG SRC="images/mri.guess.roi-mask.png" VSPACE="0" HSPACE="0" BORDER="0" class="auto-style1"></P>
+   </CENTER>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Some <a href="computing-ris.html"><strong>Results from Inverse Solution</strong></a>, 
+	usually <strong>transformed into volumes</strong> by
+	<a href="ris-to-volumes.html">this toolbo</a>x:</P>
+   </UL>
+  <P class="auto-style1">
+  <img height="263" src="images/mri.guess.ris.png" width="280"></P>
+  <UL>
+      <LI CLASS="mvd-P">
+      <P>
+    A <B>Blob</B>, usually the <B>results of some computations</B>. The surface 
+    is made &quot;not-too-smooth&quot;, with rainbow-ish colors:</P>
+   </UL>
+  <CENTER>
+   <P class="auto-style3">
+    <IMG SRC="images/mri.guess.blob.png" VSPACE="0" HSPACE="0" BORDER="0" class="auto-style1"></P>
+   </CENTER>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    None of these.</P>
+   </UL>
+  <H3>
+   <A NAME="search-orientation"></A>Searching for the orientation</H3>
+  <P>
+   Cartool tries to &quot;understand&quot; by itself the orientation of 
+   the data inside the volume. There are many reasons to do this. 
+   Firstly, there are many formats supported in Cartool, and not all of 
+   them do include informations on how oriented the data are. Secondly, 
+   though some formats have the ability to describe the orientation, it 
+   may not be used, or even worse, may be used erroneously. And finally, 
+   there are people who like to define an orientation system of their 
+   own, and you have to guess which one in the 48 possible systems.</P>
+  <P>
+   So the best solution is simply to ignore all this mess. Cartool will 
+   read a volume <B>as it is written</B> in the file and will <B>not attempt</B> 
+   anything to re-orient it (i.e. <I>coregistration is the user's responsability</I>).
+    However, it will try to guess, as we are dealing with (some sort of) 
+   brains and heads, how it is oriented to simplify and ease the<B> 
+   manipulation and display</B>:</P>
+  <P>
+   <IMG SRC="images/mri.orientation1.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.orientation2.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.orientation3.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Flags are displayed on the borders of the window, showing the closest 
+    possible indications for the projected axis.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Rotating the object will automatically update the flags' positions 
+    and contents (just try it!).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Using the default <A HREF="windows-general-commands.html#orientation">orientation button</A>,
+     you can cycle through 6 predefined rotations, consistent for all 
+    volumes (sagittal, coronal and transverse views, on both side).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    You can still turn off the display through <A HREF="#menu-show-orient">this
+     option</A>.</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   I will not describe the algorithm used here, as it has not been 
+   published, and is still under development. Enough to say it works by 
+   scanning the volume, sequentially finding axis by looking for 
+   symetries, center of gravity, and a few other appropriate methods. It 
+   has been tested on a lot of volumes, of low and high resolutions, 
+   extracted brains or full heads, partially cut or complete, MRIs or 
+   PETs, etc... But still the result may be incorrect if there are 
+   unwanted artifacts in the volume. In any case, it will not modify nor 
+   interfere with the real data.</P>
+  <P>
+   The success of the detection will depend on the initial <A HREF="#background-value">background
+    threshold value</A>, so an incorrect threshold is very likely to 
+   give an incorrect orientation. Cartool also waits for something <I>like
+    a brain</I>, so if the volume is not looking close to this (say, 
+   your grandfather's watch), the result is simply unpredictable (though 
+   sometimes it works!). If the detection totally fails, the flags are 
+   simply &quot;X Max&quot;, &quot;X Min&quot;, &quot;Y Max&quot; etc...</P>
+  <H3>
+   <A NAME="depth-shift"></A>'Depth shifting' trick</H3>
+  <P>
+   In the real world, an object and its image are (without entering in a 
+   metaphysical discussion) at the same place. So you can touch what you 
+   see, except for holograms, right?<BR>
+   Now with computers, you can do more un-natural tricky things. In the 
+   present case, we can introduce a <B>shift</B> between the <B>depth position</B> 
+   of the &quot;object&quot; (where it is), and its <B>image</B> (where 
+   we see it). So it will appear rather normally, though its position is 
+   actually displaced <B>toward the viewer</B> (you / the screen). 
+   Intuitively, we will see the object contained into another one, 
+   displayed &quot;on top&quot; of it instead of being occluded. See an 
+   example with 3 increasing <A HREF="#menu-depth-shift">depth shifts</A>:</P>
+  <P>
+   <IMG SRC="images/mri.depthshift1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.depthshift2.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.depthshift3.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   Though the full head is opaque, and the brain is inside (well, 
+   usually...), with increasing the depth shift we can visualize up to 
+   the half of the brain (the maximum) seen on top of the head. But <B>this
+    is not by any mean a &quot;projection onto the surface&quot; of the head</B>.</P>
+  <P>
+   The depth shift is limited to up to the half of the object, therefor 
+   hiding its furthest half in all cases (in the example above, we will 
+   never see the left hemisphere of the brain, as we see from the right side).</P>
+  <P>
+   &nbsp;</P>
+  <H4>
+   Very important notice:</H4>
+  <P>
+   Once a shift has been introduced, <B>you could easily induce a 
+   misinterpretation of where the data really are</B> while rotating the 
+   volume. I therefor <B>strongly recommend to use it very cautiously</B>,
+    and to favor <B>orthogonal simultaneous views</B> only.<BR>
+   See an example of possible misinterpretation due to small rotations, 
+   the inner blob is nearly central but can be made as if it were on the 
+   left or on the right side:</P>
+  <P>
+   <IMG SRC="images/mri.depthshift4.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.depthshift5.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.depthshift6.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="talairach"></A>Talairach coordinates in MRI</H3>
+  <P>
+   Talairach coordinates are, at the moment, hardwired into the code and 
+   therefor <B>available only for a restricted set of MRI files</B>: the 
+   MNI / McGill standard brains.</P>
+  <P>
+   The files which Cartool recognizes <B>can only be the following</B>:</P><UL><PRE><B>*MNI152T1*.hdr</B><BR><B>MNI152.Nlin*.hdr</B><BR><B></B>        <BR><B>avg152T1_smac_brain.hdr</B><BR><B>avg152T1_smac_grey.hdr</B><BR><B>avg152T1_smac_pro.hdr</B><BR><B>avg152T1_smac_pro_grid.3005p.spi</B><BR><B></B>        <BR><B>ave152_sym_brain.hdr</B><BR><B>ave152_sym_grey.hdr</B><BR><B>ave152_sym_pro.hdr</B><BR><B>ave152_sym_pro_grid.2738p.spi</B><BR><B></B>        <BR><B>avg152T1.fld</B></PRE></UL><P>
+   &nbsp;</P>
+  <P>
+   <B>Only then</B> are these functionalities available:</P>
+  <P>
+   &nbsp;</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <FONT FACE="Arial Black,Arial,Helvetica">Tools | Geometry transform 
+    (set of points)</FONT> , from the general menu:</P>
+   <P>
+    Give one (or more) text file(s), which <B>each line contains a set of 
+    3D coordinates</B> in the original MRI space. Each of these 3D 
+    coordinates will be transformed to Talairach, and outputed in a new 
+    file. F.ex.:</P>
+   <P>
+    &nbsp;<BR>
+    59.877 64.004 31.437&nbsp;&nbsp; will become&nbsp;&nbsp;&nbsp; 
+    -6.4474739e+01 -1.2306906e+01&nbsp; 1.7800585e+01</P>
+   <P>
+    &nbsp;</P>
+   <P>
+    Note that you can run the Talairach Daemon on this new output file, 
+    to get the corresponding brain areas.</P>
+   <P>
+    &nbsp;</P>
+   <LI CLASS="mvd-P">
+   <P>
+    You can <B><A HREF="windows-general-commands.html#mouse-picking">poll with the mouse</A></B> 
+    in the volume, and get the Talairach coordinates of the clicked 
+    location, in real-time:</P>
+   <P>
+    <IMG SRC="images/vishint.talairach.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;
+ </BODY>
+</HTML>

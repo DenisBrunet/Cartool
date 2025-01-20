@@ -1,0 +1,496 @@
+<HTML>
+ <HEAD>
+  <TITLE>Appendix B - Cartool Slang and Various Formulas</TITLE>
+ <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css">
+  <style type="text/css">
+.auto-style1 {
+	margin-left: 40px;
+}
+</style>
+ </HEAD>
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   Appendix B<BR>
+   Cartool <em>Slang</em> &amp; Various Formulas</H1>
+  <P>
+   &nbsp;</P>
+  <H5>
+   <A HREF="#formulas">Formulas</A><br><A HREF="#data-types">Data types</A><br>
+   <A HREF="#regular-expressions">String regular expression</A><br>
+   <A HREF="#Segmentation">Segmentation</A><br><A HREF="#tracks">Tracks</A><br>
+   <A HREF="#trigger">Triggers, Markers &amp; Events</A><br><A HREF="#cursor">Cursor</A><br>
+   <A HREF="#mris-volumes">MRIs and volumes</A><br><A HREF="#document">Documents &amp; views</A><br>
+   <A HREF="#OpenGL">OpenGL Graphic</A></H5>
+  <H2>
+   <A NAME="formulas"></A>Formulas</H2>
+  <P>
+   Let's define:</P>
+  <P>
+   n = number of electrodes,<BR>
+   U<SUB>org<I> </I><B>i</B></SUB> = measured voltage of electrode <B>i</B>,
+    against the recording reference,<BR>
+   <BR>
+   <BR>
+   </P>
+  <P>
+   <A NAME="average-reference"></A>The <B>Average Reference</B>:<BR>
+   &nbsp;<IMG SRC="images/formul3.png" ALIGN=CENTER WIDTH="166" HEIGHT="124" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   The valued v<SUB>i</SUB> and u<SUB>i</SUB> used in the following 
+   formulas are (subtracting the average reference): <IMG SRC="images/formul1.png" ALIGN=CENTER WIDTH="162" HEIGHT="73" VSPACE="0" HSPACE="0" BORDER="0">and<IMG SRC="images/formul2.png" ALIGN=CENTER WIDTH="168" HEIGHT="78" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   <BR>
+   <BR>
+   <BR>
+   </P>
+  <P>
+   <A NAME="GFP"></A>The <B>Global Field Power</B> (GFP) is the standard 
+   deviation of the data:<BR>
+   <IMG SRC="images/formul4.png" ALIGN=CENTER WIDTH="176" HEIGHT="130" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   <BR>
+   <BR>
+   <BR>
+   </P>
+  <P>
+   <A NAME="dissimilarity"></A>The <B>Dissimilarity</B> is the square 
+   root of the mean of the squared differences between the potentials 
+   measured at all corresponding electrodes. Since only landscape 
+   differences are of interest, the maps are first scaled to unitary 
+   strength by dividing the voltage at each electrode by the GFP:<IMG SRC="images/formul5.png" ALIGN=CENTER WIDTH="217" HEIGHT="131" VSPACE="0" HSPACE="0" BORDER="0"> with<IMG SRC="images/formul6.png" ALIGN=CENTER WIDTH="137" HEIGHT="99" VSPACE="0" HSPACE="0" BORDER="0">and<IMG SRC="images/formul7.png" ALIGN=CENTER WIDTH="135" HEIGHT="99" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   The Dissimilarity ranges from 0 to 2. Diss=2 means that the two maps 
+   are inverted, Diss=0 means that they are similar.<BR>
+   Dissimilarity and Global Field Power have been developed by Lehmann 
+   &amp; Skrandies, 1980.<BR>
+   <BR>
+   <BR>
+   <BR>
+   </P>
+  <P>
+   <A NAME="correlation"></A>The <B>Spatial Correlation</B> between two 
+   maps is mathematically defined as:<BR>
+   <IMG SRC="images/formul8.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   The relation between Dissimilarity and correlation has been developed 
+   by Brandeis et al., 1992. He showed that:<BR>
+   <IMG SRC="images/formul9.png" ALIGN=CENTER WIDTH="179" HEIGHT="80" VSPACE="0" HSPACE="0" BORDER="0">or<IMG SRC="images/formul10.png" ALIGN=CENTER WIDTH="168" HEIGHT="98" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   Correlation ranges from -1 to +1. C = -1 means that the two maps are 
+   inverted, C = +1 means that they are similar.<BR>
+   <BR>
+   <BR>
+   <BR>
+   <BR>
+   The <B>Explained Variance (EV)</B> gives the amount of variance over 
+   all electrodes of a given map that is explained by another map. It is 
+   calculated as:<BR>
+   <IMG SRC="images/formul11.png" ALIGN=CENTER WIDTH="372" HEIGHT="162" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   Therefor, the relation between correlation and explained variance is 
+   the same as between the two statistical values variance and standard deviation:<BR>
+   <IMG SRC="images/formul12.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0">or<IMG SRC="images/formul13.png" ALIGN=CENTER WIDTH="122" HEIGHT="70" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   <BR>
+   <BR>
+   <BR>
+   </P>
+  <P>
+   <A NAME="GEV"></A>The <B>Global Explained Variance (GEV)</B> is NOT 
+   just the mean of the explained variances over a time period and is 
+   NOT the mean correlation of the segment map in the time period. The 
+   global explained variance is the sum of the explained variances 
+   WEIGHTED by the Global Field Power at each moment in time:<BR>
+   <IMG SRC="images/formul14.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   Thus, a map that explains a short period with high GFP might have a 
+   higher GEV than a map that explains a long time period with low GFP.</P>
+  <P>
+   It is worth mentioning that the summation of all time frames can also 
+   be split into contributions for each segment (in which the segment 
+   map is constant). Then, for <I>q</I> segments/clusters:<BR>
+   <IMG SRC="images/formul18.png" WIDTH="177" HEIGHT="95" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   <BR>
+   <BR>
+   <BR>
+   </P>
+  <P>
+   <A NAME="cross-validation"></A>The <B>Cross Validation</B>&nbsp; (CV) 
+   for a number <I>q</I> of clusters is a modified version of the 
+   predictive residual variance:<BR>
+   <IMG SRC="images/formul16.png" WIDTH="250" HEIGHT="109" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   with <IMG SRC="images/formul17.png" ALIGN=BASELINE WIDTH="15" HEIGHT="23" VSPACE="0" HSPACE="0" BORDER="0"> 
+   as the normalized vector chosen by the segmentation at time point <I>t</I>,
+    <I>v</I> as the vector of voltages <I>v<SUB>i</SUB></I>, the 
+   estimator of the noise variance being (or put simply, the error done 
+   by the segmentation):<BR>
+   <IMG SRC="images/formul15.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   The value of <I>q</I> minimizing the cross validation is the optimal 
+   number of clusters/maps.</P>
+  <H2>
+   <A NAME="data-types"></A>Data types in Cartool</H2>
+  <H3>
+   Data handled in Cartool can be:</H3>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Scalar, positive-only values</B> (also referred as &quot;Positive Data&quot;)</P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Scalar, signed values</B></P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P>
+     <B><I>with</I> Average Reference</B><BR>
+     <LI CLASS="mvd-P"><B><I>without</I> Average Reference</B></P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Vectorial values</B></P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   <B>Positive-only</B> values could be f.ex. the <B><I>norms</I> of the <A HREF="file-calculator.html#results-of-inverse">Results
+    of Inverse Solution</A></B>, or <B>spikes counting</B> of some 
+   sorts, etc... where negative values are irrelevant.</P>
+  <P>
+   <B>Scalar, signed values</B> are the usual <B>EEG data</B>. That is, 
+   values can be whatever, positive or negative. We can further 
+   distinguish EEG data with or without Average Reference. Surface 
+   recordings (on the scalp) are always analysed <B>with <A HREF="#formulas">Average
+    Reference</A></B> (we don't really promote reference against a 
+   single or a set of electrodes BTW), while depth electrodes recordings 
+   are done <B>without Average Reference</B>.</P>
+  <P>
+   <B>Vectorial values</B> are usually the <B>Results of the Inverse Solutions</B>,
+    which produce 3D vectors at each solution point location. Cartool 
+   can optionally <A HREF="esi-display.html#IS-vectors">show you 
+   these vectors</A>, but most of the time, what you see are only the 
+   norms of these vectors, <A HREF="eeg-display.html#rendering">as with the EEG 
+   tracks display</A> or <A HREF="esi-display.html#IS-in-3D">with all 
+   these sorts of 3D blobs</A>. Nonetheless, the data behind <I>are</I> 
+   of vectorial nature.</P>
+  <H3>
+   <B>Know which data you're working on!</B></H3>
+  <P>
+   Because Cartool can be parameterized for all those cases, and the 
+   results will be different if you make the wrong choices, <B>you have 
+   to carefully select all the settings about data-type!</B></P>
+  <P>
+   Fortunately for you, <A HREF="all-processings.html#tools">many of the processings</A> 
+   now have a <I>Presets</I> drop-down menu (see <A HREF="microstates-segmentation.html#seg-dialog">here
+    f.ex.</A>) for you to pick the right data type setting (or a very 
+   close one you can fine-tune).</P>
+  <H3>
+   <B>On the influence on formulas</B></H3>
+  <P>
+   Data labeled as Positive-only values will be applied slightly 
+   different <A HREF="#formulas">formulas</A>. Mainly, <B>all formulas 
+   which first step is an average reference will simply skip it</B>. No 
+   average reference will be applied, because it has no meaning in these cases.</P>
+  <P>
+   <A HREF="#GFP">GFP</A> (Global Field Power) will become a RMS (Root 
+   Mean Square), and the other formulas keep their names, like the <A HREF="#correlation">Correlation</A>,
+    <A HREF="#dissimilarity">Dissimilarity</A>, <A HREF="#GEV">GEV</A> 
+   (Global Explained Variance), etc...</P>
+  <H2>
+   <A NAME="regular-expressions"></A>String regular expressions</H2>
+  <P>
+   In a nutshell, <I><A HREF="https://www.google.ch/search?q=regular+expression+for+beginners"><B>regular
+    expressions</B></A></I> are a powerful way to <B>find matches across 
+   a list of strings</B>. It uses a <A HREF="https://docs.python.org/2/howto/regex.html">special
+    syntax</A> that you can learn bit by bit, according to your needs, 
+   which can help you launch very powerful requests.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   This is no tutorial on the subject, but just to show you a few common 
+   examples. Suppose your files have the following trigger / marker names:</P>
+  <UL>
+   <P>
+    EyesOpen, EyesClosed,</P>
+   <P>
+    Trigger1, Trigger2, Trigger10, Trigger20,</P>
+   <P>
+    GfpAbove80, GfpAbove90, GfpAbove100</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   And we want to <A HREF="eeg-display.html#menu-marker-search"><FONT FACE="Arial Black,Arial,Helvetica">Search
+    for marker</FONT></A>, let see some basic requests and their answers.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   First, the most intuitive search is to simply give a <B>string of characters</B>,
+    which will then return any marker name that <B>contains these characters</B>:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    &quot;Eyes&quot; &#150;&gt; EyesOpen, EyesClosed</P>
+   <LI CLASS="mvd-P">
+   <P>
+    &quot;Trig&quot; &#150;&gt; Trigger1, Trigger2, Trigger10, Trigger20</P>
+   <LI CLASS="mvd-P">
+   <P>
+    &quot;1&quot; &#150;&gt; Trigger1, Trigger10, GfpAbove100</P>
+   <LI CLASS="mvd-P">
+   <P>
+    &quot;0&quot; &#150;&gt; Trigger10, Trigger20, GfpAbove80, 
+    GfpAbove90, GfpAbove100</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   Then we can introduce the <B>special meaning character</B> &quot;<B>.</B>&quot;,
+    which means <B>&quot;can be any character except a space&quot;</B>:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    &quot;1.&quot; (a 1 followed by any character) &#150;&gt; Trigger10, GfpAbove100</P>
+   <LI CLASS="mvd-P">
+   <P>
+    &quot;T......1&quot; (a T followed by any 6 characters then a 1) 
+    &#150;&gt; Trigger1, Trigger10</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   Other useful special characters are &quot;<B>(</B>&quot;, &quot;<B>|</B>&quot;
+    and &quot;<B>)</B>&quot; to set a <B>list of possible alternatives</B>:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    &quot;Eyes(Open|Closed)&quot; (Eyes then either Open or Closed) 
+    &#150;&gt; EyesOpen, EyesClosed</P>
+   <LI CLASS="mvd-P">
+   <P>
+    &quot;Trigger(1|20)&quot; &#150;&gt; Trigger1, Trigger20</P>
+   <LI CLASS="mvd-P">
+   <P>
+    &quot;Above(90|100)&quot; &#150;&gt; GfpAbove90, GfpAbove100</P>
+   </UL>
+  <H2>
+   <A NAME="Segmentation"></A>Segmentation</H2>
+  <P>
+   <B><A NAME="map"></A>Map:</B>&nbsp;the 2D / 3D visual representation of the 
+   EEG potentials at a given time point:</P>
+  <P class="auto-style1">
+   &nbsp;<img height="107" SRC="images/seg.template-map.small.png" width="109"></P>
+  <P>
+   But a map is actually only a...</P>
+  <P>
+   <B><A NAME="vector"></A>Vector</B> of values (e<I><SUB>1</SUB></I>, e<I><SUB>2</SUB></I>,
+    e<I><SUB>3</SUB></I>, ..., e<I><SUB>n</SUB></I>), for <I>n</I> electrodes.</P>
+  <P>
+   <B><A NAME="segment"></A>Segment:</B> a set of maps which have been 
+   said to belong to the same group. To identify the segments, we use a...</P>
+  <P>
+   <B><A NAME="labelling"></A>Labeling:</B> simply a numbering for each time 
+   point, telling to which segment it has been assigned. F.ex. 
+   1,1,1,2,2,3,3,3,3... first segment: the 3 first time points, second segment: 
+   time points 4 &amp; 5... Graphically rendered, with time as horizontal axis, and 
+   one color per segment:</P>
+  <P class="auto-style1">
+   &nbsp;<IMG SRC="images/small-segment.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   <B><A NAME="cluster"></A>Cluster:</B> another name for a segment, but 
+   seen from the clustering algorithm point of view. A set of vectors 
+   that have been grouped together.</P>
+  <P>
+   <B><A NAME="landscape"></A>Templates (landscape maps)</B>: the set of <I>n</I> 
+   synthetic maps produced by the segmentation that will best represent 
+   the data. Also called centroids, they are usually computed as the average of 
+   a set of maps. See here f.ex. the 4 template maps given by 4 segments:</P>
+  <P class="auto-style1">
+   <img height="112" SRC="images/seg.template-maps.small.png" width="378"></P>
+  <P>
+   See also the <A HREF="microstates-segmentation.html">Segmentation &amp; Fitting</A> page.</P>
+  <H2>
+   <A NAME="tracks"></A>Tracks</H2>
+  <P>
+   <B>Tracks</B>: (or channels, or <B>regular tracks</B>) The display 
+   representation of the electrodes' recordings in time.</P>
+  <P>
+   <B>Auxiliary tracks</B>: The tracks of the auxiliary electrodes (like 
+   ECG, EOG...), plotted in light blue.</P>
+  <P>
+   <B>Bad tracks</B>: Tracks (usually regular tracks, but auxiliaries 
+   are also possible) that have been set as bad by the user. F.ex. 
+   noisy, meaningless tracks. The bad tracks are excluded from the 
+   computed tracks process, and are plotted in light transparent red.</P>
+  <P>
+   <B>Computed tracks</B>: These are not recorded tracks, but are 
+   computed on-line by Cartool, and will appear separately at the bottom 
+   of the Eeg display in blue. Presently computed tracks are: <A HREF="#formulas">GFP</A>,
+    <A HREF="#formulas">Dissimilarity</A> and <A HREF="#formulas">Average</A>.
+    Any change on the data, like filtering or setting some tracks as bad 
+   will affect the computation, which can be seen in real-time.</P>
+  <P>
+   From top to down, the regular tracks, some auxiliary tracks, then two 
+   computed tracks:</P>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <IMG SRC="images/eeg.tracks.png" WIDTH="304" HEIGHT="285" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </CENTER>
+  <H2>
+   <A NAME="trigger"></A>Triggers, Markers &amp; Events</H2>
+  <P>
+   <B>Trigger</B>: a trigger is a<B> flag</B> already contained <B>in 
+   the original Eeg file</B>, usually sent by the stimulation machine 
+   when a given <B>event</B> occured (stimuli presentation f.ex.). The 
+   user can hide the triggers, but can not delete nor modify them. F.ex. 
+   here triggers 1 and 2 were sent when reversing a checkerboard on the screen:<BR>
+   <IMG SRC="images/eeg.triggers.png" WIDTH="329" HEIGHT="211" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   <A NAME="events"></A><B>Events</B>: in some cases, the recorded file 
+   can also contain events sent by the stimulation machine, but which 
+   are not triggers by themselves (ie not synchronized to the stimuli 
+   presentation). For example initialization events, subject responses 
+   from the keypad, reaction times, etc... They too can not be deleted.</P>
+  <P>
+   <A NAME="marker"></A><B>Marker</B>: a marker is a <B>user defined</B> 
+   flag manually set in the Eeg, with any description attached to it. 
+   The user can add and delete them as needed, and even generate them 
+   through computation (see <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="eeg-display.html#menu markers">Markers</A></FONT><A HREF="eeg-display.html#menu-markers"> menu</A> 
+   ). They are written in an external file (see <I><A HREF="files-formats-cartool.html#mrk">.mrk</A></I><A HREF="files-formats-cartool.html#mrk"> 
+   file format</A>). F.ex. here two markers were added:<BR>
+   <IMG SRC="images/eeg.markers.png" WIDTH="329" HEIGHT="211" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   <B><A NAME="epoch"></A>Epoch:</B> a <B>small time interval</B> of an 
+   EEG. It consists in an <B>origin</B> and two intervals, one <B>before</B> 
+   and one <B>after</B> its origin. The origin is usually a trigger from 
+   an experiment, and the whole duration will give the size if the <A HREF="#erp">ERP</A> <A HREF="computing-erps.html">computed</A>.</P>
+  <P>
+   There is rarely a single epoch to be considered, but rather a whole 
+   serie of them.</P>
+  <P>
+   <B><A NAME="erp"></A>ERP:</B> Evoked Response Potentials (in case you 
+   don't know).</P>
+  <H2>
+   <B><A NAME="cursor"></A></B>Cursor</H2>
+  <P>
+   <B>Cursor</B>: the current position in the Eeg, shown in red. Usually 
+   it is a single time frame in the Eeg:<BR>
+   <IMG SRC="images/eeg.1tf.png" ALIGN=TOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   <B>Extended cursor</B>: the cursor can extend to many time frames. 
+   This period of time can be used for averages, or time sequences for 
+   the display:<BR>
+   <IMG SRC="images/eeg.ntf.png" ALIGN=TOP WIDTH="238" HEIGHT="180" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   <B>Frequency cursor</B>: a cursor to select some frequency range, 
+   show in blue. This applies only to frequency files:<BR>
+   <IMG SRC="images/freq.cursor.png" ALIGN=TOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   <B><A NAME="time-frame"></A>Time frame</B>: (or time point) while 
+   recording the Eeg, each sample is numbered, starting from 0 to N-1, N 
+   being the total number of samples. It is therefor an index in the 
+   acquisition sequence, but not the time (in 
+   milliseconds/seconds/minutes) itself.</P>
+  <P>
+   <B>Sampling frequency</B>: the number of samples per second of the 
+   Eeg values. This value makes possible to translate from time frames 
+   to milliseconds, which is more understanble and mandatory for some 
+   processings (filters f.ex.).</P>
+  <H2>
+   <A NAME="mris-volumes"></A>MRIs and volumes</H2>
+  <P>
+   <A NAME="isosurface"></A><B>Isosurface</B>: a <B>mathematical surface</B> 
+   which <B>cuts through a volume at a constant value</B>. An isosurface 
+   is simply defined by this constant value, telling at which &quot;grey 
+   level&quot; the volume is to be cut.<BR>
+   Simply put, it is like a hollow veil molded around a volume (the data 
+   at a given value).<BR>
+   The now classical Marching Cube algorithm is used, with collapsed 
+   triangles decimation only. Also, the data are Gaussian filtered 
+   before the process, to remove small artifacts, to give a smoother 
+   surface and less triangles.</P>
+  <P>
+   <B><A NAME="voxel"></A>Voxel</B>: a volume element (derived from 
+   pixel, picture element, that's for the 'x'), the smallest part that 
+   can be accessed in a full volume. Voxels are usually indexed by 3 
+   coordinates, as they are in 3 dimensions, but these indexes may not 
+   have the meaning of X, Y and Z, or whatever you expect them to be...</P>
+  <H2>
+   <A NAME="document"></A>Documents and Views</H2>
+  <P>
+   <B>Documents</B>: the actual <B>data read from file</B> are put in a 
+   Document. Documents are only numbers in memory, you can't see them. 
+   For this purpose, <A HREF="#view">views</A> are attached to them.</P>
+  <P>
+   <A NAME="view"></A><B>Views</B>: to see the data, you need at least 
+   one view, but you can add as many views as you want, all reflecting 
+   the current data from its <A HREF="#document">Document</A>. Views can 
+   be of different types, to allow various explorations or analysis. 
+   These types are most of the time context sensitive.</P>
+  <P>
+   F.ex. a document with Eeg contents (= simply a matrix of numbers), 
+   with 3 views attached at the same time, one view with all 2D Eeg 
+   tracks superimposed, one view with 3D Eeg tracks, one view with a 2D 
+   interpolated color <A HREF="windows-general-commands.html#rendering">rendering</A> 
+   of a given <A HREF="#time-frame">time frame</A>:</P>
+  <CENTER>
+   <P ALIGN=CENTER>
+    Document<BR>
+    <IMG SRC="images/eeg.render5.png" ALIGN=CENTER WIDTH="217" HEIGHT="194" VSPACE="0" HSPACE="0" BORDER="0">__<IMG SRC="images/eeg.text.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0">__<IMG SRC="images/eeg.render1.png" ALIGN=CENTER WIDTH="217" HEIGHT="194" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+    |</P>
+   </CENTER>
+  <CENTER>
+   <P ALIGN=CENTER>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 
+	<IMG SRC="images/seg.template-map.small.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0" height="107" width="109">Views</P>
+   </CENTER>
+  <H2>
+   <A NAME="OpenGL"></A>OpenGL Graphic</H2>
+  <P>
+   <IMG SRC="images/opengl-logo.gif" ALIGN=ABSMIDDLE WIDTH="82" HEIGHT="40" VSPACE="0" HSPACE="0" BORDER="0"> &reg;</P>
+  <P>
+   OpenGL is a standard and very powerful graphic library for 3D 
+   rendering, first developped by Silicon Graphics, then transferred to 
+   other platforms. OpenGL is evolving, so it has a version number 
+   associated with it. Cartool right now is compatible with version 1.1 
+   and higher.</P>
+  <P>
+   It is nearly mandatory to have a graphic cards that will accelerate 
+   OpenGL operations to have decent performance. Though you can 
+   theoretically work without... but I warned you.</P>
+  <P>
+   See <A HREF="https://www.opengl.org">www.opengl.org</A> for more informations.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;
+ </BODY>
+</HTML>

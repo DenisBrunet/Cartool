@@ -1,0 +1,330 @@
+<HTML>
+ <HEAD>
+  <TITLE>Segments Display</TITLE>
+ <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css">
+  <style type="text/css">
+.auto-style1 {
+	margin-left: 40px;
+}
+</style>
+ </HEAD>
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   Segments Display</H1>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;After the <B><A HREF="microstates-segmentation.html#seg-results">Segmentation Process</A></B>,
+    we have these files:</P>
+  <P>
+   &nbsp;</P>
+  <H5>
+   <A HREF="#segments">The Segments display, for a single segmentation</A><br>
+   <A HREF="#summary">The summary of a set of segmentations</A></H5>
+  <H2>
+   <A NAME="segments"></A>Segments display</H2>
+  <P>
+   This display applies to the <I><A HREF="files-formats-cartool.html#seg"><B>.seg</B></A></I> 
+   (Segments) files. It is exactly the same as the <A HREF="eeg-display.html"><B>EEG
+    display</B></A>, with just a few more options.</P>
+  <H3>
+   <A HREF="#seg-menus">Menus</A></H3>
+  <H5>
+   <A HREF="#seg-menu-options">Options</A></H5>
+  <UL>
+   <H5>
+    <A HREF="#colored-filling">No / Empty / Colored Filling</A><br>
+	<A HREF="#select-segments">Select Segments</A></H5>
+   </UL>
+  <H3>
+   <A HREF="#seg-tech-points">Technical points</A></H3>
+  <H5>
+   <A HREF="#file-content">Full file content</A></H5>
+  <H2>
+   <A NAME="seg-menus"></A>Segments display - Menus</H2>
+  <P>
+   Quite the same as the <A HREF="eeg-display.html#menus">EEG Menus</A>, with the 
+   following variations or additions:</P>
+  <H3>
+   <A NAME="seg-menu-options"></A>Options menu</H3>
+  <UL>
+   <P>
+    <B><A NAME="colored-filling"></A>No / Empty / Colored Filling</B></P>
+   <UL>
+    <P>
+     You can change the coloring scheme to these modes:</P>
+    <UL>
+     <LI CLASS="mvd-P">
+     <P>
+      <B>No</B>: No filling, just plain tracks.</P>
+     <P>
+      <IMG SRC="images/seg.no-fill.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+     <LI CLASS="mvd-P">
+     <P>
+      <B>Empty</B>: The colors are replaced by an empty color (usually 
+      white), and the segments are separated by black lines (useful if you 
+      want to apply your own colors, or give it to your little nephew so 
+      you have 5 minutes of silence).</P>
+     <P>
+      <IMG SRC="images/seg.empty-fill.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+     <LI CLASS="mvd-P">
+     <P>
+      <B>Colored</B>: The default colored display. Note that the colors 
+      picked depend on the number of segments, so the color for segment 3 
+      will differ if it belongs to different segmentations.</P>
+     <P>
+      <IMG SRC="images/seg.small-segments.png" ALIGN=TOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+     </UL>
+    </UL>
+   <P>
+    <B><A NAME="select-segments"></A>Select Segments from list</B></P>
+   <UL>
+    <P>
+     You can restrict which segments will be actually colored, to focus 
+     the display on the segments of interest. Just give the list of 
+     segments you want to see, or empty to reset.</P>
+    <UL>
+     <P>
+      <IMG SRC="images/seg.selected-fill.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+     </UL>
+    </UL>
+   <P>
+    <B>Select Segments from cursor position</B></P>
+   <UL>
+    <P>
+     This will automatically select the only segments that overlap the current 
+	 cursor position.</P>
+    </UL>
+   </UL>
+  <H2>
+   <A NAME="seg-tech-points"></A>Segments display - Technical points</H2>
+  <H3>
+   <A NAME="file-content"></A>Full file content</H3>
+  <P>
+   Actually, the <I><A HREF="files-formats-cartool.html#seg"><B>.seg</B></A></I> 
+   file contains more informations than just the colored segments. When 
+   the file opens in Cartool, they are not shown to make the display 
+   clearer. To see all these informations, simply click on <A HREF="eeg-display.html#more-tracks">More
+    Tracks</A> button, from the <A HREF="eeg-display.html">EEG display</A>.</P>
+  <P>
+   These informations can also be retrieved for some processings of your own...</P>
+  <P>
+   For each of the file that has been segmented, you have the following 
+   informations (in this order):</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    The <B><A HREF="terms-definitions-formulas.html#formulas">GFP</A></B> of the file<BR>
+    <LI CLASS="mvd-P">The <B><A HREF="terms-definitions-formulas.html#formulas">Dissimilarity</A></B> 
+    of the file<BR>
+    <LI CLASS="mvd-P">The segment's <B><A HREF="microstates-segmentation.html#seg-results">labeling</A></B> 
+    code assigned at each time frame<BR>
+    <LI CLASS="mvd-P">The <B><A HREF="terms-definitions-formulas.html#GEV">Global Explained Variance</A></B> 
+    (of the whole segment)<BR>
+    <LI CLASS="mvd-P">The <B><A HREF="terms-definitions-formulas.html#correlation">Correlation</A></B> 
+    between the template map and the actual data</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   See an example, for two conditions, of the restricted initial 
+   display, and the full display. Note that the <B>original file names 
+   are lost</B> (&quot;Condition1&quot;, &quot;Control&quot; f.ex.), so 
+   you have to remember the order in which you inputed the data to the 
+   segmentation process. GFP1, Dis1, Seg1, GEV1 and Corr1 are for the 
+   first condition / file, GFP2, Dis2 etc for the second condition / 
+   file, and so on:</P>
+  <UL>
+   <UL>
+    <UL>
+     <P>
+      <IMG SRC="images/seg.small-segments.png" ALIGN=TOP VSPACE="0" HSPACE="0" BORDER="0"><BR>
+      <IMG SRC="images/seg.all-tracks.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+     </UL>
+    </UL>
+   </UL>
+  <P>
+   The coloring schemes used are the following:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    For the <B>GFP</B> and <B>Dis</B> tracks, a discrete color is 
+    assigned according to the<B> value of the labeling</B> (contained in 
+    the Seg track). The colors are choosen to be the &quot;furthest&quot; 
+    from each others. They also depend on the maximum number of clusters, 
+    so that the color of segment 3 (f.ex.) in two different segmentations 
+    will look different.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    For the <B>Seg</B> track, a proportional coloring based on the <B>GEV</B> 
+    (the following track, by the way) is used. The higher the GEV, the 
+    brighter the segment (from black to yellow).</P>
+   </UL>
+  <H2>
+   <A NAME="summary"></A>Summary of segmentations</H2>
+  <P>
+   The <I><B><A HREF="microstates-segmentation.html#seg-results">.error.data</a></B></I> file 
+   generated at the end of the <a href="microstates-segmentation.html">Segmentation</a> shows 
+   different <A HREF="microstates-segmentation.html#how-many-clusters">error measures</a> 
+   across the specified range of clusters. Its purpose is to help decide which 
+   is <strong>the optimal number of clusters</strong>, based on these measures.</P>
+  <P>
+   It contains the following 
+   tracks, with the horizontal axis ranging from 1 to the max number of 
+   clusters:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Clust</B>: the number of clusters from the <A HREF="microstates-segmentation.html#seg-method">mathematical
+     clustering process</A><BR>
+    <LI CLASS="mvd-P"><B>Maps</B>: the final number of maps / segments 
+    after the <A HREF="microstates-segmentation.html#temporal-postproc">temporal processings</a> 
+    (if any)<BR>
+    <LI CLASS="mvd-P"><B>GEV</B>: the <A HREF="terms-definitions-formulas.html#GEV">Global 
+    Explained Variance</A> of the whole segmentation<BR>
+    <LI CLASS="mvd-P"><A HREF="microstates-segmentation.html#how-many-clusters"><B>Gamma<br>
+	Silhouettes<br>Davies-Bouldin<br>Point Biserial<br>Dunn Robust<br>
+	Krzanowsky-Lai Index</B>: various error measures of clustering quality</a><LI CLASS="mvd-P">
+	  <A HREF="microstates-segmentation.html#how-many-clusters"><B>Mean Criterion</B>: the 
+	  median of the 6 criteria above</a><LI CLASS="mvd-P">
+	  <A HREF="microstates-segmentation.html#how-many-clusters"><strong>Meta-Criterion</strong>: 
+	  the 7 criteria above merged into a synthetic criterion</a><BR>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P class="auto-style1">
+   <img height="403" src="images/seg.error.data.png" width="593"></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The display is also based on the <A HREF="eeg-display.html"><B>EEG display</B></A>,
+    with just a few more options:</P>
+  <H3>
+   <A HREF="#summary-seg-menus">Menus</A></H3>
+  <H5>
+   <A HREF="#sum-menu-options">Options</A></H5>
+  <UL>
+   <H5>
+    <A HREF="#open-segmentation">Open Segmentation(s) at cursor position</A></H5>
+   </UL>
+  <H3>
+   <A HREF="#summary-tech-points">Technical points</A></H3>
+  <H5>
+   <A HREF="#num-clusters-maps">Number of clusters <I>vs</I> number of maps</A></H5>
+  <H5>
+   <A HREF="#error-measures">Error measures</A></H5>
+  <H5>
+   <A HREF="microstates-segmentation.html#how-many-clusters">The Optimal number of clusters &amp; 
+   Meta-Criterion</a></H5>
+  <H2>
+   <A NAME="summary-seg-menus"></A>Summary of segmentations - Menu</H2>
+  <P>
+   Quite the same as the <A HREF="eeg-display.html#menus">EEG Menus</A>, with the 
+   following variations or additions:</P>
+  <H3>
+   <A NAME="sum-menu-options"></A>Options menu</H3>
+  <UL>
+   <P>
+    <B><A NAME="open-segmentation"></A>Open Segmentation(s) at cursor position</B></P>
+   <UL>
+    <P>
+     A shortcut to directly open the <A HREF="#segments">Segments files</A> 
+     corresponding to where the cursor is located. If more than one 
+     position is selected, all the files are opened.</P>
+    </UL>
+   </UL>
+  <H2>
+   <A NAME="summary-tech-points"></A>Summary of segmentations - 
+   Technical points</H2>
+  <H4>
+   <A NAME="num-clusters-maps"></A>Number of Clusters <I>vs</I> number 
+   of Maps</H4>
+  <P>
+   There is a semantic distinction done here between the <strong>number of 
+   clusters</strong> and the <strong>number of segments</strong>:</P>
+  <ul>
+	  <li class="mvd-p">The <strong>number of clusters</strong> is the input 
+	  given to the clustering, the <A HREF="microstates-segmentation.html#range-of-clusters">
+	  range specified by the user</a>. It always shows up a straight line, of 
+	  slope 1.</li>
+	  <li class="mvd-p">The <strong>number of segments is the final number of 
+	  clusters after the optional temporal post-processing</strong>. These 
+	  options could create more clusters, as per the
+	  <a href="microstates-segmentation.html#sequentialization">Sequentialization</a>, or 
+	  delete some, as per the <A HREF="microstates-segmentation.html#small-maps-reject">
+	  Reject Small Segments</a>.<br>Without any post-processing, clusters and 
+	  segments are totally equivalent.</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   Below we can see the number of clusters (black line) <em>vs.</em> the number 
+   of segments (violet line), showing that the temporal post-processing did 
+   alter the number of clusters:</P>
+  <P class="auto-style1">
+   <img height="243" SRC="images/seg.clusters-vs-segments.png" width="304"></P>
+  <H4>
+   <A NAME="error-measures"></A>Error measures</H4>
+  <P>
+   The <B>Global Explained Variance</B> (GEV) is a global measure of the 
+   quality of a given segmentation. It converges asymptotically <B>toward
+    1</B> (perfect segmentation) as the number of clusters increases. 
+   Note that this value of 1 can only be reached if the number of 
+   clusters is equal to the number of time frames.</P>
+  <P>
+   The other measures are <A HREF="microstates-segmentation.html#how-many-clusters">explained 
+   here</a>.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;
+ </BODY>
+</HTML>

@@ -1,0 +1,745 @@
+<HTML>
+
+ <HEAD>
+  <TITLE>Computing Results of Inverse Solution</TITLE>
+
+  <link rel="stylesheet" href="cartool.css" type="text/css">
+
+  <style type="text/css">
+.auto-style1 {
+	text-align: center;
+}
+.auto-style2 {
+	margin-left: 40px;
+}
+.auto-style3 {
+	font-family: Verdana;
+	font-size: 12px;
+	color: #1155E0;
+	font-weight: bold;
+	font-style: normal;
+	padding: 0px;
+	margin-right: 0px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+.auto-style4 {
+	font-family: Verdana,Arial,Helvetica;
+	font-size: 12px;
+	color: #000000;
+	font-weight: normal;
+	font-style: normal;
+	margin: 8px 5% 0px 40px;
+	padding: 0px;
+	line-height: 1.4;
+}
+</style>
+
+ </HEAD>
+
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   Computing Results of Inverse Solution</H1>
+  <P>
+   &nbsp;</P>
+  <P class="mvd-p">
+   Once the <strong><a href="computing-inverse-solution-matrices.html">Inverse Matrix has 
+   been computed</a></strong>, you can apply it to EEG or 
+   <a href="frequency-analysis.html">Frequency data</a>, and 
+   obtain some <a href="files-formats-cartool.html#ris"><strong><em>.ris</em></strong> 
+   files</a> (<strong>r</strong>esults of <strong>i</strong>nverse <strong>s</strong>olution). 
+   These&nbsp; <a href="files-formats-cartool.html#ris"><strong><em>.ris</em></strong> 
+   files</a> can subsequently be used <strong> 
+   <a href="esi-display.html">for display</a></strong>, 
+   <A HREF="computing-statistics.html#which-cases"><strong>
+   for statistics</strong></a>, or even <strong>
+   <a href="ris-to-volumes.html">converted to volumes</a></strong> for fMRI 
+   comparison.</P>
+  <p>Here is a highly recommended article about practical use of the inverse 
+  solutions:</p>
+  <PRE><a href="https://www.frontiersin.org/articles/10.3389/fneur.2019.00325/full"><strong>&quot;EEG Source Imaging: A Practical Review of the Analysis Steps&quot;</strong>,
+C.M. Michel, D. Brunet,
+<em>Front. Neurol.</em>, 04 April 2019</a></PRE>
+  <P class="mvd-h6">
+   <a href="#dialog">Computing RIS Dialog</a></P>
+  <P class="mvd-h6">
+   <A HREF="#technical-points-and-hints">Technical points &amp; hints</a></P>
+  <P class="auto-style3">
+   <a href="#consistency checks" class="mvd-h6">Checking the files consistency</a></P>
+  <P class="mvd-h6">
+   <A HREF="#spatial-filter">Spatial Filter</a></P>
+  <P class="mvd-h6">
+   <a href="#z-score">Background normalization</a></P>
+  <P class="mvd-h6">
+   <a href="#templatize">Templatize results</a></P>
+  <P class="mvd-h6">
+   <A HREF="#frequency-files">Frequency files</a></P>
+  <P class="mvd-h6">
+   <a href="#results">Results</a></P>
+  <P class="mvd-h2">
+   <a name="dialog"></a>Computing RIS Dialog</P>
+  <P>
+   Called from the <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
+    | Inverse Solutions | Computing Results of Inverse Solutions</A></FONT> menu, the following dialog 
+   appears:</P>
+  <P class="auto-style1">
+   <img alt="Computing RIS Dialog" height="821" src="images/compris.dialog.png" width="697"></P>
+  <P>
+   &nbsp;</P>
+   <TABLE WIDTH="100%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+       <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <strong>Presets</strong></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       You can quickly set the most important parameters according to some 
+	   predefined scenarios. You are then free to fine-tune any parameter, of 
+	   course.</TD>
+       </tr>
+    <TR>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(1) Groups of EEG Files</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+       <tr>
+     <TD VALIGN=TOP style="width: 32%" class="mvd-p">One Group of Files Contains:</TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       Use this preset to specify how Cartool has to understand each group of 
+	   files that you give it:</P>
+	 <ul>
+		 <li>All Subjects, One Condition: a group of files holds all subjects at 
+		 once, for 1 condition only</li>
+		 <li>1 Subject, All Conditions: a group of files holds only 1 subvject, 
+		 and all conditions together</li>
+		 <li>1 Subject, All Epochs and All Conditions: drop all epochs, all 
+		 conditions for a single subject</li>
+	 </ul>
+      <P>
+       You can still change the preset even after the files have been dropped 
+	   in.</TD>
+       </tr>
+    <TR>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Add New Group of Files</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Enter a new group <strong>EEG</strong> or <strong>
+	   <A HREF="#frequency-files">Frequency</a></strong> files.<P>
+       <A HREF="#consistency-checks">Cartool will check that the new group of 
+	   files is compatible</a> with the existing ones, and will complain if 
+	   needed...</TD>
+    </TR>
+    <TR>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Remove Last Group</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Does what it says.</TD>
+    </TR>
+    <TR>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Clear All Groups</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Clear out all the groups at once.</TD>
+    </TR>
+    <TR>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Read Lists from File</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You can direclty retrieve the lists of groups previously (see below).</P>
+      <P>
+       See also Drag &amp; Drop.</TD>
+    </TR>
+    <TR>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Write Lists to File</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You can save the lists of current groups into a file, in case you 
+       want to re-use them (much recommended!).</P>
+      <P>
+       See the file formats available.</TD>
+    </TR>
+       <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <em>(List of current groups of files)</em></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       For your entertainment and great pleasure, you can here contemplate your 
+	   life and a summary of all the groups of files you already added to this 
+	   sub-box.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Number of Subjects:<P>
+       Number of conditions:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       A summary of what Cartool understands in terms of subjects and 
+	   conditions.</TD>
+       </tr>
+       <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(2) EEG Preprocessing</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       EEG Spatial Filter, using XYZ file:</TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       If this option is selected, then the EEG data will be 
+	   <A HREF="#spatial-filter"><strong>preprocessed with a 
+	   Spatial Filter</strong></a>.<P>
+       This filter <A HREF="eeg-display.html#spatial-filter">takes care of any remaining outliers, while also smoothing 
+	   out the data</a>. This really improves the Results of Inverse Solution, 
+	   as outliers are definitely a no-no.<P>
+       <A HREF="#consistency-checks">Cartool will check that electrodes 
+	   coordinates is compatible</a> with the other files, and will complain if 
+	   needed...</TD>
+       </tr>
+       <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(3) Inverse Processing</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Inverse Matrix File:</TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       This one input is mandatory, so give one of the
+	   <a href="computing-inverse-solution-matrices.html">inverse matrix generated here</a>.<P>
+       <A HREF="#consistency-checks">Cartool will check that inverse matrix is 
+	   compatible</a> with the other files, and will complain if needed...</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <A NAME="results-type"></a>Results Type:</TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>The type of results to be actually saved.<P>Inverse solutions produces 
+	  dipoles for each solution points, each dipole therefor coding for both 
+	  orientation and power. You can specify what to do with these vecotrial 
+	  information.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P class="auto-style2">
+       Norm</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Only the <strong>norm of each dipole</strong> will be saved.<P>
+       <em>This is what you need 99% of the time.</em></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P class="auto-style2">
+       Vectorial</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The <strong>complete vector of each dipole</strong> will be saved.<P>
+       <em>Not recommended</em> unless you know what you are doing. Also, it 
+	   takes more space on the disk.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Inverse Regularization:</TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       <A HREF="computing-inverse-solution-matrices.html#IS-regularization"><strong>
+	   Regularization</strong></a> is a kind of smoothing that accounts for noise 
+	   in the data.<P>
+       Apply more regularization for noisier data, and less for cleaner data.<P>
+       Don't over-do regularization, as makes the localization more blurry and less precise.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+	 <P class="auto-style2">
+       Auto</TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       <strong>Data is tested against all available regularizations</strong>. 
+	   Then the optimal one is picked: the lowest regularization factor that 
+	   doesn't change much the results.<P>
+       <em><strong>This is the 
+		  recommended option</strong></em>.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+	 <P class="auto-style2">
+       Fixed</TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       Or you can set a <strong>specific regularization factor</strong>, ranging 
+	   from <strong>0 (none) to 12 (max)</strong>, <strong>4</strong> being the 
+	   default value.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(4) Inverse Postprocessing</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <a name="dialog-zscore"></a><strong><a href="#z-score">Standardize Solution Points (in 
+	   Time):</a></strong></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       This will <strong>normalize the time course of each solution point</strong> 
+	   by its <strong>background activity</strong> (noise). The real activities, 
+	   the highest values, are <strong><em>not</em></strong> taken into account 
+	   in the formula, as this would be counter-productive by 'neutralizing' 
+	   them.<P>
+       <strong>This option is highly recommened for optimal results!</strong><P>
+       See <a href="#z-score">the relevant discussion here</a>.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Compute Z-Score</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Compute the Z-Scores every time.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Load Z-Score factors files</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Try to reload the Z-Score factors from existing files. Files should match 
+	   the inverse name and regularization, and of course, subjects' names.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <strong><a href="#templatize">Templatize (per Map):</a></strong></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Apply some sort of normalization to output only <strong>templates of 
+	   activations</strong>, <strong>stripping the power component out</strong>.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Ranking</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Each sample's results will be ranked, <strong>for each sample 
+	   independently</strong>. Hence values will be between (0..1]</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <strong>Envelope (Gap Bridging, in Time):</strong></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Apply an Envelope method (&quot;Gap Bridging&quot;) to the norms of results. This 
+	   goes faster than Hilbert transform, and gives more or less consistent 
+	   results.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Lowest Band-Pass Frequency:</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Provide here the lowest frequency to account for for the envelope.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <strong>ROIs (per Map):</strong></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       If the option is selected, you have to provide the ROIs file that matches 
+	   the current inverse matrix.<P>
+       This is useful to reduce the results'size. It is of course applied for 
+	   each sample at a time.<P>
+       ROIs results are computed using a Median, <em><strong>not</strong></em> 
+	   a Mean, of all points belonging to a given region.<P>
+       <A HREF="#consistency-checks">Cartool will check that ROIs are compatible</a> 
+	   with the other files, and will complain if needed...</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(4) Output Options</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       <I>&nbsp;</I></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Optional Base File Name Prefix:</TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       Specify here an optional <B>prefix for all the output file names</B>.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Saving Files:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       A few options to tailor how you want to overflow your disk with files...</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%" class="auto-style2">
+      <P class="auto-style2">
+       Every Subjects' RIS</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Each input file will have a one-to-one corresponding output <strong><a href="files-formats-cartool.html#ris">
+	   <em>.ris</em></a></strong> 
+	   file.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%" class="auto-style2">
+      <P class="auto-style2">
+       + Every Epochs' RIS</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       All Epochs will have a corresponding&nbsp; <strong><a href="files-formats-cartool.html#ris">
+	   <em>.ris</em></a></strong> 
+	   file, which means, that could be <em>huge</em>.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%" class="auto-style2">
+      <P class="auto-style2">
+       Computing Grand Averages</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This option, usually associated with ERP experiments, will gracefully 
+	   compute the <strong>average <a href="files-formats-cartool.html#ris"><em>.ris</em></a> 
+	   of each condition</strong>.<P>
+       It will work correctly only if all the files have exactly the same 
+	   lengths, across all conditions and all subjects.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%" class="auto-style2">
+      <P class="auto-style2">
+       Computing Clusters Centroids</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This option is tailored for clusters of data (from the Fitting f.ex.). It 
+	   will compute the <strong>mean template across each cluster of data</strong>. This 
+	   might be even the only results of interest in that specific case...</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%" class="auto-style2">
+      <P class="auto-style2">
+       Z-Score Factors</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Save the Z-Score factors to file. This could be handy in case of 
+	   re-computation by just reloading them - these factors take a bit of time 
+	   to compute...</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>Process</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Runs the computation.</P>
+      <P>
+       This button remains <B>disabled until <U>all</U> the parameter 
+       dialogs have received enough (and consistent) informations</B>.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Cancel</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Quit the dialog.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Help</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be here...).</TD>
+       </tr>
+   </TABLE>
+  <P class="mvd-h2">
+   <A NAME="technical-points-and-hints"></a>Computing RIS - Technical points &amp; hints</P>
+  <P class="mvd-h4">
+   <A NAME="consistency-checks"></a>Checking the files consistency</P>
+  <P>
+   Cartool will run your input files through an extensive set of consistency 
+   rules. The purpose being first to avoid crashes, and second to check that you 
+   haven't picked the wrong files.</P>
+  <P>
+   The main consistency checks are the following:</P>
+  <ul>
+	  <li class="mvd-h5">Within the same EEG group:<ul>
+		  <li>Same number of electrodes</li>
+		  <li>Same sampling frequency</li>
+		  <li>Same duration, in case or ERPs</li>
+	  </ul>
+	  </li>
+	  <li class="mvd-h5">Within different subject's groups:<ul>
+		  <li>Same number of files</li>
+		  <li>Same duration in case of ERPs</li>
+	  </ul>
+	  </li>
+	  <li class="mvd-h5">Across EEG, Inverse Matrix and Electrodes Coordinates:<ul>
+		  <li>Same number of electrodes between the matrix and the EEG</li>
+		  <li>Same number of electrodes between the Electrodes Coordinates and 
+		  the EEG</li>
+	  </ul>
+	  </li>
+	  <li class="mvd-h5">Across Inverse Matrix, Solution Points and ROIs:<ul>
+		  <li>Without ROIs, same number of Solution Points with the Inverse 
+		  Matrix</li>
+		  <li>With ROIs, same number of Solution Points with the ROIs number of 
+		  regions</li>
+	  </ul>
+	  </li>
+  </ul>
+  <P class="mvd-normal">
+   &nbsp;</P>
+  <P class="mvd-normal">
+   See here a simplified view of how files are checked, without ROIs:</P>
+  <P class="auto-style4">
+   <img alt="files compatibility checks - no ROIs" height="213" SRC="images/compris.files-consistency.1.png" width="449"></P>
+  <P class="mvd-normal">
+   &nbsp;</P>
+  <P class="mvd-normal">
+   And here the same view, but with ROIs:</P>
+  <P class="auto-style4">
+   <img alt="files compatibility checks - with ROIs" height="321" SRC="images/compris.files-consistency.2.png" width="449"></P>
+  <P class="mvd-h4">
+   <A NAME="spatial-filter"></a>Spatial Filter</P>
+  <P class="mvd-normal">
+   Applying the <strong>Spatial filter is strongly recommended</strong> before computing the 
+   results of inverse solutions if there remains any transient artifacts, and/or 
+   data is even slightly noisy. Both degrade the quality of the localization, or can even make 
+   it totally erroneous.</P>
+  <P class="mvd-normal">
+   The <A HREF="eeg-display.html#spatial-filter"><strong>exact specification of the 
+   Spatial Filter is here</strong></a>.</P>
+  <P class="mvd-normal">
+   The Spatial filter is a non-linear filter that will get rid of local 
+   outliers, while also smoothing the overall map. It will, however, retain the 
+   global aspect of the map's topography. See here an example of before (A) and 
+   after (B) the Spatial filter, on the tracks (left) then on the maps (middle 
+   and right):&nbsp;</P>
+  <P class="auto-style4">
+   <img alt="spatial filter" height="331" SRC="images/compris.spatial-filter.png" width="659"></P>
+  <P class="mvd-h4">
+   <a name="z-score"></a>Background normalization via custom <em>Z-Score</em></P>
+  <P>
+   Due to various reasons, like an incorrect head geometry, or approximate skull 
+   conductivity, <strong>some solution points will show more power than others</strong>. 
+   Moreover, these power variations depend on each subject. Therefor, a <strong>
+   normalization step can only be applied after the results of inverse have been 
+   computed</strong>, not before.</P>
+  <P>
+   Before stepping into the formula, it is important to get the underlying idea 
+   right. This normalization step will be <strong>based solely on the background 
+   / noise activity</strong>. The higher values <em>are not used at all</em>, so 
+   to not bias the correction.</P>
+  <P>
+   <strong>A custom Z-Score</strong> has been tailored to deal with the norm of dipoles. The idea is to convert from 
+   a Chi-square distribution to a Normal 
+   distribution (Equ. 1 and 2), then to a Z-Score (Equ. 3). Finally 
+   data are offsetted by 3 standard deviations so as to remain positive (Equ. 6). The 
+   tricky implementation part is all about estimating the Modes and (left part 
+   of) Median of Absolute Deviation:</P>
+  <P class="auto-style2">
+   <img alt="Z-Score equations for RIS" height="211" SRC="images/compris.z-score-equations.png" width="519"></P>
+  <P>
+   The resulting new solution points values remain positive, as to remain consistent with the original data, 
+   but now with the noise having a Normal distribution centered on 1 (and a SD of 1/3).</P>
+  <P>
+   See here an example of before (left picture) and after (right picture) 
+   standardization, showing the color plot of the histogram (horizontal acis) of 
+   each solution point (vertical axis):</P>
+  <P>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+   <img height="434" SRC="images/compris.z-score.before-and-after.png" width="576"></P>
+  <P class="mvd-h4">
+   <a name="templatize"></a>Templatize results</P>
+  <P>
+   If one is interested on only having a <strong>template of all active brains 
+   regions</strong>, and does not care about power in the results, then the 
+   Templatize options come in handy. This is typically used for Micro-tates 
+   analysis f.ex.</P>
+  <P>
+   <strong>Ranking</strong> will rank, and normalize to 1, every solution 
+   points' results, for each sample / time point independently.</P>
+  <P>
+   An additional <strong>Thresholding</strong> is available to <strong>clear-out 
+   the lowest 90% of the data, hence keeping the top 10%</strong>. Indeed, one 
+   never looks at the lowest responses at all, it is mostly noise and/or some 
+   possible inverse artefacts. It could be wise to not account for these!</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Here is an example of the effect of templatizing the results. Top data are 
+   regulard ERP results, which power vary time. Corresponding inverse on the 
+   right is kind of blurry. Bottom data is ranked + thresholded results, max 
+   values are 1. Corresponding inverse are less blurry, but power information is 
+   gone.</P>
+  <P>
+   <img height="585" src="images/compris.templatize.png" width="839"></P>
+  <P class="mvd-h4">
+   <A NAME="frequency-files"></a>Frequency files</P>
+  <P>
+   Noteworthy is the fact that you can <strong>input frequency files</strong>, 
+   and hence compute the results of inverse solution at different frequencies.</P>
+  <P>
+   Here are the necessary steps to achieve that:</P>
+  <ul>
+	  <li>When computing the frequency results, use the&nbsp; <em><strong>
+	  Wavelet for Source Space</strong></em>&nbsp; preset. It sets the <strong>
+	  output format to be of Complex type</strong>, which is mandatory for our 
+	  case here!</li>
+	  <li>Inverses will be computed at each frequency, <strong>separately on the
+	  </strong><em><strong>Real</strong></em><strong> and </strong><em><strong>
+	  Imaginary</strong></em><strong> parts</strong>,</li>
+	  <li>Then the <strong>square of the norm of the </strong><em><strong>Real</strong></em><strong> 
+	  and </strong><em><strong>Imaginary</strong></em><strong> dipoles are 
+	  summed</strong>,</li>
+	  <li>Finally, it is strongly recommended to apply <strong>ROIs</strong> at 
+	  that stage, to help reduce the size of the final data!</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   See here, for example, the results at 4 different frequencies, and for all 
+   solution points (no ROIs):</P>
+  <P class="auto-style2">
+   <img alt="" height="382" SRC="images/compris.ris-frequency.1.png" width="275"><img alt="" height="382" SRC="images/compris.ris-frequency.2.png" width="275"><br>
+   <img alt="" height="382" SRC="images/compris.ris-frequency.3.png" width="275"><img alt="" height="382" SRC="images/compris.ris-frequency.4.png" width="275"></P>
+  <P class="mvd-h2">
+   <a name="results"></a>Computing RIS - Results</P>
+  <ul>
+	  <li>For each input file, its corresponding <strong>&lt;input file&gt;<a href="files-formats-cartool.html#ris">.ris</a></strong> 
+	  . These files can be directly used <a href="esi-display.html">for 
+	  display</a>.</li>
+	  <li>In case of Z-Score option, the Z-Score Mean and SD values in a file&nbsp;
+	  <strong>&lt;output file.ZScoreFactors&gt;.<a href="files-formats-cartool.html#sef">sef</a></strong>&nbsp; 
+	  . The Z-Score file has 2 rows: one for the Mean and one for the Standard 
+	  Deviation, for each solution point.</li>
+	  <li>Optionally for each group, the Mean of the 
+	  group&nbsp; <strong>&lt;group #.Mean&gt;<a href="files-formats-cartool.html#ris">.ris</a></strong></li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   Here is an example of ERP, top is the EEG on 204 electrodes, bottom the 
+   transformed ris file. We can note that the EEG data are of course signed 
+   data, more or less in the range -4..4, while the ris data are indeed centered 
+   around 1:</P>
+  <P class="auto-style2">
+   <img alt="before ris" height="172" src="images/compris.results.1.png" width="565"></P>
+  <P class="auto-style2">
+   <img alt="after ris" height="172" src="images/compris.results.2.png" width="565"></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   And here is an example of a map and its corresponding inverse display:</P>
+  <P class="auto-style2">
+   <img alt="EEG vs RIS display" height="876" src="images/compris.results.3.png" width="794"></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+ </BODY>
+</HTML>

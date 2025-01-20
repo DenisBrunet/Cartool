@@ -1,0 +1,2908 @@
+<HTML>
+ <HEAD>
+  <TITLE>EEG Display</TITLE>
+ <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css">
+  <style type="text/css">
+.auto-style1 {
+	font-family: Verdana,Arial,Helvetica;
+	font-size: 12px;
+	color: #000000;
+	font-weight: normal;
+	font-style: normal;
+	margin: 8px 5% 0px 40px;
+	padding: 0px;
+	line-height: 1.4;
+}
+.auto-style2 {
+	margin-left: 40px;
+}
+.auto-style6 {
+	font-family: "Courier New";
+}
+.auto-style8 {
+	color: #000000;
+}
+.auto-style5 {
+	font-family: "Courier New";
+	color: #000000;
+}
+.auto-style9 {
+	font-family: Arial, Helvetica, sans-serif;
+}
+</style>
+ </HEAD>
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   EEG Display</H1>
+  <H3>
+   <A NAME="summary-buttons"></A>Buttons</H3>
+  <H5>
+   <A HREF="#linking"><IMG SRC="images/all.button.graphical-link.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#rendering"><IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#orientation"><IMG SRC="images/all.button.orientation.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#magnifier"><IMG SRC="images/all.button.magnifier.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#tracks-intensity"><IMG SRC="images/eeg.button.tracks-vs-intensity.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#rois"><IMG SRC="images/button.roi.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#rois-averaging"><IMG SRC="images/button.average.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#show-markers"><IMG SRC="images/eeg.button.show-triggers.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#previous-marker"><IMG SRC="images/eeg.button.previous-trigger.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#next-marker"><IMG SRC="images/eeg.button.next-trigger.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#add-marker"><IMG SRC="images/eeg.button.set-trigger.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#extend-cursor"><IMG SRC="images/eeg.button.extend-cursor.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#upper-tracks"><IMG SRC="images/eeg.button.tracks-up.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#tracks-below"><IMG SRC="images/eeg.button.tracks-down.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#select-session"><IMG SRC="images/eeg.button.change-session.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#less-tracks"><IMG SRC="images/eeg.button.less-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#more-tracks"><IMG SRC="images/eeg.button.more-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#less-computed-track"><IMG SRC="images/eeg.button.less-pseudo-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#more-computed-track"><IMG SRC="images/eeg.button.more-pseudo-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#superimpose-tracks"><IMG SRC="images/eeg.button.superimpose-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#reverse-display"><IMG SRC="images/eeg.button.reverse-polarity.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#standard-deviation"><IMG SRC="images/eeg.button.shows-sd.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#increase-vertical"><IMG SRC="images/eeg.button.more-vertical-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#decrease-vertical"><IMG SRC="images/eeg.button.less-vertical-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#increase-horizontal"><IMG SRC="images/eeg.button.more-horizontal-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#decrease-horizontal"><IMG SRC="images/eeg.button.less-horizontal-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#vertical-units"><IMG SRC="images/eeg.button.vertical-units.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#horizontal-units"><IMG SRC="images/eeg.button.horizontal-units.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#filters"><IMG SRC="images/eeg.button.filter.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#average-reference"><IMG SRC="images/eeg.button.average-reference.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#brightness"><IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#contrast"><IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#auto-scaling"><IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#color-modes"><IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H3>
+   Mouse</H3>
+  <H5>
+   <A HREF="#mouse-matrix">Chart of all mouse operations</A><br>
+   <A HREF="#mouse-time-selectio">Time selection</A><br>
+   <A HREF="#mouse-tracks-select">Tracks selection</A><br>
+   <A HREF="#mouse-bad-tracks">Bad tracks selection</A><br>
+   <A HREF="#mouse-horiz-scroll">Horizontal scrolling&nbsp; or&nbsp; 
+   Next / Previous tracks</A><br><A HREF="#mouse-zoom">Horizontal&nbsp; or&nbsp; vertical zoom</A><br>
+   <A HREF="#relative-vertical">Relative vertical zoom</A><br>
+   <A HREF="#mouse-keep-sub">Keep current sub-window</A><br>
+   <A HREF="#drag-and-drop">Drag &amp; Drop</A></H5>
+  <H3>
+   Keyboard</H3>
+  <H5>
+   <A HREF="#keyboard-move-curso">Moving the cursor</A><br>
+   <A HREF="#keyboard-next-page">Next&nbsp; or&nbsp; previous page</A><br>
+   <A HREF="#keyboard-home">Beginning&nbsp; or&nbsp; end of Eeg</A><br>
+   <A HREF="#quick-markers">Quickly creating markers</A><br>
+   <A HREF="#quick-jump">Quickly jumping the cursor by blocks</A></H5>
+  <H3>
+   <A HREF="#menus">Menus</A></H3>
+  <H5>
+   <A HREF="#menu-edit">Edit</A></H5>
+  <H5>
+   <A HREF="#menu-selection">Selection</A></H5>
+  <UL>
+   <H5>
+    <A HREF="#tracks-analysis">Tracks analysis</A></H5>
+   </UL>
+  <H5>
+   <A HREF="#menu-markers">Markers</A></H5>
+  <UL>
+   <H5>
+    <A HREF="#scanning-triggers">Scanning for Markers</A></H5>
+   </UL>
+  <H5>
+   <A HREF="#menu-options">Options</A></H5>
+  <UL>
+   <H5>
+    <A HREF="#menu-reference">Reference</A><br><A HREF="#menu-time">Time</A><br>Set Display Scaling<br>Set Time Window<br>Reset Tracks Scaling<br>Specify a&nbsp; Baseline Offset<br>Reset Baseline Offset<br>Line Width<br>Show / Hide Baseline Axis<br>Goto Another Session / Block</H5>
+   </UL>
+  <H2>
+   <A NAME="linking"></A>EEG - Buttons</H2>
+  <P>
+   Go <A HREF="windows-general-commands.html#buttons">here</A> for the buttons 
+   common to all views.</P>
+  <H3>
+   Linking to other Eegs&nbsp; <IMG SRC="images/all.button.graphical-link.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   The way to proceed is the very same as for any <A HREF="windows-general-commands.html#linking">standard
+    view</A>, but the targeted windows are exclusively restricted to <B>other
+    Eegs only</B>. The link behavior is also slightly different from the 
+   standard link which is purely graphical. Here the window owner of the 
+   links will <B>load the external data</B>, use them <B>as its own</B> 
+   to superimpose them. If the user changes the number of tracks, 
+   scalings etc..., all linked data will also move accordingly (except 
+   filtering, which is still the sole responsability of each individual 
+   Eeg). Here is an example with 2 Eegs:</P>
+  <P>
+   <IMG SRC="images/eeg.link1.png" ALIGN=CENTER WIDTH="210" HEIGHT="311" VSPACE="0" HSPACE="0" BORDER="0">linked
+    by<IMG SRC="images/eeg.link2.png" ALIGN=CENTER WIDTH="210" HEIGHT="311" VSPACE="0" HSPACE="0" BORDER="0">=<IMG SRC="images/eeg.link3.png" ALIGN=CENTER WIDTH="210" HEIGHT="311" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   Changing the number of tracks will naturally affect all the linked 
+   Eegs (here with 3 Eegs):</P>
+  <P>
+   <IMG SRC="images/eeg.link4.png" WIDTH="210" HEIGHT="311" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   The color scheme for the linked tracks is the following: black, red, 
+   green, blue, cyan, magenta, yellow, then again these 7 colors in 
+   dashed, then cycles back to black, red, green, etc... You may find 
+   useful to also change the <A HREF="#line-width">line width</A> of the 
+   plotting to improve clarity.</P>
+  <P>
+   Another point. Though Eeg views can only link to other Eeg views, 
+   non-Eeg views <I>can</I> link to Eeg views, so you can have this kind 
+   of display (a scalp potentials linking to a <A HREF="#rendering-3D">3D
+    view</A> of its tracks):</P>
+  <P>
+   <IMG SRC="images/eeg.render7.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="rendering"></A>Rendering&nbsp; <IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   (Go here for basic explanations on <A HREF="windows-general-commands.html#rendering">rendering</A>)<BR>
+   Toggles between <B>3 or 5 display modes</B>:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Default mode</B>, a <B>2 parts</B> display showing the <A HREF="terms-definitions-formulas.html#tracks"><B>regular
+     tracks</B></A> above, and some (if any) <A HREF="terms-definitions-formulas.html#tracks"><B>computed
+     tracks</B></A> below:</P>
+   <P>
+    <IMG SRC="images/eeg.render1.png" ALIGN=TEXTTOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Split mode</B>, a 4 / 8 parts display showing half / fourth of the 
+    current displayed tracks on each side, while repeating the computed 
+    tracks each time. Adding or removing some tracks will automatically 
+    be reflected in the splitting:</P>
+   <P>
+    <IMG SRC="images/eeg.render2.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/eeg.render3.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <LI CLASS="mvd-P">
+   <P>
+    Each track is assigned an &quot;<B>individual box</B>&quot;, and all 
+    the boxes will be <B>optimally packed inside the current window</B>. 
+    Changing the number of tracks displayed, or the shape of the window 
+    will affect the distribution of these boxes (just try it):</P>
+   <P>
+    <IMG SRC="images/eeg.render4.png" WIDTH="289" HEIGHT="258" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </UL>
+  <P>
+   <A NAME="rendering-with-xyz"></A>If the Eeg has been <B><A HREF="general-concepts.html#linkingfiles">linked</A> 
+   with some electrodes coordinates</B>, that is, if geometrical 
+   information is available, the following 2 modes are also available.</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Each track is also in a box, as seen above, but the <B>boxes are 
+    positionned according to the projected locations of the electrodes</B>:</P>
+   <P>
+    <IMG SRC="images/eeg.render5.png" WIDTH="289" HEIGHT="258" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <LI CLASS="mvd-P">
+   <P>
+    <A NAME="rendering-3D"></A>Same as above, but the tracks are rendered 
+    in <B>3D</B>:</P>
+   <P>
+    <IMG SRC="images/eeg.render6.png" WIDTH="289" HEIGHT="258" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <P>
+    This is the only <B>real 3D mode</B> available for an Eeg display, 
+    which therefore brings you with all the <A HREF="windows-general-commands.html"><B>Standard
+     3D commands</B></A> (mouse interaction and so on...).</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <H3>
+   <A NAME="tracks-intensity"></A>Tracks / Bars / Intensity display&nbsp;
+    <IMG SRC="images/eeg.button.tracks-vs-intensity.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   This button lets use choose between <B>Tracks</B> (line plots), <B>Bars</B> 
+   (filled) and <B>Intensity</B> (colors) displays:</P>
+  <P>
+   <IMG SRC="images/eeg.display-tracks.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/eeg.display-bars.png" WIDTH="274" HEIGHT="265" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/eeg.display-intensity.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="rois"></A>Showing the Regions Of Interest&nbsp; <IMG SRC="images/button.roi.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   This button is enabled if a <I><B><A HREF="files-formats-cartool.html#rois">.rois</A></B></I> 
+   file is available in the <A HREF="general-concepts.html#linkingfiles">link
+    many file</A>, and the dimension of the rois is equal to the <B>number
+    of electrodes</B>.</P>
+  <P>
+   Pressing this button will cycle within all possible rois listed in 
+   the link many file. Once a roi is active, the tracks are grouped by 
+   each roi. And within each roi, tracks are also re-ordered, which 
+   could be a convenient way to reorganize tracks on the display!</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Here is an example of 4 rois shown simultaneously; and then when <A HREF="#less-tracks">only
+    one roi</A> is selected, with the <B>tracks</B> within it appearing <B>re-ordered</B> 
+   (according to the ROIs file):</P>
+  <P>
+   <IMG SRC="images/rois.eeg.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/rois.eeg.one-roi.png" WIDTH="442" HEIGHT="383" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B><A HREF="files-formats-cartool.html#ris"> files</A> 
+   can, too, benefit from the ROIs, resulting in a far cleaner display. 
+   In this case, just provide the <A HREF="creating-rois.html#auto-rois">ROIs
+    for Inverse Solutions</A>:</P>
+  <P>
+   <IMG SRC="images/rois.ris.png" WIDTH="797" HEIGHT="359" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   You might be interested to learn how to <A HREF="creating-rois.html">create
+    the rois file</A>, too?</P>
+  <H3>
+   <A NAME="rois-averaging"></A>Averaging ROIs&nbsp; <IMG SRC="images/button.average.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   If some rois are <A HREF="#rois">currently active</A>, this will <B>average
+    all the tracks of each roi</B>.</P>
+  <P>
+   All the computations run first as usual (reference, filters, etc...), 
+   and only at the end the tracks belonging to the same region are 
+   averaged. All tracks of a given region will then receive the same 
+   averaged value:</P>
+  <P>
+   <IMG SRC="images/rois.eeg-averaged.png" WIDTH="442" HEIGHT="242" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   See also the <A HREF="potentials-maps-display.html#show-tracks">resulting maps</A> 
+   of averaged rois.</P>
+  <H3>
+   <A NAME="show-markers"></A>Show triggers and markers&nbsp; <IMG SRC="images/eeg.button.show-triggers.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Turns on and off the display of both the <A HREF="terms-definitions-formulas.html#trigger">triggers</A> 
+   and the <A HREF="terms-definitions-formulas.html#marker">markers</A> (see the specific menu 
+   for the markers). Triggers/markers are drawn in green in the Eeg 
+   display, with their descriptions on upper right.</P>
+  <H3>
+   <A NAME="previous-marker"></A>Previous trigger&nbsp; <IMG SRC="images/eeg.button.previous-trigger.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Set <A HREF="terms-definitions-formulas.html#cursor">cursor</A> position to the previous 
+   visible marker.</P>
+  <H3>
+   <A NAME="next-marker"></A>Next trigger&nbsp; <IMG SRC="images/eeg.button.next-trigger.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Set <A HREF="terms-definitions-formulas.html#cursor">cursor</A> position to the next 
+   visible marker.</P>
+  <H3>
+   <A NAME="add-marker"></A>Add a marker&nbsp; <IMG SRC="images/eeg.button.set-trigger.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Add a marker from the current <A HREF="terms-definitions-formulas.html#cursor">cursor</A> 
+   position, even if it is extended. Markers can overlap, but in this 
+   case they should differ at least either by their beginnings or their 
+   endings. Otherwise (i.e. they are equal) the old one will be overwritten.</P>
+  <P>
+   Set the current marker description that will be used through the 
+   marker menu.</P>
+  <H3>
+   <A NAME="extend-cursor"></A>Extend cursor&nbsp; <IMG SRC="images/eeg.button.extend-cursor.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Usually, it works automatically when setting the cursor with the <A HREF="#mouse-matrix">mouse</A>,
+    you can see it toggling on and off.</P>
+  <P>
+   However, it can be sometime very useful to proceed another way:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    click on the button, or rather press the <B>space bar</B> (it toggles 
+    the button on)<BR>
+    <LI CLASS="mvd-P"><B>extend</B> the cursor with the <B>left</B> and <B>right</B> 
+    arrows (do not use the mouse)<BR>
+    <LI CLASS="mvd-P">when done, click again on the button, or press 
+    again the <B>space bar</B> (toggles it off)</P>
+   </UL>
+  <P>
+   Just be careful to close this mode, or your cursor is still 
+   &quot;open&quot; to modifications (which you might want, by the way)</P>
+  <H3>
+   <A NAME="upper-tracks"></A>Show upper tracks&nbsp; <IMG SRC="images/eeg.button.tracks-up.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   When only a few tracks are on display, this button shifts to 
+   &quot;upper&quot;/previous tracks, adding one track at a time. If 
+   holding <B>Shift</B> down, it will shift for the actual number of 
+   tracks at each time.</P>
+  <H3>
+   <A NAME="tracks-below"></A>Show tracks below&nbsp; <IMG SRC="images/eeg.button.tracks-down.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   The same as previous, in the opposite direction.</P>
+  <H3>
+   <A NAME="select-session"></A>Selecting a session&nbsp; <IMG SRC="images/eeg.button.change-session.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   This button is activated when the recording has many sessions into it 
+   (which I don't recommend nor understand, why not write a NEW file 
+   each time?). In this case, clicking on it will bring a dialog asking 
+   which session to open, starting from 1 to <I>n</I>. The current 
+   window will <U>close</U>, and <U>reopen</U> a fresh window of the 
+   requested session.</P>
+  <H3>
+   <A NAME="less-tracks"></A>Less tracks&nbsp; <IMG SRC="images/eeg.button.less-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Removes some <A HREF="terms-definitions-formulas.html#tracks">tracks</A> from display, 
+   starting with the last ones. Or if some tracks are currently <A HREF="#mouse-tracks-select">selected</A>,
+    these will be removed.</P>
+  <H3>
+   <A NAME="more-tracks"></A>More Tracks&nbsp; <IMG SRC="images/eeg.button.more-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Brings back some <A HREF="terms-definitions-formulas.html#tracks">tracks</A> on display, 
+   first adding after the last ones, then filling any gaps between the 
+   first and the last of the current display.</P>
+  <H3>
+   <A NAME="less-computed-track"></A>Less computed tracks&nbsp; <IMG SRC="images/eeg.button.more-pseudo-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Removes some <A HREF="terms-definitions-formulas.html#tracks">computed tracks</A> from the 
+   display, starting with the last ones. Or if some computed tracks are 
+   currently <A HREF="#mouse-tracks-select">selected</A>, these will be removed.</P>
+  <H3>
+   <A NAME="more-computed-track"></A>More computed tracks&nbsp; <IMG SRC="images/eeg.button.more-pseudo-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Gets back some <A HREF="terms-definitions-formulas.html#tracks">computed tracks</A> from 
+   the display, starting with the last ones.</P>
+  <H3>
+   <A NAME="superimpose-tracks"></A>Superimpose tracks&nbsp; <IMG SRC="images/eeg.button.superimpose-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Superimposes current <A HREF="terms-definitions-formulas.html#tracks">regular tracks</A>.</P>
+  <P>
+   When shrinking to a too small window, Cartool will superimpose tracks 
+   by itself to keep a clear display. In this case, it will also 
+   superimposes the computed tracks. At that time, toggling on or off 
+   this button will have no effect, except when expanding back the 
+   window to a regular size.</P>
+  <H3>
+   <A NAME="reverse-display"></A>Reverse displayed polarity&nbsp; <IMG SRC="images/eeg.button.reverse-polarity.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Vertically reverses the display, showing the negative values above 
+   the 0, the positive values below 0. Just the display, not the data 
+   (it seems some people like it, in the south hemisphere maybe? 8).</P>
+  <H3>
+   <A NAME="standard-deviation"></A>Show standard deviation&nbsp; <IMG SRC="images/eeg.button.shows-sd.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   This button is enabled when a file is found within the same 
+   directory, with the very same name, but with extension <I>.epsd</I> 
+   (standard deviation) or <I>.epse</I> (standard error). This detection 
+   is automatic.</P>
+  <P>
+   This is a 3 states button:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    no standard deviation shown<BR>
+    <LI CLASS="mvd-P">standard deviation is drawn with dashed lines<BR>
+    <LI CLASS="mvd-P">standard deviation is filled with transparent color</P>
+   </UL>
+  <H3>
+   <A NAME="increase-vertical"></A>Increase vertical scaling&nbsp; <IMG SRC="images/eeg.button.more-vertical-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Or vertical zoom in, makes the tracks amplitude bigger. See also <A HREF="#mouse-matrix">mouse
+    operations</A> and the <B><A HREF="#relative-vertical">relative 
+   mouse rescaling</A></B>.</P>
+  <H3>
+   <A NAME="decrease-vertical"></A>Decrease vertical scaling&nbsp; <IMG SRC="images/eeg.button.less-vertical-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Or vertical zoom out, makes the tracks amplitude smaller. See also <A HREF="#mouse-matrix">mouse
+    operations</A> and the <B><A HREF="#relative-vertical">relative 
+   mouse rescaling</A></B>.</P>
+  <H3>
+   <A NAME="increase-horizontal"></A>Increase horizontal scaling&nbsp; <IMG SRC="images/eeg.button.more-horizontal-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Or horizontal zoom in, makes the time interval smaller. See also <A HREF="#mouse-matrix">mouse
+    operations</A>.</P>
+  <H3>
+   <A NAME="decrease-horizontal"></A>Decrease horizontal scaling&nbsp; <IMG SRC="images/eeg.button.less-horizontal-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Or horizontal zoom out, makes the time interval bigger. See also <A HREF="#mouse-matrix">mouse
+    operations</A>.</P>
+  <H3>
+   <A NAME="vertical-units"></A>Show amplitude units&nbsp; <IMG SRC="images/eeg.button.vertical-units.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Draws the vertical units behind the tracks. If the tracks are too 
+   much packed, you actually won't see any effect. There should be some 
+   space in between the tracks, so select the one you are interested in, 
+   or <A HREF="#superimpose-tracks">superimpose</A> them. Then, by 
+   changing the <A HREF="#increase-vertical">vertical scaling</A> you 
+   can see the scaling adapting itself to the data.<BR>
+   Tracks with different units or scales, like <A HREF="terms-definitions-formulas.html#formulas">GFP</A> 
+   and <A HREF="terms-definitions-formulas.html#formulas">Dissimilarity</A>, have each a 
+   separate and different scaling used.</P>
+  <H3>
+   <A NAME="horizontal-units"></A>Show time units&nbsp; <IMG SRC="images/eeg.button.horizontal-units.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Draws time intervals behind the tracks, the space between them 
+   depending on the current <A HREF="#increase-horizontal">horizontal scaling</A>.
+    The intervals are in milliseconds, starting from the beginning of 
+   the file, but if the Eeg has no sampling frequency value available, 
+   the intervals are simply put in <A HREF="terms-definitions-formulas.html#time-frame">time frames</A>.</P>
+  <H3>
+   <A NAME="filters"></A>Filters&nbsp; <IMG SRC="images/eeg.button.filter.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Brings up the dialog with all the available filters:</P>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <IMG SRC="images/eeg.filters.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </CENTER>
+  <P>
+   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Filters</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>DC / Baseline Removal</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Remove the <B>DC</B>, or <B>0 Hz</B>.</P>
+	  <P>
+       The <strong>time interval</strong> used to compute the DC depends on the 
+	   context:</P>
+	  <ul>
+		  <li>&nbsp;Within an EEG display, the current page is used.</li>
+		  <li>During <a href="reprocess-tracks.html">Export Tracks</a>, the whole 
+		  file is being used.</li>
+	  </ul>
+      <P>
+       The <em>DC Removal</em> button is automatically selected when High Pass 
+       filtering is set, as to prevent well-known instabilities from the 
+	   Butterworth (IIR) filter. Still, you can turn it off manually.</P>
+      <P>
+       You can also use it independently of the High Pass filter, just to 
+       quickly remove the baseline of the current displayed window.</TD>
+       </tr>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>Butterworth
+       High Pass:</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Specify the cut-off frequency, in Herz. <A HREF="#filters-combination">
+	   See here for more details when combining with the Low Pass</a>.</P>
+      <P>
+       The <strong>time interval</strong> used for the high-pass depends on the 
+	   context:</P>
+	  <ul>
+		  <li>&nbsp;Within an EEG display, the current page is used plus some 
+		  left and right margin. The margin being equal to <strong>half the 
+		  wavelength</strong> of the cut-off frequency. F.ex. 1 Hz gives 500 ms.</li>
+		  <li>During <a href="reprocess-tracks.html">Export Tracks</a>, the whole 
+		  file is being used.</li>
+	  </ul>
+		</TD>
+       </tr>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>Order (even, in [2..64]):</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <A HREF="#filters-combination">Order of the Butterworth High Pass</a>.</P>
+	  <P>
+       Higher order filters perform better in terms of keeping the desired 
+	   frequencies and rejecting the unwanted ones. This comes at the cost of 
+	   more processing, and possible instabilities for difficult data.</P>
+	  <P>
+       Due to current optimal implementations, <strong>order must be an even 
+	   number</strong>, and is currently limited to the <strong>range [2..64]</strong>.</P>
+		</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>Butterworth
+       Low Pass:</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Specify the cut-off frequency, in Herz. <A HREF="#filters-combination">
+	   See here for more details when combining with the High Pass</a>.</P>
+	  <P>
+       The <strong>time interval</strong> used for the low-pass depends on the 
+	   context:</P>
+	  <ul>
+		  <li>&nbsp;Within an EEG display, the current page is used plus some 
+		  left and right margin. The margin being equal to <strong>twice the 
+		  wavelength</strong> of the cut-off frequency. F.ex. 40 Hz gives 50 ms.</li>
+		  <li>During <a href="reprocess-tracks.html">Export Tracks</a>, the whole 
+		  file is being used.</li>
+	  </ul>
+		</TD>
+    </TR>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>Order (even, in [2..64]):</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <A HREF="#filters-combination">Order of the Butterworth Low Pass</a>.</P>
+	  <P>
+       Higher order filters perform better in terms of keeping the desired 
+	   frequencies and rejecting the unwanted ones. This comes at the cost of 
+	   more processing, and possible instabilities for difficult data.</P>
+	  <P>
+       Due to current optimal implementations, <strong>order must be an even 
+	   number</strong>, and is currently limited to the <strong>range [2..64]</strong>.</P>
+		</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong><A HREF="#filter-causality">Butterworth Filters Causality:</a></strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</P>
+	  	 </TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>Causal (forward ony)</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       When set, this forces the filters to work as in a real-life recording 
+	   machine. <strong><A HREF="#filter-causality">It filters by making use of 
+	   data known so far, that is, &quot;from the past and present&quot;</a>. </strong>
+	   Problem is the filtered signal has now some time delay.</P>
+		   </TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>Non-Causal (forward and backward)</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       When set (default), <strong><A HREF="#filter-causality">filters make use 
+	   of all available data by applying the filters twice, once forward and 
+	   once backward</a></strong>. The nice property is that it totally restores 
+	   the time accuracy.</P>
+		   </TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+       </tr>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Butterworth Notch(es):</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       One or more notch values, in Herz.</P>
+      <P>
+       As hinted, Notch filtering is done with a <strong>Butterworth Bandstop 
+	   filter of order 12, and a stopband of 1Hz</strong>.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>+ All Harmonics</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       With this option, Cartool will <strong>add all the harmonics from the 
+	   list of notch frequencies above</strong>, up to the Nyquist limit. This 
+	   way you save typing them yourselves, with the risk of missing some of 
+	   them. And it automatically adapts the bank of filters to the actual 
+	   sampling frequency.<P>
+       F.ex. filtering some 50Hz power line noise with this option will filter 
+	   out (assuming 1000Hz sampling frequency here):<ul>
+		  <li><strong>50Hz</strong> fundamental</li>
+		  <li><strong>100, 150, 200, 250, 300, 350, 400, 450 and 500Hz</strong> 
+		  harmonics</li>
+	  </ul>
+	  <P>
+       &nbsp;<P>
+       You can opt out this option to have finer control of your series of notch 
+	   filters if you wish so. But be aware that even if you Low Pass to 40Hz 
+	   f.ex., many frequencies well above 40Hz will still be present and will 
+	   need some actions.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Spatial Filter:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Applying the <strong><A HREF="#spatial-filter">Spatial Filter</a></strong> 
+	   to the data.<P>
+       <em>Drag &amp; Drop</em> or click Browse to select an appropriate
+	   <A HREF="files-formats-others.html#electrodes-coord">electrodes coordinates 
+	   file</a>.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Ranking</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Rank the data. At each time frame, electrode values are sorted, and the 
+	   data is then replaced with their ranks.<P>
+       Results are normalized with the number of electrodes, the results 
+	   therefor being in the range [0..1] (0 for the lowest value, 1 for the 
+	   highest value).</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       &lt;Reference computation here&gt;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This is just to formally show where Cartool computes the reference, so 
+	   just after the filters above. The next filters will use the optionally 
+	   re-referenced data.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Rectification:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Making the data all positive.<P>
+       Usually a step before the Envelop filter below, but it can also be 
+	   interesting sometimes to force the data to absolute.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Absolute value</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Absolute of input value.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Squared value (Power)</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Squared of input value, therfor equivalent to a power. Of course, results 
+	   are positive...</TD>
+       </tr>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>+ Envelope, of window duration:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Compute the Envelope, a kind of fast frequency analysis.<P>
+       To be able to compute the Envelope, all these points must be fulfilled:<ul class="mvd-p">
+		  <li>High- and Low-pass filters should be set</li>
+		  <li>Some Rectification (button above) should be set</li>
+		  <li>A sliding-window duration must be specified.<br>The suggested 
+		  window size is&nbsp; 1.5 / LowFreq</li>
+	  </ul>
+		</TD>
+    </TR>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+       </tr>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Thresholding, keeping Above:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Cutting the data at the specified threshold, <strong>keeping the values 
+	   above</strong>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Thresholding, keeping Below:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Cutting the data at the specified threshold, <strong>keeping the values 
+	   below</strong>.</P>
+	  <P>
+       Both <I>Above</I> and <I>Below</I> options can be used at the same time. 
+	   In that case remaining values are <strong>both above <em>and</em> below</strong> 
+	   the specified thresholds (interval).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Options</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Sampling Frequency (set if missing):</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       If the current file has a sampling frequency, its value will be shown here.</P>
+      <P>
+       If not, the field is editable, and it is mandatory to have a value 
+       entered to be able to apply any of the filters.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Also apply filters to:</P>
+      <P>
+       Auxiliaries Channels</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Specifies if the <A HREF="terms-definitions-formulas.html#tracks">auxiliary electrodes</A> are to be filtered.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Switch On / Off all filters set</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You can turn on and off all the currently entered filters. This is 
+       very convenient to see the effects of a set of filters, by simply 
+       turning the filtering on and off.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP></TD>
+     <TD WIDTH="68%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>OK</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Accept the filters.</P>
+      <P>
+       This button remains <B>disabled until <U>all</U> the parameter 
+       dialogs have received enough (and consistent) informations</B>. If 
+       this is not the case, first check the current dialog: if its 
+       &quot;Next&quot; button is disabled, the problem is in the current 
+       dialog. Otherwise, browse the other dialogs for some missing informations.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Cancel</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Quit the dialog, and remain in the previous filtering state.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Help</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be here...).</TD>
+    </TR>
+   </TABLE></P>
+  <P>
+   &nbsp;</P>
+  <H4>
+   <A NAME="filters-combination"></a>Filters combination and sequence</H4>
+  <P>
+   <strong>Filters are applied sequentially, following the top-down design of 
+   the dialog</strong>. This means DC filter is first to be applied, then the 
+   Butterworth, then the Spatial Filter and so on and so forth. Most of these 
+   filters are not linearly permutables, which means the actual sequence <em>
+   does matter a lot</em> on your results! The current sequence is the results 
+   of 25+ years of experience in the field.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   When applying <strong>both the Butterworth High Pass <em>and</em> the 
+   Butterworth Low Pass filters</strong>, they will be automatically merged into 
+   a <strong>single Butterworth Bandpass filter</strong> (instead of running 
+   these two filters sequentially):</P>
+  <ul>
+	  <li><strong>Order of the Bandpass</strong> will be the <strong>sum of 
+	  orders from the 2 single Butterworth filters</strong>.<br>F.ex. if High 
+	  and Low passes have each an order of <strong>4</strong>, then the 
+	  resulting Bandpass will have order of 2x4=<strong>8</strong>.<br>This 
+	  makes the final Bandpass filter orders to be multiples of 4.</li>
+	  <li>Bandpass will therefore be two times more powerful than the single 
+	  filters alone, due to the doubling of order.</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   <b>Filtering only affects the display</b> in real-time<b>, and <em>does not</em> 
+   alter the original data</b>. To permanently change the 
+   data, you can either call <span class="auto-style9"><strong>File | Save As</strong></span>, 
+   or go through the more versatile&nbsp;<FONT FACE="Arial Black,Arial,Helvetica"><A HREF="reprocess-tracks.html">Export
+    Tracks</A></FONT> toolbox.</P>
+  <H4>
+   <A NAME="filter-causality"></a>Filter causality</H4>
+  <P>
+   Sometimes, one needs to control how the filters make use of &quot;data from the 
+   future&quot;, so to speak.</P>
+  <P>
+   A filter that receives data only from the past and present is said to be 
+   causal, and non-causal if it makes use of data from the future. The latter 
+   case can only happen once the recording has been done. It is done by applying 
+   the filter once forward, then again once backward.</P>
+  <P>
+   &nbsp;</P>
+  <h5>
+   Non-causal filter</h5>
+  <P>
+   The enormous advantage of the non-causal filtering for EEG analysis is that
+   <strong>it restores the phases of the original signal</strong>. This means
+   <strong>peaks' locations remain stable</strong>. It also restores the phases 
+   for all frequencies, so the reconstructed signal also corresponds to the 
+   original one, minus the removed frequencies of course. It is the default 
+   option, and is widely used in the EEG community.</P>
+  <P>
+   <strong><em>Note:</em></strong> when applying twice a filter, the decay at 
+   cut-off frequency will no longer be -3dB (filter has been applied twice!). 
+   Cartool counteracts this effect internally by operating a slight adjustment 
+   to the cut-off frequency, so that the double-filtering has an actual -3dB 
+   decay at cut-off.</P>
+  <P>
+   &nbsp;</P>
+  <h5>
+       Causal filter</h5>
+  <P>
+       This can be used if one wants to make sure no data from the future might 
+	   have back-propagated and caused possible interference with the results. 
+	   This option is to be used mainly for picky reviewers... Note that all 
+	   real-time implementations like a recording machine must use a causal 
+	   filter - if any.</P>
+  <P>
+       One big disadvantage a causal filter is the <strong>delay added to the 
+	   resulted filtered signal</strong>. Peaks locations are no longer at the 
+	   right time positions! An aggravated issue is that the phase shifts differ 
+	   at each frequency, slightly &quot;scrambling&quot; the data.</P>
+  <H4>
+   Pamphlet you can include for publications</H4>
+  <P>
+   Here is the technical pamphlet for a <strong>single Butterworth filter</strong>, 
+   replacing <em>&lt;actualorder&gt;</em> by the order used in the dialog:</P>
+  <P class="mvd-pre">
+   The <strong>Butterworth Low / High pass filters</strong> are <em>
+   &lt;actualorder&gt;</em> order filters, with <em>&lt;-20 x actualorder&gt;</em> dB/decade roll-off 
+   and maximally flat response. They are implemented as cascaded 2<SUP>nd</SUP> 
+   order sections with bilinear transform, and applied twice with one forward 
+   and one backward pass to eliminate the phase shift.</P>
+  <P>
+   When <A HREF="#filters-combination"><strong>both High Pass and Low Pass 
+   filters are applied</strong></a>, it ends up with a <strong>Butterworth 
+   Bandpass</strong> - note the doubling order from the dialog numbers:</P>
+  <P class="mvd-pre">
+   The <strong>Butterworth Bandpass filter</strong> is a <em>&lt;2 x actualorder&gt;</em> 
+   order filter, with <em>&lt;-40 x actualorder&gt;</em> dB/decade roll-off and 
+   maximally flat response. It is implemented as cascaded 2<SUP>nd</SUP> order 
+   sections with bilinear transform, and applied twice with one forward and one 
+   backward pass to eliminate the phase shift.</P>
+  <P>
+   The <strong>Notch filter</strong> is implemented as a Butterworth Bandstop 
+   filter - note the optional part if you selected <em>All Harmonics</em>:</P>
+  <P class="mvd-pre">
+   The Notch filter is implemented as a <strong>Butterworth Bandstop filter</strong> 
+   of order 12, with -240 dB/decade roll-off and maximally flat response, and a 
+   stopband of 1Hz. It is implemented as cascaded 2<SUP>nd</SUP> order sections 
+   with bilinear transform, and applied twice with one forward and one backward 
+   pass to eliminate the phase shift. <em>&lt;optional part&gt;</em> Harmonic 
+   frequencies have also been filtered out with cascaded Notch filters, up to 
+   the Nyquist limit.</P>
+  <P>
+   Note that if you are going to comment on all these filters in the same 
+   section, you can shorten these pamphlet to avoid repeating the implementation 
+   details that are exactly identical.</P>
+  <P class="mvd-normal">
+   &nbsp;</P>
+  <P class="mvd-normal">
+   <strong>Reference</strong></P>
+  <p>Reference used for the implementation of the Butterworth filters:</p>
+  <PRE><a href="https://www.abrazol.com/books/filter1/"><span class="auto-style6"><strong><span class="auto-style8">&quot;Recursive Digital Filters - A Concise Guide&quot;</span></strong><span class="auto-style8">,
+</span></span>S. Hollos, J.R. Hollos<span class="auto-style5">,
+<em>Abrazol Publishing</em>, 2014, Exstrom Laboratories</span></a></PRE>
+  <H4>
+   Time and frequency constraints</H4>
+  <P>
+   Filters frequencies have some intrinsic limits (<a href="https://en.wikipedia.org/wiki/Nyquist_frequency">Nyquist</a> and all these 
+   sorts of things), that Cartool will gracefully check for you when 
+   specifying new values. These limits depends on the sampling frequency 
+   (see below) AND the filter window (the number of time frames given to 
+   the filter function):</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Cartool will <strong>silently expand your requested time interval</strong>, 
+	compute the filters, then crop out the extra margin.</P>
+	  <LI CLASS="mvd-P">
+      <P>
+      The <strong>additional time margin</strong> is the maximum of:</P>
+	  <UL>
+		  <LI CLASS="mvd-P">
+		  <P>For <strong>High-pass filter</strong>, half the biggest possible 
+		  period, that is&nbsp; <span class="mvd-listing">order / ( high pass 
+		  cut-off * 2 )</span></P>
+		  <LI CLASS="mvd-P">
+		  <P>For <strong>Low-pass filter</strong>, the shortest possible 
+		  period, that is&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; <span class="mvd-listing">
+		  order / ( low pass cut-off )</span></P>
+		  <LI CLASS="mvd-P">
+		  <P>For <strong>Band-pass</strong> or <strong>Band-stop</strong>, the 
+		  max of the first two above</P>
+		  <LI CLASS="mvd-P">
+		  <P>For <strong>Notch filter</strong>, a multiple of the period of the 
+		  fundamental&nbsp; <span class="mvd-listing">
+		  ( 6 * 12 ) / notch cut-off</span></P>
+		  <LI CLASS="mvd-P">
+		  <P>For <strong>Envelope filter</strong>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+		  <span class="mvd-listing">2 * Envelope width</span></P>
+	  </UL>
+	  <LI CLASS="mvd-P">
+      <P>
+      Some filters <em>don't need</em> any extra margin, being instantaneous 
+	  like the Ranking, <A HREF="#spatial-filter">Spatial</a>, Rectification, 
+	  Thresholding filters etc...</P>
+	  <LI CLASS="mvd-P">
+      <P>
+      At the beginning and ending borders of the tracks, a <B>mirroring</B> 
+	  technique is used to fill the needed time points.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Filter parameters are then <B>checked against this expanded time interval</B>.
+     The actual frequency limits will therefore vary according to the 
+    window size / <A HREF="#increase-horizontal">horizontal scaling</A>.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    If the current display window size changes, the 
+    frequencies of the filters will be temporarily <B>clipped within the 
+    new limits</B>. Though, the user-specified values are not lost, and 
+    restoring a bigger window will disable the clipping and the original 
+    values be used. This always brings the user on the safe side of the 
+    filters, at the expanse of changing the filter values.</P>
+   </UL>
+  <P class="mvd-h4">
+   <A NAME="spatial-filter"></a>Spatial Filter</P>
+  <P class="mvd-normal">
+   We developped a very specific spatial filter to <strong>improve the SNR of 
+   the data</strong>, a step which greatly improve the
+   <a href="microstates-segmentation.html">segmentation</a> and the
+   <a href="computing-ris.html">computation of inverse solution</a> results:</P>
+  <ul class="mvd-p">
+	  <li>
+	  <P class="mvd-normal">This is an <strong>instantaneous filter</strong>, it 
+	  only makes use of the electrode values at a given time point</P>
+	  </li>
+	  <li>
+	  <P class="mvd-normal">It works partly as a <strong>non-linear statistical 
+	  filter by removing outliers</strong></P>
+	  </li>
+	  <li>
+	  <P class="mvd-normal">And it also works partly as a <strong>linear 
+	  smoothing filter</strong>, the weights coming from the electrodes spatial 
+	  distribution</P>
+	  </li>
+  </ul>
+  <P class="mvd-normal">
+   &nbsp;</P>
+  <P class="mvd-normal">
+   <strong>Method description</strong></P>
+  <P class="mvd-normal">
+   For any given time point:</P>
+  <ul class="mvd-p">
+	  <li><span class="mvd-normal">Repeating for each electrode:</span><ul class="mvd-normal">
+		  <li>The values of the <strong>6 closest neighbors</strong> are 
+		  determined, plus the <strong>central electrode</strong> value itself.</li>
+		  <li>These <strong>7 data points are then sorted</strong>.</li>
+		  <li>The <strong>minimal and maximal values are removed</strong> by 
+		  dropping the first and last items of this list.</li>
+		  <li>The new electrode value is the <strong>weighted average of the 5 
+		  remaining values</strong>, with weights being proportional to the
+		  <strong>inverse distance to the central electrode</strong>. The 
+		  central electrode is given a weight of 1.<br>
+		  <img SRC="images/eeg.spatial-filter.2.png"></li>
+	  </ul>
+	  </li>
+  </ul>
+  <P class="mvd-normal">
+   &nbsp;</P>
+  <P class="mvd-normal">
+   Here is a visual example of the 6 closest Delaunay neighbors, with the 2 
+   extrema values removed (left), then the resulting smoothing (right):</P>
+  <P class="auto-style1">
+   <img height="225" SRC="images/eeg.spatial-filter.1.png" width="521"></P>
+  <P class="mvd-normal">
+   &nbsp;</P>
+  <P class="mvd-normal">
+   <strong>Technical points</strong></P>
+  <ul class="mvd-p">
+	  <li>
+	  <P class="mvd-p">The spatial filter is very similar to an Inter Quartile 
+	  Mean (IQM), but in our case cutting the Cumulated Density Function into 7 
+	  intervals instead of 4. We can therefor call it an <strong>Inter Septile 
+	  Weighted Mean</strong>.</P>
+	  </li>
+	  <li>
+	  <P class="mvd-p">The spatial filter is <strong>reference independent</strong>. 
+	  It doesn't care if the reference is computed before or after the filter. 
+	  Indeed, any additive constant will change neither the ordering nor the 
+	  weighted sum (apart from the constant shift itself, of course).</P>
+	  </li>
+	  <li>
+	  <P class="mvd-p">The spatial filter produces <strong>reliable average maps</strong>, 
+	  which is not the case with other formulas, like the regular Inter Quartile 
+	  Mean. This is very important for <A HREF="microstates-segmentation.html#seg-results">
+	  computing template maps from the segmentation</a>.</P>
+	  </li>
+	  <li>
+	  <P class="mvd-p">The <strong>weights are derived from the 2D Delaunay 
+	  triangulation</strong> computed between the electrodes positions. Note 
+	  that in order to be scale-free, the distances are normalized so that the average distance 
+	  between the closest neighbors is equal to 1.</P>
+	  </li>
+  </ul>
+  <P class="mvd-normal">
+   &nbsp;</P>
+  <P class="mvd-normal">
+   &nbsp;</P>
+  <P class="mvd-normal">
+   Finally, we can see here an example of before (A) and 
+   after (B) the Spatial filter, on the tracks (left) then on the maps (middle and right):&nbsp;</P>
+  <P class="auto-style2">
+   <img alt="spatial filter" height="331" SRC="images/compris.spatial-filter.png" width="659"></P>
+  <P class="mvd-normal">
+   &nbsp;</P>
+  <P class="mvd-normal">
+   <strong>Reference</strong></P>
+  <p>This is the published reference about the Spatial Filter:</p>
+  <PRE><a href="https://www.ncbi.nlm.nih.gov/pubmed/31019487"><span class="auto-style6"><strong><span class="auto-style8">&quot;EEG Source Imaging: A Practical Review of the Analysis Steps&quot;</span></strong><span class="auto-style8">,
+</span></span></a><span class="auto-style5"><a class="auto-style8" href="https://www.ncbi.nlm.nih.gov/pubmed/31019487">C.M. Michel, D. Brunet,
+<em>Front. Neurol.</em>, 04 April 2019</a></span></PRE>
+  <H3>
+   <A NAME="average-reference"></A>Average Reference&nbsp; <IMG SRC="images/eeg.button.average-reference.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Toggles on or off the <B><A HREF="terms-definitions-formulas.html#formulas">Average Reference</A></B>.
+    This is equivalent to setting the <A HREF="#menu-average-ref">average
+    reference through the Menu</A>.</P>
+  <H3>
+   <A NAME="brightness"></A>Brightness&nbsp; <IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Only when in the <A HREF="#tracks-intensity">Intensity mode</A> can 
+   you adjust the <B>brightness / intensity</B> of the colors.</P>
+  <P>
+   This is equivalent to changing the value assigned to the maximum color.</P>
+  <P>
+   See an example here, with the <A HREF="mri-display.html#brightness">MRI
+    display</A>.</P>
+  <H3>
+   <A NAME="contrast"></A>Contrast&nbsp; <IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Contrast does not change the maximum value mapped to the maximum 
+   color, but changes the <B>slope of the mapping</B>, increasing or 
+   decreasing the color differences between low and high values.</P>
+  <P>
+   See an example here, with the <A HREF="mri-display.html#contrast">MRI
+    display</A>.</P>
+  <H3>
+   <A NAME="auto-scaling"></A>Color auto scaling&nbsp; <IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Sets the maximum volume value to the maximum color value. Put it 
+   another way: automatically sets the brightness to match and correctly 
+   display the data. Consequently, the <A HREF="#brightness">brightness</A> 
+   buttons become inactive, but still the <A HREF="#contrast">contrast</A> 
+   can be adjusted.</P>
+  <H3>
+   <A NAME="color-modes"></A>Color modes&nbsp; <IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Cycles through different color tables (black to white, white to 
+   black, black to yellow to white, etc...).</P>
+  <H2>
+   <A NAME="mouse"></A><A NAME="mouse-matrix"></A>EEG - Mouse</H2>
+  <P>
+   Go <A HREF="windows-general-commands.html#mouse">here</A> for the mouse actions 
+   common to all views.</P>
+  <H3>
+   Chart of all mouse operations for EEG</H3>
+  <P>
+   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+    <TR>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <P ALIGN=RIGHT>
+       <B>Alternate key</B></P>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <B>Mouse button</B></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <B>None</B></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <B>Shift</B></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <B>Control</B></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <B>Control+Shift</B></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <B>Left</B></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <A HREF="#mouse-time-selectio">time selection</A><BR>
+        or<BR>
+        <A HREF="windows-general-commands.html#mouse-rotating">rotation</A> if <A HREF="#rendering-3D">in
+         3D</A></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        same as <A HREF="#mouse-tracks-select">Middle</A><BR>
+        or<BR>
+        <A HREF="windows-general-commands.html#mouse-zooming">zoom</A> if <A HREF="#rendering-3D">in
+         3D</A></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        same as <A HREF="#mouse-bad-tracks">Shift Middle</A></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <B>Middle</B></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <A HREF="#mouse-tracks-select">tracks selection</A></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <A HREF="#mouse-bad-tracks">bad tracks selection</A></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <B>Right</B></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <A HREF="#mouse-horiz-scroll">horizontal scrolling</A><BR>
+        or<BR>
+        <A HREF="#mouse-horiz-scroll">next/previous tracks</A></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <A HREF="#mouse-zoom">horizontal zoom</A><BR>
+        or<BR>
+        <A HREF="#mouse-zoom">vertical zoom</A></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <A HREF="#baseline-shift">baseline offset shifting</A>&nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <B>Double Left</B></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        <A HREF="#mouse-keep-sub">keep only sub-window</A></TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</TD>
+     <TD WIDTH="20%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</TD>
+    </TR>
+   </TABLE></P>
+  <P>
+   &nbsp;</P>
+  <H3>
+   <A NAME="mouse-time-selectio"></A>Time selection: left click</H3>
+  <P>
+   <B>Click</B> (and extend) the <B>left button</B> to set the current 
+   time point/time range:</P>
+  <P>
+   <IMG SRC="images/eeg.1tf.png" WIDTH="238" HEIGHT="180" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   If you <B>hold down the left button</B>, you can <A HREF="terms-definitions-formulas.html#cursor">extend
+    the cursor</A> to any size you want, even outside the current 
+   window. In this case, the window will scroll while you move the 
+   cursor outside the window:</P>
+  <P>
+   <IMG SRC="images/eeg.ntf.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   See also the keyboard way of <A HREF="#keyboard-move-curso">moving 
+   the cursor</A>.</P>
+  <H3>
+   <A NAME="mouse-tracks-select"></A>Tracks selection: middle click</H3>
+  <P>
+   <B>Click</B> (and extend vertically) the <B>middle button</B> to 
+   select/deselect some tracks.</P>
+  <P>
+   You can use <B>Control + left click</B> if you don't have a middle 
+   button. Also note that you have to click close to the baseline of the 
+   track, not on the track itself!</P>
+  <P>
+   The selected tracks are drawn in pink:</P>
+  <P>
+   <IMG SRC="images/eeg.tracks-selected.png" WIDTH="228" HEIGHT="180" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   To <B>deselect</B> some tracks, <B>middle click again</B> on them.</P>
+  <P>
+   To <B>deselect</B> all tracks, <B>middle click</B> somewhere far 
+   enough from the tracks, say, around the electrode names.</P>
+  <P>
+   For more controls and possible uses, see the menu <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="#menu-selection">Selection</A></FONT>.</P>
+  <P>
+   The tracks selection <I>does not</I> interfere with the time 
+   selection at all.</P>
+  <H3>
+   <A NAME="mouse-bad-tracks"></A>Bad tracks selection: Shift + middle click</H3>
+  <P>
+   Use <B>Shift</B> and <B>click</B> the <B>middle button</B> to 
+   set/reset some <A HREF="terms-definitions-formulas.html#tracks">bad</A> tracks.</P>
+  <P>
+   The bad tracks are drawn in light red:</P>
+  <P>
+   <IMG SRC="images/eeg.bad-tracks.png" WIDTH="228" HEIGHT="180" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   Bad tracks (broken electrode, noisy signal etc...) are taken out of 
+   the calculus of the <A HREF="terms-definitions-formulas.html#tracks">computed tracks</A>, 
+   and the number of significant electrodes decreased by their amount. 
+   They are also independently rescaled, so that any high amplitudes 
+   will not visually degrade the display. You can easily show or remove 
+   them through the <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="#menu-selection">Selection</A></FONT> menu.</P>
+  <H3>
+   <A NAME="mouse-horiz-scroll"></A>Horizontal scrolling or Next / 
+   Previous tracks: right click</H3>
+  <P>
+   <B>Click</B> the <B>right button</B>, then <B>drag either 
+   horizontally or vertically</B>.</P>
+  <P>
+   If the initial direction of the mouse is <B>horizontal</B>, the 
+   window will be subsequently <B>scrolled horizontally</B>. Otherwise, 
+   the scrolling will be applied <B>vertically</B>, to the <B>tracks</B>,
+    by <B>shifting</B> to the <A HREF="#tracks-below">next/down tracks</A> 
+   or the <A HREF="#upper-tracks">previous/upper tracks</A>. More 
+   intuitive if you try it!</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The <A HREF="windows-general-commands.html#mouse-hints">visual hints</A> 
+   associated, moving horizontally (time), or vertically (tracks):</P>
+  <P>
+   <IMG SRC="images/vishint.16.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.17.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   <IMG SRC="images/vishint.24.png" WIDTH="237" HEIGHT="227" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.25.png" WIDTH="237" HEIGHT="227" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="mouse-zoom"></A>Horizontal &amp; vertical zoom: Shift + 
+   right click</H3>
+  <P>
+   Use <B>Shift</B> and <B>click</B> the <B>right button</B>, then <B>drag
+    either horizontally or vertically</B>.</P>
+  <P>
+   The direction you choose will select which dimension will be zoomed 
+   in/out: <A HREF="#increase-horizontal">horizontal</A> or <A HREF="#increase-vertical">vertical</A>.</P>
+  <P>
+   When zooming horizontally, Cartool will <B>center the current view</B> 
+   to the current cursor position, which can be handy to quickly 
+   recenter your view to a given time frame.</P>
+  <P>
+   See also the next point below to some some tracks specifically.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The <A HREF="windows-general-commands.html#mouse-hints">visual hints</A> 
+   associated, for the vertical and horizontal zoom:</P>
+  <P>
+   <IMG SRC="images/vishint.12.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.13.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   <IMG SRC="images/vishint.14.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.15.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="relative-vertical"></A>Relative vertical zoom: Control + 
+   Shift + right click</H3>
+  <P>
+   Use <B>Control</B> + <B>Shift</B> and <B>click</B> the <B>right button</B>,
+    then <B>drag either horizontally or vertically</B>.</P>
+  <P>
+   This will zoom in/out <B>only</B> the <B><A HREF="#mouse-tracks-select">currently
+    selected tracks</A></B>, using the same procedure as the <A HREF="#mouse-zoom">global
+    scaling</A>.</P>
+  <P>
+   If no tracks are selected, then the global scaling applies. The 
+   procedure can be repeated as many time, and on any tracks subset, as needed.</P>
+  <P>
+   To reset the scaling to the global default, use the&nbsp; <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="#reset-scaling">Options
+    | Reset tracks scaling</A></FONT>&nbsp; menu.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   This is a way you can emphasize (interesting but too small) or 
+   de-emphasize (noisy and big) some particular tracks by giving them a <B>local
+    scaling</B> of their own:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    a regular, uniform scaling:</P>
+   </UL>
+  <P>
+   <IMG SRC="images/eeg.rescale1.png" ALIGN=CENTER WIDTH="260" HEIGHT="206" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    some specific scaling:</P>
+   </UL>
+  <P>
+   <IMG SRC="images/eeg.rescale2.png" ALIGN=CENTER WIDTH="260" HEIGHT="206" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   Finally, note that the <A HREF="#increase-vertical">rescaling buttons</A> 
+   will only work <B>globally</B>, even though some tracks might be selected.</P>
+  <H3>
+   <A NAME="baseline-shift"></A>Baseline offset shifting: Control + 
+   right click</H3>
+  <P>
+   Use <B>Control</B> and <B>click</B> the <B>right button</B>, then <B>drag
+    vertically</B>.</P>
+  <P>
+   This will move the whole tracks baseline (axis) up and down. If the 
+   data are highly skewed toward an extreme value, this allows the 
+   re-center the display around that limit, and then play with the 
+   vertical zooming as usual.</P>
+  <P>
+   To manually set a baseline value, or to reset it to its default (i.e. 
+   0), see the&nbsp; <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="#reset-scaling">Options
+    | Reset baseline offset</A></FONT>&nbsp; menu.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   See here the default baseline, and a shifted baseline of -150:</P>
+  <P>
+   <IMG SRC="images/eeg.no-offset.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0">&nbsp;&nbsp;&nbsp;
+    <IMG SRC="images/eeg.offset.png" ALIGN=CENTER WIDTH="274" HEIGHT="212" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The <A HREF="windows-general-commands.html#mouse-hints">visual hints</A> 
+   associated when shifting the baseline:</P>
+  <P>
+   <IMG SRC="images/vishint.20.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.21.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="mouse-keep-sub"></A>Keep only one sub-window: double left click</H3>
+  <P>
+   When the EEG tracks are <A HREF="#rendering">rendered</A> into 
+   different sub-windows, <B>double left clicking</B> one of these will 
+   switch the display to that single sub-window alone.</P>
+  <H3>
+   <A NAME="drag-and-drop"></A>Drag &amp; Drop</H3>
+  <P>
+   You can <I><B>Drag &amp; Drop</B></I><B> any </B><I><B>.mrk</B></I><B> 
+   file into the window</B>, and all markers from that file fitting the 
+   current EEG time range <B>will be added to the current list</B>.</P>
+  <H2>
+   <A NAME="keyboard-move-curso"></A>EEG - Keyboard</H2>
+  <P>
+   Go <A HREF="windows-general-commands.html#keyboard">here</A> and <A HREF="general-concepts.html#using-views">here</A> 
+   for the keyboard actions common to all views.</P>
+  <H3>
+   Moving cursor</H3>
+  <P>
+   With <B>left</B> and <B>right arrows</B>, you move accordingly the <A HREF="terms-definitions-formulas.html#cursor">time
+    cursor</A>. Another way is to use the <A HREF="#mouse-time-selectio">mouse</A>.
+    However, using the keyboard is more accurate, and while holding down 
+   the key, Cartool will slowly <B>accelerates</B>. When the cursor 
+   leaves the last visible time frame, Cartool will scroll the display 
+   of an appropriate amount. Altogether with the acceleration, you can 
+   easily browse to even huge files very efficiently.</P>
+  <P>
+   To <B>prevent the automatic acceleration</B>, press <B>Control + left</B> 
+   or <B>Control + right arrows</B>, so you can go through all time frames.</P>
+  <P>
+   An extended cursor is moved the same way, though it may appear to 
+   behave strangely sometimes. In case the cursor is actually wider than 
+   the number of time frames currently displayed, moving the cursor 
+   forward will show only the end of the cursor. And moving the cursor 
+   backward will show only the beginning of the cursor.</P>
+  <H3>
+   <A NAME="keyboard-next-page"></A>Next or previous page</H3>
+  <P>
+   Use the <B>page down</B> and <B>page up</B> to jump to the next or 
+   previous screen respectively. The amount of time frames jumped over 
+   is exactly the number of time frames currently displayed. These keys 
+   will also slowly accelerate when held down.<BR>
+   The cursor will also jump accordingly, that is, it will remain stable 
+   within the window.</P>
+  <H3>
+   <A NAME="keyboard-home"></A>Beginning or end of Eeg</H3>
+  <P>
+   Pressing the <B>home</B> key will of course <B>scroll the display</B> 
+   to time frame 0, and <B>set the cursor</B> to 0. Conversely, pressing 
+   the <B>end</B> key will do the same with the last time frame. The 
+   number of time frames displayed is not altered.</P>
+  <H3>
+   <A NAME="quick-markers"></A>Quickly creating markers</H3>
+  <P>
+   Pressing <B>Control</B> + <B>Numpad 1 to 9</B> to set the any of the 
+   9 possible quick markers:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <I>On first call</I>, Cartool will <B>ask the associated marker name</B> 
+    for that keystroke combination</P>
+   <LI CLASS="mvd-P">
+   <P>
+    <I>On later calls</I>, Cartool will <B>create a marker at current 
+    cursor position</B>, using the <B>marker name</B> entered on first 
+    call </P>
+   </UL>
+  <H3>
+   <A NAME="quick-jump"></A>Quickly jumping the cursor by blocks</H3>
+  <P>
+   Pressing <B>Control</B> + <B>Left or Right arrow</B> to move the 
+   cursor backward or forward, of the <B>amount of its current size</B>.</P>
+  <P>
+   F.ex. if the cursor is currently extending from time frame 0 to 99, 
+   pressing Control + Right will make the cursor jump to 100 to 199, 
+   then 200 to 299 and so on. Combine this with quickly <A HREF="#quick-markers">creating
+    markers</A>, then you have a winner combo to quickly browse a file 
+   and tag blocks of data.</P>
+  <H2>
+   <A NAME="menus"></A>EEG - Menus</H2>
+  <H3>
+   <A NAME="menu-edit"></A>Edit menu</H3>
+  <UL>
+   <P>
+    <B>Copy as Text</B></P>
+   <UL>
+    <P>
+     Copy to the clipboard the current <A HREF="#mouse-tracks-select">selected
+      tracks</A>, and for the current <A HREF="#mouse-time-selectio">selected
+      time</A>, in a text format. If no tracks are specially selected, 
+     then all tracks are taken. The output format is: a row holds all 
+     electrodes of 1 time frame, and the number of rows is the number of <A HREF="terms-definitions-formulas.html#time-frame">time
+      frames</A>. Values are <B>tab separated</B>, with <B>new line</B> at 
+     the end of each row, so you can properly paste both in a text editor 
+     and Excel.</P>
+    </UL>
+   <P>
+    <B>Copy as Bitmap</B></P>
+   <UL>
+    <P>
+     Do a snapshot in the clipboard, see <A HREF="windows-general-commands.html#keyboard">here</A>.</P>
+    </UL>
+   <P>
+    <B><A NAME="export-tracks"></A>Export Tracks</B></P>
+   <UL>
+    <P>
+     Obsolete, please use the new <A HREF="reprocess-tracks.html">Export Tracks</A>.</P>
+    </UL>
+   </UL>
+  <H3>
+   <A NAME="menu-selection"></A>Selection menu</H3>
+  <P>
+   This (extensive) menu is about <B>tracks selection and categorization</B>.</P>
+  <P>
+   <I>Please note that only the non-trivial functions will be commented, 
+   otherwise each command is considered self-explanatory!</I></P>
+  <H4>
+   Main list</H4>
+  <UL>
+   <P>
+    <B>Keep current selection</B></P>
+   <UL>
+    <P>
+     ..on display</P>
+    </UL>
+   <P>
+    <B>Exclude current selection</B></P>
+   <UL>
+    <P>
+     ..from display</P>
+    </UL>
+   <P>
+    <B>Clear selection</B></P>
+   <P>
+    <B>Select all tracks</B></P>
+   <P>
+    <B>Select all visible tracks</B></P>
+   <P>
+    <B>Invert selection</B></P>
+   <P>
+    <B>Select tracks above threshold</B></P>
+   <UL>
+    <P>
+     Tracks that are in absolute value above a user-specified threshold.</P>
+    </UL>
+   <P>
+    <B>Select tracks from a list</B></P>
+   <UL>
+    <P>
+     The user provides a list of tracks name to select from</P>
+    </UL>
+   </UL>
+  <H4>
+   Bad tracks</H4>
+  <UL>
+   <P>
+    <B>Set current selection as Bad tracks</B></P>
+   <UL>
+    <P>
+     Flags the selected tracks as bads, which removes them from some 
+     computation, like GFP, Disssimilarity and Average.</P>
+    </UL>
+   <P>
+    <B>Restore all bad tracks to Normal</B></P>
+   <P>
+    <B>Restore only the selected bad tracks</B></P>
+   <P>
+    <B>Keep only the current bad tracks</B></P>
+   <P>
+    <B>Exclude the current bad tracks</B></P>
+   <P>
+    <B>Select current bad tracks</B></P>
+   <UL>
+    <P>
+     ..from either the current selection, if any, or from the current 
+     displayed tracks otherwise.</P>
+    </UL>
+   <P>
+    <B>Deselect current bad tracks</B></P>
+   <UL>
+    <P>
+     ..from either the current selection, if any, or from the current 
+     displayed tracks otherwise.</P>
+    </UL>
+   <P>
+    <B>Select current non-bad tracks</B></P>
+   <UL>
+    <P>
+     ..from either the current selection, if any, or from the current 
+     displayed tracks otherwise.</P>
+    </UL>
+   <P>
+    <B>Select current non-bad / non-aux tracks</B></P>
+   <UL>
+    <P>
+     ..from either the current selection, if any, or from the current 
+     displayed tracks otherwise.</P>
+    </UL>
+   </UL>
+  <H4>
+   Auxiliary tracks</H4>
+  <UL>
+   <P>
+    <B>Set current selection as Auxiliary tracks</B></P>
+   <UL>
+    <P>
+     Flags the selected tracks as auxiliaries, like ECG, EOG etc...</P>
+    <P>
+     Usually, Cartool will ask you if you want to remember your new 
+     auxiliaries configuration as the default (for your current type of 
+     file only). If yes, any future opening of that type of file will use 
+     your configuration. If no, your configuration will only apply to the 
+     lifetime of your current opened file.</P>
+    </UL>
+   <P>
+    <B>Restore all auxiliary tracks to Normal</B></P>
+   <UL>
+    <P>
+     Same remark as above.</P>
+    </UL>
+   <P>
+    <B>Restore only the selected auxiliary tracks</B></P>
+   <UL>
+    <P>
+     Same remark as above.</P>
+    </UL>
+   <P>
+    <B>Restore auxiliaray tracks to default</B></P>
+   <UL>
+    <P>
+     Reset the auxiliary configuration to its default (for your current 
+     type of file only), forgetting any override you may have done before.</P>
+    </UL>
+   <P>
+    <B>Keep only the current auxiliary tracks</B></P>
+   <P>
+    <B>Exclude the current auxiliary tracks</B></P>
+   <P>
+    <B>Select current auxiliary tracks</B></P>
+   <UL>
+    <P>
+     ..from either the current selection, if any, or from the current 
+     displayed tracks otherwise.</P>
+    </UL>
+   <P>
+    <B>Deselect current auxiliary tracks</B></P>
+   <UL>
+    <P>
+     ..from either the current selection, if any, or from the current 
+     displayed tracks otherwise.</P>
+    </UL>
+   <P>
+    <B>Select current non-auxiliary tracks</B></P>
+   <UL>
+    <P>
+     ..from either the current selection, if any, or from the current 
+     displayed tracks otherwise.</P>
+    </UL>
+   <P>
+    <B>Select current non-bad / non-aux tracks</B></P>
+   <UL>
+    <P>
+     ..from either the current selection, if any, or from the current 
+     displayed tracks otherwise.</P>
+    </UL>
+   </UL>
+  <H4>
+   <A NAME="tracks-analysis"></A>Tracks analysis</H4>
+  <P>
+   <I>(note that these are currently experimental functions, but you 
+   risk nothing by trying/using them!)</I></P>
+  <UL>
+   <P>
+    <B>Search Flat tracks</B></P>
+   <UL>
+    <P>
+     Select tracks with constant values, which usually were not recorded. 
+     Note that the reference track should be kept and is/should not be 
+     selected by this method:</P>
+    <P>
+     <IMG SRC="images/eeg.analyze.flat.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+    </UL>
+   <P>
+    <B>Search Broken / jerky tracks</B></P>
+   <UL>
+    <P>
+     Select highly saturated, or very random tracks, which clearly haven't 
+     recorded anything EEG-like:</P>
+    <P>
+     <IMG SRC="images/eeg.analyze.broken.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+    </UL>
+   <P>
+    <B>Search Outlier / noisy tracks</B></P>
+   <UL>
+    <P>
+     Select tracks that <I>do</I> look like EEG, but of very low 
+     informational quality. These tracks stand out from the others, even 
+     after filtering, and therefor greatly degrade the GFP (or Standard Deviation):</P>
+    <P>
+     <IMG SRC="images/eeg.analyze.outliers.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+    </UL>
+   <P>
+    <B>Search Altogether: Flat + Broken + Outlier tracks</B></P>
+   <UL>
+    <P>
+     Use all three criterion above to search for globally artefacted 
+     tracks. First image shows the selection, second image shows the 
+     selection flagged as bad tracks, clearing up the display:</P>
+    <P>
+     <IMG SRC="images/eeg.analyze.artefacts-1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/eeg.analyze.artefacts-2.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+    </UL>
+   </UL>
+  <H4>
+   <I>Remarks on the tracks analysis:</I></H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    The analysis goes through a lot of <B>statistics</B> computed <B>on 
+    all electrodes</B> and <B>on the whole time range</B> (minus the 
+    first and last 10%, and sometimes minus the eye blinks epochs). The 
+    results are <B>tracks that are globally bad all over the recording</B>,
+     not at some specific epochs like eye blinks.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    The analysis <B>uses your current filters</B>, because this is what 
+    will matter for your processing at hand. Changing the filters will 
+    likely change the results of the analysis, like a high-pass that can 
+    help recover a drifting track, or a Notch with line interference. It 
+    shouldn't be dramatically different, though.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    The analysis is done with the <B>recording reference</B>, 
+    re-referencing is not used.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    The 3 processing run in <B>increasing complexities</B>, so in case of 
+    doubts, run them sequentially from the first one to the last one.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Bear in mind that the <B>result is just a track selection</B>, and 
+    that no action has been really taken. It is up to you to just ignore 
+    the result, or to manually include / exclude some other tracks, and 
+    to <I>actually</I> flag the selection as bad tracks.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    The analysis is primarily targetting <B>EEG recordings</B>, because 
+    it contains all the original noise and artefacts. You can run it on 
+    ERPs, though, but the averaging process might have hidden some of the artefacts.</P>
+   </UL>
+  <H3>
+   <A NAME="menu-markers"></A>Markers menu</H3>
+  <P>
+   Don't remember <A HREF="terms-definitions-formulas.html#marker">what is a marker</A>, a <A HREF="terms-definitions-formulas.html#trigger">trigger</A> 
+   or an <A HREF="terms-definitions-formulas.html#events">event</A>? or the <I><A HREF="files-formats-cartool.html#mrk">.mrk</A></I><A HREF="files-formats-cartool.html#mrk"> 
+   marker file format</A>?</P>
+  <P>
+   &nbsp;</P>
+  <UL>
+   <P>
+    <B>Add marker at current cursor position</B></P>
+   <UL>
+    <P>
+     Add a new marker from the <B>current cursor position</B> (even <A HREF="terms-definitions-formulas.html#cursor">extended</A>).
+      Markers can overlap, though the display could end up to be rather 
+     messy. If more than one marker name currently exists in <A HREF="#menu-marker-manage">the
+      list of markers</A>, then a list will pop out for you to choose the 
+     marker name.</P>
+    <P>
+     You can also easily and quickly <A HREF="#quick-markers"><B>create 
+     new markers from the keyboard</B></A>.</P>
+    <P>
+     And you can add markers with <A HREF="#drag-and-drop"><I><B>Drag &amp;
+      Drop</B></I><B>-ing other marker files</B></A>, too.</P>
+    </UL>
+   <P>
+    <B>Delete markers within cursor range</B></P>
+   <UL>
+    <P>
+     Deletes only the markers that <B>are entirely included </B>within the 
+     current cursor position. Be careful, no undo is possible.</P>
+    </UL>
+   <P>
+    <B>Delete markers by names</B></P>
+   <UL>
+    <P>
+     Deletes only the markers that <B>match a given <A HREF="terms-definitions-formulas.html#regular-expressions">string
+      expression</A></B>. Be careful, no undo is possible.</P>
+    </UL>
+   <P>
+    <B><A NAME="clear-markers"></A>Delete all markers</B></P>
+   <UL>
+    <P>
+     Delete <B>all markers</B>, for the whole file. Be careful, no undo is possible.</P>
+    </UL>
+   <P>
+    <B><A NAME="menu-marker-search"></A>Search for marker</B></P>
+   <UL>
+    <P>
+     Enter the <B><A HREF="terms-definitions-formulas.html#regular-expressions">string expression</A></B> 
+     to be searched across all marker names.</P>
+    </UL>
+   <P>
+    <B>Next hit</B></P>
+   <UL>
+    <P>
+     Goto next successful <A HREF="#menu-marker-search">search hit</A>.</P>
+    </UL>
+   <P>
+    <B>Previous hit</B></P>
+   <UL>
+    <P>
+     Goto previous successful <A HREF="#menu-marker-search">search hit</A>.</P>
+    </UL>
+   <P>
+    <B>Rename markers within cursor range</B></P>
+   <UL>
+    <P>
+     Force renaming all markers within the current cursor range.</P>
+    </UL>
+   <P>
+    <B>Rename all markers</B></P>
+   <UL>
+    <P>
+     Specify a substring to be replaced (any type of characters), and a 
+     replacement substring. It will run through all occurences within a 
+     marker name, replacing the old string by the new one, and for all 
+     markers. If the replacement string is empty, this will delete the 
+     searched string.</P>
+    <P>
+     Applications are numerous, as replacing spaces by &quot;_&quot;, or 
+     the other way round, changing esoteric codes (173) into meaningful 
+     messages (&quot;Elephant sound&quot;), merging different codes into a 
+     single one, and so on.</P>
+    </UL>
+   <P>
+    <B>Merge exact overlapping markers</B></P>
+   <UL>
+    <P>
+     All markers that <B>perfectly overlap</B> (same starting points and 
+     same ending point) will be <B>merged together</B>, also merging their names.</P>
+    </UL>
+   <P>
+    <B>Merge identical contiguous markers</B></P>
+   <UL>
+    <P>
+     Merge markers with the exact same name and that are contiguous in 
+     time. This can be useful if you have labelled blocks of data that you 
+     want to re-group into bigger blocks.</P>
+    </UL>
+   <P>
+    <B><A HREF="#scanning-triggers">Scanning tracks to generate markers</A></B></P>
+   <UL>
+    <P>
+     Applies a few different methods to <A HREF="#scanning-triggers">generate
+      markers</A> from the tracks themselves.</P>
+    </UL>
+   <P>
+    <B>Duplicate triggers into markers</B></P>
+   <UL>
+    <P>
+     Copies all <A HREF="terms-definitions-formulas.html#trigger">triggers</A> into <A HREF="terms-definitions-formulas.html#marker">markers</A>,
+      which allows you to further process / edit them, which is not the 
+     case for the triggers.</P>
+    <P>
+     You also have to select the correct <A HREF="#display-markers">display</A>,
+      if you want to see <I>only</I> the markers, as otherwise you will 
+     see both the triggers and the markers, which can be a little bit confusing.</P>
+    </UL>
+   <P>
+    <B>Split bitwise triggers / markers names</B></P>
+   <UL>
+    <P>
+     This will scan the currently displayed triggers or markers, and will 
+     split them according to their names, creating new markers. The idea 
+     is to break each name into its binary components, f.ex.</P>
+    <UL>
+     <LI CLASS="mvd-P">
+     <P>
+      &quot;24&quot; will be splitted into markers &quot;16&quot; and &quot;8&quot;;</P>
+     <LI CLASS="mvd-P">
+     <P>
+      &quot;17&quot; into &quot;16&quot; and &quot;1&quot;;</P>
+     <LI CLASS="mvd-P">
+     <P>
+      &quot;6&quot; into &quot;4&quot; and &quot;2&quot;;</P>
+     <LI CLASS="mvd-P">
+     <P>
+      &quot;3&quot; into &quot;2&quot; and &quot;1&quot;.</P>
+     </UL>
+    <P>
+     To be more selective, a mask has to be specified before running the 
+     process. Only the bits set to 1 in the binary representation of that 
+     mask will be processed. F.ex. if the mask is 255 (1111 1111 in 
+     binary), we will have all the markers of the previous example. 
+     However, if the mask is 17 (0000 1001 in binary), the results would 
+     only be &quot;16&quot;, &quot;16&quot; and &quot;1&quot;, nothing, 
+     &quot;1&quot;. In this way, you can restrict the generated markers.</P>
+    <P>
+     This process is applied only to the currently displayed type of 
+     triggers / markers. However, only markers are generated.</P>
+    <P>
+     The names have to be integer, you can not split triggers whose names 
+     would be &quot;Eyes open&quot; or &quot;Abcd&quot;!</P>
+    </UL>
+   <P>
+    <B><A NAME="menu-marker-manage"></A>Manage the list of marker names</B></P>
+   <UL>
+    <P>
+     Brings the list of currently known marker names. Then you can <B>add</B> 
+     a new name, <B>modify</B> existing names, or <B>delete</B> names.</P>
+    <P>
+     At least one name should remain in the list, though.</P>
+    </UL>
+   <P>
+    <B>Import markers from file</B></P>
+   <UL>
+    <P>
+     Reads another <I>.mrk</I> file and copies its markers.</P>
+    </UL>
+   <P>
+    <B>Switch to another marker file</B></P>
+   <UL>
+    <P>
+     (Advanced feature) This will switch the currently associated <I>.mrk</I> 
+     file (storing the markers), to another <I>.mrk</I> file. Any 
+     subsequent updates will then occur on this file.</P>
+    </UL>
+   <P>
+    <B><A NAME="display-markers"></A>Display</B>
+    <UL>
+     <B>None</B>
+     <UL>
+      No triggers or markers of any sorts are displayed</P>
+     </UL>
+    <P>
+     <B><A HREF="terms-definitions-formulas.html#events">Events</A></B>
+     <UL>
+      Toggles on or off the display of events</P>
+     </UL>
+    <P>
+     <B><A HREF="terms-definitions-formulas.html#trigger">Triggers</A></B>
+     <UL>
+      Toggles on or off the display of triggers</P>
+     </UL>
+    <P>
+     <B><A HREF="terms-definitions-formulas.html#marker">Markers</A></B>
+     <UL>
+      Toggles on or off the display of markers</P>
+     </UL>
+    <P>
+     <B>All</B>
+     <UL>
+      Shows all available events, triggers and markers</P>
+     </UL>
+    </UL>
+   <P>
+    <B>Filtering display</B></P>
+   <UL>
+    <P>
+     <B>Show</B> only the triggers / markers that successfully <B>match a </B><A HREF="terms-definitions-formulas.html#regular-expressions"><B>string
+      expression</B></A>.</P>
+    <P>
+     This is a very useful feature to show a restricted subset of markers, 
+     hiding all the others, and therefore increasing the display 
+     readability when too many markers coexist together.</P>
+    </UL>
+   <P>
+    &nbsp;</P>
+   </UL>
+  <H4>
+   Notes on marker files</H4>
+  <P>
+   When all markers have been deleted, the<A HREF="files-formats-cartool.html#mrk"> </A><I><A HREF="files-formats-cartool.html#mrk">.mrk</A></I><A HREF="files-formats-cartool.html#mrk"> file</A> 
+   associated to the Eeg file will be also <B>deleted</B>. Conversely, 
+   when the very first marker is created, the <I>.mrk</I> file is also created.</P>
+  <P>
+   For security reasons, any time you add or remove any single marker, 
+   the <I>.mrk</I> file is <B>immediately updated</B> on disk. This way, 
+   in case of any crash, your markers will be securely saved.</P>
+  <H3>
+   <A NAME="menu-options"></A>Options menu</H3>
+  <UL>
+   <P>
+    <B><A NAME="menu-reference"></A>Reference</B>
+    <UL>
+     As in file
+     <UL>
+      No subtraction occurs, the data are shown exactly as they are <B>stored
+       in the Eeg file</B> (then you should know which reference was used...)</P>
+     </UL>
+    <P>
+     <A NAME="menu-average-ref"></A>Average
+     <UL>
+      After applying any filters, the <B>mean value</B> of the tracks is 
+      computed and <B>subtracted</B> to all tracks. This is repeated for 
+      all time frames idependently. See the <A HREF="terms-definitions-formulas.html#formulas">formulas</A>,
+       and the <A HREF="#average-reference">equivalent button</A>.</P>
+     </UL>
+    <P>
+     Single track
+     <UL>
+      After applying any filters, the <B>value</B> of the <B>specified 
+      track is subtracted</B> to all tracks. This is repeated for all time 
+      frames idependently.</P>
+     </UL>
+    <P>
+     Multiple tracks
+     <UL>
+      After applying any filters, the <B>average value</B> of the <B>specified
+       tracks is subtracted</B> to all tracks. This is repeated for all 
+      time frames idependently.</P>
+     </UL>
+    <P>
+     Montage
+     <UL>
+      First requires a <I><A HREF="files-formats-cartool.html#mtg">.mtg</A></I><A HREF="files-formats-cartool.html#mtg"> 
+      montage file</A>. After applying any filters, and according to the 
+      montage specifications, any mix of <B>differences between pairs of tracks</B> 
+      or <B>single tracks values</B> are shown. This is repeated for all 
+      time frames independently. This affects only the display, not the 
+      data themselves, so you can not export the results.<BR>
+      Within one of <A HREF="#rendering-with-xyz">these modes</A>, the 
+      results are correctly positionned between the two subtracted 
+      electrodes, giving a visual cue of your montage.</P>
+     </UL>
+    </UL>
+   <P>
+    <B><A NAME="menu-time"></A>Time</B>
+    <UL>
+     Show Date
+     <UL>
+      If the date information is available from the Eeg file, either choose 
+      to show it or not.</P>
+     </UL>
+    <P>
+     Show Time
+     <UL>
+      If the time information (in hours/minutes/seconds etc...) is 
+      available in the Eeg file, either choose to show it or not.</P>
+     </UL>
+    <P>
+     Absolute time, from the recording
+     <UL>
+      Choose to use the absolute time, the one when the recording has been 
+      done, f.ex. starting at 9h37m10s.<BR>
+      You can then relate some events in the EEG to the ones in 
+      &quot;real&quot; life, like seasures.</P>
+     </UL>
+    <P>
+     Relative time, origin at the beginning
+     <UL>
+      Set the time origin at the first Time Frame recorded, giving you a 
+      relative time starting at 0h0m0s.</P>
+     </UL>
+    <P>
+     Relative time, arbitrary origin
+     <UL>
+      Set the time origin to an arbitrary position in the file. By default, 
+      Cartool will propose the current position of the cursor, or you can 
+      give any value as a relative offset from the beginning of the file.<BR>
+      You can give a position that is not within the relative time range of 
+      the file, and even a negative value.<BR>
+      This is the feature used to automatically set the origin if a marker 
+      is found with the name &quot;Origin&quot;. The origin is drawn with 
+      the <B>little vertical bar on the time axis</B>:<BR>
+      <IMG SRC="images/eeg.time-origin-arbitrary.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+     </UL>
+    <P>
+     Go to time origin
+     <UL>
+      Quickly move the Time Cursor to the time origin.</P>
+     </UL>
+    </UL>
+   <P>
+    <B>Set Display Scaling</B></P>
+   <UL>
+    <P>
+     Ask the user (you actually...) to give the maximum amplitude to be 
+     shown in the current window. Works until you rescale the window.</P>
+    </UL>
+   <P>
+    <B>Set Time Window</B></P>
+   <UL>
+    <P>
+     Give a time range for the current page. Default input is in 
+     milliseconds, but you can override it by adding &quot;s&quot; for 
+     seconds, f.ex.: 10s, 2.5s etc...</P>
+    </UL>
+   <P>
+    <B><A NAME="reset-scaling"></A>Reset Tracks Scaling</B></P>
+   <UL>
+    <P>
+     Some tracks might have user-defined <A HREF="#relative-vertical">relative
+      scalings</A>, making them appear greater or smaller then their 
+     peers. This will reset these differential scalings. If no tracks are <A HREF="#mouse-tracks-select">selected</A>,
+      all tracks are reseted, otherwise only the selected ones will be.</P>
+    </UL>
+   <P>
+    <B>Specify a Baseline Offset</B></P>
+   <UL>
+    <P>
+     Vertically shift the whole tracks of the specified amount, setting it 
+     as the new the baseline value.</P>
+    </UL>
+   <P>
+    <B>Reset Baseline Offset</B></P>
+   <UL>
+    <P>
+     Reset to 0 the baseline offset.</P>
+    </UL>
+   <P>
+    <B><A NAME="line-width"></A>Line Width</B></P>
+   <UL>
+    <P>
+     Specify a line width. <B>Default is 0</B>, which activates the <B>Smart
+      Line Width</B> features. This will choose the best line width 
+     according to the context:</P>
+    <UL>
+     <LI CLASS="mvd-P">
+     <P>
+      A <B>high density of time points</B>, and / or a <B>high number of tracks</B> 
+      will select the <B>thinnest line width</B> available.<BR>
+      <LI CLASS="mvd-P">Less tracks, or less time points, or bigger window, 
+      or more zoom will little by little increase the line width.<BR>
+      <LI CLASS="mvd-P">Superimpose mode will always select the thinnest 
+      line width.</P>
+     </UL>
+    <P>
+     <B>If not 0</B>, the width specified will be used as is. Valid values 
+     will depend on your <A HREF="terms-definitions-formulas.html#OpenGL">graphic card</A>, 
+     including fractional numbers, and 1 being the default.</P>
+    </UL>
+   <P>
+    <B>Show/hide Baseline Axis</B></P>
+   <UL>
+    <P>
+     Nothing to add.</P>
+    </UL>
+   <P>
+    <B>Goto Another Session / Block</B></P>
+   <UL>
+    <P>
+     If the Eeg file embeds multiple recordings, sometime known as 
+     sessions or blocks, you can shift to another one. See this <A HREF="#select-session">button</A>.</P>
+    </UL>
+   <P>
+    <B>Easy publish</B></P>
+   <UL>
+    <P>
+     This feature is not yet implemented, but will be very soon. For sure, 
+     it will scan your data, analyse them, do all the tests, output the 
+     figures, and build an article ready to be accepted in the highest 
+     ranked publications. And everything done in 5 minutes while playing 
+     your favorite mp3 playlist.</P>
+    </UL>
+   </UL>
+  <H2>
+   <A NAME="scanning-triggers"></A>Scanning for Markers</H2>
+  <P>
+   This is a versatile way to <B>scan tracks for some propertie to 
+   generate some </B><A HREF="terms-definitions-formulas.html#marker"><B>markers</B></A>. The 
+   markers generated can either be used for <B>display</B> (i.e. where 
+   the interesting parts of the data are), or for later <A HREF="index.html#processing"><B>processing</B></A> 
+   (like <A HREF="computing-erps.html">averaging</A>).</P>
+  <P>
+   At the end of the chapter, there are a <A HREF="#scan-examples">few examples</A>,
+    if you get confused.</P>
+  <P>
+   &nbsp;</P>
+  <H3>
+   Scanning methods</H3>
+  <P>
+   There are four methods to scan tracks:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Periods of Stability</B>: used when tracks contain kind of on/off, 
+    plateau-like encoding (like hard-wired triggers).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Local Extrema</B>: used to search for local minima and maxima of 
+    tracks (including the GFP).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Thresholds</B>: used to detect when tracks go beyond or fall below 
+    a given threshold.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Template Matching</B>: used to detect a spatio-temporal pattern on 
+    all tracks at once.</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   The markers resulting from the scan are added to the EEG's associated <I><A HREF="files-formats-cartool.html#mrk"><B>.mrk</B></A></I><A HREF="files-formats-cartool.html#mrk"> file</A>,
+    which you can edit or re-process yourself for more advanced purposes.</P>
+  <P>
+   There is certainly a <I>trial and error phase</I> before you find the 
+   right parameters. It may be a good idea to first select a short time 
+   interval and/or only a few tracks before running the scan on the full 
+   file. Also <B>don't forget to </B><A HREF="#clear-markers"><B>delete</B></A><B> 
+   previous markers</B> before re-doing a whole scan, otherwise they 
+   will simply cumulate!</P>
+  <H3>
+   Scanning for Markers dialog</H3>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <IMG SRC="images/eeg.scanning-triggers.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </CENTER>
+  <P>
+   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       <B>What to Scan</B></TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Tracks:</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       These are the tracks to analyse.</P>
+      <P>
+       <B>Each track is analysed independently of the others</B> (except 
+       with <A HREF="#template-matching">Template Matching</A>, which 
+       operates on maps, i.e. on all tracks at once).</P>
+      <P>
+       <A HREF="#mouse-tracks-select">Selecting some tracks</A> from the 
+       display <I>before</I> calling this dialog will pre-fill this field.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Time Period:</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       The time range to scan.</P>
+      <P>
+       These fields are pre-filled with the <A HREF="#mouse-time-selectio">current
+        time selection</A>, or the whole time range of the file.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP></TD>
+     <TD WIDTH="68%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       <B><A NAME="scan-methods"></A>Scanning for</B></TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       <B>Periods of Stability</B></TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       A track has to <B>remain on a constant level</B> for some time. The 
+       level itself does not matter (anything non-zero), the track has just 
+       to be constant.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP></TD>
+     <TD WIDTH="68%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       <B>Local Extrema</B></TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Finding local minima and/or maxima.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Min</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Scan for <B>local minimum</B>.</P>
+      <P>
+       Use some <A HREF="#filters">low-pass filter</A> to reduce the 
+       sensitivity / scale of this detection.</P>
+      <P>
+       See <A HREF="#local-extrema">this note</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Max</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Scan for <B>local maximum</B>.</P>
+      <P>
+       Use some <A HREF="#filters">low-pass filter</A> to reduce the 
+       sensitivity / scale of this detection.</P>
+      <P>
+       See <A HREF="#local-extrema">this note</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP></TD>
+     <TD WIDTH="68%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       <B>Thresholds</B></TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       A track has to be above or below some threshold.</P>
+      <P>
+       Note that <I>both</I> above and below criterion can be selected 
+       simultaneously. In that case, you end up with an interval testing.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Test if Above:</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       The track has to be <B>above</B> the specifed value, positive or negative.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Test if Below:</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       The track has to be <B>below</B> the specifed value, positive or negative.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Set marker position to:</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       First TF past threshold</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       The marker is <I>strictly</I> inserted at the <B>first TF</B> where 
+       the test is found positive.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Highest slope around threshold</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       The detected position will <B>drift to wherever side which has the 
+       highest slope</B>, and will stop there.</P>
+      <P>
+       The purpose of this option is to <B>help align raising-edge events</B>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP></TD>
+     <TD WIDTH="68%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       <B>Template Matching</B></TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       This has to be thought as trying to find a <B>sequence of maps</B> in 
+       the data. Tracks are not considered individually, but as a whole 
+       pattern (a map). Plus, the maps also evolve in time.</P>
+      <P>
+       See this note for more details about how <A HREF="#template-matching">template
+        matching</A> is done here.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Template file:</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       The file with the template to serach for. It should have the same 
+       number of electrodes as the EEG file to scan.</P>
+      <P>
+       It can be any kind of <A HREF="files-formats-others.html#eeg">EEG file format</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Correlation above which to accept:</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Specifies the correlation value (in percentage) above which the test 
+       will be positive.</P>
+      <P>
+       Correlation <I>does</I> account for sign, that is, correlation -90 is 
+       below 50.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP></TD>
+     <TD WIDTH="68%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       <B>Time Constraints</B></TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       <A NAME="scan-cond-true"></A>Condition has to be true between ... and 
+       ... [TF]</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Constraint the test chosen by defining <B>time limits</B>.</P>
+      <P>
+       F.ex. we can be interested in short duration plateau, at least 3 TF 
+       longs, but shorter than 30 TF. In case you don't care, set a wide 
+       range, like from 1 to 10000!</P>
+      <P>
+       These fields don't apply to local extrema, which by definition are 
+       only 1 TF long.</P>
+      <P>
+       See this note to visualize <A HREF="#scan-time-constr">how the time 
+       constraints work</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       <A NAME="scan-cond-false"></A>Then condition has to be false for ... [TF]</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Set the minimum amount of time after the test fails before a new 
+       marker can start again. Should be at least 1.</P>
+      <P>
+       See this note to visualize <A HREF="#scan-time-constr">how the time 
+       constraints work</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Simultaneous markers:</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Each track can generate its own marker, so we can deal with this.</P>
+      <P>
+       These options are off when <A HREF="#template-matching">Scanning for 
+       a template</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       One Marker per Track</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Let each simultaneous marker remain that way.</P>
+      <P>
+       Use the <A HREF="#scan-naming-markers">Naming Markers </A>options to 
+       help sort out who is who!</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Merged into Single Marker</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Post-process markers that lie in a given range, and merge them into a 
+       single one. See <A HREF="#scan-merging-marker">this note</A>.</P>
+      <P>
+       Also see the <A HREF="#scan-naming-markers">Naming Markers&nbsp;</A> 
+       to also merge the names.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Tolerance [TF]</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Give a maximum time extent within which &quot;simultaneous&quot; is meant.</P>
+      <P>
+       Set to 0 to consider only perfectly aligned markers.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP></TD>
+     <TD WIDTH="68%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       <B><A NAME="scan-naming-markers"></A>Naming Markers</B></TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       You can tune the markers' name to your liking.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Beginning with Prefix</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Optionally start all the markers with this <B>prefix</B>.</P>
+      <P>
+       By default, it reflects the kind of <A HREF="#scan-methods">Scanning method</A> 
+       you chose, like &quot;Stab&quot;, &quot;Thresh&quot;, etc...</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Including name</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Optionally include the <B>track name</B>.</P>
+      <P>
+       When <A HREF="#template-matching">Scanning for a template</A>, this 
+       is replaced by the <B>Template file name</B>.</P>
+      <P>
+       Off when <A HREF="#scan-merging-marker">merging markers</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <P>
+       Ending with value:</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       The following options are quite context sensitive!</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <UL>
+       <P>
+        None</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       What it says.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <UL>
+       <P>
+        Track Value</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       The <B>value of the track</B> that generates the marker at that position.</P>
+      <P>
+       Useful f.ex. to retrieve the Max value of a track. When <A HREF="#template-matching">Scanning
+        for a template</A>, this is replaced with the Correlation value.</P>
+      <P>
+       Off when <A HREF="#scan-merging-marker">merging markers</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <UL>
+       <P>
+        Relative Index</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       Add an index corresponding to the <B>relative position of the track</B> 
+       generating the marker.</P>
+      <P>
+       Indexes are <I>not</I> 1, 2, 3, 4... but in <B>powers of 2</B>, like: <B>1,
+        2, 4, 8</B>... So we can <B>add these values</B> when&nbsp; <A HREF="#scan-merging-marker">merging
+        markers</A> together: f.ex. tracks 3 and 4 together will produce a 
+       code of <B>4 + 8 = 12</B>. If you don't see the use of this, well, 
+       just forget it!</P>
+      <P>
+       Off when <A HREF="#template-matching">Scanning for a template</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP>
+      <UL>
+       <P>
+        Merged Count</TD>
+     <TD WIDTH="68%" VALIGN=TOP>
+      <P>
+       When (and only when) <A HREF="#scan-merging-marker">merging markers</A>,
+        add a count of how many markers were doomed to be merged.</P>
+      <P>
+       Off when <A HREF="#template-matching">Scanning for a template</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="32%" VALIGN=TOP></TD>
+     <TD WIDTH="68%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Process</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Runs the scan.</P>
+      <P>
+       This button remains <B>disabled until <U>all</U> the parameter 
+       dialogs have received enough (and consistent) informations</B>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Cancel</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Quit the dialog.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Help</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be here...).</TD>
+    </TR>
+   </TABLE></P>
+  <P>
+   &nbsp;</P>
+  <H3>
+   Scanning for markers - Technical points &amp; hints</H3>
+  <H4>
+   Filtering &amp; reference</H4>
+  <P>
+   The scan is run on the tracks as they appear to you, that is with the 
+   current <A HREF="#menu-reference">reference</A> and <A HREF="#filters">filters</A>.
+    Therefor changing these settings can dramatically affect the 
+   markers. This can actually be used for the best, for example when 
+   searching for local maxima.</P>
+  <H4>
+   Stopping the scan</H4>
+  <P>
+   Just press <I>Escape</I> to get out of a lengthy detection...</P>
+  <H4>
+   <A NAME="local-extrema"></A>Local Extrema</H4>
+  <P>
+   The detection occurs at the <B>reversal of the signs of 2 successive derivatives</B>.<BR>
+   If there is a plateau on either side, this will make one of the 
+   derivative null, therefore no sign inversion can occur (hence no detection).</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The scan will output <B>every little peaks it finds</B>, which may be 
+   too much details for you. In this case, <B>just apply </B><A HREF="#filters"><B>some
+    filters</B></A> (especially low pass) before running the detection.</P>
+  <H4>
+   <A NAME="template-matching"></A>Template matching</H4>
+  <P>
+   The vector used to compute the correlation is a <B>big vector made 
+   with all the time frames for all the tracks</B> (of the template). 
+   F.ex. a template of 100 time frames for 125 electrodes is a vector of 
+   100 * 125 = 12500 dimensions. In this way, we will retrieve only very 
+   specific patterns, both in space and in time.</P>
+  <P>
+   The <A HREF="terms-definitions-formulas.html#correlation">correlation</A> values does <I>not</I> 
+   take into account the <B>power</B> of the signal, but just <B>its shape</B>.</P>
+  <P>
+   When the current time window first correlates above the threshold, 
+   the scan continues and seeks for the <B>highest peak of correlation</B> 
+   of the period before the correlation goes below the threshold. Well, 
+   sounds difficult to make it in simple words, but simply gives you 
+   what you actually expect! The marker position within the selected 
+   time window is put where the template has its maximum GFP. In fact, 
+   it is not <I>that</I> important, what matters is that the triggers be 
+   put at the same offset for all the windows.</P>
+  <P>
+   The marker position is set at the&nbsp;position of highest GFP. Also 
+   see the <A HREF="#scan-naming-markers">Naming Markers</A> options.</P>
+  <H4>
+   <A NAME="scan-time-constr"></A>How the time constraints work</H4>
+  <P>
+   Consider a <I><A HREF="#scan-methods">Stability scan</A></I> on one 
+   track. To create a marker, the condition (plateau) should last within 
+   the given limits. Then the next marker can not start before the gap 
+   is filled:</P>
+  <P>
+   &nbsp;</P>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <TABLE WIDTH="80%" CELLPADDING="2" CELLSPACING="0" BORDER="0">
+     <TR>
+      <TD WIDTH="11%" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         Condition is false</TD>
+      <TD WIDTH="35%" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         Condition is true</TD>
+      <TD WIDTH="22%" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         Condition is false</TD>
+     </TR>
+     <TR>
+      <TD WIDTH="11%" VALIGN=TOP></TD>
+      <TD WIDTH="35%" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         Condition should last within the <A HREF="#scan-cond-true">time range specified</A></TD>
+      <TD WIDTH="22%" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         Gap should be at least <A HREF="#scan-cond-false">this long</A></TD>
+     </TR>
+     <TR>
+      <TD WIDTH="11%" VALIGN=TOP>
+       <P>
+        &nbsp;</P>
+       <P>
+        &nbsp;</P>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <HR ALIGN=CENTER WIDTH="100%" SIZE="3" NOSHADE>
+       </TD>
+      <TD WIDTH="35%" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <HR ALIGN=CENTER WIDTH="100%" SIZE="3" NOSHADE>
+         </P>
+        </CENTER>
+       <P>
+        |</P>
+       <P>
+        |</TD>
+      <TD WIDTH="22%" VALIGN=TOP>
+       <P>
+        &nbsp;</P>
+       <P>
+        &nbsp;</P>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <HR ALIGN=CENTER WIDTH="100%" SIZE="3" NOSHADE>
+       </TD>
+     </TR>
+     <TR>
+      <TD WIDTH="11%" VALIGN=TOP></TD>
+      <TD WIDTH="35%" VALIGN=TOP>
+       <P>
+        | &lt;- Marker insertion</TD>
+      <TD WIDTH="22%" VALIGN=TOP>
+       <P ALIGN=RIGHT>
+        Next marker allowed from here -&gt;</TD>
+     </TR>
+    </TABLE></P>
+   </CENTER>
+  <H4>
+   <A NAME="scan-merging-marker"></A>Merging (nearly) simultaneous markers</H4>
+  <P>
+   Merging markers is useful to consolidate the markers resulting from 
+   individual tracks into a more synthetic information. We can get the 
+   information of how many tracks were successful within a short time 
+   range. It can also be used to fusion trigger codes spread across 
+   different tracks.</P>
+  <P>
+   We ran an <I><A HREF="#scan-methods">Above Threshold 0</A></I> scan, 
+   first without merging markers (i.e. one marker per track, kind of a 
+   mess), then with merging markers within 8 TF range (and showing the 
+   count of merged markers in the names):</P>
+  <P>
+   <IMG SRC="images/scanning-markers.one-marker-per-track.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/scanning-markers.merging-markers.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   Also see the <A HREF="#scan-naming-markers">Naming Markers</A> options.</P>
+  <H3>
+   Scanning for markers - Results</H3>
+  <H4>
+   File generated</H4>
+  <P>
+   The markers are added to the external <I><A HREF="files-formats-cartool.html#mrk"><B>.mrk</B></A></I><A HREF="files-formats-cartool.html#mrk"> file</A> 
+   associated with the EEG file. Remember to move both files if you move 
+   the EEG to another directory.</P>
+  <H3>
+   <A NAME="scan-examples"></A>Scanning for markers - Examples</H3>
+  <P>
+   Here are a few examples to get a grasp on all the possibilities from 
+   the combinations of options.</P>
+  <P>
+   Note however that <I>some options could be hard to understand when 
+   combined together</I>. F.ex. scanning for Thresholds Above, plus 
+   shifting to the maximum slope, plus merging simultaneous markers with 
+   a wide range, plus Naming only with a Prefix... Unless you really 
+   want it!</P>
+  <H4>
+   Positions of maximum GFP:</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Set <A HREF="#filters">Filters</A> with some low pass filter, to 
+    smooth out small irregularities<BR>
+    <LI CLASS="mvd-P"><I>Tracks</I>: GFP<BR>
+    <LI CLASS="mvd-P">Scanning for: <I>Local Extrema</I>, <I>Max</I><BR>
+    <LI CLASS="mvd-P"><I>One Marker per Track</I></P>
+   </UL>
+  <H4>
+   Any track above a value:</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <I>Tracks</I>: choose the ones you want to test, or all<BR>
+    <LI CLASS="mvd-P"><I>Threshold</I>, <I>Above</I>: set a value<BR>
+    <LI CLASS="mvd-P"><I>Condition has to be true for</I>: 1 to 100000 TF 
+    (kind of always true)<BR>
+    <LI CLASS="mvd-P"><I>One Marker per Track</I></P>
+   </UL>
+  <H4>
+   Triggers hard-coded into tracks:</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <I>Tracks</I>: choose the tracks that hold the trigger information<BR>
+    <LI CLASS="mvd-P"><I>Periods of Stability</I><BR>
+    <LI CLASS="mvd-P"><I>Condition has to be true for</I>: give a 
+    reasonable interval of time for &quot;good&quot; triggers (i.e. set a 
+    min duration to avoid detecting noise)<BR>
+    <LI CLASS="mvd-P"><I>Merged into Single Marker</I>, <I>Tolerance</I> 
+    set to 0 or a very small range.<BR>
+    <LI CLASS="mvd-P">Naming Markers: <I>Prefix</I> Off, <I>Relative Index</I> On</P>
+   </UL>
+  <H4>
+   Counting frequency events from tracks:</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Set <A HREF="#filters">Filters</A> to <I>Envelope</I> (i.e. band 
+    pass), or do a <A HREF="frequency-analysis.html#analysis">Frequency analysis</A> 
+    first (like the S-transform)<BR>
+    <LI CLASS="mvd-P"><I>Tracks</I>: all<BR>
+    <LI CLASS="mvd-P"><I>Threshold</I>, <I>Above</I>: set a value for a 
+    minimum level of detection<BR>
+    <LI CLASS="mvd-P"><I>Condition has to be true for</I>: restrict the 
+    duration of the searched event<BR>
+    <LI CLASS="mvd-P"><I>Merged into Single Marker</I>, <I>Tolerance</I> 
+    depending on your data (sampling frequency, etc...)<BR>
+    <LI CLASS="mvd-P">Naming Markers: <I>Prefix</I> On, <I>Merged Count</I> On</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;
+ </BODY>
+</HTML>

@@ -1,0 +1,784 @@
+<HTML>
+
+ <HEAD>
+  <TITLE>MRIs Preprocessing Toolbox</TITLE>
+
+  <link rel="stylesheet" href="cartool.css" type="text/css">
+
+  <style type="text/css">
+.auto-style1 {
+	text-align: center;
+}
+.auto-style2 {
+	margin-left: 40px;
+}
+</style>
+
+ </HEAD>
+
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   MRIs Preprocessing Toolbox</H1>
+  <P>
+   </P>
+  <P>
+   This toolbox basically aims to <strong>rescale,</strong> <strong>reorient and 
+   convert 
+   raw MRIs</strong>, plus optionally <strong>extracting the brain (skull 
+   stripping)</strong>. These are mandatory steps before <strong>
+   <a href="computing-inverse-solution-matrices.html">creating Inverse Matrices</a></strong> 
+   for specific subjects. Also, the resulting MRIs are more consistent and have nicer
+   <strong><a href="mri-display.html">display</a></strong>.</P>
+  <P>
+   &nbsp;</P>
+  <h5>
+   <a href="#dialog">Computing RIS Dialog</a><br>
+   <A HREF="#technical-points-and-hints">Technical points &amp; hints</a></h5>
+  <h6>
+   <A HREF="#anisotropic-mri">Anisotropic <em>vs</em> isotropic MRI</a></h6>
+  <h6>
+   <a href="#downsampling">Downsampling MRI</a></h6>
+  <h6>
+   <a href="#orientations">Axis orientations</a></h6>
+  <h6>
+   <A HREF="#sagittal-plane">Searching the sagittal plane</a></h6>
+  <h6>
+   <A HREF="#transverse-plane">Searching the MNI transverse plane</a></h6>
+  <h6>
+   <A HREF="#MNI-center">MNI and geometrical centers</a></h6>
+  <h6>
+   <A HREF="#skull-stripping">Skull stripping</a></h6>
+  <h6>
+   <A HREF="#bias-field-correction">Bias Field Correction</a></h6>
+  <h5>
+   <a href="#results">Results</a></h5>
+  <H2>
+   <a name="dialog"></a>MRIs Preprocessing Dialog</H2>
+  <p>
+   Called from the&nbsp; <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
+    | MRIs and Volumes | MRIs Preprocessing</A></FONT>&nbsp; menu, the following dialog 
+   appears:</p>
+  <p>
+   &nbsp;</p>
+  <p class="auto-style1">
+   <img alt="MRIs Preprocessing Dialog" src="images/mrispreproc.dialog.png"></p>
+  <p>
+   &nbsp;</p>
+  <P>
+   &nbsp;</P>
+   <TABLE WIDTH="100%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+       <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <strong>Presets</strong></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       You can quickly set the most important parameters according to some 
+	   predefined scenarios. Then check and adjust the parameters to your 
+	   liking.</TD>
+       </tr>
+    <TR>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(1) Resolution</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Voxel Size:&nbsp; <A HREF="#anisotropic-mri">Make Voxels Isotropic</a></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Make the <strong>X, Y and Z voxel size equal</strong>, or isotropic, or 
+	   cubic, or the same, or.. you get the idea.<P>
+       <A HREF="#anisotropic-mri">Anisotropic voxels</a> are hard to process with filters, so this step is 
+	   mandatory.</TD>
+    </TR>
+       <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <a href="#downsampling">Resampling</a>:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Change the <strong><a href="#downsampling">voxels' resolution</a></strong>, usually through downsampling. The aim is 
+	   to have either better units, or comparable files, or smaller files.<P>
+       There are currently 2 ways to change resolution:</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       New Voxel Size:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       When selected, give the <strong>new (isotropic) voxel size</strong> in the next edit 
+	   field.<P>
+       Default is set to <strong>1 [mm]</strong>.<P>
+       Cartool is able to upsample the input MRI, though it will not visually 
+	   improve it.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Downsampling Ratio:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The other option is to just apply a <strong>downsampling factor</strong>.<P>
+       The scaling factor needs not be an integer value, so f.ex. you can 
+	   rescale by 2.56 if it suits you. It could also possibly be less than one, 
+	   which would then leads to upsampling the input file. F.ex. a scaling 
+	   factor of 0.5 would mean doubling the original resolution.</TD>
+       </tr>
+       <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(2) Orientation</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <a href="#orientations">Axis Reorientation:</a></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Change <strong><a href="#orientations">&quot;how the axis are organized&quot;</a></strong>, for the sake of consistency.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       MNI Style</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Data is reordered so as to have:<ul>
+		  <li>the <strong>X axis</strong> pointing left to <strong>right</strong>,</li>
+		  <li>the <strong>Y axis</strong> posterior to <strong>anterior</strong>,
+		  </li>
+		  <li>the <strong>Z axis</strong> inferior to <strong>superior</strong>.</li>
+	  </ul>
+	  <P>
+       Hence refering to the MNI orientation as <strong>RAS</strong>, <strong>R</strong>ight-<strong>A</strong>nterior-<strong>S</strong>uperior 
+	   for the three X, Y, Z axis.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Axis Pointing Towards:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You can specify <strong>any other orientation you like</strong>, by 
+	   specifying which direction each of the 3 axis are pointing to.<P>
+       Each axis edit field can contain only a single letter among:<ul>
+		  <li><strong>L</strong>eft or <strong>R</strong>ight</li>
+		  <li><strong>A</strong>nterior or <strong>P</strong>osterior</li>
+		  <li><strong>I</strong>nferior or <strong>S</strong>uperior.</li>
+	  </ul>
+	  <P>
+       Note that the resulting orientation should be a <strong>
+	   <a href="#orientations">valid right-hand 
+	   axis system</a></strong>, like f.ex. PIR, ALS or LIP. <em>Cartool will enforce 
+	   this consistency</em>, and will not be enable to proceed if the target 
+	   orientation is invalid.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Then Adjusting:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       After the main axis have been reassigned, <strong>some fine-tuning can be 
+	   done</strong>.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <A HREF="#sagittal-plane">Mid-Sagittal Plane</a></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This option will search for the <strong>optimal mid-sagittal cutting 
+	   plane</strong>, the one plane that anatomically separate the two 
+	   hemispheres.<P>
+       This adjustment is of utmost importance for proper Inverse Solutions, as 
+	   to ensure that an (approximately) equal number of solution points will be 
+	   assigned to each hemisphere.<P>
+       <strong>This option is usually set only for subjects' MRIs</strong>, but 
+	   is not mandatory for template MRIs.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <A HREF="#transverse-plane">MNI Transverse Plane</a></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This option will adjust the <strong>transverse cutting plane</strong> to 
+	   resemble as much as possible the <strong>MNI one</strong>.<P>
+       Subjects can be positionned very differently in the MRI scanner, for 
+	   various reason. Thererfor, without realigning the transverse plane, it 
+	   can be difficult to interpret activations when looking at slices alone. 
+	   Aligning the brains to the MNI space makes the brains easier to read, so 
+	   to speak.<P>
+       This step could be compared to a rigid body coregistration to the MNI 
+	   mid-sagittal plane, while still keeping the original size (no 
+	   deformation).</TD>
+       </tr>
+       <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(3) Origin</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Setting New Origin:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       It is often a good idea to <strong>set the origin</strong>, or &quot;center&quot;,
+	   <strong>of the MRI</strong>. This will help for any forthcoming 
+	   coregistration f.ex.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Only by Default</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This option will <strong>prevent overwriting any existing origin</strong>, 
+	   which will therefor be preserved through the transformation process.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Always</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This option, on the other hand, will <strong>forcibly set the origin</strong>, 
+	   even if a previous origin exists.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Where to Set New Origin:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <A HREF="#MNI-center">MNI Center</a></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       A very convenient center is to use the <strong><A HREF="#MNI-center">MNI origin</a></strong>. The 
+	   resulting origin will be very close, although with some slight variation, 
+	   to the Anterior Commissure chosen in the MNI template.<P>
+       This option is available only when the MNI Transverse plane option has 
+	   also been set (see above).</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <A HREF="#MNI-center">Geometrical Center</a></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Another convernient center is to use the <strong>geometrical center from 
+	   the brain</strong>.<P>
+       This one option gives a more central point than the MNI Center above, the 
+	   latter being more anterior.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       At this Original Position:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Last option is for the user to give <strong>some explicit coordinates</strong>, 
+	   from the <strong>original voxel space</strong> (<em>not</em> the target space).</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(4) Volume Size</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Transformed Volume Size is:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You can have some controls on the final volume size, which can come in 
+	   handy in some cases.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Proportional to Original Size</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The output size will <strong>follow the transform you applied on the 
+	   data:</strong><ul>
+		  <li>downsampling by 2, output size is input size divided by 2</li>
+		  <li>changing the origin, or the axis orientation, output size is equal 
+		  to input size</li>
+		  <li>Sagittal and Transverse plane adjustments however will produce new 
+		  sizes that fit the results</li>
+	  </ul>
+		   </TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Optimally Re-Cut</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The output volume will be <strong>cropped to the closest as possible to 
+	   the output content</strong>. This option can dramatically (yes, drama) 
+	   reduce the actual size of big volumes with lot of empty spaces.<P>
+       This option is mostly used in conjunction with the Sagittal and 
+	   Transverse planes search. These will rotate the MRI, and trying to 
+	   encompass the edges of the new volume will result in very big, and nearly 
+	   empty, files.<P>
+       &nbsp;<P>
+       <strong>Important:</strong> this option works on a <strong>file-by-file 
+	   basis</strong>, each file will be evaluated and cropped differently 
+	   according to their contents! If you&nbsp; happen to process a full head 
+	   then the corresponding brain, each file will be cropped differently. 
+	   Cartool can still work with these 2 files, but most of other packages 
+	   will not.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       this Specified Size:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You want some specific size? Here is your chance, provide the <strong>X, 
+	   Y, Z sizes of the output volumes</strong>.<P>
+       If you provide a <strong>smaller size</strong> than the output content, 
+	   some <strong>clipping will occur</strong>. Cartool tries to behave 
+	   nicely, though, by centering the data first, then clipping the edges 
+	   only, so you might still be OK with the results.<P>
+       If you provide a <strong>bigger size</strong> than the output content, 
+	   some <strong>empty padding</strong> will be added equally on all sides.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(5) Options</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Post-processing Full Head:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       If the input files are full head MRIs, you can choose some more handy 
+	   post-processing.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <A HREF="#skull-stripping">Skull Stripping</a></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Extract the full brain from the head, and save it to another file.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Method 1 - Fast</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Earliest and fastest method. You might use it if the default method 2 
+	   fails.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Method 2 - Best</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Latest method, the recommended one, which is a bit slower than method 1. 
+	   It rarely fails, but if it does, you can then use method 1 as a fallback.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <A HREF="#bias-field-correction">Bias Field Correction</a></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       It is usually a very good idea to also correct for the Bias Field of the 
+	   extracted brain.<P>
+       Note that the Bias Field Correction <em>does not apply </em>to the full 
+	   head MRI.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Optional Filename Postfix:</TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       You can give a meaningful file name postfix for all the resulting files.<P>
+       If empty, Cartool will generate a postfix based on all the preprocessing 
+	   steps applied.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Opening Results</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       What is says. However, this could be reset for big batches of files.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Process Current</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Enabled when called from a <a href="mri-display.html">MRI window</a>, the 
+       preprocessing will apply only to <B>this file</B>.</P>
+      	 </TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Batch Process</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Enabled when <I>not</I> called from a <a href="mri-display.html">
+	   MRI window</a>:</P>
+      <UL>
+       <LI CLASS="mvd-P">
+       <P>
+        Clicking this button will open a dialog from which you can select a <B>set
+         of MRI files</B>, within a single directory.</P>
+       <LI CLASS="mvd-P">
+       <P>
+        Using <B>Drag &amp; Drop</B>, you can drop files in the dialog and 
+        process them directly. Plus, it allows you to pick files <B>from 
+        different directories</B>, if you can select them through a handy 
+        utility like <I><A HREF="https://sites.google.com/site/cartoolcommunity/user-s-guide/using-cartool/being-more-efficient-with-cartool#TOC-Everything">Everything</A></I> beforehand.</P>
+       </UL>
+      <P>
+       &nbsp;</P>
+		   </TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Cancel</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Quit the dialog.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Help</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be here...).</TD>
+       </tr>
+   </TABLE>
+  <H2>
+   <A NAME="technical-points-and-hints"></a>MRIs Preprocessing - Technical points &amp; hints</H2>
+  <P class="mvd-h4">
+   <A NAME="anisotropic-mri"></a>Anisotropic <em>vs</em> isotropic MRI</P>
+  <P>
+   This is what an <strong>anisotropic MRI</strong> looks like, with voxels of 
+   unequal dimensions:</P>
+  <P class="auto-style2">
+   <img height="233" src="images/mrispreproc.anisotropy.png" width="243"></P>
+  <P>
+   This is mainly a side-effect of how the MRI scanner performed the 
+   acquisition. Unfortunately, filters designed for MRIs are usually expecting 
+   isotropic voxels as a way to decrease their implementation's complexity. This 
+   is the main reason why we need to correct for anisotropy.</P>
+  <P>
+   <br>Here is the <strong>isotropic corrected version</strong> of the MRI 
+   above, with voxels of equal dimensions:</P>
+  <P>
+   <img class="auto-style2" height="233" src="images/mrispreproc.isotropy.png" width="247"></P>
+  <P>
+   &nbsp;</P>
+  <P class="mvd-h4">
+   <a name="downsampling"></a>Downsampling MRI</P>
+  <P>
+   This is an example <strong>before and after downsampling</strong>, showing the loss of 
+   resolution of the downsampled version:</P>
+  <P>
+   <img class="auto-style2" height="233" src="images/mrispreproc.isotropy.png" width="247"><img class="auto-style2" height="233" src="images/mrispreproc.downsampling.png" width="247"></P>
+  <P>
+   <br>A convenient voxels' resolution is usually <strong>1 [mm]</strong>, but 
+   donw to 2 [mm] is 
+   totally acceptable for inverse solution matrices, in case you encounter 
+   memory problems or want to speed up things.</P>
+  <P>
+   <br>Note that Cartool currently allows you to specify any voxel size, or any 
+   downsampling / upsampling values. Just put meaningful values as input 
+   parameters! Avoiding final MRI size bigger than about 256 voxels is kind of 
+   recommanded.</P>
+  <P class="mvd-h4">
+   <a name="orientations"></a>Axis orientations</P>
+  <P>
+   According to how the data was scanned, or from which package you took the 
+   data from, you might encounter orientation problems either at the display 
+   level or within your processing pipe-line. This is the main reason why you 
+   might need to reorient your MRIs.<br><br></P>
+  <P>
+   Before proceeding, this is a reminder of <strong>how Cartool encodes 
+   orientation with a 3 letter string</strong>:</P>
+  <ul>
+	  <li>Orientation is coded with a <strong>sequence 3 letters</strong>, like 
+	  RAS or PIR</li>
+	  <li>A letter can only be either <strong>L, R, A, P, I or S</strong>, each 
+	  standing for:<ul>
+		  <li><strong>L</strong>eft <em>vs</em> <strong>R</strong>ight</li>
+		  <li><strong>A</strong>nterior <em>vs</em> <strong>P</strong>osterior</li>
+		  <li><strong>I</strong>nferior <em>vs</em> <strong>S</strong>uperior.</li>
+	  </ul>
+	  </li>
+	  <li>First letter tells in which direction the <strong>X axis</strong> is 
+	  pointing to</li>
+	  <li>Second letter for the <strong>Y axis</strong></li>
+	  <li>Thirs letter for the <strong>Z axis</strong></li>
+  </ul>
+	  <P>
+       <br>So, f.ex., RAS means X axis is pointing toward the Right, Y axis 
+	   pointing toward the Anterior part, and the Z axis pointing toward the 
+	   Superior part<P>
+   <br></P>
+  <P>
+   Now let's have a look at the same data, shown with 3 different orientations, 
+   respectively <strong>PSL</strong>, <strong>PIR</strong> and <strong>
+   ALS</strong> (you can tell by looking at the orientation and axis names at 
+   the edge):</P>
+  <P>
+   &nbsp;<img height="280" SRC="images/mrispreproc.orientation-PSL.png" width="293"><img height="280" SRC="images/mrispreproc.orientation-PIR.png" width="293"><img height="280" SRC="images/mrispreproc.orientation-ALS.png" width="293"></P>
+  <P>
+   <br>In all cases, the targeted orientation has to be geometrically correct, 
+   and be a
+   <a href="https://www.google.com/search?source=hp&amp;q=right-hand+axis+system&amp;oq=right-hand+axis+system">
+   <strong>right-hand axis system</strong></a>:</P>
+  <P class="auto-style2">
+   &nbsp;<img height="199" SRC="images/mrispreproc.wikipedia-right-hand-rule.jpg" width="220"></P>
+  <P class="auto-style2">
+   (picture courtesy of
+   <a href="https://en.wikipedia.org/wiki/User:Acdx">Wikipedia, 
+   User:Acdx</a>)</P>
+  <P>
+   <br>
+   </P>
+  <P>
+   In the examples above, the 3 orientations <strong>PSL</strong>, <strong>PIR</strong> and <strong>
+   ALS</strong> are all indeed right-hand systems:</P>
+  <P>
+   <img class="auto-style2" height="199" SRC="images/mrispreproc.wikipedia-right-hand-rule.PSL.jpg" width="220">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+   <img height="199" SRC="images/mrispreproc.wikipedia-right-hand-rule.PIR.jpg" width="220">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+   <img height="199" SRC="images/mrispreproc.wikipedia-right-hand-rule.ALS.jpg" width="220"></P>
+  <P>
+   <br></P>
+  <P>
+   Cartool is checking for you that the orientation you provide is legal. If the dialog is not able to proceed, this could be 
+   because the target 
+   orientation you gave might be wrong. Try to either disable the whole <em>Axis 
+   Reorientation</em> option, or try a legal orientation like <strong>RAS</strong>, 
+   to see if this was the culprit. If yes, check again your orientation 
+   flags...&nbsp;</P>
+  <P class="mvd-h4">
+   <A NAME="sagittal-plane"></a>Searching the sagittal plane</P>
+  <P>
+   Some MRI data might have the <strong>head incorrectly aligned to the sagittal 
+   plane</strong>, due to clinical constraints f.ex. Even not visible, this 
+   sagittal plane might still be slightly off. If we want to compute the <strong>
+   <a href="computing-inverse-solution-matrices.html">Inverse Matrices</a></strong> 
+   for these subjects, there will be a problem with
+   <A HREF="computing-inverse-solution-matrices.html#SPs-distribution">distributing solution 
+   points evenly on each hemispheres</a>.</P>
+  <P>
+   Hence the need to adjust to an optimally cutting sagittal plane.</P>
+  <P>
+   <br>Here we can see an example of before and after the sagittal plane (shown 
+   as a transparent blue plane) has been adjusted:</P>
+  <p>
+  <img class="auto-style2" height="280" src="images/mrispreproc.sagittal1.png" width="293"><img height="280" src="images/mrispreproc.sagittal2.png" width="293"></p>
+  <P>
+   <br>Technically speaking, the search for the optimal plane is done by 
+   maximizing the symmetry around a narrow plane, by adjusting 2 angles (roll 
+   and pan) and 1 translation (left-right).</P>
+  <P class="mvd-h4">
+   <A NAME="transverse-plane"></a>Searching the MNI transverse plane</P>
+  <P>
+   For the same reasons as for the <A HREF="#sagittal-plane">sagittal plane</a>, 
+   head placement in the scanner could be such that the transverse slices might 
+   be difficult to interpret. The proposed remedy here is to adjust the 
+   orientation until it looks similar to the MNI transverse plane, which is 
+   itself referring to the Talairach space.</P>
+  <P>
+   Please note that the<strong> transverse plane can not be searched unless the
+   </strong><A HREF="#sagittal-plane"><strong>sagittal plan</strong></a><strong>e 
+   has been done before</strong>.</P>
+  <P>
+   <br>Here we can see an example of before (left) and after (middle) the 
+   transverse plane (shown as a transparent blue plane) has been adjusted, and 
+   the MNI Brain (right) for the sake of comparison:</P>
+  <p class="auto-style2">
+  <img height="280" src="images/mrispreproc.transverse1.png" width="293"><img height="280" src="images/mrispreproc.transverse2.png" width="293"><img height="280" src="images/mrispreproc.transverse3.png" width="293"></p>
+  <P>
+   <br>Technically speaking, the search for the optimal plane is done by 
+   coregistering the sagittal plane to the MNI space, by adjusting 1 angle 
+   (tilt) and 2 translations (up-down and front-back), while ignoring scaling.</P>
+  <P>
+   There is no rescaling done in the final transform, so the Sagittal + 
+   Transverse planes are finally equivalent to a 6-degrees transform (3 
+   translations + 3 rotations). It could be very helpful to have all brains of a 
+   pool of subjects preprocessed this way, as only some scaling (and optionally 
+   some shearing) would be necessary to compute a mean template out of them.</P>
+  <P class="mvd-h4">
+   <A NAME="MNI-center"></a>MNI and geometrical centers</P>
+  <P>
+   When the MNI transverse plane has been found, we can at the same time recover 
+   the <strong>MNI center</strong>, which is just above the <strong>Anterior 
+   Commissure</strong> (AC). Otherwise, it is a good idea to use the <strong>
+   geometrical center of the brain</strong>.</P>
+  <P>
+   Here we can see the obtained MNI center (left), compared to the actual MNI 
+   brain (middle), and the geometrical center of the same brain (right):</P>
+  <P>
+   <img class="auto-style2" height="280" src="images/mrispreproc.centertomni.png" width="293"><img height="280" src="images/mrispreproc.centermni.png" width="293"><img height="280" src="images/mrispreproc.centertogeom.png" width="293"></P>
+  <P>
+   <br>Again, the MNI center can not be obtained without <strong>searching 
+   beforehand for </strong><A HREF="#sagittal-plane"><strong>the sagittal plane</strong></a><strong> 
+   and </strong><A HREF="#transverse-plane"><strong>the MNI transverse plane</strong></a>.</P>
+  <P class="mvd-h4">
+   <A NAME="skull-stripping"></a>Skull stripping</P>
+  <P>
+   Skull stripping is the process of extracting the whole brain (grey + white 
+   matter, CSF, cerebellum etc...) out of a full head. Cartool needs this whole 
+   brain to be able to <A HREF="computing-inverse-solution-matrices.html#grey-mask">extract 
+   a grey mask during the Inverse Matrices creation</a>.</P>
+  <P>
+   Here you can see the extracted brain (colored) superimposed on top of its 
+   corresponding full head:</P>
+  <P>
+   <img class="auto-style2" height="280" src="images/mrispreproc.skullstripping.png" width="293"></P>
+  <P>
+   <br></P>
+  <P>
+   There are currently <strong>2 skull stripping methods implemented</strong>, 
+   the default being the second one, which produces the best results. However, 
+   in case the outcomes of method 2 appear to be really poor, you can try your 
+   chance at method 1. The latter method being usually more robust, at the 
+   expense of a slight loss of resolution.</P>
+  <P class="mvd-h4">
+   <A NAME="bias-field-correction"></a>Bias Field Correction</P>
+  <P>
+   MRI scans usually have
+   <a href="https://www.google.com/search?biw=1488&amp;bih=1472&amp;tbm=isch&amp;sa=1&amp;q=bias+field+mri+example&amp;oq=bias+field+mri+example">
+   <strong>inhomogeneities in the space domain, called Bias Field</strong></a>. 
+   Without correcting for it, a given brain tissue like the grey matter will 
+   have different values according to their physical position in the scanner. 
+   This is definitely a non-desired property which will hamper the segmentation 
+   of the brain into its constituent tissues.</P>
+  <P>
+   To counter-balance for this inhomogeneity, a process <strong>Bias Field 
+   Correction (BFC)</strong> is usually applied on the extracted brain.</P>
+  <P>
+   <br>Here you can see the extracted brain before the BFC (left), where the 
+   central part of the brain appears &quot;brighter&quot;. Then the same brain with 
+   BFC (right), giving a uniform range of values for each tissues:</P>
+  <P>
+   <img class="auto-style2" height="336" src="images/mrispreproc.biasfield1.png" width="413"><img height="336" src="images/mrispreproc.biasfield2.png" width="413"></P>
+  <P>
+   <br>Note that the BFC correction is best applied on an
+   <A HREF="#skull-stripping">already extracted brain</a>. It could still be 
+   computed and applied on a full head, but with various success. It is however 
+   not mandatory to have the full head BFC, because the algorithm for the 
+   skull-stripping is actually insensitive to the Bias Field (yes, take that).</P>
+  <H2>
+   <a name="results"></a>MRIs Preprocessing - Results</H2>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Preprocessed files are written in the <B>same directories as their sources</B>.
+     <br>Output file names will either have the user's <strong>infix</strong> 
+	added, or have a generic infix name composed from all the preprocessing 
+	steps:</P>
+   <UL>
+	   <LI CLASS="mvd-P">
+	   <P><strong>&lt;input file&gt;.&lt;infix&gt;.hdr</strong><br>or</P>
+	   <LI CLASS="mvd-P">
+	   <P>&nbsp; <strong>&lt;input file&gt;.&lt;preprocessing string&gt;.hdr</strong></P>
+   </UL>
+   <P>Current output file type is always Analyze (<a href="files-formats-others.html#mri"><strong><em>.hdr</em></strong> 
+   / <strong><em>.img</em></strong> pairs</a>).</P>
+	  <LI CLASS="mvd-P">
+      <P>
+      Optionally, a file <strong>&lt;input file&gt;.Brain.hdr</strong> can be output 
+	  if the skull-stripping option has been selected.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I> 
+    (text), showing all the parameters.</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;<P>
+   &nbsp;<P>
+   &nbsp;
+ </BODY>
+</HTML>

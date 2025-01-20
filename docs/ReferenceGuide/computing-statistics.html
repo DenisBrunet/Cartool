@@ -1,0 +1,1458 @@
+<HTML>
+ <HEAD>
+  <TITLE>Statistics</TITLE>
+ <LINK REL="StyleSheet" HREF="cartool.css">
+  <style type="text/css">
+.auto-style1 {
+	font-family: Verdana;
+}
+</style>
+ </HEAD>
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   Statistics</H1>
+  <P ALIGN=LEFT>
+   &nbsp;</P>
+  <P ALIGN=LEFT>
+   This page is about the Statistic tools implemented in Cartool, which 
+   can be used for example to test <B>Tracks</B>, <B>GFPs</B>, <B>Topographies</B>,
+    <B>Segmentation</B> and <B>Inverse Solution results</B>.</P>
+  <P ALIGN=LEFT>
+   &nbsp;</P>
+  <H5>
+   <A HREF="#intro">Introduction</A></H5>
+  <UL>
+   <H5>
+    <A HREF="#which-stats">Which stats?</A><br><A HREF="#which-cases">Which cases?</A></H5>
+   <H5>
+    <A HREF="#two-sample-stats">Two sample statistics</A></H5>
+   <UL>
+    <H5>
+     <A HREF="#t-test">Student t-test</A><br><A HREF="#randomization">Randomization</A><br>
+	 <A HREF="#TAnova">TAnova</A></H5>
+    </UL>
+   </UL>
+  <H5>
+   <A HREF="#how-to-stat">How to run the statistics</A></H5>
+  <UL>
+   <H5>
+    <A HREF="#dialog-files">Files dialog</A><br><A HREF="#files-hints">Files dialog - Technical points &amp; hints</A><br>
+	<A HREF="#dialog-parameters">Parameters dialog</A><br>
+	<A HREF="#parameters-hints">Parameters dialog - Technical points &amp;
+     hints</A></H5>
+   </UL>
+  <H5>
+   <A HREF="#results">Results</A></H5>
+  <H2>
+   <A NAME="intro"></A>Introduction</H2>
+  <H3>
+   <A NAME="which-stats"></A>Which stats?</H3>
+  <P>
+   Currently, only <B><A HREF="#two-sample-stats">two sample statistics</A></B> 
+   are implemented. That means it works only on <B>2 sets</B> (or 
+   groups, or conditions) of data per subjects at a time, f.ex. one 
+   condition versus a control. If there are more than one condition, 
+   either wait for the Anova to be implemented, or run the tests pairs 
+   by pairs (though being less informative than an Anova).</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   All the tests are available in two variations, which are <B>paired</B> 
+   and <B>unpaired</B>. You, and only you, know which one applies. 
+   Paired tests apply f.ex. (but not only) when the same subjects have 
+   performed both conditions. Then it is legitimate to stats on the 
+   differences between conditions, which paired tests are precisely doing.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The <B>formulas between paired and unpaired are different</B>, the 
+   unpaired ones often resulting in less powerful tests. So prefer the 
+   paired tests if you can, but you can still see what happens in the 
+   unpaired case, though. Of course, paired conditions need to have the 
+   same number of files (i.e. of subjects) in each conditions.</P>
+  <H3>
+   <A NAME="which-cases"></A>Which cases?</H3>
+  <P>
+   The statistics can currently be applied in 3 different cases:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    On a <B>set of files</B>, one set per condition, each file being 
+    f.ex. an <A HREF="files-formats-others.html#eeg erp">ERP</A> or a <A HREF="files-formats-others.html#inverse-solutions">RIS</A> 
+    (for a given condition and a given subject). Each <A HREF="terms-definitions-formulas.html#time-frame">time
+     frame</A> of the ERP will be tested <A HREF="#time-seq-or-avg">sequentially,
+     or averaged</A>.<BR>
+    <LI CLASS="mvd-P"><B>One file</B> holds all the samples of one 
+    condition. The samples are written consecutively either in an <A HREF="files-formats-others.html#eeg-erp">ERP</A> 
+    or a <A HREF="files-formats-others.html#inverse-solutions">RIS</A> file, 
+    overriding and cancelling the time dimension.<BR>
+    <LI CLASS="mvd-P">On the <B>results of the <A HREF="microstates-segmentation.html#fitting">Fitting
+     process</A></B>, provided as a multidimensional array in a <I><A HREF="files-formats-cartool.html#csv">.csv</A></I> 
+    file. In this case, there is no time dimension, just a set variables 
+    to be tested. All groups / conditions are contained in a single file.</P>
+   </UL>
+  <H3>
+   <A NAME="two-sample-stats"></A>Two sample statistics</H3>
+  <H4>
+   <A NAME="t-test"></A>Student t-test</H4>
+  <P>
+   The t-test compares how the means of each conditions are far from 
+   each other, by using the standard deviation of the joined data to 
+   estimate the probability of being the same. The advantage of this 
+   method, en plus to be a standard one, is that it is very fast and 
+   straightforward to compute, and will always give the same results if 
+   run again.</P>
+  <P>
+   This is a parametric method, and the model behind it assumes that the 
+   data have a Gaussian (&quot;normal&quot;) distribution. Practically, 
+   it also behaves quite well even if the data are not 
+   &quot;normal&quot;, which is our case most of the time, unfortunately.</P>
+  <H4>
+   <A NAME="randomization"></A>Randomization</H4>
+  <P>
+   Randomization is a general method that works on any variable you 
+   wish, and without any assumption regarding the actual data 
+   distribution, hence it is a non-parametric method.</P>
+  <P>
+   In our case, the test is done on the average across subjects of the 
+   variables tested (electrodes' tracks or inverse solution points' 
+   tracks). The main idea is that if the data were random, shuffling 
+   them somehow will not statistically make any difference as compared 
+   to the actual data configuration. The method runs by repeating 
+   &quot;enough time&quot; the shuffling so as to be able to estimate 
+   the probability that the data were only there by chance.</P>
+  <P>
+   As a consequence of the very nature of the method, results may 
+   slightly vary when run many times. Though, if the number of shuffling 
+   is big enough, it should be barely noticeable.</P>
+  <H4>
+   <A NAME="TAnova"></A>TAnova</H4>
+  <P>
+   Alias Topographic Anova, this is also part of the non-parametric / 
+   randomization techniques. Simply, the variable tested is the <A HREF="terms-definitions-formulas.html#formulas">dissimilarity</A> 
+   between conditions. It will tell if there is any topographical change 
+   between conditions, without accounting for intensity.</P>
+  <H2>
+   <A NAME="how-to-stat"></A>How to run the statistics</H2>
+  <P>
+   Called from the <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
+    | Statistics</A></FONT> menu, a dialog in <B>two parts</B> appears, 
+   both of them having to be correctly filled:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <A HREF="#dialog-files">Files dialog</A><BR>
+    <LI CLASS="mvd-P"><A HREF="#dialog-parameters">Parameters dialog</A></P>
+   </UL>
+  <H2>
+   <A NAME="dialog-files"></A>Files dialog</H2>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <IMG SRC="images/stat.dialog.files.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </CENTER>
+  <P>
+   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Groups of Files</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B><A NAME="data-organization"></A>Data (samples) are Contained in:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Specify here how data are organized within the files provided.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="set-of-files"></A>Set of Files</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>One file per condition and per subject</B>, therefore the data to 
+       test have to be retrieved across a set of files for each time frame. 
+       This case has a <B><A HREF="#time-seq-or-avg">time dimension</A></B><A HREF="#time-seq-or-avg"> 
+       that can be used</A>.</P>
+      <P>
+       Files can be any <A HREF="files-formats-others.html#eeg erp">ERP</A> or <A HREF="files-formats-others.html#inverse-solutions">RIS</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       1 File</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>One file per condition</B>, the data to be tested have been <I>cut 
+       &amp; paste</I>-d into a single file. Data are then found 
+       sequentially into each file, cancelling any time dimension.</P>
+      <P>
+       Files can be any <A HREF="files-formats-others.html#eeg erp">ERP</A> or <A HREF="files-formats-others.html#inverse-solutions">RIS</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <I><A NAME="csv-file"></A><A HREF="files-formats-cartool.html#csv"><strong>.csv</strong></A></I> File</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>A multidimensional array in a </B><I><A HREF="files-formats-cartool.html#csv"><B>.csv</B></A></I><B> file</B>,
+        the data are variables computed by the <A HREF="microstates-segmentation.html#fitting">Fitting
+        process</A>. In this case, there is no time dimension, but just a 
+       set variables to be tested.</P>
+      <P>
+       All groups / conditions are usually contained in the same file.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B><A NAME="time-settings"></A>Time interval</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       If <A HREF="#set-of-files">applicable</A>, specify the time interval 
+       to be tested for the <B>next input group(s)</B>.</P>
+	  <P>
+       <strong>Set this parameter before adding a new group!</strong></P>
+      <P>
+       See <A HREF="#time-seq-or-avg">this note</A> to get the most of this parameter.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       from</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       First time frame.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       to</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Last time frame.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       End of File</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Automatically set the last time frame to the <B>actual end of the 
+       current file</B>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Within this Time Interval, using:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <A HREF="#time-seq-or-avg">How to use this time interval</a> for the <B>next input group(s)</B>.</P>
+	  <P>
+       <strong>Set this parameter before adding a new group!</strong></P>
+	  <P>
+       Basically, you specify if you want to take each time frame sequentially, 
+	   or use their mean instead.</P>
+		</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Groups</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You can use the very convenient <A HREF="#files-drag-drop">Drag &amp; 
+       Drop feature</A> here.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Add New Group of Files</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Enter a new group (condition) of file(s). Depending on the <A HREF="#data-organization">data
+        organization</A>, you have to specify either a <B>set of files</B>, 
+       a <B>single file</B>, or a <I><B>.csv</B></I><B> file</B> for a 
+       single group.</P>
+      <P>
+       See <A HREF="#groups-to-test">this note</A> about groups.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP style="height: 36px">
+      <P>
+       Remove Last Group</TD>
+     <TD WIDTH="73%" VALIGN=TOP style="height: 36px">
+      <P>
+       Does what it says (amazing).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Use Last Group of Files</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Re-use the files (only) of the last group entered. Don't forget to 
+       change the <A HREF="#time-settings">time settings</A> <I>before</I> 
+       clicking on this button.</P>
+      <P>
+       See <A HREF="#groups-to-test">this note</A> about groups.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Clear All Groups</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Clear out all the groups at once.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Read Lists from File</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You can direclty retrieve the lists of groups previously <A HREF="#file-list-write">saved</A>.</P>
+      <P>
+       See also <A HREF="#files-drag-drop">Drag &amp; Drop</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="file-list-write"></A>Write Lists to File</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You can save the lists of current groups into a file, in case you 
+       want to re-use them (much recommended!).</P>
+      <P>
+       See the <A HREF="#file-list-format">file formats</A> available.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Sort Files within Lists</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       A strange behavior of Windows is to not respect the order of the 
+       files dropped in a window. To help cure this silly habit, you can 
+       sort all the file names of all the groups already entered.</P>
+      <P>
+       Note however that Drag &amp; Dropped files are automatically sorted.</P>
+      <P>
+       This is an important issue if you are going to do <A HREF="#which-stats">paired
+        tests</A>. The <B>exact match</B> of files between the 2 conditions 
+       / groups is of the utmost importance. I can only strongly suggest to 
+       save your lists to file, and visually check the sequence.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Number of Groups:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Just a counter of the number of groups entered.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Summary list of all groups</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       One group is displayed per line, summarizing the time interval, the 
+       number of files / samples, and the file names of the first and last 
+       item of the group.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Output Files</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="param-basefilename0"></A>Output Base File Name</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Specify here a <B>basis for all the file names</B> that will be 
+       generated during the averaging process.</TD>
+       </tr>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP style="height: 99px">
+      <P>
+       <B>Output File Type:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP style="height: 99px">
+      <P>
+       Pick the main output file type from a list.<P>
+       Text files (<strong><em>.txt</em></strong> <B><I>
+	   <A HREF="files-formats-cartool.html#ep">.ep</A></I></B> <B><I><A HREF="files-formats-cartool.html#eph">.eph</A></I></B>) 
+	   might be easier to read into other packages, but take more space on the 
+	   disk.<br>Binary files (<B><I><A HREF="files-formats-cartool.html#sef">.sef</A></I></B> <B><I><A HREF="files-formats-others.html#eeg raw">.eeg</A></I></B> <B><I><A HREF="files-formats-others.html#eeg-raw">.edf</A></I></B> <B><I>
+	   <a href="files-formats-cartool.html#ris">.ris</a></I></B>) are much more 
+	   compact, faster, and incorporate more informations into them. Either <B><I><A HREF="files-formats-cartool.html#sef">.sef</A></I></B> 
+	   or BrainVision <B><I><A HREF="files-formats-others.html#eeg-raw">.eeg</A></I></B> 
+	   are good choices.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       p Value Output:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       What actual values are being written in the output files:<ul>
+		  <li>p</li>
+		  <li>(1 - p)</li>
+		  <li>- log<sub><span class="auto-style1">10</span></sub> ( p )&nbsp;&nbsp;&nbsp;&nbsp; 
+		  (0.01 &rarr; 2; 0.001 &rarr; 3 etc...)</li>
+	  </ul>
+		</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Options</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Open File(s) Upon Completion</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       To automatically open (most of) the outputed files.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="save-intermediate"></A>Save Intermediate Results</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <A HREF="#results-more-files">Save more result files</A> with 
+       intermediate results. The files depend of course of each test performed.</P>
+      <P>
+       An option quite for connoisseur that may confuse you otherwise... Can 
+       be useful for figures or to double-check the results.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      &nbsp;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Use these buttons to <B>navigate through the previous and next dialogs</B> 
+       (if any).</P>
+      <P>
+       See which current dialog you are in, and to which other dialogs you 
+       connect, in the <B>tab-like</B> part at the top of the dialog under 
+       the title.</P>
+        </TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Process</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This button actually launches the statistics computation.</P>
+      <P>
+       This button remains <B>disabled until <U>all</U> the parameter 
+       dialogs have received enough (and consistent) informations</B>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Cancel</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Quit the dialog.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Help</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be here...).</TD>
+    </TR>
+   </TABLE></P>
+  <P>
+   &nbsp;</P>
+  <H3>
+   <A NAME="files-hints"></A>Files dialog - Technical points &amp; hints</H3>
+  <H4>
+   <A NAME="time-seq-or-avg"></A>Time interval uses</H4>
+  <P>
+   Before a new group is added, and if <A HREF="#set-of-files">time
+    is relevant</A>, you can specify how to make use of the specified time 
+   range:</P>
+  <ul>
+	  <li>Default is to use <strong>each value sequentially</strong></li>
+	  <li>Otherwise you can compute a <strong>single baseline value</strong> 
+	  from that interval:<ul>
+		  <li>mean</li>
+		  <li>median</li>
+		  <li>min</li>
+		  <li>max</li>
+	  </ul>
+	  </li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   Default for ERPs is to compare each time frame sequentially. It is also quite 
+   common to compare each value sequentially from post-stimulus interval, to a 
+   pre-stimulus baseline.</P>
+  <P>
+   There 4 available baseline formulas: the median being more robust than the 
+   mean; the min / max use depend on your data.</P>
+  <H4>
+   <A NAME="groups-to-test"></A>How to test groups</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    You can test a group of files against another group of files, in 
+    which case you simply input the groups one at a time.<BR>
+    <LI CLASS="mvd-P">But you can also test a group (of files) <B>against itself</B>,
+     for example to test a baseline before an activity.<BR>
+    <LI CLASS="mvd-P">This can be combined with any <A HREF="#time-seq-or-avg">sequence
+     / average combinations</A>, <B>to test sequences or averages within 
+    the same or within different files</B>.<BR>
+    <LI CLASS="mvd-P">For two-sample tests, <B>groups are taken 2 by 2</B> 
+    from the list of groups, f.ex. groups 1 &amp; 2, then 3 &amp; 4, 
+    etc... If you want to re-use a group, you have to set the list accordingly.<BR>
+    <LI CLASS="mvd-P">Internally, the computations are done as Group1 - 
+    (minus) Group2, Group3 - Group4, etc...<BR>
+    <LI CLASS="mvd-P">The order of the groups is not important, testing 
+    GroupA vs GroupB is equivalent as testing GroupB vs GroupA. However 
+    the sign of the <I>t</I> value of the t-test will be inverted.</P>
+   </UL>
+  <H4>
+   <A NAME="files-drag-drop"></A>You can Drag &amp; Drop these files 
+   directly from the Explorer:</H4>
+  <P>
+   It is strongly recommended to use these Drag &amp; Drop features 
+   which will tremendously ease your work:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Any <A HREF="files-formats-others.html#eeg">EEG files</A> or <A HREF="files-formats-others.html#inverse-solutions">RIS
+     files</A>. According to the <A HREF="#data-organization">data 
+    organization mode chosen</A>, dropping many EEG files at a time will 
+    either generate a <B>single group of files</B>, or a <B>set of groups</B>,
+     each being a single file.<BR>
+    <LI CLASS="mvd-P"><B><I><A HREF="general-concepts.html#linkingfiles">.lm</A></I></B><A HREF="general-concepts.html#linkingfiles"> files</A>,
+     each file being scanned and its content itself treated as a group of files.<BR>
+    <LI CLASS="mvd-P"><I><A HREF="files-formats-cartool.html#csv"><B>.csv</B></A></I><A HREF="files-formats-cartool.html#csv"> files</A>,
+     which can be either a <A HREF="#file-list-write">list of groups 
+    previously saved</A>, or a multidimensional array of variables 
+    computed by the <A HREF="microstates-segmentation.html#fitting">Fitting process</A>.</P>
+   </UL>
+  <H4>
+   <A NAME="file-list-format"></A>File formats to save or retrieve the 
+   lists of groups</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B><I><A HREF="files-formats-cartool.html#csv">.csv</A></I></B> file<BR>
+    <LI CLASS="mvd-P"><B><I>.txt</I></B> text file, with a similar format 
+    as the <B><I>.csv</I></B> format above, but separators used are <B>tabs</B> 
+    instead of commas (then rather a <B><I>.tsv</I></B> format).</P>
+   </UL>
+  <H2>
+   <A NAME="dialog-parameters"></A>Parameters dialog</H2>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <IMG SRC="images/stat.dialog.parameters.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </CENTER>
+  <P>
+   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Variables to test</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Electrodes, GFP, or GEV, NumTF...:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The list of <B>variables</B> to be tested, separated either by a 
+       space, a colon or a semi-colon.</P>
+      <P>
+       See <A HREF="#variables-names">this note</A> for the full syntax and possibilities.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Linking with XYZ:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Optionally pointing to a file with the <A HREF="files-formats-others.html#electrodes-coord">electrodes
+        coordinates</A> and names. The <B>names of the electrodes are taken 
+       from this file</B>, overriding the original names from the EEG (i.e. 
+       you can rename the electrodes).<BR>
+       Be careful that the list above respect these names, otherwise you 
+       will get an error message.</P>
+      <P>
+       Constraints as in the <A HREF="general-concepts.html#linkingfiles">link
+        mechanism</A> must be respected, such as same number of electrodes, 
+       same order, etc...</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       ROIs</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The <B><A HREF="#rois">ROIs</A></B> to be used in the statistics.</P>
+      <P>
+       Note that ROIs and the <I>Electrodes</I> field above are mutually exclusive.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Two-Sample Tests</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Right now, Cartool can test only <B>two conditions</B> at a time.</P>
+      <P>
+       Before running the tests, a <A HREF="#param-checking">parameters checking</A> 
+       stage is applied according to the paired or unpaired tests.</TD>
+    </TR>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Unpaired- / Paired-</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Select which one option is relevant to your current analysis.</P>
+	  <P>
+       Before each test, some <A HREF="#param-checking">parameters checking</A> 
+       is applied depending on the paired or unpaired selection.</P>
+		   </TD>
+       </tr>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>t-test</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Student's <A HREF="#t-test"><B>t-test</B></A>.</P>
+      <P>
+       Formulas according to the paired / unpaired cases are:</P>
+      <UL>
+       <LI CLASS="mvd-P">
+       <P>
+        <B>Paired</B>: the <B>mean of the differences</B> between conditions.<BR>
+        <LI CLASS="mvd-P"><B>Unpaired</B>: the <B>difference of the means</B>&nbsp;
+         between conditions.</P>
+       </UL>
+      <P>
+       See also this note about the <A HREF="#sign-of-ttest">sign of the differences</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>Randomization</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       See <A HREF="#randomization">here</A> for a short description.</P>
+      <P>
+       Formulas according to the paired / unpaired cases are:</P>
+      <UL>
+       <LI CLASS="mvd-P">
+       <P>
+        <B>Paired</B>: the <B>mean of the differences</B> between conditions.<BR>
+        <LI CLASS="mvd-P"><B>Unpaired</B>: the <B>difference of the means</B>&nbsp;
+         between conditions.</P>
+       </UL>
+      <P>
+       See the <A HREF="#param-randomization">randomization technical points</A>.</P>
+      <P>
+       See also this note about the <A HREF="#sign-of-ttest">sign of the differences</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>Topographic Anova</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       See <A HREF="#TAnova">here</A> for a short description.</P>
+      <P>
+       See the <A HREF="#param-TAnova">TAnova technical points</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Parameters</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Presets:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This is handy to quickly set the main parameters according to the 
+       most frequent uses, listed in the drop-down box.</P>
+      <P>
+       The most important parameters will be set, still <B><I>some 
+       parameters have to be set manually!</I></B> And, as usual, double 
+       check that all your settings make sense...</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="26%" VALIGN=TOP></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Data Type:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Only Positive</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Data consist of <B>positive only, scalar data</B>. This could be 
+       spikes from neuron recordings, or the Results of Inverse Solution, f.ex.</P>
+      <P>
+       This will logically turn off the <I>Polarity</I> &amp; <I>References</I> options.</P>
+      <P>
+       See this <A HREF="computing-statistics.html#param-positive-data">point on 
+       positive data</A> and also <A HREF="terms-definitions-formulas.html#data-types">this point</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Signed</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>Signed scalar values</B>, like, you know, EEG.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Data reference</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       No Reference</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Data are used as they come from files, no changes occur.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Average Reference</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Data are <A HREF="terms-definitions-formulas.html#formulas">average reference</A>-d.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Maps / Patterns Polarity:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Ignore</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Polarity of maps does not matter, so ignore it. Inverted maps are 
+       considered the same (same underlying generators, but with reversed polarity).</P>
+      <P>
+       Used with the <A HREF="#TAnova">TAnova</A> test on spontaneous EEG 
+       recordings or <A HREF="frequency-analysis.html#analysis">FFT Approximation</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Account</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Polarity of maps matter, that is, inverted maps are indeed considered 
+       as different.</P>
+      <P>
+       Used for ERPs.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="26%" VALIGN=TOP></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Data level normalization</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This will rescale the data from each file by a given factor, and this 
+       is <I>not</I> to be misunderstood with normalization in the sense of 
+       a Gaussian distribution.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       None</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       No rescaling.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Mean Gfp</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>Each file </B>is divided by its <B>mean Gfp across time</B>, 
+       reducing inter-subjects variability.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Mean Gfp paired</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>The 2 files of the paired conditions</B> (for a given subject) <B>are
+        put together</B> to compute the <B>mean Gfp across time</B>. The 
+       resulting factor is applied to <B>both</B> conditions equally.</P>
+      <P>
+       Doing so has the advantage of reducing the inter-subjects 
+       variability, still <B>leaving untouched the differences between the conditions</B>.
+        Using only the Mean Gfp in this case will certainly lead to 
+       erroneous results.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Gfp at each TF</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       For each time frame and for each file, the data are normalized by the <B>Standard
+        Deviation</B> of its electrodes / solution points.</P>
+      <P>
+       This is a means to cancel the overall intensity of the data, keeping 
+       only the topography (scalp electrodes case), or the brain areas 
+       configuration (inverse solution case).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="26%" VALIGN=TOP></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Accounting for Missing Values:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This option is activated only when <A HREF="#csv-file">testing results</A> 
+       from the <A HREF="microstates-segmentation.html#fitting">Fitting process</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Missing Value:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Give the value that will signify that a value is to be ignored. Cartool's 
+	   default is <strong>-1</strong>.<P>
+       Be careful that no real actual value can be set to that missing value.</TD>
+    </TR>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Number of randomizations</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The number of repetitions of the random process in the Randomization and 
+	   TAnova tests.</P>
+      <P>
+       See the <A HREF="#param-randomization">randomization technical points</A>.<P>
+       Default is 5000 for a p-value of 0.01 (the lower the p-value, the higher 
+	   the number of repetitions has to be)</TD>
+       </tr>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>Multiple-Tests Correction:</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You can pick from a list how to correct for type I errors when performing 
+	   multiple-tests.<P>
+       Right now, you can choose between Bonferroni and FDR.<P>
+       <A HREF="#multiple-tests">See this paragraph for more details.</a></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       FDR value:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       For FDR correction, provide the actual discovery rate to be used. Default 
+	   is 5%.<P>
+       Note that the FDR value is <em>not</em> a p-value.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Thresholding p-value / q-values</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Threshold for the p-value (or q-value after the FDR Adjusted values).<P>
+       <strong>Only the values below this percentage will be kept, otherwise p 
+	   will be set 
+       to 1.</strong></TD>
+       </tr>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Min. Significant Duration:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       If the p-values (or q-values) are currently thresholded, it is 
+	   subsequently possible to test for a minimum successive significant 
+	   period.<P>
+       Results only at least significant for the specified amount of time will 
+	   be kept.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Use these buttons to <B>navigate through the previous and next dialogs</B> 
+       (if any).</P>
+      <P>
+       See which current dialog you are in, and to which other dialogs you 
+       connect, in the <B>tab-like</B> part at the top of the dialog under 
+       the title.</P>
+      	 </TD>
+       </tr>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Process</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This button actually launches the statistics computation.</P>
+      <P>
+       This button remains <B>disabled until <U>all</U> the parameter 
+       dialogs have received enough (and consistent) informations</B>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Cancel</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Quit the dialog.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Help</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be here...).</TD>
+    </TR>
+   </TABLE></P>
+  <P>
+   &nbsp;</P>
+  <H3>
+   <A NAME="parameters-hints"></A>Parameters dialog - Technical points 
+   &amp; hints</H3>
+  <H4>
+   <A NAME="variables-names"></A>Specifying the variables names</H4>
+  <P>
+   The <B>list</B> of variables to be tested can be:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A single variable.<BR>
+    <LI CLASS="mvd-P">Many variables separated by a space, a colon, or a 
+    semi-colon, f.ex. &quot;GEV MeanGfp MaxGfp&quot;.<BR>
+    <LI CLASS="mvd-P">A <A HREF="reprocess-tracks.html#tracks-enumerate">range
+     of names</A>, f.ex. e1-e100.<BR>
+    <LI CLASS="mvd-P">A <FONT FACE="Courier New"><B>*</B></FONT>, meaning 
+    all possible variables.</P>
+   </UL>
+  <P>
+   According to <A HREF="#which-cases">what you are testing</A>, a 
+   variable name could be (not case sensitive):</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    The name of an electrode, f.ex. <B>e1</B> or <B>Fpz</B>.<BR>
+    <LI CLASS="mvd-P">The name of a solution point, f.ex. <B>sp1</B>.<BR>
+    <LI CLASS="mvd-P">The name of a computed track, as <A HREF="terms-definitions-formulas.html#formulas"><B>Gfp</B></A> 
+    (Global Field Power) and <B>Avg</B> (Average). Dissimilarity has been 
+    disabled as it is meaningless to test it this way (see the <A HREF="#TAnova">TAnova</A> 
+    rather, and <A HREF="#param-TAnova">here</A>).<BR>
+    <LI CLASS="mvd-P">A variable name computed by the <A HREF="microstates-segmentation.html#fitting">Fitting
+     process</A>:
+    <UL>
+     <LI CLASS="mvd-P">The full name of the variable, f.ex. <B>NumTF</B>, <B>MeanGfp</B>,
+      <B>TfBestCorr</B>, etc...<BR>
+     <LI CLASS="mvd-P">Only a part of a variable name, which will include 
+     all variables containing this part, f.ex.: <B>TF</B> for variables Num<B>TF</B> 
+     and <B>Tf</B>BestCorr.<BR>
+     <LI CLASS="mvd-P">The name of a given map, f.ex. <B>map1</B> will 
+     test all the variables of map 1.<BR>
+     <LI CLASS="mvd-P">Finally, only one variable for a single map, f.ex. <B>map1_NumTF</B>.</P>
+    </UL>
+   </UL>
+  <H4>
+   <A NAME="rois"></A>ROIs &amp; Statistics</H4>
+  <P>
+   If a <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B><A HREF="files-formats-cartool.html#rois"> file</A> 
+   has been provided (also see <A HREF="creating-rois.html">Creating ROIs</A>),
+    the following processings are done:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    data are read from files, with the requested reference,</P>
+   <LI CLASS="mvd-P">
+   <P>
+    variables belonging to the same roi are <B>averaged</B> together,</P>
+   <LI CLASS="mvd-P">
+   <P>
+    data level normalization can occur, with the GFPs of the original, 
+    non-averaged data (important!),</P>
+   <LI CLASS="mvd-P">
+   <P>
+    the test(s) then occur on the averages, <B>properly accounting for 
+    the data reduction</B> (f.ex. number of variables for Bonferroni),</P>
+   <LI CLASS="mvd-P">
+   <P>
+    the output names for the variables are set to the ROIs names.</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   <B>This is the best way to tests your ROIs in Cartool!</B></P>
+  <P>
+   First, the <B>normalization is sure to be correct</B>, with the 
+   original GFPs. In the case you compute the ROIs yourself <I>before</I> 
+   the stats, make sure to do all level corrections at that stage (and 
+   check off normalization in the stats!). This is your responsability! 
+   BTW, re-referencing has the same problems, for the same reasons.</P>
+  <P>
+   Second, the <B>ROIs averaging is done on-the-fly</B>, meaning you 
+   don't have to create these averaged files yourself. That is, less 
+   errors, less time wasted, and all the flexibility to test for other 
+   ROIs. As a side effect, you can also recover the averaged ROIs data, 
+   if you asked for saving <A HREF="#save-intermediate">intermediate results</A>.</P>
+  <P>
+   Cartool will finally correctly report the <B>number of ROIs</B> as 
+   being the <B>number or variables</B> tested. This is used for 
+   Bonferroni correction f.ex.</P>
+  <H4>
+   <A NAME="param-checking"></A>Parameters checking</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Before running any test, a procedure is run on the parameters to 
+    check their consistencies. It checks the time boundaries for each 
+    file, then between the files, the number of files in each group, 
+    etc... Time limits issues are resolved here (End of File limits, etc...)</P>
+   <LI CLASS="mvd-P">
+   <P>
+    One checking is done <B>before all unpaired tests</B> (which are run 
+    first), because it is the less restrictive case.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Then a <B>second checking</B> is done when entering the <B>paired tests</B>.
+     In some rare cases, this might apparently lead to inconsistencies 
+    between the parameters actually used in the paired and unpaired 
+    tests. For example, if the number of files is not equal between the 
+    two conditions (which shouldn't be tested as paired, BTW), then the 
+    actual number of files taken into account would be the minimum of the 
+    two sets.</P>
+   </UL>
+  <H4>
+   <A NAME="param-randomization"></A>Number of repetitions for the 
+   Randomization process</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    In the paired case, Cartool tries as much as possible to <B>enumerate</B> 
+    all the <B>2</B><SUP><B>n</B></SUP> cases.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    In the unpaired case, the <B>number of randomization</B> is a 
+    compromise between the number of variables to test and the time spent 
+    into the process. Still, the number of repetitions remains quite 
+    high, starting from about <B>16000</B> repetitions down to a minimum 
+    of <B>5000</B> (this would be a very good reason to ask your boss for 
+    a more powerful PC).</P>
+   <P>
+    Cartool does not try to enumerate the unpaired cases, because <SUB><B>16</B></SUB><B>C</B><SUB><B>8</B></SUB> 
+    is already 12870!</P>
+   <LI CLASS="mvd-P">
+   <P>
+    If you override the number of repetition, it will apply to both the 
+    paired and the unpaired tests, cancelling the paired enumeration.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Be careful though, overriding the number of repetitions with a too 
+    low value can (and indeed, will) affect the precision of the results, 
+    or even completely miss the results.</P>
+   </UL>
+  <h4><A NAME="multiple-tests"></a>Multiple-Tests Correction</h4>
+  <P>When simultaneously testing multiple electrodes / solution points, it is a 
+  recommended practice to correct for type I errors.</P>
+  <P>Cartool offers currently 4 options:</P>
+  <ul>
+	  <li><strong>No correction</strong>. Still usable if you don't have enough 
+	  data, and to outline a trend in your data.</li>
+	  <li><strong>Bonferroni correction</strong>. p-values are rescaled by the 
+	  number of simultaneously tested variables.<br>This is however 
+	  well-acknowledge to be an over-kill correction, and most data don't 
+	  survive it (&quot;Bonferronied to death&quot;)!</li>
+	  <li><strong>FDR (False Discovery Rate) correction</strong>. User specifies 
+	  the acceptable proportion of tests that can have a type I error, instead 
+	  of a single one as per the Bonferroni case. A usual accepatable value is 
+	  5%, but it can be higher than that.<br>Cartool offers 2 FDR outputs:<br>
+	  <ul>
+		  <li>FDR - Optimally Thresholding p-value:<br>It finds the <strong>
+		  optimal thresholding p-value</strong> for the current set of p-values.<br>
+		  The ouput values are still p-values, which can be an interesting 
+		  property.</li>
+		  <li>FDR - Adjusting p-values to q-values:<br>All p-values are 
+		  converted to <strong>Adjusted values q-values</strong>.<br>Then you 
+		  can proceed with the usual &quot;p-values&quot; thresholding, like 1% or 5%.<br>
+		  But the output are no more p-values.</li>
+	  </ul>
+	  </li>
+  </ul>
+  <P>&nbsp;</P>
+  <P>The two FDR options should somehow lead to the same results, the main 
+  difference being the first one still outputs p-values, while not the second 
+  one.</P>
+  <P>&nbsp;</P>
+  <pre><strong>Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing</strong>,
+Yoav Benjamini, Yosef Hochberg,
+<cite>Journal of the Royal Statistical Society. Series B (Methodological), </cite>Vol. 57, No. 1 (1995), pp. 289-300. </pre>
+  <H4>
+   <A NAME="param-TAnova"></A>TAnova (Topographic Anova) method</H4>
+  <P>
+   The following randomization procedure is applied (for each time frame):</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    All the maps are average referenced, then normalized,<BR>
+    <LI CLASS="mvd-P">Maps are then randomly shuffled between the 2 groups
+    <UL>
+     <LI CLASS="mvd-P">Pair-wise in the paired test, just the order of the 
+     conditions can be swapped,<BR>
+     <LI CLASS="mvd-P">Any redistribution for the unpaired test, just to 
+     make 2 groups.</UL>
+    <LI CLASS="mvd-P">Means of the maps of the two new groups is computed,<BR>
+    <LI CLASS="mvd-P">Then the dissimilarity of the means is tested against the 
+	original dissimilarity of the 2 groups.</P>
+   </UL>
+  <H4>
+   <A NAME="sign-of-ttest"></A>Sign for the t-test and the Randomization</H4>
+  <P>
+   In case you need to know which of the two conditions was above / 
+   greater than the other one, you need to know how the subtraction was 
+   performed during the tests.</P>
+  <P>
+   Cartool always compute differences as&nbsp; <B>group 1 - group 2</B>.</P>
+  <P>
+   So f.ex. a positive t-value at a given Time Frame means group 2 is 
+   below / less than group 1 at that moment.</P>
+  <H4>
+   <I><A NAME="param-positive-data"></A>Positive Data</I> and its implications</H4>
+  <P>
+   Selecting <I><A HREF="terms-definitions-formulas.html#data-types"><B>Positive Data</B></A></I> 
+   means data should not be re-centered to their average values in any 
+   of the computations. Of course don't select this if the data <I>are</I> 
+   signed, <B>it will not convert them at all!</B></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The following formula will therefore <B>skip the average reference subtraction</B>:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    GFP (Global Field Power), which actually becomes RMS (Root Mean Square)</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Dissimilarity</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   Some formula <B>still subtract the average reference</B>, to be 
+   consistent with pattern matching techniques:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Correlation</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Explained Variance</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Normalization of maps</P>
+   </UL>
+  <H2>
+   <A NAME="results"></A>Statistics - Results</H2>
+  <H3>
+   Directory structure</H3>
+  <P>
+   First of all, a directory structure is created as follow:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    First a <B>general directory</B>, named after the <A HREF="#param-basefilename">Base
+     File Name</A></P>
+   <LI CLASS="mvd-P">
+   <P>
+    Then, <B>each test will create its own sub-directory</B>, named after 
+    the test itself, f.ex. &quot;Paired.tTest&quot; or &quot;Unpaired.TAnova&quot;.</P>
+   </UL>
+  <P>
+   This way, results are not mixed across different tests, and you can 
+   later run a specific test without erasing the previous results of 
+   other tests.</P>
+  <H3>
+   Result files</H3>
+  <P>
+   The files within these directories, one for each type of test, are 
+   the following:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A <B>verbose</B> file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>,
+     with all the parameters being used.</P>
+   <P>
+    It optionally contains the results in a textual form, if there was no 
+    time dimension in the data, or if it was only 1 time frame long. In 
+    this case there is an array with the following columns:</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P>
+     Variable name<BR>
+     <LI CLASS="mvd-P">P-value<BR>
+     <LI CLASS="mvd-P">Number of data actually used for the computation 
+     (paired case: 2 * number of subjects used)<BR>
+     <LI CLASS="mvd-P">t-value, in the t-test case<BR>
+     <LI CLASS="mvd-P">Degrees of freedom, in the t-test case</P>
+    </UL>
+   <P>
+    &nbsp;</P>
+   <LI CLASS="mvd-P">
+   <P>
+    A <I><B>.p</B></I><A HREF="files-formats-cartool.html#ep"><I><B>.ep</B></I></A> 
+    file for the <B>P-values</B>, actually <B>(1 - P)</B>. There is a 
+    color coding for the P-value, from ( 1 - P ) = 0 / grey to ( 1 - P ) 
+    = 1 / red. The following examples show the full P-values, first 
+    without Bonferroni and no clipping of P, then the P-values after 
+    Bonferroni and clipping, when testing all electrodes:</P>
+   <P>
+    <IMG SRC="images/stat.p-value1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/stat.p-value2.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <P>
+    &nbsp;</P>
+   </UL>
+  <P>
+   For the <B>t-test</B>, you have this additional file:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A <I><B>.t</B></I><A HREF="files-formats-cartool.html#ep"><I><B>.ep</B></I></A> 
+    file for the <B>t-values</B>:</P>
+   <P>
+    <IMG SRC="images/stat.t-value1.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   When testing <A HREF="#csv-file"><B>Fitting variables</B></A>, you 
+   have this additional file:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A <I><B>.p</B></I><A HREF="files-formats-cartool.html#data"><I><B>.data</B></I></A> 
+    file, with the P-values ( 1 - P ) for each variable (vertical axis), 
+    and for each map (horizontal axis). F.ex. before and after clipping 
+    the P-value:</P>
+   <P>
+    <IMG SRC="images/stat.fitting1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/stat.fitting2.png" WIDTH="242" HEIGHT="362" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </UL>
+  <P ALIGN=LEFT>
+   &nbsp;</P>
+  <P ALIGN=LEFT>
+   <A NAME="results-more-files"></A>If the <B><A HREF="#save-intermediate">Save
+    Intermediate Results</A></B> option has been selected, you will get 
+   these more files:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P ALIGN=LEFT>
+    Unpaired and Paired t-test, for each group:</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P ALIGN=LEFT>
+     The <B>Mean</B> in <B><I>.Group#.Mean.ep</I></B></P>
+    <LI CLASS="mvd-P">
+    <P ALIGN=LEFT>
+     The <B>Standard Error</B> in <B><I>.Group#.SE.ep</I></B></P>
+    <LI CLASS="mvd-P">
+    <P ALIGN=LEFT>
+     A big matrix with <B>all the subjects</B> one after the other, plus 
+     the Mean and SE in <B><I>.Group#.Subjects.<A HREF="files-formats-cartool.html#sef">sef</A></I></B></P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P ALIGN=LEFT>
+    Unpaired t-test only:</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P ALIGN=LEFT>
+     The <B>Difference of the mean</B> in <B><I>.Delta.Mean.ep</I></B></P>
+    <LI CLASS="mvd-P">
+    <P ALIGN=LEFT>
+     The <B>Joint Standard Error</B> (of both groups) in <B><I>.Delta.SE.ep</I></B></P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P ALIGN=LEFT>
+    Paired t-test only:</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P ALIGN=LEFT>
+     The <B>Mean of the difference</B> in <B><I>.Delta.Mean.ep</I></B></P>
+    <LI CLASS="mvd-P">
+    <P ALIGN=LEFT>
+     The <B>Standard Error of the difference</B> in <B><I>.Delta.SE.ep</I></B></P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P ALIGN=LEFT>
+    Unpaired and Paired TAnova:</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P ALIGN=LEFT>
+     The <B>Dissimilarity of the mean maps</B> in <B><I>.TAnova.Dis.ep</I></B></P>
+    </UL>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;
+ </BODY>
+</HTML>

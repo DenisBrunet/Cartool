@@ -1,0 +1,169 @@
+<HTML>
+ <HEAD>
+  <TITLE>Appendixes A - Problems Resolution</TITLE>
+ <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css"></HEAD>
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   Appendix A<BR>
+   Problems Resolution</H1>
+  <P>
+   &nbsp;</P>
+  <H5>
+   <A HREF="#Graphical-problems">Graphics problems</A><br>
+   <A HREF="#General-problems">General problems</A></H5>
+  <H2>
+   <A NAME="Graphical-problems"></A>Graphics problems</H2>
+  <H3>
+   Corrupted display of any sort:</H3>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Check the driver</B> of your graphic card, and update it before 
+    trying anything else. This is the major cause for erratic behaviors.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Check again for the <B><I>latest</I></B> driver!</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Go in the advanced properties of the Display, and remove all 
+    accelerations. Run again Cartool, if it works, the problem is 
+    definitely on the graphic card side! (see points 1 and 2).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    The graphic card has to be <A HREF="terms-definitions-formulas.html#OpenGL">OpenGL</A> 
+    compliant, but even if it says so, each manufacturer has its own 
+    interpretation of the standard. So try to tune the display setting in 
+    the advanced properties. Usually, I recommend setting things for 
+    &quot;Fast&quot; rather than &quot;Quality&quot; performances, or 
+    something like &quot;Application preferences&quot;.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Still it may not work properly, although it works on other computers, 
+    then you really have a problem! Either wait for the next driver 
+    (points 1, 2, 3), especially if you card is brand new. Or you simply 
+    need to change the graphic card, and&nbsp; it is worth putting a 
+    little extra money on it. The more it accelerates features by 
+    hardware, the better. You can also keep the card when 
+    upgrading/changing your PC.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    If you don't have an accelerated card, that means you rely on the 
+    software library provided in Windows (opengl32.dll). It <I>does</I> 
+    behave strangely with demanding applications like Cartool, and 
+    especially if you are running short of memory. I can't do anything 
+    for you, apart from telling you again to buy a graphic card.</P>
+   </UL>
+  <H3>
+   The display is slow:</H3>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    In Cartool, go in <FONT FACE="Arial Black,Arial,Helvetica">Help|About</FONT>,
+     and see if Cartool recognizes the graphic adapter. If not, it may 
+    not be installed correctly (drivers...) or it may be turned off 
+    (display settings again).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Try to tune up the properties of the OpenGL. It may change from card 
+    to card, but try to remove any anti-aliasing, and select for speed, 
+    not quality.</P>
+   </UL>
+  <H3>
+   It doesn't print correctly:</H3>
+  <P>
+   Cartool is not really tuned for printing, though it has the ability. 
+   Unfortunately, the Microsoft implementation of OpenGL is known to be 
+   buggy, and can not print correctly. To bypass this, do some &quot;copy
+    as bitmaps&quot; and paste in some application, then print. Sorry, 
+   that's all for now, I will fix this later.</P>
+  <CENTER>
+   <P ALIGN=CENTER>
+    &nbsp;</P>
+   </CENTER>
+  <H2>
+   <A NAME="General-problems"></A>General problems</H2>
+  <H4>
+   The program is so slow...</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Make sure you are using the 64bit edition of Cartool, which is highly 
+	optimized for speed, and not some old 32bit version.</P>
+	  <LI CLASS="mvd-P">
+      <P>
+    You must have enough memory to avoid as much as possible memory 
+    swapping on the disk. The more the memory, the better, especially if 
+    you work with big volumes. Minimum is 512M, I'd say, 1G is fine for now.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Try to optimize the swap file (known as <I>page file</I> in windows), 
+    either with some third party utility, or using the following trick. 
+    Set page file to 0 (control panel / system / advanced / performance 
+    options), ignoring warning messages, reboot, then defrag your disk. 
+    Set back the page file to its original amount, reboot again. This 
+    will provide a fresh, unfragmented page file, which can really boost 
+    your machine again!</P>
+   <LI CLASS="mvd-P">
+   <P>
+    It may not be very efficient to have multiple instances of Cartool 
+    running at the same time, though it works.</P>
+   </UL>
+  <H4>
+   The program crashes immediately when started</H4>
+  <P>
+   Presently, you must have Administrator rights to run Cartool, because 
+   it updates the Windows registry. If it is not the case, try this. Do 
+   a shortcut to Cartool.exe on the desktop, and edit its properties. In 
+   the Target field, after the Cartool.exe, add <B>/noregister</B> to 
+   avoid touching the registry. Then use this shortcut to launch 
+   Cartool. Note that Cartool has to be run <B>at least once</B> as an 
+   Administrator to create the file associations for Windows.</P>
+  <H4>
+   The Explorer can not open anymore the files when double-clicking</H4>
+  <P ALIGN=LEFT>
+   Cartool registers all its known file extensions to Windows, and each 
+   time it is run. If you happen to have multiple versions of Cartool on 
+   your machine, then each version tries to steal the registry for 
+   itself at each run time. You finish with a real mess, and 
+   double-clicking may open an unexpected version of Cartool (therefor 
+   leading to some misunderstandings and/or errors), or simply does not 
+   work anymore. Open the correct Cartool version, then <A HREF="cartool-options.html#registration-reset">reset
+    the registry</A>.</P>
+  <P ALIGN=LEFT>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;
+ </BODY>
+</HTML>

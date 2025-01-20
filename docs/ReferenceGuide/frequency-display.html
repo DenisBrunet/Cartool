@@ -1,0 +1,726 @@
+<HTML>
+ <HEAD>
+  <TITLE>Frequency Display</TITLE>
+ <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css"></HEAD>
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   Frequency Display</H1>
+  <P>
+   &nbsp;</P>
+  <P>
+   The Frequency Display tries to ease your job of browsing through 
+   frequencies, after the <A HREF="frequency-analysis.html">Frequency Analysis</A> 
+   has been done.<BR>
+   The <B>most important buttons are the 5 first ones</B>, which, 
+   combined together, help you choose through a total of <B><A HREF="#buttons">8
+    different display modes</A></B>.</P>
+  <P>
+   (Also note that the Frequency display is an extension of the <A HREF="eeg-display.html"><B>EEG
+    display</B></A>, so please refer to it for all their common parts)</P>
+  <H3>
+   <A HREF="#buttons">Buttons</A></H3>
+  <H5>
+   Most of the <A HREF="eeg-display.html#summary-buttons"><B>EEG Buttons</B></A> +</H5>
+  <H5>
+   <A HREF="#display-modes">Display modes:</A></H5>
+  <H5>
+   <A HREF="#mode-EFt"><IMG SRC="images/freq.button.spectrum-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#mode-ET"><IMG SRC="images/freq.button.freqs-per-electrode-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#mode-FEt"><IMG SRC="images/freq.button.electrodes-per-freq-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#averaging-last-dim"><IMG SRC="images/freq.button.average-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#tracks-vs-intensity"><IMG SRC="images/eeg.button.tracks-vs-intensity.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H5>
+   <A HREF="#previous-frequency"><IMG SRC="images/freq.button.previous-freqs.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#next-frequency"><IMG SRC="images/freq.button.next-freqs.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#less-frequencies"><IMG SRC="images/freq.button.less-freqs.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#more-frequencies"><IMG SRC="images/freq.button.more-freqs.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#normalize-frequenci"><IMG SRC="images/freq.button.normalize-freqs.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
+  <H3>
+   <A HREF="#mouse">Mouse</A></H3>
+  <H5>
+   <A HREF="#mouse-time">Time navigation</A><br><A HREF="#mouse-frequency">Frequency navigation</A></H5>
+  <H3>
+   <A HREF="#keyboard">Keyboard</A></H3>
+  <H5>
+   <A HREF="#Keyboard-time">Time navigation</A><br>
+   <A HREF="#keyboard-frequency">Frequency navigation</A></H5>
+  <H3>
+   <A HREF="#menus">Menus</A></H3>
+  <H5>
+   <A HREF="#menu-options">Options</A></H5>
+  <H3>
+   <A HREF="#technical-points">Technical points</A></H3>
+  <H5>
+   <A HREF="#time-considerations">Time considerations</A><br>
+   <A HREF="#cursor-time-freq">Time &amp; Frequency Cursors</A><br>
+   <A HREF="#color-scheme-rainbo">Color scheme</A><br>
+   <A HREF="#normalize-technical">Frequency normalization</A><br>
+   <A HREF="#freqs-auto-scaling">Frequencies auto-scaling</A><br>
+   <A HREF="#quality-intensity">Quality of display &amp; Copy as Bitmap</A></H5>
+  <H3>
+   <A HREF="#advanced-display">More on displays with frequencies</A></H3>
+  <H5>
+   <A HREF="#freq-maps">Showing the frequencies as maps</A><br>
+   <A HREF="#freqs-geometrically">Showing the frequencies geometrically distributed</A><br>
+   <A HREF="#freqs-superimposed">Linking and superimposing frequencies 
+   from other files</A></H5>
+  <H2>
+   <A NAME="buttons"></A>Frequency - Buttons</H2>
+  <H3>
+   <A NAME="display-modes"></A>Display modes</H3>
+  <P>
+   <IMG SRC="images/freq.button.spectrum-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.button.freqs-per-electrode-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.button.electrodes-per-freq-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"> <IMG SRC="images/freq.button.average-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/eeg.button.tracks-vs-intensity.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   These <B>5 buttons are the main switches to choose the type of display</B>:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    The first 3 select how to <B>project</B> and lay down the <B>3 
+    dimensional data ( electrodes x frequencies x time ) onto a 2D display</B>.<BR>
+    <LI CLASS="mvd-P">The last 2 buttons simply add <B>variations</B> on 
+    the current layout, either by <B>averaging some data</B>, or 
+    switching between <B>tracks and intensity</B> displays.</P>
+   </UL>
+  <P>
+   Just play around with these switches, and see...</P>
+  <H3>
+   <A NAME="mode-EFt"></A>Mode Spectrum&nbsp; <IMG SRC="images/freq.button.spectrum-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   This is the well-known <B>Spectrum display</B>. The electrodes are on 
+   the vertical axis, and the frequencies are on the horizontal one.</P>
+  <P>
+   According to the <B><A HREF="#averaging-last-dim">Averaging button</A></B> 
+   state, the display is either the <B>mean spectrum</B>, or a <B>sequence
+    of spectrums</B>:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <U><A NAME="mean-spectrum"></A></U><B><A HREF="#averaging-last-dim">Average
+     On</A></B></P>
+   <P>
+    The <B>average frequencies</B> of the <B><A HREF="eeg-display.html#mouse-time-selectio">current
+     time cursor</A></B> are shown (which you can see in <A HREF="#mode-ET">this
+     mode</A> and <A HREF="#mode-FEt">this mode</A>).</P>
+   <P>
+    <IMG SRC="images/freq.display.1avg.png" ALIGN=TEXTTOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B><A HREF="#averaging-last-dim">Average Off</A></B></P>
+   <P>
+    Sequentially shows <B>all the spectrums</B> for each time window of 
+    the <B><A HREF="eeg-display.html#mouse-time-selectio">current time cursor</A></B> 
+    (which you can see in <A HREF="#mode-ET">this mode</A> and <A HREF="#mode-FEt">this
+     mode</A>).</P>
+   <P>
+    <IMG SRC="images/freq.display.1seq.png" ALIGN=TEXTTOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </UL>
+  <H3>
+   <A NAME="mode-ET"></A>Mode Electrodes / Frequencies&nbsp; <IMG SRC="images/freq.button.freqs-per-electrode-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Displaying all the Frequencies for each Electrodes.</P>
+  <P>
+   The <B><A HREF="#averaging-last-dim">Averaging button</A></B> and the <B><A HREF="#tracks-vs-intensity">Tracks
+    / Intensity button</A></B> states affect the display in the 
+   following ways:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B><A HREF="#averaging-last-dim">Average Off</A>, <A HREF="#tracks-vs-intensity">Intensity
+     Off</A></B></P>
+   <P>
+    The <B><A HREF="#mouse-frequency">selected frequencies</A> are shown separately</B> 
+    as <B>tracks</B>.</P>
+   <P>
+    <IMG SRC="images/freq.display.2seq.png" ALIGN=TEXTTOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B><A NAME="waterfall"></A><A HREF="#averaging-last-dim">Average Off</A>,
+     <A HREF="#tracks-vs-intensity">Intensity On</A></B></P>
+   <P>
+    The <B><A HREF="#mouse-frequency">selected frequencies</A> are shown separately</B> 
+    as <B>intensities</B> (aka <I>Waterfall</I>).</P>
+   <P>
+    <IMG SRC="images/freq.display.2int.png" ALIGN=TEXTTOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B><A NAME="averaging-freqs"></A><A HREF="#averaging-last-dim">Average
+     On</A>, <A HREF="#tracks-vs-intensity">Intensity Off</A></B></P>
+   <P>
+    The <B><A HREF="#mouse-frequency">selected frequencies</A> are 
+    averaged together</B>, and shown as <B>tracks</B>.</P>
+   <P>
+    <IMG SRC="images/freq.display.2avg.png" ALIGN=TEXTTOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </UL>
+  <H3>
+   <A NAME="mode-FEt"></A>Mode Frequencies / Electrodes&nbsp; <IMG SRC="images/freq.button.electrodes-per-freq-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Displaying all the Electrodes for each Frequencies, reversing the 
+   arrangement of <A HREF="#mode-ET">Mode E / F</A>.</P>
+  <P>
+   This one mode is useful to compare electrodes latencies for each 
+   frequency separately.</P>
+  <P>
+   The <B><A HREF="#averaging-last-dim">Averaging button</A></B> and the <B><A HREF="#tracks-vs-intensity">Tracks
+    / Intensity button</A></B> states affect the display in the 
+   following ways:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B><A HREF="#averaging-last-dim">Average Off</A>, <A HREF="#tracks-vs-intensity">Intensity
+     Off</A></B></P>
+   <P>
+    The <B><A HREF="eeg-display.html#less-tracks">selected electrodes</A> are 
+    shown separately</B> as <B>tracks</B>.</P>
+   <P>
+    <IMG SRC="images/freq.display.3seq.png" ALIGN=TEXTTOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <LI CLASS="mvd-P">
+   <P>
+    <U><A NAME="chopped-waterfall"></A></U><B><A HREF="#averaging-last-dim">Average
+     Off</A>, <A HREF="#tracks-vs-intensity">Intensity On</A></B></P>
+   <P>
+    The <B><A HREF="eeg-display.html#less-tracks">selected electrodes</A> are 
+    shown separately</B> as <B>intensities</B>.</P>
+   <P>
+    <IMG SRC="images/freq.display.3int.png" ALIGN=TEXTTOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B><A HREF="#averaging-last-dim">Average On</A>, <A HREF="#tracks-vs-intensity">Intensity
+     Off</A></B></P>
+   <P>
+    The <B><A HREF="eeg-display.html#less-tracks">selected electrodes</A> are 
+    averaged together</B> and shown as <B>tracks</B>.</P>
+   <P>
+    <IMG SRC="images/freq.display.3avg.png" ALIGN=TEXTTOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </UL>
+  <H3>
+   <A NAME="averaging-last-dim"></A>Averaging&nbsp; <IMG SRC="images/freq.button.average-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   <B>Average / Enumerate the last dimension displayed</B>, which 
+   depends on the <A HREF="#buttons">current mode</A>:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <A HREF="#mode-EFt">Mode Spectrum</A>: average through the current <B><A HREF="eeg-display.html#mouse-time-selectio">selected
+     time</A></B>.<BR>
+    <LI CLASS="mvd-P"><A HREF="#mode-ET">Mode Electrodes / Frequencies</A>:
+     average the <B><A HREF="#mouse-frequency">selected frequencies</A></B>.<BR>
+    <LI CLASS="mvd-P"><A HREF="#mode-FEt">Mode Frequencies / Electrodes</A>:
+     average the <B><A HREF="eeg-display.html#less-tracks">selected electrodes</A></B>.</P>
+   </UL>
+  <P>
+   Let's have an example: the Spectrum display shows the <I>frequencies</I> 
+   for each <I>electrode</I>, the remaining dimension is therefor <I>time</I>.
+    If the Average button is On, then all time frames selected will be 
+   averaged together, giving the Average Spectrum (nothing to be scared 
+   of, you see?).</P>
+  <P>
+   <IMG SRC="images/freq.display.1seq.png" WIDTH="454" HEIGHT="279" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.display.1avg.png" WIDTH="454" HEIGHT="279" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="tracks-vs-intensity"></A>Tracks / Bars / Intensity 
+   display&nbsp; <IMG SRC="images/eeg.button.tracks-vs-intensity.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   According to the <A HREF="#buttons">current mode</A>, this button 
+   lets use choose between <B>Tracks</B> (line plots), <B>Bars</B> 
+   (filled) and <B>Intensity</B> (colors) displays:</P>
+  <P>
+   <IMG SRC="images/freq.display-tracks.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.display-bars.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.display-intensity.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="previous-frequency"></A>Previous frequency&nbsp; <IMG SRC="images/freq.button.previous-freqs.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Moves the current frequency range to the previous frequency range, 
+   for example 5-14 Hz to 4-13 Hz. The actual value of the <A HREF="frequency-analysis.html#frequency-step">step</A> 
+   depends on how the file was computed. If there is only one current 
+   frequency, and not a range, it behaves the same by shifting this frequency.<BR>
+   It has not effect if the range's lowest frequency has reached the 
+   minimum frequency of the data.</P>
+  <P>
+   See also <A HREF="#mouse-frequency">Frequency navigation with the mouse</A>,
+    and <A HREF="#keyboard-frequency">Frequency navigation with the keyboard</A>.</P>
+  <H3>
+   <A NAME="next-frequency"></A>Next frequency&nbsp; <IMG SRC="images/freq.button.next-freqs.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Moves the current frequency range to the next frequency range, for 
+   example 5-14 Hz to 6-15 Hz. The actual value of the <A HREF="frequency-analysis.html#frequency-step">step</A> 
+   depends on how the file was computed. If there is only one current 
+   frequency, and not a range, it behaves the same by shifting this frequency.<BR>
+   It has not effect if the range's highest frequency has reached the 
+   maximum frequency of the data.</P>
+  <P>
+   See also <A HREF="#mouse-frequency">Frequency navigation with the mouse</A>,
+    and <A HREF="#keyboard-frequency">Frequency navigation with the keyboard</A>.</P>
+  <H3>
+   <A NAME="less-frequencies"></A>Less frequencies&nbsp; <IMG SRC="images/freq.button.less-freqs.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Shrinks the actual frequency range by removing its highest frequency, 
+   f.ex. from 5-14 Hz to 5-13 Hz.<BR>
+   It has no effect if there remains only one frequency.</P>
+  <P>
+   See also <A HREF="#mouse-frequency">Frequency navigation with the mouse</A>,
+    and <A HREF="#keyboard-frequency">Frequency navigation with the keyboard</A>.</P>
+  <H3>
+   <A NAME="more-frequencies"></A>More frequencies&nbsp; <IMG SRC="images/freq.button.more-freqs.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   Expands the actual frequency range by adding one more frequency to 
+   its highest frequency, f.ex. from 5-14 Hz to 5-15 Hz. If the highest 
+   frequency has been reached, it continues expanding through the lower frequencies.<BR>
+   It has no effect if all frequencies are already selected.</P>
+  <P>
+   See also <A HREF="#mouse-frequency">Frequency navigation with the mouse</A>,
+    and <A HREF="#keyboard-frequency">Frequency navigation with the keyboard</A>.</P>
+  <H3>
+   <A NAME="normalize-frequenci"></A>Normalize power frequencies&nbsp; <IMG SRC="images/freq.button.normalize-freqs.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
+  <P>
+   When On, and <B>whatever the <A HREF="#mode-EFt">current mode</A></B>,
+    it will <B>normalize the frequencies' power</B>.</P>
+  <P>
+   It is a fact that low frequencies do have more powers than high ones. 
+   But we may be interested to see also the high frequencies' behavior. 
+   To cope with the intensity level differences, people usually simply <A HREF="#brightness">increase
+    the global scaling</A> of the whole display, or select a <A HREF="#less-frequencies">sub-range
+    of frequencies</A>.</P>
+  <P>
+   But to allow seeing all the frequencies simultaneously, we need to <B>counter-balance
+    the power differences across frequencies</B>. Then only on the same 
+   display one can clearly see all the frequencies equally weighted. <B>Power
+    doesn't account anymore, just the <I>patterns</I> of frequencies in time</B>.
+    Stated otherwise, it allows you to see what changes in the frequencies.</P>
+  <P>
+   See here how Cartool does the <A HREF="#normalize-technical">estimation
+    of each frequency's power.</A></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Here are some examples, before and after frequency normalization:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    In this <A HREF="#mode-EFt">spectrum display</A>, we discriminate 
+    better all the peaks in the high frequencies, and neutralize the 
+    lowest frequencies that don't change that much.</P>
+   </UL>
+  <P>
+   <IMG SRC="images/freq.display.freqs-not-normalized.spectrum.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.display.freqs-normalized.spectrum.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    In this <A HREF="#waterfall">waterfall display</A>, it behaves like a 
+    vertical adaptive scaling (filter), each frequency being 
+    independently rescaled. It tremendously helps in seeing where the 
+    signal changes, especially in the high frequencies.</P>
+   </UL>
+  <P>
+   <IMG SRC="images/freq.display.freqs-not-normalized.waterfall.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.display.freqs-normalized.waterfall.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H2>
+   <A NAME="mouse"></A>Frequency - Mouse</H2>
+  <P>
+   Quite the same as the <A HREF="eeg-display.html#mouse-matrix">EEG Mouse actions</A> 
+   (some slight differences, though, as no <A HREF="eeg-display.html#baseline-shift">Baseline
+    offset shifting</A> is available).</P>
+  <H3>
+   <A NAME="mouse-time"></A>Time navigation</H3>
+  <P>
+   If <I>not</I> in <A HREF="#mode-EFt">Spectrum display</A>, the mouse 
+   will update the <B><A HREF="terms-definitions-formulas.html#cursor">time cursor</A></B> 
+   (shown in red), as usual.</P>
+  <H3>
+   <A NAME="mouse-frequency"></A>Frequency navigation</H3>
+  <P>
+   If in <A HREF="#mode-EFt">Spectrum display</A>, the mouse will update 
+   the <B><A HREF="terms-definitions-formulas.html#cursor">frequency cursor</A></B> (shown in 
+   blue), <I>not</I> the time cursor:</P>
+  <P>
+   <IMG SRC="images/freq.cursor.png" WIDTH="236" HEIGHT="180" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   If <I>not</I> in Spectrum display, by pressing&nbsp; <B>F</B>&nbsp; <I>before</I> 
+   a mouse operation, it will try to apply it to frequencies (when 
+   meaningful). F.ex. <B>F</B> + <A HREF="eeg-display.html#mouse-matrix">right 
+   click in a vertical motion</A> will scroll through the frequency 
+   range, instead of scrolling through electrodes.</P>
+  <P>
+   See also <A HREF="#keyboard-frequency">Frequency navigation with the keyboard</A>,
+    and <A HREF="#next-frequency">Frequency navigation with buttons</A>.</P>
+  <H2>
+   <A NAME="keyboard"></A>Frequency - Keyboard</H2>
+  <P>
+   Quite the same as the <A HREF="eeg-display.html#keyboard-move-curso">EEG 
+   Keyboard actions</A>.</P>
+  <H3>
+   <A NAME="Keyboard-time"></A>Time navigation</H3>
+  <P>
+   Whatever the mode you are currently in, the <A HREF="eeg-display.html#keyboard-move-curso">EEG
+    keys to navigate in time</A> remain <B>fully functional</B>. F.ex. 
+   though in <A HREF="#mode-EFt">Spectrum display</A>, pressing the left 
+   or right arrow keys will move the time cursor accordingly, and 
+   display the updated spectrum.</P>
+  <H3>
+   <A NAME="keyboard-frequency"></A>Frequency navigation</H3>
+  <P>
+   Whatever the mode you are currently in, by pressing&nbsp; <B>F</B>&nbsp;
+    <I>before</I> another key will try to <B>apply the usual command to frequencies</B> 
+   (when meaningful). F.ex. <B>F</B> + right arrow or down arrow would 
+   scroll downward through the <A HREF="terms-definitions-formulas.html#cursor">frequency cursor</A>.</P>
+  <P>
+   The&nbsp; <B>F</B>&nbsp; shortcut <B>redirects the main functions of 
+   the <I>time cursor</I> to the <I>frequency cursor</I></B>.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Another point, when trying to shift frequencies with the keyboard, 
+   which <B>arrow keys</B> you can use is <I>contextual dependent</I>. 
+   Use Left and Right arrow keys if the frequencies are on the X axis, 
+   Up and Down arrow keys if the frequencies are on the Y axis.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   See also <A HREF="#mouse-frequency">Frequency navigation with the mouse</A>,
+    and <A HREF="#next-frequency">Frequency navigation with buttons</A>.</P>
+  <H2>
+   <A NAME="menus"></A>Frequency - Menus</H2>
+  <P>
+   Quite the same as the <A HREF="eeg-display.html#menus">EEG Menus</A>, with the 
+   following variations or additions:</P>
+  <H3>
+   <A NAME="menu-options"></A>Options menu</H3>
+  <UL>
+   <P>
+    <B>Reference</B></P>
+   <UL>
+    <P>
+     Has no effect, it has no meaning to change the &quot;reference&quot;.</P>
+    </UL>
+   <P>
+    <B><A NAME="reset-freq-normal"></A>Reset frequency normalization</B></P>
+   <UL>
+    <P>
+     Recompute the <A HREF="#normalize-technical">frequency normalization</A> 
+     factors on the current time windows. To turn it off, however, simply 
+     uncheck the <A HREF="#normalize-frequenci">button</A>.</P>
+    </UL>
+   <P>
+    <B>Show / hide 3D dimension description</B></P>
+   <UL>
+    <P>
+     All the time we are browsing in a 3 dimensions space (electrodes x 
+     frequencies x time). The main 2 dimensions for the current <A HREF="#buttons">mode</A> 
+     are clearly shown on the X and Y axis. The description of the 3d one 
+     is inserted inside the plotting, when enough space is available. But 
+     you can turn this information off.</P>
+    <P>
+     &nbsp;<BR>
+     Three examples from <A HREF="#mode-EFt">Mode E / F</A>: electrodes <B>y14</B> 
+     and <B>y5</B> (Y axis) in <B>time</B> (X axis), the 3d dimension is 
+     consequently <B>frequency</B>, 7/8/9 Hz on the first picture (enough 
+     space), 7 to 20 Hz (less space to display) on the second picture, and 
+     again on the third one but with the display turned off:</P>
+    <P>
+     <IMG SRC="images/freq.dim3.1.png" WIDTH="319" HEIGHT="250" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.dim3.2.png" WIDTH="319" HEIGHT="250" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.dim3.3.png" WIDTH="319" HEIGHT="250" VSPACE="0" HSPACE="0" BORDER="0"></P>
+    </UL>
+   </UL>
+  <H2>
+   <A NAME="technical-points"></A>Frequency - Technical points</H2>
+  <H3>
+   <A NAME="time-considerations"></A>Time considerations</H3>
+  <P>
+   Each time point, f.ex. in <A HREF="#mode-ET">Mode E / F</A>, is 
+   actually the <B>center of the time window</B> that was originally <A HREF="frequency-analysis.html">transformed</A>.
+    Of course, after transformation you don't see it as a window 
+   anymore, as it has been splitted in different frequencies. Just 
+   remember that the time displayed in the title bar or cursor is the 
+   mean time of the time windows.</P>
+  <P>
+   In all modes except in <A HREF="#mode-EFt">Mode spectrum</A>, time is 
+   represented on the X axis, as in an <A HREF="eeg-display.html#rendering">EEG display</A>.
+    The <A HREF="#cursor-time-freq">time cursor</A> is visible and is 
+   only <I>a part of the display</I>. You can update it through <A HREF="#mouse-time">mouse</A> 
+   or the <A HREF="#Keyboard-time">keyboard</A> operations.</P>
+  <P>
+   However, in the <A HREF="#mode-EFt">Mode spectrum</A>, the time 
+   cursor is <I>not visible</I>. The spectrums currently shown are the 
+   one <B>within the current time cursor only</B>. Still you can update 
+   the time cursor, and instantly see the results, either:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    with Right and Left arrow keys<BR>
+    <LI CLASS="mvd-P">by right clicking with an horizontal motion<BR>
+    <LI CLASS="mvd-P">by moving the scrollbar below the window<BR>
+    <LI CLASS="mvd-P">by changing the horizontal scale zoom, either with <A HREF="eeg-display.html#increase-horizontal">buttons</A>,
+     keyboard or <A HREF="eeg-display.html#mouse-matrix">mouse</A>.</P>
+   </UL>
+  <H3>
+   <A NAME="cursor-time-freq"></A>Time and Frequency Cursors</H3>
+  <P>
+   While browsing the data, <B>there are always 2 active cursors</B>, 
+   one for <B>time</B> (actually <I>time windows</I>) and one for <B>frequencies</B>.</P>
+  <P>
+   The first one is drawn in <B>red</B>, the second one in <B>blue</B>. <B>Both
+    interact simultaneously with the current display</B>, and by 
+   switching between modes you can conveniently modify one of the two 
+   cursors and instantly see the results.</P>
+  <P>
+   For example with frequencies 18-30 Hz and 4 windows selected (for a 
+   few electrodes to clarify the display), the frequencies on the left 
+   are the average of the 4 windows on the right, and the tracks on 
+   right are an average of the 13 frequencies of the left:</P>
+  <P>
+   <IMG SRC="images/freq.cursor2.png" WIDTH="319" HEIGHT="250" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.cursor3.png" WIDTH="319" HEIGHT="250" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   See also the <A HREF="#mouse-frequency">mouse operation</A>.</P>
+  <H3>
+   <A NAME="color-scheme-rainbo"></A>Color scheme</H3>
+  <P>
+   If the display is showing <B><A HREF="#tracks-vs-intensity">tracks</A></B> 
+   (i.e. not intensities), and in any <A HREF="#buttons"><B>mode</B></A>,
+    a <B>color scheme</B> is applied to help you <B>distinguish between frequencies</B>.
+    A <B>dark rainbow color table</B> is matched to frequencies, with 
+   low frequencies assigned to dark red and high frequencies assigned to 
+   dark violet.This coloring is of course relative to the frequency span 
+   of the current file, and is not absolute.</P>
+  <P>
+   F.ex with frequencies on X axis and Y axis respectively:</P>
+  <P>
+   <IMG SRC="images/freq.display.color-scheme.spectrum.png" ALIGN=TEXTTOP VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.display.color-scheme.ef.png" ALIGN=TEXTTOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="normalize-technical"></A>Frequency normalization</H3>
+  <P>
+   It is well known that the power of the FFT follows a distribution 
+   that quickly decays with increasing frequencies. It has the huge 
+   disadvantage of hiding the high frequency peaks, and overemphasizing 
+   the low frequency ones (which may not be that interesting). The idea 
+   to overcome this effect is to <B>normalize the power of each frequency</B>,
+    so as to give each frequency the same weight. See <A HREF="#normalize-frequenci">here</A> 
+   for some examples.</P>
+  <P>
+   Here is the idea used in Cartool, as we don't know in advance the 
+   power distributions:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    For each frequency, do:
+    <UL>
+     <LI CLASS="mvd-P">Scan all electrodes and all time windows (up to 1024)<BR>
+     <LI CLASS="mvd-P">Compute the Mean and SD of all (absolute) values<BR>
+     <LI CLASS="mvd-P">Then compute a mean value only by selecting 
+     (absolute) values within the range Mean +- ( SD / 2 ), as to reject 
+     too weak and too strong signals</UL>
+    <LI CLASS="mvd-P">With these mean powers for each frequency, inverse 
+    this curve, and normalize it.</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   See an example of the mean powers and the resulting normalization 
+   curve (frequencies are on the X axis):</P>
+  <P>
+   <IMG SRC="images/freq.normalize1.png" WIDTH="297" HEIGHT="210" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.normalize2.png" WIDTH="297" HEIGHT="210" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   The time windows initally used are the first 1024 ones. But if it 
+   seems it does not represent well the data, <B>you can <A HREF="#reset-freq-normal">re-apply
+    the frequency normalization</A> anytime</B> by using the current 
+   displayed time windows.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   You can judge if the normalization is doing its job correctly by 
+   looking to noisy data wihout signals, as you should see the same 
+   average intensity for all frequencies. See an example of 
+   &quot;noisy&quot; data vs interesting patterns that occur later on:</P>
+  <P>
+   <IMG SRC="images/freq.display.freqs-normalized.noise.png" ALIGN=TEXTTOP WIDTH="438" HEIGHT="250" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.display.freqs-normalized.signals.png" ALIGN=TEXTTOP WIDTH="438" HEIGHT="250" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   Finally, note that the <B>frequency normalization applies only on the display</B>,
+    and <B>does not alter the data</B>.</P>
+  <H3>
+   <A NAME="freqs-auto-scaling"></A>Frequencies auto-scaling</H3>
+  <P>
+   Cartool provides a very convenient <B>auto-scaling of the currrent 
+   displayed frequencies</B>, at any time and in <A HREF="#buttons">all modes</A>.</P>
+  <P>
+   What is meant here is that the display always uses the <B>strongest 
+   frequency to calibrate the maximum displayed</B>. If you change which 
+   frequencies are shown, the new frequency maximum will be taken. In 
+   this way, you always have the most optimal display without having to 
+   change (much) your tunings. Also, don't be surprised when seeing some 
+   variations when browsing frequencies, this is the auto-scaling in action!</P>
+  <P>
+   An example here, the same display but with frequencies slightly 
+   shifted higher on the second picture. As the lowest (strongest) 
+   frequencies disappear from the display, the frequency auto-scaling 
+   re-adjust the maximum to the new available frequencies, thus making 
+   the new lowest ones look brighter:</P>
+  <P>
+   <IMG SRC="images/freq.display.freqs-auto-scaling.low-freqs.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.display.freqs-auto-scaling.medium-freqs.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   Well, that mechanism can not be turned off, FYI.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Note: this is not to be misunderstood with the <A HREF="#auto-scaling">intensity
+    auto-scaling</A>, which automatically adjusts the intensity maximum. 
+   But the combination of the two is very convenient, for sure.</P>
+  <H3>
+   <A NAME="quality-intensity"></A>Quality of display &amp; Copy as Bitmap</H3>
+  <P>
+   Displaying in intensity modes (<A HREF="#waterfall">here</A> and <A HREF="#chopped-waterfall">here</A>)
+    is quite demanding in computer resources, especially with a lot of 
+   tracks. Cartool automatically and seemlessly <B>adapts the quality of 
+   the display</B> to allow reasonable display times. For examples, it 
+   simplifies the color drawing when a lot of tracks with a lot of 
+   frequencies are drawn. This could explain some strange changes you 
+   may see in the display.</P>
+  <P>
+   Though, when using <A HREF="windows-general-commands.html#keyboard-bitmapcopy"><B>Copy
+    as Bitmap</B></A>, Cartool understands you are about to publish 
+   incredible results (yes, it does), so it will use the <B>maximum quality</B>.
+    The drawback is that you may have to wait a while (~10 secondes) 
+   until the end of the snapshot. You may also use this feature if you 
+   want to see all the finest details. Note that the <B>high quality is 
+   automatically turned on</B> when the tradeoff between the <B>number 
+   of tracks</B> and the <B>time range</B> displayed is acceptable.</P>
+  <P>
+   Here is an example of low versus high quality intensity display:</P>
+  <P>
+   <IMG SRC="images/freq.display.quality-low.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.display.quality-high.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H2>
+   <A NAME="advanced-display"></A>More on displays with frequencies</H2>
+  <H3>
+   <A NAME="freq-maps"></A>Displaying frequencies as maps</H3>
+  <P>
+   Yes, you can do this, and it is straightforward! Through the <A HREF="general-concepts.html#linkingfiles"><B>link
+    mechanism</B></A>, and by using <B><I><A HREF="files-formats-cartool.html#freq">freq</A></I></B><A HREF="files-formats-cartool.html#freq"> files</A> 
+   instead of EEG files, you can do exactly the same things as with EEG! 
+   F.ex. by adding some <A HREF="files-formats-others.html#electrodes-coord">electrodes
+    coordinates file</A> you get the maps of the current frequency.</P>
+  <P>
+   <A HREF="#cursor-time-freq">Move the frequency cursor</A> to change 
+   the current displayed maps. For now, <B>only the lowest frequency 
+   selected is shown</B>, or the average selected frequencies if <A HREF="#averaging-freqs">in
+    this mode</A>.</P>
+  <P>
+   Here, f.ex., a <A HREF="frequency-analysis.html#analysis">FFT Approximation</A> 
+   at 7.84 Hz linked with the electrodes coordinates, showing two 
+   different maps:</P>
+  <P>
+   <TABLE WIDTH="60%" CELLPADDING="2" CELLSPACING="0" BORDER="0">
+    <TR>
+     <TD WIDTH="46%" VALIGN=TOP>
+      <P>
+       <IMG SRC="images/freq.link1.png" ALIGN=CENTER WIDTH="442" HEIGHT="242" VSPACE="0" HSPACE="0" BORDER="0"></TD>
+     <TD WIDTH="4%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</P>
+       </CENTER>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</P>
+       </CENTER>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</P>
+       </CENTER>
+      <CENTER>
+       <P ALIGN=CENTER>
+        +</TD>
+     <TD WIDTH="46%" VALIGN=TOP>
+      <P>
+       <IMG SRC="images/freq.link2.png" ALIGN=CENTER WIDTH="281" HEIGHT="243" VSPACE="0" HSPACE="0" BORDER="0"></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="46%" VALIGN=TOP></TD>
+     <TD WIDTH="4%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        =</TD>
+     <TD WIDTH="46%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="46%" VALIGN=TOP>
+      <P>
+       <IMG SRC="images/freq.link3.png" ALIGN=CENTER WIDTH="282" HEIGHT="242" VSPACE="0" HSPACE="0" BORDER="0"></TD>
+     <TD WIDTH="4%" VALIGN=TOP>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</P>
+       </CENTER>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</P>
+       </CENTER>
+      <CENTER>
+       <P ALIGN=CENTER>
+        &nbsp;</P>
+       </CENTER>
+      <CENTER>
+       <P ALIGN=CENTER>
+        or</TD>
+     <TD WIDTH="46%" VALIGN=TOP>
+      <P>
+       <IMG SRC="images/freq.link7.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"></TD>
+    </TR>
+   </TABLE></P>
+  <H3>
+   <A NAME="freqs-geometrically"></A>Showing the frequencies 
+   geometrically distributed</H3>
+  <P>
+   Again, with the same <A HREF="general-concepts.html#linkingfiles"><B>link
+    mechanism</B></A> as above, you can show the frequencies <A HREF="eeg-display.html#rendering-with-xyz"><B>geometrically
+    distributed</B></A> according to the electrodes. Note that this is 
+   done directly within the frequency display.</P>
+  <P>
+   F.ex. in 2D here, some <A HREF="#mode-ET">frequencies in time</A>, 
+   and some <A HREF="#waterfall">waterfall</A>:</P>
+  <P>
+   <IMG SRC="images/freq.link6.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.link8.png" WIDTH="253" HEIGHT="242" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="freqs-superimposed"></A>Linking and superimposing 
+   frequencies from other files</H3>
+  <P>
+   As for EEGs, you can <B><A HREF="eeg-display.html#linking">superimpose</A></B> 
+   and compare data from <B>other files</B> in the current <A HREF="#buttons">display
+    mode</A> (well, doesn't work in <A HREF="#tracks-vs-intensity">Intensity
+    mode</A>). Note that this is done directly within the frequency display.</P>
+  <P>
+   Here is an example of the <A HREF="#mode-EFt">spectrum</A> of a given 
+   file, then the same spectrum (turned to black) with two other files 
+   on top of it (red and green respectively):</P>
+  <P>
+   <IMG SRC="images/freq.link4.png" WIDTH="348" HEIGHT="227" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.link5.png" WIDTH="348" HEIGHT="227" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   You can change the <A HREF="#buttons">display mode</A> or any other 
+   parameters en route without problems while working with superimposed 
+   data. Although note a slight slow down if you link with too much files.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;
+ </BODY>
+</HTML>

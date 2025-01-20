@@ -1,0 +1,536 @@
+<HTML>
+
+ <HEAD>
+  <TITLE>Results of Inverse Solutions to Volumes</TITLE>
+
+  <meta content="en-us" http-equiv="Content-Language">
+
+  <link rel="stylesheet" href="cartool.css" type="text/css">
+
+    <style type="text/css">
+.auto-style1 {
+	text-align: center;
+}
+.auto-style4 {
+	margin-left: 40px;
+}
+.auto-style5 {
+	border-style: solid;
+	border-width: 2px;
+	margin-left: 40px;
+}
+.auto-style7 {
+	border: 1px solid #DDDDDD;
+	background-color: #DDDDDD;
+}
+.auto-style8 {
+	border: 1px solid #DDDDDD;
+	background-color: #999999;
+}
+.auto-style10 {
+	border: 1px solid #DDDDDD;
+}
+.auto-style11 {
+	text-align: left;
+}
+.auto-style12 {
+	font-size: xx-small;
+}
+</style>
+
+ </HEAD>
+
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   Results of Inverse Solutions to Volumes</H1>
+  <P>
+   &nbsp;</P>
+  <P>
+   This toolbox will convert some <em><strong><a href="files-formats-cartool.html#ris">
+   .ris</a></strong></em> files, computed from <a href="computing-ris.html">
+   <strong>this toolbox</strong></a>, into <a href="files-formats-others.html#mri">
+   <strong>volumes</strong></a>. The aim is to be able to either <strong>
+   <a href="mri-display.html">display the results directly as volumes</a></strong>, 
+   or to fusion these results with other 3D modalities, like fMRI 
+   results.</P>
+  <P>
+   &nbsp;</P>
+  <h5>
+   <a href="#dialog">RIS to Volumes Dialog</a><br>
+   <A HREF="#technical-points-and-hints">Technical points &amp; hints</a></h5>
+  <h6>
+   <A HREF="#grey-mask">Grey mask</a></h6>
+  <h6>
+   <a href="#interpolation">Types of interpolation</a></h6>
+  <h6>
+   <A HREF="#output-data-type">Output data types conversion</a></h6>
+  <h5>
+   <a href="#results">Results</a></h5>
+  <H2>
+   <a name="dialog"></a>RIS to Volumes Dialog</H2>
+  <p>
+   Called from the&nbsp; <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
+    | Inverse Solutions | Results of Inverse Solutions to Volumes</A></FONT>&nbsp; menu, the following dialog 
+   appears:</p>
+  <p>
+   &nbsp;</p>
+  <p class="auto-style1">
+   <img alt="MRIs Preprocessing Dialog" src="images/ris2vol.dialog.png" height="481" width="697"></p>
+  <p>
+   &nbsp;</p>
+  <P>
+   &nbsp;</P>
+   <TABLE WIDTH="100%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+       <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <strong>Presets</strong></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       You can quickly set the most important parameters according to some 
+	   predefined scenarios. Then check and adjust the parameters to your 
+	   liking.</TD>
+       </tr>
+       <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(1) Volume Parameters</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       Input and output volumes parameters.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <A NAME="dialog-grey-mask"></a>
+	   <a href="#grey mask" name="dialog grey mask">Grey Mask File:</a></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Give here the <strong>grey mask volume</strong> associated with the 
+	   <A HREF="computing-inverse-solution-matrices.html#SPs-extraction">Solution Points</a> of of the inverse solution at hand.<P>
+       You can Drag &amp; Drop a
+	   <a href="files-formats-others.html#mri"><strong>volume</strong></a> file here.<P>
+       This is the mask <strong>where the results will be actually computed</strong>.
+	   <em>Don't give the full brain, or even worse, the full head</em>, otherwise 
+	   you will have a lot of wrongful extrapolated values.<P>
+       <A HREF="#grey-mask">See this note for more details.</a></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Solution Points File:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The <strong><A HREF="computing-inverse-solution-matrices.html#SPs-extraction">Solution Points</a> file</strong>, i.e. the positions in the 
+	   brain of the <em><strong><a href="files-formats-cartool.html#ris">
+   .ris</a></strong></em> files to be converted.<P>
+       You can Drag &amp; Drop a <em><strong>
+	   <a href="files-formats-cartool.html#spi">
+   .spi</a></strong></em> file here.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <a href="#interpolation">Interpolation Type:</a></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       How to <strong>compute all the intermediate voxels from the grey 
+	   mask</strong>, given the sparse distribution of the solution points' 
+	   positions.<P>
+       Pick one method from the list, sorted with increasing complexity and 
+	   visual quality.<P>
+       <a href="#interpolation">See this note for more details.</a></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(2) Timely Parameters</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Processing All Data</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Does what it tells, <strong>every data point</strong> from the <em><strong><a href="files-formats-cartool.html#ris">
+   .ris</a></strong></em> file will be sequentially converted to a volume.<P>
+       Be warry of the space it could take on your disk!</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Only Time Interval:&nbsp;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Specify <strong>only a time interval to be converted</strong>. A much 
+	   safer option than processing all data!</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       From</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       From which <A HREF="terms-definitions-formulas.html#time-frame">time frame</a> (included)..</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       To</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       ..to which <A HREF="terms-definitions-formulas.html#time-frame">time frame</a> (included)..</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       by steps of:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       ..by <A HREF="terms-definitions-formulas.html#time-frame">time frame</a> steps.<P>
+       Data will be <strong>read by blocks of </strong><em><strong>steps</strong></em><strong> 
+	   size</strong>, then <strong>Median</strong> is applied for each 
+	   solution points.<P>
+       Smaller steps will of course generated more data...</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%"></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <B>(3) Output Options</B></TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Optional Base File Name Prefix:</TD>
+     <TD WIDTH="74%" VALIGN=TOP>
+      <P>
+       You can give a meaningful file name prefix for all the resulting files, 
+	   or leave it empty.<P>
+       Cartool will also postfix each file name with the current block of 
+	   TFs.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       <A HREF="#output-data-type">Output Data Type:</a></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Currently, Cartool offers to save either the results as:<ul>
+		  <li><strong>unsigned bytes:</strong> integer positive values ranging 
+		  in [0..255]</li>
+		  <li><strong>floating points:</strong> the real values from the input <em><strong><a href="files-formats-cartool.html#ris">
+   .ris</a></strong></em> files</li>
+	  </ul>
+	  <P>
+       Integer values use less space, are faster, and are good enough for display. 
+	   But this is not recommended for anything like statistics, as there will 
+	   be some loss during conversion.<P>
+       Floating point values take more space, but are your real data. Use this option 
+	   if you want to proceed with some statistics f.ex.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Output File Type:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Pick from the list the file format (container) you want to save your 
+	   volumes to.</TD>
+       </tr>
+	   <tr>
+     <TD VALIGN=TOP style="width: 32%">
+      <P>
+       Opening Results</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Does what is says. However, Cartool will prevent from opening too many 
+	   files.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Process Current</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Enabled when called from a <a href="eeg-display.html">Tracks (RIS) window</a>, the 
+       preprocessing will apply only to <B>this file</B>.</P>
+      	 </TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Batch Process</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Enabled when <I>not</I> called from a <a href="eeg-display.html">Tracks (RIS) 
+	   window</a>:</P>
+      <UL>
+       <LI CLASS="mvd-P">
+       <P>
+        Clicking this button will open a dialog from which you can select a <B>set
+         of RIS files</B>, within a single directory.</P>
+       <LI CLASS="mvd-P">
+       <P>
+        Using <B>Drag &amp; Drop</B>, you can drop files in the dialog and 
+        process them directly. Plus, it allows you to pick files <B>from 
+        different directories</B>, if you can select them through a handy 
+        utility like <I><A HREF="https://sites.google.com/site/cartoolcommunity/user-s-guide/using-cartool/being-more-efficient-with-cartool#TOC-Everything">Everything</A></I> beforehand.</P>
+       </UL>
+      <P>
+       &nbsp;</P>
+		   </TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Cancel</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Quit the dialog.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Help</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be right here...).</TD>
+       </tr>
+   </TABLE>
+  <H2>
+   <A NAME="technical-points-and-hints"></a>RIS to Volumes - Technical points &amp; hints</H2>
+  <P class="mvd-h4">
+   <A NAME="grey-mask"></a>Grey mask</P>
+  <P>
+   The <A HREF="#dialog-grey-mask">grey mask provided</a> will constrain 
+   the outputs in some important ways.</P>
+  <P>
+   As a reminder, solution points are indeed a <A HREF="computing-inverse-solution-matrices.html#SPs-extraction">downsampled 
+   version of the grey mask</a> given during the
+   <a href="computing-inverse-solution-matrices.html">computation of the inverse matrices</a>. 
+   So you must <strong>use the same grey mask as the 
+   one used during the Inverse Matrix creation!</strong> Ris files, Solution 
+   Points and grey mask should match altogether to guarantee an optimal
+   <a href="#interpolation">interpolation</a>.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Here we can see how the grey mask and the solution points match (left), and 
+   and example of the interpolated results they can generate (right):</P>
+  <P class="auto-style4">
+   <img height="336" src="images/ris2vol.mask-grey-and-solpoints.png" width="347"><img height="336" src="images/ris2vol.mask-grey-and-solpoints-values.png" width="347"></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   If the mask provided is <strong>bigger than the original grey mask</strong>, 
+   then it will not be optimally covered by the solution points distribution. Voxels 
+   too far from any solution point will end up being extrapolated (instead of 
+   interpolated), <em>&quot;created from nothing&quot;</em> so to speak. <strong>
+   This is definitely something to be avoided.</strong></P>
+  <P>
+   Here we can see (left) that the brain has been used instead of the grey mask, 
+   or worse (right) the full head. A lot of internal voxels (white matter 
+   f.ex.), or external voxels (outside the brain) are literally created <em>ex 
+   nihilo</em>:</P>
+  <P class="auto-style4">
+   <img height="336" src="images/ris2vol.mask-brain-and-solpoints-values.png" width="347"><img height="336" src="images/ris2vol.mask-head-and-solpoints-values.png" width="347">&nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   In summary, use the correct <strong>grey mask associated to the inverse 
+   matrice's solution points</strong>. All other masks will generate some problems 
+   of their own (and who needs more problems?).</P>
+  <P class="mvd-h4">
+   <a name="interpolation"></a>Types of interpolation</P>
+  <P>
+   We can compute the value of any voxel that sits within a <A HREF="#grey-mask">
+   reasonable range of a set of solution points</a>. To do that, we need an
+   <strong>interpolation formula that will combine the solution points' values</strong>, 
+   into a new value.</P>
+  <P>
+   <strong>Cartool provides 4 interpolation methods</strong>, all with pros and 
+   cons. <em>There is no perfect method</em>, any of them is basically creating 
+   values where there were none beforehand. This is not specific to Cartool, 
+   inverse solutions or EEG itself, just a general consideration.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Here are the interpolations that have been deemed to be safe enough, so you 
+   can make up your mind (or use the default if you can't):</P>
+  <P class="auto-style11">
+   &nbsp;</P>
+  <table cellpadding="8" cellspacing="1" class="auto-style5" style="width: 90%">
+	  <tr>
+		  <td class="auto-style8" style="width: 18%"><strong>Method</strong></td>
+		  <td class="auto-style7" style="width: 25%"><strong>What it does</strong></td>
+		  <td class="auto-style7" style="width: 25%"><strong>Pros</strong></td>
+		  <td class="auto-style7" style="width: 25%"><strong>Cons</strong></td>
+	  </tr>
+	  <tr>
+		  <td class="auto-style7" style="width: 18%"><strong>1 Nearest Neighbor</strong></td>
+		  <td class="auto-style10" style="width: 25%">The value from the <strong>
+		  single closest solution point</strong> is taken</td>
+		  <td class="auto-style10" style="width: 25%">No new values are created, you see 
+	  only your data<br><br><A HREF="#no-new-maxima">No new maxima are created</a></td>
+		  <td class="auto-style10" style="width: 25%">No new values are created, so not really an 
+	  interpolation..<br><br>Results look like little cubes - visual aspect is therefor not very engaging (unless you are into
+	  <a href="https://en.wikipedia.org/wiki/Cubism">cubism</a>)</td>
+	  </tr>
+	  <tr>
+		  <td class="auto-style7" style="height: 99px; width: 18%"><strong>4 Nearest Neighbors</strong></td>
+		  <td class="auto-style10" style="height: 99px; width: 25%">The values 
+		  from the <strong>4 closest solution points</strong> are taken, and 
+		  mixed up according to the inverse of their relative distances</td>
+		  <td class="auto-style10" style="height: 99px; width: 25%">
+		  <a href="https://en.wikipedia.org/wiki/Nearest-neighbor_interpolation">
+	  	A 
+	  well-know interpolation</a><br><br>This is the interpolation used for
+	  <a href="esi-display.html">display of inverse solutions</a><br><br>
+		  <A HREF="#no-new-maxima">No new maxima 
+	  are created</a></td>
+		  <td class="auto-style10" style="height: 99px; width: 25%">Results look a bit jagged or serrated</td>
+	  </tr>
+	  <tr>
+		  <td class="auto-style7" style="width: 18%"><strong>Linear</strong></td>
+		  <td class="auto-style10" style="width: 25%">The values from the
+		  <strong>8 solution points</strong> around a given voxel are taken, and 
+		  linearly mixed</td>
+		  <td class="auto-style10" style="width: 25%">
+		  <a href="https://en.wikipedia.org/wiki/Trilinear_interpolation">A well-known interpolation</a><br><br>
+		  <A HREF="#no-new-maxima">No new maxima are created</a></td>
+		  <td class="auto-style10" style="width: 25%">Results are smooth, but still look a little bit 
+	  like patches or blocks</td>
+	  </tr>
+	  <tr>
+		  <td class="auto-style7" style="width: 18%"><strong>Cubic Spline</strong></td>
+		  <td class="auto-style10" style="width: 25%">The values from a box of 
+		  <strong>5x5x5 (125) solution points</strong> around a given voxel are taken, and mixed up 
+   according to a <a href="https://en.wikipedia.org/wiki/B-spline">cubic B-spline kernel</a></td>
+		  <td class="auto-style10" style="width: 25%">Best looking results
+		  <span class="auto-style12">so smooth, any 
+	  reviewer resisting its sex-appeal is desperately cold-hearted</span><br><br>
+		  <A HREF="#no-new-maxima">No new 
+	  maxima are created <em>with the Cartool implementation only</em></a></td>
+		  <td class="auto-style10" style="width: 25%">Your colleagues will be jealous, deal with 
+	  it</td>
+	  </tr>
+  </table>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   See here a side by side visual comparison of the 4 interpolations, <strong>1NN</strong> (top 
+   left), <strong>4NN</strong> (top right), <strong>Linear</strong> (bottom left) and 
+   <strong>Cubic Spline</strong> (bottom right):</P>
+  <P class="auto-style4">
+   <img height="336" SRC="images/ris2vol.interpolation-1NN.png" width="348"><img height="336" SRC="images/ris2vol.interpolation-4NN.png" width="348"><br>
+   <img height="336" SRC="images/ris2vol.interpolation-linear.png" width="348"><img height="336" SRC="images/ris2vol.interpolation-cubic-spline.png" width="348"></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P class="mvd-h6">
+   <A NAME="no-new-maxima"></a>No new maxima policy</P>
+  <P>
+   To conclude, the Cartool implementation of these interpolation methods has 
+   been done in such a way to ensure that <strong>no new 
+   maxima are being artificially created.</strong></P>
+  <P>
+   This is an important point, as f.ex. a <strong>regular Cubic B-Spline 
+   interpolation can generated new maxima, and even negative values</strong> 
+   even from a positive input. <em>This is to be totally avoided</em>, as the 
+   maximum position can be of utmost importance, and artificially displacing it 
+   is not an option.&nbsp;</P>
+  <P class="mvd-h4">
+   <A NAME="output-data-type"></a>Output data type conversion</P>
+  <P>
+   Cartool can currently output 2 types of data:</P>
+  <ul>
+		  <li><strong>unsigned bytes:</strong> integer positive values, in the range [0..255]</li>
+		  <li><strong>floating points:</strong> the real values from the input <em><strong><a href="files-formats-cartool.html#ris">
+   .ris</a></strong></em> files</li>
+	  </ul>
+	  <P>
+       &nbsp;<P>
+       When saving into integer, <strong>data will be rescaled by an optimal 
+	   power-of-10 factor</strong>, so that the rescaled value will fit into [0..255]. 
+	   F.ex. data in a range of 0.0006 to 0.0230 will be multiplied by 10'000 so 
+	   to finally fit in the range 6 to 230.<P>
+   Whereas <strong>no scaling is needed when saving as floating points</strong>. 
+   The exact values are written to file.</P>
+  <P>
+   If you aim at doing statistics, or proceed with some more processing of your 
+   own, then save as floating points at the cost of bigger files. If you just 
+   aim for visualization, then you may use the unsigned byte version, which 
+   produces smaller files.</P>
+  <H2>
+   <a name="results"></a>RIS to Volumes - Results</H2>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Preprocessed files are written in the <B>same directories as their sources</B>.
+     <br>Output file names can have the user's <strong>prefix</strong> 
+	added, and a <strong>postfix</strong> composed from the current <strong>
+	block of time frames</strong>.<br>To remember that we are dealing with 
+	volumes from <strong><em>.ris</em></strong>, the <strong>.ris</strong> 
+	string is added before the file extension, too:</P>
+   <UL>
+	   <LI CLASS="mvd-P">
+	   <P><strong>&lt;input file&gt;.&lt;infix&gt;.TFXXX-YYY.ris.hdr</strong><br>or</P>
+	   <LI CLASS="mvd-P">
+	   <P>&nbsp;<strong>&lt;prefix&gt;.&lt;input file&gt;.TFXXX-YYY.ris.hdr</strong></P>
+   </UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I> 
+    (text), showing all the parameters.</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;<P>
+   &nbsp;<P>
+   &nbsp;
+ </BODY>
+</HTML>

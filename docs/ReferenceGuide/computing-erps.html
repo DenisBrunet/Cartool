@@ -1,0 +1,2416 @@
+<HTML>
+ <HEAD>
+  <TITLE>Computing ERPs and Averaging Tracks Files</TITLE>
+ <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css">
+  <style type="text/css">
+.auto-style1 {
+	text-align: center;
+}
+</style>
+ </HEAD>
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   Computing ERPs and Averaging Tracks Files</H1>
+  <P ALIGN=LEFT>
+   &nbsp;</P>
+  <H5>
+   <A HREF="#what-is-averaging">What is averaging files?</A></H5>
+  <H5>
+   <A HREF="#run-averaging">How to run the averaging process</A></H5>
+  <UL>
+   <H5>
+    <A HREF="#dialog-files">Input Files&nbsp; dialog</A><br>
+	<A HREF="#dialog-parameters">Parameters&nbsp; dialog</A><br>
+	<A HREF="#dialog-output">Output Files&nbsp; dialog</A><br>
+	<A HREF="#dialog-control">Averaging Control&nbsp; dialog</A><br>
+	<A HREF="#operating">Monitoring the averaging process</A></H5>
+   </UL>
+  <H5>
+   <A HREF="#results">Results</A></H5>
+  <UL>
+   <H5>
+    <A HREF="#output-names">Output files naming convention</A><br>
+	<A HREF="#output-directories">Output files directories hierarchy</A><br>
+	<A HREF="#ouput-hints">A few more hints about the output files</A></H5>
+   </UL>
+  <H2>
+   <A NAME="what-is-averaging"></A>What is &quot;averaging files&quot;?</H2>
+  <P>
+   This is a <B>semi-automated tool</B> to <B>average</B> and / or <B>exports
+    epochs</B> from EEG file(s).</P>
+  <P>
+   The user sets some parameters to control more or less tightly the 
+   averaging process, and then has to <B>pilot the averaging</B> 
+   (because we want you to have a look to your data!). It is used to 
+   compute either <B>ERPs</B>, <B>Grand Means</B>, but also to <B>split 
+   a file into epochs</B>.</P>
+  <P>
+   Files that can be processed could be any <B><A HREF="files-formats-others.html#eeg-raw">Spontaneous
+    EEG</A></B> recordings or <B><A HREF="files-formats-others.html#eeg-erp">ERPs</A></B>,
+    but also <B><A HREF="frequency-analysis.html">Frequency transforms</A></B> 
+   or <B><A HREF="file-calculator.html#results-of-inverse">Results of Inverse Solution</A></B>.</P>
+  <H2>
+   <A NAME="run-averaging"></A>How to run the averaging process</H2>
+  <P>
+   Called from the <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
+    | Averaging files</A></FONT> menu, there are <B>three dialogs for 
+   the parameters</B>. Then, when enough parameters are given and after 
+   pressing the Process button, the <B>control dialog</B> appears to 
+   monitor the averaging process.</P>
+  <P>
+   &nbsp;</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <A HREF="#dialog-files">Input Files&nbsp;dialog</A><BR>
+    <LI CLASS="mvd-P"><A HREF="#dialog-parameters">Parameters dialog</A><BR>
+    <LI CLASS="mvd-P"><A HREF="#dialog-output">Output Files dialog</A><BR>
+    <LI CLASS="mvd-P"><A HREF="#dialog-control">Averaging Control&nbsp;dialog</A> 
+    to monitor all the <A HREF="#operating">operations</A></P>
+   </UL>
+  <H2>
+   <A NAME="dialog-files"></A>Input Files&nbsp;dialog</H2>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <IMG SRC="images/averaging.dialog-files.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </CENTER>
+  <P>
+   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Input Files</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Input Files</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <A NAME="input-files"></A>A combo-box used to enter <A HREF="#file-types">which
+        files</A> to average:</P>
+      <UL>
+       <LI CLASS="mvd-P">
+       <P>
+        the <B>edit field</B> (on top) contains the <B>next file</B> to be added<BR>
+        <LI CLASS="mvd-P">the <B>list field</B> (below) contains the <B>files 
+        already added</B></P>
+       </UL>
+      <P>
+       Either type or modify the file name in the Edit field, or rather use 
+       the <B>Browse</B> button to select a set of files with a file dialog.<BR>
+       Then see <A HREF="#files-add-edit-line">Add Edit Line from Lists</A>, 
+       and <A HREF="#files-drag-drop">Drag &amp; Drop</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Session</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Specify an optional session number for the next file to be added. Let 
+       it empty if there are no sessions, or if you don't know (though you should!).<BR>
+       When Cartool will encounter that file, and if it sees something wrong 
+       with the specified session, it will prompt you for the right session.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Trigger Validation Files (optional)</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <A NAME="files-tva"></A>An optional <B><I><A HREF="files-formats-cartool.html#tva">.tva</A></I></B> 
+       file, used to filter out some of the triggers / markers. F.ex. 
+       excluding the <B>false responses</B> from an experiment, or if you 
+       wish to re-do an averaging and to use exactly the same accepted / 
+       rejected triggers.</P>
+      <P>
+       Also available in these files is the <B>Reaction Time</B>, which <A HREF="#epoch-origin">you
+        can use here</A> in the averaging.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B><A NAME="file-triggers"></A>Triggers / Markers</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The list of <A HREF="terms-definitions-formulas.html#trigger">triggers</A> / <A HREF="terms-definitions-formulas.html#marker">markers</A> 
+       names to be averaged, separated either by a space, a comma or a 
+       semicolumn (but please, just use only one type of separator for the 
+       sake of clarity!), f.ex.:&nbsp; <B>On Off 1 2 3 4</B></P>
+      <P>
+       Trigger names that contain a space should be put between double 
+       quotes, f.ex. <B>&quot;eye blink&quot;</B>.</P>
+      <P>
+       Wildchars are allowed with the following restrictions:</P>
+      <UL>
+       <LI CLASS="mvd-P">
+       <P>
+        Use&nbsp; <FONT SIZE="4"><B>*</B></FONT>&nbsp; to specify <B>all 
+        triggers / markers</B>, Cartool will properly expand it with the 
+        trigger names actually found in each file, one at a time.<BR>
+        <LI CLASS="mvd-P">Use&nbsp; <B>Foo<FONT SIZE="4">*</FONT></B>&nbsp; 
+        to select all triggers that <B>starts with the letters &quot;Foo&quot;</B> 
+        (case insensitive). F.ex. all correlations between 0.80 to 1.00: <B>Corr8<FONT SIZE="4">*</FONT> Corr9<FONT SIZE="4">*</FONT> Corr100</B><BR>
+        <LI CLASS="mvd-P">All other uses are not recognized yet (more than 
+        one *, or the * at the beginning).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Use Drag &amp; Drop to quickly add files</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This is only to remind the user of the very convenient <A HREF="#files-drag-drop">Drag
+        &amp; Drop feature</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Add Edit Line from Lists</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <A NAME="files-add-edit-line"></A>When all the <A HREF="#input-files">edit
+        fields</A> have been filled, and in order to validate them, click on 
+       this button to transfer their values into their corresponding list 
+       fields (below).</P>
+      <P>
+       If the <B>Session</B> or <B>Trigger Validation Files</B> edit fields 
+       were left empty, an empty entry is added.<BR>
+       But if the <B>Triggers / Markers</B> edit field is empty, a <FONT SIZE="4"><B>*</B></FONT> 
+       will be added instead, to use <B>all the triggers / markers</B>.</P>
+      <P>
+       After the edit fields have been transfered, they are all cleared for 
+       the next input, except the <B>Triggers / Markers</B> edit field, so 
+       you can re-use the same triggers again.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Remove Last Edit Line from Lists</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Pops the last added line from the lists back to the edit fields, 
+       either to remove the line, or to modify it and insert it again.<BR>
+       By pressing it many times, you also clear out the lists step by step.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="files-replace-field"></A>Replace Current Selected Field</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       First, click on any item in any of the lists (input files, session, 
+       tva, triggers / markers). Its content will appear in its 
+       corresponding edit field (on top) for you to modify it.<BR>
+       Once modified, click on this button to update the originating list 
+       with this very new value, and its done!</P>
+      <P>
+       This is a very practical way to modify the input lists wihtout having 
+       to deconstruct the whole of them (changing only the triggers, the 
+       session, or the files...).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Clear All Lists</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       To clear out all the lists at once.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Read Lists from File</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You can directly add a <B>whole set of files</B> to average, 
+       optionally including the session, tva and triggers / markers. Either 
+       you <A HREF="#file-list-format">constructed these lists</A> yourself 
+       beforehand, or they were previously <A HREF="#file-list-write">saved 
+       by Cartool</A>.</P>
+      <P>
+       Note that the lists are simply augmented, and not replaced. If you 
+       want to do so, clear them out first.<BR>
+       See also <A HREF="#files-drag-drop">Drag &amp; Drop</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Write Lists to File</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <A NAME="file-list-write"></A>You can save the current lists into a 
+       file, in case you want to re-use them.<BR>
+       See the <A HREF="#file-list-format">file formats</A> available.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Options</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Types of triggers to consider</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Cartool currently distinguishes these three types of triggers:</P>
+      <UL>
+       <LI CLASS="mvd-P">
+       <P>
+        <A HREF="terms-definitions-formulas.html#trigger"><B>triggers</B></A>,<BR>
+        <LI CLASS="mvd-P"><A HREF="terms-definitions-formulas.html#events"><B>events</B></A><BR>
+        <LI CLASS="mvd-P"><A HREF="terms-definitions-formulas.html#marker"><B>markers</B></A>.</P>
+       </UL>
+      <P>
+       Here you can select which ones (and only these) you want to use in 
+       the averaging.<BR>
+       You can also select more than one type, and at least one.</P>
+      <P>
+       Be aware that <B>not</B> selecting a given type (markers f.ex.) will 
+       make <B>all of them invisible</B> during the averaging process! This, 
+       however, could be very useful, f.ex. if you have duplicate names 
+       between triggers and markers and don't want to mix them.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="files-els"></A>Electrodes Coordinates file</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       You can optionally specify the 3D <A HREF="files-formats-cartool.html#els">coordinates
+        of the electrodes </A>to see a <A HREF="potentials-maps-display.html">map</A> 
+       of the current <A HREF="terms-definitions-formulas.html#epoch">epoch</A> to be averaged.<BR>
+       Also, in this case, a new coordinate file will be outputed with only 
+       the electrodes that will be actually saved in the averaged file 
+       (f.ex. to be used for <A HREF="tracks-interpolation.html">interpolation</A> 
+       or <A HREF="potentials-maps-display.html">display of maps</A>).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="files-base-file-nam"></A>Output Base File Name</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Specify here a <B>basis for all the file names</B> that will be 
+       generated during the averaging process.</P>
+      <P>
+       Cartool automatically provides you with a smart base file name that 
+       is a compound of the part common to all the files to be averaged 
+       (f.ex. &quot;01conditionthis&quot; and &quot;02conditionthat&quot; 
+       will give &quot;condition&quot;), added with a list of all the 
+       triggers used (f.ex. 1, 2 and 3 will give &quot;123&quot;, resulting 
+       to the base file name &quot;condition.123&quot;). Well, it's easier 
+       to see it in action!</P>
+      <P>
+       You can override the base file name, either to simplify it, to fit it 
+       to your own taste, or to avoid overwriting files...</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Use these buttons to <B>navigate through the previous and next dialogs</B> 
+       (if any).</P>
+      <P>
+       See which current dialog you are in, and to which other dialogs you 
+       connect, in the <B>tab-like</B> part at the top of the dialog under 
+       the title.</P>
+      <P>
+       These buttons are <B>enabled</B> if the <B>parameters of the current 
+       dialog are OK</B>. If they don't (not enough informations, 
+       inconsistent ones, etc...), or if there is no neighboring dialog to 
+       switch to, some of these buttons are <B>disabled</B>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Process</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This button actually <A HREF="#dialog-control">launches the averaging process</A>.</P>
+      <P>
+       This button remains <B>disabled until <U>all</U> the parameter 
+       dialogs have received enough (and consistent) informations</B>. If 
+       this is not the case, first check the current dialog: if its 
+       &quot;Next&quot; button is disabled, the problem is in the current 
+       dialog. Otherwise, browse the other dialogs for some missing informations.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Cancel</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Quit the dialog.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Help</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be here...).</TD>
+    </TR>
+   </TABLE></P>
+  <P>
+   &nbsp;</P>
+  <H3>
+   Input Files&nbsp;dialog - Technical points &amp; hints</H3>
+  <H4>
+   <A NAME="file-types"></A>File types that can be averaged:</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Any <A HREF="files-formats-others.html#eeg-raw">EEG files</A> that Cartool recognizes<BR>
+    <LI CLASS="mvd-P">Any other <A HREF="files-formats-others.html#eeg-erp">ERP files</A><BR>
+    <LI CLASS="mvd-P"><A HREF="frequency-analysis.html">Frequency files</A>,
+     in which case the averaging is run one frequency at a time.<BR>
+    <LI CLASS="mvd-P"><A HREF="files-formats-cartool.html#ris">Ris files</A>, 
+    results from some Inverse Solution computation</P>
+   </UL>
+  <H4>
+   <A NAME="files-prefill"></A>Pre-filling the Triggers / Markers field</H4>
+  <P>
+   Before entering more than one EEG file (by <A HREF="#files-drag-drop">Drag
+    &amp; Drop</A> f.ex.), it can be very convenient to enter the 
+   triggers / markers code in the edit field. All subsequent EEG file 
+   will inherited these informations. Of course, you can later <A HREF="#files-replace-field">change
+    / edit all these informations</A>.</P>
+  <H4>
+   Sessions</H4>
+  <P>
+   There is no problem to use the same file many times in a row, usually 
+   if it contains multiple sessions. In this case, specify the session 
+   number for each input line.</P>
+  <H4>
+   <A NAME="files-drag-drop"></A>You can Drag &amp; Drop these files 
+   directly from the Explorer:</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A set of <A HREF="#file-types">files that can be averaged</A>, they 
+    will be added to the Input Files list (also see <A HREF="#files-prefill">this
+     point</A>)<BR>
+    <LI CLASS="mvd-P">One pair of <A HREF="#file-types">eeg file</A> / <A HREF="files-formats-cartool.html#vrb">tva
+     file</A> that will be simultaneously added to the Input lists<BR>
+    <LI CLASS="mvd-P">Any 3D <A HREF="files-formats-cartool.html#els">coordinates 
+    (of electrodes)</A> file, it will replace the current Electrodes 
+    Coordinates file<BR>
+    <LI CLASS="mvd-P">Any <A HREF="#file-list-format">list of files</A>, 
+    which content will be added to the current lists</P>
+   </UL>
+  <H4>
+   <A NAME="file-list-format"></A>File formats to save or retrieve the 
+   list of files to average and their parameters:</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B><I><A HREF="files-formats-cartool.html#csv">.csv</A></I></B> file
+    <UL>
+     <LI CLASS="mvd-P">First line contains the list of fields that were 
+     saved, separated by a <B>comma</B> or a <B>semicolon</B>, f.ex. &quot;file;session;tva;triggers&quot;<BR>
+     <LI CLASS="mvd-P">Next lines contain the actual values, always 
+     separated by a comma or a semicolon, f.ex. &quot;E:\Data\File1.eeg;;;*&quot;</P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B><I>.txt</I></B> text file, with a similar format as the <B><I>.csv</I></B> 
+    format above, but separators used are <B>tabs</B> instead of commas 
+    (then rather a <B><I>.tsv</I></B> format).
+    <UL>
+     <LI CLASS="mvd-P">First line contains the list of fields that were 
+     saved, separated by a <B>tab</B>, f.ex. &quot;file&nbsp;&nbsp; 
+     session&nbsp;&nbsp; tva&nbsp;&nbsp; triggers&quot;<BR>
+     <LI CLASS="mvd-P">Next lines contain the actual values, always 
+     separated by a tab, f.ex. 
+     &quot;E:\Data\File1.eeg&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      *&quot;</P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P>
+    In any case, spaces are removed and ignored.<BR>
+    <LI CLASS="mvd-P">The fine point is that you can build the lists 
+    yourself, and specify <B>which fields</B> are contained and in <B>which
+     order</B> thanks to the first line format. F.ex. 
+    &quot;file;session;tva;triggers&quot;, or &quot;triggers;file&quot;, 
+    or &quot;file&quot;. Unknown fields are ignored, and missing fields 
+    are applied <A HREF="#files-add-edit-line">these rules</A>.</P>
+   </UL>
+  <H2>
+   <A NAME="dialog-parameters"></A>Parameters&nbsp;dialog</H2>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <IMG SRC="images/averaging.dialog-params.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </CENTER>
+  <P>
+   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Parameters</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Presets:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This is handy to quickly set the main parameters according to the 
+       most frequent uses, listed in the drop-down box.</P>
+      <P>
+       The most important parameters will be set, still <B><I>some 
+       parameters have to be set manually!</I></B> And, as usual, double 
+       check that all your settings make sense...</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Retrieve parameters from .vrb file</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Give a <B><I><A HREF="files-formats-cartool.html#vrb">.vrb</A></I></B> file 
+       generated from a previous averaging process, it will be scanned and 
+       as much parameters as possible will be retrieved and restored.</P>
+      <P>
+       This facility will work only with <B><I>.vrb</I></B> files compatible 
+       with this version of Cartool. Anyway, check that the parameters you 
+       get are the one you expected!</P>
+      <P>
+       You can also simply Drop the <B><I>.vrb</I></B> file into the dialog.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B><A NAME="channel-checking"></a>Channel Checking</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Regular channels:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The next parameters concern only the EEG channels.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Test to Threshold Value:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       When selected, you have to specify the threshold above which a <B>channel</B> 
+       will be considered as bad / corrupted.</P>
+      <P>
+       See <A HREF="#param-checking">channel checking</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Exclude these Channels from Test:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       If you already know what channels were noisy or inactive, you can 
+       fill this field to avoid testing them. Still, you can exclude 
+       channels later on, during the <A HREF="#operating">averaging process</A>.</P>
+      <P>
+       See <A HREF="#param-checking">channel checking</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Auxiliary channels:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The next parameters concern only the auxiliary channels (ECG, eyes, etc...).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Test to Threshold Value:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       When selected, you have to specify the threshold above which an <B>auxiliary
+        channel</B> will be considered as bad / corrputed.</P>
+      <P>
+       See <A HREF="#param-checking">channel checking</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Override the Auxiliaries with:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <A HREF="#param-override-aux">Override the default auxiliary channels</A>.
+        The list you provide will completely <B>supersede</B> the default one.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Time Interval</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B><A NAME="epoch-origin"></A>Epoch Origin:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Choose the time origin of the <A HREF="terms-definitions-formulas.html#epoch">epochs</A>. 
+       See <A HREF="#param-length-0">length and origin position</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Fixed Time Frame</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>One</B> and only one <A HREF="terms-definitions-formulas.html#time-frame">TF</A>, at a 
+       fixed position. Useful for grand averages.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Trigger</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The triggers / markers (actually, their onset).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Trigger + Offset</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The triggers / markers, plus a given and fixed number of <A HREF="terms-definitions-formulas.html#time-frame">TF</A>s.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Trigger + Reaction Time</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The triggers / markers plus a variable step found in the <B><I><A HREF="files-formats-cartool.html#tva">.tva</A></I></B> 
+       file (<A HREF="#files-tva">specified</A> in the files dialog).</P>
+      <P>
+       <B>Attention:</B> the steps are in <B>milliseconds</B>, <I><B>not</B></I> TFs!</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Duration</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The length of the <A HREF="terms-definitions-formulas.html#epoch">epoch</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Pre-Frames Duration:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The number of time frames <B>before the origin</B> (positive number, 
+       or 0). See <A HREF="#param-length-0">length and origin position</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Post-Frames Duration:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The number of time frames <B>after the origin</B> (positive number, 
+       or 0). See <A HREF="#param-length-0">length and origin position</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Total Frames Duration:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The total number of time frames. See <A HREF="#param-length-0">length 
+       and origin position</A>.</P>
+      <P>
+       Note that the TF values are also converted into milliseconds if a 
+       sampling frequency has been found in the files to average.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Computation Parameters</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       These parameters are applied according to the following sequence.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Data Type:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Only Positive</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Data consist of <B>positive only, scalar data</B>. This could be 
+       spikes from neuron recordings, or the Results of Inverse Solution, f.ex.</P>
+      <P>
+       This will logically turn off the <I>Polarity</I> &amp; <I>References</I> options.</P>
+      <P>
+       See this <A HREF="computing-statistics.html#param-positive-data">point on 
+       positive data</A> and also <A HREF="terms-definitions-formulas.html#data-types">this point</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Signed</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>Signed scalar values</B>, like, you know, EEG.</TD>
+    </TR>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Data reference</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       No Reference</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Data are used as they come from files, no changes occur.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Average Reference</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Data are <A HREF="terms-definitions-formulas.html#formulas">average reference</A>-d, can be 
+       used for Grand Averages but not necessarily.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Maps / Patterns Polarity:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Ignore</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Polarity of maps does not matter, so ignore it. Inverted maps are 
+       considered the same (same underlying generators, but with reversed polarity).</P>
+      <P>
+       Used for spontaneous EEG recordings or <A HREF="frequency-analysis.html#analysis">FFT
+        Approximation</A>.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Account</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Polarity of maps matter, that is, inverted maps are indeed considered 
+       as different.</P>
+      <P>
+       Used for ERPs.</TD>
+       </tr>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Using Filters:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Clicking on this button brings the usual <A HREF="eeg-display.html#filters">Filter
+        Dialog</A>. Fill it according to your needs, and specify a sampling 
+       frequency if none was found after <A HREF="#dialog-files">getting the 
+       input files</A>.</P>
+      <P>
+       Clicking on the button again turns the filters off.</P>
+      <P>
+       You can refine <B>on what the filters should be applied to</B> (see 
+       the <A HREF="#param-filtering">possible combinations</A>):</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       on Results</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       On the outputted data.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       on Display</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       On the <A HREF="eeg-display.html">EEG display</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Baseline Correction:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Check this button if you want to apply some baseline correction 
+       (subtracting each track with its average within a given time period).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Inferior Limit:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Lower boundary as on offset to the <A HREF="terms-definitions-formulas.html#epoch">epoch</A> origin.</P>
+      <P>
+       Use <B>negative values before the origin</B>, <B>positive values after</B>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Superior Limit:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Superior boundary as on offset to the <A HREF="terms-definitions-formulas.html#epoch">epoch</A> origin.<BR>
+       Use <B>negative values before the origin</B>, <B>positive values after</B>.</P>
+      <P>
+       The limits specified need <B><I>not</I></B> to be within the range of 
+       the <A HREF="#param-duration">Pre and Post-Frames</A>. They can be <B>whatever
+        you wish</B>, Cartool will handle <B><I>all</I></B> the cases gracefully.</P>
+      <P>
+       When changing the &quot;Pre-Frames Duration&quot; value, the 
+       &quot;Baseline Inferior Limit&quot; will be updated automatically.</TD>
+    </TR>
+       <tr>
+     <TD WIDTH="26%" VALIGN=TOP></TD>
+     <TD WIDTH="74%" VALIGN=TOP></TD>
+       </tr>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>Excluding Bad Epochs</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Check this button to allow <A HREF="#excluding-bad-epochs">skipping bad 
+	   epochs</a>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       at Markers:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Specify the <strong>exact marker names of epochs to be skipped</strong>.<P>
+       The markers should have been already <A HREF="eeg-display.html#add-marker">set 
+	   either manually</a>, or by scanning automatically the tracks.<P>
+       Any <strong><A HREF="#excluding-bad-epochs">averaging epoch intersecting</a></strong> 
+	   with any of these <strong>bad markers</strong> will be automatically 
+	   skipped.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <strong>Accepting All Remaining Epochs</strong></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Automatically <strong>accept all epochs</strong> for all files. <strong>
+	   Any specified <A HREF="#channel-checking">thresholding tests</a> will be 
+	   skipped</strong>.</P>
+      <P>
+       However, if <A HREF="#excluding-bad-epochs">Excluding Bad Epochs</a> have 
+	   been specified, then it will accept only the non-overlapping epochs only.</P>
+	  <P>
+       This option is however more useful for Grand Averages, where you just 
+	   want to sum files you already know and trust.</P>
+      <P>
+       Notice that no <A HREF="#output-directories">TVA file</A> will be 
+       outputted, as for Grand Means we don't care...</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Use these buttons to <B>navigate through the previous and next dialogs</B> 
+       (if any).</P>
+      <P>
+       See which current dialog you are in, and to which other dialogs you 
+       connect, in the <B>tab-like</B> part at the top of the dialog under 
+       the title.</P>
+      <P>
+       These buttons are <B>enabled</B> if the <B>parameters of the current 
+       dialog are OK</B>. If they don't (not enough informations, 
+       inconsistent ones, etc...), or if there is no neighboring dialog to 
+       switch to, some of these buttons are <B>disabled</B>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Process</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This button actually <A HREF="#dialog-control">launches the averaging process</A>.</P>
+      <P>
+       This button remains <B>disabled until <U>all</U> the parameter 
+       dialogs have received enough (and consistent) informations</B>. If 
+       this is not the case, first check the current dialog: if its 
+       &quot;Next&quot; button is disabled, the problem is in the current 
+       dialog. Otherwise, browse the other dialogs for some missing informations.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Cancel</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Quit the dialog.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Help</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be here...).</TD>
+    </TR>
+   </TABLE></P>
+  <P>
+   &nbsp;</P>
+  <H3>
+   Parameters&nbsp;dialog - Technical points &amp; hints</H3>
+  <H4>
+   <A NAME="param-checking"></A>Channel checking:</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Within the current <A HREF="terms-definitions-formulas.html#epoch">epoch</A>, each channel 
+    is tested and if it is above the specified threshold, the channel is 
+    marked as Bad (as well as the whole epoch). Otherwise (below the 
+    threshold), the channel is considered as Ok.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    If <B>both the <A HREF="#param-channel-check">channel test and the 
+    auxiliary test</A></B> are selected, then the channels are tested 
+    against the threshold corresponding to which category they belong to 
+    (normal or auxiliary). If any one of the test indicates a channel as 
+    Bad, then the epoch is set as Bad. Conversely, both tests must return 
+    Ok for the epoch to be considered as Ok.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    If no test at all is active, <B>all epochs</B> will be considered as <B>valid</B>.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    &quot;<A HREF="#param-channel-check">Excluded channels</A>&quot; 
+    means <B>excluded from the tests</B> (and from the display BTW). 
+    Whatever their values, excluded channels will not be tested. You can 
+    choose to save or not these channels, according to your needs. And 
+    only if the auxiliaires are being tested can you exclude some of them.</P>
+   </UL>
+  <P>&nbsp;</P>
+  <P>The <strong>time interval</strong> used for testing a given epoch is the 
+  following:</P>
+  <UL>
+      <LI CLASS="mvd-P">
+      <P>
+      It is first set to the whole <strong>pre- to post-stimulus interval</strong>.</P>
+	  <LI CLASS="mvd-P">
+      <P>
+      In case the Baseline extends beyond the pre- and post-stimulus interval, 
+	  the tested interval is extended to the <strong>biggest interval that 
+	  encompasses both the baseline and the pre+post interval</strong>.</P>
+	  <LI CLASS="mvd-P">
+      <P>
+      In case of <strong>High-Pass filter</strong>, it adds 1/6 of the lowest 
+	  wave-length on each side of interval. This is to account for slow waves 
+	  that could be just below the threshold at the edge of the epoch.<br>So 
+	  f.ex. with a High-Pass of 1 Hz, the tested interval will be extended by 
+	  167ms on the left <em>and</em> on the right.</P>
+   </UL>
+  <H4>
+   <A NAME="param-override-aux"></A>Overriding the auxiliaries :</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    The override will apply <B>before</B> the <A HREF="#param-checking">channel
+     exclusion</A> and <B>before</B> the tests (channels or auxiliaries), 
+    so that the electrodes are compared with their correct thresholds.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    A side-effect of the override allows you to specify the <A HREF="terms-definitions-formulas.html#tracks"><B>computed
+     tracks</B></A><B> as auxiliairies</B>, therefore allowing you to 
+    also test the <A HREF="terms-definitions-formulas.html#formulas">dissimilarity</A>, the <A HREF="terms-definitions-formulas.html#formulas">GFP</A> 
+    and the <A HREF="terms-definitions-formulas.html#formulas">average!</A></P>
+   </UL>
+  <H4>
+   <A NAME="param-length-0"></A>Position of the origin, and length of 
+   the output file:</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Consider the case where the <A HREF="terms-definitions-formulas.html#epoch">epoch</A> 
+    origin is the trigger onset (usual case). Starting with the simple 
+    case where <B>Pre-Frames = 0</B>, and <B>Post-Frames = 250</B>. 
+    Always Total-Frames = Pre + Post = 0 + 250 = 250 time frames in the 
+    output file. Remember that TFs start counting from 0:</P>
+   </UL>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <TABLE WIDTH="80%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+     <TR>
+      <TD BORDERCOLOR="WHITE" BORDERCOLORLIGHT="WHITE" BORDERCOLORDARK="WHITE" WIDTH="12%" VALIGN=TOP></TD>
+      <TD BORDERCOLOR="WHITE" BORDERCOLORLIGHT="WHITE" BORDERCOLORDARK="WHITE" WIDTH="6%" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         Epoch origin</TD>
+      <TD BORDERCOLOR="WHITE" BORDERCOLORLIGHT="WHITE" BORDERCOLORDARK="WHITE" WIDTH="6%" VALIGN=TOP></TD>
+      <TD BORDERCOLOR="WHITE" BORDERCOLORLIGHT="WHITE" BORDERCOLORDARK="WHITE" WIDTH="6%" VALIGN=TOP></TD>
+      <TD BORDERCOLOR="WHITE" BORDERCOLORLIGHT="WHITE" BORDERCOLORDARK="WHITE" WIDTH="14%" VALIGN=TOP></TD>
+      <TD BORDERCOLOR="WHITE" BORDERCOLORLIGHT="WHITE" BORDERCOLORDARK="WHITE" WIDTH="6%" VALIGN=TOP></TD>
+      <TD BORDERCOLOR="WHITE" BORDERCOLORLIGHT="WHITE" BORDERCOLORDARK="WHITE" WIDTH="6%" VALIGN=TOP></TD>
+      <TD BORDERCOLOR="WHITE" BORDERCOLORLIGHT="WHITE" BORDERCOLORDARK="WHITE" WIDTH="6%" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         Last TF of epoch</TD>
+     </TR>
+     <TR>
+      <TD WIDTH="12%" VALIGN=TOP>
+       <P>
+        Offset in <B>original file</B>, in TF</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="SILVER" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <B>0</B></TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         1</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         2</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="14%" BGCOLOR="LINEN" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         . . . . .</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         247</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         248</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <B>249</B></TD>
+     </TR>
+     <TR>
+      <TD WIDTH="12%" VALIGN=TOP>
+       <P>
+        Absolute TF position in <B>output file</B></TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="SILVER" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <B>0</B></TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         1</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         2</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="14%" BGCOLOR="LINEN" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         . . . . .</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         247</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         248</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <B>249</B></TD>
+     </TR>
+    </TABLE></P>
+   </CENTER>
+  <UL>
+   <P>
+    It shows that in the output file, <B>TF 0 is the epoch origin</B>, 
+    and <B>TF 249</B> <B>is the last time frame</B> (Total-Frames - 1).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Now lets have <B>Pre-Frames = 50</B>, <B>Post-Frames = 250</B>, then 
+    Total-Frames = Pre + Post = 50 + 250 = 300 time frames in the output file.</P>
+   </UL>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <TABLE WIDTH="80%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+     <TR>
+      <TD WIDTH="15%" VALIGN=TOP></TD>
+      <TD WIDTH="6%" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         First TF of epoch</TD>
+      <TD WIDTH="6%" VALIGN=TOP></TD>
+      <TD WIDTH="10%" VALIGN=TOP></TD>
+      <TD WIDTH="6%" VALIGN=TOP></TD>
+      <TD WIDTH="6%" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         Epoch origin</TD>
+      <TD WIDTH="6%" VALIGN=TOP></TD>
+      <TD WIDTH="14%" VALIGN=TOP></TD>
+      <TD WIDTH="6%" VALIGN=TOP></TD>
+      <TD WIDTH="6%" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         Last TF of epoch</TD>
+     </TR>
+     <TR>
+      <TD WIDTH="15%" VALIGN=TOP>
+       <P>
+        Offset in <B>original file</B>, in TF</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LAVENDERBLUSH" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <B>-50</B></TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LAVENDERBLUSH" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         -49</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="10%" BGCOLOR="LAVENDERBLUSH" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         ...</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LAVENDERBLUSH" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         -1</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="SILVER" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <B>0</B></TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         1</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="14%" BGCOLOR="LINEN" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         ...</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         248</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=BOTTOM>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <B>249</B></TD>
+     </TR>
+     <TR>
+      <TD WIDTH="15%" VALIGN=TOP>
+       <P>
+        Absolute TF position in <B>output file</B></TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LAVENDERBLUSH" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <B>0</B></TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LAVENDERBLUSH" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         1</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="10%" BGCOLOR="LAVENDERBLUSH" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         ...</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LAVENDERBLUSH" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         49</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="SILVER" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <B>50</B></TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         51</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="14%" BGCOLOR="LINEN" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         ...</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         298</TD>
+      <TD BORDERCOLOR="BLACK" BORDERCOLORLIGHT="BLACK" BORDERCOLORDARK="BLACK" WIDTH="6%" BGCOLOR="LINEN" VALIGN=TOP>
+       <CENTER>
+        <P ALIGN=CENTER>
+         <B>299</B></TD>
+     </TR>
+    </TABLE></P>
+   </CENTER>
+  <UL>
+   <P>
+    It shows that in the output file, <B>TFs 0 to 49 are before the trigger</B>,
+     that <B>TF 50 is the epoch origin</B>, and that <B>TF 299 is the 
+    last TF</B> (corresponding to TF 249 in input file).</P>
+   </UL>
+  <H4>
+   <A NAME="param-filtering"></A>Channels filtering:</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Usually, people are filtering the data and want to see the results, 
+    so both <A HREF="#dialog-filtering">Data</A> and <A HREF="#dialog-filtering">Display</A> 
+    should be selected.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Filtering the Display but not the Data allows you to visually select 
+    the <A HREF="terms-definitions-formulas.html#epoch">epochs</A> in a clean display, still 
+    saving the original data (f.ex. preserving all the frequencies).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Filtering the Data but not the Display can speed up things a little, 
+    at the risk of confusing you by not understanding why some tracks are 
+    not rejected (because they are actually filtered, and the tests apply 
+    to the filtered values). Not recommended (unless you really trust the program!).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    To cancel filtering, you can either deselect both the Data and 
+    Display buttons, or open the <A HREF="eeg-display.html#filters">Filter Dialog</A> 
+    itself and uncheck all filters.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    You can specify if you want to apply the filters to the <A HREF="terms-definitions-formulas.html#tracks"><B>auxiliary
+     tracks</B></A> from the <A HREF="eeg-display.html#filters">Filter dialog</A>.</P>
+   </UL>
+  <H4>
+   <A NAME="ignoring-polarity"></A>Ignoring Maps Polarity</H4>
+  <P>
+   For each TF sequentially, take <B>all the maps</B> for all the epochs 
+   and check if they correlate negatively with the <B>map with the 
+   highest GFP</B>. Then invert (multiply by -1) these maps before 
+   proceeding to the next step of the averaging (usually the summation, 
+   saving epoch to file, etc...).</P>
+  <P>
+   This way, we will sum maps with the same &quot;polarity&quot;.</P>
+  <H4>
+   <A NAME="excluding-bad-epochs"></a>Excluding Bad Epochs</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    For each epoch, the pre- and post-stimulus interval is <strong>inflated by 
+	100 ms</strong> on the left and on the right.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Then this interval is tested against each marker which names have been 
+	specified. If any of these marker overlap with the inflated epoch, then it 
+	is rejected.</P>
+	  <LI CLASS="mvd-P">
+      <P>
+      Used in conjunction with the Accepting All Epochs, this would average all 
+	  epochs not intersecting the bad markers.</P>
+   </UL>
+  <H2>
+   <A NAME="dialog-output"></A>Output Files&nbsp;dialog</H2>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <IMG SRC="images/averaging.dialog-output.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </CENTER>
+  <P>
+   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Output Files</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B><A NAME="param-merge-split"></A>Merging / Splitting Triggers</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Choose how to handle the accepted <A HREF="terms-definitions-formulas.html#epoch">epochs</A>:</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       According to Trigger Values, accepted epochs are:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Merged into One File</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>All epochs are averaged into a single file, whatever their trigger codes.</B></P>
+      <P>
+       If there are triggers 1, 2, 3, 4, the result will be a single file 
+       that sums all these epochs.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Split into Separate Files</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>The epochs are <A HREF="#output-sum-squares">routed to different files</A> 
+       according to their trigger codes.</B></P>
+      <P>
+       Epochs from trigger 1 are summed in their own file, and so on with 
+       epochs from triggers 2, 3 and 4.</P>
+      <P>
+       The standard error and standard deviation can also be computed on 
+       these files (if these options are selected, of course).</P>
+      <P>
+       You can select both the <I>Merge</I> and the <I>Split</I> options.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B><A NAME="param-data-output"></A>Data Computed</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Average of Epochs</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Compute and save the average of the accepted epochs. This is usually 
+       what you came for!</P>
+      <P>
+       Applies both to the <A HREF="#param-merge-split">Merged and Split files</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Sum of Epochs</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Compute and save the sum of the accepted epochs.</P>
+      <P>
+       Applies both to the <A HREF="#param-merge-split">Merged and Split files</A>.</P>
+      <P>
+       Also see <A HREF="#output-sum-squares">this note</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Standard Deviation</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Compute and save the standard deviation of the accepted epochs.</P>
+      <P>
+       Applies both to the <A HREF="#param-merge-split">Merged and Split files</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Standard Error</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Compute and save the standard error of the accepted epochs.</P>
+      <P>
+       Applies both to the <A HREF="#param-merge-split">Merged and Split files</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       1 File per Epoch</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Save the accepted <A HREF="terms-definitions-formulas.html#epoch">epochs</A>, <B>each epoch 
+       being put into a separate file</B>.</P>
+      <P>
+       This is done only once, and is <B><I>not</I></B> relevant if epochs are <A HREF="#param-merge-split">Merged
+        or Split</A>.<P>
+       A single marker is added for each file, with the <strong>trigger code</strong> 
+	   of the current epoch, at the correct pre-stimulus offset.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       All Epochs in 1 File</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Save the accepted <A HREF="terms-definitions-formulas.html#epoch">epochs</A>, <B>pasting 
+       them one after the other into a single file</B>.</P>
+      <P>
+       <strong>Two types of markers</strong> are generated:</P>
+	  <ul>
+		  <li>Markers with names <strong><em>epochXXX</em></strong>, <em>XXX</em> 
+		  being the index of the currrent epoch.<br>These markers extend over 
+		  the whole epoch, from beginning to ending.</li>
+		  <li>Markers with the <strong>trigger code</strong> of the current 
+		  epoch.<br>Their positions are set at the correct trigger origin, after 
+		  the pre-stimulus interval.</li>
+	  </ul>
+	  <P>
+       This is done only once, it does not matter if epochs are <A HREF="#param-merge-split">Merged
+        or Split</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B><A NAME="output-file-type"></A>Output File Type</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Preset list for you to select the file type used for all the <A HREF="#param-data-output">output data</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Tracks</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Write in the Ouput Files:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       the Excluded Channels</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Select this if the <A HREF="#param-channel-check">excluded channels</A> 
+       are to be written to the output files anyway. In this way, you can 
+       assure you get the expected number of tracks (though the exluded will 
+       certainly look noisy).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       the Auxiliary Channels</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Select this if the <A HREF="#param-channel-check">auxiliary channels</A> 
+       are to be written to the output files.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Options</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>For each Ouput Files:</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Add a Marker at Epoch Origin</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       To help visualize the <A HREF="#param-epoch-origin">epoch origin</A>, 
+       select this to conveniently add a marker on (most of) the outputed files.</P>
+      <P>
+       It does nothing if there are no <A HREF="#param-duration">Pre-Frames</A>,
+        as the first TF <I>is</I> the epoch origin (see <A HREF="#param-length-0">length
+        and origin position</A>).</P>
+      <P>
+       See how the epoch origin is <A HREF="eeg-display.html#menu-time">rendered in 
+       the EEG display</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Open File(s) Upon Completion</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       To automatically open the main resulting files.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Use these buttons to <B>navigate through the previous and next dialogs</B> 
+       (if any).</P>
+      <P>
+       See which current dialog you are in, and to which other dialogs you 
+       connect, in the <B>tab-like</B> part at the top of the dialog under 
+       the title.</P>
+      <P>
+       These buttons are <B>enabled</B> if the <B>parameters of the current 
+       dialog are OK</B>. If they don't (not enough informations, 
+       inconsistent ones, etc...), or if there is no neighboring dialog to 
+       switch to, some of these buttons are <B>disabled</B>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Process</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This button actually <A HREF="#dialog-control">launches the averaging process</A>.</P>
+      <P>
+       This button remains <B>disabled until <U>all</U> the parameter 
+       dialogs have received enough (and consistent) informations</B>. If 
+       this is not the case, first check the current dialog: if its 
+       &quot;Next&quot; button is disabled, the problem is in the current 
+       dialog. Otherwise, browse the other dialogs for some missing informations.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Cancel</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Quit the dialog (although it will be sad...).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Help</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be here...).</TD>
+    </TR>
+   </TABLE></P>
+  <P>
+   &nbsp;</P>
+  <H3>
+   Output Files&nbsp;dialog - Technical points &amp; hints</H3>
+  <H4>
+   <A NAME="output-sum-squares"></A>Splitting Triggers and Sums: WTF is that 
+   option?</H4>
+  <P>
+   This is quite simple, let's have a well designed experiment with 4 
+   triggers, each of them being already something testable (say, a condition).</P>
+  <P>
+   By <B>splitting triggers</B>, you can create <B>4 different set of files</B>,
+    one set for each trigger. In this set you can choose to put either 
+   the average, the SD, the SE and the sum (of all accepted epochs of a 
+   given trigger type).</P>
+  <P>
+   Now, you can directly <B>compare condition 1 and condition 2</B>, you 
+   are already done with the right files, including the SD / SE.</P>
+  <P>
+   You can also very easily compare <B>conditions 1+2 against conditions 3+4</B>,
+    f.ex.: just add together the Sum files (<I>not</I> the average!) of 
+   conditions 1 and 2, then 3 and 4. Divide the new 1+2 and 3+4 files by 
+   their corresponding number of summed epochs, and there you are with 
+   your averages of conditions 1+2, and 3+4.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   You can repeat in all the manners you like this joining of splitted 
+   triggers, and <B>never have to do again the whole lengthy and 
+   straining </B><A HREF="#operating"><B>Averaging process</B></A>.</P>
+  <H4>
+   <A NAME="output-file-types"></A>Input and output file types</H4>
+  <P>
+   The input and output files need not to be of the same type.</P>
+  <P>
+   Therefore, it's up to you to set the output file type according to 
+   your practical needs. The prefered choice of output is usually the 
+   same as the input one, or <B><I>.eph</I></B> or <B><I>.ep</I></B> 
+   text files. But you can average <B><I>.ris</I></B> binary files and 
+   output <B><I>.eph</I></B> text files, or averaging <B><I>.eph</I></B> 
+   text files binary files and outputting <B><I>.ris</I></B> binary files.</P>
+  <P>
+   If the output file type still does not fit you, you can still <A HREF="reprocess-tracks.html">convert
+    them</A>.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Also note that when averaging Frequency files, the output type is 
+   always <I><B><A HREF="files-formats-cartool.html#freq">.freq</A></B></I>.</P>
+  <H2>
+   <A NAME="dialog-control"></A>Averaging Control&nbsp;dialog</H2>
+  <P>
+   Once all the <A HREF="#dialog-parameters">parameters</A> have been 
+   entered, the <B>control dialog</B> appears. It is updated in <B>real-time</B> 
+   with the <B>current state</B> of the EEG, and <B>waits for some user choice</B> 
+   (see <A HREF="#operating">Operating the averaging process</A>):</P>
+  <P class="auto-style1">
+   <IMG SRC="images/averaging.control.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>Averaging Control</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       On top of the window, you find the name of the current file.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>TRIGGER</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Informations related to the current trigger.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Code</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The current <A HREF="terms-definitions-formulas.html#trigger">trigger / marker</A> code.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Position in TF</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The <A HREF="terms-definitions-formulas.html#epoch">epoch</A> origin of the current 
+       trigger, in <A HREF="terms-definitions-formulas.html#time-frame">time frame</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Relative Index</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Just to indicate the position order of the current trigger.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       #Acc</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Number of accepted triggers until now.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       #Rej</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Number of rejected triggers until now.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="control-accept"></A>Accept Current</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Accept the current <A HREF="terms-definitions-formulas.html#epoch">epoch</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Reject Current</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Reject the current epoch.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="control-accept-TFs"></A>Accept TFs</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Accept all <A HREF="terms-definitions-formulas.html#epoch">epochs</A> for the period of 
+       time specified in the edit field below (in TF). Default range is set to 
+	   2s.</P>
+      <P>
+       The time interval starts from the current epoch origin. Forthcoming 
+       epochs are accepted if their origins stand within that interval.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Reject TFs</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Reject all epochs for the period of time specified in the edit field 
+       below (in TF). Default range is set to 2s.</P>
+      <P>
+       The time interval starts from the current epoch origin. Forthcoming 
+       epochs are rejected if their origins stand within that interval.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="control-accept-whil"></A>Accept while Ok</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>Accept all the valid </B><A HREF="terms-definitions-formulas.html#epoch"><B>epochs</B></A>,
+        starting from the current one, <B>until it stumbles upon a bad epoch</B> 
+       (if any) and stops there.</P>
+      <P>
+       If the current epoch is a bad one, the button is off.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Reject while Bad</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>Reject all the bad epochs</B>, starting from the current one, <B>until
+        it finds a valid epoch</B> (if any) and stops there.</P>
+      <P>
+       If the current epoch is a valid one, the button is off.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="control-accept-cond"></A>Accept Cond.</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       This will <B>conditionally accept all the remaining </B><A HREF="terms-definitions-formulas.html#epoch"><B>epochs</B></A>,
+        including the current one.</P>
+      <P>
+       &quot;Conditionally&quot; means that each epoch will be accepted only 
+       if all <A HREF="#param-checking">tests are Ok</A>, and rejected otherwise.</P>
+      <P>
+       When you press this button, it will run until the end of file 
+       (subsequently closing it), so there is no more chance for you to 
+       interact with the control dialog!</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="control-undo"></A>Undo Last</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       <B>Undo the choice made on the last </B><A HREF="terms-definitions-formulas.html#epoch"><B>epoch</B></A>,
+        which means:</P>
+      <UL>
+       <LI CLASS="mvd-P">
+       <P>
+        going back to the previous epoch presented,<BR>
+        <LI CLASS="mvd-P">cancelling the choice made by the user (accept or reject),<BR>
+        <LI CLASS="mvd-P">and waiting for a new choice.</P>
+       </UL>
+      <P>
+       By pressing many times this button, you can even rewind to the very 
+       first epoch that was presented to you upon the file opening (only for 
+       the current file, though).</P>
+      <P>
+       Even if the user accepted / rejected a whole bunch of epochs at a 
+       time (<A HREF="#control-accept-TFs">Accept / Reject TFs</A>, or <A HREF="#control-accept-whil">Accept
+        / Rreject while</A>...), each single epoch can be individually undone.</P>
+      <P>
+       Accepting, rejecting and undoing any number of times does not alter 
+       the precision of the computations.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP></TD>
+     <TD WIDTH="73%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <B>TRACKS</B></TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Informations about tracks within the current <A HREF="terms-definitions-formulas.html#epoch">epoch</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Regular</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       If the <A HREF="#param-channel-check">regular tracks test</A> has 
+       been selected, it shows which one are concerned with the Min and Max 
+       values displayed below.</P>
+      <P>
+       It can either display &quot;ALL&quot;, if all the regular tracks are 
+       Ok (below the threshold).</P>
+      <P>
+       Or it can display the list of regular tracks that are off the threshold.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Min</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Min value of all the regular tracks listed in the field above.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Max</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Max value of all the regular tracks listed in the field above.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Rejection Threshold</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       For the regular tracks, only.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Auxiliaries</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       If the <A HREF="#param-channel-check">auxiliray tracks test</A> has 
+       been selected, it shows which one are concerned with the Min and Max 
+       values displayed below.</P>
+      <P>
+       It can either display &quot;ALL&quot;, if all the regular tracks are 
+       Ok (below the threshold).</P>
+      <P>
+       Or it can display the list of regular tracks that are off the threshold.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Min</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Min value of all the auxiliary tracks listed in the field above.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Max</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Max value of all the auxiliary tracks listed in the field above.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Rejection Threshold</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       For the auxiliary tracks, only.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Zoom Bad(s)</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       When activated, if the current epoch has some <B>bad channels</B> 
+       (always drawn in magenta), they will be <B>the only one shown on display</B>.
+        Therefore you can have a better view and an easier choice (hopefully).</P>
+      <P>
+       If none of the channels are bad, the button has no effect and all the 
+       non-excluded tracks are shown.</P>
+      <P>
+       You can press anytime on this button to focus or not on the bad 
+       channels. If the button is off, the tracks on display will not 
+       change, whatever if they are bad or not.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="control-exclude"></A>Exclude Track(s):</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Press this button to <B>exclude the tracks listed in the edit field</B> 
+       on the right.</P>
+      <P>
+       The edit field is <B>automatically filled</B> with the bad tracks, 
+       the ones that failed the <A HREF="#param-checking">tests</A> (the magenta-colorized
+        tracks on the EEG display).</P>
+      <P>
+       However, you can <B>manually modify this list</B> in the edit field, 
+       removing and / or adding some tracks. Or if the user directly <A HREF="eeg-display.html#mouse-tracks-select"><B>selects
+        / deselects tracks</B></A><B> on the EEG display</B>, the list will 
+       be updated accordingly in real-time.</P>
+      <P>
+       The modified list will be the one to be actually excluded.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Tracks Excluded:</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The list of the currently <A HREF="#param-checking">excluded channels</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Refresh Cursor</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       During normal operation, the cursor is used to represent the current 
+       epoch. It could happen, though, that its position be modified by the 
+       user. Clicking Refresh Cursor will re-position it correctly.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Refresh Tracks</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       During normal operation, the tracks displayed are the one that are 
+       not excluded. But you can still browse your data and change which 
+       tracks are on display. Clicking on Refresh Tracks will bring back the 
+       &quot;good&quot; tracks and remove the &quot;bad&quot; ones.</P>
+      <P>
+       Note that on the next epoch, Cartool will refresh the tracks anyway...</P>
+      <P>
+       If the <A HREF="#param-channel-check">auxiliaries are not tested</A>, 
+       the user can freely show or hide them. The user's choice will then 
+       remain valid for all epochs.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Restart Current</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Cancel only the current file operations, and restart from the file 
+       beginning. Of course, all the choices made on this file will be lost!</P>
+      <P>
+       This is equivalent to <A HREF="#control-undo">undoing</A> everything.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       Cancel All</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Cancel the <B>whole</B> averaging process. No undo, but it will ask 
+       for a confirmation before (see how I care for you?).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       <A NAME="control-progress"></A>&nbsp;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       The progress bar at the bottom indicates the current epoch's position 
+       within the file.</P>
+      <P>
+       It also indicates either &quot;Browsing&quot; if you are currently in 
+       the accept / reject stage, or &quot;Computing&quot; in the 
+       computation stage itself.</TD>
+    </TR>
+   </TABLE></P>
+  <H2>
+   <A NAME="operating"></A>Monitoring the averaging process</H2>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P ALIGN=LEFT>
+    <A HREF="#dialog-files">Select the files</A> to be processed</P>
+   <LI CLASS="mvd-P">
+   <P ALIGN=LEFT>
+    Set all the <A HREF="#dialog-parameters">parameters</A></P>
+   <LI CLASS="mvd-P">
+   <P ALIGN=LEFT>
+    <A NAME="operating-each-file"></A>Then work sequentially on each 
+    selected file / session. You get this kind of display:</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P ALIGN=LEFT>
+     the <A HREF="eeg-display.html">EEG display</A> on the right side,<BR>
+     <LI CLASS="mvd-P">the <A HREF="#dialog-control">averaging control</A> 
+     in the top-left corner,<BR>
+     <LI CLASS="mvd-P">an optional <A HREF="potentials-maps-display.html">potential map</A> 
+     in the lower-left corner (if an <A HREF="#files-els">electrodes 
+     coordinates file was provided</A>)</P>
+    </UL>
+   </UL>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <IMG SRC="images/averaging.process.png" WIDTH="476" HEIGHT="431" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </CENTER>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    The control is first in <B><A HREF="#control-progress">Browsing mode</A></B>,
+     which means you will go through all the <A HREF="terms-definitions-formulas.html#epoch">epochs</A>,
+     and choose which ones will be good enough to be kept in the calculus.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    The <B>current <A HREF="terms-definitions-formulas.html#epoch">epoch</A></B> is shown with 
+    the red cursor in the EEG display. Previous epochs are labelled with 
+    a <A HREF="terms-definitions-formulas.html#marker">marker</A>, stating if they were 
+    accepted or rejected. The current epoch is also labelled, but with 
+    the <A HREF="#param-checking">result of the tests</A>, either with &quot;<B>OK?</B>&quot;
+     or with &quot;<B>BAD?</B>&quot;.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Check the <B>current trigger</B> informations shown in the TRIGGER 
+    box of the control dialog</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Check the <B>tracks informations</B> shown in the TRACKS box of the 
+    control dialog</P>
+   <LI CLASS="mvd-P">
+   <P>
+    You are <B>prompted for&nbsp;a choice</B>, depending on what you see 
+    (and know...), you may:</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P>
+     <A HREF="#control-exclude">Exclude some tracks</A> that are 
+     definetely bad, restarting from the file beginning.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     <A HREF="#control-accept">Reject the current epoch</A> only, or <A HREF="#control-accept-TFs">epochs
+      for a given interval</A>, or <A HREF="#control-accept-whil">reject 
+     until the tracks are tested as Ok</A>.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     <A HREF="#control-accept">Accept the current epoch</A> only, or <A HREF="#control-accept-TFs">epochs
+      for a given interval</A>, or <A HREF="#control-accept-whil">accept 
+     until the tracks are tested as Bad</A>.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     <A HREF="#control-accept-cond">Accept / reject conditionally</A> 
+     until the end of the current file, in a semi-automated way.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     <A HREF="#control-undo">Undo the last step</A> that was done, so you 
+     can change your mind (accept a previously rejected epoch, or the 
+     other way round).</P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P>
+    When the last epoch has been processed, you automatically quit the <A HREF="#control-progress">Browsing
+     mode</A> and enter the <A HREF="#control-progress">Computing mode</A>.
+     Only then the real computations take place. Note that there is no 
+    possible interaction with the user during this stage.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    The current file is then closed, and the <A HREF="#operating-each-file">whole
+     process</A> is done again for the next file. Otherwise, the last 
+    dialog closes, and optionally some of the files produced are opened. 
+    The process ends here.</P>
+   </UL>
+  <H3>
+   Averaging process - Technical points &amp; hints</H3>
+  <H4>
+   Using <I>.tva</I> files</H4>
+  <P>
+   This is a very important and key feature to understand. The <A HREF="files-formats-cartool.html#tva">tva
+    files</A> allows you to do the following things:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Tva files coming from the stimulation machine will allow you to 
+    automatically reject all epochs where the subject answers were wrong.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    They will also make possible to compute the epoch <A HREF="#param-epoch-origin">origin
+     as the reaction time</A> from the trigger.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Tva files generated by earlier Cartool Averaging Process will allow 
+    you to <B>re-do exactly the same computation</B> (more precisely, to 
+    use exactly the same epochs). Use it if you want to double check your 
+    computations, or if you changed your mind and decided to modify some 
+    parameters and see how the results differ...</P>
+   <LI CLASS="mvd-P">
+   <P>
+    When Tva files are used, they are first scanned and all the wrong 
+    epochs are labelled as &quot;<B>TVA REJECTED</B>&quot; in the EEG display.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    The wrong epochs can not be accessed at all, even the Undo procedure 
+    will not work on them. They are definitively discarded.</P>
+   </UL>
+  <H4>
+   Using markers rather than triggers</H4>
+  <P>
+   Averaging by using <A HREF="terms-definitions-formulas.html#marker">markers</A> instead of 
+   triggers allows you to do any processing you like. Typical uses would be:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Create the markers (in a <B><I><A HREF="files-formats-cartool.html#mrk">mrk</A></I></B><A HREF="files-formats-cartool.html#mrk"> file</A>)
+     with a program of your own.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    <A HREF="eeg-display.html#scanning-triggers">Create the markers by scanning 
+    the tracks</A>.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    <A HREF="eeg-display.html#menu-markers">Copy the triggers into markers</A>, 
+    edit and save them.</P>
+   </UL>
+  <H4>
+   Be smart, use the keyboard!</H4>
+  <P>
+   Most of the parameters and actions in all the dialogs have a <B>keyboard
+    shortcut</B> that highlights when holding the <I><B>Alt</B></I> key. 
+   Using the keyboard will save a lot of time and reduce tensions in the 
+   arm and in the hand!</P>
+  <H2>
+   <A NAME="results"></A>Averaging - Results</H2>
+  <P>
+   Well, the averaging process can generate <I>quite a lot of files</I>, 
+   so files are named according to the <A HREF="#output-names">following conventions</A>,
+    and sorted in a <A HREF="#output-directories">hierarchy of directories</A>.</P>
+  <P>
+   This should be quite intuitive to use, but if you need to figure out 
+   all the details, read below:</P>
+  <P>
+   &nbsp;</P>
+  <H3>
+   <A NAME="output-names"></A>Output files naming convention</H3>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>All files</B> will begin with the <B><A HREF="#files-base-file-nam">Output
+     Base File Name</A></B>, f.ex. <B>Base</B></P>
+   <LI CLASS="mvd-P">
+   <P>
+    Next, <B><A HREF="#param-merge-split">split trigger files</A></B> (if 
+    any) will contain the name <B>Trigger</B> followed by each of the 
+    actual triggers name, f.ex. <B>Base.Trigger 1</B></P>
+   <LI CLASS="mvd-P">
+   <P>
+    Next, <B><A HREF="#param-data-output">summed files</A></B> (if any) 
+    will contain either one of these names: <B>Sum (<I>number</I>)</B>&nbsp;
+     or&nbsp; <B>SumSqr (<I>number</I>)</B></P>
+   <P>
+    The number being the number of epochs actually summed up in the file, 
+    f.ex. <B>Base.Sum (54)</B>&nbsp; and&nbsp; <B>Base.Trigger 1.Sum (28)</B></P>
+   <P>
+    (the average files themselves don't have anything inserted in this step).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B><A HREF="#param-data-output">Epochs files</A></B> (if any) will 
+    have the name&nbsp; <B>Epoch <I>&lt;number&gt;</I></B>&nbsp; or&nbsp; <B>Epochs</B>&nbsp;
+     directly inserted following the Base File Name.</P>
+   <P>
+    F.ex. <B>Base.Epoch 001</B>, <B>Base.Epoch 002</B>, <B>Base.Epoch 003</B>&nbsp;
+     or&nbsp; <B>Base.Epochs</B></P>
+   <LI CLASS="mvd-P">
+   <P>
+    Finally, according to which file is outputted, the following <B>file extensions</B> 
+    are appended:</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P>
+     The <A HREF="#param-data-output"><B>averaged / summed</B></A> files 
+     have the <A HREF="#output-file-type">extension specified</A> in the 
+     parameters:&nbsp; <B><I><A HREF="files-formats-cartool.html#ep">.ep</A></I></B>,
+      <B><I><A HREF="files-formats-cartool.html#eph">.eph</A></I></B> or <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B></P>
+    <P>
+     F.ex. <B>Base.eph</B>,&nbsp; <B>Base.Sum (54).eph</B>,&nbsp; <B>Base.Epoch
+      001.eph</B>&nbsp; or&nbsp; <B>Base.Trigger 1.eph</B></P>
+    <LI CLASS="mvd-P">
+    <P>
+     The <B>verbose file</B> with a summary of all the parameters used 
+     have the extension: <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I></P>
+    <P>
+     F.ex. <B>Base.eph.vrb</B></P>
+    <LI CLASS="mvd-P">
+    <P>
+     The <B>Trigger Validation</B> with a list of all accepted and 
+     rejected triggers have the extension: <A HREF="files-formats-cartool.html#tva"><B><I>.tva</I></B></A></P>
+    <P>
+     F.ex. <B>Base.tva</B></P>
+    <LI CLASS="mvd-P">
+    <P>
+     The (optional) standard deviation / error files have the extensions: <B><I><A HREF="files-formats-cartool.html#epsd-epse">.epsd</A></I></B> 
+     or <B><I><A HREF="files-formats-cartool.html#epsd-epse">.epse</A></I></B></P>
+    <P>
+     F.ex. <B>Base.epse</B>&nbsp; or&nbsp; <B>Base.Trigger 1.epse</B></P>
+    <LI CLASS="mvd-P">
+    <P>
+     The (optional) marker files with <B>epoch origin</B> and / or <B>epochs
+      beginning</B> have extensions: <B><I><A HREF="files-formats-cartool.html#mrk">.mrk</A></I></B></P>
+    <P>
+     F.ex. <B>Base.eph.mrk</B>,&nbsp; <B>Base.Sum (54).eph.mrk</B>,&nbsp; <B>Base.Epochs.eph.mrk</B>&nbsp;
+      or&nbsp; <B>Base.Trigger 1.eph.mrk</B></P>
+    </UL>
+   </UL>
+  <H3>
+   <A NAME="output-directories"></A>Output files directories hierarchy</H3>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A <B>root directory</B> is created with the <B><A HREF="#files-base-file-nam">Output
+     Base File Name</A></B>, which will hold:</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P>
+     The <B>averaged files</B></P>
+    <LI CLASS="mvd-P">
+    <P>
+     The <B>Trigger Validation file</B>s <A HREF="files-formats-cartool.html#tva"><B><I>.tva</I></B></A> 
+     (if Accepting All is not selected)</P>
+    <LI CLASS="mvd-P">
+    <P>
+     The <B>verbose file</B> <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I> 
+     are put directly in this <B>root directory</B>.</P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P>
+    A <B>sub-directory</B> (of the root directory) named&nbsp; <B>Epochs</B>&nbsp;
+     will hold the saved <B><A HREF="#param-data-output">epochs</A></B> 
+    (if any).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    A set of <B>sub-directories</B> (of the root directory) named&nbsp; <B>Trigger
+     <I>&lt;trigger name&gt;</I></B>&nbsp; will hold the <B><A HREF="#param-merge-split">split
+     triggers</A></B> files (if any).</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   See here an example of the directory structure and file naming:</P>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <TABLE WIDTH="80%" CELLPADDING="2" CELLSPACING="0" BORDER="0">
+     <TR>
+      <TD WIDTH="25%" VALIGN=TOP>
+       <P>
+        <B>Root</B> directory:</TD>
+      <TD WIDTH="75%" VALIGN=TOP>
+       <P>
+        <IMG SRC="images/averaging.result-files.png" VSPACE="0" HSPACE="0" BORDER="0"></TD>
+     </TR>
+     <TR>
+      <TD WIDTH="25%" VALIGN=TOP>
+       <P>
+        <B>Epochs</B> sub-directory:</TD>
+      <TD WIDTH="75%" VALIGN=TOP>
+       <UL>
+        <P>
+         <IMG SRC="images/averaging.result-files-epochs.png" VSPACE="0" HSPACE="0" BORDER="0"></TD>
+     </TR>
+     <TR>
+      <TD WIDTH="25%" VALIGN=TOP>
+       <P>
+        <B>Trigger 1</B> sub-directory:</TD>
+      <TD WIDTH="75%" VALIGN=TOP>
+       <UL>
+        <P>
+         <IMG SRC="images/averaging.result-files-trigger.png" VSPACE="0" HSPACE="0" BORDER="0"></TD>
+     </TR>
+    </TABLE></P>
+   </CENTER>
+  <P>
+   &nbsp;</P>
+  <H3>
+   <A NAME="ouput-hints"></A>A few more hints about the output files</H3>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    The <B>verbose file</B> <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I> <B><I>is
+     a very important one</I></B>, first to know how you computed your 
+    stuff, and secondly to <A HREF="#param-get-parameter">automatically 
+    set the averaging parameters</A>, should you re-do your averaging. <B>So
+     don't lose it!</B></P>
+   <LI CLASS="mvd-P">
+   <P>
+    <B>Both</B> the <A HREF="#param-merge-split">merged</A> and the <A HREF="#param-merge-split">split</A> 
+    triggers files will have <B>their own Standard Deviation / Error</B> 
+    (if this was requested in the <A HREF="#param-data-output">parameters</A>).</P>
+   <LI CLASS="mvd-P">
+   <P>
+    When re-doing a computation with a Base File Name previously used, <B>all
+     the old files with be deleted</B> (without prompting). Sorry about 
+    this &quot;tough love&quot;, but it is even more dangerous to let old 
+    and new computation results live together, as you will certainly, and 
+    involuntarily, mix them at some point.</P>
+   <P>
+    Though, the safety is: <B>Cartool will only erase the files it created</B>,
+     those who start with the specified Base File Name. If you really 
+    want to keep old stuff, either rename the files you want to keep, or, 
+    even simpler, <B>just use another Base File Name</B>!</P>
+   <LI CLASS="mvd-P">
+   <P>
+    If you haven't understood yet, choosing a good Base File Name is the 
+    key to clarity and safety for your data: short but meaningful, and 
+    not reusing an old one.</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;
+ </BODY>
+</HTML>

@@ -1,0 +1,1942 @@
+﻿<HTML>
+ <HEAD>
+  <TITLE>Segmentation of EEG Files into Micro-States</TITLE>
+  <meta content="en-us" http-equiv="Content-Language">
+ <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css">
+  <style type="text/css">
+.auto-style1 {
+	text-align: center;
+}
+.auto-style3 {
+	background-color: #FFFFFF;
+}
+.auto-style4 {
+	margin-top: -15px;
+	margin-bottom: -15px;
+}
+.auto-style5 {
+	margin-left: 40px;
+}
+.auto-style6 {
+	margin-left: 80px;
+}
+.auto-style8 {
+	border-style: solid;
+	border-width: 0px;
+}
+</style>
+ </HEAD>
+ <BODY BGCOLOR="WHITE">
+  <H1>
+   Segmentation of EEG Files into Micro-States</H1>
+  <P>
+   &nbsp;</P>
+  <P>
+   Segmentation is run first to extract <a href="terms-definitions-formulas.html#landscape">template 
+   maps</a>, which can be <a href="microstates-back-fitting-templates.html">back-fit to the individual 
+   subjects</a> on a second stage.</P>
+  <P>
+   &nbsp;</P>
+  <H5>
+   <A HREF="#summary">Brief introduction to the segmentation</A><br>
+   <A HREF="#segmenting">Segmentation of EEG files into micro-states</A></H5>
+  <UL>
+      <H5>
+      <A HREF="#seg-method">Method used for the segmentation</A><br>
+	  <A HREF="#math-clustering">Mathematical clustering</A></H5>
+   <UL>
+    <H5>
+     <A HREF="#k-means-clustering">K-Means clustering</A><br>
+	 <A HREF="#hierarchical-clust">AAHC Hierarchical Clustering</A><br>
+	 <A HREF="#TAAHC">Topographic AAHC Hierarchical Clustering</A></H5>
+    </UL>
+   <H5>
+    <A HREF="#temporal-postproc">Temporal post-processings</A></H5>
+   <UL>
+    <H5>
+     <A HREF="#temporal-smoothing">Temporal smoothing</A><br>
+	 <A HREF="#sequentialization">Sequentialization</A><br>
+	 <A HREF="#merging-corr-maps">Merging correlated maps</A><br>
+	 <A HREF="#small-maps-reject">Small segments rejection</A></H5>
+    </UL>
+   <H5>
+    <A HREF="#how-many-clusters">The infamous &quot;Optimal number of clusters&quot; and 
+	the Meta-Criterion</A></H5>
+   </UL>
+  <H5>
+   <A HREF="#seg-dialog">How to run the Segmentation</A></H5>
+  <H5 class="auto-style6">
+   <A HREF="#segmentation-files-dialog">Files Dialog</a><br>
+   <A HREF="#segmentation-parameters-dialog">Parameters Dialog</a></H5>
+  <H5>
+   <A HREF="#technical-points">Technical points &amp; hints</A><br>
+   <A HREF="#seg-results">Results</A><br>
+   <A HREF="#seg-inv-sol">Segmentation in the Source Space</A></H5>
+  <H2>
+   <A NAME="summary"></A>Brief introduction to the segmentation</H2>
+  <P>
+   <B><A HREF="#segmenting">Segmentation</A></B> into micro-states is 
+   the process of <B>finding periods of stability</B> in the <A HREF="terms-definitions-formulas.html#map">map</A> 
+   representation of the ERP's. The data (usually grand means) are then <B>segmented
+    / cut where changes occur</B>, and <B>template maps</B> are computed 
+   for each of the resulting <A HREF="terms-definitions-formulas.html#segment">segments</A> to 
+   act as single representatives of the segments. The segmentation 
+   therefore produces:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    a <A HREF="terms-definitions-formulas.html#labelling"><B>labeling</B></A> for each time 
+    point and for each file, asserting to which segment it belongs to,<BR>
+    <LI CLASS="mvd-P">a set of <B>template</B> (synthetic) maps that best 
+    represent each segment.</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   Given a set of averaged maps, it is possible to <B><a href="microstates-back-fitting-templates.html">fit</a></B> 
+   them back onto individual ERP's:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    for each time point, it chooses which <A HREF="terms-definitions-formulas.html#map">map</A> 
+    fits the best, producing again a <B>labeling</B>,<BR>
+    <LI CLASS="mvd-P">some <B>variables</B> are then extracted from this 
+    &quot;fitting&quot;, such as the number of occurrence for each map, 
+    the first occurrence for each map, or when a given map was best 
+    fit. These variables are then used for statistics.</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   For the display of the segmentation, see all the <B><A HREF="microstates-segmentation-display.html">Segments
+    Display</A></B>.</P>
+  <H2>
+   <A NAME="segmenting"></A>Segmentation of EEG files into micro-states</H2>
+  <H3>
+   <A NAME="seg-method"></A>Methods used for the segmentation</H3>
+  <P>
+   It is actually made of three successive steps:</P>
+  <OL>
+   <LI CLASS="mvd-P">
+   <P>
+    A <B>mathematical clustering</B>,<BR>
+    <LI CLASS="mvd-P">Some <B>temporal post-processings</B>,<BR>
+    <LI CLASS="mvd-P">Computing some <B>quality measures</B>.</OL>
+  <P>
+   &nbsp;</P>
+  <P>
+   Let's introduce briefly these three points:</P>
+  <H4>
+   <A HREF="#math-clustering">1. Mathematical clustering</A></H4>
+  <P>
+   This is a well-known mathematical process, which <I>does not</I> 
+   account for the time dimension of the data. That is, data (maps) are 
+   put in a &quot;bag&quot;, then picked from there without caring for 
+   their actual time stamp. Three methods are available for this stage:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    The <B><A HREF="#k-means-clustering">K-Means</A></B> clustering<BR>
+    <LI CLASS="mvd-P">The <B><A HREF="#hierarchical-clust">Atomize &amp; 
+    Agglomerate Hierarchical Clustering</A></B> (actually not anymore, obsolete)<BR>
+    <LI CLASS="mvd-P">The <B><A HREF="#TAAHC">Topographic Atomize &amp; 
+    Agglomerate Hierarchical Clustering (T-AAHC)</A></B></UL>
+  <H4>
+   <A HREF="#temporal-postproc">2. Temporal post-processings</A></H4>
+  <P>
+   These are <B>optional</B> processings, which have the nice 
+   properties, for most of them, to account for the time dimension. They 
+   are totally independent of the type of clustering method used in the 
+   first stage. The methods available are (in this order):</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <A HREF="#temporal-smoothing">Temporal smoothing</A><BR>
+    <LI CLASS="mvd-P"><A HREF="#sequentialization">Sequentialization</A><BR>
+    <LI CLASS="mvd-P"><A HREF="#merging-corr-maps">Merging correlated maps</A><BR>
+    <LI CLASS="mvd-P"><A HREF="#small-maps-reject">Small segments rejection</A></UL>
+  <H4>
+   <A HREF="#how-many-clusters">3. Computing clustering quality measures</A></H4>
+  <P>
+   Cartool computes <strong>9 different clustering quality criteria</strong> (as 
+   of 2024), and then combine them into a <strong>meta-criterion</strong>. This 
+   meta-criterion has a statistically more robust behavior, i.e. it outperforms 
+   each individual single criteria alone for correctly guessing the optimal 
+   number of clusters.</P>
+  <P>
+   See the full <A HREF="#how-many-clusters">discussion about clustering 
+   criteria</a>.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Next, we are going to delve into the details of these three stages.</P>
+  <H3>
+   <A NAME="math-clustering"></A>Mathematical clustering</H3>
+  <H4>
+   <A NAME="k-means-clustering"></A>The K-Means clustering</H4>
+  <P>
+   We summarize here the K-Means algorithm as it is used for the EEG 
+   data in Cartool. For the sake of clarity, we use practical numbers, 
+   by searching for 5 clusters out of 4 conditions of 100 time frames. 
+   Time is not relevant in this algorithm, so the total of 400 <A HREF="terms-definitions-formulas.html#map">maps</A> 
+   are just &quot;put into a bag&quot;.</P>
+  <P>
+   &nbsp;</P>
+  <OL>
+   <LI CLASS="mvd-P">
+   <P>
+    Initialization</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P>
+     <A NAME="expl-picking"></A>Of the templates: randomly pick 5 
+     non-identical maps out of the 400 data maps.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     <A NAME="expl-labelling"></A>Of the labeling: test each of the 400 
+     maps, and label (index) to which of the 5 templates they correlate 
+     the most.</P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Convergence loop</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P>
+     <B>Compute new templates:</B> average all the maps that have the same label.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     <B>Compute new labeling:</B> test each of the 400 maps, and label 
+     (index) to which of the 5 <B>new</B> templates they correlate the most.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     Compute a measure of quality of the current labeling (<A HREF="terms-definitions-formulas.html#formulas">Global
+      Explained Variance, GEV)</A>.</P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Repeat step 2, until the GEV doesn't improve anymore.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    If the end results has a higher GEV than the current best one, keep 
+    it as the current best.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Repeat again steps 1 to 4, until enough repetitions have been done.</P>
+   </OL>
+  <P>
+   &nbsp;</P>
+  <P>
+   At the end, we have an estimate of the theoretically best segmentation.</P>
+  <P>
+   As there is a random stage in this algorithm, we can only get close 
+   to the perfect solution. Also, running again the whole stuff will 
+   give slightly different results for the same reason. However, the 
+   process is reliable and is a standard procedure. See more <A HREF="#technical-points">technical
+    points</A> here.</P>
+  <H4>
+   <A NAME="hierarchical-clust"></A>The Atomize &amp; Agglomerate 
+   Hierarchical Clustering (AAHC)</H4>
+  <P>
+   <B>Important note:</B> the AAHC is not used anymore in Cartool, only 
+   its modified version <B><A HREF="#TAAHC">T-AAHC</A></B> is available. 
+   However, the T-AAHC being based on the AAHC, the explanations below 
+   still hold.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The <I>usual</I> <A HREF="https://www.google.com/search?q=hierarchical+agglomerative+clustering">Hierarchical
+    Agglomerative Clustering</A> is a bottom-up approach. It starts with 
+   all maps being a cluster, then it merges the two closest clusters (of 
+   the current remaining ones) into a new one, repeatively. In this way, 
+   we have all the segmentations from the number of Time Frames down to 1.</P>
+  <P>
+   Cartool implements a <B>modified version</B> of the Hierarchical 
+   clustering, specifically tailored for the EEG case, called the <B>Atomize
+    &amp; Agglomerate Hierarchical Clustering (AAHC)</B>.</P>
+  <P>
+   It behaves the same as a regular hierarchical agglomerative 
+   clustering, starting with every map being a cluster. Then the main 
+   idea is to pick the &quot;worst&quot; segment of all currently 
+   availables, to atomize it (split it into indivividual maps), and to 
+   re-distribute these maps to the segments they fit most. This also 
+   results in all the segmentations from the number of Time Frames 
+   downto 1.</P>
+  <P>
+   &nbsp;</P>
+  <OL>
+   <LI CLASS="mvd-P">
+   <P>
+    Initialization</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P>
+     Of the templates: each map is a template, starting therefore with 400 clusters.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     Of the labeling: each map labels itself.</P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Removing one cluster</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P>
+     <B>Pick the worst cluster:</B> the one with the lowest <A HREF="terms-definitions-formulas.html#formulas">GEV
+      (Global Explained Variance)</A>.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     <B>Atomize &amp; distribute:</B> take each map of this cluster, and 
+     assign it to the remaining cluster it correlates the best.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     <B>Compute new labeling:</B> test each of the 400 maps, and label 
+     (index) to which of the remaining templates they correlate the most.</P>
+    </UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Repeat step 2, removing one cluster at a time, until we reach 5 clusters.</P>
+   </OL>
+  <P>
+   &nbsp;</P>
+  <P>
+   The main advantages of this method over the regular Hierarchical 
+   Agglomerative Clustering are:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    It redefines the boundaries at each step, allowing <B>small segments 
+    to remain</B>.<BR>
+    <LI CLASS="mvd-P">It gives a far better GEV on each segmentation, 
+    leading to a better choice of the <A HREF="#how-many-clusters">optimum
+     segmentation</A>.</P>
+   </UL>
+  <P>
+   There are many advantages of this method over the K-Means:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    It gives always the same results, if run again.<BR>
+    <LI CLASS="mvd-P">It runs much faster.<BR>
+    <LI CLASS="mvd-P">It spends its &quot;segmentation power&quot; into 
+    higher GFP areas, then giving the interesting segments earlier.</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   A final word could be: try both segmentations, and see the 
+   differences by yourself, it's not good to trust blindly (even 
+   Cartool). Actually, if there is something in your data, it will show 
+   up with both methods anyway!</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   See f.ex. a <B>AAHC</B> versus a <B>K-Means</B> for 18 segments 
+   (though it could be hard to compare directly):</P>
+  <P>
+   <IMG SRC="images/seg.sequentialize-remerge.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   <IMG SRC="images/seg.kmean.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H4>
+   <A NAME="TAAHC"></A>The Topographic Atomize &amp; Agglomerate 
+   Hierarchical Clustering (T-AAHC)</H4>
+  <P>
+   The T-AAHC is actually a further refinement of the above AAHC. The 
+   main difference being that the <B>T-AAHC does not account for the 
+   powers of the maps, but only for their topographies</B>, as the 
+   K-Means was doing.</P>
+  <P>
+   Though the power of maps can be significantly used in many cases, 
+   there are other cases where they are not. If a given brain area is 
+   activated with only a low power, still, this is an interesting event 
+   to consider. Or if you want to re-segment a bunch of template maps 
+   merged together, they all have the same GFP so power is of no help in 
+   this case.</P>
+  <P>
+   The T-AAHC takes the <B>best of both the K-Means</B>, by working only 
+   topographies, <B>and the AAHC</B>, by being deterministic and fast, 
+   without their respective drawbacks.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   There is actually only one technical difference between the T-AAHC 
+   and the AAHC. At one point, both methods have to pick &quot;the worst 
+   cluster&quot; before atomizing it and re-distributing its parts to 
+   the other clusters:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    The AAHC picks the cluster with the <B>lowest GEV</B> (Global 
+    Explained Variance), in which the GFP of course comes into account.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    The T-AAHC picks the <B>&quot;less explained&quot;</B> cluster, the 
+    one whose maps correlate the worse to its template (cluster with the 
+    lowest sum of correlation).</P>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   The T-AAHC results are very close to the K-Means ones, see here an 
+   example for 15 segments (first one is the T-AAHC, second one is the K-Means):</P>
+  <P>
+   <IMG SRC="images/seg.seg-15-taahc.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   <IMG SRC="images/seg.seg-15-kmeans.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="temporal-postproc"></A>Temporal post-processings</H3>
+  <H4>
+   <A NAME="temporal-smoothing"></A>Temporal smoothing</H4>
+  <P>
+   This was the historical way to remove small segments. We kept it 
+   here, but we do prefer the <A HREF="#small-maps-reject">Small maps rejection</A> 
+   procedure instead, because its actual behavior is difficult to 
+   predict (very parameter dependent).</P>
+  <P>
+   (You can refresh your memory with all the <A HREF="terms-definitions-formulas.html#formulas">formulas
+    here</A>)</P>
+  <P>
+   In the labeling process, when assigning a map <IMG SRC="images/formul17.png" ALIGN=BASELINE WIDTH="15" HEIGHT="23" VSPACE="0" HSPACE="0" BORDER="0"> 
+   for each time point <I>t</I>, a distance <I>d</I> is computed, and 
+   the map with the lowest distance <I>d</I> chosen:<BR>
+   <IMG SRC="images/formul19.png" WIDTH="213" HEIGHT="75" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   To express the idea that micro-states tend to stay stables, we 
+   introduce a smoothing factor in the distance <I>d</I>, by defining a 
+   new distance <I>d'</I> that has to minimized the same way:<BR>
+   <IMG SRC="images/formul20.png" WIDTH="276" HEIGHT="76" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   with <I>N<SUB>bkt</SUB></I> being the number of maps <I>k</I> in the 
+   interval <I>t-b</I> to <I>t+b</I> (excluding time <I>t</I> itself), 
+   and <IMG SRC="images/formul21.png" WIDTH="11" HEIGHT="16" VSPACE="0" HSPACE="0" BORDER="0">&gt;0
+    being a weighting factor to control the smoothness. <IMG SRC="images/formul21.png" WIDTH="11" HEIGHT="16" VSPACE="0" HSPACE="0" BORDER="0"> 
+   equal to 0 gives <I>d'</I> = <I>d</I>, while greater values will 
+   allow more smoothness. <I>b</I> is a window size, before and after 
+   current time point t.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;See f.ex. before and after a smoothing (Window half size of 3, 
+   strength of 10). Note that not all small segments have been removed:</P>
+  <P>
+   <IMG SRC="images/seg.no-reject.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/seg.smooth.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H4>
+   <A NAME="sequentialization"></A>Sequentialization</H4>
+  <P>
+   The mathematical clustering, as <A HREF="#seg-method">already explained</A>,
+    does not account for the time dimension. It therefore happens very 
+   often that maps attributed to a given <B>cluster be in fact spread 
+   into very distinct time windows</B>. See for example here <B>cluster 3</B>,
+    or <B>cluster 4</B>:</P>
+  <P>
+   <IMG SRC="images/seg.no-sequentialize.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The clustering did a good job grouping maps together, as the best 
+   trade-off for 8 clusters. But based on physiological evidences, 
+   segments sharing the <B>same label</B> but being <B>temporaly 
+   disconnected do not reflect the same neuronal activity</B>. We are 
+   then untitled to <B>sequentialize</B> those parts, i.e. to split the 
+   clusters with many non-overlapping windows into some sub-clusters.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   The second generation of the sequentialization process works this way:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    For each cluster index:</P>
+   <UL>
+    <LI CLASS="mvd-P">
+    <P>
+     If there is at most one part of that cluster for each file, do 
+     nothing and continue to the next cluster.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     &quot;Cumulate vertically&quot; all files for that cluster, to get a 
+     labeling telling for each time frame if that cluster has been found 
+     in at least one of the files.</P>
+    <LI CLASS="mvd-P">
+    <P>
+     Use this labeling to split the cluster into its timely disconnected parts.</P>
+    </UL>
+   </UL>
+  <P>
+   &nbsp;</P>
+  <P>
+   See here the original clustering without sequentialization (above), 
+   then with sequentialization (below). Worth of interest is the 
+   splitting of old cluster 1 into new 1 and 9, old cluster 6 into new 7 
+   and 11, old cluster 7 into new 13, 15 and 16. Also note that old 
+   cluster 8 remains unchanged (though renamed 14) due to the fact that 
+   all its parts overlap:</P>
+  <P>
+   <IMG SRC="images/seg.no-sequentialize.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   <IMG SRC="images/seg.sequentialize.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <P>
+   &nbsp;</P>
+  <H4>
+   <A NAME="merging-corr-maps"></A>Merging correlated maps</H4>
+  <P>
+   This procedure blindy merges together all maps that are correlated 
+   above a specified threshold. To be used when you <I><B>really want to force</B></I> 
+   (and only when) the merging of some segments together.</P>
+  <P>
+   Not to be confused with the re-merge step of the <A HREF="#sequentialization">Sequentialization</A>.
+    This is another, and independent, processing.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   See f.ex. before and after merging maps above a correlation of 0.92:</P>
+  <P>
+   <IMG SRC="images/seg.sequentialize-remerge.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+   <IMG SRC="images/seg.merge.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H4>
+   <A NAME="small-maps-reject"></A>Small segments rejection</H4>
+  <P>
+   Repeatidely scan for the smallest segment, and if it is smaller than a 
+   given size, it will be deleted. This is done by splitting it into 2 
+   parts, each part being the one that correlates the most to one the 
+   two neighbor segments. If there is only one neighbor, it is simply 
+   merged into it.</P>
+  <P>
+   The size is given by the user, and shouldn't be greater than the 
+   smallest segment you logically expect from your experiment! 
+   (paradigm, physiology and sampling frequency dependent, at least)</P>
+  <P>
+   &nbsp;See f.ex. before and after a rejection of segments shorter than 
+   3 time frames (the coloring changed between the two):</P>
+  <P>
+   <IMG SRC="images/seg.no-reject.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/seg.sequentialize-remerge.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
+  <H3>
+   <A NAME="how-many-clusters"></A><span class="auto-style3">T</span>he infamous &quot;Optimal 
+   number of clusters&quot;<br>and the Meta-Criterion</H3>
+  <P class="mvd-h4">
+   Forewords</P>
+  <P>
+   A point worth mentioning is that we said at the beginning that we were looking for 5 clusters. But actually, we have no <I>a priori</I> 
+   knowledge of how many clusters are right. So we have to run the segmentation 
+   sequentially, and independently, through a range of clusters, for example from 
+   1 to 20 clusters. Each of these segmentations is perfectly valid in itself, 
+   but we wish to have a way to compare between them and select the &quot;optimal one&quot;.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   <strong>Many criteria exist</strong>, and have been developped based on 
+   different assumptions. However, it is also unfortunate that <strong>most of 
+   them are useless</strong> for our case. Indeed, a lot of criteria are not 
+   well suited to our type of 
+   data (normalized maps, equivalent to using a cosine distance). And if they 
+   do, they can still give unreliable 
+   results. All in all, on the 20 criteria that have been implemented in Cartool, only a 
+   subset of <strong>9 criteria (since 2024) seem 
+   to be robust enough</strong>. But none of them does work accurately in all 
+   cases. So the approach taken in Cartool is to
+   <strong>run all of them</strong>, and to <strong>merge their results into a 
+   compound called the <em>Meta-Criterion</em></strong>.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   These criteria and meta-criterion were discussed in this article:</P>
+  <P class="mvd-pre">
+   Bréchet, Brunet, Birot, Gruetter, Michel, Jorge - &quot;Capturing the 
+   spatiotemporal dynamics of self-generated, task-initiated thoughts with EEG 
+   and fMRI&quot; - <em>NeuroImage</em>, July 2019</P>
+  <P>
+   <em>Note 1:</em> the conclusions above are the results of 20+ years of working 
+   on this very specific subject. The selection of the best criteria and the 
+   formula of the Meta-Criterion were both the results of empirical observations, 
+   but, most importantly, of running simulations. These simulations where used 
+   to produce series of quasi-stable micro-states, of random durations, with a 
+   range of 3 to 15 seed maps, each correlated in a range of 10% to 90%, and Gaussian 
+   noise variance ranging from 50 dB to 0 dB (as much noise as data!). Only the criteria surviving these 
+   whole ranges of parameters were kept.</P>
+  <P class="mvd-h4">
+   The 9 criteria</P>
+  <p>The best 9 criteria that proved to be the more reliable for our type of 
+  data are:</p>
+  <ol>
+	  <li><strong>Dunn, Robust version</strong>: An evaluation of the goodness 
+	  of separation of all clusters, with a robust version formula.</li>
+	  <li><strong>Gamma</strong>: An adaptation of Goodman and Kruskal, based on 
+	  concordant vs. discordant clustered pairs.</li>
+	  <li><strong>Gamma, second derivative of Robust version</strong>: Cartool 
+	  robust version of the Gamma, then using the second derivative.</li>
+	  <li><strong>Krzanowski-Lai Index</strong>: A ratio of the relative 
+	  difference of the withinclusters dispersion.</li>
+	  <li><strong>Krzanowski-Lai Index, Cartool version</strong>: Cartool 
+	  implementation of the internal second derivative formula.</li>
+	  <li><strong>Point-Biserial</strong>: A point-biserial correlation 
+	  calculated between the distance matrix and a binary cluster index.</li>
+	  <li><strong>Point-Biserial, second derivative of Robust version</strong>: 
+	  Cartool robust version of the Point-Biserial, then using the second 
+	  derivative.</li>
+	  <li><strong>Silhouettes</strong>: Evaluation of the consistency of each 
+	  cluster through its goodness of fit.</li>
+	  <li><strong>Silhouettes second derivative</strong>: Second derivative of 
+	  Silhouettes.</li>
+  </ol>
+  <P>
+   &nbsp;</P>
+  <P>
+   Naming convention for criteria listed in the <em>.error.data</em> files is 
+   the following:</P>
+  <ul>
+	  <li><strong><em>&lt;CriterionName&gt;</em></strong>:&nbsp;&nbsp;&nbsp;&nbsp; 
+	  Official criterion taken from literature</li>
+	  <li><strong><em>&lt;CriterionName&gt;</em>R</strong>:&nbsp;&nbsp; <strong>R</strong>obust 
+	  version of criterion</li>
+	  <li><strong><em>&lt;CriterionName&gt;</em>''</strong>:&nbsp;&nbsp; Second 
+	  derivative version of criterion</li>
+	  <li><strong><em>&lt;CriterionName&gt;</em>R''</strong>: Second derivative of
+	  <strong>R</strong>obust version of criterion</li>
+	  <li><strong><em>&lt;CriterionName&gt;</em>C</strong>:&nbsp;&nbsp; <strong>C</strong>artool 
+	  own implementation of official formula</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   For example, current criteria names are: <strong>DunnR</strong>, <strong>
+   Gamma</strong>, <strong>GammaR''</strong>, <strong>KL</strong>, <strong>KLC</strong>,
+   <strong>PtBiserial</strong>, <strong>PtBiserialR''</strong>, <strong>
+   Silhouettes</strong> and <strong>Silhouettes''</strong>.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Here are the main references for all of these criteria:</P>
+  <P class="mvd-pre">
+   Charrad, Ghazzali, Boiteau, Niknafs - &quot;NbClust an R package for determining 
+   the relevant number of clusters in a data set&quot; - <em>Journal of Statistical 
+   Software</em>, 2014<br><br>Krzanowski, Lai - &quot;A Criterion for Determining the 
+   Number of Groups in a Data Set Using Sum-of-Squares Clustering&quot; - <em>
+   International Biometric Society</em>, 1988<br><br>Milligan, Cooper - &quot;An 
+   examination of procedures for determining the number of clusters in a data 
+   set&quot; - <em>Psychometrika</em>, 1985</P>
+  <P>
+   <em>Note 2:</em> We used to use a Cross-Validation (CV) criterion for a long 
+   time. However, the extensive testing above clearly showed that it was not a 
+   reliable criterion. It was &quot;undershooting&quot; all the 
+   time, having a tendency to report fewer clusters than the real numbers. This 
+   could have induced previous analysis to under-estimate the actual number of 
+   clusters, especially for Resting States analysis. The 
+   CV was therefore removed from our VIP Club of Best Criteria - RIP.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   <em>Note 3:</em> All criteria have been implemented to have the max value 
+   indicating the optimal clustering. Some criteria work the other way round, 
+   with the min value pointing at the optimal clustering. In these cases, 
+   results were simply inverted to also work with the max value.</P>
+  <P class="mvd-h4">
+   The Meta-Criterion</P>
+  <P>
+   The meta-criterion is simply defined as the <strong>median of all optimal numbers of 
+   clusters across all criteria</strong>:</P>
+  <ul>
+	  <li class="mvd-p">Each criterion max position is 1 vote</li>
+	  <li class="mvd-p">The Meta-Criterion is the Median of all votes</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P class="auto-style5">
+	  <img src="images/seg.crit.meta.png" class="auto-style8"></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   Here is an example of the <strong>9 criteria</strong> (top tracks), their
+   <strong>geometrical mean</strong>, and the 
+   <strong>Meta-Criterion</strong> (bottom track). The horizontal axis being the number of 
+   clusters, the red squares show the maximum position of a given criterion:</P>
+  <P class="auto-style5">
+   <img src="images/seg.crit.all.png" height="290" width="550"></P>
+  <P>
+   &nbsp;</P>
+  <P class="mvd-h4">
+   Lowest number of clusters</P>
+  <P>
+   The <strong>minimum number of clusters</strong> that Cartool can return is 
+   actually <strong>4</strong>. We are going to detail the reasons why:</P>
+  <ul>
+	  <li>All (except one) criteria are <strong>undefined for 1 cluster</strong>. 
+	  Because most of them look at some sorts of separation between clusters, 
+	  there needs to be at least 2 of them to do so.</li>
+	  <li>Many criteria are also <strong>undefined for 2 clusters</strong>, too. 
+	  Because they look at differences between some sort of metric across successive 
+	  clustering. As cluster 1's metric does not exist, it can not be used to 
+	  compare with cluster's 2.</li>
+	  <li>Many criteria will report <strong>3 clusters</strong> as being the 
+	  optimal most of the time, <strong>which we know is wrong</strong> 
+	  from simulated data. The metric computed for 2 clusters shows from 
+	  observation that <strong>splitting the dataset into 2 parts is </strong>
+	  <em><strong>really a bad clustering</strong></em>. Then the 
+	  metric computed for 3, 4, 5... clusters show some dramatic improvement. 
+	  But the biggest improvement is between 2 to 3 clusters. If the criteria 
+	  work with some sort of <em>L</em>-corner principle, or with a second-derivative 
+	  formula, then they will be <strong>highly biased toward 3 clusters</strong>.<br>It is 
+	  enough that some criteria will have inaccurate reports for 3 clusters to 
+	  also forbid the use of all the other criteria. Doing otherwise would 
+	  introduce some disbalance 
+	  in the Meta-Criterion voting system.</li>
+	  <li>Therefore, with our type of data, <strong>the minimum possible number of clusters 
+	  is 4</strong>.</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   Note that there are no constraints on the maximum number of clusters, though 
+   (apart to be less or equal to the number of data points). In case of <em>L</em>-corner 
+   or second-derivative criteria, Cartool will silently expand the range of 
+   clusters by 1 or 2 to be able to compute these criteria. But they will not be 
+   part of the output files.</P>
+  <P class="mvd-h4">
+   Afterwords</P>
+  <P>
+   The optimal number of clusters is a difficult topic. We hope to provide a 
+   more reliable tool with the Meta-Criterion to guide the researcher. By using 
+   different criteria, each being selected for their appropriateness, and 
+   combining them together into a Meta-Criterion, we have a more reliable 
+   estimator of the optimal number of clusters.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   For Resting States analysis, we recommand the automatic use of the 
+   Meta-Criterion when working in batches at the subject's level, i.e. finding 
+   the optimal number of clusters per subject. Then, on the group level, we 
+   suggest to use the Meta-Criterion more as a guidance, from which you have to 
+   interpret its suggestions. Indeed, it happens the result is really clear-cut, 
+   with a single max position of the Meta-Criterion. Easy case, no needs for 
+   second thoughts. However, other cases can show 2 different local max 
+   positions, suggesting that the data can legitimately be split with either of 
+   these 2 numbers of clusters. In this case, the type of data, the paradigm, or 
+   even experience should guide your final choice.</P>
+  <H2>
+   <A NAME="seg-dialog"></A>How to run the Segmentation</H2>
+  <P>
+   There are two ways to call the segmentation dialog:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Use the menu <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
+     | Segmentation of EEG files</A></FONT>, and from there select the 
+    files to be segmented together (by Drag &amp; Drop f.ex.)</P>
+   <LI CLASS="mvd-P">
+   <P>
+    Or <A HREF="general-concepts.html#linkingfiles">link together</A> the 
+    files to be segmented, <A HREF="general-concepts.html#opening-files">Open</A> 
+    the link, then click on the Segmentation button&nbsp; <IMG SRC="images/lm.button.segment2.png" ALIGN=CENTER HSPACE="0" BORDER="0" class="auto-style4">(obsolete, 
+	though)</P>
+   </UL>
+  <P>
+   Then a dialog in 2 parts appears:</P>
+  <h2>
+   <A NAME="segmentation-files-dialog"></a>Segmentation Files Dialog</h2>
+  <CENTER>
+   <P ALIGN=CENTER>
+    <img alt="segmentation files dialog" src="images/segmentation.dialog.files.png" height="740" width="700"></P>
+   <P ALIGN=CENTER>
+    &nbsp;</P>
+   </CENTER>
+  <P>
+   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+       <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <strong>Files Presets</strong></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Pick the main type of processing you want to do:<ul>
+		  <li class="mvd-p">ERP segmentation</li>
+		  <li class="mvd-p">Resting States segmentation, on subjects' level</li>
+		  <li class="mvd-p">Resting States segmentation, on group level</li>
+	  </ul>
+		   </TD>
+       </tr>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B><A NAME="segparams"></A>(1) Segmenting Groups of Files</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Read some important informations about the <A HREF="#seg-groups-of-files">meaning
+        of Groups</A> in the Segmentation context.</P>
+      <P>
+       You can use the very convenient <A HREF="#files-drag-drop">Drag &amp; 
+       Drop feature</A> here.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Number of groups:</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       A counter of how many groups have been given.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Add New Group of Files</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Enter a new group of file(s).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Remove Last Group</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Does what it says.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Clear All Groups</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Clear out all the groups at once.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Read Lists from File</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       You can direclty retrieve the lists of groups previously (see below).</P>
+      <P>
+       See also <A HREF="#files-drag-drop">Drag &amp; Drop</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Write Lists to File</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       You can save the lists of current groups into a file, in case you 
+       want to re-use them (much recommended!).</P>
+      <P>
+       See the <A HREF="#file-list-format">file formats</A> available.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Sort Files within Lists</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       A strange behavior of Windows is to not respect the order of the 
+       files dropped in a window. To help cure this silly habit, you can 
+       sort all the file names of all the groups already entered.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+    </TR>
+       <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B><A NAME="epochs-dialog"></a>(2) Epochs</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Specify which time period to segment.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       No Epochs</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       The whole input files will be used for the clustering.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       List of Epochs:</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Specify a list of epochs, <strong>each epoch being clustered 
+	   independently from the others</strong>. In this very case, epochs 
+	   overlapping or not is irrelevant.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       From</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       From time frame (included)...</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       To</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       ...to time frame (included).</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Add Epoch</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       <strong>Actually inserting the specified epoch to the list</strong>. <em>Don't forget to press on this button to enter the current values!</em></P>
+      <P>
+       If the list remains empty, the segmention process will be run on the 
+       whole dataset.</P>
+      	 </TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Remove Epoch</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Popping out the last epoch from the list back to the edit fields.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <a href="#resampling" name="resampling dialog">Resampled epochs:</a></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       This will <strong>resample your dataset</strong>, generating a set of 
+	   epochs from random data points. The intended use is for Resting States.<P>
+       The first time you select this option, Cartool will estimate the 
+	   parameters below. The aim is to statistically cover 95% of your data, but 
+	   you can change that, especially if the number of resampling is too high.<P>
+       See this paragraph about <strong><a href="#resampling">resampling</a></strong>.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <em>XX</em> Epochs,</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       The number of random epochs, each epoch being clustered on its own.<P>
+       <strong>You can change the number of epochs, and see the corresponding % 
+	   of data coverage in real-time you'll get.</strong></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       of <em>XXXX</em> [TF],</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       The epoch size. This amount of random time points are concatenated into 
+	   each epoch.<P>
+       It might be interesting to you (yes, <em>you</em>) to know that the 
+	   temporal ordering is preserved. Data points, although randoms, appeared 
+	   in the epoch's order.<P>
+       <strong>You can change the epoch size, and see the corresponding % of 
+	   data coverage in real-time you'll get.</strong></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Covering <em>XX</em>% Data</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Combining the number of epochs by the epoch size, it is possible to 
+	   compute the probability to resample any given time point. Therfore, we 
+	   have an idea of the data coverage.<P>
+       For optimal results, it is of course better to cover most of your data. 
+	   However, if the data were to be totally recurrent, you might ease up this 
+	   number.<P>
+       <strong>You can change the % of data coverage, and see the number of 
+	   epochs needed for that in real-time.</strong></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B>(3) Files Options</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Output Base File Name:</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Specify here a <B>basis for all the file names</B> that will be 
+       generated during the segmentation process.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <A NAME="segment-output"></a>Segment Files (.seg)</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       A visual rendition of the segmentation, which also includes the GEV, GFP, 
+	   and correlation of templates with the data.</P>
+      <P>
+       See the <B><I><A HREF="files-formats-cartool.html#seg">.seg</A></I></B> specification.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <A NAME="template-maps"></A>Template Files (.ep)</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       The Templates (or centroids) of the clusters, a weighted avarage of each 
+	   clusters.</P>
+      <P>
+       See the <B><I><A HREF="files-formats-cartool.html#ep">.ep</A></I></B> specification.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <A NAME="data-clusters-output"></a>Data per Cluster</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Original data splitted by clusters.</P>
+	  <P>
+       Currently in <B><I><A HREF="files-formats-cartool.html#sef">.sef</A></I></B> format.</P>
+		   </TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <A NAME="synthetic-output"></a>Synthetic EEG Files</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Counterparts of each original file, where the data has been replaced by 
+	   the corresponding template at each time frame, so it is easy to visualize 
+	   the temporal evolution of multiple conditions.</P>
+	  <P>
+       The power of the synthetic maps also follow the power of the original 
+	   data, too.</P>
+	  <P>
+       Currently in <B><I><A HREF="files-formats-cartool.html#sef">.sef</A></I></B> format.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <strong>Resting States:</strong></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       The following options are aimed at improving the Resting States batch 
+	   processing.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Force Single Files Processing</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       <strong>Each file</strong> from each input group <strong>will be 
+	   processed individually</strong>.<P>
+       So basically, it doesn't care for conditions, and you can <em>Drag&amp;Drop</em> 
+	   all your files at once.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Common Best Clustering Directory</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       After each file has been processed, be it the whole subject or some 
+	   resampled epoch, the <A HREF="#seg-results"><strong>main results</strong></a><strong> 
+	   are copied to a Best Clustering directory</strong>.<P>
+       Files copied are the <I><B>.error.</B><A HREF="files-formats-cartool.html#data"><B>data</B></A></I>, 
+	   the <A HREF="#how-many-clusters">optimal</a> <strong>
+	   <A HREF="#seg-results">templates file</a></strong>, and the corresponding 
+	   verbose <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I> file. 
+	   Directoy name ends is&nbsp; <strong><em>&lt;base file name&gt;.Best Clustering</em></strong><P>
+       A useful trick is that <strong>you can run multiple Cartools in parallel</strong>, 
+	   each with their own subset of subjects. You can then set the exact same 
+	   output base file name in all of them, and select the Common Best 
+	   Clustering Directory. These Cartool instances will therfore write 
+	   concurrently <strong>to the same output directory</strong>. They will <em>
+	   not overwrite</em> each others results, though, as file names should be 
+	   unique across subjects. This way you will divide the total processing 
+	   time by the number of Cartool you run...</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       + Delete Individual Directories</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       This option is only available when the previous one is selected.<P>
+       If selected, once the optimal results have been copied to the Common 
+	   Directory, the current file's results will be deleted. At a subject's 
+	   level, we usually don't care for all the non-optimal clustering results. 
+	   As these could amount to a lot of disk space, it is totally OK to dispose 
+	   of them.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Use these buttons to <B>navigate through the previous and next dialogs</B> 
+       (if any).</P>
+      <P>
+       See which current dialog you are in, and to which other dialogs you 
+       connect, in the <B>tab-like</B> part at the top of the dialog under 
+       the title.</P>
+      	 </TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B>Process</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Runs the segmentation.</P>
+      <P>
+       This button remains <B>disabled until <U>all</U> the parameter 
+       dialogs have received enough (and consistent) informations</B>.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Cancel</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Quit the dialog.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Help</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be here...).</TD>
+       </tr>
+   </TABLE></P>
+  <h2>
+   <A NAME="segmentation-parameters-dialog"></a>Segmentation Parameters Dialog</h2>
+  <P class="auto-style1">
+   <img alt="segmentation parameters dialog" src="images/segmentation.dialog.params.png"></P>
+  <P class="auto-style1">
+   &nbsp;</P>
+   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+       <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B>(1) Clustering Parameters</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       <A HREF="#seg-method">Corresponds to Part 1 of the segmentation</A>.</TD>
+       </tr>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B>Computation Presets:</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Pick your choice from the drop-down list, according to your data type 
+       and experiment.</P>
+      <P>
+       This will set the <B><A HREF="#seg-data-type">input data type</A></B> 
+       for you (can not be manually changed) and the <B>segmentation parameters</B> 
+       with the most common values (which you can manually tune-up).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+    </TR>
+       <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <strong>(1) Data Preprocessing</strong></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       All sorts of preprocessing to tenderize your data before the data 
+	   munching.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <A HREF="eeg-display.html#spatial-filter">Spatial Filter</a>, using XYZ file:</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Applying a <A HREF="eeg-display.html#spatial-filter">Spatial Filter</a> to the 
+	   data, to <strong>remove outliers</strong> and <strong>smooth out the 
+	   noise</strong>.<P>
+       K-Means clustering doesn't like noise, lower SNR data in input also leads 
+	   to lower SNR results...<P>
+       However, it is <em>not</em> recommended to apply this filter more than 
+	   once! <strong>If your EEG preprocessing pipe-line already included 
+	   the Spatial Filter, you shouldn't use it here!</strong> Cartool tries to be 
+	   smart here, if your files contain the characters "Spatial" in their 
+	   names, it will automatically disable this option.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Using Whole Data</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       <strong>Using all of the data</strong> specifed from the
+	   <A HREF="#epochs-dialog"><strong>epochs options</strong></a>. So either 
+	   the whole file, some specific time interval, or some resampled epoch. But 
+	   the file given to the clustering will be used as a whole.<P>
+       Mainly used for ERPs analysis.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Using only GFP Peaks Data</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Keeping only the <strong>data at local GFP Max positions</strong>. These 
+	   are the data points with the higher SNR, and centered on the segments' 
+	   most stable part. Data points with lower GFP are usually transitions due 
+	   to dipoles oscillations, when not at their peak values.<P>
+       This is used only for Resting States analysis.<P>
+       Note that <strong>the GFP Max extraction part is done <em>before</em> the 
+	   resampling</strong>. All GFP Maxes are first concatenated into a temp 
+	   file, which is then resampled. Resampling disrupt the time line 
+	   consistency, therefore a local GFP Max can not be correctly retrived. 
+	   This also ensures that all the resampled epochs will have the same size.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Automatic</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       The GFP track is computed automatically from the input file, then the GFP 
+	   Maxes positions extracted.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       At Markers:</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       The GFP Maxes might have already been computed, or the user has some 
+	   specific requirements about what data points to keep. With this option, 
+	   you can specify whatever marker names for the time positions to be kept.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       But Excluding Bad Epochs:</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Select this option to <strong>skip some time periods from your data</strong>. 
+	   Data preprocessing is never perfect, and some parts of the data should 
+	   still be ignored.<P>
+       Note that this step is done before the GFP Max and the resampling.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Automatic</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <p>Cartool has a bad epochs automatic detection (you might want to give it 
+	  a try from the <a href="eeg-display.html">EEG Window</a>, under <strong>
+	  Markers|Scanning Bad Markers</strong> menu).</p>
+	  <p>This option is seen as a last chance before the clustering. It would 
+	  definitely be better to run the detection before, <em>then</em> visually 
+	  assess the bad epochs, <em>then only</em> run the clustering.</p>
+		   </TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       At Markers</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Give the marker names of the bad epochs to be ignored.<P>
+       Either somebody did put some markers manually to isolate the bad epochs, 
+	   or have already run the automatic bad epochs detection.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <strong>(2) Clustering Parameters</strong></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B><A NAME="seg-data-type"></A>Data Type:</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       This is the input data type, set by the Presets list above.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Only Positive</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Data consist of <B>positive only, scalar data</B>. This could be 
+       spikes from neuron recordings, or the Results of Inverse Solution, f.ex.</P>
+      <P>
+       This will logically turn off the <I>Polarity</I> &amp; <I>References</I> options.</P>
+      <P>
+       See this <A HREF="computing-statistics.html#param-positive-data">point on 
+       positive data</A> and also <A HREF="terms-definitions-formulas.html#data-types">this point</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Signed</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       <B>Signed scalar values</B>, like, you know, EEG.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Vectorial</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Used on <A HREF="file-calculator.html#results-of-inverse">Inverse Solution</A>&nbsp;
+        <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B> data files, 
+       when the results are vectors for each solution points.</P>
+      <P>
+       See this point about <A HREF="#seg-inv-sol">segmentation in the 
+       Inverse Solution space</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B>Data reference</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       No Reference</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Data are used as they come from files, no changes occur.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Average Reference</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Data are <A HREF="terms-definitions-formulas.html#formulas">average reference</A>-d.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B>Maps / Patterns Polarity:</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Ignore</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Polarity of maps does not matter, so ignore it. Inverted maps are 
+       considered the same (same underlying generators, but with reversed polarity).</P>
+      <P>
+       Used for spontaneous EEG recordings.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Account</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Polarity of maps matter, that is, inverted maps are indeed considered 
+       as different.</P>
+      <P>
+       Used for ERPs.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+    </TR>
+       <tr>
+     <TD WIDTH="30%" VALIGN=TOP><strong>Clustering Method:</strong></TD>
+     <TD WIDTH="70%" VALIGN=TOP>&nbsp;</TD>
+       </tr>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP style="height: 36px">
+      <P>
+       <B>K-Means</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP style="height: 36px">
+      <P>
+       See <A HREF="#k-means-clustering">K-Means clustering</A>.&nbsp;</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Number of Random Trials</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Number of time that the process of randomly picking maps is initiated (<A HREF="#k-means-clustering">steps
+        1 to 4</A>). Of course, higher values increase the chance to 
+       converge to the optimal solution, but at the cost of more processing time.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B>T-AAHC Hierarchical Clustering</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       See <A HREF="#TAAHC">Topographic Atomize &amp; Agglomerate 
+       Hierarchical Clustering</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+    </TR>
+       <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B><A NAME="range-of-clusters"></a>Range of Clusters</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       &nbsp;</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       From</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Minimum number of clusters, keep it to <strong>1</strong>.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       To</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Maximum number of clusters, usually around <strong>20 for ERPs</strong>, and 
+	   <strong>12..15 for Resting States</strong>.<P>
+       You might want to increase that number if, f.ex., your ERP epoch is 
+	   longer than ~500 ms. Or if the optimal max appears quite close to the 
+	   higher limit. Of course, the higher the maximum number of clusters, the 
+	   longer the processing time.<P>
+       Decreasing this number is a bit more <em>delicate</em>. By doing so you 
+	   might miss the optimal clustering, without any clue about the miss! The 
+	   range suggested by Cartool is based on our experience at the FBMLab, you 
+	   have to have some good reasons to decrease that range.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Labeling at Low Correlations:<br><strong>No Labeling if Below</strong></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       If selected, you can specify a <strong>minimum correlation threshold</strong> 
+	   for data points to be <strong>assigned to a given cluster</strong>.<P>
+       <strong>Default correlation threshold is set to 50%</strong>, which is 
+	   quite conservative.<P>
+       See this <A HREF="#outliers-rejection">outliers rejection paragraph</a>.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <A NAME="alternative-dialog"></a>Alternative Templates:<br>EEG To Inverse 
+	   / Inverse To EEG</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       This option can help you <strong>computing the inverse solution of your 
+	   EEG template maps</strong>, or the <strong>EEG maps from your inverse 
+	   templates</strong> if you run the clustering on
+	   <a href="computing-ris.html">RIS</a> files.<P>
+       There are <A HREF="#alternative-templates">more explanations here</a>.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+       </tr>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B>(3) Temporal Postprocessing</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       <A HREF="#seg-method">Part 2 of the segmentation</A>.</TD>
+    </TR>
+       <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B><A HREF="#sequentialization">Sequentializing Segments</A></B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Scans the clusters, and split those who belong to the same cluster 
+       but don't overlap in time.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B><A HREF="#merging-corr-maps">Merging Correlated Segments</A></B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Blindly merge together clusters that are correlated above a threshold.<P>
+       This is quite a harsh post-processing, use with care.</TD>
+       </tr>
+	   <tr>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       If Correlated above:</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Specify the correlation threshold as a percentage.</TD>
+       </tr>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B><A HREF="#temporal-smoothing">Segments Temporal Smoothing</A></B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Redo the <A HREF="#expl-labelling">labeling</A>, but with a <A HREF="#temporal-smoothing">temporal
+        smoothing factor</A>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Window Half Size:</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       The temporal smoothing operates with a sliding window, which you 
+       specify here the half size (in time frames). The actual window size 
+       is therefore ( 2 x W + 1 ).</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Strength (Besag Factor):</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Strength <IMG SRC="images/formul21.png" WIDTH="11" HEIGHT="16" VSPACE="0" HSPACE="0" BORDER="0"> 
+       of the smoothing, actually the Besag factor from the article on the 
+       segmentation process.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B><A HREF="#small-maps-reject">Rejecting Small Segments</A></B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Deletes short segments, and fuse them with their 2 respective neighbors.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Shorter than or equal to:</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Size below which a segment is removed.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP></TD>
+     <TD WIDTH="70%" VALIGN=TOP></TD>
+    </TR>
+       <tr>
+     <TD WIDTH="27%" VALIGN=TOP>
+      <P>
+       &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;</TD>
+     <TD WIDTH="73%" VALIGN=TOP>
+      <P>
+       Use these buttons to <B>navigate through the previous and next dialogs</B> 
+       (if any).</P>
+      <P>
+       See which current dialog you are in, and to which other dialogs you 
+       connect, in the <B>tab-like</B> part at the top of the dialog under 
+       the title.</P>
+      	 </TD>
+       </tr>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       <B>Process</B></TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Runs the segmentation.</P>
+      <P>
+       This button remains <B>disabled until <U>all</U> the parameter 
+       dialogs have received enough (and consistent) informations</B>.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Cancel</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Quit the dialog.</TD>
+    </TR>
+    <TR>
+     <TD WIDTH="30%" VALIGN=TOP>
+      <P>
+       Help</TD>
+     <TD WIDTH="70%" VALIGN=TOP>
+      <P>
+       Launch the Help to the right page (should be here...).</TD>
+    </TR>
+   </TABLE>
+  <H2>
+   <A NAME="technical-points"></A>Segmentation - Technical points &amp; hints</H2>
+  <H4>
+   <A NAME="seg-groups-of-files"></A>Groups of Files in the Segmentation</H4>
+  <P>
+   <B>Each group</B> of files provided in the list will be <B>processed 
+   independently of the other groups</B>. Conversely, all the files 
+   within a group <B>are</B> concurrently segmented together (a 
+   different approach from the <A HREF="microstates-back-fitting-templates.html#fit-groups-of-files">Fitting</a>).</P>
+  <P>
+   In this way, we have a sort of batch processing, where you can input 
+   groups with different number of files, and / or different dimensions 
+   (in time, in electrodes). However, the <B>same </B><A HREF="#segparams"><B>segmentation
+    parameters</B></A> will apply for all these segmentations. The 
+   output directories / files will be numbered if more than one group is given.</P>
+  <H4 class="mvd-h4">
+   <A NAME="files-drag-drop"></A>You can Drag &amp; Drop these files 
+   directly from the Explorer:</H4>
+  <P>
+   It is strongly recommended to use these Drag &amp; Drop features 
+   which will tremendously ease your work:</P>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    Any <A HREF="files-formats-others.html#eeg">EEG files</A>. Dropping <B>many</B> 
+    EEG files at a time will create a new <B><A HREF="#fitting-groups">group
+     of files</A></B>. Dropping a <B>single</B> EEG file will update the <A HREF="#fitting-template">template
+     file</A>.<BR>
+    <LI CLASS="mvd-P"><B><I><A HREF="general-concepts.html#linkingfiles">.lm</A></I></B><A HREF="general-concepts.html#linkingfiles"> files</A>,
+     each file being scanned and its content itself treated as a <A HREF="#fitting-groups">group
+     of files</A>.<BR>
+    <LI CLASS="mvd-P"><I><A HREF="files-formats-cartool.html#csv"><B>.csv</B></A></I><A HREF="files-formats-cartool.html#csv"> files</A>,
+     as a <A HREF="#file-list-write">list of groups previously saved</A>.</P>
+   </UL>
+  <H4>
+   <A NAME="file-list-format"></A>File formats to save or retrieve the 
+   lists of groups</H4>
+  <UL>
+   <LI CLASS="mvd-P">
+   <P>
+    <B><I><A HREF="files-formats-cartool.html#csv">.csv</A></I></B> file<BR>
+    <LI CLASS="mvd-P"><B><I>.txt</I></B> text file, with a similar format 
+    as the <B><I>.csv</I></B> format above, but separators used are <B>tabs</B> 
+    instead of commas (then rather a <B><I>.tsv</I></B> format).</P>
+   </UL>
+  <H4>
+   Maps</H4>
+  <P>
+   In all the segmentation and fitting algorithms, <B>normalized maps</B> 
+   are used as only the shape/topology of the maps is of interest, and 
+   not their strengths. The only exception is when generating an average 
+   map to represent a given segment, the original maps are taken to 
+   therefor make a GFP-weighted sum, giving more emphasize to maps with 
+   higher GFP (which are likely to be less noisy and of higher interest).</P>
+  <H4>
+   <a name="resampling"></a>Resampling your data - <em>why should I do that?</em></H4>
+  <P>
+   In the <A HREF="#segmentation-files-dialog">Files Dialog</a>, you can set 
+   some <A HREF="#resampling-dialog">resampling option</a>, aimed at Resting 
+   States processing. Here are the main points <strong>why you should favor the 
+   resampling</strong> (apart from looking cool, of course):</P>
+  <ul>
+	  <li class="mvd-p"><strong>All resampled epochs will have the same size</strong>. 
+	  Although files are usually of comparable sizes across subjects or 
+	  conditions, nothing 
+	  guarantees that. And the bigger the file, the less likely the K-Means will 
+	  produce reliable answers. Using the original files, without resampling / 
+	  cropping, could therefore produce results with different levels of 
+	  quality. While equal size epochs should produce comparable quality in 
+	  terms of clusters separation.</li>
+	  <li class="mvd-p"><strong>The bigger the file, the more random 
+	  bootstrapping the K-Means will need</strong> to ensure a reliable answer. 
+	  This is due to the very random nature of the Lloyd's algorithm. The number of 
+	  trials needed for a correct clustering varies exponentially with the number of data points! 
+	  By using smaller files, for the same amount of random trials, the K-Means 
+	  will produce more reliable clustering.</li>
+	  <li class="mvd-p"><A HREF="#how-many-clusters">Estimating the best optimal 
+	  of clusters</a> is a difficult endeavour. By repeating the analysis of the 
+	  same subjects multiple times, <strong>we also reduce our chance of picking the 
+	  wrong number of clusters</strong>. Not only due to the repetition process 
+	  itself, 
+	  but also due to the resampled data being slightly different across 
+	  epochs. Stated otherwise, this also allows for <strong>resampling of the 
+	  optimal number of clusters</strong>.</li>
+	  <li class="mvd-p">Resting States data are supposed to be cyclical, the 
+	  brain looping through some major processes again and again. These 
+	  processes are what the clustering is trying to characterize. <strong>
+	  Resampling cyclical data is perfectly fine</strong> and should give the 
+	  same results as a correct, full-size clustering.</li>
+	  <li class="mvd-p">The K-Means algorithm is as a classifier. At its core,
+	  <strong>it compares 
+	  <a href="https://en.wikipedia.org/wiki/Clustering_high-dimensional_data">maps made of hundreds of electrodes</a></strong>. With 
+	  this amount of dimensions, most of the search space will appear empty, the 
+	  so-called <a href="https://en.wikipedia.org/wiki/Curse_of_dimensionality">
+	  cursed of dimensionality</a>. By using the resampling technique, we can
+	  <strong>boost the number of data points available at the Group level 
+	  clustering</strong>. The increase ratio being roughly the number of 
+	  resampling, which means going from a hundred maps to many thousands is a 
+	  real plus.</li>
+	  <li class="mvd-p">Smaller files analysis will <strong>run faster</strong>, 
+	  with <strong>smaller memory footprint</strong>.</li>
+  </ul>
+  <P>
+   &nbsp;</P>
+  <P>
+   TL;DR: Shorter files work better, repeating the K-Means multiple times is 
+   better, using different random parts of the data improves both the K-Means 
+   and the optimal number of clusters.</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   I hope I made a case to use this resampling technique. Resting States 
+   analysis is not an easy task, and the results appear to be much more unstable 
+   than ERPs. This is why we should put more chances on our sides to find the 
+   optimal clustering. You can still ignore it, though, f.ex. if you want to 
+   reproduce some previous results where it was not available.</P>
+  <H4>
+   <A NAME="GEV"></A>Global Explained Variance computation</H4>
+  <P>
+   During the <B>segmentatioin process</B>, the <A HREF="terms-definitions-formulas.html#GEV"><strong>GEV</strong></A> 
+   value is <B>computed across all the provided files</B>, as if they were
+   <strong>aggregated into a 
+   single one</strong>. It gives a global quality measure of the overall 
+   segmentation process, plus the relative weight/contribution of each segment 
+   into the global segmentation.</P>
+  <P>
+   However, during the <B>fitting process</B>, the <strong>GEV</strong> is computed on 
+   a <strong>set of groups</strong> that represent some natural <strong>
+   <A HREF="#number-within-subjects">within-subjects size</a></strong>, which in 
+   turns depend on your paradigm. It can even be computed on a <strong>per-file 
+   basis</strong>, if subjects were not the same across all groups.</P>
+  <P>
+   This has roughly the same consequence as for <A HREF="#GFP-normalization">GFP 
+   Normalization</a>, in that the <strong>denominator part of the </strong>
+   <A HREF="terms-definitions-formulas.html#GEV"><strong>equation</strong></A> will be different 
+   according to the <strong>number of files it is computed across</strong>. Not 
+   that the absolute sum is of any importance, but rather that individually 
+   scaling each file could introduce some artifacts if some big component was to 
+   be found in one file and not into the others. Which could then make the other 
+   components appear relatively weaker in the other files, thus wrongly 
+   generating significant statistical differences.</P>
+  <H4>
+   <A NAME="outliers-rejection"></a>Outliers rejection</H4>
+  <P>
+       By construct, and no matter what, the K-Means clustering will assign 
+	   every data point to one cluster, the one it correlates the most. But 
+	   sometimes, some data points will not correlate well with any of these 
+	   clusters. To avoid degrading the existing clusters with outliers, data 
+	   points whose best <strong>correlation are still below a given threshold 
+	   will not be assigned to any cluster</strong>.<P>
+       Data points too far from any clusters' cloud will be <strong>labeled as 
+	   unclassified</strong>. It can also be seen as a hidden, additional 
+	   "garbage" cluster used to gather all of the outliers. Cluster that will 
+	   be subsequently ignored for the remaining computations (centroids,
+	   <A HREF="#how-many-clusters">criteria</a>...).<P>
+       The <strong>default correlation threshold is set to 50%</strong>, which 
+	   is quite a conservative value. Hence, no more than a few % of the data 
+	   should be classified as unlabeled in the end. Check with the verbose file 
+	   for the amount of unlabeled data, and if too high, then something might 
+	   be wrong with the data.&nbsp;If you increase the threshold, you might end up 
+	   with too much rejection. If you decrease it, you might incorporate 
+	   outliers back to the clusters.<H4>
+   <A NAME="alternative-templates"></a>Alternative templates</H4>
+  <P>
+       (The following explanations are for the regular EEG clustering)<P>
+       Cartool provides an option, the <em><A HREF="#alternative-dialog">
+	   "Alternative templates"</a></em>, to compute the corresponding 
+	   localization for each EEG template map.<P>
+       First of all, it expects that <strong><em>all</em></strong> of your input 
+	   EEG files have some <a href="computing-ris.html">RIS</a> files 
+	   counterpart, f.ex. as generated by the <a href="computing-ris.html">RIS 
+	   Computation Toolbox</a>. Cartool expects an <strong>exact one-to-one 
+	   match between each EEG and RIS file names</strong> (similar file names, 
+	   identical directories). Cartool will complain if some files appear to be 
+	   missing. However it will not whine at all in case <em>no counterpart 
+	   files were found at all</em>, it will just skip this option silently.<P>
+       The clustering will then run as usual at the EEG level, without any 
+	   difference. The final templates are computed as the average of each 
+	   clusters' cloud, as usual. Then, the <strong>labeling from the EEG 
+	   clustering will be applied on the alternative dataset</strong>, allowing 
+	   to <strong>compute the average of the corresponding inverse solutions</strong>. 
+	   This way, each EEG template map will have its corresponding inverse 
+	   template.<P>
+       &nbsp;<P>
+       Here is a simplified diagram, showing 18 EEG maps clustered into 3 
+	   groups. Top part shows the results of the regular EEG clustering, with 
+	   the 3 clusters containing each 6 maps, and below them their average maps. 
+	   Bottom part is the alternative dataset, here the inverse space. It is
+	   <strong>using the same labeling</strong> ("map numbers") <strong>to 
+	   compute the average brain activities corresponding to the average EEG 
+	   maps</strong>:<P>
+       &nbsp;<P class="auto-style1">
+       <img height="564" SRC="images/seg.alternative-dataset.png" width="640"><P>
+       &nbsp;<P>
+       <em>Note 1:</em> This option is actually <strong>working both way</strong>. 
+	   If you run the clustering on the RIS data, then the alternative dataset 
+	   will be the EEG maps. The main templates will be brain regions, the 
+	   alternative templates the corresponding EEG maps.<P>
+       <em>Note 2:</em> You can also compute the average inverses through the
+	   <a href="microstates-back-fitting-templates.html">Fitting</a>, by saving all data per clusters. Then 
+	   running the <a href="computing-ris.html">RIS Computation Toolbox</a> 
+	   with the proper Preset.<H2>
+   <A NAME="seg-results"></A>Segmentation - Results</H2>
+  <P>
+   (See also the <A HREF="microstates-segmentation-display.html">Segments display</A>)<br><br></P>
+  <UL>
+      <LI CLASS="mvd-P">
+      <P>One <I><B>.error.</B><A HREF="files-formats-cartool.html#data"><B>data</B></A></I> 
+	  file which holds a <a href="microstates-segmentation-display.html#summary">summary of the 
+	  whole range of segmentations</a>, showing the error being made at each 
+	  individual segmentation.<br>This file is the most important one (with the 
+	  verbose file) from the overall segmentation, and acts like a dashboard to 
+	  help you decide which segmentation is the most optimal one.</P>
+	  <LI CLASS="mvd-P">
+      <P>One general <B>verbose</B> files <I><B>&lt;basefilename&gt;</B><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>,
+     with all the parameters being used. Keep this precious file with your data, 
+	  this is the only way you can exactly redo your results!<br>Then some more 
+	  detailed verbose files <I><B>&lt;basefilename&gt;.&lt;#clusters&gt;</B><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>&nbsp; 
+	  for each number of clusters within the <A HREF="#range-of-clusters">input 
+	  range</a>, with more informations about the clustering results for each 
+	  number of clusters.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    In case of <A HREF="#segment-output">Segment output</a>, some <I><B>
+	&lt;basefilename&gt;.&lt;#clusters&gt;</B><A HREF="files-formats-cartool.html#seg"><B>.seg</B></A></I> 
+    (Segments) files, that can be <A HREF="microstates-segmentation-display.html">opened 
+    by Cartool</A> to visually render the results of each individual 
+    segmentation.<br>At the first opening, it first displays 
+    the <A HREF="terms-definitions-formulas.html#formulas">GFP</A>&#146;s of the files 
+    segmented, filled with a color scheme representing the segment 
+    numbers. Scrolling down with the down arrow will cycle through the 
+    Dissimilarity, the segments numbers, the GEV split segment by 
+    segment, and the Correlation between the template map and the map for 
+    each time frame. For example, here is one showing the GFPs:</P>
+   <P>
+    <IMG SRC="images/seg.small-segments.png" ALIGN=TOP VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <LI CLASS="mvd-P">
+   <P>
+    In case of <A HREF="#template-maps">Template output</a>, <I><B>
+	&lt;basefilename&gt;.&lt;#clusters&gt;</B><A HREF="files-formats-cartool.html#ep"><B>.ep</B></A></I> files (or 
+	<I><B>&lt;basefilename&gt;.&lt;#clusters&gt;</B></I><B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B> 
+    files for inverse space segmentation), containing the <strong>template maps</strong> 
+	for a given number of clusters. These are the centroids of the&nbsp; 
+	clusters, and each template index correspond to the segment index of the
+	<strong><em>.seg</em></strong> files (above).</P>
+   <P>
+    <IMG SRC="images/seg.template-maps.small.png" ALIGN=TOP WIDTH="378" HEIGHT="112" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   <LI CLASS="mvd-P">
+   <P>
+    In case of <A HREF="#data-clusters-output">Data Clusters output</a>, some <I>
+	<strong>&lt;basefilename&gt;.&lt;#clusters&gt;.Cluster&lt;#&gt;</strong><A HREF="files-formats-cartool.html#ep"><strong>.ep</strong></A></I> files (or <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B> 
+    files according to the input files) in the <strong><em>More</em></strong> 
+	directory. Each file holds all the original data splitted by cluster index.</P>
+   <LI CLASS="mvd-P">
+   <P>
+    In case of <A HREF="#synthetic-output">Synthetic Ouput</a>, some <I><B>
+	&lt;basefilename&gt;.&lt;#clusters&gt;.&lt;originalfilename&gt;</B><A HREF="files-formats-cartool.html#ep"><B>.ep</B></A></I> files (or <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B> 
+    files according to the input files) in the <strong><em>More</em></strong> 
+	directory.<br>Each time point of the <strong>original data is replaced by 
+	its corresponding template map</strong>. The original power is then applied 
+	to new time point. This is useful to visually compare the before and after 
+	segmentation.<br><br>Here we can see some original data (top) clustered in 4 
+	groups (colored boxes), and the corresponding synthetic maps (below):</P>
+   <P>
+    <IMG SRC="images/seg.data-with-segments.png" WIDTH="707" HEIGHT="243" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+    <IMG SRC="images/seg.synthetic-data-with-segments.png" WIDTH="707" HEIGHT="243" VSPACE="0" HSPACE="0" BORDER="0"></P>
+   </UL>
+  <H2>
+   <A NAME="seg-inv-sol"></A>Segmentation in the Source Space</H2>
+  <P>
+   Instead of using EEG data, it is possible to directly segment the
+   <a href="computing-ris.html">Results of Inverse
+    Solution</a>. Instead of the electrical values at each 
+   electrode, it will use the estimated dipoles at each solution 
+   points within the brain.</P>
+  <P>
+   <em>This part has to be totally rewritten due to current evaluations...</em></P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;</P>
+  <P>
+   &nbsp;
+ </BODY>
+</HTML>
