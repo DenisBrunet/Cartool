@@ -281,11 +281,10 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Cartool &GitHub",             CM_HELPCARTOOLGITHUB
         MENUITEM "Cartool Co&mmunity",          CM_HELPCARTOOLCOMMUNITY
-        MENUITEM "Check for &Updates",          CM_HELPAUTOUPDATE
-        MENUITEM "Cartool &Releases",           CM_HELPWEBRELEASES
+//      MENUITEM "Check for &Updates",          CM_HELPAUTOUPDATE
+        MENUITEM "Latest &Release",             CM_HELPWEBRELEASES
         MENUITEM SEPARATOR
         MENUITEM "&Center for Biomedical Imaging (CIBM)", CM_HELPWEBCIBM
-        MENUITEM "&Functional Brain Mapping Lab", CM_HELPWEBFBMLAB
         MENUITEM SEPARATOR
         MENUITEM "&About Cartool",              CM_HELPABOUT
     END

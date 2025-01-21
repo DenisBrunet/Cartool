@@ -158,7 +158,6 @@ DEFINE_RESPONSE_TABLE2( TCartoolApp, TRecentFiles, TApplication )
 //  EV_COMMAND_AND_ID   ( CM_HELPWEBUSERSGUIDE,         CmHelpContents ),
     EV_COMMAND_AND_ID   ( CM_HELPWEBREFERENCEGUIDE,     CmHelpContents ),
     EV_COMMAND_AND_ID   ( CM_HELPWEBRELEASES,           CmHelpContents ),
-    EV_COMMAND_AND_ID   ( CM_HELPWEBFBMLAB,             CmHelpContents ),
     EV_COMMAND_AND_ID   ( CM_HELPWEBCIBM,               CmHelpContents ),
     EV_COMMAND_AND_ID   ( CM_HELPAUTOUPDATE,            CmHelpContents ),
 
@@ -282,11 +281,6 @@ RemoveExtension     ( ApplicationFileName );
                                         // extract only the directory
 StringCopy          ( ApplicationDir, ApplicationFullPath );
 RemoveFilename      ( ApplicationDir );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Use the on-line Reference Guide - we could also have a local copy
-HelpFullPath    = TFileName ( GiHubCartoolWebsite ) + "/ReferenceGuide/";
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1596,14 +1590,13 @@ if ( doc.GetDocPath () )
                                         // Menu Help Contents command
 void    TCartoolApp::CmHelpContents ( owlwparam w )
 {
-if      ( w == CM_HELPCONTENTS          )   ShellExecute    ( NULL, "open", HelpFullPath,                                                                   NULL, NULL, SW_SHOWNORMAL );
+if      ( w == CM_HELPCONTENTS          )   ShellExecute    ( NULL, "open", GiHubCartoolRefGuide,                                                           NULL, NULL, SW_SHOWNORMAL );
 //else if ( w == CM_HELPWEBUSERSGUIDE   )   ShellExecute    ( NULL, "open", "https://cartoolcommunity.unige.ch/user-s-guide",                               NULL, NULL, SW_SHOWNORMAL ); // does not exist anymore, and not yet replaced either...
-else if ( w == CM_HELPCARTOOLGITHUB     )   ShellExecute    ( NULL, "open", "https://github.com/DenisBrunet/Cartool",                                       NULL, NULL, SW_SHOWNORMAL );
+else if ( w == CM_HELPCARTOOLGITHUB     )   ShellExecute    ( NULL, "open", GiHubCartool,                                                                   NULL, NULL, SW_SHOWNORMAL );
 else if ( w == CM_HELPCARTOOLCOMMUNITY  )   ShellExecute    ( NULL, "open", "https://cartoolcommunity.unige.ch",                                            NULL, NULL, SW_SHOWNORMAL );
-else if ( w == CM_HELPAUTOUPDATE        )   ShellExecute    ( NULL, "open", "https://sites.google.com/site/cartoolcommunity/downloads",                     NULL, NULL, SW_SHOWNORMAL );
-else if ( w == CM_HELPWEBRELEASES       )   ShellExecute    ( NULL, "open", "https://sites.google.com/site/cartoolcommunity/downloads/cartool-releases",    NULL, NULL, SW_SHOWNORMAL );
+//else if ( w == CM_HELPAUTOUPDATE      )   ShellExecute    ( NULL, "open", "https://sites.google.com/site/cartoolcommunity/downloads",                     NULL, NULL, SW_SHOWNORMAL );
+else if ( w == CM_HELPWEBRELEASES       )   ShellExecute    ( NULL, "open",  TFileName ( GiHubCartool ) + "/releases/latest",                               NULL, NULL, SW_SHOWNORMAL );
 else if ( w == CM_HELPWEBCIBM           )   ShellExecute    ( NULL, "open", "https://cibm.ch/",                                                             NULL, NULL, SW_SHOWNORMAL );
-else if ( w == CM_HELPWEBFBMLAB         )   ShellExecute    ( NULL, "open", "https://www.unige.ch/medecine/neuf/en/research/grecherche/christoph-michel/",  NULL, NULL, SW_SHOWNORMAL );
 }
 
                                         // Menu Help About Cartool command

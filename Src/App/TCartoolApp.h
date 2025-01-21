@@ -44,7 +44,11 @@ namespace crtl {
 //----------------------------------------------------------------------------
                                         // Program name
 constexpr char* CartoolTitle            = "Cartool";
-constexpr char* GiHubCartoolWebsite     = "https://denisbrunet.github.io/Cartool";
+
+                                        // Web addresses
+constexpr char* GiHubCartool            = "https://github.com/DenisBrunet/Cartool";
+constexpr char* GiHubCartoolIO          = "https://DenisBrunet.github.io/Cartool";
+constexpr char* GiHubCartoolRefGuide    = "https://DenisBrunet.github.io/Cartool/ReferenceGuide";
 
 
 constexpr int   ShortStringLength       = 64;
@@ -129,7 +133,6 @@ public:
     TFileName       ApplicationFullPath;        // full path to executable
     TFileName       ApplicationDir;             // full path to directory
     char            ApplicationFileName [ ShortStringLength ];  // file name only (no directory, no extension)
-    TFileName       HelpFullPath;               // full path to help file
 
     char            ProdName            [ ShortStringLength ];  // this is used to access the registry, i.e. storing and retrieving options - is should remain as 'Cartool' to be able to access the same options in case of different executables
     char            ProdVersion         [ ShortStringLength ];

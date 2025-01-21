@@ -664,7 +664,7 @@ CmGroupWinAction ( IDB_GTVFIT );
                                         // Called from menu  Tools | Help
 void    TCartoolMdiClient::CmToolsHelp ()
 {
-TFileName           helpaddress     = CartoolApplication->HelpFullPath + "all-processings.html";
+TFileName           helpaddress     = TFileName ( GiHubCartoolRefGuide ) + "/all-processings.html";
 
 ShellExecute    ( NULL, "open", helpaddress, NULL, NULL, SW_SHOWNORMAL );
 }

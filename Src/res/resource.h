@@ -1216,7 +1216,6 @@
 #define CM_HELPCARTOOLCOMMUNITY         24374
 #define CM_HELPWEBUSERSGUIDE            24375
 #define CM_HELPWEBREFERENCEGUIDE        24376
-#define CM_HELPWEBFBMLAB                24377
 #define CM_HELPWEBRELEASES              24378
 #define CM_HELPAUTOUPDATE               24379
 #define CM_HELPWEBCIBM                  24380

@@ -468,31 +468,31 @@ void    TBaseDialog::CmHelp ()
 uint                ResId           = PtrToUint ( Attr.Name );
 
 
-TFileName           helpaddress     = CartoolApplication->HelpFullPath;
+TFileName           helpaddress     = GiHubCartoolRefGuide;
 
-if      ( ResId == IDD_STATISTICS1              )   helpaddress    += "computing-statistics.html"               "#dialog-files";
-else if ( ResId == IDD_STATISTICS2              )   helpaddress    += "computing-statistics.html"               "#dialog-parameters";
-else if ( ResId == IDD_AVERAGE1                 )   helpaddress    += "computing-erps.html"                     "#dialog-files";
-else if ( ResId == IDD_AVERAGE2                 )   helpaddress    += "computing-erps.html"                     "#dialog-parameters";
-else if ( ResId == IDD_AVERAGE3                 )   helpaddress    += "computing-erps.html"                     "#dialog-output";
-else if ( ResId == IDD_AVERAGECONTROL           )   helpaddress    += "computing-erps.html"                     "#dialog-control";
-else if ( ResId == IDD_TRACKSFILTERS            )   helpaddress    += "eeg-display.html"                        "#filters";
-else if ( ResId == IDD_EXPORTTRACKS             )   helpaddress    += "reprocess-tracks.html";
-else if ( ResId == IDD_SEGMENT1                 )   helpaddress    += "microstates-segmentation.html"           "#segmentation-files-dialog";
-else if ( ResId == IDD_SEGMENT2                 )   helpaddress    += "microstates-segmentation.html"           "#segmentation-parameters-dialog";
-else if ( ResId == IDD_FITTING1                 )   helpaddress    += "microstates-back-fitting-templates.html" "#fitting-files-dialog";
-else if ( ResId == IDD_FITTING2                 )   helpaddress    += "microstates-back-fitting-templates.html" "#fitting-parameters-dialog";
-else if ( ResId == IDD_FITTING3                 )   helpaddress    += "microstates-back-fitting-templates.html" "#fitting-results-dialog";
-else if ( ResId == IDD_INTERPOLATE              )   helpaddress    += "tracks-interpolation.html"               "#dialog";
-else if ( ResId == IDD_SCANMARKERS              )   helpaddress    += "eeg-display.html"                        "scanning-triggers";
-else if ( ResId == IDD_FREQANALYSIS             )   helpaddress    += "frequency-analysis.html";
-else if ( ResId == IDD_CREATEROIS               )   helpaddress    += "creating-rois.html";
-else if ( ResId == IDD_CALCULATOR               )   helpaddress    += "file-calculator.html";
-else if ( ResId == IDD_INVERSEMATRICES          )   helpaddress    += "computing-inverse-solution-matrices.html";
-else if ( ResId == IDD_RISCOMPUTATION           )   helpaddress    += "computing-ris.html";
-else if ( ResId == IDD_MRIPREPROCESSING         )   helpaddress    += "mris-preprocessing.html";
-else if ( ResId == IDD_RISTOVOLUME              )   helpaddress    += "ris-to-volumes.html";
-else if ( ResId == IDD_COREGISTRATION           )   helpaddress    += "coregistering-electrodes-to-mri.html";
+if      ( ResId == IDD_STATISTICS1              )   helpaddress    += "/computing-statistics.html"               "#dialog-files";
+else if ( ResId == IDD_STATISTICS2              )   helpaddress    += "/computing-statistics.html"               "#dialog-parameters";
+else if ( ResId == IDD_AVERAGE1                 )   helpaddress    += "/computing-erps.html"                     "#dialog-files";
+else if ( ResId == IDD_AVERAGE2                 )   helpaddress    += "/computing-erps.html"                     "#dialog-parameters";
+else if ( ResId == IDD_AVERAGE3                 )   helpaddress    += "/computing-erps.html"                     "#dialog-output";
+else if ( ResId == IDD_AVERAGECONTROL           )   helpaddress    += "/computing-erps.html"                     "#dialog-control";
+else if ( ResId == IDD_TRACKSFILTERS            )   helpaddress    += "/eeg-display.html"                        "#filters";
+else if ( ResId == IDD_EXPORTTRACKS             )   helpaddress    += "/reprocess-tracks.html";
+else if ( ResId == IDD_SEGMENT1                 )   helpaddress    += "/microstates-segmentation.html"           "#segmentation-files-dialog";
+else if ( ResId == IDD_SEGMENT2                 )   helpaddress    += "/microstates-segmentation.html"           "#segmentation-parameters-dialog";
+else if ( ResId == IDD_FITTING1                 )   helpaddress    += "/microstates-back-fitting-templates.html" "#fitting-files-dialog";
+else if ( ResId == IDD_FITTING2                 )   helpaddress    += "/microstates-back-fitting-templates.html" "#fitting-parameters-dialog";
+else if ( ResId == IDD_FITTING3                 )   helpaddress    += "/microstates-back-fitting-templates.html" "#fitting-results-dialog";
+else if ( ResId == IDD_INTERPOLATE              )   helpaddress    += "/tracks-interpolation.html"               "#dialog";
+else if ( ResId == IDD_SCANMARKERS              )   helpaddress    += "/eeg-display.html"                        "scanning-triggers";
+else if ( ResId == IDD_FREQANALYSIS             )   helpaddress    += "/frequency-analysis.html";
+else if ( ResId == IDD_CREATEROIS               )   helpaddress    += "/creating-rois.html";
+else if ( ResId == IDD_CALCULATOR               )   helpaddress    += "/file-calculator.html";
+else if ( ResId == IDD_INVERSEMATRICES          )   helpaddress    += "/computing-inverse-solution-matrices.html";
+else if ( ResId == IDD_RISCOMPUTATION           )   helpaddress    += "/computing-ris.html";
+else if ( ResId == IDD_MRIPREPROCESSING         )   helpaddress    += "/mris-preprocessing.html";
+else if ( ResId == IDD_RISTOVOLUME              )   helpaddress    += "/ris-to-volumes.html";
+else if ( ResId == IDD_COREGISTRATION           )   helpaddress    += "/coregistering-electrodes-to-mri.html";
 //else                                              ;               // all other cases: land on the main page
 
 
