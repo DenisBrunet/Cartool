@@ -44,7 +44,7 @@ namespace crtl {
 //----------------------------------------------------------------------------
                                         // Program name
 constexpr char* CartoolTitle            = "Cartool";
-constexpr char* HelpShortFileName       = "Cartool.chm";
+constexpr char* GiHubCartoolWebsite     = "https://denisbrunet.github.io/Cartool";
 
 
 constexpr int   ShortStringLength       = 64;
@@ -206,7 +206,6 @@ protected:
 
     void            CmHelpAbout         ();
     void            CmHelpContents      ( owlwparam w );
-//  void            CmHelpUsing         ();
     void            EvDropFiles         ( owl::TDropInfo    drop );
     void            EvNewView           ( owl::TView&       view );
     void            EvCloseView         ( owl::TView&       view );
@@ -230,7 +229,7 @@ protected:
 
 
 private:
-    bool            HelpState;          // Has the help engine been used.
+
     bool            ContextHelp;        // SHIFT-F1 state(context sensitive HELP).
     owl::TCursor*   HelpCursor;         // Context sensitive help cursor.
 

@@ -103,7 +103,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalDependencies>OPENGL32.LIB;GLU32.LIB;htmlhelp.lib;version.lib;Shlwapi.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OPENGL32.LIB;GLU32.LIB;version.lib;Shlwapi.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/IGNORE:4006 %(AdditionalOptions)</AdditionalOptions>
       <EntryPointSymbol>WinMainCRTStartup</EntryPointSymbol>
       <HeapReserveSize>10485760</HeapReserveSize>
@@ -146,7 +146,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OPENGL32.LIB;GLU32.LIB;htmlhelp.lib;version.lib;Shlwapi.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OPENGL32.LIB;GLU32.LIB;version.lib;Shlwapi.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/IGNORE:4006 %(AdditionalOptions)</AdditionalOptions>
       <EntryPointSymbol>WinMainCRTStartup</EntryPointSymbol>
       <HeapReserveSize>10485760</HeapReserveSize>

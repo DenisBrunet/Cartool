@@ -30,7 +30,6 @@ limitations under the License.
 #include    <owl/validate.h>
 
 #include    <io.h>
-#include    <htmlhelp.h>
 
 #pragma     hdrstop
 //-=-=-=-=-=-=-=-=-
@@ -162,7 +161,6 @@ DEFINE_RESPONSE_TABLE2( TCartoolApp, TRecentFiles, TApplication )
     EV_COMMAND_AND_ID   ( CM_HELPWEBFBMLAB,             CmHelpContents ),
     EV_COMMAND_AND_ID   ( CM_HELPWEBCIBM,               CmHelpContents ),
     EV_COMMAND_AND_ID   ( CM_HELPAUTOUPDATE,            CmHelpContents ),
-//  EV_COMMAND          ( CM_HELPUSING,                 CmHelpUsing),
 
     EV_WM_DROPFILES,
     EV_WM_DISPLAYCHANGE,
@@ -197,7 +195,7 @@ END_RESPONSE_TABLE;
 
 //----------------------------------------------------------------------------
                                         // tomodule is 0 for non-interactive application, f.ex. when running tests
-                                        // Expected files at root directory: HelpShortFileName, TalairachOracleFileName
+                                        // Expected file at root directory: TalairachOracleFileName
                                         // 'name' will be overridden with actual exe file name + revision + optional debug/console flag
         TCartoolApp::TCartoolApp ( LPCTSTR name, int argc, char** argv, TModule*& tomodule, TAppDictionary* appdir )
       : TApplication ( name, tomodule, appdir ),
@@ -229,7 +227,6 @@ ControlBar          = 0;
 
 LastActiveBaseView  = 0;
 
-HelpState           = false;
 ContextHelp         = false;
 HelpCursor          = 0;
 
@@ -239,10 +236,7 @@ Bitmapping          = false;
 Closing             = false;
 AnimateViews        = true;
 
-ApplicationFullPath .Reset ();
-ApplicationDir      .Reset ();
 ClearString ( ApplicationFileName, ShortStringLength );
-HelpFullPath        .Reset ();
 
 ClearString ( ProdName,     ShortStringLength );
 ClearString ( ProdVersion,  ShortStringLength );
@@ -291,8 +285,8 @@ RemoveFilename      ( ApplicationDir );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // expect the help file to be in the same directory as exe
-StringCopy          ( HelpFullPath,     ApplicationDir,     "\\",   HelpShortFileName );
+                                        // Use the on-line Reference Guide - we could also have a local copy
+HelpFullPath    = TFileName ( GiHubCartoolWebsite ) + "/ReferenceGuide/";
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -351,14 +345,9 @@ bool    TCartoolApp::CanClose ()
 {
 Closing     = true;
 
-bool                result          = TApplication::CanClose();
+bool                result          = TApplication::CanClose ();
 
 //Closing     = false;
-
-                                        // Close the help engine if we used it.
-//if ( result && HelpState )
-//    CartoolMainWindow->WinHelp ( HelpFullPath, HELP_QUIT, 0 );
-
 
 return result;
 }
@@ -1607,32 +1596,38 @@ if ( doc.GetDocPath () )
                                         // Menu Help Contents command
 void    TCartoolApp::CmHelpContents ( owlwparam w )
 {
-                                        // Show the help table of contents.
-//HelpState = CartoolMainWindow->WinHelp ( HelpFullPath, HELP_CONTENTS, 0 ); // old help system
-
-
-if      ( w == CM_HELPCONTENTS          )   HtmlHelp        ( CartoolMainWindow->GetHandle (), HelpFullPath, HH_DISPLAY_TOPIC, 0 );
-//else if ( w == CM_HELPWEBUSERSGUIDE   )   ShellExecute    ( NULL, "open", "https://cartoolcommunity.unige.ch/user-s-guide",                               NULL, NULL, SW_SHOWNORMAL); // does not exist anymore, and not yet replaced either...
-else if ( w == CM_HELPCARTOOLGITHUB     )   ShellExecute    ( NULL, "open", "https://github.com/DenisBrunet/Cartool",                                       NULL, NULL, SW_SHOWNORMAL);
-else if ( w == CM_HELPCARTOOLCOMMUNITY  )   ShellExecute    ( NULL, "open", "https://cartoolcommunity.unige.ch",                                            NULL, NULL, SW_SHOWNORMAL);
-else if ( w == CM_HELPAUTOUPDATE        )   ShellExecute    ( NULL, "open", "https://sites.google.com/site/cartoolcommunity/downloads",                     NULL, NULL, SW_SHOWNORMAL);
-else if ( w == CM_HELPWEBRELEASES       )   ShellExecute    ( NULL, "open", "https://sites.google.com/site/cartoolcommunity/downloads/cartool-releases",    NULL, NULL, SW_SHOWNORMAL);
-else if ( w == CM_HELPWEBCIBM           )   ShellExecute    ( NULL, "open", "https://cibm.ch/",                                                             NULL, NULL, SW_SHOWNORMAL);
-else if ( w == CM_HELPWEBFBMLAB         )   ShellExecute    ( NULL, "open", "https://www.unige.ch/medecine/neuf/en/research/grecherche/christoph-michel/",  NULL, NULL, SW_SHOWNORMAL);
+if      ( w == CM_HELPCONTENTS          )   ShellExecute    ( NULL, "open", HelpFullPath,                                                                   NULL, NULL, SW_SHOWNORMAL );
+//else if ( w == CM_HELPWEBUSERSGUIDE   )   ShellExecute    ( NULL, "open", "https://cartoolcommunity.unige.ch/user-s-guide",                               NULL, NULL, SW_SHOWNORMAL ); // does not exist anymore, and not yet replaced either...
+else if ( w == CM_HELPCARTOOLGITHUB     )   ShellExecute    ( NULL, "open", "https://github.com/DenisBrunet/Cartool",                                       NULL, NULL, SW_SHOWNORMAL );
+else if ( w == CM_HELPCARTOOLCOMMUNITY  )   ShellExecute    ( NULL, "open", "https://cartoolcommunity.unige.ch",                                            NULL, NULL, SW_SHOWNORMAL );
+else if ( w == CM_HELPAUTOUPDATE        )   ShellExecute    ( NULL, "open", "https://sites.google.com/site/cartoolcommunity/downloads",                     NULL, NULL, SW_SHOWNORMAL );
+else if ( w == CM_HELPWEBRELEASES       )   ShellExecute    ( NULL, "open", "https://sites.google.com/site/cartoolcommunity/downloads/cartool-releases",    NULL, NULL, SW_SHOWNORMAL );
+else if ( w == CM_HELPWEBCIBM           )   ShellExecute    ( NULL, "open", "https://cibm.ch/",                                                             NULL, NULL, SW_SHOWNORMAL );
+else if ( w == CM_HELPWEBFBMLAB         )   ShellExecute    ( NULL, "open", "https://www.unige.ch/medecine/neuf/en/research/grecherche/christoph-michel/",  NULL, NULL, SW_SHOWNORMAL );
 }
 
-/*                                        // Menu Help Using Help command
-void    TCartoolApp::CmHelpUsing ()
-{
-                                        // Display the contents of the Windows help file.
-HelpState = CartoolMainWindow->WinHelp(HelpFullPath, HELP_HELPONHELP, 0);
-}
-*/
                                         // Menu Help About Cartool command
 void    TCartoolApp::CmHelpAbout ()
 {
                                         // Show the modal dialog.
 TCartoolAboutDialog ( CartoolMainWindow ).Execute ();
+}
+
+
+//----------------------------------------------------------------------------
+
+bool    TCartoolApp::ProcessAppMsg ( MSG& msg )
+{
+                                        // Stand-alone F1 keypress
+if ( msg.message == WM_KEYDOWN && msg.wParam == VK_F1 ) {
+
+    CmHelpContents ( CM_HELPCONTENTS );
+
+    return true;        // Gobble up the message.
+    }
+
+                                        // Continue normal processing.
+return  TApplication::ProcessAppMsg ( msg );
 }
 
 
@@ -1996,103 +1991,6 @@ if ( tpl )
 return 0;
 }
 
-
-//----------------------------------------------------------------------------
-                                        // Process application messages to provide context sensitive help
-bool    TCartoolApp::ProcessAppMsg ( MSG& msg )
-{
-/*
-if ( msg.message == WM_COMMAND ) {
-    if (ContextHelp || ::GetKeyState(VK_F1) < 0) {
-        ContextHelp = false;
-        CartoolMainWindow->WinHelp(HelpFullPath, HELP_CONTEXT, msg.wParam);
-        return true;
-        }
-    }
-else */
-    switch ( msg.message ) {
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        case WM_KEYDOWN:
-
-            if ( msg.wParam == VK_F1 ) {
-                                        // If the Shift/F1 then set the help cursor and turn on the modal help state.
-                if ( ::GetKeyState ( VK_SHIFT ) < 0 ) {
-
-                    ContextHelp = true;
-                    HelpCursor  = new TCursor ( CartoolMainWindow->GetModule()->GetHandle(), TResId ( IDC_HELPCURSOR ) );
-                    ::SetCursor ( *HelpCursor );
-
-                    return true;        // Gobble up the message.
-                    }
-                else {
-                                        // If F1 w/o the Shift key then bring up help's main index.
-//                  CartoolMainWindow->WinHelp(HelpFullPath, HELP_INDEX, 0); // old help system
-                    HtmlHelp ( CartoolMainWindow->GetHandle (), HelpFullPath, HH_DISPLAY_TOPIC, 0 );
-
-                    return true;        // Gobble up the message.
-                    }
-                }
-            else {
-
-                if ( ContextHelp && msg.wParam == VK_ESCAPE ) {
-
-                    if ( HelpCursor )
-                        delete HelpCursor;
-                    HelpCursor  = 0;
-
-                    ContextHelp = false;
-                    CartoolMainWindow->SetCursor ( 0, IDC_ARROW );
-
-                    return true;    // Gobble up the message.
-                    }
-                }
-            break;
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        case WM_MOUSEMOVE:
-        case WM_NCMOUSEMOVE:
-
-            if ( ContextHelp ) {
-
-                ::SetCursor ( *HelpCursor );
-                return true;        // Gobble up the message.
-                }
-            break;
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        case WM_INITMENU:
-
-            if ( ContextHelp ) {
-                ::SetCursor ( *HelpCursor );
-
-                return true;    // Gobble up the message.
-                }
-            break;
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        case WM_ENTERIDLE:
-
-            if ( msg.wParam == MSGF_MENU )
-                if ( ::GetKeyState ( VK_F1 ) < 0 ) {
-
-                    ContextHelp = true;
-                    CartoolMainWindow->PostMessage ( WM_KEYDOWN, VK_RETURN, 0 );
-
-                    return true;     // Gobble up the message.
-                    }
-            break;
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        default:
-
-            return  TApplication::ProcessAppMsg ( msg );
-
-    } // End of message switch
-
-                                        // Continue normal processing.
-return  TApplication::ProcessAppMsg ( msg );
-}
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------

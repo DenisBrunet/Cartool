@@ -19,8 +19,6 @@ limitations under the License.
 
 #include    <owl/pch.h>
 
-#include    <htmlhelp.h>
-
 #pragma     hdrstop
 //-=-=-=-=-=-=-=-=-
 
@@ -663,14 +661,12 @@ CmGroupWinAction ( IDB_GTVFIT );
 
 
 //----------------------------------------------------------------------------
-                                        // dispatch Help according to resource Id
+                                        // Called from menu  Tools | Help
 void    TCartoolMdiClient::CmToolsHelp ()
 {
-TFileName           helpfile;
+TFileName           helpaddress     = CartoolApplication->HelpFullPath + "all-processings.html";
 
-StringCopy ( helpfile, CartoolApplication->HelpFullPath, "::/html/", "processing.htm" );
-
-HtmlHelp ( CartoolApplication->CartoolMainWindow->GetHandle (), helpfile, HH_DISPLAY_TOPIC, 0 );
+ShellExecute    ( NULL, "open", helpaddress, NULL, NULL, SW_SHOWNORMAL );
 }
 
 
