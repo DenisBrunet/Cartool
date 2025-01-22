@@ -1,6 +1,6 @@
 
 ## 2025-01-22
-- **Reference Guide**, aka Help, has been moved from local .chm file to the [**online ReferenceGuide**](https://denisbrunet.github.io/Cartool/ReferenceGuide/index.html).
+- **Reference Guide**, aka Help, has been moved from a local _.chm_ file to an [**online Reference Guide**](https://denisbrunet.github.io/Cartool/ReferenceGuide/index.html).
 
 ## 2025-01-15
 - **Fixed giganormous EEG files opening and access** (Geodesics MFF, BrainVision...)
