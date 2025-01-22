@@ -5,17 +5,14 @@ It enables seamless real-time integration of diverse modalities such as EEG, ele
 
 Developed in C++ for _Windows_, Cartool is highly optimized for parallel processing, has a very small memory footprint, and very few dependencies. It has been under continuous development since 1997, originally from the [**Functional Brain Mapping Lab**](https://www.google.ch/search?q="functional+brain+mapping"+fbmlab+geneva), Geneva, Switzerland, and since 2024, from the [**Geneva University Hospital**](https://www.unige.ch/medecine/neucli/groupes-de-recherche/serge-vulliemoz) and [**CIBM**](https://cibm.ch/research/software/), Switzerland.
 
+## What's New
+See the [What's New page](WHATSNEW.md).
+
 ## Pre-compiled releases
 The latest compiled version of Cartool can be found **[here](https://github.com/DenisBrunet/Cartool/releases/latest)**, and all previous versions **[there](https://github.com/DenisBrunet/Cartool/releases)**.
 
 ## Compiling from sources
 The [BUILDING](https://github.com/DenisBrunet/Cartool/blob/main/BUILDING.md) page describes all the steps and the necessary tools needed to fully compile Cartool from the source code.
-
-## Contributing
-Our contribution policy is specified in the [CONTRIBUTING](https://github.com/DenisBrunet/Cartool/blob/main/CONTRIBUTING.md) page.
-
-## Citation
-We have some citations policy, please visit the [CITATION](https://github.com/DenisBrunet/Cartool/blob/main/CITATION.md) page.
 
 ## Community
 There are a few resources to gather knowledge and get some help:
@@ -25,6 +22,12 @@ There are a few resources to gather knowledge and get some help:
 - [Cartool YouTube](https://www.youtube.com/channel/UC7S3IgUeYplmrh3ji3ZK1Lw)
 - [Cartool Community](https://sites.google.com/site/cartoolcommunity)
 - [CIBM](https://cibm.ch/)
+
+## Contributing
+Our contribution policy is specified in the [CONTRIBUTING](https://github.com/DenisBrunet/Cartool/blob/main/CONTRIBUTING.md) page.
+
+## Citation
+We have some citations policy, please visit the [CITATION](https://github.com/DenisBrunet/Cartool/blob/main/CITATION.md) page.
 
 ## License
 This project is licensed under the _Apache License Version 2.0_ - see the [LICENSE.txt](https://github.com/DenisBrunet/Cartool/blob/main/LICENSE.txt) file for details.
