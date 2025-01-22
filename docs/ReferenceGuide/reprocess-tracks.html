@@ -2,962 +2,1284 @@
  <HEAD>
   <TITLE>Reprocess / Export Tracks</TITLE>
  <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css"></HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   Reprocess / Export Tracks</H1>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <H5>
-   <A HREF="#what-is-exporting">What is Reprocess / Export Tracks?</A><br>
-   <A HREF="#run-export">Running from the Dialog</A><br>
-   <a href="#command-line">Running from the Command-Line Interface (CLI)</a><br><A HREF="#results">Results</A><br>
-   <A HREF="#technical-points">Technical points and hints</A><br>&nbsp;&nbsp;&nbsp;
-   <a href="#sequenceofprocessing">Sequence of Processing</a><br>&nbsp;&nbsp;&nbsp;
-   <a href="#temporalfiltering">Temporal Filtering</a><br>&nbsp;&nbsp;&nbsp;
-   <a href="#spatialfiltering">Spatial Filtering and Adding Null Track</a><br>&nbsp;&nbsp;&nbsp;
-   <a href="#rois">ROIs</a><br>&nbsp;&nbsp;&nbsp; <A HREF="#tracks-enumerate">
-   Specifying list of tracks</a><br>&nbsp;&nbsp;&nbsp;
-   <a href="#exportingcomputedtracks">Exporting Computed Tracks</a></H5>
-  <H2>
-   <A NAME="what-is-exporting"></A>What is Reprocess / Export Tracks?</H2>
-  <P>
-   This is a <B>versatile tool to read EEG files</B> (or other 
-   tracks-like files), then <B>export them to some new files after 
-   applying some basic transformations</B>. They include things such as:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <strong>Cropping the time line</strong>,<BR>
-    <LI CLASS="mvd-P"><strong>Saving only a subset of tracks</strong>, possibliy 
-	re-orering them,<BR>
-    <LI CLASS="mvd-P"><strong>Tracks filtering</strong> (Butterworth, Notches, 
-	Spatial Filter etc..),<BR>
-    <LI CLASS="mvd-P">Baseline correction,<BR>
-    <LI CLASS="mvd-P"><strong>Re-referencing</strong>,<BR>
-    <LI CLASS="mvd-P">Rescaling / normalizing,<BR>
-    <LI CLASS="mvd-P"><strong>Downsampling</strong>,<BR>
-    <LI CLASS="mvd-P"><strong>Changing file format</strong>,<LI CLASS="mvd-P">
-	  Applying Region Of Interests (ROIs)<BR>
-    <LI CLASS="mvd-P">etc...</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   <B>Input files</B> can be anything that looks like tracks:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <A HREF="files-formats-others.html#eeg"><I>Any</I> EEG files recognized by Cartool,</A><BR>
-    <LI CLASS="mvd-P"><A HREF="files-formats-cartool.html#ris">Ris files</A> 
-    (Results from Inverse Solution computation),<BR>
-    <LI CLASS="mvd-P"><A HREF="files-formats-cartool.html#freq">Freq files</A> 
-    from the <A HREF="frequency-analysis.html">Frequency Analysis</A> (see 
-    also <A HREF="#result-from-freq">this point</A>),<BR>
-    <LI CLASS="mvd-P">Even exotic files like the <A HREF="files-formats-cartool.html#seg">.seg</A> 
-    and <A HREF="files-formats-cartool.html#data">.data</A> ones.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   See here what the <B><A HREF="#file-types-out">ouput files</A></B> 
-   can be, plus the <A HREF="#result-from-freq">special case of 
-   frequency files</A>.</P>
-  <H2>
-   <A NAME="run-export"></A>Running from the Dialog</H2>
-  <P>
-   Call the dialog from <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
-    | Export tracks</A></FONT> menu, which is context sensitive:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <A NAME="call-eeg-opened"></A>Called from an EEG file, the 
-    processing&nbsp;will apply only to this file.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <A NAME="call-batch-mode"></A>In any other case, the dialog will 
-    operate in Batch mode, requiring you to later select some files.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   The following dialog pops out. Fill the parameters which are relevant 
-   for you, then click either on <B>Process Current</B> or <B>Batch Process</B> 
-   (according to how the dialog was invoked):</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/export-tracks.dialog.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Tracks or ROIs</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Tracks</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       <A HREF="#call-eeg-opened">From an opened EEG:</A><BR>
-       Prefilled with the current <A HREF="eeg-display.html#mouse-tracks-select">selected</A> 
-       tracks, otherwise with the current displayed tracks.</P>
-      <P>
-       <A HREF="#call-batch-mode">In Batch Mode:</A><BR>
-       On first call, default is <B>*</B>, meaning all <A HREF="terms-definitions-formulas.html#tracks">regular
-        tracks</A>.</P>
-      <P>
-       You can of course modify this list. <A HREF="#tracks-enumerate">See 
-       important note below about notation</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Names from XYZ:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Optionally pointing to a file with the <A HREF="files-formats-others.html#electrodes-coord">electrodes
-        coordinates</A> and names. The <B>names of the electrodes are taken 
-       from this file</B>, overriding the original names from the EEG (i.e. 
-       you can rename the electrodes).<BR>
-       Be careful that the list above respect these names, otherwise you 
-       will get an error message.</P>
-      <P>
-       Constraints as in the <A HREF="general-concepts.html#linkingfiles">link
-        mechanism</A> must be respected, such as same number of electrodes, 
-       same order, etc...</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       ROIs</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The <B><A HREF="#rois">ROIs</A></B> to be used in the export.</P>
-      <P>
-       Note 1: The ROIs option and the <I>Tracks</I> field above are mutually exclusive.<P>
-       Note 2: The ROIs option and the <a href="#appendingnulltracks">Add Null 
-	   Tracks</a> below are also mutually 
-	   exclusive.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Input Time</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Interval</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Export a time interval, specified in <A HREF="terms-definitions-formulas.html#time-frame">time
-        frames</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       From</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       First time frame to be exported.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       to</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Last time frame to be exported.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       End of File</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Automatically set the last time frame to export to the <B>actual end 
-       of the current file</B>. Useful in <A HREF="#call-batch-mode">Batch Mode</A>,
-        if the files have different lengths.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Triggers To Keep</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Only the time frames <strong><em>contained</em></strong> in the <B>specified list of <A HREF="terms-definitions-formulas.html#trigger">triggers</A> /<A HREF="terms-definitions-formulas.html#marker"> markers</A></B> 
-       will be exported.</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Triggers To Exclude</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Only the time frames <strong><em>excluded</em></strong> from the <B>specified list of <A HREF="terms-definitions-formulas.html#trigger">triggers</A> /<A HREF="terms-definitions-formulas.html#marker"> markers</A></B> 
-       will be exported.</TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Processing Parameters</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B><a name="appendingnulltracks"></a>Appending Null Track(s):</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       A list of track name(s) that will be appended after the last input 
-	   tracks. Its/their values will be set to 0.<P>
-       The intent is to add a single reference track that was not included in 
-	   the recording file, though you might go beyond this and add as many 
-	   tracks as you wish.<P>
-       Note: Appending Null Tracks and applying ROIs are mutually exclusive.</TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Filters:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Also see these notes about:<ul>
-		  <li><a href="#sequenceofprocessing">Sequence of Processing</a></li>
-		  <li><a href="#temporalfiltering">Temporal Filtering</a></li>
-		  <li><a href="#spatialfiltering">Spatial Filter and Adding Null Tracks</a></li>
-	  </ul>
-		</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       No Filters</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       No filtering at all, just using the raw data from the file.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Use Current Filters</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Using the filters currently set in the current opened EEG. Useful as a 
-	   kind of &quot;Save what I see&quot; feature.<P>
-       Note: If user has <a href="#appendingnulltracks">added null tracks</a>,
-	   <em>these tracks will also be filtered</em>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Other Filters</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Using these specific filters, bypassing any filters that might be in 
-	   current use. This will pop out the usual <A HREF="eeg-display.html#filters">Filter Dialog</A> 
-	   for you to fill the relevant filters parameters.</P>
-      <P>
-       Note 1: You might have to fill the <em>Sampling Frequency </em>entry of this dialog, 
-	   though.<P>
-       Note 2: If user has <a href="#appendingnulltracks">added null tracks</a>,
-	   <em>these tracks will also be filtered</em>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Reference:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Also see this note about the <a href="#sequenceofprocessing">Sequence of 
-	   Processing</a>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       No Reference</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use the same reference as when the file(s) was(were) written, that 
-       is, no change in reference.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Use Current Reference</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use the reference currently in use. Useful only if the files have 
-       already been opened in Cartool, and the user has changed the reference.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Average Reference</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use the <A HREF="terms-definitions-formulas.html#formulas">average reference</A>, 
-       overriding current reference.<P>
-       Note: If user has <a href="#appendingnulltracks">added null tracks</a>,
-	   <em>these tracks will be included in the new average reference 
-	   computation</em>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Other Reference</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use the <B>average of the specified list of electrodes</B>. If only 
-       one electrode is specified, this will be the reference.<P>
-       Note: If user has <a href="#appendingnulltracks">added null tracks</a>,
-	   <em>these tracks can also be used as reference</em>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Baseline Correction:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Apply Baseline Correction</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Select this to apply some baseline correction (subtracting each track 
-       with its average within a given time period).<P>
-       Note: If user has <a href="#appendingnulltracks">added null tracks</a>,
-	   <em>these tracks will also have be baseline-corrected</em>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       From</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       First time frame of the baseline.</P>
-      <P>
-       <B>This is an absolute value</B>, <I>not</I> a relative one, and 
-       should be within the range of available time frames. Otherwise it 
-       will be clipped to these limits.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       to</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Last time frame of the baseline.</P>
-      <P>
-       <B>This is an absolute value</B>, <I>not</I> a relative one, and 
-       should be within the range of available time frames. Otherwise it 
-       will be clipped to these limits.</P>
-      <P>
-       The limits specified need <B><I>not</I></B> to be within the range of 
-       the time period exported. They can be <B>whatever you wish</B>, 
-       Cartool will handle <B><I>all</I></B> the cases gracefully.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       End of File</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Automatically set the last time frame of the baseline correction to 
-       the <B>actual end of the current file</B>. Useful in <A HREF="#call-batch-mode">Batch
-        Mode</A>, if the files have different lengths.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Rescaling:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Note: If user has <a href="#appendingnulltracks">added null tracks</a>,
-	   <em>these tracks will also be rescaled</em>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       No Rescaling</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       What is says.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Rescaled By</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Rescale the EEG values by <B>multiplying with the provided value</B>. 
-       Negative factors are allowed to perform a polarity inversion.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       GFP Normalize</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       For each EEG, compute the <B>mean GFP (or RMS) over the selected time period</B>,
-        then <B>divide the EEG values</B> with it.</P>
-      <P>
-       See this <A HREF="computing-statistics.html#param-positive-data">point on 
-       positive data</A> and also <A HREF="terms-definitions-formulas.html#data-types">this point</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Output Time</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Output Time is:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Sequential</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The <B>input time period</B>, once processed, <B>is outputted sequentially</B>.</P>
-      <P>
-       F.ex. if the input time range selected is from 100 to 149 time 
-       frames, then the resulting output will be 50 time frames long.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Average</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The <B>input time period</B>, once processed, <B>is averaged</B>, and 
-       a <B>single value</B> is outputted.</P>
-      <P>
-       F.ex. if the input time range selected is from 100 to 149 time 
-       frames, then the resulting output will be 1 time frame long.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Time Downsampling:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Downsample by Integer Ratio:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       <B>Downsample the data</B> by the specified integer ratio (&gt;1). 
-       The resulting sampling frequency will be the original one divided by 
-       this ratio.</P>
-      <P>
-       The method used is equivalent to a <B>CIC</B> (Cascaded 
-       Integrator-Comb) filter, followed by a light <B>High Pass FIR</B> 
-       (compensation) filter, and finally the <B>decimation</B> itself.</P>
-      <P>
-       &nbsp;</P>
-      <P>
-       Also note that downsampling is disabled in the following cases:</P>
-      <UL>
-       <LI CLASS="mvd-P">
-       <P>
-        Input Time Period is taken from Triggers</P>
-       <LI CLASS="mvd-P">
-       <P>
-        Averaging the output value</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Output File</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Filename Infix&nbsp;</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The exported filenames will have these characters inserted. Default 
-       is &quot;Export&quot;.</TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B><A NAME="file-types-out"></A>Output File Type</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       A drop-down list with currently the following available types:</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       TXT (text)</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Text file, actually the same as the <B><I><A HREF="files-formats-cartool.html#ep">.ep</A></I></B><A HREF="files-formats-cartool.html#ep"> file</A> 
-	   except for the extension.</TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       EP (text)</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Text file, basically a plain matrix of data. See the <B><I><A HREF="files-formats-cartool.html#ep">.ep</A></I></B><A HREF="files-formats-cartool.html#ep"> file</A> specification.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       EPH (text)</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Text file, basically the same as the <strong><em>.ep</em></strong> above 
-	   but with an additional header line. See the <B><I><A HREF="files-formats-cartool.html#eph">.eph</A></I></B><A HREF="files-formats-cartool.html#eph"> file</A> specification.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       SEF (binary)</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Binary file, see the <B><I><A HREF="files-formats-cartool.html#sef">.sef</A></I></B><A HREF="files-formats-cartool.html#sef"> file</A> specification.</P>
-      <P>
-       Useful when exporting original recording file(s), or to include the 
-       electodes / ROIs names in the new file(s).</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       EEG (binary)</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Binary file, <A HREF="files-formats-others.html#eeg-raw">file format from <em>
-	   BrainVision</em></a>. This is the default option as it is a quite 
-	   versatile format.</P>
-		   </TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       EDF (binary)</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Binary file, see the <B><I><A HREF="files-formats-others.html#eeg raw">.edf</A></I></B><A HREF="files-formats-others.html#eeg-raw"> file</A> specification.</P>
-      <P>
-       Useful only for data interchange, otherwise don't use (loss of precision)!</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       RIS (binary)</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Binary file, see the <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B><A HREF="files-formats-cartool.html#ris"> file</A> specification.</P>
-      <P>
-       Used mainly if you are already testing other <B><I>.ris</I></B> 
-       files, and want to visualize the results in 3D.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Options</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Export Underlying Markers</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Also exports the markers belonging to the selected time period, 
-       creating a <I><A HREF="files-formats-cartool.html#mrk">.mrk</A></I> file</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Open File(s) Upon Completion</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       ...of the exportation. Just be careful in <A HREF="#call-batch-mode">Batch
-        Mode</A>, this could open a lot of files (read: crash)! (the 
-       original EEG files are opened one at a time, then closed when done).</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Concatenate all into 1 File</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       If you have Batch Process a list of files, then the results will be 
-	   concatenated into a single output file. Note that this happanes as the 
-	   last step of the Reprocess Tracks, so what is appended depends on the 
-	   parameters chosen above!<P>
-       Markers will be conveniently added at each starting point of the original 
-	   files.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Process Current</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Enabled when called from an <A HREF="eeg-display.html">EEG window</A>, the 
-       exportation will apply to <B>this file</B> only.</P>
-      <P>
-       &nbsp;</P>
-      <P>
-       This button remains <B>disabled until <U>all</U> the parameter 
-       dialogs have received enough (and consistent) informations</B>. If 
-       this is not the case, first check the current dialog: if its 
-       &quot;Next&quot; button is disabled, the problem is in the current 
-       dialog. Otherwise, browse the other dialogs for some missing informations.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Batch Process</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Enabled when <I>not</I> called from an EEG window:</P>
-      <UL>
-       <LI CLASS="mvd-P">
-       <P>
-        Clicking this button will open a dialog from which you can select a <B>set
-         of files</B>, within a single directory.</P>
-       <LI CLASS="mvd-P">
-       <P>
-        Using <B>Drag &amp; Drop</B>, you can drop files in the dialog and 
-        process them directly. Plus, it allows you to pick files <B>from 
-        different directories</B>, if you can select them through a handy 
-        utility like <I><A HREF="https://sites.google.com/site/cartoolcommunity/user-s-guide/using-cartool/being-more-efficient-with-cartool#TOC-Everything">Everything</A></I> beforehand.</P>
-       </UL>
-      <P>
-       &nbsp;</P>
-      <P>
-       This button remains <B>disabled until <U>all</U> the parameter 
-       dialogs have received enough (and consistent) informations</B>. If 
-       this is not the case, first check the current dialog: if its 
-       &quot;Next&quot; button is disabled, the problem is in the current 
-       dialog. Otherwise, browse the other dialogs for some missing informations.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Cancel</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Quit the dialog.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Help</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Launch the Help to the right page (should land on this page...).</TD>
-    </TR>
-   </TABLE></P>
-  <H2>
-   <a name="command-line"></a>Runnning from the Command-Line Interface (CLI)</H2>
-  <p>
-   You can call the Reprocess toolbox directly from the command-line, see the
-   <a href="command-line-interface.html#reprocesstracks"><strong>full syntax and examples 
-   here</strong></a>.</p>
-  <H2>
-   <A NAME="results"></A>Results</H2>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Exported files are written in the <B>same directories as their sources</B>.
-     File names are inserted with the <B>infix</B> string, which is by 
-    default &quot;Export&quot;, followed by the appropriate file extension.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <A NAME="result-from-freq"></A>In case the input is a <A HREF="frequency-analysis.html#results">Freq
-     file</A>, <B>each of the stored frequency will be output in a 
-    separate file</B>. The resulting filenames will include which 
-    frequency has been used, f.ex.&nbsp; &quot;MyFile.4-8 Hz.EP&quot;, 
-    &quot;MyFile.8-14 Hz.EP&quot;, &quot;MyFile.14-20 Hz.EP&quot;.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I> 
-    (text), showing all the parameters.</P>
-   </UL>
-  <H2>
-   <A NAME="technical-points"></A>Technical points and hints</H2>
-  <H4>
-   <a name="sequenceofprocessing"></a>Sequence of Processing</H4>
-  <P>
-   The various available processing <strong><em>follow a very precise sequence</em></strong>, 
-   which is:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Reading the raw tracks from file<LI CLASS="mvd-P">
-      <P>
-      Cropping the time-line (interval, keeping triggers, or excluding triggers)<LI CLASS="mvd-P">
-      <P>
-      Appending null track(s). <em>All the following steps will make use of 
-	  these new tracks!</em><BR>
-    <LI CLASS="mvd-P">Filtering (pre-reference)<UL>
-		<LI CLASS="mvd-P">DC / Baseline<LI CLASS="mvd-P">Butterworth High-Pass / 
-		Low-Pass / Band-Pass<LI CLASS="mvd-P">Notches<LI CLASS="mvd-P">Spatial 
-		Filter<LI CLASS="mvd-P">Ranking</UL>
-    <LI CLASS="mvd-P">Re-referencing<LI CLASS="mvd-P">Filtering (post-reference)<UL>
-		  <LI CLASS="mvd-P">Rectification<LI CLASS="mvd-P">Envelope<LI CLASS="mvd-P">
-		  Thresholding Above and/or Below</UL>
-    <LI CLASS="mvd-P">Baseline correction<BR>
-    <LI CLASS="mvd-P">Rescaling<BR>
-    <LI CLASS="mvd-P">Averaging the whole time range or Downsampling<BR>
-    <LI CLASS="mvd-P">Computing ROIs</P>
-   </UL>
-  <H4>
-   <a name="temporalfiltering"></a>Temporal
-   Filtering</H4>
-  <P>
-   Cartool uses a classic<B> sliding window</B> method, which is 
-   mandatory to avoid artifacts, especially with high-pass filter:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    to export time frame <B><I>t</I></B>, read data between <B><I>t - filtersize</I></B> 
-    and <B><I>t + filtersize</I></B></P>
-   <LI CLASS="mvd-P">
-   <P>
-    filter, correct, etc...</P>
-   <LI CLASS="mvd-P">
-   <P>
-    save only the time frame value at <B><I>t</I></B></P>
-   <LI CLASS="mvd-P">
-   <P>
-    repeat for all time frames</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   As a consequence, Cartool reads / filters / processes way more points 
-   than are actually written to file. This is the only way to ensure the 
-   results are correct, so be patient, it has to be done only once after all...</P>
-  <P>
-   <B><I>filtersize</I></B> depends on the sampling frequency of the 
-   current file. The higher the sampling frequency, the bigger the <B><I>filtersize</I></B> 
-   variable, the longer the computation.</P>
-  <H4>
-   <a name="spatialfiltering"></a>Spatial
-   Filtering and Adding Null Track</H4>
-  <P>
-   The <em><A HREF="eeg-display.html#spatial-filter">Spatial Filter</a></em> depends on a
-   <a href="files-formats-cartool.html#xyz"><strong><em>.xyz</em></strong> coordinates 
-   file</a> to operate, as it needs the spatial locations of each and every 
-   electrodes. It is also requires that <strong>the number of tracks in the EEG 
-   file</strong> and <strong>the number of electrodes in the <em>.xyz</em> file 
-   be exactly the same</strong>. Cartool enforces that for you all the time, so 
-   nothing to worry here.</P>
-  <P>
-   However, in case the user required for an <a href="#appendingnulltracks">
-   additional null track</a>, the EEG has suddenly one more dimension. To 
-   properly apply any Spatial Filter, <strong>the user should then select the
-   <em>Other Filter</em> option</strong>, and drop a correct <strong><em>.xyz</em></strong> 
-   file with an additional electrode, too. This way both EEG and electrodes 
-   coordinates dimensions will match again.</P>
-  <P>
-   <em>In case of mismatch</em>, Cartool will likely complain, skip the Spatial 
-   Filter step(!), and add an error message in the <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A> </I> 
-    verbose file...</P>
-  <H4>
-   <A NAME="rois"></A>ROIs</H4>
-  <P>
-   If a <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B><A HREF="files-formats-cartool.html#rois"> file</A> 
-   has been provided (see <A HREF="creating-rois.html">Creating ROIs</A>),
-    all members of a given roi are averaged together as a final step. 
-   Then only the averaged value is written to file.</P>
-  <P>
-   If you intend to do some stats later on these roi-ed files, <I>think twice</I>!
-    In fact, it is a far better practice to <I>not</I> compute the rois 
-   yourself (for the stats), but <B>let the <A HREF="computing-statistics.html#rois">Statistics
-    processing</A> do it for you</B>. The main problem being that data 
-   normalization that will be wrong, as the original data will be lost, 
-   so will be the original GFP. Plus, why fill your drive with another 
-   set of files?</P>
-  <P>
-   But if you just want ROIs for some display purpose, or re-ordering 
-   your tracks, just proceed!</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Noteworthy is a side-effect of <I>Exporting</I> with ROIs, which is 
-   the <B>re-ordering of the tracks</B> that occurs. Within each roi, 
-   all tracks will follow the exact sequence given in the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B><A HREF="files-formats-cartool.html#rois"> file</A>.
-    See an example, first the original order, then one roi with a 
-   quarter of the electrodes:</P>
-  <P>
-   <IMG SRC="images/rois.original-tracks-order.png" WIDTH="276" HEIGHT="397" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/rois.new-tracks-order.png" WIDTH="276" HEIGHT="397" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H4>
-   <A NAME="tracks-enumerate"></A>Specifying the list of tracks</H4>
-  <P>
-   You can:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Enumerate the tracks one by one: <B>e1 e2 e3</B></P>
-   <P>
-    <I>The order is relevant</I>, this is not equivalent to <B>e2 e3 e1</B>!<BR>
-    Use whatever separator you like: comma, semi-colon, space, tab.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Use interval notation: <B>e1-e20</B></P>
-   <P>
-    Which means all tracks from <B>e1</B> up to <B>e20</B>, both 
-    included, and in the order found in the file.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    You can of crouse combine the two notations: <B>e3 e5 e10-e20</B></P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   With interval notation, the ordering is the one found in the file you 
-   are processing, and is by no mean lexicographic (<I>&agrave; la</I> 
-   dictionary). So in this example <B>C1-C2</B> means <B>C1, Cz, C2</B>; 
-   and <B>T3-T4</B> means <B>T3, C3, C1, Cz, C2, C4, T4</B>:</P>
-  <P>
-   <IMG SRC="images/export-tracks.tracks-order.png" WIDTH="216" HEIGHT="515" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H4>
-   <a name="exportingcomputedtracks"></a>Exporting Computed Tracks</H4>
-  <P>
-   You can export the <A HREF="terms-definitions-formulas.html#tracks">computed tracks</A> by 
-   using any of the following predefined names:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>GFP</B>&nbsp; for the Global Field Power, if data are signed.<BR>
-    <LI CLASS="mvd-P"><B>RMS</B> for the Root Mean Square, instead of the 
-    GFP if <A HREF="terms-definitions-formulas.html#data-types">data are positive</A>.<BR>
-    <LI CLASS="mvd-P"><B>DIS</B>&nbsp; for the dissimilarity.<BR>
-    <LI CLASS="mvd-P"><B>AVG</B>&nbsp; for the average.</P>
-   </UL>
-  <H4>
-   Exporting frequency files</H4>
-  <P>
-   See the <A HREF="#results">Results paragraph</A>.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             Reprocess / Export Tracks
+         </H1>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <H5>
+             <A HREF="#what-is-exporting">What is Reprocess / Export Tracks?</A><br>
+             <A HREF="#run-export">Running from the Dialog</A><br>
+             <a href="#command-line">Running from the Command-Line Interface (CLI)</a><br><A HREF="#results">Results</A><br>
+             <A HREF="#technical-points">Technical points and hints</A><br>&nbsp;&nbsp;&nbsp;
+             <a href="#sequenceofprocessing">Sequence of Processing</a><br>&nbsp;&nbsp;&nbsp;
+             <a href="#temporalfiltering">Temporal Filtering</a><br>&nbsp;&nbsp;&nbsp;
+             <a href="#spatialfiltering">Spatial Filtering and Adding Null Track</a><br>&nbsp;&nbsp;&nbsp;
+             <a href="#rois">ROIs</a><br>&nbsp;&nbsp;&nbsp; <A HREF="#tracks-enumerate">
+                 Specifying list of tracks
+             </A><br>&nbsp;&nbsp;&nbsp;
+             <a href="#exportingcomputedtracks">Exporting Computed Tracks</a>
+         </H5>
+         <H2>
+             <A NAME="what-is-exporting"></A>What is Reprocess / Export Tracks?
+         </H2>
+         <P>
+             This is a <B>versatile tool to read EEG files</B> (or other
+             tracks-like files), then <B>
+                 export them to some new files after
+                 applying some basic transformations
+             </B>. They include things such as:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <strong>Cropping the time line</strong>,<BR>
+             <LI CLASS="mvd-P">
+                 <strong>Saving only a subset of tracks</strong>, possibliy
+                 re-orering them,<BR>
+             <LI CLASS="mvd-P">
+                 <strong>Tracks filtering</strong> (Butterworth, Notches,
+                 Spatial Filter etc..),<BR>
+             <LI CLASS="mvd-P">Baseline correction,<BR>
+             <LI CLASS="mvd-P"><strong>Re-referencing</strong>,<BR>
+             <LI CLASS="mvd-P">Rescaling / normalizing,<BR>
+             <LI CLASS="mvd-P"><strong>Downsampling</strong>,<BR>
+             <LI CLASS="mvd-P"><strong>Changing file format</strong>,
+             <LI CLASS="mvd-P">
+                 Applying Region Of Interests (ROIs)<BR>
+             <LI CLASS="mvd-P">etc...</P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             <B>Input files</B> can be anything that looks like tracks:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A HREF="files-formats-others.html#eeg"><I>Any</I> EEG files recognized by Cartool,</A><BR>
+             <LI CLASS="mvd-P">
+                 <A HREF="files-formats-cartool.html#ris">Ris files</A>
+                 (Results from Inverse Solution computation),<BR>
+             <LI CLASS="mvd-P">
+                 <A HREF="files-formats-cartool.html#freq">Freq files</A>
+                 from the <A HREF="frequency-analysis.html">Frequency Analysis</A> (see
+                 also <A HREF="#result-from-freq">this point</A>),<BR>
+             <LI CLASS="mvd-P">
+                 Even exotic files like the <A HREF="files-formats-cartool.html#seg">.seg</A>
+                 and <A HREF="files-formats-cartool.html#data">.data</A> ones.</P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             See here what the <B><A HREF="#file-types-out">ouput files</A></B>
+             can be, plus the <A HREF="#result-from-freq">
+                 special case of
+                 frequency files
+             </A>.
+         </P>
+         <H2>
+             <A NAME="run-export"></A>Running from the Dialog
+         </H2>
+         <P>
+             Call the dialog from <FONT FACE="Arial Black,Arial,Helvetica">
+                 <A HREF="all-processings.html#tools">
+                     Tools
+                     | Export tracks
+                 </A>
+             </FONT> menu, which is context sensitive:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A NAME="call-eeg-opened"></A>Called from an EEG file, the
+                     processing&nbsp;will apply only to this file.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A NAME="call-batch-mode"></A>In any other case, the dialog will
+                     operate in Batch mode, requiring you to later select some files.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The following dialog pops out. Fill the parameters which are relevant
+             for you, then click either on <B>Process Current</B> or <B>Batch Process</B>
+             (according to how the dialog was invoked):
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/export-tracks.dialog.png" VSPACE="0" HSPACE="0" BORDER="0" WIDTH="700">
+             </P>
+         </CENTER>
+         <P>
+             <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Tracks or ROIs</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Tracks
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             <A HREF="#call-eeg-opened">From an opened EEG:</A><BR>
+                             Prefilled with the current <A HREF="eeg-display.html#mouse-tracks-select">selected</A>
+                             tracks, otherwise with the current displayed tracks.
+                         </P>
+                         <P>
+                             <A HREF="#call-batch-mode">In Batch Mode:</A><BR>
+                             On first call, default is <B>*</B>, meaning all <A HREF="terms-definitions-formulas.html#tracks">
+                                 regular
+                                 tracks
+                             </A>.
+                         </P>
+                         <P>
+                             You can of course modify this list. <A HREF="#tracks-enumerate">
+                                 See
+                                 important note below about notation
+                             </A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Names from XYZ:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Optionally pointing to a file with the <A HREF="files-formats-others.html#electrodes-coord">
+                                 electrodes
+                                 coordinates
+                             </A> and names. The <B>
+                                 names of the electrodes are taken
+                                 from this file
+                             </B>, overriding the original names from the EEG (i.e.
+                             you can rename the electrodes).<BR>
+                             Be careful that the list above respect these names, otherwise you
+                             will get an error message.
+                         </P>
+                         <P>
+                             Constraints as in the <A HREF="general-concepts.html#linkingfiles">
+                                 link
+                                 mechanism
+                             </A> must be respected, such as same number of electrodes,
+                             same order, etc...
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             ROIs
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The <B><A HREF="#rois">ROIs</A></B> to be used in the export.
+                         </P>
+                         <P>
+                             Note 1: The ROIs option and the <I>Tracks</I> field above are mutually exclusive.
+                         <P>
+                             Note 2: The ROIs option and the <a href="#appendingnulltracks">
+                                 Add Null
+                                 Tracks
+                             </a> below are also mutually
+                             exclusive.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Input Time</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Interval</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Export a time interval, specified in <A HREF="terms-definitions-formulas.html#time-frame">
+                                 time
+                                 frames
+                             </A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             From
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             First time frame to be exported.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             to
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Last time frame to be exported.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             End of File
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Automatically set the last time frame to export to the <B>
+                                 actual end
+                                 of the current file
+                             </B>. Useful in <A HREF="#call-batch-mode">Batch Mode</A>,
+                             if the files have different lengths.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Triggers To Keep</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Only the time frames <strong><em>contained</em></strong> in the <B>specified list of <A HREF="terms-definitions-formulas.html#trigger">triggers</A> /<A HREF="terms-definitions-formulas.html#marker"> markers</A></B>
+                             will be exported.
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Triggers To Exclude</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Only the time frames <strong><em>excluded</em></strong> from the <B>specified list of <A HREF="terms-definitions-formulas.html#trigger">triggers</A> /<A HREF="terms-definitions-formulas.html#marker"> markers</A></B>
+                             will be exported.
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Processing Parameters</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B><a name="appendingnulltracks"></a>Appending Null Track(s):</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             A list of track name(s) that will be appended after the last input
+                             tracks. Its/their values will be set to 0.
+                         <P>
+                             The intent is to add a single reference track that was not included in
+                             the recording file, though you might go beyond this and add as many
+                             tracks as you wish.
+                         <P>
+                             Note: Appending Null Tracks and applying ROIs are mutually exclusive.
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Filters:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Also see these notes about:<ul>
+                                 <li><a href="#sequenceofprocessing">Sequence of Processing</a></li>
+                                 <li><a href="#temporalfiltering">Temporal Filtering</a></li>
+                                 <li><a href="#spatialfiltering">Spatial Filter and Adding Null Tracks</a></li>
+                             </ul>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             No Filters
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             No filtering at all, just using the raw data from the file.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Use Current Filters
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Using the filters currently set in the current opened EEG. Useful as a
+                             kind of &quot;Save what I see&quot; feature.
+                         <P>
+                             Note: If user has <a href="#appendingnulltracks">added null tracks</a>,
+                             <em>these tracks will also be filtered</em>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Other Filters
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Using these specific filters, bypassing any filters that might be in
+                             current use. This will pop out the usual <A HREF="eeg-display.html#filters">Filter Dialog</A>
+                             for you to fill the relevant filters parameters.
+                         </P>
+                         <P>
+                             Note 1: You might have to fill the <em>Sampling Frequency </em>entry of this dialog,
+                             though.
+                         <P>
+                             Note 2: If user has <a href="#appendingnulltracks">added null tracks</a>,
+                             <em>these tracks will also be filtered</em>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Reference:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Also see this note about the <a href="#sequenceofprocessing">
+                                 Sequence of
+                                 Processing
+                             </a>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             No Reference
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Use the same reference as when the file(s) was(were) written, that
+                             is, no change in reference.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Use Current Reference
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Use the reference currently in use. Useful only if the files have
+                             already been opened in Cartool, and the user has changed the reference.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Average Reference
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Use the <A HREF="terms-definitions-formulas.html#formulas">average reference</A>,
+                             overriding current reference.
+                         <P>
+                             Note: If user has <a href="#appendingnulltracks">added null tracks</a>,
+                             <em>
+                                 these tracks will be included in the new average reference
+                                 computation
+                             </em>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Other Reference
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Use the <B>average of the specified list of electrodes</B>. If only
+                             one electrode is specified, this will be the reference.
+                         <P>
+                             Note: If user has <a href="#appendingnulltracks">added null tracks</a>,
+                             <em>these tracks can also be used as reference</em>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Baseline Correction:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Apply Baseline Correction</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Select this to apply some baseline correction (subtracting each track
+                             with its average within a given time period).
+                         <P>
+                             Note: If user has <a href="#appendingnulltracks">added null tracks</a>,
+                             <em>these tracks will also have be baseline-corrected</em>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             From
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             First time frame of the baseline.
+                         </P>
+                         <P>
+                             <B>This is an absolute value</B>, <I>not</I> a relative one, and
+                             should be within the range of available time frames. Otherwise it
+                             will be clipped to these limits.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             to
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Last time frame of the baseline.
+                         </P>
+                         <P>
+                             <B>This is an absolute value</B>, <I>not</I> a relative one, and
+                             should be within the range of available time frames. Otherwise it
+                             will be clipped to these limits.
+                         </P>
+                         <P>
+                             The limits specified need <B><I>not</I></B> to be within the range of
+                             the time period exported. They can be <B>whatever you wish</B>,
+                             Cartool will handle <B><I>all</I></B> the cases gracefully.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             End of File
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Automatically set the last time frame of the baseline correction to
+                             the <B>actual end of the current file</B>. Useful in <A HREF="#call-batch-mode">
+                                 Batch
+                                 Mode
+                             </A>, if the files have different lengths.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Rescaling:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Note: If user has <a href="#appendingnulltracks">added null tracks</a>,
+                             <em>these tracks will also be rescaled</em>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             No Rescaling
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             What is says.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Rescaled By
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Rescale the EEG values by <B>multiplying with the provided value</B>.
+                             Negative factors are allowed to perform a polarity inversion.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             GFP Normalize
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             For each EEG, compute the <B>mean GFP (or RMS) over the selected time period</B>,
+                             then <B>divide the EEG values</B> with it.
+                         </P>
+                         <P>
+                             See this <A HREF="computing-statistics.html#param-positive-data">
+                                 point on
+                                 positive data
+                             </A> and also <A HREF="terms-definitions-formulas.html#data-types">this point</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Output Time</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Output Time is:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Sequential
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The <B>input time period</B>, once processed, <B>is outputted sequentially</B>.
+                         </P>
+                         <P>
+                             F.ex. if the input time range selected is from 100 to 149 time
+                             frames, then the resulting output will be 50 time frames long.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Average
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The <B>input time period</B>, once processed, <B>is averaged</B>, and
+                             a <B>single value</B> is outputted.
+                         </P>
+                         <P>
+                             F.ex. if the input time range selected is from 100 to 149 time
+                             frames, then the resulting output will be 1 time frame long.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Time Downsampling:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Downsample by Integer Ratio:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             <B>Downsample the data</B> by the specified integer ratio (&gt;1).
+                             The resulting sampling frequency will be the original one divided by
+                             this ratio.
+                         </P>
+                         <P>
+                             The method used is equivalent to a <B>CIC</B> (Cascaded
+                             Integrator-Comb) filter, followed by a light <B>High Pass FIR</B>
+                             (compensation) filter, and finally the <B>decimation</B> itself.
+                         </P>
+                         <P>
+                             &nbsp;
+                         </P>
+                         <P>
+                             Also note that downsampling is disabled in the following cases:
+                         </P>
+                         <UL>
+                             <LI CLASS="mvd-P">
+                                 <P>
+                                     Input Time Period is taken from Triggers
+                                 </P>
+                             <LI CLASS="mvd-P">
+                                 <P>
+                                     Averaging the output value
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Output File</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Filename Infix&nbsp;
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The exported filenames will have these characters inserted. Default
+                             is &quot;Export&quot;.
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B><A NAME="file-types-out"></A>Output File Type</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             A drop-down list with currently the following available types:
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             TXT (text)
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Text file, actually the same as the <B><I><A HREF="files-formats-cartool.html#ep">.ep</A></I></B><A HREF="files-formats-cartool.html#ep"> file</A>
+                             except for the extension.
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             EP (text)
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Text file, basically a plain matrix of data. See the <B><I><A HREF="files-formats-cartool.html#ep">.ep</A></I></B><A HREF="files-formats-cartool.html#ep"> file</A> specification.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             EPH (text)
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Text file, basically the same as the <strong><em>.ep</em></strong> above
+                             but with an additional header line. See the <B><I><A HREF="files-formats-cartool.html#eph">.eph</A></I></B><A HREF="files-formats-cartool.html#eph"> file</A> specification.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             SEF (binary)
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Binary file, see the <B><I><A HREF="files-formats-cartool.html#sef">.sef</A></I></B><A HREF="files-formats-cartool.html#sef"> file</A> specification.
+                         </P>
+                         <P>
+                             Useful when exporting original recording file(s), or to include the
+                             electodes / ROIs names in the new file(s).
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             EEG (binary)
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Binary file, <A HREF="files-formats-others.html#eeg-raw">
+                                 file format from <em>
+                                     BrainVision
+                                 </em>
+                             </A>. This is the default option as it is a quite
+                             versatile format.
+                         </P>
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             EDF (binary)
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Binary file, see the <B><I><A HREF="files-formats-others.html#eeg raw">.edf</A></I></B><A HREF="files-formats-others.html#eeg-raw"> file</A> specification.
+                         </P>
+                         <P>
+                             Useful only for data interchange, otherwise don't use (loss of precision)!
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             RIS (binary)
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Binary file, see the <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B><A HREF="files-formats-cartool.html#ris"> file</A> specification.
+                         </P>
+                         <P>
+                             Used mainly if you are already testing other <B><I>.ris</I></B>
+                             files, and want to visualize the results in 3D.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Options</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Export Underlying Markers
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Also exports the markers belonging to the selected time period,
+                             creating a <I><A HREF="files-formats-cartool.html#mrk">.mrk</A></I> file
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Open File(s) Upon Completion
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             ...of the exportation. Just be careful in <A HREF="#call-batch-mode">
+                                 Batch
+                                 Mode
+                             </A>, this could open a lot of files (read: crash)! (the
+                             original EEG files are opened one at a time, then closed when done).
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Concatenate all into 1 File
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             If you have Batch Process a list of files, then the results will be
+                             concatenated into a single output file. Note that this happanes as the
+                             last step of the Reprocess Tracks, so what is appended depends on the
+                             parameters chosen above!
+                         <P>
+                             Markers will be conveniently added at each starting point of the original
+                             files.
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Process Current</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Enabled when called from an <A HREF="eeg-display.html">EEG window</A>, the
+                             exportation will apply to <B>this file</B> only.
+                         </P>
+                         <P>
+                             &nbsp;
+                         </P>
+                         <P>
+                             This button remains <B>
+                                 disabled until <U>all</U> the parameter
+                                 dialogs have received enough (and consistent) informations
+                             </B>. If
+                             this is not the case, first check the current dialog: if its
+                             &quot;Next&quot; button is disabled, the problem is in the current
+                             dialog. Otherwise, browse the other dialogs for some missing informations.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Batch Process</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Enabled when <I>not</I> called from an EEG window:
+                         </P>
+                         <UL>
+                             <LI CLASS="mvd-P">
+                                 <P>
+                                     Clicking this button will open a dialog from which you can select a <B>
+                                         set
+                                         of files
+                                     </B>, within a single directory.
+                                 </P>
+                             <LI CLASS="mvd-P">
+                                 <P>
+                                     Using <B>Drag &amp; Drop</B>, you can drop files in the dialog and
+                                     process them directly. Plus, it allows you to pick files <B>
+                                         from
+                                         different directories
+                                     </B>, if you can select them through a handy
+                                     utility like <I><A HREF="https://sites.google.com/site/cartoolcommunity/user-s-guide/using-cartool/being-more-efficient-with-cartool#TOC-Everything">Everything</A></I> beforehand.
+                                 </P>
+                         </UL>
+                         <P>
+                             &nbsp;
+                         </P>
+                         <P>
+                             This button remains <B>
+                                 disabled until <U>all</U> the parameter
+                                 dialogs have received enough (and consistent) informations
+                             </B>. If
+                             this is not the case, first check the current dialog: if its
+                             &quot;Next&quot; button is disabled, the problem is in the current
+                             dialog. Otherwise, browse the other dialogs for some missing informations.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Cancel
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Quit the dialog.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Help
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Launch the Help to the right page (should land on this page...).
+                     </TD>
+                 </TR>
+             </TABLE>
+         </P>
+         <H2>
+             <a name="command-line"></a>Runnning from the Command-Line Interface (CLI)
+         </H2>
+         <p>
+             You can call the Reprocess toolbox directly from the command-line, see the
+             <a href="command-line-interface.html#reprocesstracks">
+                 <strong>
+                     full syntax and examples
+                     here
+                 </strong>
+             </a>.
+         </p>
+         <H2>
+             <A NAME="results"></A>Results
+         </H2>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Exported files are written in the <B>same directories as their sources</B>.
+                     File names are inserted with the <B>infix</B> string, which is by
+                     default &quot;Export&quot;, followed by the appropriate file extension.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A NAME="result-from-freq"></A>In case the input is a <A HREF="frequency-analysis.html#results">
+                         Freq
+                         file
+                     </A>, <B>
+                         each of the stored frequency will be output in a
+                         separate file
+                     </B>. The resulting filenames will include which
+                     frequency has been used, f.ex.&nbsp; &quot;MyFile.4-8 Hz.EP&quot;,
+                     &quot;MyFile.8-14 Hz.EP&quot;, &quot;MyFile.14-20 Hz.EP&quot;.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>
+                     (text), showing all the parameters.
+                 </P>
+         </UL>
+         <H2>
+             <A NAME="technical-points"></A>Technical points and hints
+         </H2>
+         <H4>
+             <a name="sequenceofprocessing"></a>Sequence of Processing
+         </H4>
+         <P>
+             The various available processing <strong><em>follow a very precise sequence</em></strong>,
+             which is:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Reading the raw tracks from file
+             <LI CLASS="mvd-P">
+                 <P>
+                     Cropping the time-line (interval, keeping triggers, or excluding triggers)
+             <LI CLASS="mvd-P">
+                 <P>
+                     Appending null track(s). <em>
+                         All the following steps will make use of
+                         these new tracks!
+                     </em><BR>
+             <LI CLASS="mvd-P">
+                 Filtering (pre-reference)<UL>
+                     <LI CLASS="mvd-P">DC / Baseline
+                     <LI CLASS="mvd-P">
+                         Butterworth High-Pass /
+                         Low-Pass / Band-Pass
+                     <LI CLASS="mvd-P">Notches
+                     <LI CLASS="mvd-P">
+                         Spatial
+                         Filter
+                     <LI CLASS="mvd-P">Ranking
+                 </UL>
+             <LI CLASS="mvd-P">Re-referencing
+             <LI CLASS="mvd-P">
+                 Filtering (post-reference)<UL>
+                     <LI CLASS="mvd-P">Rectification
+                     <LI CLASS="mvd-P">Envelope
+                     <LI CLASS="mvd-P">
+                         Thresholding Above and/or Below
+                 </UL>
+             <LI CLASS="mvd-P">Baseline correction<BR>
+             <LI CLASS="mvd-P">Rescaling<BR>
+             <LI CLASS="mvd-P">Averaging the whole time range or Downsampling<BR>
+             <LI CLASS="mvd-P">Computing ROIs</P>
+         </UL>
+         <H4>
+             <a name="temporalfiltering"></a>Temporal
+             Filtering
+         </H4>
+         <P>
+             Cartool uses a classic<B> sliding window</B> method, which is
+             mandatory to avoid artifacts, especially with high-pass filter:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     to export time frame <B><I>t</I></B>, read data between <B><I>t - filtersize</I></B>
+                     and <B><I>t + filtersize</I></B>
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     filter, correct, etc...
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     save only the time frame value at <B><I>t</I></B>
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     repeat for all time frames
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             As a consequence, Cartool reads / filters / processes way more points
+             than are actually written to file. This is the only way to ensure the
+             results are correct, so be patient, it has to be done only once after all...
+         </P>
+         <P>
+             <B><I>filtersize</I></B> depends on the sampling frequency of the
+             current file. The higher the sampling frequency, the bigger the <B><I>filtersize</I></B>
+             variable, the longer the computation.
+         </P>
+         <H4>
+             <a name="spatialfiltering"></a>Spatial
+             Filtering and Adding Null Track
+         </H4>
+         <P>
+             The <em><A HREF="eeg-display.html#spatial-filter">Spatial Filter</A></em> depends on a
+             <a href="files-formats-cartool.html#xyz">
+                 <strong><em>.xyz</em></strong> coordinates
+                 file
+             </a> to operate, as it needs the spatial locations of each and every
+             electrodes. It is also requires that <strong>
+                 the number of tracks in the EEG
+                 file
+             </strong> and <strong>
+                 the number of electrodes in the <em>.xyz</em> file
+                 be exactly the same
+             </strong>. Cartool enforces that for you all the time, so
+             nothing to worry here.
+         </P>
+         <P>
+             However, in case the user required for an <a href="#appendingnulltracks">
+                 additional null track
+             </a>, the EEG has suddenly one more dimension. To
+             properly apply any Spatial Filter, <strong>
+                 the user should then select the
+                 <em>Other Filter</em> option
+             </strong>, and drop a correct <strong><em>.xyz</em></strong>
+             file with an additional electrode, too. This way both EEG and electrodes
+             coordinates dimensions will match again.
+         </P>
+         <P>
+             <em>In case of mismatch</em>, Cartool will likely complain, skip the Spatial
+             Filter step(!), and add an error message in the <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A> </I>
+             verbose file...
+         </P>
+         <H4>
+             <A NAME="rois"></A>ROIs
+         </H4>
+         <P>
+             If a <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B><A HREF="files-formats-cartool.html#rois"> file</A>
+             has been provided (see <A HREF="creating-rois.html">Creating ROIs</A>),
+             all members of a given roi are averaged together as a final step.
+             Then only the averaged value is written to file.
+         </P>
+         <P>
+             If you intend to do some stats later on these roi-ed files, <I>think twice</I>!
+             In fact, it is a far better practice to <I>not</I> compute the rois
+             yourself (for the stats), but <B>
+                 let the <A HREF="computing-statistics.html#rois">
+                     Statistics
+                     processing
+                 </A> do it for you
+             </B>. The main problem being that data
+             normalization that will be wrong, as the original data will be lost,
+             so will be the original GFP. Plus, why fill your drive with another
+             set of files?
+         </P>
+         <P>
+             But if you just want ROIs for some display purpose, or re-ordering
+             your tracks, just proceed!
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Noteworthy is a side-effect of <I>Exporting</I> with ROIs, which is
+             the <B>re-ordering of the tracks</B> that occurs. Within each roi,
+             all tracks will follow the exact sequence given in the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B><A HREF="files-formats-cartool.html#rois"> file</A>.
+             See an example, first the original order, then one roi with a
+             quarter of the electrodes:
+         </P>
+         <P>
+             <IMG SRC="images/rois.original-tracks-order.png" WIDTH="276" HEIGHT="397" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/rois.new-tracks-order.png" WIDTH="276" HEIGHT="397" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H4>
+             <A NAME="tracks-enumerate"></A>Specifying the list of tracks
+         </H4>
+         <P>
+             You can:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Enumerate the tracks one by one: <B>e1 e2 e3</B>
+                 </P>
+                 <P>
+                     <I>The order is relevant</I>, this is not equivalent to <B>e2 e3 e1</B>!<BR>
+                     Use whatever separator you like: comma, semi-colon, space, tab.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Use interval notation: <B>e1-e20</B>
+                 </P>
+                 <P>
+                     Which means all tracks from <B>e1</B> up to <B>e20</B>, both
+                     included, and in the order found in the file.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     You can of crouse combine the two notations: <B>e3 e5 e10-e20</B>
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             With interval notation, the ordering is the one found in the file you
+             are processing, and is by no mean lexicographic (<I>&agrave; la</I>
+             dictionary). So in this example <B>C1-C2</B> means <B>C1, Cz, C2</B>;
+             and <B>T3-T4</B> means <B>T3, C3, C1, Cz, C2, C4, T4</B>:
+         </P>
+         <P>
+             <IMG SRC="images/export-tracks.tracks-order.png" WIDTH="216" HEIGHT="515" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H4>
+             <a name="exportingcomputedtracks"></a>Exporting Computed Tracks
+         </H4>
+         <P>
+             You can export the <A HREF="terms-definitions-formulas.html#tracks">computed tracks</A> by
+             using any of the following predefined names:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>GFP</B>&nbsp; for the Global Field Power, if data are signed.<BR>
+             <LI CLASS="mvd-P">
+                 <B>RMS</B> for the Root Mean Square, instead of the
+                 GFP if <A HREF="terms-definitions-formulas.html#data-types">data are positive</A>.<BR>
+             <LI CLASS="mvd-P"><B>DIS</B>&nbsp; for the dissimilarity.<BR>
+             <LI CLASS="mvd-P"><B>AVG</B>&nbsp; for the average.</P>
+         </UL>
+         <H4>
+             Exporting frequency files
+         </H4>
+         <P>
+             See the <A HREF="#results">Results paragraph</A>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

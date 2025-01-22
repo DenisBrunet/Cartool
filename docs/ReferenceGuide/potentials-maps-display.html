@@ -2,390 +2,560 @@
  <HEAD>
   <TITLE>Scalp and Intracranial Potentials Display</TITLE>
  <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css"></HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   Scalp &amp; Intracranial Potentials Display</H1>
-  <P>
-   &nbsp;</P>
-  <P>
-   If you have no idea how to get this display on the first hand, it 
-   will help if <A HREF="#how-to-get-it">you read this topic first</A>.</P>
-  <H3>
-   <A HREF="#buttons">Buttons</A></H3>
-  <H5>
-   <A HREF="windows-general-commands.html#linking"><IMG SRC="images/all.button.graphical-link.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#rendering"><IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#orientation"><IMG SRC="images/all.button.orientation.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#magnifier"><IMG SRC="images/all.button.magnifier.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="general-concepts.html#slave controls"><IMG SRC="images/all.button.synchronize-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="general-concepts.html#slave average"><IMG SRC="images/all.button.average-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="general-concepts.html#slave sequence"><IMG SRC="images/all.button.sequence-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="general-concepts.html#slave-animate"><IMG SRC="images/all.button.animate-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="general-concepts.html#slave-less-frames"><IMG SRC="images/all.button.less-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#show-electrodes"><IMG SRC="images/pot.button.show-electrodes.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#show-elec-names"><IMG SRC="images/pot.button.show-electrodes-name.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#show-tracks"><IMG SRC="images/pot.button.show-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#project-2D"><IMG SRC="images/all.button.2d.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#show-min-max"><IMG SRC="images/all.button.min-max-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#brightness"><IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#contrast"><IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#auto-scaling"><IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#color-modes"><IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#next-xyz"><IMG SRC="images/pot.button.cycle-xyz.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H3>
-   <A HREF="#mouse">Mouse</A></H3>
-  <H3>
-   <A HREF="#menus">Menus</A></H3>
-  <H5>
-   <A HREF="#menu-search">Search</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#menu-search">Find TF with maximum value</A></H5>
-   </UL>
-  <H5>
-   <A HREF="#menu-options">Options</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#menu-options">Interpolation</A><br>
-    <A HREF="#menu-options">Specify a display scaling</A><br>
-    <A HREF="#menu-options">Show / hide color scaling</A><br>
-    <A HREF="#menu-options">Show / hide color orientation</A><br>
-	<A HREF="#depth-shifting">'Depth Shifting' trick of 3D potentials</A></H5>
-   </UL>
-  <H3>
-   <A HREF="#technical-points">Technical points</A></H3>
-  <H5>
-   <A HREF="#how-to-get-it">How do I get this display?</A><br><A HREF="#rois">ROIs and potentials display</A></H5>
-  <H2>
-   <A NAME="buttons"></A>Potentials - Buttons</H2>
-  <H3>
-   <A NAME="rendering"></A>Rendering&nbsp; <IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   (Go here for basic explanations on <A HREF="windows-general-commands.html#rendering">rendering</A>)<BR>
-   Toggles between <B>4 display modes</B>:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B><A NAME="render-no-interpol"></A>No interpolation</B>, small 
-    spheres at each electrode position have a coloring proportional to 
-    the intensity:</P>
-   <P>
-    <IMG SRC="images/pot.rendering1.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    Using a <B>Delaunay interpolation</B>, triangles between electrodes 
-    have a coloring proportional to the intensity, plus a <B>fixed transparency</B>:</P>
-   <P>
-    <IMG SRC="images/pot.rendering2.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    Using a <B>Delaunay interpolation</B>, triangles between electrodes 
-    have a coloring proportional to the intensity, plus a <B>transparency 
-    inversely proportional to the intensity</B> (a bit like clouds on top 
-    of the brain...):</P>
-   <P>
-    <IMG SRC="images/pot.rendering3.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    Using a <B>Delaunay interpolation</B>, triangles between electrodes 
-    have a coloring proportional to the intensity, and are rendered <B>opaque</B>:</P>
-   <P>
-    <IMG SRC="images/pot.rendering4.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <H3>
-   <A NAME="show-electrodes"></A>Show electrodes&nbsp; <IMG SRC="images/pot.button.show-electrodes.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   Show the electrodes positions. It currently toggles between <B>3 modes</B>:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    No electrodes,<BR>
-    <LI CLASS="mvd-P"><B>Small electrodes</B>,<BR>
-    <LI CLASS="mvd-P"><B>Bigger electrodes</B>.</P>
-   </UL>
-  <H3>
-   <A NAME="show-elec-names"></A>Show electrode names&nbsp; <IMG SRC="images/pot.button.show-electrodes-name.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   Show the <B>names of the electrodes</B>, each name within its own 
-   semi-transparent window.</P>
-  <H3>
-   <A NAME="show-tracks"></A>Show tracks on top&nbsp; <IMG SRC="images/pot.button.show-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   This is actually a handy shortcut to the <A HREF="eeg-display.html">EEG window</A> 
-   itself, to turn it into the <A HREF="eeg-display.html#rendering-3D">3D tracks rendering</A>,
-    and then applying a <A HREF="windows-general-commands.html#linking">graphical link</A> 
-   to <B>see the tracks in 3D superimposed&nbsp; to the potentials</B>. 
-   See an example here in <A HREF="#project-2D">3D and in 2D</A>:</P>
-  <P ALIGN=LEFT>
-   <IMG SRC="images/pot.tracks-on-top.3d.png" WIDTH="307" HEIGHT="256" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.tracks-on-top.flat.png" WIDTH="307" HEIGHT="256" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P ALIGN=LEFT>
-   Plus, you can <A HREF="#rois">combine the &quot;tracks on top&quot; 
-   with ROIs</A>.</P>
-  <H3>
-   <A NAME="project-2D"></A>Project in 2D&nbsp; <IMG SRC="images/all.button.2d.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   Enables you to see all your data on a flat surface. Mostly, it does a <B>projection
-    of the 3D model</B>. What has been detected as &quot;the top&quot; 
-   is used as the center of the projection, and everything un-warps from 
-   there (I'm still searching for the name of that projection).</P>
-  <P>
-   &nbsp;It currently toggles between <B>3 modes</B>:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Regular, 3D mode,<BR>
-    <LI CLASS="mvd-P">Plain 2D,<BR>
-    <LI CLASS="mvd-P">2D plus elevation proportional to intensity and contrast.</P>
-   </UL>
-  <P>
-   <IMG SRC="images/pot.3d.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.2d.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.2d-plus-elevation.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   If the electrode model includes more than surface electrodes, that is <A HREF="files-formats-cartool.html#els">single
-    electrodes, strips, grids</A>, they will also be rendered in 2D in a <B>synthetic
-    and ordered way</B>. Still the idea is to give the user an idea of 
-   what the data are, avoiding anything to be hidden by another object. 
-   F.ex. a few strips in 3D and then in 2D:</P>
-  <P>
-   <IMG SRC="images/pot.strips.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.strips-2d.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H3>
-   <A NAME="show-min-max"></A>Show Min and Max positions&nbsp; <IMG SRC="images/all.button.min-max-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   Add a <B>3D cross</B> where the minimum and maximum values are. It's 
-   also a 3 states buttons, with <B>two different sizes</B> for the 
-   cross availables:</P>
-  <P>
-   <IMG SRC="images/pot.minmax.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H3>
-   <A NAME="brightness"></A>Brightness&nbsp; <IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   See the MRI <A HREF="mri-display.html#brightness">Brightness</A>.</P>
-  <H3>
-   <A NAME="contrast"></A>Contrast&nbsp; <IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   See the MRI <A HREF="mri-display.html#contrast">Contrast</A>.</P>
-  <H3>
-   <A NAME="auto-scaling"></A>Color auto scaling&nbsp; <IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   See the MRI <A HREF="mri-display.html#auto-scaling">Color auto scaling</A>.</P>
-  <H3>
-   <A NAME="color-modes"></A>Color modes&nbsp; <IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   4 different color modes are possible, for <B>negative / 0 / positive</B> values:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Blue / White / Red<BR>
-    <LI CLASS="mvd-P">Neuroscan-ish colors<BR>
-    <LI CLASS="mvd-P">Black / White / Black<BR>
-    <LI CLASS="mvd-P">White / Middle grey / Black</P>
-   </UL>
-  <P>
-   <IMG SRC="images/pot.color1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.color2.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-   <IMG SRC="images/pot.color3.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.color4.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H3>
-   <A NAME="next-xyz"></A>Switch to another electrode coordinates 
-   file&nbsp; <IMG SRC="images/pot.button.cycle-xyz.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   The link file can contain <B><A HREF="#how-to-get-it">more than one 
-   electrode coordinates file</A></B>. In this case, you can use any of 
-   these models to show your data. F.ex. you can have a standard (and 
-   smooth) model, plus the actual model (less smooth) of a given 
-   subject, and switch from one to another. F.ex.:</P>
-  <P>
-   <IMG SRC="images/top.model1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/top.model2.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H2>
-   <A NAME="mouse"></A>Potentials - Mouse</H2>
-  <P>
-   See the <A HREF="windows-general-commands.html#mouse"><B>general mouse actions</B></A>,
-    and especially the <A HREF="windows-general-commands.html#brightness-contrast">brightness
-    and contrast control</A> and the <A HREF="windows-general-commands.html#mouse-picking">polling
-    function</A>.</P>
-  <H2>
-   <A NAME="menus"></A>Potentials - Menus</H2>
-  <H3>
-   <A NAME="menu-search"></A>Search menu</H3>
-  <UL>
-   <P>
-    <B>Find TF with maximum value&nbsp;</B></P>
-   <UL>
-    <P>
-     Scan all <A HREF="terms-definitions-formulas.html#time-frame">Time Frames</A>, and set the 
-     time cursor to the position where the <B>greatest GFP</B> is.</P>
-    </UL>
-   </UL>
-  <H3>
-   <A NAME="menu-options"></A>Options menu</H3>
-  <UL>
-   <P>
-    <B>Interpolation</B></P>
-   <UL>
-    <P>
-     Obsolete stuff. Cancels or enables the triangulation, <A HREF="#render-no-interpol">equivalent
-      to this mode</A>.</P>
-    </UL>
-   <P>
-    <B>Specify a display scaling</B></P>
-   <UL>
-    <P>
-     Ask the user for an arbitrary scaling value, equivalent to setting 
-     the <A HREF="#brightness">brightness</A>.</P>
-    </UL>
-   <P>
-    <B>Show / hide color scaling</B></P>
-   <UL>
-    <P>
-     Does what it says.</P>
-    </UL>
-   <P>
-    <B>Show / hide projected axis and equator</B></P>
-   <UL>
-    <P>
-     In <A HREF="#project-2D">2D mode</A>, this toggles on and off the 
-     display of the projected equator and axis.</P>
-    </UL>
-   <P>
-    <B>Show / hide orientation</B></P>
-   <UL>
-    <P>
-     Does what it says.</P>
-    </UL>
-   <P>
-    <B><A NAME="depth-shifting"></A>'Depth shifting' trick for 3D potentials</B></P>
-   <UL>
-    <P>
-     If you apply some graphical links, the data are 3D consistents. That 
-     is, anything closer to the viewer will hide what is behind, as we get 
-     used to. In some cases, f.ex. <B>depth electrodes</B>, we wish to see 
-     their display even though they are hidden in the brain. So we can 
-     artificially shift the potentials closer to the viewer, and see them 
-     &quot;on top&quot; of the brain.</P>
-    <P>
-     Same as the <A HREF="mri-display.html#depth-shift">MRI Depth 
-     Shifting topic</A>.</P>
-    <P>
-     F.ex. depth electrodes wihtout and with depth shifting:</P>
-    <P>
-     <IMG SRC="images/pot.no-depth-shift.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.depth-shift.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-    </UL>
-   </UL>
-  <H2>
-   <A NAME="technical-points"></A>Potentials - Technical points</H2>
-  <H3>
-   <A NAME="how-to-get-it"></A>How do I get this display?</H3>
-  <P>
-   This display is actually <B>automatically generated</B> when enough 
-   files have been <B><A HREF="general-concepts.html#linkingfiles">linked together</A></B>,
-    and therefore share enough informations together.</P>
-  <P>
-   So, simply put at least these kind of files:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    1 (or more) <B><A HREF="files-formats-others.html#eeg">EEG file(s)</A></B> 
-    (preferably an <A HREF="files-formats-others.html#eeg-erp">ERP file</A>),</P>
-   <LI CLASS="mvd-P">
-   <P>
-    At least one <B><A HREF="files-formats-others.html#electrodes-coord">electrode
-     coordinates file</A></B>.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   Putting <B>many EEG</B> files will display as many maps as there are 
-   of EEGs, but putting <B>many coordinates</B> files does not. This 
-   last case allows you to <B>switch in real-time between different 3D models</B>,
-    f.ex. between a real model from a subject, and an average one. All 
-   the maps of the link being changed at once.</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   Important points:</H4>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Putting many EEG files will display <B>as many maps</B> as there are 
-    of files.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    You can put many coordinates files, but only one is active at a time.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>You have to sure the sequence of the electrodes in the coordinates 
-    file exactly match the sequence of the tracks in the EEG files</B>. 
-    Missing this point leads to totally erroneous results and displays!</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Cartool is doing a lot of checkings to ensure you are on the safe 
-    side of this elaborate display. Though, only you can assert that all 
-    these files match together (the solution points with the MRI space 
-    and the IS matrix).</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   Recommended readings: the fabulous <A HREF="general-concepts.html#linkingfiles"><B>Linking
-    Files</B></A> story, as well as the infamous &quot;<B><A HREF="general-concepts.html#slave_windows">windows
-    in slavery</A></B>&quot;.</P>
-  <H3>
-   <A NAME="rois"></A>ROIs and potentials display</H3>
-  <P>
-   Well, there is no direct control / button for ROIs in the potential 
-   display. This is done through the usual ones, and from the <A HREF="eeg-display.html#rois">EEG
-    tracks ROI controls</A>.</P>
-  <P ALIGN=LEFT>
-   So, if the EEG display is in <A HREF="eeg-display.html#rois"><B>ROIs mode</B></A>,
-    <A HREF="#show-tracks">showing the tracks on top</A> will show the <B>tracks
-    grouped by roi</B>, with the underlying map unchanged:</P>
-  <P ALIGN=LEFT>
-   <IMG SRC="images/pot.rois-tracks.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P ALIGN=LEFT>
-   Now, if the <A HREF="eeg-display.html#rois-averaging"><B>rois are averaged</B></A>,
-    then the averaged tracks are shown, and the underlying <B>map shows 
-   the averaged values</B>, too (the electrodes not within a roi are set 
-   to zero):</P>
-  <P>
-   <IMG SRC="images/pot.rois-tracks-averaged.png" WIDTH="307" HEIGHT="256" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             Scalp &amp; Intracranial Potentials Display
+         </H1>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             If you have no idea how to get this display on the first hand, it
+             will help if <A HREF="#how-to-get-it">you read this topic first</A>.
+         </P>
+         <H3>
+             <A HREF="#buttons">Buttons</A>
+         </H3>
+         <H5>
+             <A HREF="windows-general-commands.html#linking"><IMG SRC="images/all.button.graphical-link.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#rendering"><IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#orientation"><IMG SRC="images/all.button.orientation.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#magnifier"><IMG SRC="images/all.button.magnifier.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="general-concepts.html#slave controls"><IMG SRC="images/all.button.synchronize-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="general-concepts.html#slave average"><IMG SRC="images/all.button.average-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="general-concepts.html#slave sequence"><IMG SRC="images/all.button.sequence-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="general-concepts.html#slave-animate"><IMG SRC="images/all.button.animate-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="general-concepts.html#slave-less-frames"><IMG SRC="images/all.button.less-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#show-electrodes"><IMG SRC="images/pot.button.show-electrodes.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#show-elec-names"><IMG SRC="images/pot.button.show-electrodes-name.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#show-tracks"><IMG SRC="images/pot.button.show-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#project-2D"><IMG SRC="images/all.button.2d.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#show-min-max"><IMG SRC="images/all.button.min-max-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#brightness"><IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#contrast"><IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#auto-scaling"><IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#color-modes"><IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#next-xyz"><IMG SRC="images/pot.button.cycle-xyz.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H3>
+             <A HREF="#mouse">Mouse</A>
+         </H3>
+         <H3>
+             <A HREF="#menus">Menus</A>
+         </H3>
+         <H5>
+             <A HREF="#menu-search">Search</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#menu-search">Find TF with maximum value</A>
+             </H5>
+         </UL>
+         <H5>
+             <A HREF="#menu-options">Options</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#menu-options">Interpolation</A><br>
+                 <A HREF="#menu-options">Specify a display scaling</A><br>
+                 <A HREF="#menu-options">Show / hide color scaling</A><br>
+                 <A HREF="#menu-options">Show / hide color orientation</A><br>
+                 <A HREF="#depth-shifting">'Depth Shifting' trick of 3D potentials</A>
+             </H5>
+         </UL>
+         <H3>
+             <A HREF="#technical-points">Technical points</A>
+         </H3>
+         <H5>
+             <A HREF="#how-to-get-it">How do I get this display?</A><br><A HREF="#rois">ROIs and potentials display</A>
+         </H5>
+         <H2>
+             <A NAME="buttons"></A>Potentials - Buttons
+         </H2>
+         <H3>
+             <A NAME="rendering"></A>Rendering&nbsp; <IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             (Go here for basic explanations on <A HREF="windows-general-commands.html#rendering">rendering</A>)<BR>
+             Toggles between <B>4 display modes</B>:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B><A NAME="render-no-interpol"></A>No interpolation</B>, small
+                     spheres at each electrode position have a coloring proportional to
+                     the intensity:
+                 </P>
+                 <P>
+                     <IMG SRC="images/pot.rendering1.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Using a <B>Delaunay interpolation</B>, triangles between electrodes
+                     have a coloring proportional to the intensity, plus a <B>fixed transparency</B>:
+                 </P>
+                 <P>
+                     <IMG SRC="images/pot.rendering2.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Using a <B>Delaunay interpolation</B>, triangles between electrodes
+                     have a coloring proportional to the intensity, plus a <B>
+                         transparency
+                         inversely proportional to the intensity
+                     </B> (a bit like clouds on top
+                     of the brain...):
+                 </P>
+                 <P>
+                     <IMG SRC="images/pot.rendering3.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Using a <B>Delaunay interpolation</B>, triangles between electrodes
+                     have a coloring proportional to the intensity, and are rendered <B>opaque</B>:
+                 </P>
+                 <P>
+                     <IMG SRC="images/pot.rendering4.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="show-electrodes"></A>Show electrodes&nbsp; <IMG SRC="images/pot.button.show-electrodes.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             Show the electrodes positions. It currently toggles between <B>3 modes</B>:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     No electrodes,<BR>
+             <LI CLASS="mvd-P"><B>Small electrodes</B>,<BR>
+             <LI CLASS="mvd-P"><B>Bigger electrodes</B>.</P>
+         </UL>
+         <H3>
+             <A NAME="show-elec-names"></A>Show electrode names&nbsp; <IMG SRC="images/pot.button.show-electrodes-name.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             Show the <B>names of the electrodes</B>, each name within its own
+             semi-transparent window.
+         </P>
+         <H3>
+             <A NAME="show-tracks"></A>Show tracks on top&nbsp; <IMG SRC="images/pot.button.show-tracks.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             This is actually a handy shortcut to the <A HREF="eeg-display.html">EEG window</A>
+             itself, to turn it into the <A HREF="eeg-display.html#rendering-3D">3D tracks rendering</A>,
+             and then applying a <A HREF="windows-general-commands.html#linking">graphical link</A>
+             to <B>see the tracks in 3D superimposed&nbsp; to the potentials</B>.
+             See an example here in <A HREF="#project-2D">3D and in 2D</A>:
+         </P>
+         <P ALIGN=LEFT>
+             <IMG SRC="images/pot.tracks-on-top.3d.png" WIDTH="307" HEIGHT="256" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.tracks-on-top.flat.png" WIDTH="307" HEIGHT="256" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P ALIGN=LEFT>
+             Plus, you can <A HREF="#rois">
+                 combine the &quot;tracks on top&quot;
+                 with ROIs
+             </A>.
+         </P>
+         <H3>
+             <A NAME="project-2D"></A>Project in 2D&nbsp; <IMG SRC="images/all.button.2d.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             Enables you to see all your data on a flat surface. Mostly, it does a <B>
+                 projection
+                 of the 3D model
+             </B>. What has been detected as &quot;the top&quot;
+             is used as the center of the projection, and everything un-warps from
+             there (I'm still searching for the name of that projection).
+         </P>
+         <P>
+             &nbsp;It currently toggles between <B>3 modes</B>:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Regular, 3D mode,<BR>
+             <LI CLASS="mvd-P">Plain 2D,<BR>
+             <LI CLASS="mvd-P">2D plus elevation proportional to intensity and contrast.</P>
+         </UL>
+         <P>
+             <IMG SRC="images/pot.3d.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.2d.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.2d-plus-elevation.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             If the electrode model includes more than surface electrodes, that is <A HREF="files-formats-cartool.html#els">
+                 single
+                 electrodes, strips, grids
+             </A>, they will also be rendered in 2D in a <B>
+                 synthetic
+                 and ordered way
+             </B>. Still the idea is to give the user an idea of
+             what the data are, avoiding anything to be hidden by another object.
+             F.ex. a few strips in 3D and then in 2D:
+         </P>
+         <P>
+             <IMG SRC="images/pot.strips.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.strips-2d.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H3>
+             <A NAME="show-min-max"></A>Show Min and Max positions&nbsp; <IMG SRC="images/all.button.min-max-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             Add a <B>3D cross</B> where the minimum and maximum values are. It's
+             also a 3 states buttons, with <B>two different sizes</B> for the
+             cross availables:
+         </P>
+         <P>
+             <IMG SRC="images/pot.minmax.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H3>
+             <A NAME="brightness"></A>Brightness&nbsp; <IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             See the MRI <A HREF="mri-display.html#brightness">Brightness</A>.
+         </P>
+         <H3>
+             <A NAME="contrast"></A>Contrast&nbsp; <IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             See the MRI <A HREF="mri-display.html#contrast">Contrast</A>.
+         </P>
+         <H3>
+             <A NAME="auto-scaling"></A>Color auto scaling&nbsp; <IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             See the MRI <A HREF="mri-display.html#auto-scaling">Color auto scaling</A>.
+         </P>
+         <H3>
+             <A NAME="color-modes"></A>Color modes&nbsp; <IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             4 different color modes are possible, for <B>negative / 0 / positive</B> values:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Blue / White / Red<BR>
+             <LI CLASS="mvd-P">Neuroscan-ish colors<BR>
+             <LI CLASS="mvd-P">Black / White / Black<BR>
+             <LI CLASS="mvd-P">White / Middle grey / Black</P>
+         </UL>
+         <P>
+             <IMG SRC="images/pot.color1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.color2.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+             <IMG SRC="images/pot.color3.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.color4.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H3>
+             <A NAME="next-xyz"></A>Switch to another electrode coordinates
+             file&nbsp; <IMG SRC="images/pot.button.cycle-xyz.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             The link file can contain <B>
+                 <A HREF="#how-to-get-it">
+                     more than one
+                     electrode coordinates file
+                 </A>
+             </B>. In this case, you can use any of
+             these models to show your data. F.ex. you can have a standard (and
+             smooth) model, plus the actual model (less smooth) of a given
+             subject, and switch from one to another. F.ex.:
+         </P>
+         <P>
+             <IMG SRC="images/top.model1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/top.model2.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H2>
+             <A NAME="mouse"></A>Potentials - Mouse
+         </H2>
+         <P>
+             See the <A HREF="windows-general-commands.html#mouse"><B>general mouse actions</B></A>,
+             and especially the <A HREF="windows-general-commands.html#brightness-contrast">
+                 brightness
+                 and contrast control
+             </A> and the <A HREF="windows-general-commands.html#mouse-picking">
+                 polling
+                 function
+             </A>.
+         </P>
+         <H2>
+             <A NAME="menus"></A>Potentials - Menus
+         </H2>
+         <H3>
+             <A NAME="menu-search"></A>Search menu
+         </H3>
+         <UL>
+             <P>
+                 <B>Find TF with maximum value&nbsp;</B>
+             </P>
+             <UL>
+                 <P>
+                     Scan all <A HREF="terms-definitions-formulas.html#time-frame">Time Frames</A>, and set the
+                     time cursor to the position where the <B>greatest GFP</B> is.
+                 </P>
+             </UL>
+         </UL>
+         <H3>
+             <A NAME="menu-options"></A>Options menu
+         </H3>
+         <UL>
+             <P>
+                 <B>Interpolation</B>
+             </P>
+             <UL>
+                 <P>
+                     Obsolete stuff. Cancels or enables the triangulation, <A HREF="#render-no-interpol">
+                         equivalent
+                         to this mode
+                     </A>.
+                 </P>
+             </UL>
+             <P>
+                 <B>Specify a display scaling</B>
+             </P>
+             <UL>
+                 <P>
+                     Ask the user for an arbitrary scaling value, equivalent to setting
+                     the <A HREF="#brightness">brightness</A>.
+                 </P>
+             </UL>
+             <P>
+                 <B>Show / hide color scaling</B>
+             </P>
+             <UL>
+                 <P>
+                     Does what it says.
+                 </P>
+             </UL>
+             <P>
+                 <B>Show / hide projected axis and equator</B>
+             </P>
+             <UL>
+                 <P>
+                     In <A HREF="#project-2D">2D mode</A>, this toggles on and off the
+                     display of the projected equator and axis.
+                 </P>
+             </UL>
+             <P>
+                 <B>Show / hide orientation</B>
+             </P>
+             <UL>
+                 <P>
+                     Does what it says.
+                 </P>
+             </UL>
+             <P>
+                 <B><A NAME="depth-shifting"></A>'Depth shifting' trick for 3D potentials</B>
+             </P>
+             <UL>
+                 <P>
+                     If you apply some graphical links, the data are 3D consistents. That
+                     is, anything closer to the viewer will hide what is behind, as we get
+                     used to. In some cases, f.ex. <B>depth electrodes</B>, we wish to see
+                     their display even though they are hidden in the brain. So we can
+                     artificially shift the potentials closer to the viewer, and see them
+                     &quot;on top&quot; of the brain.
+                 </P>
+                 <P>
+                     Same as the <A HREF="mri-display.html#depth-shift">
+                         MRI Depth
+                         Shifting topic
+                     </A>.
+                 </P>
+                 <P>
+                     F.ex. depth electrodes wihtout and with depth shifting:
+                 </P>
+                 <P>
+                     <IMG SRC="images/pot.no-depth-shift.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/pot.depth-shift.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             </UL>
+         </UL>
+         <H2>
+             <A NAME="technical-points"></A>Potentials - Technical points
+         </H2>
+         <H3>
+             <A NAME="how-to-get-it"></A>How do I get this display?
+         </H3>
+         <P>
+             This display is actually <B>automatically generated</B> when enough
+             files have been <B><A HREF="general-concepts.html#linkingfiles">linked together</A></B>,
+             and therefore share enough informations together.
+         </P>
+         <P>
+             So, simply put at least these kind of files:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     1 (or more) <B><A HREF="files-formats-others.html#eeg">EEG file(s)</A></B>
+                     (preferably an <A HREF="files-formats-others.html#eeg-erp">ERP file</A>),
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     At least one <B>
+                         <A HREF="files-formats-others.html#electrodes-coord">
+                             electrode
+                             coordinates file
+                         </A>
+                     </B>.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Putting <B>many EEG</B> files will display as many maps as there are
+             of EEGs, but putting <B>many coordinates</B> files does not. This
+             last case allows you to <B>switch in real-time between different 3D models</B>,
+             f.ex. between a real model from a subject, and an average one. All
+             the maps of the link being changed at once.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             Important points:
+         </H4>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Putting many EEG files will display <B>as many maps</B> as there are
+                     of files.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     You can put many coordinates files, but only one is active at a time.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>
+                         You have to sure the sequence of the electrodes in the coordinates
+                         file exactly match the sequence of the tracks in the EEG files
+                     </B>.
+                     Missing this point leads to totally erroneous results and displays!
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Cartool is doing a lot of checkings to ensure you are on the safe
+                     side of this elaborate display. Though, only you can assert that all
+                     these files match together (the solution points with the MRI space
+                     and the IS matrix).
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Recommended readings: the fabulous <A HREF="general-concepts.html#linkingfiles">
+                 <B>
+                     Linking
+                     Files
+                 </B>
+             </A> story, as well as the infamous &quot;<B>
+                 <A HREF="general-concepts.html#slave_windows">
+                     windows
+                     in slavery
+                 </A>
+             </B>&quot;.
+         </P>
+         <H3>
+             <A NAME="rois"></A>ROIs and potentials display
+         </H3>
+         <P>
+             Well, there is no direct control / button for ROIs in the potential
+             display. This is done through the usual ones, and from the <A HREF="eeg-display.html#rois">
+                 EEG
+                 tracks ROI controls
+             </A>.
+         </P>
+         <P ALIGN=LEFT>
+             So, if the EEG display is in <A HREF="eeg-display.html#rois"><B>ROIs mode</B></A>,
+             <A HREF="#show-tracks">showing the tracks on top</A> will show the <B>
+                 tracks
+                 grouped by roi
+             </B>, with the underlying map unchanged:
+         </P>
+         <P ALIGN=LEFT>
+             <IMG SRC="images/pot.rois-tracks.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P ALIGN=LEFT>
+             Now, if the <A HREF="eeg-display.html#rois-averaging"><B>rois are averaged</B></A>,
+             then the averaged tracks are shown, and the underlying <B>
+                 map shows
+                 the averaged values
+             </B>, too (the electrodes not within a roi are set
+             to zero):
+         </P>
+         <P>
+             <IMG SRC="images/pot.rois-tracks-averaged.png" WIDTH="307" HEIGHT="256" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

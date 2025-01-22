@@ -2,559 +2,790 @@
  <HEAD>
   <TITLE>General Concepts</TITLE>
  <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css"></HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   General Concepts</H1>
-  <P>
-   &nbsp;</P>
-  <H5>
-   <A HREF="#files_and_views">Files and Views</A><br><A HREF="#linkingfiles">Linking 
-   Files Together</A><br>
-   <A HREF="#slave_windows">Slave Windows</A></H5>
-  <H2>
-   <A NAME="files_and_views"></A>Files and Views</H2>
-  <H5>
-   <A HREF="#opening-files">Opening files</A><br><A HREF="#adding-views">Adding new views</A><br>
-   <A HREF="#deleting-views">Deleting views</A><br><A HREF="#using-views">Using views</A></H5>
-  <H3>
-   <A NAME="opening-files"></A>Opening files</H3>
-  <P>
-   As with all programs, you can:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Use <B>drag and drop</B> from the Explorer (the Chef's choice).</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Menu <FONT FACE="Arial Black,Arial,Helvetica">File|Open</FONT>, 
-    select the file type, then choose the file.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Double-click on the file from the Explorer. Note that in this case, 
-    you start a new running instance of Cartool, and having multiple 
-    Cartool running at the same time is not very memory efficient, though 
-    it will work. If it does not work or crashes? see <A HREF="cartool-options.html#registration-reset">here</A> 
-    or <A HREF="problems-resolution.html#General-problems">here</A>.</P>
-   </UL>
-  <P>
-   The file opens as a <A HREF="terms-definitions-formulas.html#document">Document</A> inside 
-   Cartool, with a default <A HREF="terms-definitions-formulas.html#view">View</A> attached to 
-   it. Then you can <A HREF="#adding-views">add new views</A> to the 
-   document, that can be of different types of display, or <A HREF="#deleting-views">delete
-    the views</A>. When the last view is destroyed, the document is 
-   closed and removed from Cartool's memory.</P>
-  <H3>
-   <A NAME="adding-views"></A>Adding new views</H3>
-  <P>
-   You can add as many views to the same document as you wish, all 
-   showing the same data from the Document. You can use either:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Press <B>Control + A</B> (the Chef's choice).<BR>
-    <LI CLASS="mvd-P">Click on button<IMG SRC="images/button.addview.png" ALIGN=ABSMIDDLE WIDTH="74" HEIGHT="76" VSPACE="0" HSPACE="0" BORDER="0">.<BR>
-    <LI CLASS="mvd-P">Menu <FONT FACE="Arial Black,Arial,Helvetica">Window
-     | Add View</FONT>, and choose the view type if asked for it.</P>
-   </UL>
-  <H3>
-   <A NAME="deleting-views"></A>Deleting views</H3>
-  <P>
-   Simply destroy the window by closing it.</P>
-  <P>
-   When the last View of a Document has been closed, the Document itself 
-   is closed, and removed from Cartool's memory.</P>
-  <H3>
-   <A NAME="using-views"></A>Using views</H3>
-  <P>
-   Here is what you can do with all views:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>NumPad </B><FONT SIZE="5"><B>*</B></FONT> will quickly <B>inflate</B> 
-    the window <B>global size</B> by 26% (repeated 3 times will make the 
-    window double in size)</P>
-   <P>
-    <B>NumPad </B><FONT SIZE="5"><B>*</B></FONT> + <B>left or right arrow</B> 
-    will quickly <B>inflate</B> the window <B>horizontal size</B> by 26%<BR>
-    <B>NumPad </B><FONT SIZE="5"><B>*</B></FONT> + <B>up or down arrow</B> 
-    will quickly <B>inflate</B> the window <B>vertical size</B> by 26%</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>NumPad </B><FONT SIZE="5"><B>/</B></FONT> will quickly <B>shrink</B> 
-    the window <B>global size</B> by 26% (repeated 3 times will make the 
-    window half in size)</P>
-   <P>
-    <B>NumPad </B><FONT SIZE="5"><B>/</B></FONT> + <B>left or right arrow</B> 
-    will quickly <B>shrink</B> the window <B>horizontal size</B> by 26%<BR>
-    <B>NumPad </B><FONT SIZE="5"><B>/</B></FONT> + <B>up or down arrow</B> 
-    will quickly <B>shrink</B> the window <B>vertical size</B> by 26%</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Letting the cursor on any button will bring a <B>tool-tip</B> window, 
-    giving a short message of its signification, and a keyboard shortcut. 
-    This is usually the most up-to-date help.</P>
-   </UL>
-  <H2>
-   <A NAME="linkingfiles"></A>Linking Files Together</H2>
-  <P>
-   <I>Linking files</I> is a key feature of Cartool, so it is very 
-   important to get used to it and to understand all the benefits you 
-   can get from it.</P>
-  <P>
-   &nbsp;</P>
-  <H5>
-   <A HREF="#what-is-linking">What is &quot;linking files&quot;?</A><br>
-   <A HREF="#link-display">Link display explained</A><br><A HREF="#how-to-link">How to link files together</A><br>
-   <A HREF="#how-to-use-link">How to use the linked files</A><br>
-   <A HREF="#link-new-windows">Creating new windows</A><br>
-   <A HREF="#link-synchronizing">Synchronization</A><br>
-   <A HREF="#link-technical">More technical points</A></H5>
-  <H3>
-   <A NAME="what-is-linking"></A>What is &quot;linking files&quot;?</H3>
-  <P>
-   Simply, it is <B>binding together files</B> that are in some way <B>related</B> 
-   and <B>consistent</B> relatively to each others. This is achieved 
-   (right now) through a <B>simple listing</B> in a <A HREF="files-formats-cartool.html#lm">.lm
-    file</A>, and brings the following benefits:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>Avoiding and controlling information redundancy</B>, for example 
-    by checking that all linked files do have the same number of 
-    electrodes, or that only one file contains the electrodes 
-    descriptions. F.ex. a link file containing 3 compatibles EEG files 
-    linked together with one electrode coordinates file:</P>
-   <P>
-    <IMG SRC="images/lm.example1.png" WIDTH="291" HEIGHT="142" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>Sharing informations</B> between the linked files, for example all 
-    files will have access to the sampling frequency of the EEG, or the 
-    names of the electrodes even though they do not have these 
-    informations by themselves.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    A consequence of the previous point, <B><A HREF="#link-new-windows">new
-     types of display</A> are therefore available</B>. Sharing 
-    information gives more powerful displays. F.ex. 1 EEG file plus 1 
-    electrode coordinates file can generate a spatial rendering of the potentials:</P>
-   <P>
-    The <B>link file</B> content itself:<BR>
-    <IMG SRC="images/lm.example2.0.png" ALIGN=CENTER WIDTH="291" HEIGHT="102" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-    The 3 windows it can produce (EEG tracks, electrodes coordinates, 
-    scalp potentials):<BR>
-    <IMG SRC="images/lm.example2.1.png" ALIGN=CENTER WIDTH="269" HEIGHT="144" VSPACE="0" HSPACE="0" BORDER="0">+<IMG SRC="images/lm.example2.2.png" ALIGN=CENTER WIDTH="216" HEIGHT="194" VSPACE="0" HSPACE="0" BORDER="0">=&gt;<IMG SRC="images/lm.example2.3.png" ALIGN=CENTER WIDTH="216" HEIGHT="194" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    Easily <B>saving and managing your work</B> for later use, as the 
-    files association is saved on disk.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>Securing your data and results</B>, as you know you always reopen 
-    the very same files, and can re-process your data with either the 
-    same parameters (for double-checking), or other parameters (for new 
-    trials). <B>Absolute path</B> is taken to differentiate between files 
-    with same file names, so be careful when moving files around.</P>
-   <P>
-    2 examples of link files, one putting a set of EEG files together, 
-    another one linking together everything you need for some inverse 
-    solutions, but without any EEG files:</P>
-   <P>
-    <IMG SRC="images/lm.example3.png" ALIGN=TOP WIDTH="291" HEIGHT="122" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/lm.example4.png" ALIGN=TOP WIDTH="276" HEIGHT="162" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <H3>
-   <A NAME="link-display"></A>Link display explained</H3>
-  <P>
-   Here are the windows you will see when dealing with link files:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/lm.explained.png" WIDTH="551" HEIGHT="420" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Upper left is the <B>link window</B> itself, which lists all the 
-    files contained into the link. Double clicking on a file name will 
-    maximize or minimize the appropriate windows.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    On its right, all the <B>windows managed by this link</B>. They do 
-    not belong to the link itself, as they are independent documents, but 
-    receive <B>commands</B> and share <B>informations</B> through the 
-    link mechanism.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The managed windows can be divided into 2 categories, the <B>EEG 
-    &quot;master&quot; windows</B>, and the other <A HREF="#slave_windows"><B>slave
-     windows</B></A>. Slave windows depend of the EEG windows immediately 
-    on their left.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    At the bottom, some windows opened and minimized to unclutter the display.</P>
-   </UL>
-  <H3>
-   <A NAME="how-to-link"></A>How to link files together</H3>
-  <P>
-   <B>Create</B> a special file of type <A HREF="files-formats-cartool.html#lm">.lm</A>,
-    with one of these way:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Menu <FONT FACE="Arial Black,Arial,Helvetica">File|New 'Link Many' file</FONT>,
-     which will straight away create an empty link file (but after you 
-    filled it, don't forget to save it on disk before closing Cartool!)</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Menu <FONT FACE="Arial Black,Arial,Helvetica">File|New</FONT> then 
-    selecting <FONT FACE="Arial Black,Arial,Helvetica">Link Many Files</FONT>.
-     Some dialogs will pop out, asking for the files to be linked. When 
-    finished, the name of the link file is also asked, and saved to disk.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   <B>Update</B> the link at any time with:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Drag files from the Explorer and <B>drop them inside the link window</B>.
-     Regular files will be added directly. But dropping <B>another link 
-    file will copy its content</B>. A very useful way to use this is to 
-    have a set of predefined linked files, linking to often used files, 
-    that will be added on demand in a single operation. F.ex. 2 separate 
-    link files that merge together:</P>
-   <P>
-    <IMG SRC="images/lm.example3.png" ALIGN=CENTER WIDTH="291" HEIGHT="122" VSPACE="0" HSPACE="0" BORDER="0">dropped
-     into<IMG SRC="images/lm.example4.png" ALIGN=CENTER WIDTH="276" HEIGHT="162" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-    generates<IMG SRC="images/lm.example5.png" ALIGN=CENTER WIDTH="291" HEIGHT="222" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-    (the <A HREF="#link-display">managed windows</A> it may generate are 
-    not shown here)</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <A NAME="linking-adding"></A>From&nbsp;the link file window, press on 
-    the &quot;Add files&quot; button <IMG SRC="images/lm.button.add.png" ALIGN=CENTER WIDTH="74" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">.
-     A &quot;+&quot; shaped cursor appears, click on the windows (within 
-    Cartool!) of already open files to include them on the fly. If you 
-    click on another link file, as in the previous point, all the files 
-    it contains will be transferred at once. Click in the background to 
-    stop linking..</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   On each addition of a new file, here is what happen in real time:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    The file is <B>checked</B> against all the others for all possible 
-    consistencies. F.ex. all number of electrodes or solution points 
-    should be the same across all files.<BR>
-    <LI CLASS="mvd-P">If the check is successful, the file is accepted, 
-    and <B>added</B> to the link file.<BR>
-    <LI CLASS="mvd-P">If a new type of display is available, due to these 
-    new incoming informations, a <B><A HREF="#link-new-windows">new window</A></B> 
-    is created straight away (so you don't have to request it), and all 
-    the other windows are refreshed. So don't be surprised to see windows 
-    opening and shuffling all around your screen, just wait.<BR>
-    <LI CLASS="mvd-P"><B>Linked files are locked</B>, and can not be 
-    individually closed, to prevent the link integrity. Closing the link 
-    file will remove all locks, and will also close the linked files.</P>
-   </UL>
-  <H3>
-   <A NAME="how-to-use-link"></A>How to use the linked files</H3>
-  <P>
-   Once open, from the <B><A HREF="#link-display">link window</A> itself</B>,
-    you can operate on the <A HREF="#link-display">windows it manages</A>:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <IMG SRC="images/lm.button.tile1.png" ALIGN=CENTER WIDTH="122" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">Tile
-     all managed windows by <B>compacting</B> the display, still <B>keeping
-     current windows size</B>.<BR>
-    <LI CLASS="mvd-P"><IMG SRC="images/lm.button.tile2.png" ALIGN=CENTER WIDTH="122" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">Tile
-     all managed windows by <B>compacting</B> the display, and assigning <B>default
-     sizes</B> to all windows.<BR>
-    <LI CLASS="mvd-P"><IMG SRC="images/lm.button.tile3.png" ALIGN=CENTER WIDTH="122" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">Tile
-     all managed windows by <B>compacting</B> the display, <B>resizing 
-    all windows to fit in a single page</B>.<BR>
-    <LI CLASS="mvd-P"><A HREF="#linking-adding"><IMG SRC="images/lm.button.add.png" ALIGN=CENTER WIDTH="74" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"></A>see
-     <A HREF="#linking-adding">adding files</A>.<BR>
-    <LI CLASS="mvd-P"><IMG SRC="images/lm.button.sync-all.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">to<IMG SRC="images/lm.button.cmd-cloning.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">see
-     <A HREF="#link-synchronizing">synchronization</A>.<BR>
-    <LI CLASS="mvd-P"><A HREF="microstates-segmentation.html#segmenting"><IMG SRC="images/lm.button.segment2.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"></A>will
-     call the <A HREF="microstates-segmentation.html#segmenting">segmentation</A> procedure.<BR>
-    <LI CLASS="mvd-P">In the link window itself, <B>double clicking</B> 
-    on a file name will <B>maximize or minimize</B> the appropriate windows.</P>
-   </UL>
-  <H3>
-   <A NAME="link-new-windows"></A>Creating new windows</H3>
-  <P>
-   More interesting is what you can do <B>from any <A HREF="#link-display">window
-    managed by the linked files</A></B> (say, from an EEG window). As 
-   said earlier, informations are now shared amongst all the files. By <A HREF="general-concepts.html#adding-views">requesting
-    a new view</A>, a <B>context sensitive list of currently available displays</B> 
-   will pop out. See also the related topic on &quot;<A HREF="#slave_windows">slave
-    windows</A>&quot;.</P>
-  <P>
-   Currently, here are the different types of windows (according to the 
-   link content):</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <A HREF="eeg-display.html">Tracks display</A>, with new available <A HREF="eeg-display.html#rendering">renderings</A>:</P>
-   <P>
-    <IMG SRC="images/eeg.render1.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/eeg.render4.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/eeg.render5.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    3D potentials display:</P>
-   <P>
-    <IMG SRC="images/lm.example2.3.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    3D inverse solutions:</P>
-   <P>
-    <IMG SRC="images/is.example1.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <H3>
-   <A NAME="link-synchronizing"></A>Synchronization</H3>
-  <P>
-   The&nbsp; <FONT FACE="Arial Black,Arial,Helvetica">Synchronizing</FONT>&nbsp;
-    menu, together with the following buttons, provide some predefined 
-   way to <A HREF="#slave-controls">synchronize</A> the <A HREF="#link-display">managed</A> <A HREF="#slave_windows">slave
-    windows</A>:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <IMG SRC="images/lm.button.sync-all.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"><B>Synchronize
-     all</B></P>
-   <P>
-    All windows are synchronized at once:<BR>
-    <IMG SRC="images/lm.masterslave6.png" WIDTH="480" HEIGHT="398" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <IMG SRC="images/lm.button.desync-all.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"><B>Desynchronize
-     all</B></P>
-   <P>
-    Clear all synchronizations, all windows are independent again:<BR>
-    <IMG SRC="images/lm.masterslave8.png" WIDTH="480" HEIGHT="398" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <IMG SRC="images/lm.button.sync-eeg.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"><B>Synchronize
-     only within same EEG</B></P>
-   <P>
-    Each EEG will synchronize all of its own <A HREF="#slave_windows">slave
-     windows</A> (create &quot;horizontal&quot; synchronizations):<BR>
-    <IMG SRC="images/lm.masterslave5.png" WIDTH="480" HEIGHT="398" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <IMG SRC="images/lm.button.desync-diff-eeg.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"><B>Desynchronize
-     between different EEGs</B></P>
-   <P>
-    Break any existing synchronizations between windows from different 
-    EEGs (break the &quot;vertical&quot; synchronizations). Still 
-    preserving existing &quot;horizontal&quot; synchronizations:<BR>
-    <IMG SRC="images/lm.masterslave7.png" WIDTH="480" HEIGHT="398" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <A NAME="commands-cloning"></A><IMG SRC="images/lm.button.cmd-cloning.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"><B>Clone
-     user commands within likewise windows</B></P>
-   <P>
-    Once activated, (most) <B>commands</B> done in any window <B>will 
-    spread to the other windows of the same type</B> (f.ex. EEG to EEG, 
-    Potential Maps to Potential Maps, etc...). Simply put, it allows you 
-    not to repeat the tunings done in one window again in the others.</P>
-   <P>
-    The commands modifying the <A HREF="terms-definitions-formulas.html#cursor">time cursor</A> 
-    are not spread, because they are specifically handled by the 
-    synchronization process (see <A HREF="#link-synchronizing">above</A>).
-     Then through the right combination of settings, you can choose 
-    either to modify the setup of the windows, the time cursor, or both.</P>
-   <P>
-    Commands include <A HREF="windows-general-commands.html#mouse">left and right 
-    mouse operations</A> (rotation, zoom, brightness and contrast), and 
-    all buttons (including keyboard shortcuts) except those that apply to time.</P>
-   </UL>
-  <H3>
-   <A NAME="link-technical"></A>More technical points</H3>
-  <P>
-   When opening a link file, Cartool will open all the files listed into 
-   it. Many of them will be straight away minimized to clean up a bit 
-   the display. Typically, the electrode coordinates, inverse solutions 
-   matrices, MRI's etc...</P>
-  <P>
-   Creating a new view from a given window will actually create <B>as 
-   many views as there are EEG files</B>, one for each of them. The new 
-   views will be assigned the rightmost position of all <A HREF="#link-display">managed
-    windows</A>.</P>
-  <H2>
-   <A NAME="slave_windows"></A>Slave Windows</H2>
-  <P>
-   See the <A HREF="#linkingfiles">Linking files</A> paragraph 
-   beforehand, as it applies to <I>windows created within the link 
-   mechanism only</I>.</P>
-  <P>
-   &nbsp;</P>
-  <H5>
-   <A HREF="#slave-windows">Windows in slavery...</A><br>
-   <A HREF="#slave-controls">Controlling your slave windows</A>&nbsp; <B><A HREF="#slave-controls"><IMG SRC="images/all.button.synchronize-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#slave-controls"><IMG SRC="images/all.button.average-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.sequence-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.animate-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#slave-controls"><IMG SRC="images/all.button.less-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></B></H5>
-  <P>
-   &nbsp;</P>
-  <H3>
-   <A NAME="slave-windows"></A>Windows in slavery...</H3>
-  <P>
-   All views managed by the <A HREF="#linkingfiles">link mechanism</A> 
-   are not equals, the <B>EEG display naturally leading</B> all the 
-   others attached to it as it contains the <B>source of the data flow</B>,
-    thus being the &quot;master&quot;. <B>All the other windows are 
-   therefore &quot;slaves&quot;</B> to it, and need at least one 
-   &quot;master&quot; for existing (see <A HREF="#link-display">here</A> 
-   for a summary of the various windows available).<BR>
-   F.ex. moving the cursor inside the EEG window (on the left, the 
-   master), will drive and update the scalp potentials window (on the 
-   right, the slave) in real time:</P>
-  <P>
-   <IMG SRC="images/lm.master1.png" WIDTH="276" HEIGHT="150" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/lm.slave1.png" WIDTH="182" HEIGHT="150" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-   <IMG SRC="images/lm.master2.png" WIDTH="276" HEIGHT="150" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/lm.slave2.png" WIDTH="182" HEIGHT="150" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   &nbsp;</P>
-  <P>
-   You can have <B>for the same EEG as many windows as you want</B>, 
-   just <A HREF="#link-new-windows">create them</A>. New 
-   &quot;slave&quot; windows will be assigned the last EEG 
-   &quot;master&quot; window created. Two examples here show 1 tracks 
-   display and 3 potentials display associated, then 2 tracks display 
-   and respectively 2 and 1 potentials displays associated:</P>
-  <P>
-   <IMG SRC="images/lm.masterslave1.png" WIDTH="615" HEIGHT="142" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-   <IMG SRC="images/lm.masterslave2.png" WIDTH="818" HEIGHT="143" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   Note that the potential windows, though they usually share a single 
-   EEG tracks display, are independent one of the others. That means the <A HREF="terms-definitions-formulas.html#cursor">time
-    cursor</A> is moved only for this particular window.</P>
-  <H3>
-   <A NAME="slave-controls"></A>Controlling your slave windows</H3>
-  <P>
-   Slave windows have a few extra controls over the world (a little compensation...):</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B><IMG SRC="images/all.button.synchronize-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
-     Synchronizing</B> with other <A HREF="#slave_windows">slave windows</A>,
-     a key feature of Cartool (See also the <A HREF="#link-synchronizing">synchronizing
-     menu</A>, to operate globally).</P>
-   <P>
-    A clock-like cursor appears, with which you can click on other slave 
-    windows, even from other link files. These windows will be <B>time-synchronized</B>,
-     so moving the cursor in any of them will update the cursor in all 
-    the others. F.ex. 3 windows before (independent cursors) and after (3 
-    cursors equals) synchronization:</P>
-   <P>
-    <IMG SRC="images/lm.masterslave3.png" WIDTH="370" HEIGHT="383" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/lm.masterslave4.png" WIDTH="370" HEIGHT="383" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <P>
-    If 2 groups of windows, say { A, B, C } and { D, E } respectively are 
-    already synchronized, it is enough to synchronize f.ex. windows A and 
-    D to merge the 2 groups together, { A .. E } becoming synchronous 
-    (&quot;Synchronicity is transitive&quot;).</P>
-   <P>
-    Synchronicity does account for different sampling frequency, so you 
-    can sync an EEG sampled at 1000Hz and another one sampled at 256Hz 
-    correctly. EEG lengths can also differ, the cursor being safely 
-    clipped to the limits of each EEGs.</P>
-   <P>
-    To <B>stop the synchronizing process</B>, click on the background.</P>
-   <P>
-    To <B>desynchronize</B> a window from all the others, click with the 
-    clock-like cursor on the window itself.</P>
-   <P>
-    By default, when opening a link file, all EEG windows synchronize all 
-    their &quot;slave&quot; windows with them. Simply means you can move 
-    the cursor, and see the result accordingly!</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B><A NAME="slave-average"></A><IMG SRC="images/all.button.average-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
-     Average</B> the values of the EEG if the <A HREF="terms-definitions-formulas.html#cursor">time
-     cursor</A> spreads across multiple time frames, then show the result:</P>
-   <P>
-    <IMG SRC="images/lm.average.png" WIDTH="189" HEIGHT="231" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B><A NAME="slave-sequence"></A><IMG SRC="images/all.button.sequence-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
-     </B>Display a <B>sequence</B> of time frames if the <A HREF="terms-definitions-formulas.html#cursor">time
-     cursor</A> spreads across multiple time frames.</P>
-   <P>
-    Usually, there are <B>more than one sequence layout available</B>, 
-    just <B>click again</B> to toggle through all possibilities (the 
-    number of frames is controlled <A HREF="#slave-less-frames">here</A>):</P>
-   <P>
-    <IMG SRC="images/lm.sequence.png" WIDTH="189" HEIGHT="231" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B><A NAME="slave-animate"></A><IMG SRC="images/all.button.animate-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
-     </B>Run an <B>animation</B> if the <A HREF="terms-definitions-formulas.html#cursor">time cursor</A> 
-    spreads across multiple time frames. <B>Click again</B> to <B>stop</B> 
-    or <B>restart</B> the animation (speed is controlled <A HREF="#slave-less-frames">here)</A>:</P>
-   <P>
-    <IMG SRC="images/lm.animation.png" WIDTH="589" HEIGHT="230" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <A NAME="slave-less-frames"></A><B><IMG SRC="images/all.button.less-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
-     </B>In case of sequence or animation, <B>reduce the number of 
-    frames, or the speed</B>.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B><IMG SRC="images/all.button.more-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
-     </B>In case of sequence or animation, <B>increase the number of 
-    frames, or the speed</B>.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             General Concepts
+         </H1>
+         <P>
+             &nbsp;
+         </P>
+         <H5>
+             <A HREF="#files_and_views">Files and Views</A><br><A HREF="#linkingfiles">
+                 Linking
+                 Files Together
+             </A><br>
+             <A HREF="#slave_windows">Slave Windows</A>
+         </H5>
+         <H2>
+             <A NAME="files_and_views"></A>Files and Views
+         </H2>
+         <H5>
+             <A HREF="#opening-files">Opening files</A><br><A HREF="#adding-views">Adding new views</A><br>
+             <A HREF="#deleting-views">Deleting views</A><br><A HREF="#using-views">Using views</A>
+         </H5>
+         <H3>
+             <A NAME="opening-files"></A>Opening files
+         </H3>
+         <P>
+             As with all programs, you can:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Use <B>drag and drop</B> from the Explorer (the Chef's choice).
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Menu <FONT FACE="Arial Black,Arial,Helvetica">File|Open</FONT>,
+                     select the file type, then choose the file.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Double-click on the file from the Explorer. Note that in this case,
+                     you start a new running instance of Cartool, and having multiple
+                     Cartool running at the same time is not very memory efficient, though
+                     it will work. If it does not work or crashes? see <A HREF="cartool-options.html#registration-reset">here</A>
+                     or <A HREF="problems-resolution.html#General-problems">here</A>.
+                 </P>
+         </UL>
+         <P>
+             The file opens as a <A HREF="terms-definitions-formulas.html#document">Document</A> inside
+             Cartool, with a default <A HREF="terms-definitions-formulas.html#view">View</A> attached to
+             it. Then you can <A HREF="#adding-views">add new views</A> to the
+             document, that can be of different types of display, or <A HREF="#deleting-views">
+                 delete
+                 the views
+             </A>. When the last view is destroyed, the document is
+             closed and removed from Cartool's memory.
+         </P>
+         <H3>
+             <A NAME="adding-views"></A>Adding new views
+         </H3>
+         <P>
+             You can add as many views to the same document as you wish, all
+             showing the same data from the Document. You can use either:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Press <B>Control + A</B> (the Chef's choice).<BR>
+             <LI CLASS="mvd-P">Click on button<IMG SRC="images/button.addview.png" ALIGN=ABSMIDDLE WIDTH="74" HEIGHT="76" VSPACE="0" HSPACE="0" BORDER="0">.<BR>
+             <LI CLASS="mvd-P">
+                 Menu <FONT FACE="Arial Black,Arial,Helvetica">
+                     Window
+                     | Add View
+                 </FONT>, and choose the view type if asked for it.</P>
+         </UL>
+         <H3>
+             <A NAME="deleting-views"></A>Deleting views
+         </H3>
+         <P>
+             Simply destroy the window by closing it.
+         </P>
+         <P>
+             When the last View of a Document has been closed, the Document itself
+             is closed, and removed from Cartool's memory.
+         </P>
+         <H3>
+             <A NAME="using-views"></A>Using views
+         </H3>
+         <P>
+             Here is what you can do with all views:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>NumPad </B><FONT SIZE="5"><B>*</B></FONT> will quickly <B>inflate</B>
+                     the window <B>global size</B> by 26% (repeated 3 times will make the
+                     window double in size)
+                 </P>
+                 <P>
+                     <B>NumPad </B><FONT SIZE="5"><B>*</B></FONT> + <B>left or right arrow</B>
+                     will quickly <B>inflate</B> the window <B>horizontal size</B> by 26%<BR>
+                     <B>NumPad </B><FONT SIZE="5"><B>*</B></FONT> + <B>up or down arrow</B>
+                     will quickly <B>inflate</B> the window <B>vertical size</B> by 26%
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>NumPad </B><FONT SIZE="5"><B>/</B></FONT> will quickly <B>shrink</B>
+                     the window <B>global size</B> by 26% (repeated 3 times will make the
+                     window half in size)
+                 </P>
+                 <P>
+                     <B>NumPad </B><FONT SIZE="5"><B>/</B></FONT> + <B>left or right arrow</B>
+                     will quickly <B>shrink</B> the window <B>horizontal size</B> by 26%<BR>
+                     <B>NumPad </B><FONT SIZE="5"><B>/</B></FONT> + <B>up or down arrow</B>
+                     will quickly <B>shrink</B> the window <B>vertical size</B> by 26%
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Letting the cursor on any button will bring a <B>tool-tip</B> window,
+                     giving a short message of its signification, and a keyboard shortcut.
+                     This is usually the most up-to-date help.
+                 </P>
+         </UL>
+         <H2>
+             <A NAME="linkingfiles"></A>Linking Files Together
+         </H2>
+         <P>
+             <I>Linking files</I> is a key feature of Cartool, so it is very
+             important to get used to it and to understand all the benefits you
+             can get from it.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H5>
+             <A HREF="#what-is-linking">What is &quot;linking files&quot;?</A><br>
+             <A HREF="#link-display">Link display explained</A><br><A HREF="#how-to-link">How to link files together</A><br>
+             <A HREF="#how-to-use-link">How to use the linked files</A><br>
+             <A HREF="#link-new-windows">Creating new windows</A><br>
+             <A HREF="#link-synchronizing">Synchronization</A><br>
+             <A HREF="#link-technical">More technical points</A>
+         </H5>
+         <H3>
+             <A NAME="what-is-linking"></A>What is &quot;linking files&quot;?
+         </H3>
+         <P>
+             Simply, it is <B>binding together files</B> that are in some way <B>related</B>
+             and <B>consistent</B> relatively to each others. This is achieved
+             (right now) through a <B>simple listing</B> in a <A HREF="files-formats-cartool.html#lm">
+                 .lm
+                 file
+             </A>, and brings the following benefits:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Avoiding and controlling information redundancy</B>, for example
+                     by checking that all linked files do have the same number of
+                     electrodes, or that only one file contains the electrodes
+                     descriptions. F.ex. a link file containing 3 compatibles EEG files
+                     linked together with one electrode coordinates file:
+                 </P>
+                 <P>
+                     <IMG SRC="images/lm.example1.png" WIDTH="291" HEIGHT="142" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Sharing informations</B> between the linked files, for example all
+                     files will have access to the sampling frequency of the EEG, or the
+                     names of the electrodes even though they do not have these
+                     informations by themselves.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A consequence of the previous point, <B>
+                         <A HREF="#link-new-windows">
+                             new
+                             types of display
+                         </A> are therefore available
+                     </B>. Sharing
+                     information gives more powerful displays. F.ex. 1 EEG file plus 1
+                     electrode coordinates file can generate a spatial rendering of the potentials:
+                 </P>
+                 <P>
+                     The <B>link file</B> content itself:<BR>
+                     <IMG SRC="images/lm.example2.0.png" ALIGN=CENTER WIDTH="291" HEIGHT="102" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+                     The 3 windows it can produce (EEG tracks, electrodes coordinates,
+                     scalp potentials):<BR>
+                     <IMG SRC="images/lm.example2.1.png" ALIGN=CENTER WIDTH="269" HEIGHT="144" VSPACE="0" HSPACE="0" BORDER="0">+<IMG SRC="images/lm.example2.2.png" ALIGN=CENTER WIDTH="216" HEIGHT="194" VSPACE="0" HSPACE="0" BORDER="0">=&gt;<IMG SRC="images/lm.example2.3.png" ALIGN=CENTER WIDTH="216" HEIGHT="194" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Easily <B>saving and managing your work</B> for later use, as the
+                     files association is saved on disk.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Securing your data and results</B>, as you know you always reopen
+                     the very same files, and can re-process your data with either the
+                     same parameters (for double-checking), or other parameters (for new
+                     trials). <B>Absolute path</B> is taken to differentiate between files
+                     with same file names, so be careful when moving files around.
+                 </P>
+                 <P>
+                     2 examples of link files, one putting a set of EEG files together,
+                     another one linking together everything you need for some inverse
+                     solutions, but without any EEG files:
+                 </P>
+                 <P>
+                     <IMG SRC="images/lm.example3.png" ALIGN=TOP WIDTH="291" HEIGHT="122" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/lm.example4.png" ALIGN=TOP WIDTH="276" HEIGHT="162" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="link-display"></A>Link display explained
+         </H3>
+         <P>
+             Here are the windows you will see when dealing with link files:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/lm.explained.png" WIDTH="551" HEIGHT="420" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Upper left is the <B>link window</B> itself, which lists all the
+                     files contained into the link. Double clicking on a file name will
+                     maximize or minimize the appropriate windows.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     On its right, all the <B>windows managed by this link</B>. They do
+                     not belong to the link itself, as they are independent documents, but
+                     receive <B>commands</B> and share <B>informations</B> through the
+                     link mechanism.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The managed windows can be divided into 2 categories, the <B>
+                         EEG
+                         &quot;master&quot; windows
+                     </B>, and the other <A HREF="#slave_windows">
+                         <B>
+                             slave
+                             windows
+                         </B>
+                     </A>. Slave windows depend of the EEG windows immediately
+                     on their left.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     At the bottom, some windows opened and minimized to unclutter the display.
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="how-to-link"></A>How to link files together
+         </H3>
+         <P>
+             <B>Create</B> a special file of type <A HREF="files-formats-cartool.html#lm">.lm</A>,
+             with one of these way:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Menu <FONT FACE="Arial Black,Arial,Helvetica">File|New 'Link Many' file</FONT>,
+                     which will straight away create an empty link file (but after you
+                     filled it, don't forget to save it on disk before closing Cartool!)
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Menu <FONT FACE="Arial Black,Arial,Helvetica">File|New</FONT> then
+                     selecting <FONT FACE="Arial Black,Arial,Helvetica">Link Many Files</FONT>.
+                     Some dialogs will pop out, asking for the files to be linked. When
+                     finished, the name of the link file is also asked, and saved to disk.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             <B>Update</B> the link at any time with:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Drag files from the Explorer and <B>drop them inside the link window</B>.
+                     Regular files will be added directly. But dropping <B>
+                         another link
+                         file will copy its content
+                     </B>. A very useful way to use this is to
+                     have a set of predefined linked files, linking to often used files,
+                     that will be added on demand in a single operation. F.ex. 2 separate
+                     link files that merge together:
+                 </P>
+                 <P>
+                     <IMG SRC="images/lm.example3.png" ALIGN=CENTER WIDTH="291" HEIGHT="122" VSPACE="0" HSPACE="0" BORDER="0">dropped
+                     into<IMG SRC="images/lm.example4.png" ALIGN=CENTER WIDTH="276" HEIGHT="162" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+                     generates<IMG SRC="images/lm.example5.png" ALIGN=CENTER WIDTH="291" HEIGHT="222" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+                     (the <A HREF="#link-display">managed windows</A> it may generate are
+                     not shown here)
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A NAME="linking-adding"></A>From&nbsp;the link file window, press on
+                     the &quot;Add files&quot; button <IMG SRC="images/lm.button.add.png" ALIGN=CENTER WIDTH="74" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">.
+                     A &quot;+&quot; shaped cursor appears, click on the windows (within
+                     Cartool!) of already open files to include them on the fly. If you
+                     click on another link file, as in the previous point, all the files
+                     it contains will be transferred at once. Click in the background to
+                     stop linking..
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             On each addition of a new file, here is what happen in real time:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The file is <B>checked</B> against all the others for all possible
+                     consistencies. F.ex. all number of electrodes or solution points
+                     should be the same across all files.<BR>
+             <LI CLASS="mvd-P">
+                 If the check is successful, the file is accepted,
+                 and <B>added</B> to the link file.<BR>
+             <LI CLASS="mvd-P">
+                 If a new type of display is available, due to these
+                 new incoming informations, a <B><A HREF="#link-new-windows">new window</A></B>
+                 is created straight away (so you don't have to request it), and all
+                 the other windows are refreshed. So don't be surprised to see windows
+                 opening and shuffling all around your screen, just wait.<BR>
+             <LI CLASS="mvd-P">
+                 <B>Linked files are locked</B>, and can not be
+                 individually closed, to prevent the link integrity. Closing the link
+                 file will remove all locks, and will also close the linked files.</P>
+         </UL>
+         <H3>
+             <A NAME="how-to-use-link"></A>How to use the linked files
+         </H3>
+         <P>
+             Once open, from the <B><A HREF="#link-display">link window</A> itself</B>,
+             you can operate on the <A HREF="#link-display">windows it manages</A>:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <IMG SRC="images/lm.button.tile1.png" ALIGN=CENTER WIDTH="122" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">Tile
+                     all managed windows by <B>compacting</B> the display, still <B>
+                         keeping
+                         current windows size
+                     </B>.<BR>
+             <LI CLASS="mvd-P">
+                 <IMG SRC="images/lm.button.tile2.png" ALIGN=CENTER WIDTH="122" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">Tile
+                 all managed windows by <B>compacting</B> the display, and assigning <B>
+                     default
+                     sizes
+                 </B> to all windows.<BR>
+             <LI CLASS="mvd-P">
+                 <IMG SRC="images/lm.button.tile3.png" ALIGN=CENTER WIDTH="122" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">Tile
+                 all managed windows by <B>compacting</B> the display, <B>
+                     resizing
+                     all windows to fit in a single page
+                 </B>.<BR>
+             <LI CLASS="mvd-P">
+                 <A HREF="#linking-adding"><IMG SRC="images/lm.button.add.png" ALIGN=CENTER WIDTH="74" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"></A>see
+                 <A HREF="#linking-adding">adding files</A>.<BR>
+             <LI CLASS="mvd-P">
+                 <IMG SRC="images/lm.button.sync-all.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">to<IMG SRC="images/lm.button.cmd-cloning.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0">see
+                 <A HREF="#link-synchronizing">synchronization</A>.<BR>
+             <LI CLASS="mvd-P">
+                 <A HREF="microstates-segmentation.html#segmenting"><IMG SRC="images/lm.button.segment2.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"></A>will
+                 call the <A HREF="microstates-segmentation.html#segmenting">segmentation</A> procedure.<BR>
+             <LI CLASS="mvd-P">
+                 In the link window itself, <B>double clicking</B>
+                 on a file name will <B>maximize or minimize</B> the appropriate windows.</P>
+         </UL>
+         <H3>
+             <A NAME="link-new-windows"></A>Creating new windows
+         </H3>
+         <P>
+             More interesting is what you can do <B>
+                 from any <A HREF="#link-display">
+                     window
+                     managed by the linked files
+                 </A>
+             </B> (say, from an EEG window). As
+             said earlier, informations are now shared amongst all the files. By <A HREF="general-concepts.html#adding-views">
+                 requesting
+                 a new view
+             </A>, a <B>context sensitive list of currently available displays</B>
+             will pop out. See also the related topic on &quot;<A HREF="#slave_windows">
+                 slave
+                 windows
+             </A>&quot;.
+         </P>
+         <P>
+             Currently, here are the different types of windows (according to the
+             link content):
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A HREF="eeg-display.html">Tracks display</A>, with new available <A HREF="eeg-display.html#rendering">renderings</A>:
+                 </P>
+                 <P>
+                     <IMG SRC="images/eeg.render1.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/eeg.render4.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/eeg.render5.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     3D potentials display:
+                 </P>
+                 <P>
+                     <IMG SRC="images/lm.example2.3.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     3D inverse solutions:
+                 </P>
+                 <P>
+                     <IMG SRC="images/is.example1.png" ALIGN=CENTER VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="link-synchronizing"></A>Synchronization
+         </H3>
+         <P>
+             The&nbsp; <FONT FACE="Arial Black,Arial,Helvetica">Synchronizing</FONT>&nbsp;
+             menu, together with the following buttons, provide some predefined
+             way to <A HREF="#slave-controls">synchronize</A> the <A HREF="#link-display">managed</A> <A HREF="#slave_windows">
+                 slave
+                 windows
+             </A>:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <IMG SRC="images/lm.button.sync-all.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"><B>
+                         Synchronize
+                         all
+                     </B>
+                 </P>
+                 <P>
+                     All windows are synchronized at once:<BR>
+                     <IMG SRC="images/lm.masterslave6.png" WIDTH="480" HEIGHT="398" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <IMG SRC="images/lm.button.desync-all.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"><B>
+                         Desynchronize
+                         all
+                     </B>
+                 </P>
+                 <P>
+                     Clear all synchronizations, all windows are independent again:<BR>
+                     <IMG SRC="images/lm.masterslave8.png" WIDTH="480" HEIGHT="398" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <IMG SRC="images/lm.button.sync-eeg.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"><B>
+                         Synchronize
+                         only within same EEG
+                     </B>
+                 </P>
+                 <P>
+                     Each EEG will synchronize all of its own <A HREF="#slave_windows">
+                         slave
+                         windows
+                     </A> (create &quot;horizontal&quot; synchronizations):<BR>
+                     <IMG SRC="images/lm.masterslave5.png" WIDTH="480" HEIGHT="398" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <IMG SRC="images/lm.button.desync-diff-eeg.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"><B>
+                         Desynchronize
+                         between different EEGs
+                     </B>
+                 </P>
+                 <P>
+                     Break any existing synchronizations between windows from different
+                     EEGs (break the &quot;vertical&quot; synchronizations). Still
+                     preserving existing &quot;horizontal&quot; synchronizations:<BR>
+                     <IMG SRC="images/lm.masterslave7.png" WIDTH="480" HEIGHT="398" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A NAME="commands-cloning"></A><IMG SRC="images/lm.button.cmd-cloning.png" ALIGN=CENTER WIDTH="170" HEIGHT="74" VSPACE="0" HSPACE="0" BORDER="0"><B>
+                         Clone
+                         user commands within likewise windows
+                     </B>
+                 </P>
+                 <P>
+                     Once activated, (most) <B>commands</B> done in any window <B>
+                         will
+                         spread to the other windows of the same type
+                     </B> (f.ex. EEG to EEG,
+                     Potential Maps to Potential Maps, etc...). Simply put, it allows you
+                     not to repeat the tunings done in one window again in the others.
+                 </P>
+                 <P>
+                     The commands modifying the <A HREF="terms-definitions-formulas.html#cursor">time cursor</A>
+                     are not spread, because they are specifically handled by the
+                     synchronization process (see <A HREF="#link-synchronizing">above</A>).
+                     Then through the right combination of settings, you can choose
+                     either to modify the setup of the windows, the time cursor, or both.
+                 </P>
+                 <P>
+                     Commands include <A HREF="windows-general-commands.html#mouse">
+                         left and right
+                         mouse operations
+                     </A> (rotation, zoom, brightness and contrast), and
+                     all buttons (including keyboard shortcuts) except those that apply to time.
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="link-technical"></A>More technical points
+         </H3>
+         <P>
+             When opening a link file, Cartool will open all the files listed into
+             it. Many of them will be straight away minimized to clean up a bit
+             the display. Typically, the electrode coordinates, inverse solutions
+             matrices, MRI's etc...
+         </P>
+         <P>
+             Creating a new view from a given window will actually create <B>
+                 as
+                 many views as there are EEG files
+             </B>, one for each of them. The new
+             views will be assigned the rightmost position of all <A HREF="#link-display">
+                 managed
+                 windows
+             </A>.
+         </P>
+         <H2>
+             <A NAME="slave_windows"></A>Slave Windows
+         </H2>
+         <P>
+             See the <A HREF="#linkingfiles">Linking files</A> paragraph
+             beforehand, as it applies to <I>
+                 windows created within the link
+                 mechanism only
+             </I>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H5>
+             <A HREF="#slave-windows">Windows in slavery...</A><br>
+             <A HREF="#slave-controls">Controlling your slave windows</A>&nbsp; <B><A HREF="#slave-controls"><IMG SRC="images/all.button.synchronize-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#slave-controls"><IMG SRC="images/all.button.average-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.sequence-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.animate-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#slave-controls"><IMG SRC="images/all.button.less-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></B>
+         </H5>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="slave-windows"></A>Windows in slavery...
+         </H3>
+         <P>
+             All views managed by the <A HREF="#linkingfiles">link mechanism</A>
+             are not equals, the <B>EEG display naturally leading</B> all the
+             others attached to it as it contains the <B>source of the data flow</B>,
+             thus being the &quot;master&quot;. <B>
+                 All the other windows are
+                 therefore &quot;slaves&quot;
+             </B> to it, and need at least one
+             &quot;master&quot; for existing (see <A HREF="#link-display">here</A>
+             for a summary of the various windows available).<BR>
+             F.ex. moving the cursor inside the EEG window (on the left, the
+             master), will drive and update the scalp potentials window (on the
+             right, the slave) in real time:
+         </P>
+         <P>
+             <IMG SRC="images/lm.master1.png" WIDTH="276" HEIGHT="150" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/lm.slave1.png" WIDTH="182" HEIGHT="150" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+             <IMG SRC="images/lm.master2.png" WIDTH="276" HEIGHT="150" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/lm.slave2.png" WIDTH="182" HEIGHT="150" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             You can have <B>for the same EEG as many windows as you want</B>,
+             just <A HREF="#link-new-windows">create them</A>. New
+             &quot;slave&quot; windows will be assigned the last EEG
+             &quot;master&quot; window created. Two examples here show 1 tracks
+             display and 3 potentials display associated, then 2 tracks display
+             and respectively 2 and 1 potentials displays associated:
+         </P>
+         <P>
+             <IMG SRC="images/lm.masterslave1.png" WIDTH="615" HEIGHT="142" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+             <IMG SRC="images/lm.masterslave2.png" WIDTH="818" HEIGHT="143" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             Note that the potential windows, though they usually share a single
+             EEG tracks display, are independent one of the others. That means the <A HREF="terms-definitions-formulas.html#cursor">
+                 time
+                 cursor
+             </A> is moved only for this particular window.
+         </P>
+         <H3>
+             <A NAME="slave-controls"></A>Controlling your slave windows
+         </H3>
+         <P>
+             Slave windows have a few extra controls over the world (a little compensation...):
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>
+                         <IMG SRC="images/all.button.synchronize-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
+                         Synchronizing
+                     </B> with other <A HREF="#slave_windows">slave windows</A>,
+                     a key feature of Cartool (See also the <A HREF="#link-synchronizing">
+                         synchronizing
+                         menu
+                     </A>, to operate globally).
+                 </P>
+                 <P>
+                     A clock-like cursor appears, with which you can click on other slave
+                     windows, even from other link files. These windows will be <B>time-synchronized</B>,
+                     so moving the cursor in any of them will update the cursor in all
+                     the others. F.ex. 3 windows before (independent cursors) and after (3
+                     cursors equals) synchronization:
+                 </P>
+                 <P>
+                     <IMG SRC="images/lm.masterslave3.png" WIDTH="370" HEIGHT="383" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/lm.masterslave4.png" WIDTH="370" HEIGHT="383" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+                 <P>
+                     If 2 groups of windows, say { A, B, C } and { D, E } respectively are
+                     already synchronized, it is enough to synchronize f.ex. windows A and
+                     D to merge the 2 groups together, { A .. E } becoming synchronous
+                     (&quot;Synchronicity is transitive&quot;).
+                 </P>
+                 <P>
+                     Synchronicity does account for different sampling frequency, so you
+                     can sync an EEG sampled at 1000Hz and another one sampled at 256Hz
+                     correctly. EEG lengths can also differ, the cursor being safely
+                     clipped to the limits of each EEGs.
+                 </P>
+                 <P>
+                     To <B>stop the synchronizing process</B>, click on the background.
+                 </P>
+                 <P>
+                     To <B>desynchronize</B> a window from all the others, click with the
+                     clock-like cursor on the window itself.
+                 </P>
+                 <P>
+                     By default, when opening a link file, all EEG windows synchronize all
+                     their &quot;slave&quot; windows with them. Simply means you can move
+                     the cursor, and see the result accordingly!
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>
+                         <A NAME="slave-average"></A><IMG SRC="images/all.button.average-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
+                         Average
+                     </B> the values of the EEG if the <A HREF="terms-definitions-formulas.html#cursor">
+                         time
+                         cursor
+                     </A> spreads across multiple time frames, then show the result:
+                 </P>
+                 <P>
+                     <IMG SRC="images/lm.average.png" WIDTH="189" HEIGHT="231" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>
+                         <A NAME="slave-sequence"></A><IMG SRC="images/all.button.sequence-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
+                     </B>Display a <B>sequence</B> of time frames if the <A HREF="terms-definitions-formulas.html#cursor">
+                         time
+                         cursor
+                     </A> spreads across multiple time frames.
+                 </P>
+                 <P>
+                     Usually, there are <B>more than one sequence layout available</B>,
+                     just <B>click again</B> to toggle through all possibilities (the
+                     number of frames is controlled <A HREF="#slave-less-frames">here</A>):
+                 </P>
+                 <P>
+                     <IMG SRC="images/lm.sequence.png" WIDTH="189" HEIGHT="231" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>
+                         <A NAME="slave-animate"></A><IMG SRC="images/all.button.animate-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
+                     </B>Run an <B>animation</B> if the <A HREF="terms-definitions-formulas.html#cursor">time cursor</A>
+                     spreads across multiple time frames. <B>Click again</B> to <B>stop</B>
+                     or <B>restart</B> the animation (speed is controlled <A HREF="#slave-less-frames">here)</A>:
+                 </P>
+                 <P>
+                     <IMG SRC="images/lm.animation.png" WIDTH="589" HEIGHT="230" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A NAME="slave-less-frames"></A><B>
+                         <IMG SRC="images/all.button.less-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
+                     </B>In case of sequence or animation, <B>
+                         reduce the number of
+                         frames, or the speed
+                     </B>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>
+                         <IMG SRC="images/all.button.more-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">&nbsp;
+                     </B>In case of sequence or animation, <B>
+                         increase the number of
+                         frames, or the speed
+                     </B>.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

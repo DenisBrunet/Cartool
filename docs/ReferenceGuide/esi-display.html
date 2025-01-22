@@ -2,983 +2,1494 @@
  <HEAD>
   <TITLE>Inverse Solutions Display</TITLE>
  <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css"></HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   Inverse Solutions Display</H1>
-  <P>
-   &nbsp;</P>
-  <P>
-   If you don't know how to get this display on the first hand, please <A HREF="#how-to-get-it">read
-    this topic first</A>. Also note that very often Inverse Solutions 
-   will be nicknamed <I>IS</I>.</P>
-  <P>
-   You can <B><a href="computing-inverse-solution-matrices.html">compute the inverse 
-   matrices here</a></B>, or <B><a href="computing-ris.html">compute the 
-   results of inverse solutions</a> </B>from EEG (or frequency) files.</P>
-  <H3>
-   <A HREF="#buttons">Buttons</A></H3>
-  <H5>
-   <A HREF="windows-general-commands.html#linking"><IMG SRC="images/all.button.graphical-link.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#orientation"><IMG SRC="images/all.button.orientation.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#magnifier"><IMG SRC="images/all.button.magnifier.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="general-concepts.html#slave-controls"><IMG SRC="images/all.button.synchronize-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#time-averaging"><IMG SRC="images/all.button.average-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#time-sequence"><IMG SRC="images/all.button.sequence-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#time-animation"><IMG SRC="images/all.button.animate-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="general-concepts.html#slave-less-frames"><IMG SRC="images/all.button.less-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#display-modes">Display modes:</A></H5>
-  <H5>
-   <A HREF="#IS-on-2D"><IMG SRC="images/is.button.2d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#IS-in-3D"><IMG SRC="images/is.button.3d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#IS-vectors"><IMG SRC="images/is.button.3d-vect.png" VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#MRI-mode"><IMG SRC="images/is.button.show-mri.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#SP-mode"><IMG SRC="images/is.button.show-sp.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#rois"><IMG SRC="images/button.roi.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#clipping-planes"><IMG SRC="images/mri.button.clip-cor.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.clip-tra.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.clip-sag.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#slice-mode"><IMG SRC="images/mri.button.slice-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#slice-mode"><IMG SRC="images/mri.button.less-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.more-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#slice-mode"><IMG SRC="images/mri.button.move-first-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-first-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#slice-mode"><IMG SRC="images/mri.button.move-last-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-last-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#show-min-max"><IMG SRC="images/is.button.min-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.button.max-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#find-min-max-pos"><IMG SRC="images/is.button.find-min-max.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#brightness"><IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#contrast"><IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#auto-scaling"><IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#color-modes"><IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#regul-reset"><IMG SRC="images/is.button.regul reset" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#regul-previous"><IMG SRC="images/is.button.regul-less.png" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#regul-next"><IMG SRC="images/is.button.regul more" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#regul-search"><IMG SRC="images/is.button.regul search" VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H5>
-   <A HREF="#cycle-is"><IMG SRC="images/is.button.cycle-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#cycle-mri"><IMG SRC="images/is.button.cycle-mri.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H3>
-   <A HREF="#mouse">Mouse</A></H3>
-  <H3>
-   <A HREF="#menus">Menus</A></H3>
-  <H5>
-   <A HREF="#menu-edit">Edit</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#menu-edit">Copy as Bitmap</A></H5>
-   </UL>
-  <H5>
-   <A HREF="#menu-search">Search</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#menu-search">Find TF with maximum value</A></H5>
-   </UL>
-  <H5>
-   <A HREF="#menu-regularization">Regularization</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#menu-regul-reset">Reset Regularization</A><br>
-	<A HREF="#menu-regul-previous">Previous Regularization</A><br>
-	<A HREF="#menu-regul-next">Next Regularization</A><br>
-	<A HREF="#menu-regul-find-cur">Find optimal Regularization, at 
-    current time range only</A><br><A HREF="#menu-regul-find-whl">Find optimal Regularization, across 
-    whole time range</A></H5>
-   </UL>
-  <H5>
-   <A HREF="#menu-options">Options</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#menu-options">Specify a display scaling</A><br>
-    <A HREF="#menu-options">Show / hide color scaling</A><br>
-    <A HREF="#menu-options">Show / hide color orientation</A><br>
-	<A HREF="#avg-precedence">Averaging precedence of inverse</A><br>
-	<A HREF="#depth-shifting">'Depth Shifting' trick of 3D inverse</A></H5>
-   </UL>
-  <H3>
-   <A HREF="#technical-points">Technical points</A></H3>
-  <H5>
-   <A HREF="#how-to-get-it">How do I get this display?</A><br>
-   <A HREF="#how-to-matrix-IS">How do I compute the Inverse Solutions matrices?</A><br>
-   <A HREF="#matrix-scal-vs-vect">Matrix results: scalar of vectorial</A><br>
-   <A HREF="#time-averaging">Time Averaging</A><br><A HREF="#time-sequence">Time Sequence</A><br>
-   <A HREF="#time-animation">Time Animation</A><br><A HREF="#IS-2D-and-IS-3D">Combining 2D IS and 3D IS</A><br>
-   <A HREF="#MRI-color">Changing the color of the MRI</A><br>
-   <A HREF="#interpolation-4NN">Interpolating between solution points</A><br>
-   <A HREF="#sp-regular-or-not">Solution points distribution</A></H5>
-  <H2>
-   <A NAME="buttons"></A>Inverse Solutions Display - Buttons</H2>
-  <H3>
-   <A NAME="display-modes"></A>Display modes</H3>
-  <P>
-   <IMG SRC="images/is.button.2d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.button.3d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.button.3d-vect.png" WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="1"> <IMG SRC="images/is.button.show-mri.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"> <IMG SRC="images/is.button.show-sp.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   Your display will <B>depend mainly on these 5 buttons</B>. Most of 
-   the time <B>their effects combine together</B> to provide some rich 
-   output, so knowing their roles is fundamental to get the most of this display!</P>
-  <H3>
-   <A NAME="IS-on-2D"></A>Show Inverse Solution on 2D clipping 
-   planes&nbsp; <IMG SRC="images/is.button.2d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   The <B>IS will be drawn in 2D (flat) on the current <A HREF="#clipping-planes">clipping
-    planes</A></B>, the values seen are the ones intersecting those planes.</P>
-  <P>
-   The button cycles between 3 states:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Nothing (i.e. no 2D drawing)<BR>
-    <LI CLASS="mvd-P">Drawing with <B>transparency for the lowest values</B><BR>
-    <LI CLASS="mvd-P"><B>Opaque drawing</B>.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   See an example, on top of a single <A HREF="#MRI-mode">MRI clipping plane</A> 
-   (you can set all 3 planes if you wish):</P>
-  <P>
-   <IMG SRC="images/is.mri-and-2D-transparent-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-and-2D-opaque-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   Be aware that if <B><I>no</I> clipping planes</B> are set, there will 
-   be <B>nothing to see</B>!</P>
-  <P>
-   However, <B>you can have a <A HREF="#clipping-planes">clipping plane selected</A> 
-   without any <A HREF="#MRI-mode">MRI rendering</A></B>. This will draw 
-   only the IS, as f.ex.:</P>
-  <P>
-   <IMG SRC="images/is.2d-transparent-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.2d-opaque-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   Finally, note that the coloring only occurs where the <A HREF="#specifying-MRIs">MRI
-    mask provided has non-null values</A>.</P>
-  <H3>
-   <A NAME="IS-in-3D"></A>Show Inverse Solution in 3D&nbsp; <IMG SRC="images/is.button.3d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   Display the <B>IS values in 3D</B>.</P>
-  <P>
-   There are 4 states for this mode:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Nothing (i.e. no 3D drawing).<BR>
-    <LI CLASS="mvd-P">The <B><I>&quot;Berries&quot;</I> display</B>, 
-    where each <B>solution point is drawn with a color and a diameter 
-    proportional to its value</B>.<BR>
-    <LI CLASS="mvd-P">The <B><I>'Potatoes&quot;</I> display</B>, made 
-    from a <B>single, opaque, </B><A HREF="terms-definitions-formulas.html#isosurface"><B>isosurface</B></A> 
-    of the IS values.<BR>
-    <LI CLASS="mvd-P">The <B><I>&quot;Onions&quot;</I> display</B>, made 
-    from a <B>serie of nested, transparents, </B><A HREF="terms-definitions-formulas.html#isosurface"><B>isosurface</B></A> 
-    of the IS values.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   See an example, on top of a single <A HREF="#MRI-mode">MRI clipping plane</A>:</P>
-  <P>
-   <IMG SRC="images/is.mri-only.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-and-3D-berries-is.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-   <A NAME="IS-potatoes"></A><IMG SRC="images/is.mri-and-3D-potatoes-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-and-3D-onions-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   The &quot;<B>Berries</B>&quot; display is the <B>fastest</B>, and it 
-   gives a good idea of where the sources are.</P>
-  <P>
-   The &quot;<B>Potatoes</B>&quot; display is a little slower, and it 
-   gives an <B>exact 3D isosurface</B>, which can be intersected by 
-   other 3D objects (clipping planes, other windows...). The drawback is 
-   that it only plots the outer surface of the IS, and you can not 
-   differentiate between all these &quot;potatoes&quot; which one is the strongest.</P>
-  <P>
-   The &quot;<B>Onions</B>&quot; display is the slowest one, as it is 
-   indeed a <B>serie of isosurfaces</B>, set with different cutting 
-   values, and drawn transparently. It has the advantage over the 
-   &quot;Potatoes&quot; display that you can see &quot;through&quot; the 
-   first isosurface. So you can tell which &quot;potato&quot; is the 
-   most important, on first sight (see in the examples above, the 
-   potatoes below the clipping plane are not so strong). The 
-   &quot;onions&quot; are also 3D objects that can intersect with others 
-   (clipping planes, other windows...).</P>
-  <H3>
-   <A NAME="IS-vectors"></A>Show Inverse Solution as 3D vectors&nbsp; <IMG SRC="images/is.button.3d-vect.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   If the results of the IS is vectorial, this will display each of the <B>vectors
-    in 3D</B>.</P>
-  <P>
-   The <B>small sphere</B> stands for the origin of the vector (i.e. the 
-   solution point location of the IS), and the <B>length / width / coloring</B> 
-   of the vector will vary according to the strength of the vector.</P>
-  <P>
-   The usual <A HREF="#brightness">Brightness / Contrast</A> tuning also 
-   applies here, and you might have to highly increase the brightness, 
-   or to zoom in, if you want to clearly distinguish each vector!</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   See a (zoomed in) example:</P>
-  <P>
-   <IMG SRC="images/is.mri-and-3D-vectors-is.png" WIDTH="324" HEIGHT="269" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H3>
-   <A NAME="MRI-mode"></A>Show MRI&nbsp; <IMG SRC="images/is.button.show-mri.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   You can change the way the <B>current MRI is displayed</B> (see here 
-   to change the <A HREF="#MRI-color">MRI color and properties</A>).</P>
-  <P>
-   This button is a <B>more convenient way</B> (and faster) to <A HREF="windows-general-commands.html#linking"><B>linking
-    the MRI window</B></A> into the IS one.</P>
-  <P>
-   The <A HREF="mri-display.html#rendering"><B>modes availables</B></A> 
-   are exactly the same as the ones from the <A HREF="mri-display.html">MRI
-    display</A>.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   See some examples, with the <A HREF="#IS-potatoes">IS in the 3D 
-   &quot;Potatoes&quot; mode</A>:</P>
-  <P>
-   <IMG SRC="images/is.mri-3d-slice-transparent.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-3d-slice-opaque.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-   <IMG SRC="images/is.mri-3d-volume-transparent.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-3d-volume-opaque.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H3>
-   <A NAME="SP-mode"></A>Show Solution Points&nbsp; <IMG SRC="images/is.button.show-sp.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   You can add the <B>solution points location</B> in your display.</P>
-  <P>
-   This button is a <B>more convenient way</B> (and faster) to <A HREF="windows-general-commands.html#linking">linking
-    the Solution Points window</A> into the IS one.</P>
-  <P>
-   The button cycles between 3 states:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Nothing (i.e. no Solution Points)<BR>
-    <LI CLASS="mvd-P"><B>Small spheres.</B><BR>
-    <LI CLASS="mvd-P"><B>Bigger spheres</B>.</P>
-   </UL>
-  <P>
-   <B></B>&nbsp;</P>
-  <P>
-   See an example, with the <A HREF="#IS-potatoes">IS in the 3D 
-   &quot;Potatoes&quot; mode</A>:</P>
-  <P>
-   <IMG SRC="images/is.solution-points.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H3>
-   <A NAME="rois"></A>Regions Of Interest&nbsp; <IMG SRC="images/button.roi.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   This button is enabled if a <I><B><A HREF="files-formats-cartool.html#rois">.rois</A></B></I> 
-   file is available in the <A HREF="general-concepts.html#linkingfiles">link
-    many file</A>, and the dimension of the rois is equal to the <B>number
-    of solution points</B>.</P>
-  <P>
-   Pressing this button will <B>cycle within all possible rois</B> 
-   listed in the link many file. Once a roi is active, the IS 
-   computation is run as usual, then the results are averaged for each 
-   region at a time. All the solution points of a given region will then 
-   receive the same averaged value, so the display will appear as big 
-   chunks of equal values (this is normal).</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   See an example, without and with rois, while using the <A HREF="#IS-in-3D">Berries
-    display</A>. We can see on the second picture that all the solution 
-   points beloging to a given region have the same value / color!</P>
-  <P>
-   <IMG SRC="images/is.rois-off.png" WIDTH="324" HEIGHT="269" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.rois-on.png" WIDTH="324" HEIGHT="269" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   You might be interested to learn how to <A HREF="creating-rois.html">create
-    the rois file</A>, too?</P>
-  <H3>
-   <A NAME="clipping-planes"></A>Clipping planes&nbsp; <A HREF="mri-display.html#clipping X"><IMG SRC="images/mri.button.clip-cor.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="mri-display.html#clipping Y"><IMG SRC="images/mri.button.clip-tra.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="mri-display.html#clipping-Z"><IMG SRC="images/mri.button.clip-sag.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></A></H3>
-  <P>
-   Set the <B>active clipping planes</B>.</P>
-  <P>
-   See the equivalent <A HREF="mri-display.html#clipping-X"><B>MRI 
-   related topic</B></A>, plus the <A HREF="#IS-on-2D"><B>2D IS topic</B></A>,
-    if you want to see the IS on these planes.</P>
-  <H3>
-   <A NAME="slice-mode"></A>Slice mode&nbsp; <A HREF="mri-display.html#slice-mode"><IMG SRC="images/mri.button.slice-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="mri-display.html#more less slices"><IMG SRC="images/mri.button.less-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.more-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="mri-display.html#move first slice"><IMG SRC="images/mri.button.move-first-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-first-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="mri-display.html#move-last-slice"><IMG SRC="images/mri.button.move-last-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-last-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H3>
-  <P>
-   Switch to a <B>serie of slices</B>, either in the <B>Coronal</B>, <B>Transverse</B> 
-   or <B>Sagittal</B> planes.</P>
-  <P>
-   Visit the equivalent <A HREF="mri-display.html#slice-mode"><B>MRI 
-   related topic</B></A>.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   See an example:</P>
-  <P>
-   <IMG SRC="images/is.slices-coronal.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.slices-transverse.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.slices-sagittal.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   Each view is a serie of 2D intersecting planes, on which the <B>IS is 
-   always drawn in 2D</B>, exactly the same way as <A HREF="#IS-on-2D">here</A>.</P>
-  <P>
-   In each view, the last MRI drawn has a different orientation, as to 
-   figure out <B>where the slices</B> (the grey lines) <B>come from</B>. 
-   Moreover, you can still change the <A HREF="#MRI-mode">appearance of 
-   this MRI</A> and which <A HREF="#display-modes">IS is drawn on it</A>.</P>
-  <P>
-   You can still <A HREF="windows-general-commands.html#mouse-rotating">rotate</A> 
-   the slices, if the orientation does not suit you...</P>
-  <H3>
-   <A NAME="show-min-max"></A>Show Min / Max&nbsp; <IMG SRC="images/is.button.min-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.button.max-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   Same behavior as the <B><A HREF="mri-display.html#show-min-max">MRI
-    Max feature</A></B>, except that it works on the <B>Inverse Solution values</B> instead.</P>
-  <P>
-   Note that the <I>Min</I> is only available if the current Inverse 
-   Matrix can produce <A HREF="#matrix-scal-vs-vect">scalar value</A> results.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   See an example, either with <A HREF="#IS-on-2D">2D IS</A> or <A HREF="#IS-in-3D">3D
-    IS</A>:</P>
-  <P>
-   <IMG SRC="images/is.max-position-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.max-position-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H3>
-   <A NAME="find-min-max-pos"></A>Find Min / Max positions&nbsp; <IMG SRC="images/is.button.find-min-max.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   Same behavior as the <B><A HREF="#find-min-max-pos">MRI Find Max feature</A></B>,
-    except that it works on the <B>Inverse Solution values</B> instead.</P>
-  <P>
-   Note that this is independent from <A HREF="#show-min-max">displaying 
-   the min / max positions.</A></P>
-  <P>
-   &nbsp;</P>
-  <P>
-   If <A HREF="#matrix-scal-vs-vect"><B>both the Min and Max values</B></A> 
-   are available, they can only be <I>shown at once</I> in the <A HREF="#slice-mode">Slice
-    mode display</A>, f.ex.:</P>
-  <P>
-   <IMG SRC="images/is.slices-coronal-auto-min-max.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   In all the other displays, the <B>absolute greatest one</B> will be 
-   used to set the clipping plane, f.ex.:</P>
-  <P>
-   <IMG SRC="images/is.max-position-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   You can still <A HREF="#clipping-planes">shift the clipping planes</A> 
-   by <A HREF="windows-general-commands.html#moving-clipping">hand</A>, but each 
-   time you will release the mouse, Cartool will go back to the 
-   automatic positionning. This is done on purpose, so you can explore 
-   the other slices to check for some other sweet spots.</P>
-  <H3>
-   <A NAME="brightness"></A>Brightness&nbsp; <IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   Changing the brightness has a slightly different effect according to 
-   wether you are in a <B><A HREF="#IS-on-2D">2D IS</A></B> or in a <B><A HREF="#IS-in-3D">3D
-    IS</A></B> mode.</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    In <B><A HREF="#IS-on-2D">2D IS</A></B> mode, it is similar to the 
-    brightness control of the MRI <A HREF="mri-display.html#brightness">Brightness</A>.</P>
-   <P>
-    Here is an example of a <B>low</B> and a <B>high</B> brightness 2D IS:</P>
-   <P>
-    <IMG SRC="images/is.low-bright-low-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.high-bright-low-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    In <B><A HREF="#IS-in-3D">3D IS</A></B> mode, it changes the <A HREF="terms-definitions-formulas.html#isosurface">isosurface</A> 
-    cutting value of the IS, therefore changing the size of the &quot;<A HREF="#IS-potatoes">potatoes</A>&quot;.</P>
-   <P>
-    Here is an example of a <B>low</B> and a <B>high</B> brightness 3D IS:</P>
-   <P>
-    <IMG SRC="images/is.low-bright-low-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.high-bright-low-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    In <B><A HREF="#IS-vectors">3D Vectors</A></B> mode, it changes the 
-    length / width / brightness of the vectors.</P>
-   <P>
-    Here is an example of a <B>low</B> and a <B>high</B> brightness 3D 
-    Vectors display:</P>
-   <P>
-    <IMG SRC="images/is.low-bright-3d-vectors.png" WIDTH="324" HEIGHT="269" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.high-bright-3d-vectors.png" WIDTH="324" HEIGHT="269" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <H3>
-   <A NAME="contrast"></A>Contrast&nbsp; <IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   Changing the contrast has a slightly different effect according to 
-   wether you are in a <B><A HREF="#IS-on-2D">2D IS</A></B> or in a <B><A HREF="#IS-in-3D">3D
-    IS</A></B> mode.</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    In <B><A HREF="#IS-on-2D">2D IS</A></B> mode, it is similar to the 
-    contrast control of the MRI <A HREF="mri-display.html#contrast">Contrast</A>.</P>
-   <P>
-    Here is an example of a <B>low</B> and a <B>high</B> contrast 2D IS:</P>
-   <P>
-    <IMG SRC="images/is.high-bright-low-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.high-bright-high-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    In <B><A HREF="#IS-in-3D">3D IS</A></B> mode, it also changes (as for 
-    the <A HREF="#brightness">brightness</A>) the <A HREF="terms-definitions-formulas.html#isosurface">isosurface</A> 
-    cutting value of the IS, therefore changing the size of the &quot;<A HREF="#IS-potatoes">potatoes</A>&quot;.
-     It also <B>changes the color</B> used for the isosurface.</P>
-   <P>
-    Here is an example of a <B>low</B> and a <B>high</B> contrast 3D IS:</P>
-   <P>
-    <IMG SRC="images/is.high-bright-low-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.high-bright-high-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <H3>
-   <A NAME="auto-scaling"></A>Color auto scaling&nbsp; <IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   The color auto scaling has a slightly different effect according to 
-   wether you are in a <B><A HREF="#IS-on-2D">2D IS</A></B> or in a <B><A HREF="#IS-in-3D">3D
-    IS</A></B> mode.</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    In <B><A HREF="#IS-on-2D">2D IS</A></B> mode, it is similar to the 
-    contrast control of the MRI <A HREF="mri-display.html#auto-scaling">Color
-     auto scaling</A>.</P>
-   <P>
-    Here is an example of auto scaling, with a <B>low</B> and a <B>high</B> 
-    contrast 2D IS:</P>
-   <P>
-    <IMG SRC="images/is.auto-bright-low-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.auto-bright-high-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    In <B><A HREF="#IS-in-3D">3D IS</A></B> mode, it sets a <B>minimum 
-    visible size</B> for the &quot;<A HREF="#IS-potatoes">potatoes</A>&quot;,
-     <B>changing the </B><A HREF="#contrast"><B>contrast</B></A><B> 
-    finally setting the actual size</B>.</P>
-   <P>
-    Here is an example of auto scaling, with a <B>low</B> and a <B>high</B> 
-    contrast 3D IS:</P>
-   <P>
-    <IMG SRC="images/is.auto-bright-low-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.auto-bright-high-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <H3>
-   <A NAME="color-modes"></A>Color modes&nbsp; <IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   You have <B>2 series of color modes</B> available, and Cartool 
-   automatically choose the serie according to the <A HREF="#matrix-scal-vs-vect">type
-    of IS matrix</A>. These matrices being able to produce either signed 
-   or non-signed results.</P>
-  <P>
-   Within the selected serie, you can of course <B>switch between 
-   different color modes</B> (for the Inverse Solutions), similarly to 
-   the <A HREF="potentials-maps-display.html#color-modes">Potentials</A>.</P>
-  <H3>
-   <A NAME="regul-reset"></A>Reset Regularization&nbsp; <IMG SRC="images/is.button.regul reset" VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   See <A HREF="#menu-regul-reset">here</A>.</P>
-  <H3>
-   <A NAME="regul-previous"></A>Previous Regularization&nbsp; <IMG SRC="images/is.button.regul-less.png" VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   See <A HREF="#menu-regul-previous">here</A>.</P>
-  <H3>
-   <A NAME="regul-next"></A>Next Regularization&nbsp; <IMG SRC="images/is.button.regul more" VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   See <A HREF="#menu-regul-next">here</A>.</P>
-  <H3>
-   <A NAME="regul-search"></A>Find optimal Regularization&nbsp; <IMG SRC="images/is.button.regul search" VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   See <A HREF="#menu-regul-find-whl">here</A>.</P>
-  <H3>
-   <A NAME="cycle-is"></A>Switch to another Inverse matrix&nbsp; <IMG SRC="images/is.button.cycle-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   The link file can contain <B><A HREF="#how-to-get-it">more than one 
-   Inverse Solution matrix</A></B>. This is a very convenient way to 
-   test different models, each model having its own <A HREF="#brightness">brightness</A> 
-   and <A HREF="#contrast">contrast</A> values stored.</P>
-  <P>
-   The <B>name of the current IS</B> is written in the top-right part of 
-   the window.</P>
-  <H3>
-   <A NAME="cycle-mri"></A>Switch to another MRI&nbsp; <IMG SRC="images/is.button.cycle-mri.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   The link file will usually contain <B><A HREF="#how-to-get-it">more 
-   than one MRI file</A></B>. By cycling between these MRIs you can 
-   focus your message either on the grey matter, the full brain or the 
-   full head.</P>
-  <P>
-   F.ex. the same <A HREF="#IS-potatoes">3D &quot;onions&quot; IS</A> on 
-   top of two different MRIs (of the same head):</P>
-  <P>
-   <IMG SRC="images/is.depth-shift-is-right-mask.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.depth-shift-is-right.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H2>
-   <A NAME="mouse"></A>Inverse Solutions Display - Mouse</H2>
-  <P>
-   See the <A HREF="windows-general-commands.html#mouse"><B>general mouse actions</B></A>,
-    and especially the <A HREF="windows-general-commands.html#brightness-contrast">brightness
-    and contrast control</A> and the <A HREF="windows-general-commands.html#mouse-picking">polling
-    function</A>.</P>
-  <H2>
-   <A NAME="menus"></A>Inverse Solutions Display - Menus</H2>
-  <H3>
-   <A NAME="menu-edit"></A>Edit menu</H3>
-  <UL>
-   <P>
-    <B><A HREF="windows-general-commands.html#keyboard-bitmapcopy">Copy as Bitmap</A></B></P>
-   </UL>
-  <H3>
-   <A NAME="menu-search"></A>Search menu</H3>
-  <UL>
-   <P>
-    <B>Find TF with maximum value</B></P>
-   <UL>
-    <P>
-     Scan all <A HREF="terms-definitions-formulas.html#time-frame">Time Frames</A>, and set the 
-     time cursor to the position where the <B>greatest absolute min or max</B> is.</P>
-    </UL>
-   </UL>
-  <H3>
-   <A NAME="menu-regularization"></A>Regularization menu</H3>
-  <UL>
-   <P>
-    <B><A NAME="menu-regul-reset"></A>Reset Regularization</B></P>
-   <UL>
-    <P>
-     Switch to the first regularization, usually with value 0 (i.e. no regularization).</P>
-    <P>
-     This function is available only if the Inverse Matrix embeds <A HREF="files-formats-cartool.html#is">more
-      than 1 regularization</A>.</P>
-    </UL>
-   <P>
-    <B><A NAME="menu-regul-previous"></A>Previous Regularization</B></P>
-   <UL>
-    <P>
-     Switch to the previous regularization, until the first one is reached.</P>
-    <P>
-     This function is available only if the Inverse Matrix embeds <A HREF="files-formats-cartool.html#is">more
-      than 1 regularization</A>.</P>
-    </UL>
-   <P>
-    <B><A NAME="menu-regul-next"></A>Next Regularization</B></P>
-   <UL>
-    <P>
-     Switch to the next regularization, until the last one is reached.</P>
-    <P>
-     This function is available only if the Inverse Matrix embeds <A HREF="files-formats-cartool.html#is">more
-      than 1 regularization</A>.</P>
-    </UL>
-   <P>
-    <B><A NAME="menu-regul-find-cur"></A>Find optimal Regularization, at 
-    current time range only</B></P>
-   <UL>
-    <P>
-     Looking for the optimal regularization <B>at the current time selection</B> 
-     (see below).</P>
-    <P>
-     This option allows you to have the regularization parameter to be as 
-     precise as possible at a given time frame (or time interval). As the 
-     obtained value depends on the noise level at the current time range, 
-     this regularization might not in turn be optimal for other parts of 
-     the data. In that case, either repeat the regularization search, or 
-     try to have a global, fixed regularization value for the whole data, 
-     as explained below.</P>
-    </UL>
-   <P>
-    <B><A NAME="menu-regul-find-whl"></A>Find optimal Regularization, 
-    across whole time range</B></P>
-   <UL>
-    <P>
-     Looking for the optimal regularization <B>for the whole data set</B>, 
-     independently of the current time selection.</P>
-    <P>
-     This option allows you to compute a single regularization parameter 
-     for the whole data. You can therefore use this value to <A HREF="file-calculator.html#results-of-inverse">export
-      the inverse results</A>, f.ex. If you think you're missing some 
-     precisions somewhere, you can try to compute a specific 
-     regularization value for a given time range, as explained above.</P>
-    </UL>
-   <P>
-    &nbsp;</P>
-   <UL>
-    <P>
-     In either two cases, the time range considered (current or whole) is 
-     scanned and a <B>best regularization is computed for each time frame</B>.
-      Then the <B>average</B> of all the obtained regularizations is computed.</P>
-    <P>
-     The best regularization at a given time frame is found by plotting 
-     the <B>average norm of all solution points</B> as a function of 
-     regularization, and then taking the <B>L-corner</B> of this curve 
-     (f.ex. here regularization 3):</P>
-    <P>
-     <IMG SRC="images/is.regul-search.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-    <H4>
-     Important:</H4>
-    <UL>
-     <LI CLASS="mvd-P">
-     <P>
-      The computed regularization is usually a <B>good hint</B>, but you 
-      still have to <B>be critical</B> of this value. Watch the result, and 
-      try the previous and next regularizations f.ex.</P>
-     <LI CLASS="mvd-P">
-     <P>
-      The proposed value is also <B>dependent of the type of inverse solution</B>,
-       f.ex. a LORETA vs a WMN, though it shouldn't vary that much for a 
-      given set of data.</UL>
-     &nbsp;<BR>
-     This function is available only if the Inverse Matrix embeds <A HREF="files-formats-cartool.html#is">more
-      than 1 regularization</A>.</P>
-    </UL>
-   </UL>
-  <H3>
-   <A NAME="menu-options"></A>Options menu</H3>
-  <UL>
-   <P>
-    <B>Specify a display scaling</B></P>
-   <UL>
-    <P>
-     Ask the user for an arbitrary scaling value, equivalent to setting 
-     the <A HREF="#brightness">brightness</A>.</P>
-    </UL>
-   <P>
-    <B>Show / hide color scaling</B></P>
-   <UL>
-    <P>
-     Does what it says.</P>
-    </UL>
-   <P>
-    <B>Show / hide orientation</B></P>
-   <UL>
-    <P>
-     Does what it says.</P>
-    </UL>
-   <P>
-    <B><A NAME="avg-precedence"></A>Averaging precedence of inverse</B></P>
-   <UL>
-    <P>
-     <B>Before:</B></P>
-    <UL>
-     <P>
-      The EEG is first averaged for the current time period selected, then 
-      the Inverse Solution of this mean period taken<BR>
-      = InverseSolution ( Mean EEG ( for each time point ) )</P>
-     </UL>
-    <P>
-     <B>After:</B></P>
-    <UL>
-     <P>
-      The Inverse Solution is computed sequentially for each time point of 
-      the current time period selected. Then the average of these IS is taken<BR>
-      = Mean ( InverseSolution ( for each time point ) )</P>
-     </UL>
-    </UL>
-   <P>
-    <B><A NAME="depth-shifting"></A>'Depth shifting' trick for 3D inverse</B></P>
-   <UL>
-    <P>
-     This is discussed in the <A HREF="mri-display.html#depth-shift">MRI
-      Depth Shifting topic</A> and in the <A HREF="potentials-maps-display.html#depth-shifting">Potential
-      topic</A>.</P>
-    <P>
-     Be aware that <B>the shift only applies to the <A HREF="#IS-in-3D">3D 
-     Inverse Solutions</A></B>, and neither to the <A HREF="#IS-on-2D">2D 
-     Inverse Solutions</A> nor the <A HREF="#cycle-mri">MRI</A> itself.</P>
-    <P>
-     See an example here, first picture is a clipped MRI and an IS without 
-     depth shifting. Second picture the MRI is not clipped and the IS are 
-     &quot;depth shifted&quot; on top. Note that in the latter case, you 
-     can see a little more detailed IS:</P>
-    <P>
-     <IMG SRC="images/is.no-depth-shift-is-right.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.depth-shift-is-right.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-    </UL>
-   </UL>
-  <H2>
-   <A NAME="technical-points"></A>Inverse Solutions Display - Technical points</H2>
-  <H3>
-   <A NAME="how-to-get-it"></A>How do I get this display?</H3>
-  <P>
-   This display is actually <B>automatically generated</B> when enough 
-   files have been <B><A HREF="general-concepts.html#linkingfiles">linked together</A></B>,
-    and therefore share enough informations.</P>
-  <P>
-   There are two cases concerning the files:</P>
-  <H4>
-   First case:</H4>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    1 (or more) <B><A HREF="files-formats-others.html#eeg">EEG file(s)</A></B> 
-    (generally an <A HREF="files-formats-others.html#eeg-erp">ERP file</A>),</P>
-   <LI CLASS="mvd-P">
-   <P>
-    At least one <B><A HREF="files-formats-cartool.html#is">inverse solution 
-    matrix file</A></B>.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    One <B><A HREF="files-formats-cartool.html#spi">solution points file</A></B>.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    At least one <B><A HREF="files-formats-others.html#mri">MRI file</A></B>, 
-    containing a mask around the Grey matter;</P>
-   <P>
-    other MRIs with the Brain or Full Head are optionals, though they do 
-    improve the display quality.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   Cartool will multiply the IS matrix with each time frames of each EEG 
-   files, in real-time.</P>
-  <H4>
-   Second case:</H4>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    1 (or more) <B><A HREF="files-formats-cartool.html#ris">RIS file(s)</A></B>,</P>
-   <LI CLASS="mvd-P">
-   <P>
-    One <B><A HREF="files-formats-cartool.html#spi">solution points file</A></B>.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    At least one <B><A HREF="files-formats-others.html#mri">MRI file</A></B>, 
-    containing a mask around the Grey matter;</P>
-   <P>
-    other MRIs with the Brain or Full Head are optionals, though they do 
-    improve the display quality.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   The <B>multiplication of the IS matrix and the EEG data has been done 
-   somewhere else</B> (f.ex. with the <B><A HREF="file-calculator.html#results-of-inverse">File
-    Calculator</A></B>), and the <B>result</B> is stored in a RIS file. 
-   This is usually faster to work with, but it lacks suppleness, as the 
-   data are computed once for all.</P>
-  <P>
-   It can be very useful, though, if you want to compute the inverse 
-   solutions with your own recipe.</P>
-  <H4>
-   Important points:</H4>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Putting many EEG / RIS files will show <B>as many inverse windows</B> 
-    as there are of files.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Only <B>one solution points file is allowed</B>, and <B>it has to be 
-    absolutely the same one that has been used to build the IS matrix</B> 
-    you want to use. Missing this point will produce <B>totally wrong displays</B>.
-     Only the one who actually built the IS matrix can certify which file 
-    has been used.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    You can put many IS matrices, but only one is active at a time. You 
-    can of course <A HREF="#cycle-is">toggle</A> between these matrices, 
-    so you can compare between different models.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <A NAME="specifying-MRIs"></A>You have to put at least <B>1 MRI</B>, 
-    though <B>2 or 3</B> should be the usual case. The <B>first one</B> 
-    is mandatory, it <B>holds a </B><A HREF="mri-display.html#guessing-content"><B>mask</B></A> 
-    where non-zero values voxels specifies the grey-matter, and therefore 
-    where the IS will be actually <A HREF="#interpolation-4NN">computed 
-    and displayed</A>.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The following MRIs can contain, for example, a segmented brain and a 
-    full head, so you can display the inverse solution in these spaces. 
-    Each of these MRIs must of course be co-registered.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>All the MRIs must match exactly the Solution Points geometry.</B></P>
-   <LI CLASS="mvd-P">
-   <P>
-    You can also mix the two cases for linkings, that is, both EEG files 
-    with IS matrices and pre-computed RIS files.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Cartool is doing a lot of checkings to ensure you are on the safe 
-    side of this elaborated display. Though, only you can really assert 
-    that all these files finally match together (the solution points with 
-    the MRI space and the IS matrix).</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   Recommended readings: the fabulous <A HREF="general-concepts.html#linkingfiles"><B>Linking
-    Files</B></A> story, and the ignominous &quot;<B><A HREF="general-concepts.html#slave_windows">Windows
-    in Slavery</A></B>&quot; tale.</P>
-  <H3>
-   <A NAME="how-to-matrix-IS"></A>How do I compute Inverse Solutions matrices?</H3>
-  <P>
-   Either from the <A HREF="computing-inverse-solution-matrices.html"><B>Cartool toolbox</B></A>,
-    or from third-party applications.</P>
-  <H3>
-   <A NAME="matrix-scal-vs-vect"></A>Matrix results: scalar or vectorial</H3>
-  <P>
-   According to the model underneath the <A HREF="#how-to-matrix-IS">IS 
-   matrix you are using</A>, the results at each solution points 
-   location can either be some <B>signed scalar values</B>, or <B>vectors</B> 
-   (direction plus intensity of the source). This is wired into the 
-   matrix and can not be changed by Cartool!</P>
-  <P>
-   It has the following consequences:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <A HREF="#color-modes">Color maps</A> will account for the possible 
-    signed values.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    If results are signed scalar values, Cartool will produce <B>two isosurfaces</B> 
-    for the <A HREF="#IS-potatoes">3D IS</A>, one for the positive values 
-    alone, and the other one for the negative values alone. Each one will 
-    be colored differently, of course.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    If the results are vectors, Cartool currently only display the value 
-    of their <B>norms</B> (aka intensity). This is related to the <A HREF="#avg-precedence">averaging
-     precedence</A> topic.</P>
-   </UL>
-  <H3>
-   <A NAME="time-averaging"></A>Time Averaging&nbsp; <B><A HREF="general-concepts.html#slave-average"><IMG SRC="images/all.button.average-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></B></H3>
-  <P>
-   This is the same as the basic <A HREF="general-concepts.html#slave-average">Time
-    Averaging</A>.</P>
-  <P>
-   Note however the potential effect of changing the <A HREF="#avg-precedence"><B>Averaging
-    precedence</B></A>, which can lead to different results.</P>
-  <H3>
-   <A NAME="time-sequence"></A>Time Sequence&nbsp; <B><A HREF="general-concepts.html#slave-sequence"><IMG SRC="images/all.button.sequence-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></B></H3>
-  <P>
-   This is the same as the basic <A HREF="general-concepts.html#slave-sequence">Time
-    Sequence</A>.</P>
-  <P>
-   See a few typical examples here, with the relevant parameters also specified:</P>
-  <P>
-   &nbsp;</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <A HREF="general-concepts.html#slave-sequence">Time Sequence</A> + <A HREF="#find-min-max-pos"><B>Finding
-     Min / Max Slices</B></A> + <A HREF="#auto-scaling">Auto color scaling</A> 
-    + <A HREF="#MRI-mode"><B>MRI display as volume</B></A> + <A HREF="#clipping-planes"><B>2
-     Clipping planes</B></A> =</P>
-   <P>
-    &nbsp;<IMG SRC="images/is.sequence-of-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <A HREF="general-concepts.html#slave-sequence">Time Sequence</A> + <A HREF="#find-min-max-pos"><B>Finding
-     Min / Max Slices</B></A> + <A HREF="#auto-scaling">Auto color scaling</A> 
-    + <A HREF="#MRI-mode"><B>MRI display as slice</B></A> + <A HREF="#clipping-planes"><B>1
-     Clipping plane</B></A> =</P>
-   <P>
-    &nbsp;<IMG SRC="images/is.sequence-of-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <A HREF="general-concepts.html#slave-sequence">Time Sequence</A> + <A HREF="#find-min-max-pos"><B>Finding
-     Min / Max Slices</B></A> + <A HREF="#auto-scaling">Auto color scaling</A> 
-    + <B><A HREF="#slice-mode">MRI display as 2D slices</A></B> + <B><A HREF="#show-min-max">Show
-     Max position</A></B> =</P>
-   <P>
-    &nbsp;<IMG SRC="images/is.sequence-of-slices.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   <P>
-    Be aware that this last combination becomes <B>computationally expensive</B>!
-     Use it either for a single <A HREF="windows-general-commands.html#keyboard-bitmapcopy">snapshot</A>,
-     or <A HREF="mri-display.html#more-less-slices">reduce the number 
-    of slices</A>, and / or <A HREF="general-concepts.html#slave-less-frames">reduce
-     the number of time frames</A>.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <H3>
-   <A NAME="time-animation"></A>Time Animation&nbsp; <B><A HREF="general-concepts.html#slave-animate"><IMG SRC="images/all.button.animate-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></B></H3>
-  <P>
-   This is the same as the basic <A HREF="general-concepts.html#slave-animate">Time
-    Animation</A>.</P>
-  <P>
-   At the moment, the smoother animation will be by using the highly 
-   optimized <A HREF="#slice-mode">Slice Mode</A>!</P>
-  <H3>
-   <A NAME="IS-2D-and-IS-3D"></A>Combining 2D IS and 3D IS</H3>
-  <P>
-   This is a possible, but not very useful, combination. That is why 
-   most of the time, unless you really want it, Cartool makes 2D and 3D 
-   IS exclusive (you can still force them together, though).</P>
-  <P>
-   The <A HREF="#IS-on-2D">2D IS</A> applies only on the <A HREF="#clipping-planes">clipping
-    planes</A> or the <A HREF="#slice-mode">slices</A>, so it is more 
-   restricted view than the <A HREF="#IS-in-3D">3D IS</A>. When you turn 
-   on the 3D IS, then the 2D IS is switched off, because it does not 
-   bring more informations, and increase the display time. However you 
-   can bring it back by clicking again on the <A HREF="#IS-on-2D">2D IS button</A>,
-    which gives you both the planar and the 3D IS:</P>
-  <P>
-   <IMG SRC="images/is.mri-and-flat-is-and-3D-is.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   Finally, also note that switching off the 3D IS will re-activate the 
-   2D IS back.</P>
-  <P>
-   &nbsp;</P>
-  <H3>
-   <A NAME="MRI-color"></A>Changing the color of the MRI</H3>
-  <P>
-   All the <B><A HREF="#brightness">color options</A></B> within the IS 
-   display <B>only apply to the Inverse Solutions</B> themselves.</P>
-  <P>
-   Changing the <A HREF="#cycle-mri">MRI</A> coloring (changing the 
-   brightness, or the color mode f.ex.) is done very simply by <B>switching
-    to the related </B><A HREF="mri-display.html"><B>MRI window</B></A>,
-    and do your changes there. The results are shown in real-time, so 
-   you can easily tune your IS display:</P>
-  <P>
-   <IMG SRC="images/is.mri-dark.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-bright.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   A good hint: if you want only to change the <A HREF="mri-display.html#brightness">brightness
-    / contrast of the MRI</A>, you don't even need to make the window 
-   active (&quot;clicking&quot; on it). It is enough to <B>use the <A HREF="windows-general-commands.html#brightness-contrast">right-click</A> 
-   above the MRI window</B>.</P>
-  <P>
-   &nbsp;</P>
-  <H3>
-   <A NAME="interpolation-4NN"></A>Interpolating between solution points</H3>
-  <P>
-   The <A HREF="computing-inverse-solution-matrices.html#SPs-extraction">Solution Points</A> 
-   are actually a sub-sampling of the brain <A HREF="computing-inverse-solution-matrices.html#grey-mask">grey
-    matter</A>. To fill the spaces between the SPs, some kind of 
-   interpolation is therefore needed.</P>
-  <P>
-   A <strong>4 Nearest Neighbors (4NN)</strong> method is used, 
-   due to its nice visual output.</P>
-  <P>
-   Note that the interpolation is restricted to the <B><A HREF="#specifying-MRIs">content
-    of the grey mask</A>.</B></P>
-  <P>
-   <IMG SRC="images/is.4NN-close-up.png" VSPACE="0" HSPACE="0" BORDER="0" height="269" width="324"></P>
-  <P>
-   &nbsp;&nbsp;</P>
-  <H3>
-   <A NAME="sp-regular-or-not"></A>Solution points distribution</H3>
-  <P>
-   The <A HREF="files-formats-cartool.html#spi">solution points</A>, according to 
-   which <A HREF="#how-to-matrix-IS">IS model is used</A>, can either be 
-   placed with a <B>regular interval spacing</B>, or <B>arbitrarily distributed</B> 
-   among the <A HREF="#specifying-MRIs">grey matter voxels</A>.</P>
-  <P>
-   In fact, you shouldn't care that much about this, Cartool does it 
-   best to handle both cases. However, in case of <B>non-regular 
-   solution points</B>, the <A HREF="#IS-potatoes">3D IS isosurface rendering</A> 
-   is <B>noticeably slower</B>, because it is computed in the full grey 
-   matter space. The regular grid case, on the other hand, use this 
-   property to compute the isosurface on a <B>downsampled version of the 
-   grey matter MRI</B>.</P>
-  <P>
-   See an example of regularly and non-regularly distributed solution 
-   points (this is <I>not</I> a perspective distortion):</P>
-  <P>
-   <IMG SRC="images/sp.regular-grid-spacing.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/sp.non-regular-grid-spacing.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             Inverse Solutions Display
+         </H1>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             If you don't know how to get this display on the first hand, please <A HREF="#how-to-get-it">
+                 read
+                 this topic first
+             </A>. Also note that very often Inverse Solutions
+             will be nicknamed <I>IS</I>.
+         </P>
+         <P>
+             You can <B>
+                 <a href="computing-inverse-solution-matrices.html">
+                     compute the inverse
+                     matrices here
+                 </a>
+             </B>, or <B>
+                 <a href="computing-ris.html">
+                     compute the
+                     results of inverse solutions
+                 </a>
+             </B>from EEG (or frequency) files.
+         </P>
+         <H3>
+             <A HREF="#buttons">Buttons</A>
+         </H3>
+         <H5>
+             <A HREF="windows-general-commands.html#linking"><IMG SRC="images/all.button.graphical-link.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#orientation"><IMG SRC="images/all.button.orientation.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="windows-general-commands.html#magnifier"><IMG SRC="images/all.button.magnifier.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="general-concepts.html#slave-controls"><IMG SRC="images/all.button.synchronize-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#time-averaging"><IMG SRC="images/all.button.average-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#time-sequence"><IMG SRC="images/all.button.sequence-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#time-animation"><IMG SRC="images/all.button.animate-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="general-concepts.html#slave-less-frames"><IMG SRC="images/all.button.less-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#display-modes">Display modes:</A>
+         </H5>
+         <H5>
+             <A HREF="#IS-on-2D"><IMG SRC="images/is.button.2d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#IS-in-3D"><IMG SRC="images/is.button.3d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#IS-vectors"><IMG SRC="images/is.button.3d-vect.png" VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#MRI-mode"><IMG SRC="images/is.button.show-mri.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#SP-mode"><IMG SRC="images/is.button.show-sp.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#rois"><IMG SRC="images/button.roi.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#clipping-planes"><IMG SRC="images/mri.button.clip-cor.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.clip-tra.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.clip-sag.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#slice-mode"><IMG SRC="images/mri.button.slice-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#slice-mode"><IMG SRC="images/mri.button.less-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.more-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#slice-mode"><IMG SRC="images/mri.button.move-first-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-first-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#slice-mode"><IMG SRC="images/mri.button.move-last-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-last-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#show-min-max"><IMG SRC="images/is.button.min-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.button.max-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#find-min-max-pos"><IMG SRC="images/is.button.find-min-max.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#brightness"><IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#contrast"><IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#auto-scaling"><IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#color-modes"><IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#regul-reset"><IMG SRC="images/is.button.regul reset" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#regul-previous"><IMG SRC="images/is.button.regul-less.png" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#regul-next"><IMG SRC="images/is.button.regul more" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#regul-search"><IMG SRC="images/is.button.regul search" VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H5>
+             <A HREF="#cycle-is"><IMG SRC="images/is.button.cycle-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="#cycle-mri"><IMG SRC="images/is.button.cycle-mri.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H3>
+             <A HREF="#mouse">Mouse</A>
+         </H3>
+         <H3>
+             <A HREF="#menus">Menus</A>
+         </H3>
+         <H5>
+             <A HREF="#menu-edit">Edit</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#menu-edit">Copy as Bitmap</A>
+             </H5>
+         </UL>
+         <H5>
+             <A HREF="#menu-search">Search</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#menu-search">Find TF with maximum value</A>
+             </H5>
+         </UL>
+         <H5>
+             <A HREF="#menu-regularization">Regularization</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#menu-regul-reset">Reset Regularization</A><br>
+                 <A HREF="#menu-regul-previous">Previous Regularization</A><br>
+                 <A HREF="#menu-regul-next">Next Regularization</A><br>
+                 <A HREF="#menu-regul-find-cur">
+                     Find optimal Regularization, at
+                     current time range only
+                 </A><br><A HREF="#menu-regul-find-whl">
+                     Find optimal Regularization, across
+                     whole time range
+                 </A>
+             </H5>
+         </UL>
+         <H5>
+             <A HREF="#menu-options">Options</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#menu-options">Specify a display scaling</A><br>
+                 <A HREF="#menu-options">Show / hide color scaling</A><br>
+                 <A HREF="#menu-options">Show / hide color orientation</A><br>
+                 <A HREF="#avg-precedence">Averaging precedence of inverse</A><br>
+                 <A HREF="#depth-shifting">'Depth Shifting' trick of 3D inverse</A>
+             </H5>
+         </UL>
+         <H3>
+             <A HREF="#technical-points">Technical points</A>
+         </H3>
+         <H5>
+             <A HREF="#how-to-get-it">How do I get this display?</A><br>
+             <A HREF="#how-to-matrix-IS">How do I compute the Inverse Solutions matrices?</A><br>
+             <A HREF="#matrix-scal-vs-vect">Matrix results: scalar of vectorial</A><br>
+             <A HREF="#time-averaging">Time Averaging</A><br><A HREF="#time-sequence">Time Sequence</A><br>
+             <A HREF="#time-animation">Time Animation</A><br><A HREF="#IS-2D-and-IS-3D">Combining 2D IS and 3D IS</A><br>
+             <A HREF="#MRI-color">Changing the color of the MRI</A><br>
+             <A HREF="#interpolation-4NN">Interpolating between solution points</A><br>
+             <A HREF="#sp-regular-or-not">Solution points distribution</A>
+         </H5>
+         <H2>
+             <A NAME="buttons"></A>Inverse Solutions Display - Buttons
+         </H2>
+         <H3>
+             <A NAME="display-modes"></A>Display modes
+         </H3>
+         <P>
+             <IMG SRC="images/is.button.2d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.button.3d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.button.3d-vect.png" WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="1"> <IMG SRC="images/is.button.show-mri.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"> <IMG SRC="images/is.button.show-sp.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             Your display will <B>depend mainly on these 5 buttons</B>. Most of
+             the time <B>their effects combine together</B> to provide some rich
+             output, so knowing their roles is fundamental to get the most of this display!
+         </P>
+         <H3>
+             <A NAME="IS-on-2D"></A>Show Inverse Solution on 2D clipping
+             planes&nbsp; <IMG SRC="images/is.button.2d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             The <B>
+                 IS will be drawn in 2D (flat) on the current <A HREF="#clipping-planes">
+                     clipping
+                     planes
+                 </A>
+             </B>, the values seen are the ones intersecting those planes.
+         </P>
+         <P>
+             The button cycles between 3 states:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Nothing (i.e. no 2D drawing)<BR>
+             <LI CLASS="mvd-P">Drawing with <B>transparency for the lowest values</B><BR>
+             <LI CLASS="mvd-P"><B>Opaque drawing</B>.</P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             See an example, on top of a single <A HREF="#MRI-mode">MRI clipping plane</A>
+             (you can set all 3 planes if you wish):
+         </P>
+         <P>
+             <IMG SRC="images/is.mri-and-2D-transparent-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-and-2D-opaque-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             Be aware that if <B><I>no</I> clipping planes</B> are set, there will
+             be <B>nothing to see</B>!
+         </P>
+         <P>
+             However, <B>
+                 you can have a <A HREF="#clipping-planes">clipping plane selected</A>
+                 without any <A HREF="#MRI-mode">MRI rendering</A>
+             </B>. This will draw
+             only the IS, as f.ex.:
+         </P>
+         <P>
+             <IMG SRC="images/is.2d-transparent-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.2d-opaque-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             Finally, note that the coloring only occurs where the <A HREF="#specifying-MRIs">
+                 MRI
+                 mask provided has non-null values
+             </A>.
+         </P>
+         <H3>
+             <A NAME="IS-in-3D"></A>Show Inverse Solution in 3D&nbsp; <IMG SRC="images/is.button.3d-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             Display the <B>IS values in 3D</B>.
+         </P>
+         <P>
+             There are 4 states for this mode:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Nothing (i.e. no 3D drawing).<BR>
+             <LI CLASS="mvd-P">
+                 The <B><I>&quot;Berries&quot;</I> display</B>,
+                 where each <B>
+                     solution point is drawn with a color and a diameter
+                     proportional to its value
+                 </B>.<BR>
+             <LI CLASS="mvd-P">
+                 The <B><I>'Potatoes&quot;</I> display</B>, made
+                 from a <B>single, opaque, </B><A HREF="terms-definitions-formulas.html#isosurface"><B>isosurface</B></A>
+                 of the IS values.<BR>
+             <LI CLASS="mvd-P">
+                 The <B><I>&quot;Onions&quot;</I> display</B>, made
+                 from a <B>serie of nested, transparents, </B><A HREF="terms-definitions-formulas.html#isosurface"><B>isosurface</B></A>
+                 of the IS values.</P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             See an example, on top of a single <A HREF="#MRI-mode">MRI clipping plane</A>:
+         </P>
+         <P>
+             <IMG SRC="images/is.mri-only.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-and-3D-berries-is.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+             <A NAME="IS-potatoes"></A><IMG SRC="images/is.mri-and-3D-potatoes-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-and-3D-onions-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             The &quot;<B>Berries</B>&quot; display is the <B>fastest</B>, and it
+             gives a good idea of where the sources are.
+         </P>
+         <P>
+             The &quot;<B>Potatoes</B>&quot; display is a little slower, and it
+             gives an <B>exact 3D isosurface</B>, which can be intersected by
+             other 3D objects (clipping planes, other windows...). The drawback is
+             that it only plots the outer surface of the IS, and you can not
+             differentiate between all these &quot;potatoes&quot; which one is the strongest.
+         </P>
+         <P>
+             The &quot;<B>Onions</B>&quot; display is the slowest one, as it is
+             indeed a <B>serie of isosurfaces</B>, set with different cutting
+             values, and drawn transparently. It has the advantage over the
+             &quot;Potatoes&quot; display that you can see &quot;through&quot; the
+             first isosurface. So you can tell which &quot;potato&quot; is the
+             most important, on first sight (see in the examples above, the
+             potatoes below the clipping plane are not so strong). The
+             &quot;onions&quot; are also 3D objects that can intersect with others
+             (clipping planes, other windows...).
+         </P>
+         <H3>
+             <A NAME="IS-vectors"></A>Show Inverse Solution as 3D vectors&nbsp; <IMG SRC="images/is.button.3d-vect.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             If the results of the IS is vectorial, this will display each of the <B>
+                 vectors
+                 in 3D
+             </B>.
+         </P>
+         <P>
+             The <B>small sphere</B> stands for the origin of the vector (i.e. the
+             solution point location of the IS), and the <B>length / width / coloring</B>
+             of the vector will vary according to the strength of the vector.
+         </P>
+         <P>
+             The usual <A HREF="#brightness">Brightness / Contrast</A> tuning also
+             applies here, and you might have to highly increase the brightness,
+             or to zoom in, if you want to clearly distinguish each vector!
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             See a (zoomed in) example:
+         </P>
+         <P>
+             <IMG SRC="images/is.mri-and-3D-vectors-is.png" WIDTH="324" HEIGHT="269" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H3>
+             <A NAME="MRI-mode"></A>Show MRI&nbsp; <IMG SRC="images/is.button.show-mri.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             You can change the way the <B>current MRI is displayed</B> (see here
+             to change the <A HREF="#MRI-color">MRI color and properties</A>).
+         </P>
+         <P>
+             This button is a <B>more convenient way</B> (and faster) to <A HREF="windows-general-commands.html#linking">
+                 <B>
+                     linking
+                     the MRI window
+                 </B>
+             </A> into the IS one.
+         </P>
+         <P>
+             The <A HREF="mri-display.html#rendering"><B>modes availables</B></A>
+             are exactly the same as the ones from the <A HREF="mri-display.html">
+                 MRI
+                 display
+             </A>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             See some examples, with the <A HREF="#IS-potatoes">
+                 IS in the 3D
+                 &quot;Potatoes&quot; mode
+             </A>:
+         </P>
+         <P>
+             <IMG SRC="images/is.mri-3d-slice-transparent.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-3d-slice-opaque.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+             <IMG SRC="images/is.mri-3d-volume-transparent.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-3d-volume-opaque.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H3>
+             <A NAME="SP-mode"></A>Show Solution Points&nbsp; <IMG SRC="images/is.button.show-sp.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             You can add the <B>solution points location</B> in your display.
+         </P>
+         <P>
+             This button is a <B>more convenient way</B> (and faster) to <A HREF="windows-general-commands.html#linking">
+                 linking
+                 the Solution Points window
+             </A> into the IS one.
+         </P>
+         <P>
+             The button cycles between 3 states:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Nothing (i.e. no Solution Points)<BR>
+             <LI CLASS="mvd-P"><B>Small spheres.</B><BR>
+             <LI CLASS="mvd-P"><B>Bigger spheres</B>.</P>
+         </UL>
+         <P>
+             <B></B>&nbsp;
+         </P>
+         <P>
+             See an example, with the <A HREF="#IS-potatoes">
+                 IS in the 3D
+                 &quot;Potatoes&quot; mode
+             </A>:
+         </P>
+         <P>
+             <IMG SRC="images/is.solution-points.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H3>
+             <A NAME="rois"></A>Regions Of Interest&nbsp; <IMG SRC="images/button.roi.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             This button is enabled if a <I><B><A HREF="files-formats-cartool.html#rois">.rois</A></B></I>
+             file is available in the <A HREF="general-concepts.html#linkingfiles">
+                 link
+                 many file
+             </A>, and the dimension of the rois is equal to the <B>
+                 number
+                 of solution points
+             </B>.
+         </P>
+         <P>
+             Pressing this button will <B>cycle within all possible rois</B>
+             listed in the link many file. Once a roi is active, the IS
+             computation is run as usual, then the results are averaged for each
+             region at a time. All the solution points of a given region will then
+             receive the same averaged value, so the display will appear as big
+             chunks of equal values (this is normal).
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             See an example, without and with rois, while using the <A HREF="#IS-in-3D">
+                 Berries
+                 display
+             </A>. We can see on the second picture that all the solution
+             points beloging to a given region have the same value / color!
+         </P>
+         <P>
+             <IMG SRC="images/is.rois-off.png" WIDTH="324" HEIGHT="269" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.rois-on.png" WIDTH="324" HEIGHT="269" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             You might be interested to learn how to <A HREF="creating-rois.html">
+                 create
+                 the rois file
+             </A>, too?
+         </P>
+         <H3>
+             <A NAME="clipping-planes"></A>Clipping planes&nbsp; <A HREF="mri-display.html#clipping X"><IMG SRC="images/mri.button.clip-cor.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="mri-display.html#clipping Y"><IMG SRC="images/mri.button.clip-tra.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></A><A HREF="mri-display.html#clipping-Z"><IMG SRC="images/mri.button.clip-sag.png" ALIGN=BASELINE WIDTH="22" HEIGHT="22" VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H3>
+         <P>
+             Set the <B>active clipping planes</B>.
+         </P>
+         <P>
+             See the equivalent <A HREF="mri-display.html#clipping-X">
+                 <B>
+                     MRI
+                     related topic
+                 </B>
+             </A>, plus the <A HREF="#IS-on-2D"><B>2D IS topic</B></A>,
+             if you want to see the IS on these planes.
+         </P>
+         <H3>
+             <A NAME="slice-mode"></A>Slice mode&nbsp; <A HREF="mri-display.html#slice-mode"><IMG SRC="images/mri.button.slice-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="mri-display.html#more less slices"><IMG SRC="images/mri.button.less-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.more-slices.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="mri-display.html#move first slice"><IMG SRC="images/mri.button.move-first-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-first-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="mri-display.html#move-last-slice"><IMG SRC="images/mri.button.move-last-slice-forward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/mri.button.move-last-slice-backward.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H3>
+         <P>
+             Switch to a <B>serie of slices</B>, either in the <B>Coronal</B>, <B>Transverse</B>
+             or <B>Sagittal</B> planes.
+         </P>
+         <P>
+             Visit the equivalent <A HREF="mri-display.html#slice-mode">
+                 <B>
+                     MRI
+                     related topic
+                 </B>
+             </A>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             See an example:
+         </P>
+         <P>
+             <IMG SRC="images/is.slices-coronal.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.slices-transverse.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.slices-sagittal.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             Each view is a serie of 2D intersecting planes, on which the <B>
+                 IS is
+                 always drawn in 2D
+             </B>, exactly the same way as <A HREF="#IS-on-2D">here</A>.
+         </P>
+         <P>
+             In each view, the last MRI drawn has a different orientation, as to
+             figure out <B>where the slices</B> (the grey lines) <B>come from</B>.
+             Moreover, you can still change the <A HREF="#MRI-mode">
+                 appearance of
+                 this MRI
+             </A> and which <A HREF="#display-modes">IS is drawn on it</A>.
+         </P>
+         <P>
+             You can still <A HREF="windows-general-commands.html#mouse-rotating">rotate</A>
+             the slices, if the orientation does not suit you...
+         </P>
+         <H3>
+             <A NAME="show-min-max"></A>Show Min / Max&nbsp; <IMG SRC="images/is.button.min-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.button.max-pos.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             Same behavior as the <B>
+                 <A HREF="mri-display.html#show-min-max">
+                     MRI
+                     Max feature
+                 </A>
+             </B>, except that it works on the <B>Inverse Solution values</B> instead.
+         </P>
+         <P>
+             Note that the <I>Min</I> is only available if the current Inverse
+             Matrix can produce <A HREF="#matrix-scal-vs-vect">scalar value</A> results.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             See an example, either with <A HREF="#IS-on-2D">2D IS</A> or <A HREF="#IS-in-3D">
+                 3D
+                 IS
+             </A>:
+         </P>
+         <P>
+             <IMG SRC="images/is.max-position-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.max-position-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H3>
+             <A NAME="find-min-max-pos"></A>Find Min / Max positions&nbsp; <IMG SRC="images/is.button.find-min-max.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             Same behavior as the <B><A HREF="#find-min-max-pos">MRI Find Max feature</A></B>,
+             except that it works on the <B>Inverse Solution values</B> instead.
+         </P>
+         <P>
+             Note that this is independent from <A HREF="#show-min-max">
+                 displaying
+                 the min / max positions.
+             </A>
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             If <A HREF="#matrix-scal-vs-vect"><B>both the Min and Max values</B></A>
+             are available, they can only be <I>shown at once</I> in the <A HREF="#slice-mode">
+                 Slice
+                 mode display
+             </A>, f.ex.:
+         </P>
+         <P>
+             <IMG SRC="images/is.slices-coronal-auto-min-max.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             In all the other displays, the <B>absolute greatest one</B> will be
+             used to set the clipping plane, f.ex.:
+         </P>
+         <P>
+             <IMG SRC="images/is.max-position-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             You can still <A HREF="#clipping-planes">shift the clipping planes</A>
+             by <A HREF="windows-general-commands.html#moving-clipping">hand</A>, but each
+             time you will release the mouse, Cartool will go back to the
+             automatic positionning. This is done on purpose, so you can explore
+             the other slices to check for some other sweet spots.
+         </P>
+         <H3>
+             <A NAME="brightness"></A>Brightness&nbsp; <IMG SRC="images/all.button.less-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-brightness.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             Changing the brightness has a slightly different effect according to
+             wether you are in a <B><A HREF="#IS-on-2D">2D IS</A></B> or in a <B>
+                 <A HREF="#IS-in-3D">
+                     3D
+                     IS
+                 </A>
+             </B> mode.
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     In <B><A HREF="#IS-on-2D">2D IS</A></B> mode, it is similar to the
+                     brightness control of the MRI <A HREF="mri-display.html#brightness">Brightness</A>.
+                 </P>
+                 <P>
+                     Here is an example of a <B>low</B> and a <B>high</B> brightness 2D IS:
+                 </P>
+                 <P>
+                     <IMG SRC="images/is.low-bright-low-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.high-bright-low-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     In <B><A HREF="#IS-in-3D">3D IS</A></B> mode, it changes the <A HREF="terms-definitions-formulas.html#isosurface">isosurface</A>
+                     cutting value of the IS, therefore changing the size of the &quot;<A HREF="#IS-potatoes">potatoes</A>&quot;.
+                 </P>
+                 <P>
+                     Here is an example of a <B>low</B> and a <B>high</B> brightness 3D IS:
+                 </P>
+                 <P>
+                     <IMG SRC="images/is.low-bright-low-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.high-bright-low-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     In <B><A HREF="#IS-vectors">3D Vectors</A></B> mode, it changes the
+                     length / width / brightness of the vectors.
+                 </P>
+                 <P>
+                     Here is an example of a <B>low</B> and a <B>high</B> brightness 3D
+                     Vectors display:
+                 </P>
+                 <P>
+                     <IMG SRC="images/is.low-bright-3d-vectors.png" WIDTH="324" HEIGHT="269" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.high-bright-3d-vectors.png" WIDTH="324" HEIGHT="269" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="contrast"></A>Contrast&nbsp; <IMG SRC="images/all.button.less-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.button.more-contrast.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             Changing the contrast has a slightly different effect according to
+             wether you are in a <B><A HREF="#IS-on-2D">2D IS</A></B> or in a <B>
+                 <A HREF="#IS-in-3D">
+                     3D
+                     IS
+                 </A>
+             </B> mode.
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     In <B><A HREF="#IS-on-2D">2D IS</A></B> mode, it is similar to the
+                     contrast control of the MRI <A HREF="mri-display.html#contrast">Contrast</A>.
+                 </P>
+                 <P>
+                     Here is an example of a <B>low</B> and a <B>high</B> contrast 2D IS:
+                 </P>
+                 <P>
+                     <IMG SRC="images/is.high-bright-low-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.high-bright-high-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     In <B><A HREF="#IS-in-3D">3D IS</A></B> mode, it also changes (as for
+                     the <A HREF="#brightness">brightness</A>) the <A HREF="terms-definitions-formulas.html#isosurface">isosurface</A>
+                     cutting value of the IS, therefore changing the size of the &quot;<A HREF="#IS-potatoes">potatoes</A>&quot;.
+                     It also <B>changes the color</B> used for the isosurface.
+                 </P>
+                 <P>
+                     Here is an example of a <B>low</B> and a <B>high</B> contrast 3D IS:
+                 </P>
+                 <P>
+                     <IMG SRC="images/is.high-bright-low-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.high-bright-high-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="auto-scaling"></A>Color auto scaling&nbsp; <IMG SRC="images/all.button.color-auto-scaling.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             The color auto scaling has a slightly different effect according to
+             wether you are in a <B><A HREF="#IS-on-2D">2D IS</A></B> or in a <B>
+                 <A HREF="#IS-in-3D">
+                     3D
+                     IS
+                 </A>
+             </B> mode.
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     In <B><A HREF="#IS-on-2D">2D IS</A></B> mode, it is similar to the
+                     contrast control of the MRI <A HREF="mri-display.html#auto-scaling">
+                         Color
+                         auto scaling
+                     </A>.
+                 </P>
+                 <P>
+                     Here is an example of auto scaling, with a <B>low</B> and a <B>high</B>
+                     contrast 2D IS:
+                 </P>
+                 <P>
+                     <IMG SRC="images/is.auto-bright-low-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.auto-bright-high-contr-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     In <B><A HREF="#IS-in-3D">3D IS</A></B> mode, it sets a <B>
+                         minimum
+                         visible size
+                     </B> for the &quot;<A HREF="#IS-potatoes">potatoes</A>&quot;,
+                     <B>changing the </B><A HREF="#contrast"><B>contrast</B></A><B>
+                         finally setting the actual size
+                     </B>.
+                 </P>
+                 <P>
+                     Here is an example of auto scaling, with a <B>low</B> and a <B>high</B>
+                     contrast 3D IS:
+                 </P>
+                 <P>
+                     <IMG SRC="images/is.auto-bright-low-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.auto-bright-high-contr-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="color-modes"></A>Color modes&nbsp; <IMG SRC="images/all.button.color-mode.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             You have <B>2 series of color modes</B> available, and Cartool
+             automatically choose the serie according to the <A HREF="#matrix-scal-vs-vect">
+                 type
+                 of IS matrix
+             </A>. These matrices being able to produce either signed
+             or non-signed results.
+         </P>
+         <P>
+             Within the selected serie, you can of course <B>
+                 switch between
+                 different color modes
+             </B> (for the Inverse Solutions), similarly to
+             the <A HREF="potentials-maps-display.html#color-modes">Potentials</A>.
+         </P>
+         <H3>
+             <A NAME="regul-reset"></A>Reset Regularization&nbsp; <IMG SRC="images/is.button.regul reset" VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             See <A HREF="#menu-regul-reset">here</A>.
+         </P>
+         <H3>
+             <A NAME="regul-previous"></A>Previous Regularization&nbsp; <IMG SRC="images/is.button.regul-less.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             See <A HREF="#menu-regul-previous">here</A>.
+         </P>
+         <H3>
+             <A NAME="regul-next"></A>Next Regularization&nbsp; <IMG SRC="images/is.button.regul more" VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             See <A HREF="#menu-regul-next">here</A>.
+         </P>
+         <H3>
+             <A NAME="regul-search"></A>Find optimal Regularization&nbsp; <IMG SRC="images/is.button.regul search" VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             See <A HREF="#menu-regul-find-whl">here</A>.
+         </P>
+         <H3>
+             <A NAME="cycle-is"></A>Switch to another Inverse matrix&nbsp; <IMG SRC="images/is.button.cycle-is.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             The link file can contain <B>
+                 <A HREF="#how-to-get-it">
+                     more than one
+                     Inverse Solution matrix
+                 </A>
+             </B>. This is a very convenient way to
+             test different models, each model having its own <A HREF="#brightness">brightness</A>
+             and <A HREF="#contrast">contrast</A> values stored.
+         </P>
+         <P>
+             The <B>name of the current IS</B> is written in the top-right part of
+             the window.
+         </P>
+         <H3>
+             <A NAME="cycle-mri"></A>Switch to another MRI&nbsp; <IMG SRC="images/is.button.cycle-mri.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             The link file will usually contain <B>
+                 <A HREF="#how-to-get-it">
+                     more
+                     than one MRI file
+                 </A>
+             </B>. By cycling between these MRIs you can
+             focus your message either on the grey matter, the full brain or the
+             full head.
+         </P>
+         <P>
+             F.ex. the same <A HREF="#IS-potatoes">3D &quot;onions&quot; IS</A> on
+             top of two different MRIs (of the same head):
+         </P>
+         <P>
+             <IMG SRC="images/is.depth-shift-is-right-mask.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.depth-shift-is-right.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H2>
+             <A NAME="mouse"></A>Inverse Solutions Display - Mouse
+         </H2>
+         <P>
+             See the <A HREF="windows-general-commands.html#mouse"><B>general mouse actions</B></A>,
+             and especially the <A HREF="windows-general-commands.html#brightness-contrast">
+                 brightness
+                 and contrast control
+             </A> and the <A HREF="windows-general-commands.html#mouse-picking">
+                 polling
+                 function
+             </A>.
+         </P>
+         <H2>
+             <A NAME="menus"></A>Inverse Solutions Display - Menus
+         </H2>
+         <H3>
+             <A NAME="menu-edit"></A>Edit menu
+         </H3>
+         <UL>
+             <P>
+                 <B><A HREF="windows-general-commands.html#keyboard-bitmapcopy">Copy as Bitmap</A></B>
+             </P>
+         </UL>
+         <H3>
+             <A NAME="menu-search"></A>Search menu
+         </H3>
+         <UL>
+             <P>
+                 <B>Find TF with maximum value</B>
+             </P>
+             <UL>
+                 <P>
+                     Scan all <A HREF="terms-definitions-formulas.html#time-frame">Time Frames</A>, and set the
+                     time cursor to the position where the <B>greatest absolute min or max</B> is.
+                 </P>
+             </UL>
+         </UL>
+         <H3>
+             <A NAME="menu-regularization"></A>Regularization menu
+         </H3>
+         <UL>
+             <P>
+                 <B><A NAME="menu-regul-reset"></A>Reset Regularization</B>
+             </P>
+             <UL>
+                 <P>
+                     Switch to the first regularization, usually with value 0 (i.e. no regularization).
+                 </P>
+                 <P>
+                     This function is available only if the Inverse Matrix embeds <A HREF="files-formats-cartool.html#is">
+                         more
+                         than 1 regularization
+                     </A>.
+                 </P>
+             </UL>
+             <P>
+                 <B><A NAME="menu-regul-previous"></A>Previous Regularization</B>
+             </P>
+             <UL>
+                 <P>
+                     Switch to the previous regularization, until the first one is reached.
+                 </P>
+                 <P>
+                     This function is available only if the Inverse Matrix embeds <A HREF="files-formats-cartool.html#is">
+                         more
+                         than 1 regularization
+                     </A>.
+                 </P>
+             </UL>
+             <P>
+                 <B><A NAME="menu-regul-next"></A>Next Regularization</B>
+             </P>
+             <UL>
+                 <P>
+                     Switch to the next regularization, until the last one is reached.
+                 </P>
+                 <P>
+                     This function is available only if the Inverse Matrix embeds <A HREF="files-formats-cartool.html#is">
+                         more
+                         than 1 regularization
+                     </A>.
+                 </P>
+             </UL>
+             <P>
+                 <B>
+                     <A NAME="menu-regul-find-cur"></A>Find optimal Regularization, at
+                     current time range only
+                 </B>
+             </P>
+             <UL>
+                 <P>
+                     Looking for the optimal regularization <B>at the current time selection</B>
+                     (see below).
+                 </P>
+                 <P>
+                     This option allows you to have the regularization parameter to be as
+                     precise as possible at a given time frame (or time interval). As the
+                     obtained value depends on the noise level at the current time range,
+                     this regularization might not in turn be optimal for other parts of
+                     the data. In that case, either repeat the regularization search, or
+                     try to have a global, fixed regularization value for the whole data,
+                     as explained below.
+                 </P>
+             </UL>
+             <P>
+                 <B>
+                     <A NAME="menu-regul-find-whl"></A>Find optimal Regularization,
+                     across whole time range
+                 </B>
+             </P>
+             <UL>
+                 <P>
+                     Looking for the optimal regularization <B>for the whole data set</B>,
+                     independently of the current time selection.
+                 </P>
+                 <P>
+                     This option allows you to compute a single regularization parameter
+                     for the whole data. You can therefore use this value to <A HREF="file-calculator.html#results-of-inverse">
+                         export
+                         the inverse results
+                     </A>, f.ex. If you think you're missing some
+                     precisions somewhere, you can try to compute a specific
+                     regularization value for a given time range, as explained above.
+                 </P>
+             </UL>
+             <P>
+                 &nbsp;
+             </P>
+             <UL>
+                 <P>
+                     In either two cases, the time range considered (current or whole) is
+                     scanned and a <B>best regularization is computed for each time frame</B>.
+                     Then the <B>average</B> of all the obtained regularizations is computed.
+                 </P>
+                 <P>
+                     The best regularization at a given time frame is found by plotting
+                     the <B>average norm of all solution points</B> as a function of
+                     regularization, and then taking the <B>L-corner</B> of this curve
+                     (f.ex. here regularization 3):
+                 </P>
+                 <P>
+                     <IMG SRC="images/is.regul-search.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+                 <H4>
+                     Important:
+                 </H4>
+                 <UL>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             The computed regularization is usually a <B>good hint</B>, but you
+                             still have to <B>be critical</B> of this value. Watch the result, and
+                             try the previous and next regularizations f.ex.
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             The proposed value is also <B>dependent of the type of inverse solution</B>,
+                             f.ex. a LORETA vs a WMN, though it shouldn't vary that much for a
+                             given set of data.
+                 </UL>
+                 &nbsp;
+                 <BR>
+                 This function is available only if the Inverse Matrix embeds
+                 <A HREF="files-formats-cartool.html#is">
+                     more
+                     than 1 regularization
+                 </A>.</P>
+             </UL>
+         </UL>
+         <H3>
+             <A NAME="menu-options"></A>Options menu
+         </H3>
+         <UL>
+             <P>
+                 <B>Specify a display scaling</B>
+             </P>
+             <UL>
+                 <P>
+                     Ask the user for an arbitrary scaling value, equivalent to setting
+                     the <A HREF="#brightness">brightness</A>.
+                 </P>
+             </UL>
+             <P>
+                 <B>Show / hide color scaling</B>
+             </P>
+             <UL>
+                 <P>
+                     Does what it says.
+                 </P>
+             </UL>
+             <P>
+                 <B>Show / hide orientation</B>
+             </P>
+             <UL>
+                 <P>
+                     Does what it says.
+                 </P>
+             </UL>
+             <P>
+                 <B><A NAME="avg-precedence"></A>Averaging precedence of inverse</B>
+             </P>
+             <UL>
+                 <P>
+                     <B>Before:</B>
+                 </P>
+                 <UL>
+                     <P>
+                         The EEG is first averaged for the current time period selected, then
+                         the Inverse Solution of this mean period taken<BR>
+                         = InverseSolution ( Mean EEG ( for each time point ) )
+                     </P>
+                 </UL>
+                 <P>
+                     <B>After:</B>
+                 </P>
+                 <UL>
+                     <P>
+                         The Inverse Solution is computed sequentially for each time point of
+                         the current time period selected. Then the average of these IS is taken<BR>
+                         = Mean ( InverseSolution ( for each time point ) )
+                     </P>
+                 </UL>
+             </UL>
+             <P>
+                 <B><A NAME="depth-shifting"></A>'Depth shifting' trick for 3D inverse</B>
+             </P>
+             <UL>
+                 <P>
+                     This is discussed in the <A HREF="mri-display.html#depth-shift">
+                         MRI
+                         Depth Shifting topic
+                     </A> and in the <A HREF="potentials-maps-display.html#depth-shifting">
+                         Potential
+                         topic
+                     </A>.
+                 </P>
+                 <P>
+                     Be aware that <B>
+                         the shift only applies to the <A HREF="#IS-in-3D">
+                             3D
+                             Inverse Solutions
+                         </A>
+                     </B>, and neither to the <A HREF="#IS-on-2D">
+                         2D
+                         Inverse Solutions
+                     </A> nor the <A HREF="#cycle-mri">MRI</A> itself.
+                 </P>
+                 <P>
+                     See an example here, first picture is a clipped MRI and an IS without
+                     depth shifting. Second picture the MRI is not clipped and the IS are
+                     &quot;depth shifted&quot; on top. Note that in the latter case, you
+                     can see a little more detailed IS:
+                 </P>
+                 <P>
+                     <IMG SRC="images/is.no-depth-shift-is-right.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.depth-shift-is-right.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             </UL>
+         </UL>
+         <H2>
+             <A NAME="technical-points"></A>Inverse Solutions Display - Technical points
+         </H2>
+         <H3>
+             <A NAME="how-to-get-it"></A>How do I get this display?
+         </H3>
+         <P>
+             This display is actually <B>automatically generated</B> when enough
+             files have been <B><A HREF="general-concepts.html#linkingfiles">linked together</A></B>,
+             and therefore share enough informations.
+         </P>
+         <P>
+             There are two cases concerning the files:
+         </P>
+         <H4>
+             First case:
+         </H4>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     1 (or more) <B><A HREF="files-formats-others.html#eeg">EEG file(s)</A></B>
+                     (generally an <A HREF="files-formats-others.html#eeg-erp">ERP file</A>),
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     At least one <B>
+                         <A HREF="files-formats-cartool.html#is">
+                             inverse solution
+                             matrix file
+                         </A>
+                     </B>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     One <B><A HREF="files-formats-cartool.html#spi">solution points file</A></B>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     At least one <B><A HREF="files-formats-others.html#mri">MRI file</A></B>,
+                     containing a mask around the Grey matter;
+                 </P>
+                 <P>
+                     other MRIs with the Brain or Full Head are optionals, though they do
+                     improve the display quality.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Cartool will multiply the IS matrix with each time frames of each EEG
+             files, in real-time.
+         </P>
+         <H4>
+             Second case:
+         </H4>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     1 (or more) <B><A HREF="files-formats-cartool.html#ris">RIS file(s)</A></B>,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     One <B><A HREF="files-formats-cartool.html#spi">solution points file</A></B>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     At least one <B><A HREF="files-formats-others.html#mri">MRI file</A></B>,
+                     containing a mask around the Grey matter;
+                 </P>
+                 <P>
+                     other MRIs with the Brain or Full Head are optionals, though they do
+                     improve the display quality.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The <B>
+                 multiplication of the IS matrix and the EEG data has been done
+                 somewhere else
+             </B> (f.ex. with the <B>
+                 <A HREF="file-calculator.html#results-of-inverse">
+                     File
+                     Calculator
+                 </A>
+             </B>), and the <B>result</B> is stored in a RIS file.
+             This is usually faster to work with, but it lacks suppleness, as the
+             data are computed once for all.
+         </P>
+         <P>
+             It can be very useful, though, if you want to compute the inverse
+             solutions with your own recipe.
+         </P>
+         <H4>
+             Important points:
+         </H4>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Putting many EEG / RIS files will show <B>as many inverse windows</B>
+                     as there are of files.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Only <B>one solution points file is allowed</B>, and <B>
+                         it has to be
+                         absolutely the same one that has been used to build the IS matrix
+                     </B>
+                     you want to use. Missing this point will produce <B>totally wrong displays</B>.
+                     Only the one who actually built the IS matrix can certify which file
+                     has been used.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     You can put many IS matrices, but only one is active at a time. You
+                     can of course <A HREF="#cycle-is">toggle</A> between these matrices,
+                     so you can compare between different models.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A NAME="specifying-MRIs"></A>You have to put at least <B>1 MRI</B>,
+                     though <B>2 or 3</B> should be the usual case. The <B>first one</B>
+                     is mandatory, it <B>holds a </B><A HREF="mri-display.html#guessing-content"><B>mask</B></A>
+                     where non-zero values voxels specifies the grey-matter, and therefore
+                     where the IS will be actually <A HREF="#interpolation-4NN">
+                         computed
+                         and displayed
+                     </A>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The following MRIs can contain, for example, a segmented brain and a
+                     full head, so you can display the inverse solution in these spaces.
+                     Each of these MRIs must of course be co-registered.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>All the MRIs must match exactly the Solution Points geometry.</B>
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     You can also mix the two cases for linkings, that is, both EEG files
+                     with IS matrices and pre-computed RIS files.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Cartool is doing a lot of checkings to ensure you are on the safe
+                     side of this elaborated display. Though, only you can really assert
+                     that all these files finally match together (the solution points with
+                     the MRI space and the IS matrix).
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Recommended readings: the fabulous <A HREF="general-concepts.html#linkingfiles">
+                 <B>
+                     Linking
+                     Files
+                 </B>
+             </A> story, and the ignominous &quot;<B>
+                 <A HREF="general-concepts.html#slave_windows">
+                     Windows
+                     in Slavery
+                 </A>
+             </B>&quot; tale.
+         </P>
+         <H3>
+             <A NAME="how-to-matrix-IS"></A>How do I compute Inverse Solutions matrices?
+         </H3>
+         <P>
+             Either from the <A HREF="computing-inverse-solution-matrices.html"><B>Cartool toolbox</B></A>,
+             or from third-party applications.
+         </P>
+         <H3>
+             <A NAME="matrix-scal-vs-vect"></A>Matrix results: scalar or vectorial
+         </H3>
+         <P>
+             According to the model underneath the <A HREF="#how-to-matrix-IS">
+                 IS
+                 matrix you are using
+             </A>, the results at each solution points
+             location can either be some <B>signed scalar values</B>, or <B>vectors</B>
+             (direction plus intensity of the source). This is wired into the
+             matrix and can not be changed by Cartool!
+         </P>
+         <P>
+             It has the following consequences:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A HREF="#color-modes">Color maps</A> will account for the possible
+                     signed values.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     If results are signed scalar values, Cartool will produce <B>two isosurfaces</B>
+                     for the <A HREF="#IS-potatoes">3D IS</A>, one for the positive values
+                     alone, and the other one for the negative values alone. Each one will
+                     be colored differently, of course.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     If the results are vectors, Cartool currently only display the value
+                     of their <B>norms</B> (aka intensity). This is related to the <A HREF="#avg-precedence">
+                         averaging
+                         precedence
+                     </A> topic.
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="time-averaging"></A>Time Averaging&nbsp; <B><A HREF="general-concepts.html#slave-average"><IMG SRC="images/all.button.average-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></B>
+         </H3>
+         <P>
+             This is the same as the basic <A HREF="general-concepts.html#slave-average">
+                 Time
+                 Averaging
+             </A>.
+         </P>
+         <P>
+             Note however the potential effect of changing the <A HREF="#avg-precedence">
+                 <B>
+                     Averaging
+                     precedence
+                 </B>
+             </A>, which can lead to different results.
+         </P>
+         <H3>
+             <A NAME="time-sequence"></A>Time Sequence&nbsp; <B><A HREF="general-concepts.html#slave-sequence"><IMG SRC="images/all.button.sequence-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></B>
+         </H3>
+         <P>
+             This is the same as the basic <A HREF="general-concepts.html#slave-sequence">
+                 Time
+                 Sequence
+             </A>.
+         </P>
+         <P>
+             See a few typical examples here, with the relevant parameters also specified:
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A HREF="general-concepts.html#slave-sequence">Time Sequence</A> + <A HREF="#find-min-max-pos">
+                         <B>
+                             Finding
+                             Min / Max Slices
+                         </B>
+                     </A> + <A HREF="#auto-scaling">Auto color scaling</A>
+                     + <A HREF="#MRI-mode"><B>MRI display as volume</B></A> + <A HREF="#clipping-planes">
+                         <B>
+                             2
+                             Clipping planes
+                         </B>
+                     </A> =
+                 </P>
+                 <P>
+                     &nbsp;<IMG SRC="images/is.sequence-of-3d-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A HREF="general-concepts.html#slave-sequence">Time Sequence</A> + <A HREF="#find-min-max-pos">
+                         <B>
+                             Finding
+                             Min / Max Slices
+                         </B>
+                     </A> + <A HREF="#auto-scaling">Auto color scaling</A>
+                     + <A HREF="#MRI-mode"><B>MRI display as slice</B></A> + <A HREF="#clipping-planes">
+                         <B>
+                             1
+                             Clipping plane
+                         </B>
+                     </A> =
+                 </P>
+                 <P>
+                     &nbsp;<IMG SRC="images/is.sequence-of-2d-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A HREF="general-concepts.html#slave-sequence">Time Sequence</A> + <A HREF="#find-min-max-pos">
+                         <B>
+                             Finding
+                             Min / Max Slices
+                         </B>
+                     </A> + <A HREF="#auto-scaling">Auto color scaling</A>
+                     + <B><A HREF="#slice-mode">MRI display as 2D slices</A></B> + <B>
+                         <A HREF="#show-min-max">
+                             Show
+                             Max position
+                         </A>
+                     </B> =
+                 </P>
+                 <P>
+                     &nbsp;<IMG SRC="images/is.sequence-of-slices.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 </P>
+                 <P>
+                     Be aware that this last combination becomes <B>computationally expensive</B>!
+                     Use it either for a single <A HREF="windows-general-commands.html#keyboard-bitmapcopy">snapshot</A>,
+                     or <A HREF="mri-display.html#more-less-slices">
+                         reduce the number
+                         of slices
+                     </A>, and / or <A HREF="general-concepts.html#slave-less-frames">
+                         reduce
+                         the number of time frames
+                     </A>.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="time-animation"></A>Time Animation&nbsp; <B><A HREF="general-concepts.html#slave-animate"><IMG SRC="images/all.button.animate-time.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></B>
+         </H3>
+         <P>
+             This is the same as the basic <A HREF="general-concepts.html#slave-animate">
+                 Time
+                 Animation
+             </A>.
+         </P>
+         <P>
+             At the moment, the smoother animation will be by using the highly
+             optimized <A HREF="#slice-mode">Slice Mode</A>!
+         </P>
+         <H3>
+             <A NAME="IS-2D-and-IS-3D"></A>Combining 2D IS and 3D IS
+         </H3>
+         <P>
+             This is a possible, but not very useful, combination. That is why
+             most of the time, unless you really want it, Cartool makes 2D and 3D
+             IS exclusive (you can still force them together, though).
+         </P>
+         <P>
+             The <A HREF="#IS-on-2D">2D IS</A> applies only on the <A HREF="#clipping-planes">
+                 clipping
+                 planes
+             </A> or the <A HREF="#slice-mode">slices</A>, so it is more
+             restricted view than the <A HREF="#IS-in-3D">3D IS</A>. When you turn
+             on the 3D IS, then the 2D IS is switched off, because it does not
+             bring more informations, and increase the display time. However you
+             can bring it back by clicking again on the <A HREF="#IS-on-2D">2D IS button</A>,
+             which gives you both the planar and the 3D IS:
+         </P>
+         <P>
+             <IMG SRC="images/is.mri-and-flat-is-and-3D-is.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             Finally, also note that switching off the 3D IS will re-activate the
+             2D IS back.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="MRI-color"></A>Changing the color of the MRI
+         </H3>
+         <P>
+             All the <B><A HREF="#brightness">color options</A></B> within the IS
+             display <B>only apply to the Inverse Solutions</B> themselves.
+         </P>
+         <P>
+             Changing the <A HREF="#cycle-mri">MRI</A> coloring (changing the
+             brightness, or the color mode f.ex.) is done very simply by <B>
+                 switching
+                 to the related
+             </B><A HREF="mri-display.html"><B>MRI window</B></A>,
+             and do your changes there. The results are shown in real-time, so
+             you can easily tune your IS display:
+         </P>
+         <P>
+             <IMG SRC="images/is.mri-dark.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/is.mri-bright.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             A good hint: if you want only to change the <A HREF="mri-display.html#brightness">
+                 brightness
+                 / contrast of the MRI
+             </A>, you don't even need to make the window
+             active (&quot;clicking&quot; on it). It is enough to <B>
+                 use the <A HREF="windows-general-commands.html#brightness-contrast">right-click</A>
+                 above the MRI window
+             </B>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="interpolation-4NN"></A>Interpolating between solution points
+         </H3>
+         <P>
+             The <A HREF="computing-inverse-solution-matrices.html#SPs-extraction">Solution Points</A>
+             are actually a sub-sampling of the brain <A HREF="computing-inverse-solution-matrices.html#grey-mask">
+                 grey
+                 matter
+             </A>. To fill the spaces between the SPs, some kind of
+             interpolation is therefore needed.
+         </P>
+         <P>
+             A <strong>4 Nearest Neighbors (4NN)</strong> method is used,
+             due to its nice visual output.
+         </P>
+         <P>
+             Note that the interpolation is restricted to the <B>
+                 <A HREF="#specifying-MRIs">
+                     content
+                     of the grey mask
+                 </A>.
+             </B>
+         </P>
+         <P>
+             <IMG SRC="images/is.4NN-close-up.png" VSPACE="0" HSPACE="0" BORDER="0" height="269" width="324">
+         </P>
+         <P>
+             &nbsp;&nbsp;
+         </P>
+         <H3>
+             <A NAME="sp-regular-or-not"></A>Solution points distribution
+         </H3>
+         <P>
+             The <A HREF="files-formats-cartool.html#spi">solution points</A>, according to
+             which <A HREF="#how-to-matrix-IS">IS model is used</A>, can either be
+             placed with a <B>regular interval spacing</B>, or <B>arbitrarily distributed</B>
+             among the <A HREF="#specifying-MRIs">grey matter voxels</A>.
+         </P>
+         <P>
+             In fact, you shouldn't care that much about this, Cartool does it
+             best to handle both cases. However, in case of <B>
+                 non-regular
+                 solution points
+             </B>, the <A HREF="#IS-potatoes">3D IS isosurface rendering</A>
+             is <B>noticeably slower</B>, because it is computed in the full grey
+             matter space. The regular grid case, on the other hand, use this
+             property to compute the isosurface on a <B>
+                 downsampled version of the
+                 grey matter MRI
+             </B>.
+         </P>
+         <P>
+             See an example of regularly and non-regularly distributed solution
+             points (this is <I>not</I> a perspective distortion):
+         </P>
+         <P>
+             <IMG SRC="images/sp.regular-grid-spacing.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/sp.non-regular-grid-spacing.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

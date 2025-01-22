@@ -31,1621 +31,2130 @@
 }
   </style>
  </HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   Back-Fitting Template Maps</H1>
-  <P>
-   &nbsp;</P>
-  <P>
-   The back-fitting is about taking the results from the
-   <a href="microstates-segmentation.html">segmentation</a>, and back-fitting them to the 
-   subjects to be able to extract variables for statistics.</P>
-  <P>
-   &nbsp;</P>
-  <H5>
-   <A HREF="#fitting">Fitting template maps back to 
-   subjects data</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#fit-method">Method used for the Fitting</A></H5>
-   </UL>
-  <H5>
-   <A HREF="#fit-dialog">How to run the Fitting</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#fitting-files-dialog">Files Dialog</a><br>
-	<A HREF="#fitting-parameters-dialog">Parameters Dialog</a><br>
-	<A HREF="#fitting-results-dialog">Results Dialog</a></H5>
-   </UL>
-  <H5>
-   <A HREF="#technical-points">Technical points &amp; hints</A><br>
-   <A HREF="#fit-results">Results</A><br><A HREF="#fit-inv-sol">Fitting in the Inverse Solution space</A></H5>
-  <H2>
-   <A NAME="fitting"></A>Fitting template maps back to subjects data</H2>
-  <H3>
-   <A NAME="fit-method"></A>Method used for the Fitting</H3>
-  <P>
-   The idea here is to use the maps from the &quot;best&quot; 
-   segmentation of the Grand Means, and fit them back to the subject 
-   files, then apply some statistics on the results.</P>
-  <P>
-   Practically, this is simply <A HREF="microstates-segmentation.html#expl-labelling">this step</a> 
-   from the <a href="microstates-segmentation.html#k-means-clustering">K-Means segmentation</a> 
-   process, simply <B>assigning the map with the highest correlation</B> 
-   at each time frame and for each file.</P>
-  <H2>
-   <A NAME="fit-dialog"></A>How to run the Fitting</H2>
-  <P>
-   Called from the <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
-    | Fitting maps into EEG files</A></FONT> menu, a dialog in 3 parts appears:</P>
-  <h2>
-   <A NAME="fitting-files-dialog"></a>Fitting Files Dialog</h2>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <img alt="fitting files dialog" height="689" src="images/fit.dialog.files.png" width="697"></P>
-   <P ALIGN=CENTER>
-    &nbsp;</P>
-   </CENTER>
-  <P>
-   <TABLE WIDTH="100%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
-       <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <strong>(1) Templates to Fit</strong></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-       </tr>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B><A NAME="fitting-template"></A>Fit with Templates to File:</B></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       Give the <A HREF="files-formats-cartool.html#ep"><B><I>.ep</I></B></A> file that 
-	   contains the templates, 
-       usually <A HREF="microstates-segmentation.html#template-maps">generated</a> by the 
-	   <a href="microstates-segmentation.html">Segmentation
-        process</a>, that will be used for the fitting process.</P>
-      <P>
-       If you Drag &amp; Drop a single <A HREF="files-formats-cartool.html#ep"><B><I>.ep</I></B></A> file, this will be 
-	   assumed as the 
-       template file.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B><A NAME="fitting-groups"></A>(2) Groups of Files to be Fit</B></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       &nbsp;</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Read some important informations about the <A HREF="#fit-groups-of-files">meaning
-        of Groups</A> in the Fitting context.</P>
-      <P>
-       You can use the very convenient <A HREF="#files-drag-drop">Drag &amp; 
-       Drop feature</A> here.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Add New Group of Files</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Enter a new group of file(s).</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Remove Last Group</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Does what it says.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Clear All Groups</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Clear out all the groups at once.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Read Lists from File</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       You can direclty retrieve the lists of groups previously (see below).</P>
-      <P>
-       See also <A HREF="#files-drag-drop">Drag &amp; Drop</A>.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Write Lists to File</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       You can save the lists of current groups into a file, in case you 
-       want to re-use them (much recommended!).</P>
-      <P>
-       See the <A HREF="#file-list-format">file formats</A> available.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Sort Files within Lists</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       A strange behavior of Windows is to not respect the order of the 
-       files dropped in a window. To help cure this silly habit, you can 
-       sort all the file names of all the groups already entered.<P>
-       <strong>New:</strong> Cartool will sort your files if you use <A HREF="#files-drag-drop">
-	   Drag &amp; Drop</A>...</TD>
-    </TR>
-       <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <A HREF="#number-within-subjects">Number of Consecutive Groups within 
-	   Subjects:</a></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Default is to assume <strong>all dropped groups above are considered
-	   <A HREF="#number-within-subjects">within-subjects</a></strong>. The 
-	   within-subjects number of groups is therefore equal to the total number 
-	   of groups.<P>
-       If this is not the case, you can specify a smaller number of groups 
-	   within-subjects. F.ex. 8 groups of files, but first 4 are patients, last 
-	   4 controls, then you specify "4" as the number of consecutive 
-	   within-subjects.<P>
-       A few remarks:<ul>
-		  <li class="mvd-p">The number you set should be a integer divisor of 
-		  the total number of groups.</li>
-		  <li class="mvd-p">&nbsp;You can set the number to 1 in case of 
-		  across-subjects design.</li>
-		  <li class="mvd-p">This value is very important to compute the proper 
-		  normalization factors of all the extracted variables.</li>
-	  </ul>
-		   </TD>
-       </tr>
-       <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B><A NAME="epochs-to-fit"></a>(3) Epochs to fit</B></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       You can <B>restrict the time interval to be fit with some given maps</B>.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       From</TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       From time frame (included)</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       To</TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       To time frame (included)</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       with Maps</TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       A set of templates/maps for which the this epoch will be restricted to.<P>
-       &nbsp;Let it empty, or set 
-       to <B><FONT FACE="Courier New">*</FONT></B>, to use all the maps.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Add epoch</TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       Insert the specified epoch to the list.</P>
-      <P>
-       Don't forget to press on this button to enter the current values!</P>
-      <P>
-       If the list remains empty, the fitting process will be run on the 
-       whole files. Otherwise you can enter a serie of time ranges to 
-       restrict the fitting, but <B>the epochs can not overlap</B>.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Remove epoch</TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       Remove last epoch from the list.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B>(4) Output Options</B></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       <I>&nbsp;</I></TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Output Base File Name</TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       Specify here a <B>basis for all the file names</B> that will be 
-       generated during the segmentation process.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Output Segmentation Files:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Saving a <A HREF="microstates-segmentation.html#segment-output">visual representation</a> of the fitting as a segmentation file. If 
-	   you used <A HREF="#epochs-to-fit">different epochs</a>, they will be all 
-	   merged together for display (they are forbidden to overlap).</P>
-	  <P>
-       Meaningful 
-       only if you run a <A HREF="#competitive-param">competitive</A> 
-       fitting process.</P>
-	  <P>
-       Files are located in the <em><strong>More</strong></em> subdirectory.</P>
-      <P>
-       Also see the <B><I><A HREF="files-formats-cartool.html#seg">.seg</A></I></B> specification.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Output Other Files:<br>Data per Cluster</TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       This option will <strong>save the clusters of maps</strong>. There will 
-	   be a file for each cluster, and for each subject, with all the data 
-	   assign to a given cluster.<P>
-       Note that this will basically take the same amount of space as your input 
-	   data (minus the optional bad epochs).<P>
-       This is a very handy option to later compute the localization of each 
-	   template map, for each subject.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Temp Files:<br>Delete Preprocessed Files</TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       Subjects' data could be preprocessed, f.ex. with Spatial Filter and / or 
-	   GFP Normalization. With this option, these files are discarded after use 
-	   (the default).</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP></TD>
-     <TD WIDTH="70%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use these buttons to <B>navigate through the previous and next dialogs</B> 
-       (if any).</P>
-      <P>
-       See which current dialog you are in, and to which other dialogs you 
-       connect, in the <B>tab-like</B> part at the top of the dialog under 
-       the title.</P>
-      	 </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       <B>Process</B></TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Runs the fitting.</P>
-      <P>
-       This button remains <B>disabled until <U>all</U> the parameter 
-       dialogs have received enough (and consistent) informations</B>.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       Cancel</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Quit the dialog.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       Help</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Launch the Help to the right page (should be here...).</TD>
-       </tr>
-   </TABLE></P>
-  <h2>
-   <A NAME="fitting-parameters-dialog"></a>Fitting Parameters Dialog</h2>
-  <P class="auto-style1">
-   <img alt="fitting parameters dialog" height="689" src="images/fit.dialog.parameters.png" width="697"></P>
-  <P>
-   &nbsp;</P>
-   <TABLE WIDTH="100%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B>Presets:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       This is handy to quickly set the main parameters according to the 
-       most frequent uses, listed in the drop-down box.</P>
-      <P>
-       The most important parameters will be set, still <B><I>some 
-       parameters have to be set manually!</I></B> And, as usual, double 
-       check that all your settings make sense...</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-       </tr>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%; height: 30px;">
-      <P>
-       <B>(1) Data Preprocessing</B></TD>
-     <TD WIDTH="74%" VALIGN=TOP style="height: 30px">
-      <P>
-       It is better to preprocess your files once and for all. In case this was 
-	   not the case, this is your last chance to apply these preprocessing 
-	   before the actual fitting.</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       <A HREF="eeg-display.html#spatial-filter">Spatial Filter</a>, using XYZ file:</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Applying a <A HREF="eeg-display.html#spatial-filter">Spatial Filter</a> to the 
-	   data, to <strong>remove outliers</strong> and <strong>smooth out the 
-	   noise</strong>.<P>
-       Be careful, avoid using this this filter more than 
-	   once! <strong>If your EEG preprocessing pipe-line already included 
-	   the Spatial Filter, you shouldn't use it here!</strong> Cartool tries to be 
-	   smart here, if your files contain the characters "Spatial" in their 
-	   names, it will automatically disable this option.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP></TD>
-     <TD WIDTH="70%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B>Data level normalization</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       This will rescale the data from each file by a given factor.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       None</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       No rescaling.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <A NAME="GFP-normalization"></a>Mean Gfp</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       According to the <A HREF="#number-within-subjects">Number of Consecutive 
-	   Groups within Subjects</a> parameter, the <strong>median GFP across all 
-	   within-subject files</strong> is computed and used for normalization. 
-	   This helps in reducing the inter-subjects variability.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       Excluding Bad Epochs:</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Select this option to <strong>skip some time periods from your data</strong>. 
-	   Data preprocessing is never perfect, and some parts of the data should 
-	   still be ignored.<P>
-       Note that this step is done after the GFP Max, and before the resampling.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       Automatic</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <p>Cartool has a bad epochs automatic detection (you might want to give it 
-	  a try from the <a href="eeg-display.html">EEG Window</a>, under <strong>
-	  Markers|Scanning Bad Markers</strong> menu).</p>
-	  <p>This option is seen as a last chance before the clustering. It would 
-	  definitely be better to run the detection before, <em>then</em> visually 
-	  assess the bad epochs, <em>then only</em> run the clustering.</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       At Markers</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Give the marker names of the bad epochs to be ignored.<P>
-       Either somebody did put some markers manually to isolate the bad epochs, 
-	   or have already run the automatic bad epochs detection.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B>(2) Labeling Parameters</B></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-       </tr>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B>Data Type:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Only Positive</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Data consist of <B>positive only, scalar data</B>. This could be 
-       spikes from neuron recordings, or the Results of Inverse Solution, f.ex.</P>
-      <P>
-       This will logically turn off the <I>Polarity</I> &amp; <I>References</I> options.</P>
-      <P>
-       See this <A HREF="computing-statistics.html#param-positive-data">point on 
-       positive data</A> and also <A HREF="terms-definitions-formulas.html#data-types">this point</A>.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Signed</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       <B>Signed scalar values</B>, like, you know, EEG.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Vectorial</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Used on <a href="computing-ris.html">Inverse Solution</a>&nbsp;
-        <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B> data files, 
-       when the results are vectors for each solution points.</P>
-      <P>
-       See this point about <A HREF="#fit-inv-sol">fitting in the Inverse 
-       Solution space</A>.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B>Data reference</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       No Reference</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Data are used as they come from files, no changes occur.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Average Reference</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Data are <A HREF="terms-definitions-formulas.html#formulas">average reference</A>-d.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B>Maps / Patterns Polarity:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Ignore</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Polarity of maps does not matter, so ignore it. Inverted maps are 
-       considered the same (same underlying generators, but with reversed polarity).</P>
-      <P>
-       Used for spontaneous EEG recordings.</TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Account</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Polarity of maps matter, that is, inverted maps are indeed considered 
-       as different.</P>
-      <P>
-       Used for ERPs.</TD>
-    </TR>
-       <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B><A NAME="competitive-param"></A></B>To avoid missing values:<B><br>Use a Non-Competitive Fitting</B></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       When <B>off</B>, all the maps <B>compete with each others</B> to be 
-       elected as the best fitting one for a given time frame. As only one 
-       map can win, the labeling is therefore a competitive process. This is 
-       the default.</P>
-      <P>
-       When <B>on</B>, it gives each map an exclusive access to the data, 
-       the labeling is therefore run on the <B>whole file with a single map 
-       at a time</B>. The process is repeated for each map. This is useful 
-       to produce variables with non-missing values for later statistics.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       <A NAME="min-correlation"></a>Labeling at Low Correlations:<br><strong>No Labeling if Below</strong></TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       If selected, you can specify a <strong>minimum correlation threshold</strong> 
-	   for data points to be <strong>assigned to a given cluster</strong>.<P>
-       <strong>Default correlation threshold is set to 50%</strong>, which is 
-	   quite conservative.<P>
-       See this <A HREF="microstates-segmentation.html#outliers-rejection">outliers rejection paragraph</a>.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B>(3) Temporal Postprocessing</B></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       <B><A HREF="#temporal-smoothing">Segments Temporal Smoothing</A></B></TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Redo the <A HREF="#expl-labelling">labeling</A>, but with a <A HREF="#temporal-smoothing">temporal
-        smoothing factor</A>.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       Window Half Size:</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       The temporal smoothing operates with a sliding window, which you 
-       specify here the half size (in time frames). The actual window size 
-       is therefore ( 2 x W + 1 ).</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       Strength (Besag Factor):</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Strength <IMG SRC="images/formul21.png" WIDTH="11" HEIGHT="16" VSPACE="0" HSPACE="0" BORDER="0"> 
-       of the smoothing, actually the Besag factor from the article on the 
-       segmentation process.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       <B><A HREF="#small-maps-reject">Rejecting Small Segments</A></B></TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Deletes short segments, and fuse them with their 2 respective neighbors.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       Shorter than or equal to:</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Size below which a segment is removed.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use these buttons to <B>navigate through the previous and next dialogs</B> 
-       (if any).</P>
-      <P>
-       See which current dialog you are in, and to which other dialogs you 
-       connect, in the <B>tab-like</B> part at the top of the dialog under 
-       the title.</P>
-      	 </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       <B>Process</B></TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Runs the 
-	   fitting.</P>
-      <P>
-       This button remains <B>disabled until <U>all</U> the parameter 
-       dialogs have received enough (and consistent) informations</B>.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       Cancel</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Quit the dialog.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       Help</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Launch the Help to the right page (should be here...).</TD>
-       </tr>
-   </TABLE>
-  <h2>
-   <A NAME="fitting-results-dialog"></a>Fitting Results Dialog</h2>
-  <P class="auto-style1">
-   <img alt="fitting parameters dialog" height="689" src="images/fit.dialog.results.png" width="697"></P>
-  <P class="auto-style4">
-   &nbsp;</P>
-   <TABLE WIDTH="100%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <B>(1) Variables to Extract</B></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       See <A HREF="#variable-names">here all the <strong>variables</strong></A> that 
-	   can be computed, <B>for each subject and for 
-       each template map</B>.</P>
-	  <P>
-       Note that you can be more selective than taking all variables (though it 
-	   doesn't hurt), according to your paradigm, some variables might not make 
-	   sense at all!</P>
-	  <P>
-       Also some of them will be unavailable in case of
-	   <A HREF="#competitive-param">non-competitive fitting</a>.</P>
-      <P>
-       See this note about the <A HREF="#fit-results-format">format of the 
-       array of results</A>.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       All On<br>All Off</P>
-		</TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       What is says, turns on / off all variables at once.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP></TD>
-     <TD WIDTH="70%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <A NAME="output-data-layout"></a>Data Layout in Worksheet Files:</TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       You currently have 2 (non-exclusive) ways of outputting the 
-	   multi-dimensional resulting data.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <strong>Lines As Samples</strong></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       This is a <A HREF="#csv-lines-as-samples">multiplexed format</a> that can 
-	   be read by <em>Cartool</em>, <em>Statistica,</em> <em>Excel</em>. etc...<P>
-       Each line correspond to an input file, then all columns (a <em>lot</em>) 
-	   will contain the variables.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <strong>Columns As Factors</strong></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       This is an <A HREF="#csv-columns-as-factors">indexed array</a> that can 
-	   be read by R.<P>
-       There are some columns that hold the indexes, then the other columns that 
-	   hold the factors themselves.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="68%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Splitting Results into Files</TD>
-     <TD WIDTH="68%" VALIGN=TOP>
-      <P>
-       You can also refine how many files to write with these 2 independent 
-	   options.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <strong>Force 1 File per Group</strong></TD>
-     <TD WIDTH="68%" VALIGN=TOP>
-      <P>
-       <strong>1 output file for each group of input file</strong>. This is now 
-	   the default, as it is more handy to manipulate for statistics.<P>
-       When option is off, it will pack all
-	   <A HREF="#number-within-subjects">within subjects groups</a> into a 
-	   single file.<P>
-       This can be combined with splitting the variables option below.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <strong>Force 1 File per Variable</strong></TD>
-     <TD WIDTH="68%" VALIGN=TOP>
-      <P>
-       1 output file for each computed variable. Not recommended, as it may 
-	   create a lot of files.<P>
-       When option if off, all variables are saved into the same file.<P>
-       This can be combined with splitting the group option above.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Force
-       Short Variable Names</TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       Choose between long (and more explicit) or short (cryptic) variable names.</P>
-      <P>
-       See <A HREF="#variable-names">this note</A> and this one about the <A HREF="#fit-results-format">format
-        of the array of results</A>.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="68%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <strong><A NAME="computing-Markov-Chains"></a>(2) <a href="#markov">Markov Chains</a></strong></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Joints States Probabilites</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Used to study the transitions from between states.<P>
-       <a href="#markov">See this paragraph</a>.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Transition Matrices</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Used to study the transitions from between states.<P>
-       <a href="#markov">See this paragraph</a>.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       Number of Transitions ahead:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Number of forward transitions to take into account.<P>
-       This only compute the <strong>probabilities from the current state to the
-	   </strong> <em><strong>n</strong></em><sup><span class="auto-style2"><em><strong>th</strong></em></span></sup><strong>-next 
-	   state</strong>, and <em>not</em> the order of the Markov Chains 
-	   (all combinations of <em>n</em><sup><span class="auto-style2"><em>th</em></span></sup> 
-	   to previous states, to current one).</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP></TD>
-     <TD WIDTH="70%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <strong>(3) Resting States</strong></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       These options apply to spontaneous type of data only.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <A HREF="#duration-histograms">Save Durations Histograms</a></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       What it says.<P>
-       There will be 2 histograms per map for each subject, one with <strong>
-	   <A HREF="#duration-histograms">linear time scale</a></strong>, and one with<strong> 
-	   <A HREF="#duration-histograms">log time scale</a></strong>. 
-	   Then another 2 histograms per map, but for all subjects together.</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <A NAME="output-segments-frequency"></a>
-	   <a href="#segments frequency" name="output segments frequency">Save Segments Frequency</a></TD>
-     <TD WIDTH="68%" VALIGN=TOP>
-      <P>
-       This option will <A HREF="#segments-frequency">create new files</a>, with the number of templates as number 
-	   of tracks, and each input file original time scale. The tracks will be 
-	   filled with a <strong>raised cosine bump at each segment location</strong>, 
-	   so that repeating segments will appear as a sine wave, which frequency is 
-	   related to the duration of each segment.<P>
-       Any type of <a href="frequency-analysis.html">frequency analysis</a> can 
-	   then be applied on these files.<P>
-       These files are located in the <em><strong>Segments 
-	   Frequency</strong></em> subdirectory.</P>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%">
-      <P>
-       <A NAME="output-correlation-of-data"></a>
-	   <a href="#correlation output" name="output correlation of data">Save Correlations of Data and 
-	   Maps</a></TD>
-     <TD WIDTH="74%" VALIGN=TOP>
-      <P>
-       Saving for each input file the <A HREF="#correlation-output">correlation with each template map</a>.</P>
-	  <P>
-       F.ex. if you give 10 maps to be fit, the output will have the number 
-	   of time frames of the original files, and 10 tracks showing the 
-	   correlation of each map for the current time frame.</P>
-	  <P>
-       These files are located in the <em><strong>Correlations</strong></em> subdirectory.</P>
-		</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use these buttons to <B>navigate through the previous and next dialogs</B> 
-       (if any).</P>
-      <P>
-       See which current dialog you are in, and to which other dialogs you 
-       connect, in the <B>tab-like</B> part at the top of the dialog under 
-       the title.</P>
-      	 </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       <B>Process</B></TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Runs the 
-	   fitting.</P>
-      <P>
-       This button remains <B>disabled until <U>all</U> the parameter 
-       dialogs have received enough (and consistent) informations</B>.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       Cancel</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Quit the dialog.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="30%" VALIGN=TOP>
-      <P>
-       Help</TD>
-     <TD WIDTH="70%" VALIGN=TOP>
-      <P>
-       Launch the Help to the right page (should be here...).</TD>
-       </tr>
-   </TABLE>
-  <H2>
-   <A NAME="technical-points"></A>Fitting - Technical points &amp; hints</H2>
-  <H4>
-   <A NAME="fit-groups-of-files"></A>Groups of Files in the Fitting</H4>
-  <P>
-   Groups of files can be of the <strong>same size or be of different sizes</strong>, depending 
-   on you experiment and the type of statistics you are going to use.</P>
-  <P>
-   If your groups have different size, meaning the number of subjects is not the 
-   same across groupsn, then Cartool will force set the
-   <A HREF="#number-within-subjects">within-subjects parameter</a> to 1.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   The <strong>fitting is optimized</strong> to have the lowest memory footprint 
-   and highest computation speed, and will load only the <strong>
-   absolute necessary files into memory at nay given time</strong>. This allows you to have 
-   any arbitrarily big groups of files to fit, even if they are original recording 
-   (which can be large by themselves).</P>
-  <h4>
-   <A NAME="number-within-subjects"></a>Number of consecutive within-subjects 
-   groups</h4>
-  <P>
-   ('Group' here means a group of file you dropped in, and shown as such in the 
-   list box)</P>
-  <P>
-   <strong>A set of groups can</strong> (and actually should be) <strong>grouped 
-   together</strong> if they were part of a <strong>within-subjects paradigm</strong>. 
-   Practically, this means that all the files from these groups were recorded 
-   from identical subjects, row-wise speaking. It also implies that these groups 
-   have the same number of files. F.ex. a paired experiment will be grouped by 
-   2.</P>
-  <P>
-   Once Cartool knows how many af these groups have to to joined together, it 
-   will <strong>compute the normalization part</strong> (denominator part of the 
-   equations) of the <strong><a href="terms-definitions-formulas.html#GEV">GEV</a></strong>&nbsp; and
-   <strong>GFP normalization </strong>with all subject's files together. Again 
-   for a paired experiment, the 2 files of a subject are used to compute the sum 
-   of the squares of map, and the sum of GFP, which are therefor used to compute 
-   the GEV and normalize by GFP respectively.</P>
-  <P>
-   Failing to define properly the parameter will lead to a wrong normalization 
-   of the data. If on the file has one more big component, it will relatively 
-   make the other components looking artificially weaker, and hence could 
-   produce erroneous positive tests on these components with their apparent 
-   intensities difference.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Cartool will suggest using the biggest denominator across all current groups' 
-   sizes for this parameter. But you should check this is correct according to 
-   your experiment design. With our example of a paired experiment, if you 
-   dropped 4 files, and they are grouped by 2, then Cartool will run the fitting 
-   on the groups 1 and 2 together, and then independently on the groups 3 and 4 
-   together.</P>
-  <H4>
-   <A NAME="variable-names"></A>Variable names</H4>
-  <P>
-   The full variable names can have two different formats, namely the 
-   short and the long versions. Choose the version according to the 
-   program you are going to send the results to, though I think the long 
-   version is clearer (Cartool can read both, however).</P>
-  <P>
-   Variable names always consist of 3 parts joined together by a 
-   &quot;_&quot; (underscore):</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    The group index<BR>
-    <LI CLASS="mvd-P">The map / cluster index<BR>
-    <LI CLASS="mvd-P">The variable computed</P>
-   </UL>
-  <P>
-   So f.ex.:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Long: <B>Group1_Map1_NumTF</B>, <B>Group1_Map2_NumTF</B>, <B>Group1_Map1_MaxGfp</B>...<BR>
-    <LI CLASS="mvd-P">Short: <B>G1_M1_N</B>, <B>G1_M2_N</B>, <B>G1_M1_X</B>...</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   The <B>variables that can be computed</B> are currently the 
-   following. They can be further processed with <A HREF="computing-statistics.html">Cartool
-    Statistics</A>, or the tools of your choice:</P>
-  <P>
-   &nbsp;</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="80%" CELLPADDING="2" CELLSPACING="0" class="auto-style7">
-        <tr>
-      <th VALIGN=TOP class="auto-style11" style="width: 20%">
-       <strong>Variable</strong></th>
-      <th VALIGN=TOP class="auto-style11" style="width: 52%">
-       <strong>Meaning</strong></th>
-      <th VALIGN=TOP class="auto-style11" style="width: 20%">
-       <strong>Unit</strong></th>
-      <th VALIGN=TOP class="auto-style11" style="width: 8%">
-       <strong>Missing Value</strong></th>
-        </tr>
-     <TR>
-      <TD VALIGN=TOP class="auto-style9" style="width: 20%">
-       <P>
-        <strong>First Onset</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        The <B>first time frame of appearance</B>, for a given map and a 
-        given file.</P>
-		 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Time frame</P>
-         </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        -1</TD>
-     </TR>
-     <TR>
-      <TD VALIGN=TOP class="auto-style9" style="width: 20%">
-       <P>
-        <strong>Last Offset</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        The <B>last time frame of appearance</B>, for a given map and a given 
-		file.</P>
-		 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Time frame</P>
-         </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        -1</TD>
-     </TR>
-     <TR>
-      <TD VALIGN=TOP class="auto-style9" style="width: 20%">
-       <P>
-        <strong>Number of TFs</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        Total <B>number of time frames of appearance</B>, for a given map and 
-        a given file.</P>
-		 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Time frame</P>
-         </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        0</TD>
-     </TR>
-        <tr>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        <strong>Mean Correlation</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        <strong>Mean correlation</strong>, for a given map and a given file.</TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        No unit<br>range in [-1..1]</P>
-       	 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        -1</P>
-       	 </TD>
-        </tr>
-     <TR>
-      <TD VALIGN=TOP class="auto-style9" style="width: 20%">
-       <P>
-        <strong>GEV</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        <A HREF="terms-definitions-formulas.html#GEV"><B>Global Explain Variance</B>, 
-        contribution <a href="microstates-segmentation.html#GEV">splitted for each map</a>, for a given file.</P>
-		 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        No unit<br>range in [-1..1]</P>
-         </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        0</P>
-         </TD>
-     </TR>
-        <tr>
-      <TD VALIGN=TOP class="auto-style9" style="width: 20%">
-       <P>
-        <strong>TF of Centroid</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        The <B>GFP-weighted mean time frame position</B>, for a given map and a 
-		given file.</P>
-			</TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Time frame</P>
-       	 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        -1</P>
-       	 </TD>
-        </tr>
-     <TR>
-      <TD VALIGN=TOP class="auto-style9" style="width: 20%">
-       <P>
-        <strong>Best Correlation</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        <B>Highest </B><A HREF="terms-definitions-formulas.html#correlation"><B>Correlation</B></A> 
-        value encountered, for a given map and a given file...</P>
-         </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        No unit<br>range in [-1..1]</P>
-         </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        -1</P>
-         </TD>
-     </TR>
-     <TR>
-      <TD VALIGN=TOP class="auto-style9" style="width: 20%">
-       <P>
-        <strong>TF of Best Correlation</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        ...and its <B>position</B>...</P>
-		 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Time frame</P>
-         </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        -1</P>
-         </TD>
-     </TR>
-     <TR>
-      <TD VALIGN=TOP class="auto-style9" style="width: 20%">
-       <P>
-        <strong>Gfp of TF of Best Correlation</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        ...and the <B>Gfp</B> value at that position.</P>
-		 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Identical to input data, usually [milli-volts]</P>
-         </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        -1</P>
-         </TD>
-     </TR>
-        <tr>
-      <TD VALIGN=TOP class="auto-style9" style="width: 20%">
-       <P>
-        <strong>Max Gfp</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        The <B>max Gfp over the segment fit by a given map...</P>
-       	 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Identical to input data, usually [milli-volts]</P>
-       	 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        0</P>
-       	 </TD>
-        </tr>
-		<tr>
-      <TD VALIGN=TOP class="auto-style9" style="width: 20%">
-       <P>
-        <strong>TF of Max Gfp</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        ...and its <B>position</B>.</P>
-			</TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Time frame</P>
-       	 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        -1</P>
-       	 </TD>
-        </tr>
-		<tr>
-      <TD VALIGN=TOP class="auto-style9" style="width: 20%">
-       <P>
-        <strong>Mean Gfp</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        The <B>mean G over the segment fit by a given map.</P>
-       	 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Identical to input data, usually [milli-volts]</P>
-       	 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        0</P>
-       	 </TD>
-        </tr>
-     <TR>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        <strong>Mean Duration</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        <strong>Mean length of segments</strong>.</P>
-		 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Millisecond<br>(older version was in time frame)</P>
-         </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        0</P>
-         </TD>
-     </TR>
-     <TR>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        <strong>Time Coverage</strong></TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        <strong>Percentage in time coverage</strong>, i.e. the number of time 
-		frames for each template divided by the total number of labeled time frames</P>
-		 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Percentage [0..100]<br>(older version was in range [0..1])</P>
-		 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        0</P>
-         </TD>
-     </TR>
-     <TR>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        <strong>Segment Count Density<br></strong><em>Occurences per second</em> 
-		in some papers</TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 52%">
-       <P>
-        <strong>Number of segments divided by the total labeled duration.</strong></P>
-		 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 20%">
-       <P>
-        Count per second, <strong><em>not</em></strong> a frequency!<br>(older 
-		version was in 
-		count per time frame)</P>
-		 </TD>
-      <TD VALIGN=TOP class="auto-style10" style="width: 8%">
-       <P>
-        0</P>
-         </TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <H4>
-   <a name="markov"></a>Markov Chains</H4>
-  <P>
-   The aim is to compute statistics on the transitions probabilities, to show
-   <strong>some kind of syntax in the sequences of micro-states</strong>. These
-   <strong>transitions are computed from the segments</strong> (all consecutive 
-   time points of identical label stands for 1 state), and <em>not</em> on the 
-   time frame level.</P>
-  <P>
-   Cartool will output various Worksheets <strong><em>.csv</em></strong> files 
-   which contain, for each subject, either the <strong>expected probability from 
-   going to segment A to segment B</strong>, or the <strong>observed probability 
-   from the data</strong>. Then we can compare the two statistically. The 
-   expected probabilities are theoretical values based on the count of segments 
-   for each template map. While the observed probabilities come from actually 
-   scanning the transitions from each and every segment to all the others.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Cartool will output 2 types of probabilities, the difference between the two 
-   being how the probabilities are normalized:</P>
-  <ul>
-	  <li class="mvd-p"><strong>Markov probabilities</strong>: the <strong>sum 
-	  of all probabilities for each line of the transition matrix is equal to 1</strong>.<br>
-	  F.ex. showing below the observed values (6 maps + Unlabeled):<br>
-	  <img height="182" src="images/fit.markov.observed.png" width="422"></li>
-	  <li class="mvd-p"><strong>Joint States Probabilities</strong>: the <strong>
-	  sum of all probabilities of the whole transition matrix is equal to 1</strong>.<br>
-	  F.ex. showing below the observed values (6 maps + Unlabeled):<br>
-	  <img height="182" src="images/fit.jsp.observed.png" width="422"></li>
-  </ul>
-  <p>&nbsp;</p>
-  <P>
-   <em>Note 1:</em> In case a <A HREF="#min-correlation">minimum correlation 
-   threshold has been set</a>, we end up with an additional "state", the one 
-   with undefined labeling. Undefined data points are the one which don't 
-   correlate well enough to any template maps. It is a sort of "garbage" 
-   cluster, so to speak. It behaves like a regular cluster for all the 
-   transition probabilities computation, though.</P>
-  <P>
-   <em>Note 2:</em> The number of transitions ahead is which segment is 
-   considered the one to compute the transition to. Default is 1, which means 
-   the next segment. If you set to a higher value, like 2, the second-next 
-   segment will be used. This is <em>not</em> the traditional Markov order.</P>
-  <H4>
-   <A NAME="duration-histograms"></a>Duration histograms</H4>
-  <P>
-   Two files per subject are outputed, one with linear and one with log time 
-   scale:&nbsp;</P>
-  <P class="auto-style5">
-   <img height="246" SRC="images/fit.duration-histo.linear.png" width="730"></P>
-  <P class="auto-style5">
-   <img height="246" SRC="images/fit.duration-histo.log.png" width="732"></P>
-  <P>
-   You can run statistics on the duration histograms.</P>
-  <H4>
-   <A NAME="segments-frequency"></a>Segments frequency</H4>
-  <P>
-   This option will create a new time line for each map (top picture), where each 
-   segment (bottom picture) is replaced by a raised cosine bump. Here you can 
-   focus at map 1 as a good example:</P>
-  <P class="auto-style5">
-   <img height="293" SRC="images/fit.segments-frequency.1.png" width="814"></P>
-  <P class="auto-style5">
-   <img height="245" SRC="images/fit.segments-frequency.2.png" width="815"></P>
-  <P>
-   This can be used for frequency analysis.</P>
-  <H4>
-   <A NAME="correlation-output"></a>Correlation output</H4>
-  <P>
-   Across time correlation shows the <strong>correlation between each template 
-   map and every data point</strong>. Values are within the [0..1] range:</P>
-  <P class="auto-style5">
-   <img height="352" src="images/fit.correlation.time.png" width="815"></P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Once we have these time lines, we can again correlate them. This will show
-   <strong>how each correlation time course looks similar to the other ones</strong> 
-   (which is not to be confused with the correlation between maps):</P>
-  <P class="auto-style5">
-   <img height="171" src="images/fit.correlation.maps.png" width="264"></P>
-  <H2>
-   <A NAME="fit-results"></A>Fitting - Results</H2>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    A <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I> <B>verbose</B> file, 
-	containing all the parameters being used, plus the GFP normalization factors 
-	computed 
-	per file(s), if the <A HREF="#GFP-normalization">option was selected</a>.</P>
-	  <LI CLASS="mvd-P">
-      <P>
-      A copy of the input templates <I><a href="files-formats-cartool.html#ep"><B>.ep</B></a></I> 
-	  and its corresponding <I><A HREF="files-formats-cartool.html#seg"><B>.seg</B></A></I> 
-	  files.</P>
-	  <LI CLASS="mvd-P">
-      <P>
-      Then <strong>for each group of files</strong>:<br><br></P>
-      <UL>
-		  <LI CLASS="mvd-P">
-		  <P>In the root directory, <A HREF="#output-data-layout">1 or <em>n</em></a> <I><A HREF="files-formats-cartool.html#csv"><B>.csv</B></A></I> files,<br>
-		  <strong><I>&nbsp;&nbsp;&nbsp; 
-		  &lt;basefilename&gt;.Group&lt;#&gt;.LinesAsSamples.csv</I></strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and / or<br>
-		  <strong><I>&nbsp;&nbsp;&nbsp; 
-		  &lt;basefilename&gt;.Group&lt;#&gt;.FactorsAsColumns.csv<br></I></strong>each 
-		  file containing all the output variables, arranged 
-		  in <A HREF="#fit-results-format">different layouts</a> to match your 
-		  analysis tools.<br></P>
-		  <LI CLASS="mvd-P">
-		  <P>In the root directory,<br>&nbsp;&nbsp;&nbsp; <I><strong>&lt;basefilename&gt;.Group&lt;#&gt;</strong><A HREF="files-formats-cartool.html#seg"><B>.seg</B></A></I> 
-    	  <br>is the labeling file of all subjects together (only in case of 
-		  non-competitive fitting BTW)<br></P>
-		  <LI CLASS="mvd-P">
-		  <P>In the <em><strong>Segmentations</strong></em> directory,<I><strong><br>&nbsp;&nbsp;&nbsp; &lt;basefilename&gt;.Group&lt;#&gt;.Subj&lt;#&gt;</strong><A HREF="files-formats-cartool.html#seg"><B>.seg</B></A></I> 
-		  <br>contain labeling split by subject.<br></P>
-		  <LI CLASS="mvd-P">
-		  <P>In the <strong><em>Data Clusters</em></strong> directory,<br>&nbsp;&nbsp;&nbsp; <I><strong>&lt;basefilename&gt;.Subject&lt;#&gt;.&lt;original 
-		  file name&gt;.Cluster&lt;#&gt;.*.sef</strong></I><br>contain all the maps 
-		  assign to a given cluster.<br></P>
-		  <LI CLASS="mvd-P">
-		  <P>In the <em><strong>Markov Chains</strong></em> directory, and in case of 
-		  <A HREF="#computing-Markov-Chains">Markov output</a>,</P>
-		  <UL>
-			  <LI CLASS="mvd-P">
-			  <P><I><strong>&lt;basefilename&gt;.Group&lt;#&gt;.MarkovChains&lt;#&gt;.*.csv</strong></I> 
-			  files .<br>Each 
-			  file contains the probabilities of&nbsp; transitions (template<sub><span class="auto-style2"><em>i</em></span></sub> &rarr; 
-			  template<sub><span class="auto-style2"><em>j</em></span></sub>), 
-			  with 1 file for each step ranging from 1 to the maximum set in the 
-			  parameters.<br>The format of the <strong><em>.csv</em></strong> 
-			  follows <A HREF="#output-data-layout">these options</a>.</P>
-			  <LI CLASS="mvd-P">
-			  <P><I><strong>&lt;basefilename&gt;.Group&lt;#&gt;.MarkovChains.freq</strong></I> 
-			  files.<br>These are the same data as the above <strong><em>.csv</em></strong> 
-			  files, but all transitions are stored (trick) into a <strong><em>.freq</em></strong> file. In this case, the &quot;frequency&quot; dimension 
-			  will hold the transitions dimension, the &quot;time&quot; dimension will 
-			  will hold the subjects index dimension.<br></P>
-		  </UL>
-		  <LI CLASS="mvd-P">
-		  <P>In the <strong><em>Histograms Duration</em></strong> directory,<br>&nbsp;&nbsp;&nbsp;
-		  <I><strong>&lt;basefilename&gt;.Subject&lt;#&gt;.HistoDuration.Lin.sef</strong></I>&nbsp;&nbsp; 
-		  and<I><strong><br>&nbsp;&nbsp;&nbsp; &lt;basefilename&gt;.Subject&lt;#&gt;.HistoDuration.Log.sef</strong></I>
-		  <br>contain the histograms of segments' durations.<br></P>
-		  <LI CLASS="mvd-P">
-		  <P>In the <em><strong>Segments Frequency</strong></em> directory, and 
-		  in case of <A HREF="#output-segments-frequency">segments frequency 
-		  output</a>, <I><strong><br>&nbsp;&nbsp;&nbsp; &lt;basefilename&gt;.Group&lt;#&gt;.Subj&lt;#&gt;.SegFreq.sef</strong></I><br>files 
-		  hold the segments coded as bumps, with 1 track per template, 
-		  reflecting the frequency of the fit templates.<br></P>
-		  <LI CLASS="mvd-P">
-		  <P>In the <em><strong>Correlations</strong></em> directory, and in case of
-		  <A HREF="#output-correlation-of-data">correlation output</a>,<I><strong><br>&nbsp;&nbsp;&nbsp; &lt;basefilename&gt;.Group&lt;#&gt;.Subj&lt;#&gt;.CorrDataTempl</strong><A HREF="files-formats-cartool.html#sef"><strong>.sef</strong></A></I><br>
-		  <I><strong>&nbsp;&nbsp;&nbsp; &lt;basefilename&gt;.Group&lt;#&gt;.Subj&lt;#&gt;.CorrTempl</strong><A HREF="files-formats-cartool.html#sef"><strong>.sef</strong></A></I><br>
-		  files 
-		  hold the correlations of the data with each template, and the 
-		  correlation of the correlations.</P>
-	  </UL>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   Also see the <A HREF="#technical-points">technical points</A>, and 
-   especially the <A HREF="#GEV">GEV</A> remarks.</P>
-  <H4>
-   <A NAME="fit-results-format"></A>Format of the <em>.csv</em> results</H4>
-  <P>
-   As for today, there are <strong>2 output arrays</strong>, each with a <strong>
-   different formatting</strong> and targetting different packages. They however
-   <strong>contain exactly the same data</strong>, this is just a matter of 
-   formatting the 4D (<em>number of groups</em> x <em>number of subjects</em> x
-   <em>number of segments</em> x <em>number of variables</em>) dataset...</P>
-  <P>
-   &nbsp;</P>
-  <h6>
-   <A NAME="csv-lines-as-samples"></a>The <em>.LinesAsSamples.csv</em> file</h6>
-  <P>
-   <strong>Each line correspond to a subject</strong>, so the number of subjects 
-   is equal to the total number of lines - 1 (the header line).</P>
-  <P>
-   This is the format used by <A HREF="computing-statistics.html"><em>Cartool</em></A> and
-   <em>Statistica</em> for its statistical analysis.</P>
-  <P>
-   With this format, lines end up to be huge, and sometimes will fail to be read 
-   by Excel, though <em>Cartool</em> and other analysis packages will have no 
-   problems reading them.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   The format is the following:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <strong>First line is a header </strong>which lists all the <strong>
-	mutliplexed variables' name</strong>. First variable name is always <em>
-	Subject</em>, then there are many variables with format of the like <em>
-	Group*_Map*_VariableName</em>.<LI CLASS="mvd-P">
-      <P>
-      <strong>Next lines hold the data themselves</strong>, with 1 row/line per 
-	  subject (so each line can be quite long):<UL>
-		  <LI CLASS="mvd-P">
-		  <P>Data are mulitplexed by Group, then Map, then Variable, in this 
-		  order from outer to inner variable loop.<br>F.ex. you'll find first 
-		  all the variables of Group1, Map1, then all the variables of Group1, 
-		  Map2, etc.. for all maps, then all the variables of Group2, Map1, then 
-		  all the variables of Group2, Map2, etc...<LI CLASS="mvd-P">
-		  <P>Data are written either in integer or floatting point, according to 
-		  their actual types (integer for counts f.ex., floatting point for GEV, 
-		  Gfp etc...)</UL>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   Here is an example of the <strong>actual ordering</strong> (the formatting 
-   itself is skipped for clarity), for 3 files, 2 groups, 2 maps, and 2 
-   variables (<em>NumTF</em> and <em>Gfp</em>). The names in italic indicate 
-   some <em>actual</em> data:</P><PRE>File1<em>	Group1_Map1_NumTF  Group1_Map1_MaxGfp &nbsp;Group1_Map2_NumTF  Group1_Map2_MaxGfp &nbsp;Group2_Map1_NumTF  Group2_Map1_MaxGfp &nbsp;Group2_Map2_NumTF  Group2_Map2_MaxGfp<BR></em>File2<em>	Group1_Map1_NumTF  Group1_Map1_MaxGfp &nbsp;Group1_Map2_NumTF  Group1_Map2_MaxGfp &nbsp;Group2_Map1_NumTF  Group2_Map1_MaxGfp &nbsp;Group2_Map2_NumTF  Group2_Map2_MaxGfp<BR></em>File3<em>	Group1_Map1_NumTF  Group1_Map1_MaxGfp &nbsp;Group1_Map2_NumTF  Group1_Map2_MaxGfp &nbsp;Group2_Map1_NumTF  Group2_Map1_MaxGfp &nbsp;Group2_Map2_NumTF  Group2_Map2_MaxGfp</em></PRE>
-  <p>&nbsp;</p>
-  <h6>
-   <A NAME="csv-columns-as-factors"></a>The <em>.ColumnsAsFactors.csv</em> file</h6>
-  <P>
-   <strong>Each column is a factor / variable</strong>.</P>
-  <P>
-   This is the format used by <em>R</em>.</P>
-  <P>
-   With this format, and contrary to the Lines As Samples format above, lines 
-   are hopefully much shorter. The counterpart is that the number of lines is 
-   much higher, and you have to make sure that all combinations of Files, Groups 
-   and Maps indexes exist (like the indexes of a 3D array).</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   The format is the following:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <strong>First line is a header </strong>which lists all the <strong>
-	variables' name</strong>. First variables names are always <em>Subject</em>,
-	<em>Group</em> and <em>Map</em>, then followed by all the
-	<A HREF="#variable-names">variables names</a>.<LI CLASS="mvd-P">
-      <P>
-      <strong>Next lines hold the data themselves</strong>:<UL>
-		  <LI CLASS="mvd-P">
-		  <P>The <strong>first 3 values</strong> hold the file name, group 
-		  index, and map index, all in text.<br>F.ex.&nbsp;&nbsp;&nbsp; File1&nbsp;&nbsp;&nbsp; 
-		  Group2&nbsp;&nbsp;&nbsp; Map5<LI CLASS="mvd-P">
-		  <P>Next are all the variables <em>values</em>, in the order listed 
-		  from the header line.<LI CLASS="mvd-P">
-		  <P>Data are not necessarily ordered, though they are currently written 
-		  first by Group, then by Map, then by Variable.</UL>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   Here is an example of the <strong>actual ordering</strong> (the formatting 
-   itself is skipped for clarity), for 3 files, 2 groups, 2 maps, and 2 
-   variables (<em>NumTF</em> and <em>Gfp</em>). The names in italic indicate 
-   some <em>actual</em> data:</P>
-  <PRE>File1<em>	</em>Group1<em>	</em>Map1<em>	Group1_Map1_NumTF  Group1_Map1_MaxGfp
+ <BODY>
+     <div class="container">
+         <H1>
+             Back-Fitting Template Maps
+         </H1>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The back-fitting is about taking the results from the
+             <a href="microstates-segmentation.html">segmentation</a>, and back-fitting them to the
+             subjects to be able to extract variables for statistics.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H5>
+             <A HREF="#fitting">
+                 Fitting template maps back to
+                 subjects data
+             </A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#fit-method">Method used for the Fitting</A>
+             </H5>
+         </UL>
+         <H5>
+             <A HREF="#fit-dialog">How to run the Fitting</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#fitting-files-dialog">Files Dialog</A><br>
+                 <A HREF="#fitting-parameters-dialog">Parameters Dialog</A><br>
+                 <A HREF="#fitting-results-dialog">Results Dialog</A>
+             </H5>
+         </UL>
+         <H5>
+             <A HREF="#technical-points">Technical points &amp; hints</A><br>
+             <A HREF="#fit-results">Results</A><br><A HREF="#fit-inv-sol">Fitting in the Inverse Solution space</A>
+         </H5>
+         <H2>
+             <A NAME="fitting"></A>Fitting template maps back to subjects data
+         </H2>
+         <H3>
+             <A NAME="fit-method"></A>Method used for the Fitting
+         </H3>
+         <P>
+             The idea here is to use the maps from the &quot;best&quot;
+             segmentation of the Grand Means, and fit them back to the subject
+             files, then apply some statistics on the results.
+         </P>
+         <P>
+             Practically, this is simply <A HREF="microstates-segmentation.html#expl-labelling">this step</A>
+             from the <a href="microstates-segmentation.html#k-means-clustering">K-Means segmentation</a>
+             process, simply <B>assigning the map with the highest correlation</B>
+             at each time frame and for each file.
+         </P>
+         <H2>
+             <A NAME="fit-dialog"></A>How to run the Fitting
+         </H2>
+         <P>
+             Called from the <FONT FACE="Arial Black,Arial,Helvetica">
+                 <A HREF="all-processings.html#tools">
+                     Tools
+                     | Fitting maps into EEG files
+                 </A>
+             </FONT> menu, a dialog in 3 parts appears:
+         </P>
+         <h2>
+             <A NAME="fitting-files-dialog"></A>Fitting Files Dialog
+         </h2>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <img alt="fitting files dialog" height="689" src="images/fit.dialog.files.png" width="697">
+             </P>
+             <P ALIGN=CENTER>
+                 &nbsp;
+             </P>
+         </CENTER>
+         <P>
+             <TABLE WIDTH="100%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             <strong>(1) Templates to Fit</strong>
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             <B><A NAME="fitting-template"></A>Fit with Templates to File:</B>
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             Give the <A HREF="files-formats-cartool.html#ep"><B><I>.ep</I></B></A> file that
+                             contains the templates,
+                             usually <A HREF="microstates-segmentation.html#template-maps">generated</A> by the
+                             <a href="microstates-segmentation.html">
+                                 Segmentation
+                                 process
+                             </a>, that will be used for the fitting process.
+                         </P>
+                         <P>
+                             If you Drag &amp; Drop a single <A HREF="files-formats-cartool.html#ep"><B><I>.ep</I></B></A> file, this will be
+                             assumed as the
+                             template file.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP style="width: 32%"></TD>
+                     <TD WIDTH="74%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             <B><A NAME="fitting-groups"></A>(2) Groups of Files to be Fit</B>
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             &nbsp;
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Read some important informations about the <A HREF="#fit-groups-of-files">
+                                 meaning
+                                 of Groups
+                             </A> in the Fitting context.
+                         </P>
+                         <P>
+                             You can use the very convenient <A HREF="#files-drag-drop">
+                                 Drag &amp;
+                                 Drop feature
+                             </A> here.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Add New Group of Files
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Enter a new group of file(s).
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Remove Last Group
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Does what it says.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Clear All Groups
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Clear out all the groups at once.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Read Lists from File
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             You can direclty retrieve the lists of groups previously (see below).
+                         </P>
+                         <P>
+                             See also <A HREF="#files-drag-drop">Drag &amp; Drop</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Write Lists to File
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             You can save the lists of current groups into a file, in case you
+                             want to re-use them (much recommended!).
+                         </P>
+                         <P>
+                             See the <A HREF="#file-list-format">file formats</A> available.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Sort Files within Lists
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             A strange behavior of Windows is to not respect the order of the
+                             files dropped in a window. To help cure this silly habit, you can
+                             sort all the file names of all the groups already entered.
+                         <P>
+                             <strong>New:</strong> Cartool will sort your files if you use <A HREF="#files-drag-drop">
+                                 Drag &amp; Drop
+                             </A>...
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             <A HREF="#number-within-subjects">
+                                 Number of Consecutive Groups within
+                                 Subjects:
+                             </A>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Default is to assume <strong>
+                                 all dropped groups above are considered
+                                 <A HREF="#number-within-subjects">within-subjects</A>
+                             </strong>. The
+                             within-subjects number of groups is therefore equal to the total number
+                             of groups.
+                         <P>
+                             If this is not the case, you can specify a smaller number of groups
+                             within-subjects. F.ex. 8 groups of files, but first 4 are patients, last
+                             4 controls, then you specify "4" as the number of consecutive
+                             within-subjects.
+                         <P>
+                             A few remarks:<ul>
+                                 <li class="mvd-p">
+                                     The number you set should be a integer divisor of
+                                     the total number of groups.
+                                 </li>
+                                 <li class="mvd-p">
+                                     &nbsp;You can set the number to 1 in case of
+                                     across-subjects design.
+                                 </li>
+                                 <li class="mvd-p">
+                                     This value is very important to compute the proper
+                                     normalization factors of all the extracted variables.
+                                 </li>
+                             </ul>
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%"></TD>
+                     <TD WIDTH="74%" VALIGN=TOP></TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             <B><A NAME="epochs-to-fit"></A>(3) Epochs to fit</B>
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             You can <B>restrict the time interval to be fit with some given maps</B>.
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             From
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             From time frame (included)
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             To
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             To time frame (included)
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             with Maps
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             A set of templates/maps for which the this epoch will be restricted to.
+                         <P>
+                             &nbsp;Let it empty, or set
+                             to <B><FONT FACE="Courier New">*</FONT></B>, to use all the maps.
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Add epoch
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             Insert the specified epoch to the list.
+                         </P>
+                         <P>
+                             Don't forget to press on this button to enter the current values!
+                         </P>
+                         <P>
+                             If the list remains empty, the fitting process will be run on the
+                             whole files. Otherwise you can enter a serie of time ranges to
+                             restrict the fitting, but <B>the epochs can not overlap</B>.
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Remove epoch
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             Remove last epoch from the list.
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%"></TD>
+                     <TD WIDTH="74%" VALIGN=TOP></TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             <B>(4) Output Options</B>
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             <I>&nbsp;</I>
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Output Base File Name
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             Specify here a <B>basis for all the file names</B> that will be
+                             generated during the segmentation process.
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Output Segmentation Files:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Saving a <A HREF="microstates-segmentation.html#segment-output">visual representation</A> of the fitting as a segmentation file. If
+                             you used <A HREF="#epochs-to-fit">different epochs</A>, they will be all
+                             merged together for display (they are forbidden to overlap).
+                         </P>
+                         <P>
+                             Meaningful
+                             only if you run a <A HREF="#competitive-param">competitive</A>
+                             fitting process.
+                         </P>
+                         <P>
+                             Files are located in the <em><strong>More</strong></em> subdirectory.
+                         </P>
+                         <P>
+                             Also see the <B><I><A HREF="files-formats-cartool.html#seg">.seg</A></I></B> specification.
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Output Other Files:<br>Data per Cluster
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             This option will <strong>save the clusters of maps</strong>. There will
+                             be a file for each cluster, and for each subject, with all the data
+                             assign to a given cluster.
+                         <P>
+                             Note that this will basically take the same amount of space as your input
+                             data (minus the optional bad epochs).
+                         <P>
+                             This is a very handy option to later compute the localization of each
+                             template map, for each subject.
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%">
+                         <P>
+                             Temp Files:<br>Delete Preprocessed Files
+                     </TD>
+                     <TD WIDTH="74%" VALIGN=TOP>
+                         <P>
+                             Subjects' data could be preprocessed, f.ex. with Spatial Filter and / or
+                             GFP Normalization. With this option, these files are discarded after use
+                             (the default).
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="30%" VALIGN=TOP></TD>
+                     <TD WIDTH="70%" VALIGN=TOP></TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Use these buttons to <B>navigate through the previous and next dialogs</B>
+                             (if any).
+                         </P>
+                         <P>
+                             See which current dialog you are in, and to which other dialogs you
+                             connect, in the <B>tab-like</B> part at the top of the dialog under
+                             the title.
+                         </P>
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="30%" VALIGN=TOP>
+                         <P>
+                             <B>Process</B>
+                     </TD>
+                     <TD WIDTH="70%" VALIGN=TOP>
+                         <P>
+                             Runs the fitting.
+                         </P>
+                         <P>
+                             This button remains <B>
+                                 disabled until <U>all</U> the parameter
+                                 dialogs have received enough (and consistent) informations
+                             </B>.
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="30%" VALIGN=TOP>
+                         <P>
+                             Cancel
+                     </TD>
+                     <TD WIDTH="70%" VALIGN=TOP>
+                         <P>
+                             Quit the dialog.
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="30%" VALIGN=TOP>
+                         <P>
+                             Help
+                     </TD>
+                     <TD WIDTH="70%" VALIGN=TOP>
+                         <P>
+                             Launch the Help to the right page (should be here...).
+                     </TD>
+                 </tr>
+             </TABLE>
+         </P>
+         <h2>
+             <A NAME="fitting-parameters-dialog"></A>Fitting Parameters Dialog
+         </h2>
+         <P class="auto-style1">
+             <img alt="fitting parameters dialog" height="689" src="images/fit.dialog.parameters.png" width="697">
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <TABLE WIDTH="100%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <B>Presets:</B>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         This is handy to quickly set the main parameters according to the
+                         most frequent uses, listed in the drop-down box.
+                     </P>
+                     <P>
+                         The most important parameters will be set, still <B>
+                             <I>
+                                 some
+                                 parameters have to be set manually!
+                             </I>
+                         </B> And, as usual, double
+                         check that all your settings make sense...
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="74%" VALIGN=TOP></TD>
+             </tr>
+             <TR>
+                 <TD VALIGN=TOP style="width: 32%; height: 30px;">
+                     <P>
+                         <B>(1) Data Preprocessing</B>
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP style="height: 30px">
+                     <P>
+                         It is better to preprocess your files once and for all. In case this was
+                         not the case, this is your last chance to apply these preprocessing
+                         before the actual fitting.
+                 </TD>
+             </TR>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         <A HREF="eeg-display.html#spatial-filter">Spatial Filter</A>, using XYZ file:
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Applying a <A HREF="eeg-display.html#spatial-filter">Spatial Filter</A> to the
+                         data, to <strong>remove outliers</strong> and <strong>
+                             smooth out the
+                             noise
+                         </strong>.
+                     <P>
+                         Be careful, avoid using this this filter more than
+                         once! <strong>
+                             If your EEG preprocessing pipe-line already included
+                             the Spatial Filter, you shouldn't use it here!
+                         </strong> Cartool tries to be
+                         smart here, if your files contain the characters "Spatial" in their
+                         names, it will automatically disable this option.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP></TD>
+                 <TD WIDTH="70%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <B>Data level normalization</B>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         This will rescale the data from each file by a given factor.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         None
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         No rescaling.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <A NAME="GFP-normalization"></A>Mean Gfp
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         According to the <A HREF="#number-within-subjects">
+                             Number of Consecutive
+                             Groups within Subjects
+                         </A> parameter, the <strong>
+                             median GFP across all
+                             within-subject files
+                         </strong> is computed and used for normalization.
+                         This helps in reducing the inter-subjects variability.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="74%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         Excluding Bad Epochs:
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Select this option to <strong>skip some time periods from your data</strong>.
+                         Data preprocessing is never perfect, and some parts of the data should
+                         still be ignored.
+                     <P>
+                         Note that this step is done after the GFP Max, and before the resampling.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         Automatic
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <p>
+                         Cartool has a bad epochs automatic detection (you might want to give it
+                         a try from the <a href="eeg-display.html">EEG Window</a>, under <strong>
+                             Markers|Scanning Bad Markers
+                         </strong> menu).
+                     </p>
+                     <p>
+                         This option is seen as a last chance before the clustering. It would
+                         definitely be better to run the detection before, <em>then</em> visually
+                         assess the bad epochs, <em>then only</em> run the clustering.
+                     </p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         At Markers
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Give the marker names of the bad epochs to be ignored.
+                     <P>
+                         Either somebody did put some markers manually to isolate the bad epochs,
+                         or have already run the automatic bad epochs detection.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="74%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <B>(2) Labeling Parameters</B>
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         &nbsp;
+                 </TD>
+             </tr>
+             <TR>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <B>Data Type:</B>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         &nbsp;
+                 </TD>
+             </TR>
+             <TR>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Only Positive
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Data consist of <B>positive only, scalar data</B>. This could be
+                         spikes from neuron recordings, or the Results of Inverse Solution, f.ex.
+                     </P>
+                     <P>
+                         This will logically turn off the <I>Polarity</I> &amp; <I>References</I> options.
+                     </P>
+                     <P>
+                         See this <A HREF="computing-statistics.html#param-positive-data">
+                             point on
+                             positive data
+                         </A> and also <A HREF="terms-definitions-formulas.html#data-types">this point</A>.
+                 </TD>
+             </TR>
+             <TR>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Signed
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         <B>Signed scalar values</B>, like, you know, EEG.
+                 </TD>
+             </TR>
+             <TR>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Vectorial
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Used on <a href="computing-ris.html">Inverse Solution</a>&nbsp;
+                         <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B> data files,
+                         when the results are vectors for each solution points.
+                     </P>
+                     <P>
+                         See this point about <A HREF="#fit-inv-sol">
+                             fitting in the Inverse
+                             Solution space
+                         </A>.
+                 </TD>
+             </TR>
+             <TR>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <B>Data reference</B>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         &nbsp;
+                 </TD>
+             </TR>
+             <TR>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         No Reference
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Data are used as they come from files, no changes occur.
+                 </TD>
+             </TR>
+             <TR>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Average Reference
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Data are <A HREF="terms-definitions-formulas.html#formulas">average reference</A>-d.
+                 </TD>
+             </TR>
+             <TR>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <B>Maps / Patterns Polarity:</B>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         &nbsp;
+                 </TD>
+             </TR>
+             <TR>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Ignore
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Polarity of maps does not matter, so ignore it. Inverted maps are
+                         considered the same (same underlying generators, but with reversed polarity).
+                     </P>
+                     <P>
+                         Used for spontaneous EEG recordings.
+                 </TD>
+             </TR>
+             <TR>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Account
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Polarity of maps matter, that is, inverted maps are indeed considered
+                         as different.
+                     </P>
+                     <P>
+                         Used for ERPs.
+                 </TD>
+             </TR>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="74%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <B><A NAME="competitive-param"></A></B>To avoid missing values:<B><br>Use a Non-Competitive Fitting</B>
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         When <B>off</B>, all the maps <B>compete with each others</B> to be
+                         elected as the best fitting one for a given time frame. As only one
+                         map can win, the labeling is therefore a competitive process. This is
+                         the default.
+                     </P>
+                     <P>
+                         When <B>on</B>, it gives each map an exclusive access to the data,
+                         the labeling is therefore run on the <B>
+                             whole file with a single map
+                             at a time
+                         </B>. The process is repeated for each map. This is useful
+                         to produce variables with non-missing values for later statistics.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="74%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         <A NAME="min-correlation"></A>Labeling at Low Correlations:<br><strong>No Labeling if Below</strong>
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         If selected, you can specify a <strong>minimum correlation threshold</strong>
+                         for data points to be <strong>assigned to a given cluster</strong>.
+                     <P>
+                         <strong>Default correlation threshold is set to 50%</strong>, which is
+                         quite conservative.
+                     <P>
+                         See this <A HREF="microstates-segmentation.html#outliers-rejection">outliers rejection paragraph</A>.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="74%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <B>(3) Temporal Postprocessing</B>
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         &nbsp;
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         <B><A HREF="#temporal-smoothing">Segments Temporal Smoothing</A></B>
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Redo the <A HREF="#expl-labelling">labeling</A>, but with a <A HREF="#temporal-smoothing">
+                             temporal
+                             smoothing factor
+                         </A>.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         Window Half Size:
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         The temporal smoothing operates with a sliding window, which you
+                         specify here the half size (in time frames). The actual window size
+                         is therefore ( 2 x W + 1 ).
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         Strength (Besag Factor):
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Strength <IMG SRC="images/formul21.png" WIDTH="11" HEIGHT="16" VSPACE="0" HSPACE="0" BORDER="0">
+                         of the smoothing, actually the Besag factor from the article on the
+                         segmentation process.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         <B><A HREF="#small-maps-reject">Rejecting Small Segments</A></B>
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Deletes short segments, and fuse them with their 2 respective neighbors.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         Shorter than or equal to:
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Size below which a segment is removed.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="74%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <P>
+                         &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Use these buttons to <B>navigate through the previous and next dialogs</B>
+                         (if any).
+                     </P>
+                     <P>
+                         See which current dialog you are in, and to which other dialogs you
+                         connect, in the <B>tab-like</B> part at the top of the dialog under
+                         the title.
+                     </P>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         <B>Process</B>
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Runs the
+                         fitting.
+                     </P>
+                     <P>
+                         This button remains <B>
+                             disabled until <U>all</U> the parameter
+                             dialogs have received enough (and consistent) informations
+                         </B>.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         Cancel
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Quit the dialog.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         Help
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Launch the Help to the right page (should be here...).
+                 </TD>
+             </tr>
+         </TABLE>
+         <h2>
+             <A NAME="fitting-results-dialog"></A>Fitting Results Dialog
+         </h2>
+         <P class="auto-style1">
+             <img alt="fitting parameters dialog" height="689" src="images/fit.dialog.results.png" width="697">
+         </P>
+         <P class="auto-style4">
+             &nbsp;
+         </P>
+         <TABLE WIDTH="100%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <B>(1) Variables to Extract</B>
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         See <A HREF="#variable-names">here all the <strong>variables</strong></A> that
+                         can be computed, <B>
+                             for each subject and for
+                             each template map
+                         </B>.
+                     </P>
+                     <P>
+                         Note that you can be more selective than taking all variables (though it
+                         doesn't hurt), according to your paradigm, some variables might not make
+                         sense at all!
+                     </P>
+                     <P>
+                         Also some of them will be unavailable in case of
+                         <A HREF="#competitive-param">non-competitive fitting</A>.
+                     </P>
+                     <P>
+                         See this note about the <A HREF="#fit-results-format">
+                             format of the
+                             array of results
+                         </A>.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         All On<br>All Off
+                     </P>
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         What is says, turns on / off all variables at once.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP></TD>
+                 <TD WIDTH="70%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <A NAME="output-data-layout"></A>Data Layout in Worksheet Files:
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         You currently have 2 (non-exclusive) ways of outputting the
+                         multi-dimensional resulting data.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <strong>Lines As Samples</strong>
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         This is a <A HREF="#csv-lines-as-samples">multiplexed format</A> that can
+                         be read by <em>Cartool</em>, <em>Statistica,</em> <em>Excel</em>. etc...
+                     <P>
+                         Each line correspond to an input file, then all columns (a <em>lot</em>)
+                         will contain the variables.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <strong>Columns As Factors</strong>
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         This is an <A HREF="#csv-columns-as-factors">indexed array</A> that can
+                         be read by R.
+                     <P>
+                         There are some columns that hold the indexes, then the other columns that
+                         hold the factors themselves.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="68%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Splitting Results into Files
+                 </TD>
+                 <TD WIDTH="68%" VALIGN=TOP>
+                     <P>
+                         You can also refine how many files to write with these 2 independent
+                         options.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <strong>Force 1 File per Group</strong>
+                 </TD>
+                 <TD WIDTH="68%" VALIGN=TOP>
+                     <P>
+                         <strong>1 output file for each group of input file</strong>. This is now
+                         the default, as it is more handy to manipulate for statistics.
+                     <P>
+                         When option is off, it will pack all
+                         <A HREF="#number-within-subjects">within subjects groups</A> into a
+                         single file.
+                     <P>
+                         This can be combined with splitting the variables option below.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <strong>Force 1 File per Variable</strong>
+                 </TD>
+                 <TD WIDTH="68%" VALIGN=TOP>
+                     <P>
+                         1 output file for each computed variable. Not recommended, as it may
+                         create a lot of files.
+                     <P>
+                         When option if off, all variables are saved into the same file.
+                     <P>
+                         This can be combined with splitting the group option above.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Force
+                         Short Variable Names
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         Choose between long (and more explicit) or short (cryptic) variable names.
+                     </P>
+                     <P>
+                         See <A HREF="#variable-names">this note</A> and this one about the <A HREF="#fit-results-format">
+                             format
+                             of the array of results
+                         </A>.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="68%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <strong><A NAME="computing-Markov-Chains"></A>(2) <a href="#markov">Markov Chains</a></strong>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         &nbsp;
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Joints States Probabilites
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Used to study the transitions from between states.
+                     <P>
+                         <a href="#markov">See this paragraph</a>.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Transition Matrices
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Used to study the transitions from between states.
+                     <P>
+                         <a href="#markov">See this paragraph</a>.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Number of Transitions ahead:
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Number of forward transitions to take into account.
+                     <P>
+                         This only compute the <strong>
+                             probabilities from the current state to the
+                         </strong> <em><strong>n</strong></em><sup><span class="auto-style2"><em><strong>th</strong></em></span></sup><strong>
+                             -next
+                             state
+                         </strong>, and <em>not</em> the order of the Markov Chains
+                         (all combinations of <em>n</em><sup><span class="auto-style2"><em>th</em></span></sup>
+                         to previous states, to current one).
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP></TD>
+                 <TD WIDTH="70%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <strong>(3) Resting States</strong>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         These options apply to spontaneous type of data only.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <A HREF="#duration-histograms">Save Durations Histograms</A>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         What it says.
+                     <P>
+                         There will be 2 histograms per map for each subject, one with <strong>
+                             <A HREF="#duration-histograms">linear time scale</A>
+                         </strong>, and one with<strong>
+                             <A HREF="#duration-histograms">log time scale</A>
+                         </strong>.
+                         Then another 2 histograms per map, but for all subjects together.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <A NAME="output-segments-frequency"></A>
+                         <a href="#segments frequency" name="output segments frequency">Save Segments Frequency</a>
+                 </TD>
+                 <TD WIDTH="68%" VALIGN=TOP>
+                     <P>
+                         This option will <A HREF="#segments-frequency">create new files</A>, with the number of templates as number
+                         of tracks, and each input file original time scale. The tracks will be
+                         filled with a <strong>raised cosine bump at each segment location</strong>,
+                         so that repeating segments will appear as a sine wave, which frequency is
+                         related to the duration of each segment.
+                     <P>
+                         Any type of <a href="frequency-analysis.html">frequency analysis</a> can
+                         then be applied on these files.
+                     <P>
+                         These files are located in the <em>
+                             <strong>
+                                 Segments
+                                 Frequency
+                             </strong>
+                         </em> subdirectory.
+                     </P>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <A NAME="output-correlation-of-data"></A>
+                         <a href="#correlation output" name="output correlation of data">
+                             Save Correlations of Data and
+                             Maps
+                         </a>
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         Saving for each input file the <A HREF="#correlation-output">correlation with each template map</A>.
+                     </P>
+                     <P>
+                         F.ex. if you give 10 maps to be fit, the output will have the number
+                         of time frames of the original files, and 10 tracks showing the
+                         correlation of each map for the current time frame.
+                     </P>
+                     <P>
+                         These files are located in the <em><strong>Correlations</strong></em> subdirectory.
+                     </P>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="74%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <P>
+                         &lt;&lt; Previous&nbsp; |&nbsp; Next &gt;&gt;
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Use these buttons to <B>navigate through the previous and next dialogs</B>
+                         (if any).
+                     </P>
+                     <P>
+                         See which current dialog you are in, and to which other dialogs you
+                         connect, in the <B>tab-like</B> part at the top of the dialog under
+                         the title.
+                     </P>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         <B>Process</B>
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Runs the
+                         fitting.
+                     </P>
+                     <P>
+                         This button remains <B>
+                             disabled until <U>all</U> the parameter
+                             dialogs have received enough (and consistent) informations
+                         </B>.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         Cancel
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Quit the dialog.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="30%" VALIGN=TOP>
+                     <P>
+                         Help
+                 </TD>
+                 <TD WIDTH="70%" VALIGN=TOP>
+                     <P>
+                         Launch the Help to the right page (should be here...).
+                 </TD>
+             </tr>
+         </TABLE>
+         <H2>
+             <A NAME="technical-points"></A>Fitting - Technical points &amp; hints
+         </H2>
+         <H4>
+             <A NAME="fit-groups-of-files"></A>Groups of Files in the Fitting
+         </H4>
+         <P>
+             Groups of files can be of the <strong>same size or be of different sizes</strong>, depending
+             on you experiment and the type of statistics you are going to use.
+         </P>
+         <P>
+             If your groups have different size, meaning the number of subjects is not the
+             same across groupsn, then Cartool will force set the
+             <A HREF="#number-within-subjects">within-subjects parameter</A> to 1.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The <strong>fitting is optimized</strong> to have the lowest memory footprint
+             and highest computation speed, and will load only the <strong>
+                 absolute necessary files into memory at nay given time
+             </strong>. This allows you to have
+             any arbitrarily big groups of files to fit, even if they are original recording
+             (which can be large by themselves).
+         </P>
+         <h4>
+             <A NAME="number-within-subjects"></A>Number of consecutive within-subjects
+             groups
+         </h4>
+         <P>
+             ('Group' here means a group of file you dropped in, and shown as such in the
+             list box)
+         </P>
+         <P>
+             <strong>A set of groups can</strong> (and actually should be) <strong>
+                 grouped
+                 together
+             </strong> if they were part of a <strong>within-subjects paradigm</strong>.
+             Practically, this means that all the files from these groups were recorded
+             from identical subjects, row-wise speaking. It also implies that these groups
+             have the same number of files. F.ex. a paired experiment will be grouped by
+             2.
+         </P>
+         <P>
+             Once Cartool knows how many af these groups have to to joined together, it
+             will <strong>compute the normalization part</strong> (denominator part of the
+             equations) of the <strong><a href="terms-definitions-formulas.html#GEV">GEV</a></strong>&nbsp; and
+             <strong>GFP normalization </strong>with all subject's files together. Again
+             for a paired experiment, the 2 files of a subject are used to compute the sum
+             of the squares of map, and the sum of GFP, which are therefor used to compute
+             the GEV and normalize by GFP respectively.
+         </P>
+         <P>
+             Failing to define properly the parameter will lead to a wrong normalization
+             of the data. If on the file has one more big component, it will relatively
+             make the other components looking artificially weaker, and hence could
+             produce erroneous positive tests on these components with their apparent
+             intensities difference.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Cartool will suggest using the biggest denominator across all current groups'
+             sizes for this parameter. But you should check this is correct according to
+             your experiment design. With our example of a paired experiment, if you
+             dropped 4 files, and they are grouped by 2, then Cartool will run the fitting
+             on the groups 1 and 2 together, and then independently on the groups 3 and 4
+             together.
+         </P>
+         <H4>
+             <A NAME="variable-names"></A>Variable names
+         </H4>
+         <P>
+             The full variable names can have two different formats, namely the
+             short and the long versions. Choose the version according to the
+             program you are going to send the results to, though I think the long
+             version is clearer (Cartool can read both, however).
+         </P>
+         <P>
+             Variable names always consist of 3 parts joined together by a
+             &quot;_&quot; (underscore):
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The group index<BR>
+             <LI CLASS="mvd-P">The map / cluster index<BR>
+             <LI CLASS="mvd-P">The variable computed</P>
+         </UL>
+         <P>
+             So f.ex.:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Long: <B>Group1_Map1_NumTF</B>, <B>Group1_Map2_NumTF</B>, <B>Group1_Map1_MaxGfp</B>...<BR>
+             <LI CLASS="mvd-P">Short: <B>G1_M1_N</B>, <B>G1_M2_N</B>, <B>G1_M1_X</B>...</P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The <B>variables that can be computed</B> are currently the
+             following. They can be further processed with <A HREF="computing-statistics.html">
+                 Cartool
+                 Statistics
+             </A>, or the tools of your choice:
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="80%" CELLPADDING="2" CELLSPACING="0" class="auto-style7">
+                     <tr>
+                         <th VALIGN=TOP class="auto-style11" style="width: 20%">
+                             <strong>Variable</strong>
+                         </th>
+                         <th VALIGN=TOP class="auto-style11" style="width: 52%">
+                             <strong>Meaning</strong>
+                         </th>
+                         <th VALIGN=TOP class="auto-style11" style="width: 20%">
+                             <strong>Unit</strong>
+                         </th>
+                         <th VALIGN=TOP class="auto-style11" style="width: 8%">
+                             <strong>Missing Value</strong>
+                         </th>
+                     </tr>
+                     <TR>
+                         <TD VALIGN=TOP class="auto-style9" style="width: 20%">
+                             <P>
+                                 <strong>First Onset</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 The <B>first time frame of appearance</B>, for a given map and a
+                                 given file.
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Time frame
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 -1
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD VALIGN=TOP class="auto-style9" style="width: 20%">
+                             <P>
+                                 <strong>Last Offset</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 The <B>last time frame of appearance</B>, for a given map and a given
+                                 file.
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Time frame
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 -1
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD VALIGN=TOP class="auto-style9" style="width: 20%">
+                             <P>
+                                 <strong>Number of TFs</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 Total <B>number of time frames of appearance</B>, for a given map and
+                                 a given file.
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Time frame
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 0
+                         </TD>
+                     </TR>
+                     <tr>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 <strong>Mean Correlation</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 <strong>Mean correlation</strong>, for a given map and a given file.
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 No unit<br>range in [-1..1]
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 -1
+                             </P>
+                         </TD>
+                     </tr>
+                     <TR>
+                         <TD VALIGN=TOP class="auto-style9" style="width: 20%">
+                             <P>
+                                 <strong>GEV</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 <A HREF="terms-definitions-formulas.html#GEV">
+                                     <B>Global Explain Variance</B>,
+                                     contribution <a href="microstates-segmentation.html#GEV">splitted for each map</a>, for a given file.
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 No unit<br>range in [-1..1]
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 0
+                             </P>
+                         </TD>
+                     </TR>
+                     <tr>
+                         <TD VALIGN=TOP class="auto-style9" style="width: 20%">
+                             <P>
+                                 <strong>TF of Centroid</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 The <B>GFP-weighted mean time frame position</B>, for a given map and a
+                                 given file.
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Time frame
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 -1
+                             </P>
+                         </TD>
+                     </tr>
+                     <TR>
+                         <TD VALIGN=TOP class="auto-style9" style="width: 20%">
+                             <P>
+                                 <strong>Best Correlation</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 <B>Highest </B><A HREF="terms-definitions-formulas.html#correlation"><B>Correlation</B></A>
+                                 value encountered, for a given map and a given file...
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 No unit<br>range in [-1..1]
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 -1
+                             </P>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD VALIGN=TOP class="auto-style9" style="width: 20%">
+                             <P>
+                                 <strong>TF of Best Correlation</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 ...and its <B>position</B>...
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Time frame
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 -1
+                             </P>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD VALIGN=TOP class="auto-style9" style="width: 20%">
+                             <P>
+                                 <strong>Gfp of TF of Best Correlation</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 ...and the <B>Gfp</B> value at that position.
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Identical to input data, usually [milli-volts]
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 -1
+                             </P>
+                         </TD>
+                     </TR>
+                     <tr>
+                         <TD VALIGN=TOP class="auto-style9" style="width: 20%">
+                             <P>
+                                 <strong>Max Gfp</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 The <B>max Gfp over the segment fit by a given map...
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Identical to input data, usually [milli-volts]
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 0
+                             </P>
+                         </TD>
+                     </tr>
+                     <tr>
+                         <TD VALIGN=TOP class="auto-style9" style="width: 20%">
+                             <P>
+                                 <strong>TF of Max Gfp</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 ...and its <B>position</B>.
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Time frame
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 -1
+                             </P>
+                         </TD>
+                     </tr>
+                     <tr>
+                         <TD VALIGN=TOP class="auto-style9" style="width: 20%">
+                             <P>
+                                 <strong>Mean Gfp</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 The <B>mean G over the segment fit by a given map.
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Identical to input data, usually [milli-volts]
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 0
+                             </P>
+                         </TD>
+                     </tr>
+                     <TR>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 <strong>Mean Duration</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 <strong>Mean length of segments</strong>.
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Millisecond<br>(older version was in time frame)
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 0
+                             </P>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 <strong>Time Coverage</strong>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 <strong>Percentage in time coverage</strong>, i.e. the number of time
+                                 frames for each template divided by the total number of labeled time frames
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Percentage [0..100]<br>(older version was in range [0..1])
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 0
+                             </P>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 <strong>Segment Count Density<br></strong><em>Occurences per second</em>
+                                 in some papers
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 52%">
+                             <P>
+                                 <strong>Number of segments divided by the total labeled duration.</strong>
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 20%">
+                             <P>
+                                 Count per second, <strong><em>not</em></strong> a frequency!<br>(older
+                                 version was in
+                                 count per time frame)
+                             </P>
+                         </TD>
+                         <TD VALIGN=TOP class="auto-style10" style="width: 8%">
+                             <P>
+                                 0
+                             </P>
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <H4>
+             <a name="markov"></a>Markov Chains
+         </H4>
+         <P>
+             The aim is to compute statistics on the transitions probabilities, to show
+             <strong>some kind of syntax in the sequences of micro-states</strong>. These
+             <strong>transitions are computed from the segments</strong> (all consecutive
+             time points of identical label stands for 1 state), and <em>not</em> on the
+             time frame level.
+         </P>
+         <P>
+             Cartool will output various Worksheets <strong><em>.csv</em></strong> files
+             which contain, for each subject, either the <strong>
+                 expected probability from
+                 going to segment A to segment B
+             </strong>, or the <strong>
+                 observed probability
+                 from the data
+             </strong>. Then we can compare the two statistically. The
+             expected probabilities are theoretical values based on the count of segments
+             for each template map. While the observed probabilities come from actually
+             scanning the transitions from each and every segment to all the others.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Cartool will output 2 types of probabilities, the difference between the two
+             being how the probabilities are normalized:
+         </P>
+         <ul>
+             <li class="mvd-p">
+                 <strong>Markov probabilities</strong>: the <strong>
+                     sum
+                     of all probabilities for each line of the transition matrix is equal to 1
+                 </strong>.<br>
+                 F.ex. showing below the observed values (6 maps + Unlabeled):<br>
+                 <img height="182" src="images/fit.markov.observed.png" width="422">
+             </li>
+             <li class="mvd-p">
+                 <strong>Joint States Probabilities</strong>: the <strong>
+                     sum of all probabilities of the whole transition matrix is equal to 1
+                 </strong>.<br>
+                 F.ex. showing below the observed values (6 maps + Unlabeled):<br>
+                 <img height="182" src="images/fit.jsp.observed.png" width="422">
+             </li>
+         </ul>
+         <p>&nbsp;</p>
+         <P>
+             <em>Note 1:</em> In case a <A HREF="#min-correlation">
+                 minimum correlation
+                 threshold has been set
+             </A>, we end up with an additional "state", the one
+             with undefined labeling. Undefined data points are the one which don't
+             correlate well enough to any template maps. It is a sort of "garbage"
+             cluster, so to speak. It behaves like a regular cluster for all the
+             transition probabilities computation, though.
+         </P>
+         <P>
+             <em>Note 2:</em> The number of transitions ahead is which segment is
+             considered the one to compute the transition to. Default is 1, which means
+             the next segment. If you set to a higher value, like 2, the second-next
+             segment will be used. This is <em>not</em> the traditional Markov order.
+         </P>
+         <H4>
+             <A NAME="duration-histograms"></A>Duration histograms
+         </H4>
+         <P>
+             Two files per subject are outputed, one with linear and one with log time
+             scale:&nbsp;
+         </P>
+         <P class="auto-style5">
+             <img height="246" SRC="images/fit.duration-histo.linear.png" width="730">
+         </P>
+         <P class="auto-style5">
+             <img height="246" SRC="images/fit.duration-histo.log.png" width="732">
+         </P>
+         <P>
+             You can run statistics on the duration histograms.
+         </P>
+         <H4>
+             <A NAME="segments-frequency"></A>Segments frequency
+         </H4>
+         <P>
+             This option will create a new time line for each map (top picture), where each
+             segment (bottom picture) is replaced by a raised cosine bump. Here you can
+             focus at map 1 as a good example:
+         </P>
+         <P class="auto-style5">
+             <img height="293" SRC="images/fit.segments-frequency.1.png" width="814">
+         </P>
+         <P class="auto-style5">
+             <img height="245" SRC="images/fit.segments-frequency.2.png" width="815">
+         </P>
+         <P>
+             This can be used for frequency analysis.
+         </P>
+         <H4>
+             <A NAME="correlation-output"></A>Correlation output
+         </H4>
+         <P>
+             Across time correlation shows the <strong>
+                 correlation between each template
+                 map and every data point
+             </strong>. Values are within the [0..1] range:
+         </P>
+         <P class="auto-style5">
+             <img height="352" src="images/fit.correlation.time.png" width="815">
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Once we have these time lines, we can again correlate them. This will show
+             <strong>how each correlation time course looks similar to the other ones</strong>
+             (which is not to be confused with the correlation between maps):
+         </P>
+         <P class="auto-style5">
+             <img height="171" src="images/fit.correlation.maps.png" width="264">
+         </P>
+         <H2>
+             <A NAME="fit-results"></A>Fitting - Results
+         </H2>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I> <B>verbose</B> file,
+                     containing all the parameters being used, plus the GFP normalization factors
+                     computed
+                     per file(s), if the <A HREF="#GFP-normalization">option was selected</A>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A copy of the input templates <I><a href="files-formats-cartool.html#ep"><B>.ep</B></a></I>
+                     and its corresponding <I><A HREF="files-formats-cartool.html#seg"><B>.seg</B></A></I>
+                     files.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Then <strong>for each group of files</strong>:<br><br>
+                 </P>
+                 <UL>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             In the root directory, <A HREF="#output-data-layout">1 or <em>n</em></A> <I><A HREF="files-formats-cartool.html#csv"><B>.csv</B></A></I> files,<br>
+                             <strong>
+                                 <I>
+                                     &nbsp;&nbsp;&nbsp;
+                                     &lt;basefilename&gt;.Group&lt;#&gt;.LinesAsSamples.csv
+                                 </I>
+                             </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and / or<br>
+                             <strong>
+                                 <I>
+                                     &nbsp;&nbsp;&nbsp;
+                                     &lt;basefilename&gt;.Group&lt;#&gt;.FactorsAsColumns.csv<br>
+                                 </I>
+                             </strong>each
+                             file containing all the output variables, arranged
+                             in <A HREF="#fit-results-format">different layouts</A> to match your
+                             analysis tools.<br>
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             In the root directory,<br>&nbsp;&nbsp;&nbsp; <I><strong>&lt;basefilename&gt;.Group&lt;#&gt;</strong><A HREF="files-formats-cartool.html#seg"><B>.seg</B></A></I>
+                             <br>is the labeling file of all subjects together (only in case of
+                             non-competitive fitting BTW)<br>
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             In the <em><strong>Segmentations</strong></em> directory,<I><strong><br>&nbsp;&nbsp;&nbsp; &lt;basefilename&gt;.Group&lt;#&gt;.Subj&lt;#&gt;</strong><A HREF="files-formats-cartool.html#seg"><B>.seg</B></A></I>
+                             <br>contain labeling split by subject.<br>
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             In the <strong><em>Data Clusters</em></strong> directory,<br>&nbsp;&nbsp;&nbsp; <I>
+                                 <strong>
+                                     &lt;basefilename&gt;.Subject&lt;#&gt;.&lt;original
+                                     file name&gt;.Cluster&lt;#&gt;.*.sef
+                                 </strong>
+                             </I><br>contain all the maps
+                             assign to a given cluster.<br>
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             In the <em><strong>Markov Chains</strong></em> directory, and in case of
+                             <A HREF="#computing-Markov-Chains">Markov output</A>,
+                         </P>
+                         <UL>
+                             <LI CLASS="mvd-P">
+                                 <P>
+                                     <I><strong>&lt;basefilename&gt;.Group&lt;#&gt;.MarkovChains&lt;#&gt;.*.csv</strong></I>
+                                     files .<br>Each
+                                     file contains the probabilities of&nbsp; transitions (template<sub><span class="auto-style2"><em>i</em></span></sub> &rarr;
+                                     template<sub><span class="auto-style2"><em>j</em></span></sub>),
+                                     with 1 file for each step ranging from 1 to the maximum set in the
+                                     parameters.<br>The format of the <strong><em>.csv</em></strong>
+                                     follows <A HREF="#output-data-layout">these options</A>.
+                                 </P>
+                             <LI CLASS="mvd-P">
+                                 <P>
+                                     <I><strong>&lt;basefilename&gt;.Group&lt;#&gt;.MarkovChains.freq</strong></I>
+                                     files.<br>These are the same data as the above <strong><em>.csv</em></strong>
+                                     files, but all transitions are stored (trick) into a <strong><em>.freq</em></strong> file. In this case, the &quot;frequency&quot; dimension
+                                     will hold the transitions dimension, the &quot;time&quot; dimension will
+                                     will hold the subjects index dimension.<br>
+                                 </P>
+                         </UL>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             In the <strong><em>Histograms Duration</em></strong> directory,<br>&nbsp;&nbsp;&nbsp;
+                             <I><strong>&lt;basefilename&gt;.Subject&lt;#&gt;.HistoDuration.Lin.sef</strong></I>&nbsp;&nbsp;
+                             and<I><strong><br>&nbsp;&nbsp;&nbsp; &lt;basefilename&gt;.Subject&lt;#&gt;.HistoDuration.Log.sef</strong></I>
+                             <br>contain the histograms of segments' durations.<br>
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             In the <em><strong>Segments Frequency</strong></em> directory, and
+                             in case of <A HREF="#output-segments-frequency">
+                                 segments frequency
+                                 output
+                             </A>, <I><strong><br>&nbsp;&nbsp;&nbsp; &lt;basefilename&gt;.Group&lt;#&gt;.Subj&lt;#&gt;.SegFreq.sef</strong></I><br>files
+                             hold the segments coded as bumps, with 1 track per template,
+                             reflecting the frequency of the fit templates.<br>
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             In the <em><strong>Correlations</strong></em> directory, and in case of
+                             <A HREF="#output-correlation-of-data">correlation output</A>,<I><strong><br>&nbsp;&nbsp;&nbsp; &lt;basefilename&gt;.Group&lt;#&gt;.Subj&lt;#&gt;.CorrDataTempl</strong><A HREF="files-formats-cartool.html#sef"><strong>.sef</strong></A></I><br>
+                             <I><strong>&nbsp;&nbsp;&nbsp; &lt;basefilename&gt;.Group&lt;#&gt;.Subj&lt;#&gt;.CorrTempl</strong><A HREF="files-formats-cartool.html#sef"><strong>.sef</strong></A></I><br>
+                             files
+                             hold the correlations of the data with each template, and the
+                             correlation of the correlations.
+                         </P>
+                 </UL>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Also see the <A HREF="#technical-points">technical points</A>, and
+             especially the <A HREF="#GEV">GEV</A> remarks.
+         </P>
+         <H4>
+             <A NAME="fit-results-format"></A>Format of the <em>.csv</em> results
+         </H4>
+         <P>
+             As for today, there are <strong>2 output arrays</strong>, each with a <strong>
+                 different formatting
+             </strong> and targetting different packages. They however
+             <strong>contain exactly the same data</strong>, this is just a matter of
+             formatting the 4D (<em>number of groups</em> x <em>number of subjects</em> x
+             <em>number of segments</em> x <em>number of variables</em>) dataset...
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <h6>
+             <A NAME="csv-lines-as-samples"></A>The <em>.LinesAsSamples.csv</em> file
+         </h6>
+         <P>
+             <strong>Each line correspond to a subject</strong>, so the number of subjects
+             is equal to the total number of lines - 1 (the header line).
+         </P>
+         <P>
+             This is the format used by <A HREF="computing-statistics.html"><em>Cartool</em></A> and
+             <em>Statistica</em> for its statistical analysis.
+         </P>
+         <P>
+             With this format, lines end up to be huge, and sometimes will fail to be read
+             by Excel, though <em>Cartool</em> and other analysis packages will have no
+             problems reading them.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The format is the following:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <strong>First line is a header </strong>which lists all the <strong>
+                         mutliplexed variables' name
+                     </strong>. First variable name is always <em>
+                         Subject
+                     </em>, then there are many variables with format of the like <em>
+                         Group*_Map*_VariableName
+                     </em>.
+             <LI CLASS="mvd-P">
+                 <P>
+                     <strong>Next lines hold the data themselves</strong>, with 1 row/line per
+                     subject (so each line can be quite long):<UL>
+                         <LI CLASS="mvd-P">
+                             <P>
+                                 Data are mulitplexed by Group, then Map, then Variable, in this
+                                 order from outer to inner variable loop.<br>F.ex. you'll find first
+                                 all the variables of Group1, Map1, then all the variables of Group1,
+                                 Map2, etc.. for all maps, then all the variables of Group2, Map1, then
+                                 all the variables of Group2, Map2, etc...
+                         <LI CLASS="mvd-P">
+                             <P>
+                                 Data are written either in integer or floatting point, according to
+                                 their actual types (integer for counts f.ex., floatting point for GEV,
+                                 Gfp etc...)
+                     </UL>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Here is an example of the <strong>actual ordering</strong> (the formatting
+             itself is skipped for clarity), for 3 files, 2 groups, 2 maps, and 2
+             variables (<em>NumTF</em> and <em>Gfp</em>). The names in italic indicate
+             some <em>actual</em> data:
+         </P><PRE>File1<em>	Group1_Map1_NumTF  Group1_Map1_MaxGfp &nbsp;Group1_Map2_NumTF  Group1_Map2_MaxGfp &nbsp;Group2_Map1_NumTF  Group2_Map1_MaxGfp &nbsp;Group2_Map2_NumTF  Group2_Map2_MaxGfp<BR></em>File2<em>	Group1_Map1_NumTF  Group1_Map1_MaxGfp &nbsp;Group1_Map2_NumTF  Group1_Map2_MaxGfp &nbsp;Group2_Map1_NumTF  Group2_Map1_MaxGfp &nbsp;Group2_Map2_NumTF  Group2_Map2_MaxGfp<BR></em>File3<em>	Group1_Map1_NumTF  Group1_Map1_MaxGfp &nbsp;Group1_Map2_NumTF  Group1_Map2_MaxGfp &nbsp;Group2_Map1_NumTF  Group2_Map1_MaxGfp &nbsp;Group2_Map2_NumTF  Group2_Map2_MaxGfp</em></PRE>
+         <p>&nbsp;</p>
+         <h6>
+             <A NAME="csv-columns-as-factors"></A>The <em>.ColumnsAsFactors.csv</em> file
+         </h6>
+         <P>
+             <strong>Each column is a factor / variable</strong>.
+         </P>
+         <P>
+             This is the format used by <em>R</em>.
+         </P>
+         <P>
+             With this format, and contrary to the Lines As Samples format above, lines
+             are hopefully much shorter. The counterpart is that the number of lines is
+             much higher, and you have to make sure that all combinations of Files, Groups
+             and Maps indexes exist (like the indexes of a 3D array).
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The format is the following:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <strong>First line is a header </strong>which lists all the <strong>
+                         variables' name
+                     </strong>. First variables names are always <em>Subject</em>,
+                     <em>Group</em> and <em>Map</em>, then followed by all the
+                     <A HREF="#variable-names">variables names</A>.
+             <LI CLASS="mvd-P">
+                 <P>
+                     <strong>Next lines hold the data themselves</strong>:<UL>
+                         <LI CLASS="mvd-P">
+                             <P>
+                                 The <strong>first 3 values</strong> hold the file name, group
+                                 index, and map index, all in text.<br>F.ex.&nbsp;&nbsp;&nbsp; File1&nbsp;&nbsp;&nbsp;
+                                 Group2&nbsp;&nbsp;&nbsp; Map5
+                         <LI CLASS="mvd-P">
+                             <P>
+                                 Next are all the variables <em>values</em>, in the order listed
+                                 from the header line.
+                         <LI CLASS="mvd-P">
+                             <P>
+                                 Data are not necessarily ordered, though they are currently written
+                                 first by Group, then by Map, then by Variable.
+                     </UL>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Here is an example of the <strong>actual ordering</strong> (the formatting
+             itself is skipped for clarity), for 3 files, 2 groups, 2 maps, and 2
+             variables (<em>NumTF</em> and <em>Gfp</em>). The names in italic indicate
+             some <em>actual</em> data:
+         </P>
+         <PRE>File1<em>	</em>Group1<em>	</em>Map1<em>	Group1_Map1_NumTF  Group1_Map1_MaxGfp
 </em>File1<em>	</em>Group1<em>	</em>Map2<em>	Group1_Map2_NumTF  Group1_Map2_MaxGfp
 </em>File1<em>	</em>Group2<em>	</em>Map1<em>	Group2_Map1_NumTF  Group2_Map1_MaxGfp
 </em>File1<em>	</em>Group2<em>	</em>Map2<em>	Group2_Map2_NumTF  Group2_Map2_MaxGfp
@@ -1657,69 +2166,104 @@
 </em>File3	Group1	Map2	<em>Group1_Map2_NumTF  Group1_Map2_MaxGfp
 </em>File3	Group2	Map1	<em>Group2_Map1_NumTF  Group2_Map1_MaxGfp
 </em>File3	Group2	Map2	<em>Group2_Map2_NumTF  Group2_Map2_MaxGfp</em></PRE>
-  <H2>
-   <A NAME="fit-inv-sol"></A>Fitting in the Inverse Solution space</H2>
-  <P>This is the counterpart of the <A HREF="microstates-segmentation.html#seg-inv-sol">segmentation in 
-   the Inverse Solution space</a>. Instead of fitting the subjects' ERPs 
-   with the template maps from the segmentation, we can fit the 
-   <a href="computing-ris.html">Results
-    on Inverse Solution</a> <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></i></b> 
-  files with <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></i></b> templates 
-  obtained from the segmentation in the inverse space.</P>
-  <B><I>
-  <P>
-   <em>&lt;This part has to be totally rewritten&gt;</em></P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+         <H2>
+             <A NAME="fit-inv-sol"></A>Fitting in the Inverse Solution space
+         </H2>
+         <P>
+             This is the counterpart of the <A HREF="microstates-segmentation.html#seg-inv-sol">
+                 segmentation in
+                 the Inverse Solution space
+             </A>. Instead of fitting the subjects' ERPs
+             with the template maps from the segmentation, we can fit the
+             <a href="computing-ris.html">
+                 Results
+                 on Inverse Solution
+             </a> <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B>
+             files with <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B> templates
+             obtained from the segmentation in the inverse space.
+         </P>
+         <B>
+             <I>
+                 <P>
+                     <em>&lt;This part has to be totally rewritten&gt;</em>
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+                 </P>
+                 <P>
+                     &nbsp;
+     </div>
  </BODY>
 </HTML>

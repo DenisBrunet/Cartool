@@ -2,551 +2,732 @@
  <HEAD>
   <TITLE>General Commands for all Windows</TITLE>
  <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css"></HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   General Commands for all Windows</H1>
-  <P>
-   &nbsp;</P>
-  <P>
-   All <A HREF="terms-definitions-formulas.html#view">views</A> are now drawn using the <A HREF="terms-definitions-formulas.html#OpenGL">OpenGL</A> 
-   library, allowing to show and manipulate objects in a 3D world. Here 
-   are introduced <B>all the commands common to all views</B>.</P>
-  <H3>
-   <B><A HREF="#buttons">Buttons</A></B></H3>
-  <H5>
-   <A HREF="#linking"><IMG SRC="images/all.button.graphical-link.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#rendering"><IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#orientation"><IMG SRC="images/all.button.orientation.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#magnifier"><IMG SRC="images/all.button.magnifier.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A></H5>
-  <H3>
-   <A HREF="#mouse">M</A><B><A HREF="#mouse">ouse</A></B></H3>
-  <H5>
-   <A HREF="#mouse">All basic mouse operations</A><br><A HREF="#mouse-hints">Visual hints during mouse operation</A><br>
-   <A HREF="#mouse-rotating">Rotating</A><br><A HREF="#mouse-zooming">Zooming</A><br>
-   <A HREF="#mouse-picking">Polling or Selecting</A><br>
-   <A HREF="#mouse-setting">Setting</A><br><A HREF="#moving-clipping">Moving the clipping planes</A><br>
-   <A HREF="#brightness-contrast">Setting brightness and contrast</A></H5>
-  <H3>
-   <A HREF="#keyboard">Keyboard</A></H3>
-  <H5>
-   <A HREF="#keyboard-rotating">Rotating</A><br><A HREF="#moving-clipping-key">Moving clipping planes</A><br>
-   <A HREF="#keyboard-bitmapcopy">Bitmap copy / snapshot</A></H5>
-  <H2>
-   <A NAME="buttons"></A>Common commands - Buttons</H2>
-  <H3>
-   <A NAME="linking"></A>Linking to another 3D view&nbsp; <IMG SRC="images/all.button.graphical-link.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   <B>Graphical links</B> allow drawing the contents of <B>other</B> 
-   windows inside a specific one. You can increase the visual message 
-   and check data consistency, through this 3D-consistent inclusion. For 
-   example, linking 2 windows with MRIs, one with a segmented brain and 
-   the other one with a full head would give:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/all.graphical-link-2.png" ALIGN=ABSMIDDLE VSPACE="0" HSPACE="0" BORDER="0">+
-     link to<IMG SRC="images/all.graphical-link-1.png" ALIGN=ABSMIDDLE VSPACE="0" HSPACE="0" BORDER="0"><BR>
-    =<BR>
-    <IMG SRC="images/all.graphical-link-3.png" ALIGN=ABSMIDDLE VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <H4>
-   How to do graphical links:</H4>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    When clicking on the linking button, a picking arrow appears. By 
-    further clicking with this arrow onto other 3D views, you <B>create</B> 
-    the link to them. That's that simple.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    You can <B>remove</B> individually linked windows by clicking again 
-    on them, or you can remove all links at once by clicking one time in 
-    the original window. Loops of links are not allowed, i.e. linking 
-    view1 to view2, then view2 to view1.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    To <B>quit the linking</B> process, just click outside any 3D window.</P>
-   </UL>
-  <H4>
-   Some remarks:</H4>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    The windows'contents are incorporated as they are currently drawn, 
-    with their <B>actual respective settings</B>. You can therefor set 
-    different aspects for each linked views independently, as in the 
-    example above, where the brain is opaque, and the full head is 
-    clipped and transparently rendered. Conversely, any change in one 
-    view will be <B>automatically forwarded</B> to all views linking to it.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    There is <B>no limit</B> as to the number of links allowed, as long 
-    as your graphic card is powerful enough to support this multi-pass 
-    rendering quickly enough for you to work.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The <B>linked windows are stacked</B> in their incoming order, the 
-    latest being visually &quot;on top&quot;. Cartool handles the case of 
-    perfect superimposition (same coordinates) of two windows, in such a 
-    way that the window last linked will be visible. If this is not what 
-    you expect, change the order of the links (clicking the correct 
-    sequence of windows).</P>
-   <LI CLASS="mvd-P">
-   <P>
-    If both the host view and the linked view have <A HREF="#moving-clipping">clipping
-     planes</A> abilities (f.ex. see <A HREF="mri-display.html#clipping-X">here</A>),
-     and <B>if both views have at least one clipping plane active</B>, 
-    then <B>the host view will override the linked view with its own 
-    clipping planes and positions</B>. That is, both views will be 
-    dynamically &quot;synchronized&quot; with the same cutting planes.</P>
-   </UL>
-  <H3>
-   <A NAME="rendering"></A>Rendering&nbsp; <IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   Rendering is about <B>changing the modality your data are being 
-   displayed with</B>. By modality, we mean things like <A HREF="mri-display.html#rendering">transparency
-    versus opacity</A>, or <A HREF="potentials-maps-display.html#rendering">different
-    kind of transparencies</A>, different ways of <A HREF="eeg-display.html#rendering">tiling
-    tracks</A>, etc...</P>
-  <P>
-   <B>Each kind of display has its own set of renderings</B>, which you 
-   can cycle through with this button. Also, most displays of course 
-   include many additional parameters to help refine the current 
-   rendering, but the main switch is still the rendering mode itself.</P>
-  <P>
-   For example, here are some renderings from the <A HREF="mri-display.html">MRI
-    / Volume display</A>, showing either opaque slices, a full 
-   transparent surface or a full opaque surface:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/all.rendering-1.png" ALIGN=ABSMIDDLE WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0">,<IMG SRC="images/all.rendering-2.png" ALIGN=ABSMIDDLE WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0">,<IMG SRC="images/all.rendering-3.png" ALIGN=ABSMIDDLE WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0">...</P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <P>
-   <I>Note:</I> nearly all displays include a &quot;void&quot; rendering 
-   in their list of renderings, which actually turns off the display. 
-   This is useful when you have <A HREF="#linking">included a window</A> 
-   into another one and want to temporarily hide it while keeping the link.</P>
-  <H3>
-   <A NAME="orientation"></A>Default orientation(s)&nbsp; <IMG SRC="images/all.button.orientation.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   The default is to reset to <B>original 3D orientation</B>. However, 
-   in some cases (MRI, inverse solution...), the buttons will toggle 
-   through a <B>serie of predefined orientations</B>, f.ex. sagittal, 
-   coronal, transverse. See also <A HREF="#mouse-rotating">mouse rotation</A>.</P>
-  <H3>
-   <A NAME="magnifier"></A>Magnifier&nbsp; <IMG SRC="images/all.button.magnifier.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></H3>
-  <P>
-   By clicking on this button, you enter the magnifier mode, which 
-   graphically zooms the current window. Just move the loupe around the 
-   window to see what's going on there. You can temporarily have a 
-   better idea of a small, or intricate area.</P>
-  <P>
-   Another way to start this mode is by first setting the mouse pointer 
-   where you wish to see more, then press G to magnify. You can again 
-   move the pointer.</P>
-  <P>
-   Quit the magnifier simply by clicking.</P>
-  <P>
-   The magnifier acts purely in 2D, like zooming a picture, and does not 
-   affect any 3D settings.</P>
-  <H2>
-   <A NAME="mouse"></A>Common commands - Mouse</H2>
-  <H3>
-   All basic mouse operations</H3>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="90%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <P ALIGN=RIGHT>
-        <B>Alternate key</B></P>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Mouse button</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>None</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Shift</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Control</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Left</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <A HREF="windows-general-commands.html#mouse-rotating">Rotating</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         &nbsp;</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <A HREF="windows-general-commands.html#mouse-zooming">Zooming</A></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Middle</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <A HREF="#mouse-picking">Polling or Selecting</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <A HREF="#mouse-setting">Setting to bad</A>&nbsp;</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Right</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <A HREF="#brightness-contrast">Brightness / Contrast</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         &nbsp;</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <A HREF="#moving-clipping">Moving clipping planes</A></TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <H3>
-   <A NAME="mouse-hints"></A>Visual hints during mouse operation</H3>
-  <P>
-   Cartool will superimpose on the display a kind of <B>iconic hint</B> 
-   of what the current mouse operation is. This is to help the users 
-   know (and use) better all the mouse functionnalities, which are 
-   designed to improve your experience.</P>
-  <P>
-   These hints may vary according to the current type of display, here 
-   are some examples of the most common ones for operations like 
-   rotation, zoom, brightness (FYI it's the yellowish stuff):</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/vishint.1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.2.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-    <IMG SRC="images/vishint.5.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.6.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-    <IMG SRC="images/vishint.7.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.8.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <H3>
-   <A NAME="mouse-rotating"></A>Rotating</H3>
-  <P>
-   Using the mouse with the <B>left button</B> depressed, you can set 
-   the current rotation of the object. The <B>effect will be different</B> 
-   according to the <B>relative position of the mouse in the window</B>:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/mouse.rotating2.png" WIDTH="186" HEIGHT="183" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    In the <B>central part</B>, you can rotate and turn as if you were 
-    picking the object in 3D.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    In the <B>peripheric part</B>, with a circular movement, the object 
-    will only turn like a 2D picture on the screen. But if you add a 
-    radial component to your movement, it will also add a 3D rotation, as before.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    If you press on <B>Alt key</B> while doing any rotation, all the 
-    angles will step only by <B>45 degrees</B> each time. You can achieve 
-    clean and precise orthogonal views by starting from the default view, 
-    or by <A HREF="#orientation">resetting the orientation</A>.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   The <A HREF="#mouse-hints">visual hints</A> associated, for the 
-   central part of the window, without and with the <B>Alt</B> key:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/vishint.1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.3.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   The <A HREF="#mouse-hints">visual hints</A> associated, for the 
-   peripheric part of the window, without and with the <B>Alt</B> key:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/vishint.2.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.4.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <H3>
-   <A NAME="mouse-zooming"></A>Zooming</H3>
-  <P>
-   With the mouse <B>left button</B> and the <B>Control</B> key 
-   depressed, you control the 3D zoom of the object, that is how big it 
-   is rendered inside the window:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    move upward to zoom out</P>
-   <LI CLASS="mvd-P">
-   <P>
-    move downward to zoom in</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   The <A HREF="#mouse-hints">visual hints</A> associated, for zooming 
-   out and zooming in:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/vishint.5.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.6.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <H3>
-   <A NAME="mouse-picking"></A>Polling or Selecting</H3>
-  <P>
-   While pressing the <B>middle button</B> (yes, under the scroll 
-   wheel!) of the mouse, you can <B>poll</B> or <B>select things</B> 
-   from what you see, and get some informations out of it:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    A <B>3D cross</B> is drawn at the 3D position where you have pointed to,</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Some <B>textual informations</B> is given below the cross, such as 
-    the <B>3D coordinates</B>, the <B>Talairach coordinates &amp; names</B>,
-     some <B>value</B> at that point, etc...</P>
-   <LI CLASS="mvd-P">
-   <P>
-    If there are <A HREF="#linking">graphical links</A> to other windows, 
-    they will too contribute to the informations displayed.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The <B>Clipboard 
-    is automatically updated</B> with the same informations as displayed. 
-    You can then <I>Paste</I> them into Excel, a text editor etc... for 
-    later use!</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   <I>Note:</I> In the case of the <A HREF="eeg-display.html#rendering">EEG 2D display</A>,
-    the Polling mechanism is overriden to a <B><A HREF="eeg-display.html#mouse-tracks-select">track
-    selection mechanism</A></B>.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   An example of polling into a MRI with <A HREF="mri-display.html#talairach">Talairach
-    capabilities</A>, showing what the user can see on the screen, and 
-   the resulting 12 fields&nbsp; from the Clipboard, each separated by a <I>Tab</I>:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/all.polling-mri.png" WIDTH="322" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER><PRE>45.57  74.68  73.43  18  15  -1  Right Cerebrum  Sub-lobar  Lentiform Nucleus  Gray Matter  Putamen  164</PRE><P>
-   Another example, here polling into some Electrode coordinates:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/all.polling-xyz.png" WIDTH="306" HEIGHT="302" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER><PRE>0.41  0.22  0.88                                                                                     17</PRE><P>
-   The clipboard is always filled with <B>12 </B><I><B>Tab</B></I><B> 
-   separated fields</B>:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    It always starts with the <B>actual x, y, z coordinates</B> of where 
-    you clicked,</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Then the equivalent <B>Talairach coordinates</B>, if available,</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The <B>5 labels</B> from that Talairach region, if available (<I>&agrave;
-     la</I> Talairach Daemon),</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Finally, a <B>value / label related to the underlying object</B>: the 
-    value for MRI, the electrode name for electrodes, etc...</P>
-   </UL>
-  <P>
-   Any missing piece of information is replaced by a blank <I>Tab</I>, 
-   so you always get 12 fields to help you devise any sort of automation 
-   on the retrieved data.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Finally, if another window is <A HREF="#linking"><B>graphically linked</B></A> 
-   into the current one, it can slightly modify the content of what you 
-   clicked onto. For example, it can jump right on the center of the 
-   Solution points, and add the information pertaining to that solution point:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/all.polling-mri.png" WIDTH="322" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.polling-mri-and-sp.png" WIDTH="322" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <H3>
-   <A NAME="mouse-setting"></A>Setting</H3>
-  <P>
-   With the mouse <B>middle button</B> and the <B>Shift</B> key 
-   depressed, you can optionally set an electrode as <B><A HREF="terms-definitions-formulas.html#tracks">bad</A></B>.
-    Presently this works only within a few views (electrodes 
-   coordinates, potentials display). The result should be 
-   straightforward, by changing the electrode's color.</P>
-  <H3>
-   <A NAME="moving-clipping"></A>Moving the clipping planes</H3>
-  <P>
-   (<B>if</B> clipping planes are available within the current view)</P>
-  <P>
-   With the mouse <B>right button</B> and the <B>Control</B> key 
-   depressed, you can move the clipping planes (can also be done <A HREF="#moving-clipping-key">from
-    the keyboard</A>):</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    If only 1 clipping plane is active, this is the one that will be 
-    modified. Simply follow the direction of its projected axis on the display.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    If 2 or 3 clipping planes are active, Cartool guesses which one you 
-    want to move by reading the initial motion of your mouse. The 
-    direction you give (the big yellow arrow) will select the axis which 
-    is closer to it (here the Z axis, in blue):</P>
-   </UL>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/mri.clipmove.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   Release the right mouse if the selected axis is not the one you 
-   expected, and try again. Most of the time, the guess is correct, but 
-   if&nbsp; the projected axis are very close, it might prove impossible 
-   (here the Y-green and Z-blue axis are too close):</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/mri.clipmove2.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <P>
-   The <A HREF="#mouse-hints">visual hint</A> associated:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/vishint.11.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <H3>
-   <A NAME="brightness-contrast"></A>Setting brightness and contrast</H3>
-  <P>
-   With the mouse <B>right button</B>, you can adjust the <B>brightness</B>,
-    if the initial motion is <B>horizontal</B>, leftward decreases 
-   respectively rightward increases it.<BR>
-   If the initial motion is <B>vertical</B>, downward decreases and 
-   upward increases the <B>contrast</B>.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   The <A HREF="#mouse-hints">visual hints</A> associated:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/vishint.7.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.8.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-    <IMG SRC="images/vishint.9.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.10.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <H2>
-   <A NAME="keyboard"></A>Common commands - Keyboard</H2>
-  <P>
-   See <A HREF="general-concepts.html#using-views">here</A> for basic 
-   commands from the keyboard.</P>
-  <H3>
-   <A NAME="keyboard-rotating"></A>Rotating</H3>
-  <P>
-   By pressing <B>X</B>, <B>Y</B> or <B>Z</B> you <B>rotate</B> the 
-   object, and with <B>Shift</B> depressed, you counter-rotate. See <A HREF="#mouse-rotating">here</A> 
-   for rotating with the mouse.</P>
-  <H3>
-   <A NAME="moving-clipping-key"></A>Moving the clipping planes</H3>
-  <P>
-   Apart from using the <A HREF="#moving-clipping">mouse to move the 
-   clipping planes</A>, by first pressing keypad <B>+</B> or <B>-</B> , 
-   then on&nbsp; <B>X</B>, <B>Y</B> or <B>Z</B> , you can shift the 
-   corresponding plane.</P>
-  <H3>
-   <A NAME="keyboard-bitmapcopy"></A>Copy as Bitmap (snapshot)</H3>
-  <P>
-   To copy the visual content of the current window, use&nbsp; <B><FONT FACE="Arial Black,Arial,Helvetica">Edit
-    | Copy as bitmap</FONT></B>&nbsp; or use keyboard <B>Control + C</B>.
-    The snapshot will be placed in the <B>clipboard</B>, ready to be 
-   pasted into whatever other program you use (Word, Powerpoint, 
-   Photoshop, etc..).</P>
-  <P>
-   During the snapshot, Cartool tunes up many parameters to make the 
-   display even more precise and beautiful, f.ex.:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Using anti-aliasing techniques to remove jagged lines and borders.<BR>
-    <LI CLASS="mvd-P">More spatial resolution in some of the objects displayed.<BR>
-    <LI CLASS="mvd-P">More color resolution.<BR>
-    <LI CLASS="mvd-P">The blue background color is replaced by a white 
-    one, as most of the time, you are going to paste it into a white 
-    page. At the same time, the colors of some &quot;furnitures&quot; 
-    (like axis, borders..) are also adjusted.</P>
-   </UL>
-  <P>
-   All these features come with a (CPU) cost, and most of the time you 
-   will not notice it. But in some complex windows (MRI shown in slices, 
-   or many <A HREF="windows-general-commands.html#linking">linked windows</A>), the 
-   extra time taken can be noticeable. Just be patient, the results will 
-   be worth it.</P>
-  <P>
-   Here is an example of a normal MRI window, with the blue background 
-   (note the jagged borders with the background, and the inner jagged 
-   colors), and the same window once copied, with the white background 
-   (no more jagged borders, and more spatial and color resolution within 
-   the slice):</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/copybitmap1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/copybitmap2.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             General Commands for all Windows
+         </H1>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             All <A HREF="terms-definitions-formulas.html#view">views</A> are now drawn using the <A HREF="terms-definitions-formulas.html#OpenGL">OpenGL</A>
+             library, allowing to show and manipulate objects in a 3D world. Here
+             are introduced <B>all the commands common to all views</B>.
+         </P>
+         <H3>
+             <B><A HREF="#buttons">Buttons</A></B>
+         </H3>
+         <H5>
+             <A HREF="#linking"><IMG SRC="images/all.button.graphical-link.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#rendering"><IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#orientation"><IMG SRC="images/all.button.orientation.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A> <A HREF="#magnifier"><IMG SRC="images/all.button.magnifier.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0"></A>
+         </H5>
+         <H3>
+             <A HREF="#mouse">M</A><B><A HREF="#mouse">ouse</A></B>
+         </H3>
+         <H5>
+             <A HREF="#mouse">All basic mouse operations</A><br><A HREF="#mouse-hints">Visual hints during mouse operation</A><br>
+             <A HREF="#mouse-rotating">Rotating</A><br><A HREF="#mouse-zooming">Zooming</A><br>
+             <A HREF="#mouse-picking">Polling or Selecting</A><br>
+             <A HREF="#mouse-setting">Setting</A><br><A HREF="#moving-clipping">Moving the clipping planes</A><br>
+             <A HREF="#brightness-contrast">Setting brightness and contrast</A>
+         </H5>
+         <H3>
+             <A HREF="#keyboard">Keyboard</A>
+         </H3>
+         <H5>
+             <A HREF="#keyboard-rotating">Rotating</A><br><A HREF="#moving-clipping-key">Moving clipping planes</A><br>
+             <A HREF="#keyboard-bitmapcopy">Bitmap copy / snapshot</A>
+         </H5>
+         <H2>
+             <A NAME="buttons"></A>Common commands - Buttons
+         </H2>
+         <H3>
+             <A NAME="linking"></A>Linking to another 3D view&nbsp; <IMG SRC="images/all.button.graphical-link.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             <B>Graphical links</B> allow drawing the contents of <B>other</B>
+             windows inside a specific one. You can increase the visual message
+             and check data consistency, through this 3D-consistent inclusion. For
+             example, linking 2 windows with MRIs, one with a segmented brain and
+             the other one with a full head would give:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/all.graphical-link-2.png" ALIGN=ABSMIDDLE VSPACE="0" HSPACE="0" BORDER="0">+
+                 link to<IMG SRC="images/all.graphical-link-1.png" ALIGN=ABSMIDDLE VSPACE="0" HSPACE="0" BORDER="0"><BR>
+                 =<BR>
+                 <IMG SRC="images/all.graphical-link-3.png" ALIGN=ABSMIDDLE VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <H4>
+             How to do graphical links:
+         </H4>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     When clicking on the linking button, a picking arrow appears. By
+                     further clicking with this arrow onto other 3D views, you <B>create</B>
+                     the link to them. That's that simple.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     You can <B>remove</B> individually linked windows by clicking again
+                     on them, or you can remove all links at once by clicking one time in
+                     the original window. Loops of links are not allowed, i.e. linking
+                     view1 to view2, then view2 to view1.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     To <B>quit the linking</B> process, just click outside any 3D window.
+                 </P>
+         </UL>
+         <H4>
+             Some remarks:
+         </H4>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The windows'contents are incorporated as they are currently drawn,
+                     with their <B>actual respective settings</B>. You can therefor set
+                     different aspects for each linked views independently, as in the
+                     example above, where the brain is opaque, and the full head is
+                     clipped and transparently rendered. Conversely, any change in one
+                     view will be <B>automatically forwarded</B> to all views linking to it.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     There is <B>no limit</B> as to the number of links allowed, as long
+                     as your graphic card is powerful enough to support this multi-pass
+                     rendering quickly enough for you to work.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The <B>linked windows are stacked</B> in their incoming order, the
+                     latest being visually &quot;on top&quot;. Cartool handles the case of
+                     perfect superimposition (same coordinates) of two windows, in such a
+                     way that the window last linked will be visible. If this is not what
+                     you expect, change the order of the links (clicking the correct
+                     sequence of windows).
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     If both the host view and the linked view have <A HREF="#moving-clipping">
+                         clipping
+                         planes
+                     </A> abilities (f.ex. see <A HREF="mri-display.html#clipping-X">here</A>),
+                     and <B>if both views have at least one clipping plane active</B>,
+                     then <B>
+                         the host view will override the linked view with its own
+                         clipping planes and positions
+                     </B>. That is, both views will be
+                     dynamically &quot;synchronized&quot; with the same cutting planes.
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="rendering"></A>Rendering&nbsp; <IMG SRC="images/all.button.rendering.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             Rendering is about <B>
+                 changing the modality your data are being
+                 displayed with
+             </B>. By modality, we mean things like <A HREF="mri-display.html#rendering">
+                 transparency
+                 versus opacity
+             </A>, or <A HREF="potentials-maps-display.html#rendering">
+                 different
+                 kind of transparencies
+             </A>, different ways of <A HREF="eeg-display.html#rendering">
+                 tiling
+                 tracks
+             </A>, etc...
+         </P>
+         <P>
+             <B>Each kind of display has its own set of renderings</B>, which you
+             can cycle through with this button. Also, most displays of course
+             include many additional parameters to help refine the current
+             rendering, but the main switch is still the rendering mode itself.
+         </P>
+         <P>
+             For example, here are some renderings from the <A HREF="mri-display.html">
+                 MRI
+                 / Volume display
+             </A>, showing either opaque slices, a full
+             transparent surface or a full opaque surface:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/all.rendering-1.png" ALIGN=ABSMIDDLE WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0">,<IMG SRC="images/all.rendering-2.png" ALIGN=ABSMIDDLE WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0">,<IMG SRC="images/all.rendering-3.png" ALIGN=ABSMIDDLE WIDTH="237" HEIGHT="228" VSPACE="0" HSPACE="0" BORDER="0">...
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             <I>Note:</I> nearly all displays include a &quot;void&quot; rendering
+             in their list of renderings, which actually turns off the display.
+             This is useful when you have <A HREF="#linking">included a window</A>
+             into another one and want to temporarily hide it while keeping the link.
+         </P>
+         <H3>
+             <A NAME="orientation"></A>Default orientation(s)&nbsp; <IMG SRC="images/all.button.orientation.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             The default is to reset to <B>original 3D orientation</B>. However,
+             in some cases (MRI, inverse solution...), the buttons will toggle
+             through a <B>serie of predefined orientations</B>, f.ex. sagittal,
+             coronal, transverse. See also <A HREF="#mouse-rotating">mouse rotation</A>.
+         </P>
+         <H3>
+             <A NAME="magnifier"></A>Magnifier&nbsp; <IMG SRC="images/all.button.magnifier.png" ALIGN=BASELINE VSPACE="0" HSPACE="0" BORDER="0">
+         </H3>
+         <P>
+             By clicking on this button, you enter the magnifier mode, which
+             graphically zooms the current window. Just move the loupe around the
+             window to see what's going on there. You can temporarily have a
+             better idea of a small, or intricate area.
+         </P>
+         <P>
+             Another way to start this mode is by first setting the mouse pointer
+             where you wish to see more, then press G to magnify. You can again
+             move the pointer.
+         </P>
+         <P>
+             Quit the magnifier simply by clicking.
+         </P>
+         <P>
+             The magnifier acts purely in 2D, like zooming a picture, and does not
+             affect any 3D settings.
+         </P>
+         <H2>
+             <A NAME="mouse"></A>Common commands - Mouse
+         </H2>
+         <H3>
+             All basic mouse operations
+         </H3>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="90%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <P ALIGN=RIGHT>
+                                 <B>Alternate key</B>
+                             </P>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Mouse button</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>None</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Shift</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Control</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Left</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <A HREF="windows-general-commands.html#mouse-rotating">Rotating</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     &nbsp;
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <A HREF="windows-general-commands.html#mouse-zooming">Zooming</A>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Middle</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <A HREF="#mouse-picking">Polling or Selecting</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <A HREF="#mouse-setting">Setting to bad</A>&nbsp;
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Right</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <A HREF="#brightness-contrast">Brightness / Contrast</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     &nbsp;
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <A HREF="#moving-clipping">Moving clipping planes</A>
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="mouse-hints"></A>Visual hints during mouse operation
+         </H3>
+         <P>
+             Cartool will superimpose on the display a kind of <B>iconic hint</B>
+             of what the current mouse operation is. This is to help the users
+             know (and use) better all the mouse functionnalities, which are
+             designed to improve your experience.
+         </P>
+         <P>
+             These hints may vary according to the current type of display, here
+             are some examples of the most common ones for operations like
+             rotation, zoom, brightness (FYI it's the yellowish stuff):
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/vishint.1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.2.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+                 <IMG SRC="images/vishint.5.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.6.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+                 <IMG SRC="images/vishint.7.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.8.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <H3>
+             <A NAME="mouse-rotating"></A>Rotating
+         </H3>
+         <P>
+             Using the mouse with the <B>left button</B> depressed, you can set
+             the current rotation of the object. The <B>effect will be different</B>
+             according to the <B>relative position of the mouse in the window</B>:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/mouse.rotating2.png" WIDTH="186" HEIGHT="183" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     In the <B>central part</B>, you can rotate and turn as if you were
+                     picking the object in 3D.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     In the <B>peripheric part</B>, with a circular movement, the object
+                     will only turn like a 2D picture on the screen. But if you add a
+                     radial component to your movement, it will also add a 3D rotation, as before.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     If you press on <B>Alt key</B> while doing any rotation, all the
+                     angles will step only by <B>45 degrees</B> each time. You can achieve
+                     clean and precise orthogonal views by starting from the default view,
+                     or by <A HREF="#orientation">resetting the orientation</A>.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The <A HREF="#mouse-hints">visual hints</A> associated, for the
+             central part of the window, without and with the <B>Alt</B> key:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/vishint.1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.3.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             The <A HREF="#mouse-hints">visual hints</A> associated, for the
+             peripheric part of the window, without and with the <B>Alt</B> key:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/vishint.2.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.4.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <H3>
+             <A NAME="mouse-zooming"></A>Zooming
+         </H3>
+         <P>
+             With the mouse <B>left button</B> and the <B>Control</B> key
+             depressed, you control the 3D zoom of the object, that is how big it
+             is rendered inside the window:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     move upward to zoom out
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     move downward to zoom in
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The <A HREF="#mouse-hints">visual hints</A> associated, for zooming
+             out and zooming in:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/vishint.5.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.6.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <H3>
+             <A NAME="mouse-picking"></A>Polling or Selecting
+         </H3>
+         <P>
+             While pressing the <B>middle button</B> (yes, under the scroll
+             wheel!) of the mouse, you can <B>poll</B> or <B>select things</B>
+             from what you see, and get some informations out of it:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <B>3D cross</B> is drawn at the 3D position where you have pointed to,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Some <B>textual informations</B> is given below the cross, such as
+                     the <B>3D coordinates</B>, the <B>Talairach coordinates &amp; names</B>,
+                     some <B>value</B> at that point, etc...
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     If there are <A HREF="#linking">graphical links</A> to other windows,
+                     they will too contribute to the informations displayed.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The <B>
+                         Clipboard
+                         is automatically updated
+                     </B> with the same informations as displayed.
+                     You can then <I>Paste</I> them into Excel, a text editor etc... for
+                     later use!
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             <I>Note:</I> In the case of the <A HREF="eeg-display.html#rendering">EEG 2D display</A>,
+             the Polling mechanism is overriden to a <B>
+                 <A HREF="eeg-display.html#mouse-tracks-select">
+                     track
+                     selection mechanism
+                 </A>
+             </B>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             An example of polling into a MRI with <A HREF="mri-display.html#talairach">
+                 Talairach
+                 capabilities
+             </A>, showing what the user can see on the screen, and
+             the resulting 12 fields&nbsp; from the Clipboard, each separated by a <I>Tab</I>:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/all.polling-mri.png" WIDTH="322" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER><PRE>45.57  74.68  73.43  18  15  -1  Right Cerebrum  Sub-lobar  Lentiform Nucleus  Gray Matter  Putamen  164</PRE><P>
+             Another example, here polling into some Electrode coordinates:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/all.polling-xyz.png" WIDTH="306" HEIGHT="302" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER><PRE>0.41  0.22  0.88                                                                                     17</PRE><P>
+             The clipboard is always filled with <B>12 </B><I><B>Tab</B></I><B>
+                 separated fields
+             </B>:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     It always starts with the <B>actual x, y, z coordinates</B> of where
+                     you clicked,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Then the equivalent <B>Talairach coordinates</B>, if available,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The <B>5 labels</B> from that Talairach region, if available (<I>
+                         &agrave;
+                         la
+                     </I> Talairach Daemon),
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Finally, a <B>value / label related to the underlying object</B>: the
+                     value for MRI, the electrode name for electrodes, etc...
+                 </P>
+         </UL>
+         <P>
+             Any missing piece of information is replaced by a blank <I>Tab</I>,
+             so you always get 12 fields to help you devise any sort of automation
+             on the retrieved data.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Finally, if another window is <A HREF="#linking"><B>graphically linked</B></A>
+             into the current one, it can slightly modify the content of what you
+             clicked onto. For example, it can jump right on the center of the
+             Solution points, and add the information pertaining to that solution point:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/all.polling-mri.png" WIDTH="322" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/all.polling-mri-and-sp.png" WIDTH="322" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <H3>
+             <A NAME="mouse-setting"></A>Setting
+         </H3>
+         <P>
+             With the mouse <B>middle button</B> and the <B>Shift</B> key
+             depressed, you can optionally set an electrode as <B><A HREF="terms-definitions-formulas.html#tracks">bad</A></B>.
+             Presently this works only within a few views (electrodes
+             coordinates, potentials display). The result should be
+             straightforward, by changing the electrode's color.
+         </P>
+         <H3>
+             <A NAME="moving-clipping"></A>Moving the clipping planes
+         </H3>
+         <P>
+             (<B>if</B> clipping planes are available within the current view)
+         </P>
+         <P>
+             With the mouse <B>right button</B> and the <B>Control</B> key
+             depressed, you can move the clipping planes (can also be done <A HREF="#moving-clipping-key">
+                 from
+                 the keyboard
+             </A>):
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     If only 1 clipping plane is active, this is the one that will be
+                     modified. Simply follow the direction of its projected axis on the display.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     If 2 or 3 clipping planes are active, Cartool guesses which one you
+                     want to move by reading the initial motion of your mouse. The
+                     direction you give (the big yellow arrow) will select the axis which
+                     is closer to it (here the Z axis, in blue):
+                 </P>
+         </UL>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/mri.clipmove.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             Release the right mouse if the selected axis is not the one you
+             expected, and try again. Most of the time, the guess is correct, but
+             if&nbsp; the projected axis are very close, it might prove impossible
+             (here the Y-green and Z-blue axis are too close):
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/mri.clipmove2.png" WIDTH="205" HEIGHT="195" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The <A HREF="#mouse-hints">visual hint</A> associated:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/vishint.11.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <H3>
+             <A NAME="brightness-contrast"></A>Setting brightness and contrast
+         </H3>
+         <P>
+             With the mouse <B>right button</B>, you can adjust the <B>brightness</B>,
+             if the initial motion is <B>horizontal</B>, leftward decreases
+             respectively rightward increases it.<BR>
+             If the initial motion is <B>vertical</B>, downward decreases and
+             upward increases the <B>contrast</B>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The <A HREF="#mouse-hints">visual hints</A> associated:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/vishint.7.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.8.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+                 <IMG SRC="images/vishint.9.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/vishint.10.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <H2>
+             <A NAME="keyboard"></A>Common commands - Keyboard
+         </H2>
+         <P>
+             See <A HREF="general-concepts.html#using-views">here</A> for basic
+             commands from the keyboard.
+         </P>
+         <H3>
+             <A NAME="keyboard-rotating"></A>Rotating
+         </H3>
+         <P>
+             By pressing <B>X</B>, <B>Y</B> or <B>Z</B> you <B>rotate</B> the
+             object, and with <B>Shift</B> depressed, you counter-rotate. See <A HREF="#mouse-rotating">here</A>
+             for rotating with the mouse.
+         </P>
+         <H3>
+             <A NAME="moving-clipping-key"></A>Moving the clipping planes
+         </H3>
+         <P>
+             Apart from using the <A HREF="#moving-clipping">
+                 mouse to move the
+                 clipping planes
+             </A>, by first pressing keypad <B>+</B> or <B>-</B> ,
+             then on&nbsp; <B>X</B>, <B>Y</B> or <B>Z</B> , you can shift the
+             corresponding plane.
+         </P>
+         <H3>
+             <A NAME="keyboard-bitmapcopy"></A>Copy as Bitmap (snapshot)
+         </H3>
+         <P>
+             To copy the visual content of the current window, use&nbsp; <B>
+                 <FONT FACE="Arial Black,Arial,Helvetica">
+                     Edit
+                     | Copy as bitmap
+                 </FONT>
+             </B>&nbsp; or use keyboard <B>Control + C</B>.
+             The snapshot will be placed in the <B>clipboard</B>, ready to be
+             pasted into whatever other program you use (Word, Powerpoint,
+             Photoshop, etc..).
+         </P>
+         <P>
+             During the snapshot, Cartool tunes up many parameters to make the
+             display even more precise and beautiful, f.ex.:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Using anti-aliasing techniques to remove jagged lines and borders.<BR>
+             <LI CLASS="mvd-P">More spatial resolution in some of the objects displayed.<BR>
+             <LI CLASS="mvd-P">More color resolution.<BR>
+             <LI CLASS="mvd-P">
+                 The blue background color is replaced by a white
+                 one, as most of the time, you are going to paste it into a white
+                 page. At the same time, the colors of some &quot;furnitures&quot;
+                 (like axis, borders..) are also adjusted.</P>
+         </UL>
+         <P>
+             All these features come with a (CPU) cost, and most of the time you
+             will not notice it. But in some complex windows (MRI shown in slices,
+             or many <A HREF="windows-general-commands.html#linking">linked windows</A>), the
+             extra time taken can be noticeable. Just be patient, the results will
+             be worth it.
+         </P>
+         <P>
+             Here is an example of a normal MRI window, with the blue background
+             (note the jagged borders with the background, and the inner jagged
+             colors), and the same window once copied, with the white background
+             (no more jagged borders, and more spatial and color resolution within
+             the slice):
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/copybitmap1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/copybitmap2.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

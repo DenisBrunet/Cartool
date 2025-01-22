@@ -26,571 +26,741 @@
 }
 </style>
  </HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   Electrodes Coregistration to MRI</H1>
-  <P>
-   &nbsp;</P>
-  <P>
-   This toolbox helps the user to <strong>interactively coregister electrodes on 
-   a full head MRI</strong>. This is usually a required step before
-   <A HREF="computing-inverse-solution-matrices.html#electrodes-setup">building inverse 
-   matrices</a>.</P>
-  <P>
-   &nbsp;</P>
-  <h6>
-   <a href="#dialog">Electrodes Coregistration Dialog</a></h6>
-  <h6>
-   <A HREF="#technical-points">Technical points &amp; hints</a></h6>
-  <h6>
-   &nbsp;&nbsp;&nbsp; <a href="#actions">Actions</a></h6>
-  <h6>
-   &nbsp;&nbsp;&nbsp; <a href="#glueing">Glueing electrodes</a></h6>
-  <h6>
-   &nbsp;&nbsp;&nbsp; <A HREF="#recommended-steps">Recommended sequence for coregistration</a></h6>
-  <h6>
-   <a href="#results">Results</a></h6>
-  <H2>
-   <a name="dialog"></a>Electrodes Coregistration
-   Dialog</H2>
-  <P ALIGN=LEFT>
-   Called from the&nbsp; <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
-    | Electrodes Coordinates and Solution Points | Coregistering Electrodes to 
-   MRI Head</A></FONT>&nbsp; menu, the following dialog appears:</P>
-  <P class="auto-style1">
-   <img height="598" src="images/coregxyz.dialog.png" width="707"></P>
-  <P>
-   &nbsp;</P>
-   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p>Presets</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p>There are currently only 2 presets:</p>
-	 <ul>
-		 <li><strong>Starting from scratch</strong>: it will guess an initial 
-		 scaling and position before starting</li>
-		 <li><strong>Reloading the electrodes coordinates as is</strong>: skip 
-		 the guess and start straight away</li>
-	 </ul>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p>Input Files</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p>&nbsp;</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style2">Source XYZ file:</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p>The electrodes coordinates file to be coregistered.</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style2">Target MRI Head file:</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p>The target MRI.</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p><strong><a href="#actions">Actions</a></strong></p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p>Once everything is opened up, you can start to geometrical update the 
-	 electrodes geometry with these actions:</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style2">Rescale</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p><strong>Rescales</strong> the <strong>X</strong>, <strong>Y</strong> or
-	 <strong>Z axis</strong>, or <strong>all of them</strong> (Global).</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style2">Translate</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p><B>Translates </B>in the <B>X,</B> <B>Y</B> or <B>Z</B> 
-	 axis.</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style2">Rotate</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p><B>Rotates </B>the <B>X,</B> <B>Y</B> or <B>Z</B> 
-	 axis.&nbsp;</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style2">Magic</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p><strong><a href="#glueing">Glueing</a></strong> the electrodes onto the 
-	 <strong>scalp surface</strong>.</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style2"><A NAME="dialog-historic"></a>Historic</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p>&nbsp;</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style3">Undo Last</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p>Goes <strong>one step backward</strong> into the history of transforms.</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style3">Redo Last</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p>Goes <strong>one step forward</strong> into the history of transforms.</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style3">Undo All</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p><strong>Undo all</strong>. Note that the <strong>history is still 
-	 available</strong>, so you can move forward again if you wish...</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style3">Redo All</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p><strong>Redo all</strong>.</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p class="auto-style3">Clear All</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p><strong>Undo all</strong> then <strong>erase all history</strong>. Guess 
-	 you have to be a little cautious before doing that, don't you?</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p>Output</p>
-		   </TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p>&nbsp;</p>
-		   </TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-	 <p>Output Base File Prefix:</p>
-		</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-	 <p>Directory and prefix used for all output files.</p>
-		</TD>
-    </TR>
-   </TABLE>
-  <H2>
-   <A NAME="technical-points"></a>Electrodes Coregistration -&nbsp; Technical 
-   points &amp; hints</H2>
-  <h3>
-   <a name="actions"></a>Actions</h3>
-  <h5>
-   Axis considerations</h5>
-  <P>
-   Before applying a transform step, <strong>you have to pay attention toward 
-   which directions the X, Y and Z axis are pointing to</strong>. On any 
-   display, the X axis is 
-   colored red, the Y axis, green and the Z axis, blue.</P>
-  <P>
-   For the usual <strong>'RAS'</strong> orientation case (or MNI orientation), we have:</P>
-  <ul>
-	  <li><strong>X</strong> pointing toward the <strong>R</strong>ight side</li>
-	  <li><strong>Y</strong> pointing toward the <strong>A</strong>nterior part</li>
-	  <li><strong>Z</strong> pointing toward the <strong>S</strong>uperior part</li>
-  </ul>
-  <P>
-   &nbsp;</P>
-  <P>
-   Most actions need an <strong>axis specified to be performed</strong>. F.ex. you can
-   <strong>Rotate around the X axis (RX)</strong> or <strong>Translate in the Y 
-   axis (TY)</strong>. <em>En plus</em> of the axis, the
-   <strong>direction</strong> of the action should be specified, like <strong>
-   Translate Y forward (TY+)</strong> or <strong>Translate Y backward (TY-)</strong>. 
-   Hence the <strong>axis + sign butons</strong>. Just try and see,
-   <A HREF="#dialog-historic">in any case you can always undo your last step</a>!</P>
-  <P>
-   &nbsp;</P>
-  <h5>
-   Actions considerations</h5>
-  <ul>
-	  <li>Rescaling is equivalent to &quot;stretching&quot; or &quot;compressing&quot;; translating 
-	  to shifting position; and rotating to turning around.</li>
-	  <li>The way the toolbox works is by applying <strong>small incremental 
-	  transforms</strong>, one at a time.<br>The increment will be small if you click sporadically on a 
-	  button, and will increase with faster presses.</li>
-	  <li>The <strong><a href="#glueing">Glueing</a></strong> action is 
-	  definitely appart from all the other operations, for many reasons. First 
-	  it is a non-linear 
-	  operation (and can not be represented in a 4x4 homegenous transform). 
-	  Second, it is very radical and is best done at the very end of the 
-	  coregistration.</li>
-	  <li>You can <strong><A HREF="#dialog-historic">undo and redo</a> any number of steps to assert your whole 
-	  transform</strong> (or if you are a little bit geeky and enjoy tiny 
-	  pleasures like the replay).</li>
-  </ul>
-  <P>
-   &nbsp;</P>
-  <h3>
-   <a name="glueing"></a>Glueing electrodes</h3>
-  <P>
-   <B>Glueing</B> the electrodes on 
-   the surface <B>projects</B> them to the closest point on the <B>surface
-    of the scalp</B>. This forces the electrodes to have the <B>exact 
-   shape of the head</B>, and the <B>exact distances to the brain</B>, 
-   which is a good thing when <a href="computing-inverse-solution-matrices.html">computing 
-   Inverse Matices</a>.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Glueing can also save the day, too, by <B>un-spherizing a spherical 
-   template electrodes set</B> back to a real head shape. However, note 
-   that this is still an approximation: it is quite <I>unlikely</I> that the 
-   un-spherization function used here will perfectly revert the spherization function used on the first hand! So you 
-   can end up with some <B>geometrical distortions</B> that can <B>bias 
-   all your inverse solutions</B>!</P>
-  <P>
-   One solution to this problem would be to <A HREF="creating-template-electrodes.html">
-   compute a real template</A> 
-   of your electrodes set. Un-spherize only if you can not do otherwise!</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Glueing <B>might not be a good idea</B>, if your electrodes set covers 
-   the neck / jaws, but the target MRI has been clipped at ear / 
-   cerebellum level. That is, your <B>electrodes set</B> have a <B>wider 
-   coverage than the available MRI</B>. The electrodes below the missing 
-   part of the MRI will be simply rescaled, so you could end up with a 
-   sort of discontinuity at the border. Visually check this, it can be 
-   either tolerable or a disaster, this is up to you at this point...</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Glueing <B>shouldn't be done</B> if the MRI appears to have some sorts 
-   of <B>holes on the surface</B>, for whatever reasons (MRI artifact, or a real 
-   hole in the head...). Should this be the case, the &quot;glued&quot; 
-   electrodes <I>could end up inside</I> the head, which is a real concern 
-   for the inverse solutions, to say the least! In this case, simply 
-   adjust as much as you can with translations / rotations / scalings 
-   and <I>avoid</I> the glueing step.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   An example of a <B>real electrodes set</B> successfully glued to its 
-   corresponding <B>real head</B>, best case scenario:</P>
-  <UL>
-   <P>
-    <IMG SRC="images/cris.el-glue7.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/cris.el-glue8.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <P>
-   An example of <B>spherical electrodes set</B> successfully glued to a <B>real
-    head</B>, not ideal but should work:</P>
-  <UL>
-   <P>
-    <IMG SRC="images/cris.el-glue1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/cris.el-glue2.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <P>
-   An example of <B>spherical electrodes set</B> successfully glued to a <B>template
-    head</B> (MNI), not ideal but should work: :</P>
-  <UL>
-   <P>
-    <IMG SRC="images/cris.el-glue3.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/cris.el-glue4.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <P>
-   An example of <B>spherical electrodes</B> set <B>potentially problematic</B> 
-   due to the electrodes floating in the air below the MRI cut, <B>try 
-   to avoid</B>:</P>
-  <UL>
-   <P>
-    <IMG SRC="images/cris.el-glue5.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/cris.el-glue6.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <P>
-   An example of a <B>real electrodes</B> set with a <B>corrupted MRI</B> 
-   (irregular surface), before and after gluing, showing some electrodes 
-   landed <I>inside</I> the head, <B>so avoid gluing here</B>:</P>
-  <UL>
-   <P>
-    <IMG SRC="images/cris.el-glue9.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/cris.el-glue11.png" WIDTH="260" HEIGHT="249" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <h3>
-   <A NAME="recommended-steps"></a>Recommended sequence for coregistration</h3>
-  <P>
-   <strong>Your MRI should be correctly oriented &amp; origin properly set before 
-   performing any coregistration!</strong> <a href="mris-preprocessing.html">
-   Re-align &amp; set the origin</a> beforehand if needed.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Once the dialog is all set and the display opens up, here is what a typical sequence of operations 
-   looks like:</P>
-  <P>
-   &nbsp;</P>
-   <TABLE CELLPADDING="5" CELLSPACING="0" class="auto-style4" style="width: 66%">
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq01.png" width="386"></p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p>Starting from the initial guess of Cartool (centering, scaling)</p>
-	 <p>We are going to work only on the side view for the moment</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq02.png" width="386"></p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p><strong>Translation Y-</strong> (back)</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq03.png" width="386">&nbsp;</p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p><strong>Translation Z-</strong> (down)</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq04.png" width="386">&nbsp;</p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p><strong>Global rescaling</strong> (shrinking)</p>
-	 <p>It might be necessary to repeat the last 3 steps - or not</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq05.png" width="386">&nbsp;&nbsp;</p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p><strong>Rotation X-</strong></p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq06.png" width="386">&nbsp;&nbsp;</p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p><strong>Translation Z-</strong></p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq07.png" width="386">&nbsp;</p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p><strong>Rotation X+</strong></p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq08.png" width="386">&nbsp;&nbsp;</p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p>Turning display now &amp; checking the electrodes now <strong>around the 
-	 eyes</strong></p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq09.png" width="386">&nbsp;&nbsp;</p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p><strong>Rotation X+</strong></p>
-	 <p>Now that we see the face, we can adjust the rotation. Don't forget that 
-	 eyebrows can not be seen on the MRI and that you certainly didn't put 
-	 electrodes on them!</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq10.png" width="386">&nbsp;</p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p>Turning display &amp; checking <strong>around the ears</strong></p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq11.png" width="386"></p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p><strong>Scale Z+</strong> (expand top-down)</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq12.png" width="386"></p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p><strong>Scale Y-</strong>&nbsp;(shrink front-back)</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq13.png" width="386"></p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p>Checking left-right</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq14.png" width="386"></p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p><strong>Scale X+</strong> (expand left-right)</p>
-	 <p>Tiny adjustment here</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq15.png" width="386"></p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p>Final check?</p>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
-	 <p><img height="386" src="images/coregxyz.seq16.png" width="386"></p>
-		   </TD>
-     <TD WIDTH="73%" class="auto-style6">
-	 <p><strong>Glueing electrodes!</strong></p>
-	 <p>This should be done at the end only, although you can try during the 
-	 whole process to guess how the projected electrodes are going to land.</p>
-		   </TD>
-       </tr>
-   </TABLE>
-  <P>
-   &nbsp;</P>
-  <h5>
-   A few comments:</h5>
-  <ul>
-	  <li>No <strong>X (left-right) translation</strong>, nor <strong>Y rotation</strong>, 
-	  nor <strong>Z rotation</strong> were ever needed during the 
-	  coregistration! This is due to the fact that both the <strong>MRI and the 
-	  electrodes (should) have been optimally re-centered</strong>, which sets 
-	  these 3 parameters. You should not have to adjust these in most cases. It 
-	  could be necessary for non-aligned input MRIs.</li>
-	  <li>Check that the glueing does not send any <strong>electrodes in bad 
-	  places: inside the head, inside a cavity, or even on the ear</strong> - 
-	  anything geometrically non-realistic. Try <strong>tiny adjustments while 
-	  remaining &quot;glued&quot;</strong> to fix the problem. If this does not help, 
-	  either plainly give up on the glueing part, or apply the glueing and edit 
-	  manually the faulty electrodes once the file has been saved.</li>
-	  <li>If the <strong>head has been clipped quite high</strong> and the parts 
-	  below the nose level is missing (MNI template, we look at you), Cartool 
-	  will normally <strong>skip the glueing below this &quot;guillotine&quot; limit</strong>. 
-	  Again, try your best <em>without</em> the glueing for these electrodes,
-	  <a href="#glueing">glue and check the whole electrode setup looks 
-	  reasonable</a>.</li>
-	  <li>As can be seen on the sequence above, the <strong>full 257 electrodes 
-	  were being coregistered</strong>. Although we might use a subset later, 
-	  like 204 electrodes, <strong>using all the geometrical information 
-	  available improves the reliability of the coregistration</strong>. It is 
-	  quite easy to remove the few useless electrodes <em>after </em>the 
-	  coregistration.</li>
-	  <li>Consider taking a <strong>picture of the subjects with the net on</strong>. 
-	  Using these pictures could help a lot <strong>building individual models</strong>, 
-	  especially if different people are involved during the recording and the 
-	  modelling. By experience, peoples / labs have a tendency to set the 
-	  electrodes a tiny bit differently, so having actual visual cues will 
-	  definitely help. This applies even more so when dealing with <strong>
-	  animals recording / models</strong>.</li>
-  </ul>
-  <H2>
-   <a name="results"></a>&nbsp;Electrodes Coregistration - Results</H2>
-  <P>
-   Coregistering generates the following output files:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>All files</B> will start with the provided output base file name, 
-	including directory part;</P>
-   <LI CLASS="mvd-P">
-   <P>
-    A <B><I><A HREF="files-formats-cartool.html#xyz">.xyz</A></I></B> file for the 
-    coregistered electrodes;</P>
-   <LI CLASS="mvd-P">
-   <P>
-    A <B><I><A HREF="files-formats-cartool.html#vrb">.vrb</A></I></B> verbose file.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             Electrodes Coregistration to MRI
+         </H1>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             This toolbox helps the user to <strong>
+                 interactively coregister electrodes on
+                 a full head MRI
+             </strong>. This is usually a required step before
+             <A HREF="computing-inverse-solution-matrices.html#electrodes-setup">
+                 building inverse
+                 matrices
+             </A>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <h6>
+             <a href="#dialog">Electrodes Coregistration Dialog</a>
+         </h6>
+         <h6>
+             <A HREF="#technical-points">Technical points &amp; hints</A>
+         </h6>
+         <h6>
+             &nbsp;&nbsp;&nbsp; <a href="#actions">Actions</a>
+         </h6>
+         <h6>
+             &nbsp;&nbsp;&nbsp; <a href="#glueing">Glueing electrodes</a>
+         </h6>
+         <h6>
+             &nbsp;&nbsp;&nbsp; <A HREF="#recommended-steps">Recommended sequence for coregistration</A>
+         </h6>
+         <h6>
+             <a href="#results">Results</a>
+         </h6>
+         <H2>
+             <a name="dialog"></a>Electrodes Coregistration
+             Dialog
+         </H2>
+         <P ALIGN=LEFT>
+             Called from the&nbsp; <FONT FACE="Arial Black,Arial,Helvetica">
+                 <A HREF="all-processings.html#tools">
+                     Tools
+                     | Electrodes Coordinates and Solution Points | Coregistering Electrodes to
+                     MRI Head
+                 </A>
+             </FONT>&nbsp; menu, the following dialog appears:
+         </P>
+         <P class="auto-style1">
+             <img height="598" src="images/coregxyz.dialog.png" width="707">
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p>Presets</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>There are currently only 2 presets:</p>
+                     <ul>
+                         <li>
+                             <strong>Starting from scratch</strong>: it will guess an initial
+                             scaling and position before starting
+                         </li>
+                         <li>
+                             <strong>Reloading the electrodes coordinates as is</strong>: skip
+                             the guess and start straight away
+                         </li>
+                     </ul>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP></TD>
+                 <TD WIDTH="73%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p>Input Files</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>&nbsp;</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style2">Source XYZ file:</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>The electrodes coordinates file to be coregistered.</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style2">Target MRI Head file:</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>The target MRI.</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP></TD>
+                 <TD WIDTH="73%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p><strong><a href="#actions">Actions</a></strong></p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>
+                         Once everything is opened up, you can start to geometrical update the
+                         electrodes geometry with these actions:
+                     </p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style2">Rescale</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>
+                         <strong>Rescales</strong> the <strong>X</strong>, <strong>Y</strong> or
+                         <strong>Z axis</strong>, or <strong>all of them</strong> (Global).
+                     </p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style2">Translate</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>
+                         <B>Translates </B>in the <B>X,</B> <B>Y</B> or <B>Z</B>
+                         axis.
+                     </p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style2">Rotate</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>
+                         <B>Rotates </B>the <B>X,</B> <B>Y</B> or <B>Z</B>
+                         axis.&nbsp;
+                     </p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style2">Magic</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>
+                         <strong><a href="#glueing">Glueing</a></strong> the electrodes onto the
+                         <strong>scalp surface</strong>.
+                     </p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style2"><A NAME="dialog-historic"></A>Historic</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>&nbsp;</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style3">Undo Last</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>Goes <strong>one step backward</strong> into the history of transforms.</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style3">Redo Last</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>Goes <strong>one step forward</strong> into the history of transforms.</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style3">Undo All</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>
+                         <strong>Undo all</strong>. Note that the <strong>
+                             history is still
+                             available
+                         </strong>, so you can move forward again if you wish...
+                     </p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style3">Redo All</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p><strong>Redo all</strong>.</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p class="auto-style3">Clear All</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>
+                         <strong>Undo all</strong> then <strong>erase all history</strong>. Guess
+                         you have to be a little cautious before doing that, don't you?
+                     </p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP></TD>
+                 <TD WIDTH="73%" VALIGN=TOP></TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p>Output</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>&nbsp;</p>
+                 </TD>
+             </tr>
+             <TR>
+                 <TD WIDTH="27%" VALIGN=TOP>
+                     <p>Output Base File Prefix:</p>
+                 </TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <p>Directory and prefix used for all output files.</p>
+                 </TD>
+             </TR>
+         </TABLE>
+         <H2>
+             <A NAME="technical-points"></A>Electrodes Coregistration -&nbsp; Technical
+             points &amp; hints
+         </H2>
+         <h3>
+             <a name="actions"></a>Actions
+         </h3>
+         <h5>
+             Axis considerations
+         </h5>
+         <P>
+             Before applying a transform step, <strong>
+                 you have to pay attention toward
+                 which directions the X, Y and Z axis are pointing to
+             </strong>. On any
+             display, the X axis is
+             colored red, the Y axis, green and the Z axis, blue.
+         </P>
+         <P>
+             For the usual <strong>'RAS'</strong> orientation case (or MNI orientation), we have:
+         </P>
+         <ul>
+             <li><strong>X</strong> pointing toward the <strong>R</strong>ight side</li>
+             <li><strong>Y</strong> pointing toward the <strong>A</strong>nterior part</li>
+             <li><strong>Z</strong> pointing toward the <strong>S</strong>uperior part</li>
+         </ul>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Most actions need an <strong>axis specified to be performed</strong>. F.ex. you can
+             <strong>Rotate around the X axis (RX)</strong> or <strong>
+                 Translate in the Y
+                 axis (TY)
+             </strong>. <em>En plus</em> of the axis, the
+             <strong>direction</strong> of the action should be specified, like <strong>
+                 Translate Y forward (TY+)
+             </strong> or <strong>Translate Y backward (TY-)</strong>.
+             Hence the <strong>axis + sign butons</strong>. Just try and see,
+             <A HREF="#dialog-historic">in any case you can always undo your last step</A>!
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <h5>
+             Actions considerations
+         </h5>
+         <ul>
+             <li>
+                 Rescaling is equivalent to &quot;stretching&quot; or &quot;compressing&quot;; translating
+                 to shifting position; and rotating to turning around.
+             </li>
+             <li>
+                 The way the toolbox works is by applying <strong>
+                     small incremental
+                     transforms
+                 </strong>, one at a time.<br>The increment will be small if you click sporadically on a
+                 button, and will increase with faster presses.
+             </li>
+             <li>
+                 The <strong><a href="#glueing">Glueing</a></strong> action is
+                 definitely appart from all the other operations, for many reasons. First
+                 it is a non-linear
+                 operation (and can not be represented in a 4x4 homegenous transform).
+                 Second, it is very radical and is best done at the very end of the
+                 coregistration.
+             </li>
+             <li>
+                 You can <strong>
+                     <A HREF="#dialog-historic">undo and redo</A> any number of steps to assert your whole
+                     transform
+                 </strong> (or if you are a little bit geeky and enjoy tiny
+                 pleasures like the replay).
+             </li>
+         </ul>
+         <P>
+             &nbsp;
+         </P>
+         <h3>
+             <a name="glueing"></a>Glueing electrodes
+         </h3>
+         <P>
+             <B>Glueing</B> the electrodes on
+             the surface <B>projects</B> them to the closest point on the <B>
+                 surface
+                 of the scalp
+             </B>. This forces the electrodes to have the <B>
+                 exact
+                 shape of the head
+             </B>, and the <B>exact distances to the brain</B>,
+             which is a good thing when <a href="computing-inverse-solution-matrices.html">
+                 computing
+                 Inverse Matices
+             </a>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Glueing can also save the day, too, by <B>
+                 un-spherizing a spherical
+                 template electrodes set
+             </B> back to a real head shape. However, note
+             that this is still an approximation: it is quite <I>unlikely</I> that the
+             un-spherization function used here will perfectly revert the spherization function used on the first hand! So you
+             can end up with some <B>geometrical distortions</B> that can <B>
+                 bias
+                 all your inverse solutions
+             </B>!
+         </P>
+         <P>
+             One solution to this problem would be to <A HREF="creating-template-electrodes.html">
+                 compute a real template
+             </A>
+             of your electrodes set. Un-spherize only if you can not do otherwise!
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Glueing <B>might not be a good idea</B>, if your electrodes set covers
+             the neck / jaws, but the target MRI has been clipped at ear /
+             cerebellum level. That is, your <B>electrodes set</B> have a <B>
+                 wider
+                 coverage than the available MRI
+             </B>. The electrodes below the missing
+             part of the MRI will be simply rescaled, so you could end up with a
+             sort of discontinuity at the border. Visually check this, it can be
+             either tolerable or a disaster, this is up to you at this point...
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Glueing <B>shouldn't be done</B> if the MRI appears to have some sorts
+             of <B>holes on the surface</B>, for whatever reasons (MRI artifact, or a real
+             hole in the head...). Should this be the case, the &quot;glued&quot;
+             electrodes <I>could end up inside</I> the head, which is a real concern
+             for the inverse solutions, to say the least! In this case, simply
+             adjust as much as you can with translations / rotations / scalings
+             and <I>avoid</I> the glueing step.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             An example of a <B>real electrodes set</B> successfully glued to its
+             corresponding <B>real head</B>, best case scenario:
+         </P>
+         <UL>
+             <P>
+                 <IMG SRC="images/cris.el-glue7.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/cris.el-glue8.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </UL>
+         <P>
+             An example of <B>spherical electrodes set</B> successfully glued to a <B>
+                 real
+                 head
+             </B>, not ideal but should work:
+         </P>
+         <UL>
+             <P>
+                 <IMG SRC="images/cris.el-glue1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/cris.el-glue2.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </UL>
+         <P>
+             An example of <B>spherical electrodes set</B> successfully glued to a <B>
+                 template
+                 head
+             </B> (MNI), not ideal but should work: :
+         </P>
+         <UL>
+             <P>
+                 <IMG SRC="images/cris.el-glue3.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/cris.el-glue4.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </UL>
+         <P>
+             An example of <B>spherical electrodes</B> set <B>potentially problematic</B>
+             due to the electrodes floating in the air below the MRI cut, <B>
+                 try
+                 to avoid
+             </B>:
+         </P>
+         <UL>
+             <P>
+                 <IMG SRC="images/cris.el-glue5.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/cris.el-glue6.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </UL>
+         <P>
+             An example of a <B>real electrodes</B> set with a <B>corrupted MRI</B>
+             (irregular surface), before and after gluing, showing some electrodes
+             landed <I>inside</I> the head, <B>so avoid gluing here</B>:
+         </P>
+         <UL>
+             <P>
+                 <IMG SRC="images/cris.el-glue9.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/cris.el-glue11.png" WIDTH="260" HEIGHT="249" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <h3>
+             <A NAME="recommended-steps"></A>Recommended sequence for coregistration
+         </h3>
+         <P>
+             <strong>
+                 Your MRI should be correctly oriented &amp; origin properly set before
+                 performing any coregistration!
+             </strong> <a href="mris-preprocessing.html">
+                 Re-align &amp; set the origin
+             </a> beforehand if needed.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Once the dialog is all set and the display opens up, here is what a typical sequence of operations
+             looks like:
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <TABLE CELLPADDING="5" CELLSPACING="0" class="auto-style4" style="width: 66%">
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq01.png" width="386"></p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p>Starting from the initial guess of Cartool (centering, scaling)</p>
+                     <p>We are going to work only on the side view for the moment</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq02.png" width="386"></p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p><strong>Translation Y-</strong> (back)</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq03.png" width="386">&nbsp;</p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p><strong>Translation Z-</strong> (down)</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq04.png" width="386">&nbsp;</p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p><strong>Global rescaling</strong> (shrinking)</p>
+                     <p>It might be necessary to repeat the last 3 steps - or not</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq05.png" width="386">&nbsp;&nbsp;</p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p><strong>Rotation X-</strong></p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq06.png" width="386">&nbsp;&nbsp;</p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p><strong>Translation Z-</strong></p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq07.png" width="386">&nbsp;</p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p><strong>Rotation X+</strong></p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq08.png" width="386">&nbsp;&nbsp;</p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p>
+                         Turning display now &amp; checking the electrodes now <strong>
+                             around the
+                             eyes
+                         </strong>
+                     </p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq09.png" width="386">&nbsp;&nbsp;</p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p><strong>Rotation X+</strong></p>
+                     <p>
+                         Now that we see the face, we can adjust the rotation. Don't forget that
+                         eyebrows can not be seen on the MRI and that you certainly didn't put
+                         electrodes on them!
+                     </p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq10.png" width="386">&nbsp;</p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p>Turning display &amp; checking <strong>around the ears</strong></p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq11.png" width="386"></p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p><strong>Scale Z+</strong> (expand top-down)</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq12.png" width="386"></p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p><strong>Scale Y-</strong>&nbsp;(shrink front-back)</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq13.png" width="386"></p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p>Checking left-right</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq14.png" width="386"></p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p><strong>Scale X+</strong> (expand left-right)</p>
+                     <p>Tiny adjustment here</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq15.png" width="386"></p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p>Final check?</p>
+                 </TD>
+             </tr>
+             <tr>
+                 <TD WIDTH="27%" VALIGN=TOP class="auto-style6">
+                     <p><img height="386" src="images/coregxyz.seq16.png" width="386"></p>
+                 </TD>
+                 <TD WIDTH="73%" class="auto-style6">
+                     <p><strong>Glueing electrodes!</strong></p>
+                     <p>
+                         This should be done at the end only, although you can try during the
+                         whole process to guess how the projected electrodes are going to land.
+                     </p>
+                 </TD>
+             </tr>
+         </TABLE>
+         <P>
+             &nbsp;
+         </P>
+         <h5>
+             A few comments:
+         </h5>
+         <ul>
+             <li>
+                 No <strong>X (left-right) translation</strong>, nor <strong>Y rotation</strong>,
+                 nor <strong>Z rotation</strong> were ever needed during the
+                 coregistration! This is due to the fact that both the <strong>
+                     MRI and the
+                     electrodes (should) have been optimally re-centered
+                 </strong>, which sets
+                 these 3 parameters. You should not have to adjust these in most cases. It
+                 could be necessary for non-aligned input MRIs.
+             </li>
+             <li>
+                 Check that the glueing does not send any <strong>
+                     electrodes in bad
+                     places: inside the head, inside a cavity, or even on the ear
+                 </strong> -
+                 anything geometrically non-realistic. Try <strong>
+                     tiny adjustments while
+                     remaining &quot;glued&quot;
+                 </strong> to fix the problem. If this does not help,
+                 either plainly give up on the glueing part, or apply the glueing and edit
+                 manually the faulty electrodes once the file has been saved.
+             </li>
+             <li>
+                 If the <strong>head has been clipped quite high</strong> and the parts
+                 below the nose level is missing (MNI template, we look at you), Cartool
+                 will normally <strong>skip the glueing below this &quot;guillotine&quot; limit</strong>.
+                 Again, try your best <em>without</em> the glueing for these electrodes,
+                 <a href="#glueing">
+                     glue and check the whole electrode setup looks
+                     reasonable
+                 </a>.
+             </li>
+             <li>
+                 As can be seen on the sequence above, the <strong>
+                     full 257 electrodes
+                     were being coregistered
+                 </strong>. Although we might use a subset later,
+                 like 204 electrodes, <strong>
+                     using all the geometrical information
+                     available improves the reliability of the coregistration
+                 </strong>. It is
+                 quite easy to remove the few useless electrodes <em>after </em>the
+                 coregistration.
+             </li>
+             <li>
+                 Consider taking a <strong>picture of the subjects with the net on</strong>.
+                 Using these pictures could help a lot <strong>building individual models</strong>,
+                 especially if different people are involved during the recording and the
+                 modelling. By experience, peoples / labs have a tendency to set the
+                 electrodes a tiny bit differently, so having actual visual cues will
+                 definitely help. This applies even more so when dealing with <strong>
+                     animals recording / models
+                 </strong>.
+             </li>
+         </ul>
+         <H2>
+             <a name="results"></a>&nbsp;Electrodes Coregistration - Results
+         </H2>
+         <P>
+             Coregistering generates the following output files:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>All files</B> will start with the provided output base file name,
+                     including directory part;
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <B><I><A HREF="files-formats-cartool.html#xyz">.xyz</A></I></B> file for the
+                     coregistered electrodes;
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <B><I><A HREF="files-formats-cartool.html#vrb">.vrb</A></I></B> verbose file.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

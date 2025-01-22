@@ -2,288 +2,394 @@
  <HEAD>
   <TITLE>Creating a Template Electrodes Coordinates</TITLE>
  <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css"></HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   Creating a Template Electrodes Coordinates</H1>
-  <P>
-   &nbsp;</P>
-  <H5>
-   <A HREF="#what-is-averaging">What is averaging electrodes</A><br>
-   <A HREF="#how-to-run">How to run the averaging</A><br><A HREF="#results">Results</A></H5>
-  <H2>
-   <A NAME="what-is-averaging"></A>What is averaging electrodes?</H2>
-  <P ALIGN=LEFT>
-   This is a utility to build an <B>average electrodes coordinates file</B> 
-   from a set of subjects or measurements (average is the left one):</P>
-  <UL>
-   <P ALIGN=LEFT>
-    <IMG SRC="images/avgel.idea.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <H4>
-   Method</H4>
-  <P ALIGN=LEFT>
-   The method works this way, with the 2 first stages being the main ones:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    Building a <B>first temporary average</B>, by coregistering all files 
-    to the first one.</P>
-   <P ALIGN=LEFT>
-    Coregistration is done by minimizing the sum of the squared distances 
-    between the same electrodes, with a global optimization process. The 
-    transformation function has 7 parameters (3 for translations, 3 for 
-    rotations, 1 for global scaling).</P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    <B>Coregistering all files to the current average</B>, then <B>averaging
-     the results to have a new average</B>.</P>
-   <P ALIGN=LEFT>
-    This is repeated a few times (convergence is quite fast), and the 
-    same 7 parameters function is used.</P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    Finally, some post-processing:</P>
-   <UL>
-    <LI CLASS="mvd-P">
-    <P ALIGN=LEFT>
-     <B>Symmetrizing</B> the final average;</P>
-    <LI CLASS="mvd-P">
-    <P ALIGN=LEFT>
-     <B>Re-orienting</B> to the RAS system (X: Right, Y: Anterior, Z: Superior);</P>
-    <LI CLASS="mvd-P">
-    <P ALIGN=LEFT>
-     <B>Aligning the Y axis</B> to the line <B>Fpz-Oz</B>.</P>
-    </UL>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    Computing the final quality measures.</P>
-   </UL>
-  <H4>
-   Remarks</H4>
-  <P ALIGN=LEFT>
-   The method is insensitive to which file is picked first in the first 
-   stage, apart for a slight different global scaling.</P>
-  <P ALIGN=LEFT>
-   The number of repetitions of the second stage is currently set to 3, 
-   as the resulting average does not evolve significantly afterward.</P>
-  <P ALIGN=LEFT>
-   Only a global scaling is allowed, and not 3 different scalings for 
-   each axis. We want to average the <I>shape</I> of the heads, and 
-   having different factors in x, y or z <I>does</I> alter the original 
-   shape. Plus, it would make the whole process very dependent to which 
-   file is picked in the first stage.</P>
-  <H2>
-   <A NAME="how-to-run"></A>How to run the averaging</H2>
-  <P>
-   Called from the <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
-    | Averaging Electrodes Coordinates</A></FONT> menu, you simply have 
-   to follow these steps (no dialog for the moment):</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Give the list of files to be averaged;</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Give the output file name;</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Provide the <B>Cz</B>, <B>Fpz</B> and <B>Oz</B> approximate locations</P>
-   <P>
-    (you can specify up to 4 electrodes for each locus, like &quot;125 
-    138 137&quot;, to use their average position).</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The process begins straight away. At the end, it can burps a few 
-    error messages that are worth reading, usually indicating that the 
-    result is somehow unreliable and some files to be excluded.</P>
-   </UL>
-  <H4>
-   Input files</H4>
-  <P ALIGN=LEFT>
-   The files to be averaged should be taken from the <B>same 
-   source/process of measurement:</B></P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    They should have the same orientation (though it can be arbitrary),</P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    the same number of electrodes (!),</P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    but centers, scalings and some rotations are allowed (and expected), 
-    and can be arbitrary.</P>
-   </UL>
-  <H4>
-   Cz / Fpz / Oz locations</H4>
-  <P>
-   See here an example for specifying Fpz, as we gave the electrodes 25 
-   26 and 32, so to have Fpz in the middle of these 3 points:</P>
-  <UL>
-   <P ALIGN=LEFT>
-    <IMG SRC="images/avgel.specifying-fpz.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <H2>
-   <A NAME="results"></A>Results</H2>
-  <P>
-   Here are the output files:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>All files</B> will begin with the output file given;</P>
-   <LI CLASS="mvd-P">
-   <P>
-    A <B><I><A HREF="files-formats-cartool.html#xyz">.xyz</A></I></B> file for the 
-    average electrodes;</P>
-   <LI CLASS="mvd-P">
-   <P>
-    A <I><B>.Distances</B></I><B><I><A HREF="files-formats-cartool.html#sef">.sef</A></I></B> 
-    file for the distances to the final average</P>
-   <LI CLASS="mvd-P">
-   <P>
-    A <B><I><A HREF="files-formats-cartool.html#vrb">.vrb</A></I></B> verbose file.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   To help visualize, see here 3 coregistered files (blue meshes &amp; 
-   electrodes) on top of the final average (yellow triangles):</P>
-  <UL>
-   <P>
-    <IMG SRC="images/avgel.coregistered-to-average.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <H3>
-   Distance file</H3>
-  <P>
-   It indicates the distance of each file to the average, for each 
-   electrode (distance from the blue electrodes to the yellow ones in 
-   the figure above). The Y axis are the electrodes, and the X axis is 
-   the index of each of the original files.</P>
-  <P>
-   Plus, there are 2 more positions in X (&quot;files&quot;):</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    The <B>average of the distances</B>, per electrode, <B>across all files</B>.</P>
-   <P>
-    This measure is equivalent to a <I>Mean Absolute Deviation</I>, and 
-    measures the <B>distance from the data set to the average</B>.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The <B>dispersion of the distances</B>, per electrode, <B>across all files</B>.</P>
-   <P>
-    This measure is a within group average distance (average of distances 
-    of all pairs of data), and measures the <B>variability of the 
-    coregistered data</B>.</P>
-   <P>
-    Note that the SD of the distance to the average is <I>not</I> a very 
-    interesting measure here: if all files are all wrong but within an 
-    equal range, the SD would be low anyway, even though the coregistered 
-    data being far.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   You can of course <A HREF="potentials-maps-display.html">link</A> this distance 
-   file with the average <B><I>.xyz</I></B> to visualize the results, 
-   here we can see the average of electrodes distances:</P>
-  <UL>
-   <P>
-    <IMG SRC="images/avgel.distance-tracks.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/avgel.distance-map.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </UL>
-  <H3>
-   Verbose file</H3>
-  <P>
-   It contains all the input parameters, the content of the distance 
-   file plus some more details.</P>
-  <P>
-   In addition to the distance, you will find 2 more rows (in Y):</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    The <B>average of the distances</B>, per file, <B>across all electrodes</B>,</P>
-   <P>
-    including on the last 2 columns the average of average of distances, 
-    and the average of dispersion.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The <B>Coefficient of Variation of the distances</B> (CoV, normalized 
-    SD/Avg), per file, <B>across all electrodes</B>,</P>
-   <P>
-    including on the last 2 columns the CoV of the average (<I>not</I> 
-    the average of the CoV) and the CoV of dispersion.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <H3>
-   Error messages</H3>
-  <P>
-   The error messages you might have had at the end of the processing 
-   are also reproduced into the verbose file, so you can have a second 
-   thought on them:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    It could be that <B>a file is considered globally unfit to the average</B>,
-     by comparing the average distance across all the electrodes, to the 
-    average of average of distances.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Or it could be that <B>some electrodes of a file are considered 
-    locally unfit to the average</B>, by comparing its CoV of all 
-    electrodes to about 52%.</P>
-   </UL>
-  <P>
-   The advice is to first remove the files of the first category, run 
-   again the averaging, then only remove the files of the second 
-   category, if there remain some anymore.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             Creating a Template Electrodes Coordinates
+         </H1>
+         <P>
+             &nbsp;
+         </P>
+         <H5>
+             <A HREF="#what-is-averaging">What is averaging electrodes</A><br>
+             <A HREF="#how-to-run">How to run the averaging</A><br><A HREF="#results">Results</A>
+         </H5>
+         <H2>
+             <A NAME="what-is-averaging"></A>What is averaging electrodes?
+         </H2>
+         <P ALIGN=LEFT>
+             This is a utility to build an <B>average electrodes coordinates file</B>
+             from a set of subjects or measurements (average is the left one):
+         </P>
+         <UL>
+             <P ALIGN=LEFT>
+                 <IMG SRC="images/avgel.idea.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </UL>
+         <H4>
+             Method
+         </H4>
+         <P ALIGN=LEFT>
+             The method works this way, with the 2 first stages being the main ones:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     Building a <B>first temporary average</B>, by coregistering all files
+                     to the first one.
+                 </P>
+                 <P ALIGN=LEFT>
+                     Coregistration is done by minimizing the sum of the squared distances
+                     between the same electrodes, with a global optimization process. The
+                     transformation function has 7 parameters (3 for translations, 3 for
+                     rotations, 1 for global scaling).
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     <B>Coregistering all files to the current average</B>, then <B>
+                         averaging
+                         the results to have a new average
+                     </B>.
+                 </P>
+                 <P ALIGN=LEFT>
+                     This is repeated a few times (convergence is quite fast), and the
+                     same 7 parameters function is used.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     Finally, some post-processing:
+                 </P>
+                 <UL>
+                     <LI CLASS="mvd-P">
+                         <P ALIGN=LEFT>
+                             <B>Symmetrizing</B> the final average;
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P ALIGN=LEFT>
+                             <B>Re-orienting</B> to the RAS system (X: Right, Y: Anterior, Z: Superior);
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P ALIGN=LEFT>
+                             <B>Aligning the Y axis</B> to the line <B>Fpz-Oz</B>.
+                         </P>
+                 </UL>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     Computing the final quality measures.
+                 </P>
+         </UL>
+         <H4>
+             Remarks
+         </H4>
+         <P ALIGN=LEFT>
+             The method is insensitive to which file is picked first in the first
+             stage, apart for a slight different global scaling.
+         </P>
+         <P ALIGN=LEFT>
+             The number of repetitions of the second stage is currently set to 3,
+             as the resulting average does not evolve significantly afterward.
+         </P>
+         <P ALIGN=LEFT>
+             Only a global scaling is allowed, and not 3 different scalings for
+             each axis. We want to average the <I>shape</I> of the heads, and
+             having different factors in x, y or z <I>does</I> alter the original
+             shape. Plus, it would make the whole process very dependent to which
+             file is picked in the first stage.
+         </P>
+         <H2>
+             <A NAME="how-to-run"></A>How to run the averaging
+         </H2>
+         <P>
+             Called from the <FONT FACE="Arial Black,Arial,Helvetica">
+                 <A HREF="all-processings.html#tools">
+                     Tools
+                     | Averaging Electrodes Coordinates
+                 </A>
+             </FONT> menu, you simply have
+             to follow these steps (no dialog for the moment):
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Give the list of files to be averaged;
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Give the output file name;
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Provide the <B>Cz</B>, <B>Fpz</B> and <B>Oz</B> approximate locations
+                 </P>
+                 <P>
+                     (you can specify up to 4 electrodes for each locus, like &quot;125
+                     138 137&quot;, to use their average position).
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The process begins straight away. At the end, it can burps a few
+                     error messages that are worth reading, usually indicating that the
+                     result is somehow unreliable and some files to be excluded.
+                 </P>
+         </UL>
+         <H4>
+             Input files
+         </H4>
+         <P ALIGN=LEFT>
+             The files to be averaged should be taken from the <B>
+                 same
+                 source/process of measurement:
+             </B>
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     They should have the same orientation (though it can be arbitrary),
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     the same number of electrodes (!),
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     but centers, scalings and some rotations are allowed (and expected),
+                     and can be arbitrary.
+                 </P>
+         </UL>
+         <H4>
+             Cz / Fpz / Oz locations
+         </H4>
+         <P>
+             See here an example for specifying Fpz, as we gave the electrodes 25
+             26 and 32, so to have Fpz in the middle of these 3 points:
+         </P>
+         <UL>
+             <P ALIGN=LEFT>
+                 <IMG SRC="images/avgel.specifying-fpz.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </UL>
+         <H2>
+             <A NAME="results"></A>Results
+         </H2>
+         <P>
+             Here are the output files:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>All files</B> will begin with the output file given;
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <B><I><A HREF="files-formats-cartool.html#xyz">.xyz</A></I></B> file for the
+                     average electrodes;
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <I><B>.Distances</B></I><B><I><A HREF="files-formats-cartool.html#sef">.sef</A></I></B>
+                     file for the distances to the final average
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <B><I><A HREF="files-formats-cartool.html#vrb">.vrb</A></I></B> verbose file.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             To help visualize, see here 3 coregistered files (blue meshes &amp;
+             electrodes) on top of the final average (yellow triangles):
+         </P>
+         <UL>
+             <P>
+                 <IMG SRC="images/avgel.coregistered-to-average.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             Distance file
+         </H3>
+         <P>
+             It indicates the distance of each file to the average, for each
+             electrode (distance from the blue electrodes to the yellow ones in
+             the figure above). The Y axis are the electrodes, and the X axis is
+             the index of each of the original files.
+         </P>
+         <P>
+             Plus, there are 2 more positions in X (&quot;files&quot;):
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The <B>average of the distances</B>, per electrode, <B>across all files</B>.
+                 </P>
+                 <P>
+                     This measure is equivalent to a <I>Mean Absolute Deviation</I>, and
+                     measures the <B>distance from the data set to the average</B>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The <B>dispersion of the distances</B>, per electrode, <B>across all files</B>.
+                 </P>
+                 <P>
+                     This measure is a within group average distance (average of distances
+                     of all pairs of data), and measures the <B>
+                         variability of the
+                         coregistered data
+                     </B>.
+                 </P>
+                 <P>
+                     Note that the SD of the distance to the average is <I>not</I> a very
+                     interesting measure here: if all files are all wrong but within an
+                     equal range, the SD would be low anyway, even though the coregistered
+                     data being far.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             You can of course <A HREF="potentials-maps-display.html">link</A> this distance
+             file with the average <B><I>.xyz</I></B> to visualize the results,
+             here we can see the average of electrodes distances:
+         </P>
+         <UL>
+             <P>
+                 <IMG SRC="images/avgel.distance-tracks.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/avgel.distance-map.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </UL>
+         <H3>
+             Verbose file
+         </H3>
+         <P>
+             It contains all the input parameters, the content of the distance
+             file plus some more details.
+         </P>
+         <P>
+             In addition to the distance, you will find 2 more rows (in Y):
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The <B>average of the distances</B>, per file, <B>across all electrodes</B>,
+                 </P>
+                 <P>
+                     including on the last 2 columns the average of average of distances,
+                     and the average of dispersion.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The <B>Coefficient of Variation of the distances</B> (CoV, normalized
+                     SD/Avg), per file, <B>across all electrodes</B>,
+                 </P>
+                 <P>
+                     including on the last 2 columns the CoV of the average (<I>not</I>
+                     the average of the CoV) and the CoV of dispersion.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             Error messages
+         </H3>
+         <P>
+             The error messages you might have had at the end of the processing
+             are also reproduced into the verbose file, so you can have a second
+             thought on them:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     It could be that <B>a file is considered globally unfit to the average</B>,
+                     by comparing the average distance across all the electrodes, to the
+                     average of average of distances.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Or it could be that <B>
+                         some electrodes of a file are considered
+                         locally unfit to the average
+                     </B>, by comparing its CoV of all
+                     electrodes to about 52%.
+                 </P>
+         </UL>
+         <P>
+             The advice is to first remove the files of the first category, run
+             again the averaging, then only remove the files of the second
+             category, if there remain some anymore.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

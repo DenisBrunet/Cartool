@@ -8,1106 +8,1480 @@
 }
 </style>
  </HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   Creating ROIs</H1>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <P ALIGN=LEFT>
-   This page is about creating the <I><A HREF="files-formats-cartool.html#rois"><B>.rois</B></A></I><A HREF="files-formats-cartool.html#rois"> files</A>,
-    the preliminary step before actually being able to apply the <A HREF="about-rois.html"><B>rois
-    calculus</B></A> itself. The <B><I>.rois</I></B> files are actually 
-   just groups of indexes (of tracks, electrodes, solution points, or whatever).</P>
-  <P ALIGN=LEFT>
-   Creating rois can be done either <B>automatically</B> or through <B>user
-    interaction</B>.</P>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <H5>
-   <A HREF="#auto-rois">Automatic creation of ROIs</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#talairach-to-rois">From Talairach regions</A></H5>
-   <UL>
-    <H5>
-     <A HREF="#tal-to-rois-tech">Technical points &amp; hints</A><br>
-	 <A HREF="#tal-to-rois-results">Results</A></H5>
-    </UL>
-   <H5>
-    <A HREF="#mask-to-rois">From the <I>AAL</I> or any Volume Mask</A></H5>
-   <UL>
-    <H5>
-     <A HREF="#mask-to-rois-tech">Technical points &amp; hints</A><br>
-	 <A HREF="#mask-to-rois-result">Results</A></H5>
-    </UL>
-   </UL>
-  <H5>
-   <A HREF="#interactive-rois">Interactive creation of ROIs</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#tracks-to-rois">From EEG or RIS tracks</A></H5>
-   <UL>
-    <H5>
-     <A HREF="#tracks-to-rois-tech">Technical points &amp; hints</A><br>
-	 <A HREF="#tracks-to-rois-res">Results</A></H5>
-    </UL>
-   <H5>
-    <A HREF="#xyz-to-rois">From electrodes or solution points</A></H5>
-   <UL>
-    <H5>
-     <A HREF="#xyz-to-rois-tech">Technical points &amp; hints</A><br>
-	 <A HREF="#xyz-to-rois-res">Results</A></H5>
-    </UL>
-   </UL>
-  <H2>
-   <A NAME="auto-rois"></A>Automatic creation of ROIs</H2>
-  <P ALIGN=LEFT>
-   This way of generating <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B><A HREF="files-formats-cartool.html#rois"> files</A> 
-   is done by looking for the <B>intersection of the solution points 
-   with a volume mask</B>. The generated ROIs can then be used either 
-   with the <A HREF="esi-display.html#rois">Inverse Solution display</A>,
-    the <A HREF="computing-statistics.html#rois">Statistics</A> or the <A HREF="reprocess-tracks.html#rois">Export</A> 
-   of RIS files.</P>
-  <P ALIGN=LEFT>
-   Three options are available:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    specifying a set of <B>Talairach regions,</B></P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    <B>scanning the </B><A HREF="https://www.gin.cnrs.fr/en/tools/aal/"><B><I>AAL</I></B></A><B> 
-    volume mask</B>,</P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    <B>scanning any arbitrary volume mask</B> that contains some region labels.</P>
-   </UL>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <H3>
-   <A NAME="talairach-to-rois"></A>Automatic creation of ROIs from 
-   Talairach regions</H3>
-  <P ALIGN=LEFT>
-   This automatic generation needs a <B><A HREF="files-formats-cartool.html#spi">solution
-    points file</A></B> that has a <A HREF="mri-display.html#talairach">Talairach
-    transformation function attached to it</A>. <I><B>If</B></I> this 
-   function is available, you can simply provide a <B>text file naming 
-   some Talaraich regions</B>, and Cartool will create the groups of 
-   solution points that <B>fit within each of the named regions</B>.</P>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <P ALIGN=LEFT>
-   Called from the <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
-    | Creating Rois</A></FONT> menu, the following dialog appears:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/rois.dialog.talairach.png" WIDTH="718" HEIGHT="695" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   <I>Note that only the relevant parameters to the current processing 
-   are being listed here:</I></P>
-  <DIV>
-   <P ALIGN=LEFT>
-    <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Input Files</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        EEG / RIS / XYZ / <B>SP</B> file</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        In our case, provide a <B><A HREF="files-formats-others.html#solution-points">solution
-         points file</A></B>, with <A HREF="mri-display.html#talairach">Talaraich
-         abilities</A>. </P>
-       <P>
-        Use Drag &amp; Drop to save time!</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        ROIs Volume file (optional):</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        You can optionally provide a <A HREF="files-formats-others.html#mri">MRI file</A> 
-        containing a grey matter / brain mask.</P>
-       <P>
-        This MRI will solely be used for generating another mask MRI, with 
-        the labels generated from the specified Talairach regions.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        ROIs Labels file (optional):</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        (not relevant here, Talairach names are hard-encoded in Cartool).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Processing Mode:</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Select <B>Automatic</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Automatic Mode:</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        SPs Intersecting a ROIS Volume:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Select <B>Talairach ROIs</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Generating ROIs (optional text file):</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Give a file with the <B>Talairach regions you would like to generate</B>.</P>
-       <P>
-        This file is actually mandatory for the Talairach case...</P>
-       <P>
-        <A HREF="#naming-talairach">See below</A> for the (simplistic) syntax 
-        of the file.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Output</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Output Base File Name:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Specifies a <B>basis for all the file names</B> that will be 
-        generated (main directory, common file name).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Options:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Open File(s) Upon Completion</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        What it says...</TD>
-     </TR>
-    </TABLE></P>
-   </DIV>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <H3>
-   <A NAME="tal-to-rois-tech"></A>ROIs from Talairach - Technical points 
-   &amp; hints</H3>
-  <H4>
-   <A NAME="naming-talairach"></A>Naming convention</H4>
-  <P ALIGN=LEFT>
-   The text file containing the named Talairach regions follow a very 
-   simple syntax:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    each line is a region,</P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    optionally, the line can begin with either the <B>Right</B> or <B>Left</B> keyword,</P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    use one or more of the <B><A HREF="#talairach-labels">known Talairach labels</A></B> 
-    listed below, separated by a comma &quot;<B>,</B>&quot; . If more 
-    than one label is listed, this means the <B>intersection</B> of the 
-    regions will be used.</P>
-   </UL>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <P ALIGN=LEFT>
-   As usual (!) Cartool tries to ease your work, so when specifying the <B>Right</B> 
-   or <B>Left</B> keywords, what it does is gathering (adding together) 
-   all the labels which holds this keyword, silently compounding a whole 
-   left or right structure. Then only it will be intersected with the 
-   named Talairach region that follows. It is even possible to just 
-   specify Left or Right on a line, just to see all the structures on 
-   the left and right (respectively).</P>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <P ALIGN=LEFT>
-   Example of valid namings:</P><PRE>Left Cerebrum<BR>Right Cerebrum<BR>Left Posterior Lobe<BR>Right Posterior Lobe<BR>Left Occipital Lobe, Middle Occipital Gyrus<BR>Left Occipital Lobe, Middle Occipital Gyrus, Gray Matter</PRE><H4>
-   <A NAME="talairach-labels"></A>Recognized Talairach names</H4>
-  <P ALIGN=LEFT>
-   Here are all the labels Cartool will recognize:</P><PRE>Label 1<BR>Inter-Hemispheric<BR>Left Cerebrum<BR>Right Cerebrum<BR>Right Cerebellum<BR>Right Brainstem<BR>Left Brainstem<BR>Left Cerebellum</PRE><PRE>Label 2<BR>Posterior Lobe<BR>Anterior Lobe<BR>Frontal-Temporal Space<BR>Limbic Lobe<BR>Medulla<BR>Pons<BR>Midbrain<BR>Sub-lobar<BR>Occipital Lobe<BR>Temporal Lobe<BR>Parietal Lobe<BR>Frontal Lobe</PRE><PRE>Label 3<BR>Posterior Cingulate<BR>Anterior Cingulate<BR>Subcallosal Gyrus<BR>Sub-Gyral<BR>Transverse Temporal Gyrus<BR>Uncus<BR>Rectal Gyrus<BR>Fusiform Gyrus<BR>Inferior Occipital Gyrus<BR>Inferior Temporal Gyrus<BR>Insula<BR>Parahippocampal Gyrus<BR>Lingual Gyrus<BR>Middle Occipital Gyrus<BR>Orbital Gyrus<BR>Middle Temporal Gyrus<BR>Superior Temporal Gyrus<BR>Superior Occipital Gyrus<BR>Precentral Gyrus<BR>Inferior Frontal Gyrus<BR>Cuneus<BR>Angular Gyrus<BR>Supramarginal Gyrus<BR>Cingulate Gyrus<BR>Inferior Parietal Lobule<BR>Precuneus<BR>Superior Parietal Lobule<BR>Middle Frontal Gyrus<BR>Paracentral Lobule<BR>Postcentral Gyrus<BR>Precentral Gyrus<BR>Superior Frontal Gyrus<BR>Medial Frontal Gyrus<BR>Uvula of Vermis<BR>Pyramis of Vermis<BR>Tuber of Vermis<BR>Declive of Vermis<BR>Culmen of Vermis<BR>Cerebellar Tonsil<BR>Inferior Semi-Lunar Lobule<BR>Fastigium<BR>Nodule<BR>Uvula<BR>Pyramis<BR>Tuber<BR>Declive<BR>Culmen<BR>Cerebellar Lingual<BR>Hippocampus<BR>Extra-Nuclear<BR>Lentiform Nucleus<BR>Amygdala<BR>Hypothalamus<BR>Red Nucleus<BR>Substantia Nigra<BR>Claustrum<BR>Thalamus<BR>Caudate<BR>Cerebro-Spinal Fluid<BR></PRE><PRE>Label 4<BR>Gray Matter<BR>White Matter</PRE><PRE>Label 5<BR>Brodmann area 1<BR>Brodmann area 2<BR>Brodmann area 3<BR>Brodmann area 4<BR>Brodmann area 5<BR>Brodmann area 6<BR>Brodmann area 7<BR>Brodmann area 8<BR>Brodmann area 9<BR>Brodmann area 10<BR>Brodmann area 11<BR>Brodmann area 12<BR>Brodmann area 13<BR>Brodmann area 17<BR>Brodmann area 18<BR>Brodmann area 19<BR>Brodmann area 20<BR>Brodmann area 21<BR>Brodmann area 22<BR>Brodmann area 23<BR>Brodmann area 24<BR>Brodmann area 25<BR>Brodmann area 27<BR>Brodmann area 28<BR>Brodmann area 29<BR>Brodmann area 30<BR>Brodmann area 31<BR>Brodmann area 32<BR>Brodmann area 33<BR>Brodmann area 34<BR>Brodmann area 35<BR>Brodmann area 36<BR>Brodmann area 37<BR>Brodmann area 38<BR>Brodmann area 39<BR>Brodmann area 40<BR>Brodmann area 41<BR>Brodmann area 42<BR>Brodmann area 43<BR>Brodmann area 44<BR>Brodmann area 45<BR>Brodmann area 46<BR>Brodmann area 47<BR>Caudate Tail<BR>Caudate Body<BR>Caudate Head<BR>Dentate<BR>Ventral Anterior Nucleus<BR>Ventral Posterior Medial Nucleus<BR>Ventral Posterior Lateral Nucleus<BR>Medial Dorsal Nucleus<BR>Lateral Dorsal Nucleus<BR>Pulvinar<BR>Lateral Posterior Nucleus<BR>Ventral Lateral Nucleus<BR>Midline Nucleus<BR>Anterior Nucleus<BR>Mammillary Body<BR>Fourth Ventricle<BR>Optic Tract<BR>Anterior Commissure<BR>Corpus Callosum<BR>Third Ventricle<BR>Medial Globus Pallidus<BR>Lateral Globus Pallidus<BR>Nucleus Accumbens Septi<BR>Medial Geniculum Body<BR>Lateral Geniculum Body<BR>Subthalamic Nucleus<BR>Lateral Ventricle<BR>Putamen</PRE><H3>
-   <A NAME="tal-to-rois-results"></A>ROIs from Talairach - Results</H3>
-  <P>
-   Within the specified output directory, you'll find:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    The real stuff is in the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B> 
-    file, in the form of lists of indexes. To see how to make use of it, 
-    go <A HREF="about-rois.html">here</A>.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    A <B>verbose</B> file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>,
-     with all the parameters being used.</P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    Optionally, a volume <B><I><A HREF="files-formats-others.html#mri">.hdr / .img</A></I></B> 
-    that will hold the equivalent regions in the form of a mask. A voxel 
-    in this volume holds a coded value which are listed in the associated <B><I>.txt</I></B> file.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <H3>
-   <A NAME="mask-to-rois"></A>Automatic creation of ROIs from the AAL or 
-   any Volume Mask</H3>
-  <P ALIGN=LEFT>
-   This automatic generation needs a <B><A HREF="files-formats-cartool.html#spi">solution
-    points file</A></B> plus a <B><A HREF="files-formats-others.html#mri">volume (MRI)</A></B> 
-   which content is labels of regions, like the <A HREF="https://www.gin.cnrs.fr/en/tools/aal/">AAL</A>.
-    It will then scan each labeled region from the mask and find the 
-   solution points that intersect it.</P>
-  <P ALIGN=LEFT>
-   Be sure that the <B>solution points are coregistered to the mask</B> 
-   (origin, orientation etc...) beforehand, otherwise the intersection 
-   will be empty!</P>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <P ALIGN=LEFT>
-   Called from the <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
-    | Creating Rois</A></FONT> menu, the following dialog appears:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/rois.dialog.mask.png" WIDTH="718" HEIGHT="695" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   <I>Note that only the relevant parameters to the current processing 
-   are being listed here:</I></P>
-  <DIV>
-   <P ALIGN=LEFT>
-    <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Input Files</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        EEG / RIS / XYZ / <B>SP</B> file</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        In our case, provide a <B><A HREF="files-formats-others.html#solution-points">solution
-         points file</A></B>, for example with Drag &amp; Drop.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        ROIs Volume Mask (optional):</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Actually, <B>this is rather mandatory</B>:&nbsp; provide a <A HREF="files-formats-others.html#mri"><B>MRI
-         file</B></A> containing a mask for regions (like the AAL).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <A NAME="dialog-rois-labels-file"></a>ROIs Labels file (optional):</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Also provide a <A HREF="#rois-labels-file">text file</A> that 
-        associates the <strong>index of the volume mask with some textual/coded data</strong>.</P>
-       <P>
-        Cartool can provide for the AAL3v1 textual infos internally, see below.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Processing Mode:</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Select <B>Automatic</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Automatic Mode:</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-        <tr>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        SPs Intersecting a ROIS Volume:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Select either&nbsp; <B>AAL3v1 ROIs</B>&nbsp; or&nbsp; <B>Other ROIs</B>.
-        Both options work the same, just that in case of the AAL, you 
-        don't need the <A HREF="#rois-labels-file">ROIs Labels file</A>.</P>
-			</TD>
-        </tr>
-		<tr>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P class="auto-style1">
-        AAL3v1 ROIS</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        You can select&nbsp; <B>AAL3v1 ROIs</B>&nbsp; if you are sure you 
-		dropped the AAL3v1 ROIs volume beforehand.</P>
-	   <P>
-        Don't use this option if you are unsure about which AAL version you are 
-		using, as the labelling and the volume might have some inconsistencies. 
-		In case of any doubt, just use the general purpose option below...</P>
-       	 </TD>
-        </tr>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P class="auto-style1">
-        Other ROIS</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Select&nbsp; <B>Other ROIs</B>&nbsp; for any other ROIs that are not 
-		(currently) the AAL3v1. It will need the
-		<A HREF="#dialog-rois-labels-file">dialog rois labels file</a> specified 
-		to be able to work.</P>
-       <P>
-        See <A HREF="#rois-labels-file">the syntax of the ROIs Labels file</A>.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Generating ROIs (optional text file):</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Give a file with the <B>regions you would like to generate</B>.</P>
-       <P>
-        If the field is empty, <strong>all possible ROIs</strong> will be generated.</P>
-       <P>
-        <A HREF="#naming-rois">See below</A> for the syntax of that file.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Output</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Output Base File Name:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Specifies a <B>basis for all the file names</B> that will be 
-        generated (main directory, common file name).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Options:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Open File(s) Upon Completion</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        What it says...</TD>
-     </TR>
-    </TABLE></P>
-   </DIV>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <H3>
-   <A NAME="mask-to-rois-tech"></A>ROIs from Volume Mask - Technical 
-   points &amp; hints</H3>
-  <H4>
-   <A NAME="rois-labels-file"></A>ROIs Labels file syntax</H4>
-  <P ALIGN=LEFT>
-   This file <B>associates the indexes</B> from the volume mask to some <B>textual
-    data</B>. If this file is missing, Cartool can still use the indexes 
-   of the volume to generate ROIs.</P>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <P ALIGN=LEFT>
-   Here is the simple syntax of that file:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>one index + associated data per line</B></P>
-   <LI CLASS="mvd-P">
-   <P>
-    the volume index can be:</P>
-   <UL>
-    <LI CLASS="mvd-P">
-    <P>
-     <B>the first integer value</B> of the line</P>
-    <LI CLASS="mvd-P">
-    <P>
-     or, if not an integer, the current <B>line number</B></P>
-    </UL>
-   <LI CLASS="mvd-P">
-   <P>
-    data following the index can be <B>any number of textual parts</B> 
-    separated by some space</P>
-   </UL>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <P ALIGN=LEFT>
-   See an example of a few lines:</P><PRE>1 Precentral_L 2001<BR>2 Precentral_R 2002<BR>3 Frontal_Sup_L 2101<BR>4 Frontal_Sup_R 2102<BR>...</PRE><H4>
-   <A NAME="naming-rois"></A>Generating ROIs file syntax</H4>
-  <P ALIGN=LEFT>
-   This file will tell <B>which ROIs you want</B>, and only them. Note 
-   that if this file is missing, all possible ROIs will be constructed!</P>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <P ALIGN=LEFT>
-   The syntax of the file is pretty lax, here are the rules:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    <B>one ROI to <I>generate</I> per line</B>, </P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    <B>each line</B> consists of <B>one or multiple codes</B> (specified 
-    in the <A HREF="#rois-labels-file">MRI labels file</A>). Each code 
-    could be:</P>
-   <UL>
-    <LI CLASS="mvd-P">
-    <P ALIGN=LEFT>
-     either the ROI index, like&nbsp; <B>123</B></P>
-    <LI CLASS="mvd-P">
-    <P ALIGN=LEFT>
-     any textual association from the ROIs Labels file, like&nbsp; <B>Precentral_L</B></P>
-    <LI CLASS="mvd-P">
-    <P ALIGN=LEFT>
-     in case of AAL, the value associated to each ROI, like&nbsp; <B>2001</B></P>
-    </UL>
-   </UL>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <P ALIGN=LEFT>
-   See an example to generate 7 ROIs:</P><PRE>Precentral_L  Precentral_R<BR>3  4<BR>2111  2112<BR>ORG  ORD<BR>Cuneus_L<BR>Cuneus_R<BR>91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108</PRE><P
-    ALIGN=LEFT>
-   &nbsp;</P>
-  <P ALIGN=LEFT>
-   Although you can mix all types of codes in the same file, and even on 
-   the same line, this is of course not regarded as a good practice! 
-   Stick to one notation, you are more likely to read this file than the computer!</P>
-  <P>
-   &nbsp;</P>
-  <H3>
-   <A NAME="mask-to-rois-result"></A>ROIs from Volume Mask - Results</H3>
-  <P>
-   Within the specified output directory, you'll find:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    The real stuff is in the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B> 
-    file, in the form of lists of indexes. To see how to make use of it, 
-    go <A HREF="about-rois.html">here</A>.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    A <B>verbose</B> file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>,
-     with all the parameters being used.</P>
-   </UL>
-  <H2>
-   <A NAME="interactive-rois"></A>Interactive creation of ROIs</H2>
-  <P ALIGN=LEFT>
-   This way of creating rois is achieved through <B>user interaction</B>,
-    by <B>picking elements</B> one at a time into a roi, <B>one roi 
-   after the other</B>.<BR>
-   This process could be done on the following files:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    <A HREF="files-formats-others.html#eeg"><B>EEG</B> tracks</A>.</P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    <A HREF="files-formats-others.html#inverse-solutions"><B>RIS</B> (result of 
-    inverse) tracks file</A>.</P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    <A HREF="files-formats-others.html#electrodes-coord"><B>Electrodes Coordinates</B> files</A>.</P>
-   <LI CLASS="mvd-P">
-   <P ALIGN=LEFT>
-    <A HREF="files-formats-others.html#solution-points"><B>Solution Points</B> files</A>.</P>
-   </UL>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <P ALIGN=LEFT>
-   After creating the ROIs, see how to make use of them for <A HREF="eeg-display.html#rois">Tracks
-    display</A>, <A HREF="potentials-maps-display.html#rois">Potential display</A>,
-    <A HREF="esi-display.html#rois">Inverse Solution display</A>, <A HREF="computing-statistics.html#rois">Statistics</A> 
-   or <A HREF="reprocess-tracks.html#rois">Export</A> of EEG files.</P>
-  <H3>
-   <A NAME="tracks-to-rois"></A>Interactive creation of ROIs from EEG or 
-   RIS tracks</H3>
-  <P ALIGN=LEFT>
-   Call <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
-    | Creating Rois</A></FONT> to launch the following dialog (if you 
-   have already opened an EEG or a RIS file, the <I>input</I> field will 
-   be correctly pre-filled):</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/rois.dialog.eeg.png" WIDTH="718" HEIGHT="695" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   <I>Note that only the relevant parameters to the current processing 
-   are being listed here:</I></P>
-  <DIV>
-   <P ALIGN=LEFT>
-    <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Input Files</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>EEG</B> / <B>RIS</B> / XYZ / SP file</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        In our case, provide an <B><A HREF="files-formats-others.html#eeg">EEG</A></B> 
-        or a <B><A HREF="files-formats-others.html#inverse-solutions">RIS</A></B> 
-        file, for example with Drag &amp; Drop.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        ROIs Volume file (optional):</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        (not relevant here).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        ROIs Labels file (optional):</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        (not relevant here).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Processing Mode:</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Select <B>Interactive</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Interactive Mode:</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Next ROI Name:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Give a <B>name for the current roi</B> (spaces allowed).</P>
-       <P>
-        If you let this field empty... well, Cartool will name the roi 
-        itself, and it is known to have quite a bad taste at it (something as 
-        dull as &quot;roi1&quot;, &quot;roi2&quot;, &quot;roi3&quot;...). So 
-        it is not a good idea to not fill this field. In any case, when all 
-        is done and saved to a <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B> 
-        file, you can still text-edit it and change the names...</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Next ROI Tracks:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Add here all the <B>names of the tracks</B> you wish to be in the 
-        same roi.</P>
-       <P>
-        <B><I>Now, the magic</I></B>:</P>
-       <UL>
-        <LI CLASS="mvd-P">
-        <P>
-         <B>switch back to the EEG window</B>, and select the tracks you like (<A HREF="eeg-display.html#mouse-tracks-select">middle-click</A>,
-          or whatever <A HREF="eeg-display.html#menu-selection">selection tools</A>). <B>All
-          your EEG selection will be shown in the &quot;Tracks&quot; field of 
-         the dialog!</B></P>
-        <LI CLASS="mvd-P">
-        <P>
-         Conversely, <B>typing</B> in the dialog field, or modifying the 
-         existing text in it will also be <B>reflected in the EEG window</B>! Wunderbar!</P>
-        </UL>
-       <P>
-        <IMG SRC="images/rois.dialog.eeg2.png" VSPACE="0" HSPACE="0" BORDER="0"></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Add New Roi</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        When all the tracks you want to be in one roi are shown in the 
-        previous field, clicking this will actually <B>create the roi</B> 
-        from the current input. So until you have clicked it, the roi is <I>not</I> 
-        recorded, and you can still modify it.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Remove Last Roi</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        What is says.</P>
-       <P>
-        Bonus track: the list of tracks of the removed roi is restored in the 
-        dialog, so you can re-edit it if you want.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Output</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Output Base File Name:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Specifies a <B>basis for all the file names</B> that will be 
-        generated (main directory, common file name).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Options:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Open File(s) Upon Completion</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        What it says...</TD>
-     </TR>
-    </TABLE></P>
-   </DIV>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <H3>
-   <A NAME="tracks-to-rois-tech"></A>ROIs from EEG / RIS tracks - 
-   Technical points &amp; hints</H3>
-  <H4>
-   Checking ROIs do not overlap</H4>
-  <P>
-   Each time a roi is added, Cartool will check it <B>does not overlap</B> 
-   with any existing rois. If it finds some tracks that surreptuously 
-   sneaked in, they will be silently removed from the list of tracks 
-   before creating the roi.</P>
-  <P>
-   This makes the interactive creation fool-proof (not that we don't 
-   trust you, but...).</P>
-  <H4>
-   Ending the interactive process</H4>
-  <P>
-   Well, when you're done, just click the <I>OK</I> button to actually 
-   create the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B> 
-   file. If all tracks have been used into a roi, the <I>Add New Roi</I> 
-   button will disable itself in great disdain...</P>
-  <P>
-   Finally, Cartool will close the files it has opened.</P>
-  <H4>
-   Using ROIs to reorder tracks display</H4>
-  <P>
-   Within a given roi, the <B>electrodes will also be reordered</B> 
-   according to the exact sequence specified. Thought order does not 
-   matter for averaging purposes, it can be beneficial for <B>displaying tracks</B> 
-   according to a more intuitive scheme.</P>
-  <P>
-   F.ex. with high density nets of electrodes, the native ordering is 
-   basically non-intuitive:</P>
-  <P>
-   <IMG SRC="images/rois.tracks-unordered.png" WIDTH="534" HEIGHT="237" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   Then, with rois re-ordering (well this is just an example, not a 
-   winning price in design!):</P>
-  <P>
-   <IMG SRC="images/rois.tracks-reordered.png" WIDTH="534" HEIGHT="237" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   See also this <A HREF="eeg-display.html#rois">topic</A>.</P>
-  <H4>
-   Final thoughts</H4>
-  <P>
-   It is not really the best way to create rois from a RIS file, because 
-   there are too many track! Think more about <A HREF="#auto-rois">automatic
-    creation</A> in the case of inverse solution.</P>
-  <P>
-   In the case of EEG, it is quite sexy to work from an EEG <A HREF="general-concepts.html#linkingfiles">linked</A> 
-   with electrodes coordinates, so you can also see the selection on the 
-   electrodes of the <A HREF="potentials-maps-display.html">potential display</A>, too!</P>
-  <H3>
-   <A NAME="tracks-to-rois-res"></A>ROIs from EEG / RIS tracks - Results</H3>
-  <P>
-   Within the specified output directory, you'll find:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    The real stuff is in the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B> 
-    file, in the form of lists of indexes. To see how to make use of it, 
-    go <A HREF="about-rois.html">here</A>.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    A <B>verbose</B> file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>,
-     with all the parameters being used.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <H3>
-   <A NAME="xyz-to-rois"></A>Interactive creation of ROIs from 
-   electrodes or solution points</H3>
-  <P ALIGN=LEFT>
-   Call <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
-    | Creating Rois</A></FONT> to launch the following dialog (if you 
-   have already opened an electrode or a solution points file, the <I>input</I> 
-   field will be correctly pre-filled):</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/rois.dialog.xyz.png" WIDTH="718" HEIGHT="695" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   <I>Note that only the relevant parameters to the current processing 
-   are being listed here:</I></P>
-  <DIV>
-   <P ALIGN=LEFT>
-    <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Input Files</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        EEG / RIS / <B>XYZ</B> / <B>SP</B> file</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        In our case, provide an <B><A HREF="files-formats-others.html#electrodes-coord">electrodes
-         coordinates file</A></B> or a <B><A HREF="files-formats-others.html#solution-points">solution
-         points file</A></B>, for example with Drag &amp; Drop.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        ROIs Volume file (optional):</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        (not relevant here).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        ROIs Labels file (optional):</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        (not relevant here).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Processing Mode:</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Select <B>Interactive</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Interactive Mode:</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Next ROI Name:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Give a <B>name for the current roi</B> (spaces allowed).</P>
-       <P>
-        If you let this field empty... well, Cartool will name the roi 
-        itself, and it is known to have quite a bad taste at it (something as 
-        dull as &quot;roi1&quot;, &quot;roi2&quot;, &quot;roi3&quot;...). So 
-        it is not a good idea to not fill this field. In any case, when all 
-        is done and saved to a <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B> 
-        file, you can still text-edit it and change the names...</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Next ROI Tracks:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Add here all the <B>names of the tracks</B> you wish to be in the 
-        same roi.</P>
-       <P>
-        <B><I>Now, the magic</I></B>:</P>
-       <UL>
-        <LI CLASS="mvd-P">
-        <P>
-         <B>switch back to the electrode window</B>, and select the tracks you 
-         like (with <A HREF="windows-general-commands.html#mouse-picking">middle-click</A>).
-          <B>All selected electrodes will be shown in the &quot;Tracks&quot; 
-         field of the dialog!</B></P>
-        <LI CLASS="mvd-P">
-        <P>
-         Conversely, <B>typing</B> in the dialog field, or modifying the 
-         existing text in it will also be <B>reflected in the electrode window</B>!
-          Wundersch&ouml;n!</P>
-        </UL>
-       <P ALIGN=LEFT>
-        <IMG SRC="images/rois.dialog.xyz2.png" VSPACE="0" HSPACE="0" BORDER="0"></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Add New Roi</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        When all the electrodes you want to be in one roi are shown in the 
-        previous field, clicking this will actually <B>create the roi</B> 
-        from the current input. So until you have clicked it, the roi is <I>not</I> 
-        recorded, and you can still modify it.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Remove Last Roi</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        What is says.</P>
-       <P>
-        Bonus track: the list of electrodes of the removed roi is restored in 
-        the dialog, so you can re-edit it if you want.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Output</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Output Base File Name:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Specifies a <B>basis for all the file names</B> that will be 
-        generated (main directory, common file name).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Options:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Open File(s) Upon Completion</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        What it says...</TD>
-     </TR>
-    </TABLE></P>
-   </DIV>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <H3>
-   <A NAME="xyz-to-rois-tech"></A>ROIs from electrodes or solution 
-   points - Technical points &amp; hints</H3>
-  <P>
-   Most of <A HREF="#tracks-to-roi-tech">these points</A> are also 
-   relevant here!</P>
-  <H4>
-   And for the solution points?</H4>
-  <P>
-   Well, you can technically use this manual method:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    if you have only a few rois / solution points to look after,</P>
-   <LI CLASS="mvd-P">
-   <P>
-    make use of the slice display to show less points at a time,</P>
-   <LI CLASS="mvd-P">
-   <P>
-    and be patient.</P>
-   </UL>
-  <P>
-   Otherwise, think about the <A HREF="#auto-rois">automatic processes</A>!</P>
-  <H3>
-   <A NAME="xyz-to-rois-res"></A>ROIs from electrodes or solution points 
-   - Results</H3>
-  <P>
-   Within the specified output directory, you'll find:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    The real stuff is in the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B> 
-    file, in the form of lists of indexes. To see how to make use of it, 
-    go <A HREF="about-rois.html">here</A>.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    A <B>verbose</B> file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>,
-     with all the parameters being used.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             Creating ROIs
+         </H1>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <P ALIGN=LEFT>
+             This page is about creating the <I><A HREF="files-formats-cartool.html#rois"><B>.rois</B></A></I><A HREF="files-formats-cartool.html#rois"> files</A>,
+             the preliminary step before actually being able to apply the <A HREF="about-rois.html">
+                 <B>
+                     rois
+                     calculus
+                 </B>
+             </A> itself. The <B><I>.rois</I></B> files are actually
+             just groups of indexes (of tracks, electrodes, solution points, or whatever).
+         </P>
+         <P ALIGN=LEFT>
+             Creating rois can be done either <B>automatically</B> or through <B>
+                 user
+                 interaction
+             </B>.
+         </P>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <H5>
+             <A HREF="#auto-rois">Automatic creation of ROIs</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#talairach-to-rois">From Talairach regions</A>
+             </H5>
+             <UL>
+                 <H5>
+                     <A HREF="#tal-to-rois-tech">Technical points &amp; hints</A><br>
+                     <A HREF="#tal-to-rois-results">Results</A>
+                 </H5>
+             </UL>
+             <H5>
+                 <A HREF="#mask-to-rois">From the <I>AAL</I> or any Volume Mask</A>
+             </H5>
+             <UL>
+                 <H5>
+                     <A HREF="#mask-to-rois-tech">Technical points &amp; hints</A><br>
+                     <A HREF="#mask-to-rois-result">Results</A>
+                 </H5>
+             </UL>
+         </UL>
+         <H5>
+             <A HREF="#interactive-rois">Interactive creation of ROIs</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#tracks-to-rois">From EEG or RIS tracks</A>
+             </H5>
+             <UL>
+                 <H5>
+                     <A HREF="#tracks-to-rois-tech">Technical points &amp; hints</A><br>
+                     <A HREF="#tracks-to-rois-res">Results</A>
+                 </H5>
+             </UL>
+             <H5>
+                 <A HREF="#xyz-to-rois">From electrodes or solution points</A>
+             </H5>
+             <UL>
+                 <H5>
+                     <A HREF="#xyz-to-rois-tech">Technical points &amp; hints</A><br>
+                     <A HREF="#xyz-to-rois-res">Results</A>
+                 </H5>
+             </UL>
+         </UL>
+         <H2>
+             <A NAME="auto-rois"></A>Automatic creation of ROIs
+         </H2>
+         <P ALIGN=LEFT>
+             This way of generating <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B><A HREF="files-formats-cartool.html#rois"> files</A>
+             is done by looking for the <B>
+                 intersection of the solution points
+                 with a volume mask
+             </B>. The generated ROIs can then be used either
+             with the <A HREF="esi-display.html#rois">Inverse Solution display</A>,
+             the <A HREF="computing-statistics.html#rois">Statistics</A> or the <A HREF="reprocess-tracks.html#rois">Export</A>
+             of RIS files.
+         </P>
+         <P ALIGN=LEFT>
+             Three options are available:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     specifying a set of <B>Talairach regions,</B>
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     <B>scanning the </B><A HREF="https://www.gin.cnrs.fr/en/tools/aal/"><B><I>AAL</I></B></A><B>
+                         volume mask
+                     </B>,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     <B>scanning any arbitrary volume mask</B> that contains some region labels.
+                 </P>
+         </UL>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="talairach-to-rois"></A>Automatic creation of ROIs from
+             Talairach regions
+         </H3>
+         <P ALIGN=LEFT>
+             This automatic generation needs a <B>
+                 <A HREF="files-formats-cartool.html#spi">
+                     solution
+                     points file
+                 </A>
+             </B> that has a <A HREF="mri-display.html#talairach">
+                 Talairach
+                 transformation function attached to it
+             </A>. <I><B>If</B></I> this
+             function is available, you can simply provide a <B>
+                 text file naming
+                 some Talaraich regions
+             </B>, and Cartool will create the groups of
+             solution points that <B>fit within each of the named regions</B>.
+         </P>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <P ALIGN=LEFT>
+             Called from the <FONT FACE="Arial Black,Arial,Helvetica">
+                 <A HREF="all-processings.html#tools">
+                     Tools
+                     | Creating Rois
+                 </A>
+             </FONT> menu, the following dialog appears:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/rois.dialog.talairach.png" WIDTH="718" HEIGHT="695" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             <I>
+                 Note that only the relevant parameters to the current processing
+                 are being listed here:
+             </I>
+         </P>
+         <DIV>
+             <P ALIGN=LEFT>
+                 <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Input Files</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 EEG / RIS / XYZ / <B>SP</B> file
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 In our case, provide a <B>
+                                     <A HREF="files-formats-others.html#solution-points">
+                                         solution
+                                         points file
+                                     </A>
+                                 </B>, with <A HREF="mri-display.html#talairach">
+                                     Talaraich
+                                     abilities
+                                 </A>.
+                             </P>
+                             <P>
+                                 Use Drag &amp; Drop to save time!
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 ROIs Volume file (optional):
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 You can optionally provide a <A HREF="files-formats-others.html#mri">MRI file</A>
+                                 containing a grey matter / brain mask.
+                             </P>
+                             <P>
+                                 This MRI will solely be used for generating another mask MRI, with
+                                 the labels generated from the specified Talairach regions.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 ROIs Labels file (optional):
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 (not relevant here, Talairach names are hard-encoded in Cartool).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Processing Mode:</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Select <B>Automatic</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Automatic Mode:</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 SPs Intersecting a ROIS Volume:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Select <B>Talairach ROIs</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Generating ROIs (optional text file):
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Give a file with the <B>Talairach regions you would like to generate</B>.
+                             </P>
+                             <P>
+                                 This file is actually mandatory for the Talairach case...
+                             </P>
+                             <P>
+                                 <A HREF="#naming-talairach">See below</A> for the (simplistic) syntax
+                                 of the file.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Output</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Output Base File Name:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Specifies a <B>basis for all the file names</B> that will be
+                                 generated (main directory, common file name).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Options:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Open File(s) Upon Completion
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 What it says...
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </DIV>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="tal-to-rois-tech"></A>ROIs from Talairach - Technical points
+             &amp; hints
+         </H3>
+         <H4>
+             <A NAME="naming-talairach"></A>Naming convention
+         </H4>
+         <P ALIGN=LEFT>
+             The text file containing the named Talairach regions follow a very
+             simple syntax:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     each line is a region,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     optionally, the line can begin with either the <B>Right</B> or <B>Left</B> keyword,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     use one or more of the <B><A HREF="#talairach-labels">known Talairach labels</A></B>
+                     listed below, separated by a comma &quot;<B>,</B>&quot; . If more
+                     than one label is listed, this means the <B>intersection</B> of the
+                     regions will be used.
+                 </P>
+         </UL>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <P ALIGN=LEFT>
+             As usual (!) Cartool tries to ease your work, so when specifying the <B>Right</B>
+             or <B>Left</B> keywords, what it does is gathering (adding together)
+             all the labels which holds this keyword, silently compounding a whole
+             left or right structure. Then only it will be intersected with the
+             named Talairach region that follows. It is even possible to just
+             specify Left or Right on a line, just to see all the structures on
+             the left and right (respectively).
+         </P>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <P ALIGN=LEFT>
+             Example of valid namings:
+         </P><PRE>Left Cerebrum<BR>Right Cerebrum<BR>Left Posterior Lobe<BR>Right Posterior Lobe<BR>Left Occipital Lobe, Middle Occipital Gyrus<BR>Left Occipital Lobe, Middle Occipital Gyrus, Gray Matter</PRE><H4>
+             <A NAME="talairach-labels"></A>Recognized Talairach names
+         </H4>
+         <P ALIGN=LEFT>
+             Here are all the labels Cartool will recognize:
+         </P><PRE>Label 1<BR>Inter-Hemispheric<BR>Left Cerebrum<BR>Right Cerebrum<BR>Right Cerebellum<BR>Right Brainstem<BR>Left Brainstem<BR>Left Cerebellum</PRE><PRE>Label 2<BR>Posterior Lobe<BR>Anterior Lobe<BR>Frontal-Temporal Space<BR>Limbic Lobe<BR>Medulla<BR>Pons<BR>Midbrain<BR>Sub-lobar<BR>Occipital Lobe<BR>Temporal Lobe<BR>Parietal Lobe<BR>Frontal Lobe</PRE><PRE>Label 3<BR>Posterior Cingulate<BR>Anterior Cingulate<BR>Subcallosal Gyrus<BR>Sub-Gyral<BR>Transverse Temporal Gyrus<BR>Uncus<BR>Rectal Gyrus<BR>Fusiform Gyrus<BR>Inferior Occipital Gyrus<BR>Inferior Temporal Gyrus<BR>Insula<BR>Parahippocampal Gyrus<BR>Lingual Gyrus<BR>Middle Occipital Gyrus<BR>Orbital Gyrus<BR>Middle Temporal Gyrus<BR>Superior Temporal Gyrus<BR>Superior Occipital Gyrus<BR>Precentral Gyrus<BR>Inferior Frontal Gyrus<BR>Cuneus<BR>Angular Gyrus<BR>Supramarginal Gyrus<BR>Cingulate Gyrus<BR>Inferior Parietal Lobule<BR>Precuneus<BR>Superior Parietal Lobule<BR>Middle Frontal Gyrus<BR>Paracentral Lobule<BR>Postcentral Gyrus<BR>Precentral Gyrus<BR>Superior Frontal Gyrus<BR>Medial Frontal Gyrus<BR>Uvula of Vermis<BR>Pyramis of Vermis<BR>Tuber of Vermis<BR>Declive of Vermis<BR>Culmen of Vermis<BR>Cerebellar Tonsil<BR>Inferior Semi-Lunar Lobule<BR>Fastigium<BR>Nodule<BR>Uvula<BR>Pyramis<BR>Tuber<BR>Declive<BR>Culmen<BR>Cerebellar Lingual<BR>Hippocampus<BR>Extra-Nuclear<BR>Lentiform Nucleus<BR>Amygdala<BR>Hypothalamus<BR>Red Nucleus<BR>Substantia Nigra<BR>Claustrum<BR>Thalamus<BR>Caudate<BR>Cerebro-Spinal Fluid<BR></PRE><PRE>Label 4<BR>Gray Matter<BR>White Matter</PRE><PRE>Label 5<BR>Brodmann area 1<BR>Brodmann area 2<BR>Brodmann area 3<BR>Brodmann area 4<BR>Brodmann area 5<BR>Brodmann area 6<BR>Brodmann area 7<BR>Brodmann area 8<BR>Brodmann area 9<BR>Brodmann area 10<BR>Brodmann area 11<BR>Brodmann area 12<BR>Brodmann area 13<BR>Brodmann area 17<BR>Brodmann area 18<BR>Brodmann area 19<BR>Brodmann area 20<BR>Brodmann area 21<BR>Brodmann area 22<BR>Brodmann area 23<BR>Brodmann area 24<BR>Brodmann area 25<BR>Brodmann area 27<BR>Brodmann area 28<BR>Brodmann area 29<BR>Brodmann area 30<BR>Brodmann area 31<BR>Brodmann area 32<BR>Brodmann area 33<BR>Brodmann area 34<BR>Brodmann area 35<BR>Brodmann area 36<BR>Brodmann area 37<BR>Brodmann area 38<BR>Brodmann area 39<BR>Brodmann area 40<BR>Brodmann area 41<BR>Brodmann area 42<BR>Brodmann area 43<BR>Brodmann area 44<BR>Brodmann area 45<BR>Brodmann area 46<BR>Brodmann area 47<BR>Caudate Tail<BR>Caudate Body<BR>Caudate Head<BR>Dentate<BR>Ventral Anterior Nucleus<BR>Ventral Posterior Medial Nucleus<BR>Ventral Posterior Lateral Nucleus<BR>Medial Dorsal Nucleus<BR>Lateral Dorsal Nucleus<BR>Pulvinar<BR>Lateral Posterior Nucleus<BR>Ventral Lateral Nucleus<BR>Midline Nucleus<BR>Anterior Nucleus<BR>Mammillary Body<BR>Fourth Ventricle<BR>Optic Tract<BR>Anterior Commissure<BR>Corpus Callosum<BR>Third Ventricle<BR>Medial Globus Pallidus<BR>Lateral Globus Pallidus<BR>Nucleus Accumbens Septi<BR>Medial Geniculum Body<BR>Lateral Geniculum Body<BR>Subthalamic Nucleus<BR>Lateral Ventricle<BR>Putamen</PRE><H3>
+             <A NAME="tal-to-rois-results"></A>ROIs from Talairach - Results
+         </H3>
+         <P>
+             Within the specified output directory, you'll find:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The real stuff is in the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B>
+                     file, in the form of lists of indexes. To see how to make use of it,
+                     go <A HREF="about-rois.html">here</A>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <B>verbose</B> file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>,
+                     with all the parameters being used.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     Optionally, a volume <B><I><A HREF="files-formats-others.html#mri">.hdr / .img</A></I></B>
+                     that will hold the equivalent regions in the form of a mask. A voxel
+                     in this volume holds a coded value which are listed in the associated <B><I>.txt</I></B> file.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="mask-to-rois"></A>Automatic creation of ROIs from the AAL or
+             any Volume Mask
+         </H3>
+         <P ALIGN=LEFT>
+             This automatic generation needs a <B>
+                 <A HREF="files-formats-cartool.html#spi">
+                     solution
+                     points file
+                 </A>
+             </B> plus a <B><A HREF="files-formats-others.html#mri">volume (MRI)</A></B>
+             which content is labels of regions, like the <A HREF="https://www.gin.cnrs.fr/en/tools/aal/">AAL</A>.
+             It will then scan each labeled region from the mask and find the
+             solution points that intersect it.
+         </P>
+         <P ALIGN=LEFT>
+             Be sure that the <B>solution points are coregistered to the mask</B>
+             (origin, orientation etc...) beforehand, otherwise the intersection
+             will be empty!
+         </P>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <P ALIGN=LEFT>
+             Called from the <FONT FACE="Arial Black,Arial,Helvetica">
+                 <A HREF="all-processings.html#tools">
+                     Tools
+                     | Creating Rois
+                 </A>
+             </FONT> menu, the following dialog appears:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/rois.dialog.mask.png" WIDTH="718" HEIGHT="695" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             <I>
+                 Note that only the relevant parameters to the current processing
+                 are being listed here:
+             </I>
+         </P>
+         <DIV>
+             <P ALIGN=LEFT>
+                 <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Input Files</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 EEG / RIS / XYZ / <B>SP</B> file
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 In our case, provide a <B>
+                                     <A HREF="files-formats-others.html#solution-points">
+                                         solution
+                                         points file
+                                     </A>
+                                 </B>, for example with Drag &amp; Drop.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 ROIs Volume Mask (optional):
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Actually, <B>this is rather mandatory</B>:&nbsp; provide a <A HREF="files-formats-others.html#mri">
+                                     <B>
+                                         MRI
+                                         file
+                                     </B>
+                                 </A> containing a mask for regions (like the AAL).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <A NAME="dialog-rois-labels-file"></A>ROIs Labels file (optional):
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Also provide a <A HREF="#rois-labels-file">text file</A> that
+                                 associates the <strong>index of the volume mask with some textual/coded data</strong>.
+                             </P>
+                             <P>
+                                 Cartool can provide for the AAL3v1 textual infos internally, see below.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Processing Mode:</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Select <B>Automatic</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Automatic Mode:</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <tr>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 SPs Intersecting a ROIS Volume:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Select either&nbsp; <B>AAL3v1 ROIs</B>&nbsp; or&nbsp; <B>Other ROIs</B>.
+                                 Both options work the same, just that in case of the AAL, you
+                                 don't need the <A HREF="#rois-labels-file">ROIs Labels file</A>.
+                             </P>
+                         </TD>
+                     </tr>
+                     <tr>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P class="auto-style1">
+                                 AAL3v1 ROIS
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 You can select&nbsp; <B>AAL3v1 ROIs</B>&nbsp; if you are sure you
+                                 dropped the AAL3v1 ROIs volume beforehand.
+                             </P>
+                             <P>
+                                 Don't use this option if you are unsure about which AAL version you are
+                                 using, as the labelling and the volume might have some inconsistencies.
+                                 In case of any doubt, just use the general purpose option below...
+                             </P>
+                         </TD>
+                     </tr>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P class="auto-style1">
+                                 Other ROIS
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Select&nbsp; <B>Other ROIs</B>&nbsp; for any other ROIs that are not
+                                 (currently) the AAL3v1. It will need the
+                                 <A HREF="#dialog-rois-labels-file">dialog rois labels file</A> specified
+                                 to be able to work.
+                             </P>
+                             <P>
+                                 See <A HREF="#rois-labels-file">the syntax of the ROIs Labels file</A>.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Generating ROIs (optional text file):
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Give a file with the <B>regions you would like to generate</B>.
+                             </P>
+                             <P>
+                                 If the field is empty, <strong>all possible ROIs</strong> will be generated.
+                             </P>
+                             <P>
+                                 <A HREF="#naming-rois">See below</A> for the syntax of that file.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Output</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Output Base File Name:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Specifies a <B>basis for all the file names</B> that will be
+                                 generated (main directory, common file name).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Options:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Open File(s) Upon Completion
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 What it says...
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </DIV>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="mask-to-rois-tech"></A>ROIs from Volume Mask - Technical
+             points &amp; hints
+         </H3>
+         <H4>
+             <A NAME="rois-labels-file"></A>ROIs Labels file syntax
+         </H4>
+         <P ALIGN=LEFT>
+             This file <B>associates the indexes</B> from the volume mask to some <B>
+                 textual
+                 data
+             </B>. If this file is missing, Cartool can still use the indexes
+             of the volume to generate ROIs.
+         </P>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <P ALIGN=LEFT>
+             Here is the simple syntax of that file:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>one index + associated data per line</B>
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     the volume index can be:
+                 </P>
+                 <UL>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             <B>the first integer value</B> of the line
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P>
+                             or, if not an integer, the current <B>line number</B>
+                         </P>
+                 </UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     data following the index can be <B>any number of textual parts</B>
+                     separated by some space
+                 </P>
+         </UL>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <P ALIGN=LEFT>
+             See an example of a few lines:
+         </P><PRE>1 Precentral_L 2001<BR>2 Precentral_R 2002<BR>3 Frontal_Sup_L 2101<BR>4 Frontal_Sup_R 2102<BR>...</PRE><H4>
+             <A NAME="naming-rois"></A>Generating ROIs file syntax
+         </H4>
+         <P ALIGN=LEFT>
+             This file will tell <B>which ROIs you want</B>, and only them. Note
+             that if this file is missing, all possible ROIs will be constructed!
+         </P>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <P ALIGN=LEFT>
+             The syntax of the file is pretty lax, here are the rules:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     <B>one ROI to <I>generate</I> per line</B>,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     <B>each line</B> consists of <B>one or multiple codes</B> (specified
+                     in the <A HREF="#rois-labels-file">MRI labels file</A>). Each code
+                     could be:
+                 </P>
+                 <UL>
+                     <LI CLASS="mvd-P">
+                         <P ALIGN=LEFT>
+                             either the ROI index, like&nbsp; <B>123</B>
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P ALIGN=LEFT>
+                             any textual association from the ROIs Labels file, like&nbsp; <B>Precentral_L</B>
+                         </P>
+                     <LI CLASS="mvd-P">
+                         <P ALIGN=LEFT>
+                             in case of AAL, the value associated to each ROI, like&nbsp; <B>2001</B>
+                         </P>
+                 </UL>
+         </UL>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <P ALIGN=LEFT>
+             See an example to generate 7 ROIs:
+         </P><PRE>Precentral_L  Precentral_R<BR>3  4<BR>2111  2112<BR>ORG  ORD<BR>Cuneus_L<BR>Cuneus_R<BR>91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108</PRE><P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <P ALIGN=LEFT>
+             Although you can mix all types of codes in the same file, and even on
+             the same line, this is of course not regarded as a good practice!
+             Stick to one notation, you are more likely to read this file than the computer!
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="mask-to-rois-result"></A>ROIs from Volume Mask - Results
+         </H3>
+         <P>
+             Within the specified output directory, you'll find:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The real stuff is in the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B>
+                     file, in the form of lists of indexes. To see how to make use of it,
+                     go <A HREF="about-rois.html">here</A>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <B>verbose</B> file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>,
+                     with all the parameters being used.
+                 </P>
+         </UL>
+         <H2>
+             <A NAME="interactive-rois"></A>Interactive creation of ROIs
+         </H2>
+         <P ALIGN=LEFT>
+             This way of creating rois is achieved through <B>user interaction</B>,
+             by <B>picking elements</B> one at a time into a roi, <B>
+                 one roi
+                 after the other
+             </B>.<BR>
+             This process could be done on the following files:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     <A HREF="files-formats-others.html#eeg"><B>EEG</B> tracks</A>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     <A HREF="files-formats-others.html#inverse-solutions">
+                         <B>RIS</B> (result of
+                         inverse) tracks file
+                     </A>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     <A HREF="files-formats-others.html#electrodes-coord"><B>Electrodes Coordinates</B> files</A>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P ALIGN=LEFT>
+                     <A HREF="files-formats-others.html#solution-points"><B>Solution Points</B> files</A>.
+                 </P>
+         </UL>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <P ALIGN=LEFT>
+             After creating the ROIs, see how to make use of them for <A HREF="eeg-display.html#rois">
+                 Tracks
+                 display
+             </A>, <A HREF="potentials-maps-display.html#rois">Potential display</A>,
+             <A HREF="esi-display.html#rois">Inverse Solution display</A>, <A HREF="computing-statistics.html#rois">Statistics</A>
+             or <A HREF="reprocess-tracks.html#rois">Export</A> of EEG files.
+         </P>
+         <H3>
+             <A NAME="tracks-to-rois"></A>Interactive creation of ROIs from EEG or
+             RIS tracks
+         </H3>
+         <P ALIGN=LEFT>
+             Call <FONT FACE="Arial Black,Arial,Helvetica">
+                 <A HREF="all-processings.html#tools">
+                     Tools
+                     | Creating Rois
+                 </A>
+             </FONT> to launch the following dialog (if you
+             have already opened an EEG or a RIS file, the <I>input</I> field will
+             be correctly pre-filled):
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/rois.dialog.eeg.png" WIDTH="718" HEIGHT="695" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             <I>
+                 Note that only the relevant parameters to the current processing
+                 are being listed here:
+             </I>
+         </P>
+         <DIV>
+             <P ALIGN=LEFT>
+                 <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Input Files</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>EEG</B> / <B>RIS</B> / XYZ / SP file
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 In our case, provide an <B><A HREF="files-formats-others.html#eeg">EEG</A></B>
+                                 or a <B><A HREF="files-formats-others.html#inverse-solutions">RIS</A></B>
+                                 file, for example with Drag &amp; Drop.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 ROIs Volume file (optional):
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 (not relevant here).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 ROIs Labels file (optional):
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 (not relevant here).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Processing Mode:</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Select <B>Interactive</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Interactive Mode:</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Next ROI Name:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Give a <B>name for the current roi</B> (spaces allowed).
+                             </P>
+                             <P>
+                                 If you let this field empty... well, Cartool will name the roi
+                                 itself, and it is known to have quite a bad taste at it (something as
+                                 dull as &quot;roi1&quot;, &quot;roi2&quot;, &quot;roi3&quot;...). So
+                                 it is not a good idea to not fill this field. In any case, when all
+                                 is done and saved to a <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B>
+                                 file, you can still text-edit it and change the names...
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Next ROI Tracks:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Add here all the <B>names of the tracks</B> you wish to be in the
+                                 same roi.
+                             </P>
+                             <P>
+                                 <B><I>Now, the magic</I></B>:
+                             </P>
+                             <UL>
+                                 <LI CLASS="mvd-P">
+                                     <P>
+                                         <B>switch back to the EEG window</B>, and select the tracks you like (<A HREF="eeg-display.html#mouse-tracks-select">middle-click</A>,
+                                         or whatever <A HREF="eeg-display.html#menu-selection">selection tools</A>). <B>
+                                             All
+                                             your EEG selection will be shown in the &quot;Tracks&quot; field of
+                                             the dialog!
+                                         </B>
+                                     </P>
+                                 <LI CLASS="mvd-P">
+                                     <P>
+                                         Conversely, <B>typing</B> in the dialog field, or modifying the
+                                         existing text in it will also be <B>reflected in the EEG window</B>! Wunderbar!
+                                     </P>
+                             </UL>
+                             <P>
+                                 <IMG SRC="images/rois.dialog.eeg2.png" VSPACE="0" HSPACE="0" BORDER="0">
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Add New Roi
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 When all the tracks you want to be in one roi are shown in the
+                                 previous field, clicking this will actually <B>create the roi</B>
+                                 from the current input. So until you have clicked it, the roi is <I>not</I>
+                                 recorded, and you can still modify it.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Remove Last Roi
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 What is says.
+                             </P>
+                             <P>
+                                 Bonus track: the list of tracks of the removed roi is restored in the
+                                 dialog, so you can re-edit it if you want.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Output</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Output Base File Name:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Specifies a <B>basis for all the file names</B> that will be
+                                 generated (main directory, common file name).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Options:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Open File(s) Upon Completion
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 What it says...
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </DIV>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="tracks-to-rois-tech"></A>ROIs from EEG / RIS tracks -
+             Technical points &amp; hints
+         </H3>
+         <H4>
+             Checking ROIs do not overlap
+         </H4>
+         <P>
+             Each time a roi is added, Cartool will check it <B>does not overlap</B>
+             with any existing rois. If it finds some tracks that surreptuously
+             sneaked in, they will be silently removed from the list of tracks
+             before creating the roi.
+         </P>
+         <P>
+             This makes the interactive creation fool-proof (not that we don't
+             trust you, but...).
+         </P>
+         <H4>
+             Ending the interactive process
+         </H4>
+         <P>
+             Well, when you're done, just click the <I>OK</I> button to actually
+             create the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B>
+             file. If all tracks have been used into a roi, the <I>Add New Roi</I>
+             button will disable itself in great disdain...
+         </P>
+         <P>
+             Finally, Cartool will close the files it has opened.
+         </P>
+         <H4>
+             Using ROIs to reorder tracks display
+         </H4>
+         <P>
+             Within a given roi, the <B>electrodes will also be reordered</B>
+             according to the exact sequence specified. Thought order does not
+             matter for averaging purposes, it can be beneficial for <B>displaying tracks</B>
+             according to a more intuitive scheme.
+         </P>
+         <P>
+             F.ex. with high density nets of electrodes, the native ordering is
+             basically non-intuitive:
+         </P>
+         <P>
+             <IMG SRC="images/rois.tracks-unordered.png" WIDTH="534" HEIGHT="237" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             Then, with rois re-ordering (well this is just an example, not a
+             winning price in design!):
+         </P>
+         <P>
+             <IMG SRC="images/rois.tracks-reordered.png" WIDTH="534" HEIGHT="237" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             See also this <A HREF="eeg-display.html#rois">topic</A>.
+         </P>
+         <H4>
+             Final thoughts
+         </H4>
+         <P>
+             It is not really the best way to create rois from a RIS file, because
+             there are too many track! Think more about <A HREF="#auto-rois">
+                 automatic
+                 creation
+             </A> in the case of inverse solution.
+         </P>
+         <P>
+             In the case of EEG, it is quite sexy to work from an EEG <A HREF="general-concepts.html#linkingfiles">linked</A>
+             with electrodes coordinates, so you can also see the selection on the
+             electrodes of the <A HREF="potentials-maps-display.html">potential display</A>, too!
+         </P>
+         <H3>
+             <A NAME="tracks-to-rois-res"></A>ROIs from EEG / RIS tracks - Results
+         </H3>
+         <P>
+             Within the specified output directory, you'll find:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The real stuff is in the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B>
+                     file, in the form of lists of indexes. To see how to make use of it,
+                     go <A HREF="about-rois.html">here</A>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <B>verbose</B> file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>,
+                     with all the parameters being used.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="xyz-to-rois"></A>Interactive creation of ROIs from
+             electrodes or solution points
+         </H3>
+         <P ALIGN=LEFT>
+             Call <FONT FACE="Arial Black,Arial,Helvetica">
+                 <A HREF="all-processings.html#tools">
+                     Tools
+                     | Creating Rois
+                 </A>
+             </FONT> to launch the following dialog (if you
+             have already opened an electrode or a solution points file, the <I>input</I>
+             field will be correctly pre-filled):
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/rois.dialog.xyz.png" WIDTH="718" HEIGHT="695" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             <I>
+                 Note that only the relevant parameters to the current processing
+                 are being listed here:
+             </I>
+         </P>
+         <DIV>
+             <P ALIGN=LEFT>
+                 <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Input Files</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 EEG / RIS / <B>XYZ</B> / <B>SP</B> file
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 In our case, provide an <B>
+                                     <A HREF="files-formats-others.html#electrodes-coord">
+                                         electrodes
+                                         coordinates file
+                                     </A>
+                                 </B> or a <B>
+                                     <A HREF="files-formats-others.html#solution-points">
+                                         solution
+                                         points file
+                                     </A>
+                                 </B>, for example with Drag &amp; Drop.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 ROIs Volume file (optional):
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 (not relevant here).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 ROIs Labels file (optional):
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 (not relevant here).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Processing Mode:</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Select <B>Interactive</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Interactive Mode:</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Next ROI Name:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Give a <B>name for the current roi</B> (spaces allowed).
+                             </P>
+                             <P>
+                                 If you let this field empty... well, Cartool will name the roi
+                                 itself, and it is known to have quite a bad taste at it (something as
+                                 dull as &quot;roi1&quot;, &quot;roi2&quot;, &quot;roi3&quot;...). So
+                                 it is not a good idea to not fill this field. In any case, when all
+                                 is done and saved to a <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B>
+                                 file, you can still text-edit it and change the names...
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Next ROI Tracks:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Add here all the <B>names of the tracks</B> you wish to be in the
+                                 same roi.
+                             </P>
+                             <P>
+                                 <B><I>Now, the magic</I></B>:
+                             </P>
+                             <UL>
+                                 <LI CLASS="mvd-P">
+                                     <P>
+                                         <B>switch back to the electrode window</B>, and select the tracks you
+                                         like (with <A HREF="windows-general-commands.html#mouse-picking">middle-click</A>).
+                                         <B>
+                                             All selected electrodes will be shown in the &quot;Tracks&quot;
+                                             field of the dialog!
+                                         </B>
+                                     </P>
+                                 <LI CLASS="mvd-P">
+                                     <P>
+                                         Conversely, <B>typing</B> in the dialog field, or modifying the
+                                         existing text in it will also be <B>reflected in the electrode window</B>!
+                                         Wundersch&ouml;n!
+                                     </P>
+                             </UL>
+                             <P ALIGN=LEFT>
+                                 <IMG SRC="images/rois.dialog.xyz2.png" VSPACE="0" HSPACE="0" BORDER="0">
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Add New Roi
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 When all the electrodes you want to be in one roi are shown in the
+                                 previous field, clicking this will actually <B>create the roi</B>
+                                 from the current input. So until you have clicked it, the roi is <I>not</I>
+                                 recorded, and you can still modify it.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Remove Last Roi
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 What is says.
+                             </P>
+                             <P>
+                                 Bonus track: the list of electrodes of the removed roi is restored in
+                                 the dialog, so you can re-edit it if you want.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Output</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Output Base File Name:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Specifies a <B>basis for all the file names</B> that will be
+                                 generated (main directory, common file name).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Options:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Open File(s) Upon Completion
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 What it says...
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </DIV>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="xyz-to-rois-tech"></A>ROIs from electrodes or solution
+             points - Technical points &amp; hints
+         </H3>
+         <P>
+             Most of <A HREF="#tracks-to-roi-tech">these points</A> are also
+             relevant here!
+         </P>
+         <H4>
+             And for the solution points?
+         </H4>
+         <P>
+             Well, you can technically use this manual method:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     if you have only a few rois / solution points to look after,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     make use of the slice display to show less points at a time,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     and be patient.
+                 </P>
+         </UL>
+         <P>
+             Otherwise, think about the <A HREF="#auto-rois">automatic processes</A>!
+         </P>
+         <H3>
+             <A NAME="xyz-to-rois-res"></A>ROIs from electrodes or solution points
+             - Results
+         </H3>
+         <P>
+             Within the specified output directory, you'll find:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The real stuff is in the <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B>
+                     file, in the form of lists of indexes. To see how to make use of it,
+                     go <A HREF="about-rois.html">here</A>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <B>verbose</B> file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>,
+                     with all the parameters being used.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

@@ -2,169 +2,243 @@
  <HEAD>
   <TITLE>Tracks Interpolation</TITLE>
  <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css"></HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   Tracks Interpolation</H1>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <H5>
-   <A HREF="#kind-interpolation">What is the use of interpolation?</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#interpol-bad-chan">Interpolating bad channels</A><br>
-	<A HREF="#switching-config">Switching to another electrodes system</A><br>
-	<A HREF="#interpol-switching">Interpolating bad channeles <em>and</em> switching system</A></H5>
-   </UL>
-  <H5>
-   <A HREF="#how-interpol-works">How interpolation works</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#main-loop">The main loop</A><br><A HREF="#which-splines">Which splines are being used</A><br>
-	<A HREF="#coregister-systems">Coregistering between two electrodes systems</A></H5>
-   </UL>
-  <H5>
-   <A HREF="#dialog">Tracks Interpolation dialog</A></H5>
-  <H5>
-   <A HREF="#technical-points">Technical points</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#centering-normaliz">Re-orienting, centering &amp; normalizing</A><br>
-	<A HREF="#spline-degree">Degree of the spline</A><br><A HREF="#borders">Electrodes on the border</A><br>
-	<A HREF="#punching-a-hole">Punching a hole in your geometry</A><br>
-	<A HREF="#just-removing-elec">Just removing electrodes</A></H5>
-   </UL>
-  <H5>
-   <A HREF="#results">Results</A></H5>
-  <H2>
-   <A NAME="kind-interpolation"></A>What is the use of interpolation?</H2>
-  <P>
-   This tool is used on <B>EEG data</B> for the following purposes:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B><A HREF="#interpol-bad-chan">Interpolating</A></B><A HREF="#interpol-bad-chan"> 
-    bad channels</A></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B><A HREF="#switching-config">Switching</A></B><A HREF="#switching-config"> 
-    from one electrodes system to another one</A></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <A HREF="#interpol-switching">Both </A><B><A HREF="#interpol-switching">interpolating
-     and switching</A></B><A HREF="#interpol-switching"> electrodes 
-    system at the same time</A></P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   In any of these cases, you will need the electrodes coordinates in an <A HREF="files-formats-others.html#electrodes-coord">appropriate
-    file</A>.</P>
-  <H3>
-   <A NAME="interpol-bad-chan"></A>Interpolating bad channels</H3>
-  <P>
-   Very often during EEG recording, some <B>tracks are definitely corrupted</B>,
-    but you still have to stick with the setup and the resulting data.</P>
-  <P>
-   To alleviate this fact, one can interpolate these bad channels <I>a posteriori</I>.
-    <B>The values from the bad electrodes are all discarded</B>, and the <B>neighbors</B> 
-   (geometrically speaking) of these bad electrodes are taken to compute 
-   an <B>estimate</B> of what the original values would have been 
-   looking like.</P>
-  <P>
-   Hence the points:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>Interpolating is about re-creating values</B>, please keep this is 
-    mind and avoid it if you can.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    You need a removed electrode to have <B><A HREF="#punching-a-hole">enough
-     remaining geometrical neighbors</A></B> to have the most correct 
-    interpolated values.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Bad electrodes located on the <B>border of the cap</B>, once removed 
-    and &quot;interpolated&quot;, are indeed <B><A HREF="#borders">extrapolated</A></B>,
-     which is not good at all. Usually if too much bad electrodes rely on 
-    the border, you can not recover them safely.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Seems obvious, but let's remind you that the <B>geometry of the electrodes</B> 
-    has to be known with the best precision, be it from a single subject 
-    or from an average of subjects. Check the symetry and the correct 
-    positions of <A HREF="#coregister-systems">landmarks</A>.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   See an example of three channels that have been successfully interpolated:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/interpol.bad-channels.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/interpol.bad-channels-removed.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <H3>
-   <A NAME="switching-config"></A>Switching to another electrodes system</H3>
-  <P>
-   You can transform your data <B>from one electrodes system to another one</B>.
-    This is useful to make data from different systems comparable or to 
-   be processed together.</P>
-  <P>
-   Here are some points worth mentioning:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    You need <B>two</B> electrodes <A HREF="files-formats-others.html#electrodes-coord">coordinates
-     files</A>, one for each system.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    You can successfully go from a <B>high number of electrodes down to a 
-    lower number of electrodes</B>. The other way round, though 
-    technically working, will of course <I>not</I> create any new 
-    information from the data. This will simply spread the available data 
-    into more channels (you don't gain any resolution).</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Again, watch out for the <B><A HREF="#borders">geometrical borders of 
-    both systems</A></B>. If they really don't match, the resulting 
-    interpolation will be rather an extrapolation, which is <I>not good 
-    at all</I> for your business.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    If you simply need to remove some electrodes (say the border), you 
-    may consider the faster and easier <A HREF="reprocess-tracks.html"><B>Export
-     Tracks</B></A> utility.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   See an example of 125 channels interpolated down to 41 channels:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/interpol.bad-channels-removed.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-    <IMG SRC="images/interpol.to-another-system.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <H3>
-   <A NAME="interpol-switching"></A>Interpolating bad channels <em>and</em> switching system</H3>
-  <P>
-   Well, this is simply the two previous steps done at once: removing 
-   bad channels, and switching to another system.</P>
-  <P>
-   Doing this simultaneously will save you some time, and, more 
-   important (well, it's a matter of choice what is more important 
-   between these two points), will very likely save some little extra 
-   precision in the resulting data.</P>
-  <H2>
-   <A NAME="how-interpol-works"></A>How interpolation works</H2>
-  <P>
-   This is a well known method, based mainly on the following articles:</P>
-  <P>
-   &nbsp;</P>
-  <pre><b>&quot;Mapping of scalp potentials by surface spline interpolation&quot;</b>, F. Perrin, J. Pernier, O. Bertrand, M.H. Giard, J.F. Echalier,
+ <BODY>
+     <div class="container">
+         <H1>
+             Tracks Interpolation
+         </H1>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <H5>
+             <A HREF="#kind-interpolation">What is the use of interpolation?</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#interpol-bad-chan">Interpolating bad channels</A><br>
+                 <A HREF="#switching-config">Switching to another electrodes system</A><br>
+                 <A HREF="#interpol-switching">Interpolating bad channeles <em>and</em> switching system</A>
+             </H5>
+         </UL>
+         <H5>
+             <A HREF="#how-interpol-works">How interpolation works</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#main-loop">The main loop</A><br><A HREF="#which-splines">Which splines are being used</A><br>
+                 <A HREF="#coregister-systems">Coregistering between two electrodes systems</A>
+             </H5>
+         </UL>
+         <H5>
+             <A HREF="#dialog">Tracks Interpolation dialog</A>
+         </H5>
+         <H5>
+             <A HREF="#technical-points">Technical points</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#centering-normaliz">Re-orienting, centering &amp; normalizing</A><br>
+                 <A HREF="#spline-degree">Degree of the spline</A><br><A HREF="#borders">Electrodes on the border</A><br>
+                 <A HREF="#punching-a-hole">Punching a hole in your geometry</A><br>
+                 <A HREF="#just-removing-elec">Just removing electrodes</A>
+             </H5>
+         </UL>
+         <H5>
+             <A HREF="#results">Results</A>
+         </H5>
+         <H2>
+             <A NAME="kind-interpolation"></A>What is the use of interpolation?
+         </H2>
+         <P>
+             This tool is used on <B>EEG data</B> for the following purposes:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B><A HREF="#interpol-bad-chan">Interpolating</A></B><A HREF="#interpol-bad-chan">
+                         bad channels
+                     </A>
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B><A HREF="#switching-config">Switching</A></B><A HREF="#switching-config">
+                         from one electrodes system to another one
+                     </A>
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A HREF="#interpol-switching">Both </A><B>
+                         <A HREF="#interpol-switching">
+                             interpolating
+                             and switching
+                         </A>
+                     </B><A HREF="#interpol-switching">
+                         electrodes
+                         system at the same time
+                     </A>
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             In any of these cases, you will need the electrodes coordinates in an <A HREF="files-formats-others.html#electrodes-coord">
+                 appropriate
+                 file
+             </A>.
+         </P>
+         <H3>
+             <A NAME="interpol-bad-chan"></A>Interpolating bad channels
+         </H3>
+         <P>
+             Very often during EEG recording, some <B>tracks are definitely corrupted</B>,
+             but you still have to stick with the setup and the resulting data.
+         </P>
+         <P>
+             To alleviate this fact, one can interpolate these bad channels <I>a posteriori</I>.
+             <B>The values from the bad electrodes are all discarded</B>, and the <B>neighbors</B>
+             (geometrically speaking) of these bad electrodes are taken to compute
+             an <B>estimate</B> of what the original values would have been
+             looking like.
+         </P>
+         <P>
+             Hence the points:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Interpolating is about re-creating values</B>, please keep this is
+                     mind and avoid it if you can.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     You need a removed electrode to have <B>
+                         <A HREF="#punching-a-hole">
+                             enough
+                             remaining geometrical neighbors
+                         </A>
+                     </B> to have the most correct
+                     interpolated values.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Bad electrodes located on the <B>border of the cap</B>, once removed
+                     and &quot;interpolated&quot;, are indeed <B><A HREF="#borders">extrapolated</A></B>,
+                     which is not good at all. Usually if too much bad electrodes rely on
+                     the border, you can not recover them safely.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Seems obvious, but let's remind you that the <B>geometry of the electrodes</B>
+                     has to be known with the best precision, be it from a single subject
+                     or from an average of subjects. Check the symetry and the correct
+                     positions of <A HREF="#coregister-systems">landmarks</A>.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             See an example of three channels that have been successfully interpolated:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/interpol.bad-channels.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/interpol.bad-channels-removed.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <H3>
+             <A NAME="switching-config"></A>Switching to another electrodes system
+         </H3>
+         <P>
+             You can transform your data <B>from one electrodes system to another one</B>.
+             This is useful to make data from different systems comparable or to
+             be processed together.
+         </P>
+         <P>
+             Here are some points worth mentioning:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     You need <B>two</B> electrodes <A HREF="files-formats-others.html#electrodes-coord">
+                         coordinates
+                         files
+                     </A>, one for each system.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     You can successfully go from a <B>
+                         high number of electrodes down to a
+                         lower number of electrodes
+                     </B>. The other way round, though
+                     technically working, will of course <I>not</I> create any new
+                     information from the data. This will simply spread the available data
+                     into more channels (you don't gain any resolution).
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Again, watch out for the <B>
+                         <A HREF="#borders">
+                             geometrical borders of
+                             both systems
+                         </A>
+                     </B>. If they really don't match, the resulting
+                     interpolation will be rather an extrapolation, which is <I>
+                         not good
+                         at all
+                     </I> for your business.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     If you simply need to remove some electrodes (say the border), you
+                     may consider the faster and easier <A HREF="reprocess-tracks.html">
+                         <B>
+                             Export
+                             Tracks
+                         </B>
+                     </A> utility.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             See an example of 125 channels interpolated down to 41 channels:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/interpol.bad-channels-removed.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+                 <IMG SRC="images/interpol.to-another-system.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <H3>
+             <A NAME="interpol-switching"></A>Interpolating bad channels <em>and</em> switching system
+         </H3>
+         <P>
+             Well, this is simply the two previous steps done at once: removing
+             bad channels, and switching to another system.
+         </P>
+         <P>
+             Doing this simultaneously will save you some time, and, more
+             important (well, it's a matter of choice what is more important
+             between these two points), will very likely save some little extra
+             precision in the resulting data.
+         </P>
+         <H2>
+             <A NAME="how-interpol-works"></A>How interpolation works
+         </H2>
+         <P>
+             This is a well known method, based mainly on the following articles:
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <pre><b>&quot;Mapping of scalp potentials by surface spline interpolation&quot;</b>, F. Perrin, J. Pernier, O. Bertrand, M.H. Giard, J.F. Echalier,
 in <i>Electroencephalography and clinical Neurophysiology</i>, 1987, 66: 75-81.<b>
 
 &quot;Spherical splines for scalp potential and current density mapping&quot;</b>, F. Perrin, J. Pernier, O. Bertrand, J.F. Echalier,
@@ -173,785 +247,1046 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
 <b>
 &quot;Spline Interpolation of the Scalp EEG&quot;</b>, Thomas C. Ferree,
 <i>Technical Note</i> from Electrical Geodesics Inc, See <a href="https://www.researchgate.net/publication/265238579_Spline_Interpolation_of_the_Scalp_EEG">ResearchGate</a>, 2000.</pre>
-  <h3><A NAME="main-loop"></a>The main loop</h3>
-  <p>For each <A HREF="terms-definitions-formulas.html#time-frame">time frame</A>, do:</p>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    A <B><A HREF="https://www.google.com/search?q=splines">spline</A></B> 
-    is computed <B>through the values of the non-excluded electrodes</B>, 
-    by taking into account the <B>geometry</B> of these electrodes.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The spline is then used to <B>access any point on the surface of the 
-    original geometry</B>, even at location without electrodes (this is 
-    all the interest indeed).</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>For all electrodes</B> of the targetted system, retrieve the 
-    values at their locations by simply <B>looking at the spline</B>.</P>
-   </UL>
-  <H3>
-   <A NAME="which-splines"></A>Which splines are being used</H3>
-  <P>
-   You can choose between three different types of spline:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Surface Spline, after projection on a plane of the electrodes position. Not 
-	recommended if electrodes are not a grid...</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Spherical Spline, after using a unitary spherical version of the 
-    electrodes position.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>3D Spline</B>, the preferred one as it preserves the real geometry of the 
-	electrodes.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    A spherical spline can also be used to compute the <B>Current Source Density</B>.</P>
-   </UL>
-  <H3>
-   <A NAME="coregister-systems"></A>Coregistering between two electrodes systems</H3>
-  <P>
-   If you switch from one electrodes system to another one, you have to 
-   deal with the very important topic of <B>coregistration</B>. This is 
-   how two different systems are made <B>geometrically superimposable</B>.
-    Most of the time, geometries of different systems are far from 
-   matching each other, so we have to handle that case. See f.ex. two 
-   non-matching geometries of electrodes:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/interpol.not-coregistered.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <P>
-   There are for sure many different methods, and we sticked to a safe 
-   one: <B>using fiducial electrodes to build an intermediate, 
-   normalized geometrical system</B>. Here is a view of the 
-   international 10-20 system, which were defined as to <B>reliably 
-   relate to the underlying brain structures</B>:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/Jaakko-Malmivuo-Robert-Plonsey-Bioelectromagnetism-Principles-and-Applications-of-Bioelectric-and-Biomagnetic-Fields.10-20-system.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-    <IMG SRC="images/Jaakko-Malmivuo-Robert-Plonsey-Bioelectromagnetism-Principles-and-Applications-of-Bioelectric-and-Biomagnetic-Fields.10-20-system-flat.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-    (Images taken from: Jaakko Malmivuo &amp; Robert Plonsey<BR>
-    Bioelectromagnetism - Principles and Applications of Bioelectric and 
-    Biomagnetic Fields)</P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <P>
-   To define the normalization function (for each electrodes system), we 
-   need to know the following <B>five landmarks</B> (front, sides, back 
-   and top of the head):</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="200" CELLPADDING="2" CELLSPACING="0" BORDER="0">
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Fpz</B></P>
-        </CENTER>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B></B>&nbsp;</TD>
-      <TD WIDTH="33%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>T3</B><BR>
-         <B>(or T7)</B></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Cz</B></P>
-        </CENTER>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B></B>&nbsp;</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>T4</B><BR>
-         <B>(or T8)</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Oz</B></P>
-        </CENTER>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B></B>&nbsp;</TD>
-      <TD WIDTH="33%" VALIGN=TOP></TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <P>
-   More precisely, we need to know the <B>equivalent of these landmarks 
-   in the systems you use</B>. New high-density nets usually don't match 
-   the standard 10-10 (or 10-5) system, so you have to figure out 
-   yourself where these 5 landmarks are. This has to be done carefully, 
-   f.ex. by averaging 10 subjects together, or getting this information 
-   from the company who built the recording machine.</P>
-  <P>
-   If one landmark has no direct equivalent, you can give a set of 
-   electrode which average position will be taken. F.ex. if <B>Oz</B> 
-   does not exist , you could specify &quot;<B>O1 O2</B>&quot; instead.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   From the 5 landmarks, <B>a 12 parameters affine transform</B> is 
-   derived, which will account for (3 parameters for each line):</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>Origin translation</B></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>Rotation</B></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>Scaling (stretching)</B></P>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>Shearing</B></P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   <A NAME="normalized-system"></A>The end result is a <B>centered</B>, <B>unitary</B> 
-   and <B>orthogonal geometrical system</B>, hence called the <B><A HREF="#centering-normaliz">normalized
-    system</A></B>.</P>
-  <P>
-   F.ex. see here the <B>original system</B> to be interpolated, then 
-   its <B>normalized version</B> (impossible to see here is the origin 
-   and the overall scaling that are completely different), and a <B>spherical
-    version</B> of the normalized system. Note that the global shape of 
-   the normalized system has been preserved, which is of course not the 
-   case of the spherical one:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/interpol.from-not-normalized.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/interpol.from-normalized.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/interpol.from-spherical.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <P>
-   Using these normalized systems is a snap, f.ex. going from system A 
-   to system B, simply transform to Normalized System A, then transform 
-   back to system B:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="300" CELLPADDING="2" CELLSPACING="0" BORDER="0">
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         Original Coordinate System <B>A</B></TD>
-      <TD WIDTH="33%" VALIGN=TOP></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         Original Coordinate System <B>B</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         &nbsp;|</TD>
-      <TD WIDTH="33%" VALIGN=TOP></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         |</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         Normalized Coordinate System <B>A</B></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         &nbsp;<BR>
-         =<BR>
-         (equivalent spaces)</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         Normalized Coordinate System <B>B</B></TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <P>
-   <A NAME="full-transformation"></A>Here is an example of the <B>original
-    system</B>, the <B>target system</B>, and then the <B>original 
-   system finally transformed and <A HREF="windows-general-commands.html#linking">superimposed</A> 
-   onto the target system</B>:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/interpol.from-not-normalized.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/interpol.to-not-normalized.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-    <IMG SRC="images/interpol.from-normalized-on-to.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <P>
-   See also this discussion about the <A HREF="#borders">electrodes on 
-   the border</A>, and if it leads or not to <B>extrapolation</B>, and 
-   this note about <A HREF="#punching-a-hole">removing too much electrodes</A>.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Finally, we can add that it is <B><I>not</I> how good the normalized 
-   systems are in absolute</B> (of course, a good transformation is 
-   preferred) that really matters. Rather, it is that by applying the <B>same
-    normalization scheme on both systems</B>, we can transform 
-   coordinates from one system to another. <B>The normalized systems are 
-   just intermediate stages</B> in the whole processing.</P>
-  <H2>
-   <A NAME="dialog"></A>Tracks Interpolation dialog</H2>
-  <P>
-   Call the dialog from <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
-    | Interpolating EEG files</A></FONT> menu, which is context sensitive:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Called from an EEG file, the processing&nbsp;applies only to this file.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    In any other case, the dialog will operate in Batch mode, requiring 
-    you to later select some files.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   Then the following dialog appears:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/interpol.dialog.png" VSPACE="0" HSPACE="0" BORDER="0" height="661" width="704"></P>
-   </CENTER>
-  <P>
-   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Tracks Interpolation</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>'From' Space</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       This box deals about the <B>original system</B>.</P>
-      <P>
-       See this discussion about how 'From' and 'To' spaces should <A HREF="#borders">geometrically
-        relate to each other</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Electrodes coordinates file:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Give the <A HREF="files-formats-others.html#electrodes-coord">file with the 
-       electrodes coordinates</A>.</P>
-      <P>
-       You can <B>Drag &amp; Drop</B> the file directly in this box.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Bad electrodes:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Optional <B>bad channels</B> to be <A HREF="#interpol-bad-chan">interpolated</A>.</P>
-      <P>
-       Let the field be empty if you have no bad channels, and just use the 
-	   toolbox to <A HREF="#switching-config">switch
-        to another system</A>.</P>
-      <P>
-       Also see this note about <A HREF="#punching-a-hole">removing too much electrodes</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Re-orient, Center &amp; Normalize using Landmarks:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       We need to <A HREF="#centering-normaliz">re-orient, center
-        and normalize</A> the electrodes coordinates (used in the <A HREF="#how-interpol-works">spline
-        computation</A>, and also to <A HREF="#coregister-systems">coregister</A> 
-       between two systems).<P>
-       To achieve that, you have to provide the names of the electrodes pointing 
-	   to the front, left, top, right and rear (the <A HREF="#coregister-systems">5 landmarks we need</A>). 
-	   Or if you're lucky, Cartool might have already recognized your electrodes system! If this is the case, 
-	   electrodes names will be pre-filled for you.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Front / Left / Top / Right / Rear</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Each of these edit boxes contains the electrodes names used to point in 
-	   the corresponding direction.</P>
-      <P>
-       You can put <B>more than one electrode</B> in one box, in this case, 
-       the <B>average</B> (3D barycenter) of the electrodes position will be 
-       taken. Useful as very often, no one electrode of a given system 
-       exactly matches the 10-10 system.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Getting landmarks:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Just handy buttons to fill these 5 boxes a little more easily...</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Cycle into predefined landmarks</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Force Cartool to cycle into its predefined, known systems, until one 
-       best matches yours.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Copy the 'To' landmarks</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Let's copy the targetted (the 'To') system landmarks.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>'To' Space</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       This box is used to specify an optional <B>destination system</B>.</P>
-      <P>
-       See this discussion about how 'From' and 'To' spaces should <A HREF="#borders">geometrically
-        relate to each other</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Destination space is:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Choose the <A HREF="#kind-interpolation">behavior of the interpolation</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Identical to 'From' Space</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       If you just want to <A HREF="#interpol-bad-chan">interpolate bad channels</A>,
-        and remain in the same system, check this button.</P>
-      <P>
-       If this is set, you don't need to specify the remaining parameters of 
-       the 'To' box.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Another Space:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       You want to <A HREF="#switching-config">switch to another system</A>, 
-       this is the button to check!</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Front / Left / Top / Right / Rear</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Same as per the 'From' case.</P>
-		   </TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Interpolation Method</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Choose the <A HREF="#how-interpol-works">type of spline</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Surface Spline</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Project the electrodes onto a plane, then use a 2D spline.</P>
-      <P>
-       Not recommend, unless for grid electrodes.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Spherical Spline</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Spline on a centered, unitary sphere. Results are quite good.</P>
-      <P>
-       The spherical version of the original system is directly derived from 
-       the <A HREF="#normalized-system">normalized system</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       3D Spline</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       3D Spline, which accounts for the real geometry of 
-       the head. <strong>This is the recommended default spline.</strong></P>
-      <P>
-       Use the <A HREF="#normalized-system">normalized system</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Curr. Dens. with Spherical Spline</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use the spline to compute the Current Source Density (aka Laplacian 
-       of the potential), as in these <A HREF="#how-interpol-works">articles</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Spline's Degree:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       This is the parameter <B><I>m</I></B> from the <A HREF="#how-interpol-works">articles
-        cited</A>.</P>
-      <P>
-       See <A HREF="#spline-degree">this note</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Options</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Optional filename infix&nbsp;override</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The exported filenames will have these characters inserted. If empty, the 
-	   infix will be a compound made from all the parameters.</TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Clean up Temp Files</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Uncheck this box if you want to see by yourself how the <A HREF="#coregister-systems">centering,
-        the normalization and coregistration</A> have actually been 
-       performed. And <I>cerise sur le g&acirc;teau</I>, Cartool even 
-       provides you with 2 more files: the original system finally <A HREF="#full-transformation">transformed
-        into the target system</A>, and the target system also transformed 
-       back into the original system. This way you can <A HREF="windows-general-commands.html#linking">superimpose</A> 
-       these files and visually check.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Open Files Upon Completion</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Open the interpolated EEG files.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Process Current</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Enabled when called from an EEG. The interpolation applies only to <B>this
-        current file</B>.</P>
-      <P>
-       This button remains <B>disabled until <U>all</U> the parameter 
-       dialogs have received enough (and consistent) informations</B>. If 
-       this is not the case, first check the current dialog: if its 
-       &quot;Next&quot; button is disabled, the problem is in the current 
-       dialog. Otherwise, browse the other dialogs for some missing informations.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Batch Process</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Enabled when not called from an EEG. This will open a dialog for you 
-       to pick the <B>set of files</B> (even from different directories) to 
-       be interpolated.</P>
-      <P>
-       This button remains <B>disabled until <U>all</U> the parameter 
-       dialogs have received enough (and consistent) informations</B>. If 
-       this is not the case, first check the current dialog: if its 
-       &quot;Next&quot; button is disabled, the problem is in the current 
-       dialog. Otherwise, browse the other dialogs for some missing informations.</P>
-      <P>
-       You can <B>Drag &amp; Drop files directly</B> to run the Batch Process!</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Cancel</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Quit the dialog.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Help</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Launch the Help to the right page (should be here...).</TD>
-    </TR>
-   </TABLE></P>
-  <H2>
-   <A NAME="technical-points"></A>Interpolation - Technical points</H2>
-  <H4>
-   <A NAME="centering-normaliz"></A>Re-orienting, centering &amp; normalizing</H4>
-  <P>
-   After <A HREF="#coregister-systems">centering and normalizing</A>, we 
-   should end up with a geometrical system which:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Origin is on the line Fpz - Oz, intersected by the orthogonal 
-    projection of Cz.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    X axis points to Fpz, and have a unitary length.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Y axis points to T3 (though it may have been slightly adjusted after 
-    projection of Cz), and have a unitary length.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Z axis points to Cz, and have a unitary length.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    All three axis are of course orthognal.</P>
-   </UL>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/interpol.normalizing.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <H4>
-   <A NAME="spline-degree"></A>Degree of the spline</H4>
-  <P>
-   For a spline of degree <B><I>m</I></B>, the actual degree of the 
-   polynomials it is made of is <B><I>( m - 1 )</I></B>.</P>
-  <P>
-   We definitely recommend to use <B>m = 2</B>, that is polynomials of 
-   degree 1, which is very close to a <B>linear interpolation</B>. The advantage is that it will <B>
-   very unlikely create values that 
-   can exceed the minimum and maximum values of the data</B>. New values will 
-   remain within the range of values of the original data (most of the time).</P>
-  <P>
-   Creating new extrema values could be very detrimental when computing the 
-   source localization. This would produce false brain soures just beneath the 
-   new extrema electrode!</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   <em><strong>Note:</strong></em> as per 2024, spline degree is not editable 
-   from user, and will remain set to 2.</P>
-  <H4>
-   <A NAME="borders"></A>Electrodes on the border</H4>
-  <P>
-   When <A HREF="#switching-config">interpolating to another system</A>, 
-   you should be sure not to have <B>extrapolation issues</B>. As a rule 
-   of thumb, targetted systems which geometry overflows the original 
-   system are to be avoided. See here a few fine and bad examples (the <B>original</B> 
-   system is in <B>yellow</B>, the <B>targetted</B> system is in <B>blue</B>):</P>
-  <P>
-   &nbsp;</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>OK</B>, the original system's border is beyond the target system's border:</P>
-   <CENTER>
-    <P ALIGN=CENTER>
-     <IMG SRC="images/interpol.extrapolation1.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-    </CENTER>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>NOT OK</B>, the target system's border is beyond the original 
-    system's border:</P>
-   <CENTER>
-    <P ALIGN=CENTER>
-     <IMG SRC="images/interpol.extrapolation2.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-    </CENTER>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>NOT OK</B>, even though the original system has <I>way more electrodes</I>,
-     their <I>geometrical distribution</I> is not wide enough to 
-    encompass the target system's border:</P>
-   <CENTER>
-    <P ALIGN=CENTER>
-     <IMG SRC="images/interpol.extrapolation3.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-    </CENTER>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>OK</B>, though the target system has a denser array of electrodes 
-    (smooth out the output):</P>
-   <CENTER>
-    <P ALIGN=CENTER>
-     <IMG SRC="images/interpol.extrapolation4.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-    </CENTER>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>OK</B>, the original and the target system extents are 
-    geometrically very close to each other (interpolating in the other 
-    direction, from the &quot;blue&quot; to the &quot;yellow&quot; system 
-    could even be tolerable):</P>
-   <CENTER>
-    <P ALIGN=CENTER>
-     <IMG SRC="images/interpol.extrapolation5.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-    </CENTER>
-   </UL>
-  <H4>
-   <A NAME="punching-a-hole"></A>Punching a hole in your geometry</H4>
-  <P>
-   It is not so advisable to have to remove a bunch of electrodes 
-   (though it might happen due to circumstances) that will <B>punch a 
-   big hole out of your system</B>. Having fewer neighbors to 
-   interpolate from will of course lead to less precise results. See 
-   here just how removing 4 electrodes that are too close to each others 
-   seems a pretty good promise of an awkward interpolation:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/interpol.not-enough-neighbors.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <P>
-   Noter that you can still remove / interpolate an electrode, say Fpz, 
-   and use its position as a <A HREF="#coregister-systems">landmark</A> 
-   for the coregistration.</P>
-  <H4>
-   <A NAME="just-removing-elec"></A>Just removing electrodes</H4>
-  <P>
-   In this case, using the interpolation is simply an overkill. Consider 
-   the <B><A HREF="reprocess-tracks.html">Export Tracks</A></B> instead...</P>
-  <H2>
-   <A NAME="results"></A>Interpolation - Results</H2>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Interpolated EEG files are written in the <B>same directories as 
-    their sources</B>. File names are inserted with the <B>infix</B> 
-    string, which briefly describes the type of interpolation used. 
-    Currently, only <I><B><A HREF="files-formats-cartool.html#ep">.ep</A></B></I> <I><B>or
-     <A HREF="files-formats-cartool.html#eph">.eph</A></B></I> are outputed.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The temporary geometry files are written in the same directories as 
-    their original geometry files, which may be different from the EEG 
-    directory. The electrodes coordinates are written as <I><B><A HREF="files-formats-cartool.html#xyz">.xyz</A></B></I> files.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I> 
-    (text), showing all the parameters.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+         <h3><A NAME="main-loop"></A>The main loop</h3>
+         <p>For each <A HREF="terms-definitions-formulas.html#time-frame">time frame</A>, do:</p>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <B><A HREF="https://www.google.com/search?q=splines">spline</A></B>
+                     is computed <B>through the values of the non-excluded electrodes</B>,
+                     by taking into account the <B>geometry</B> of these electrodes.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The spline is then used to <B>
+                         access any point on the surface of the
+                         original geometry
+                     </B>, even at location without electrodes (this is
+                     all the interest indeed).
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>For all electrodes</B> of the targetted system, retrieve the
+                     values at their locations by simply <B>looking at the spline</B>.
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="which-splines"></A>Which splines are being used
+         </H3>
+         <P>
+             You can choose between three different types of spline:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Surface Spline, after projection on a plane of the electrodes position. Not
+                     recommended if electrodes are not a grid...
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Spherical Spline, after using a unitary spherical version of the
+                     electrodes position.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>3D Spline</B>, the preferred one as it preserves the real geometry of the
+                     electrodes.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A spherical spline can also be used to compute the <B>Current Source Density</B>.
+                 </P>
+         </UL>
+         <H3>
+             <A NAME="coregister-systems"></A>Coregistering between two electrodes systems
+         </H3>
+         <P>
+             If you switch from one electrodes system to another one, you have to
+             deal with the very important topic of <B>coregistration</B>. This is
+             how two different systems are made <B>geometrically superimposable</B>.
+             Most of the time, geometries of different systems are far from
+             matching each other, so we have to handle that case. See f.ex. two
+             non-matching geometries of electrodes:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/interpol.not-coregistered.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             There are for sure many different methods, and we sticked to a safe
+             one: <B>
+                 using fiducial electrodes to build an intermediate,
+                 normalized geometrical system
+             </B>. Here is a view of the
+             international 10-20 system, which were defined as to <B>
+                 reliably
+                 relate to the underlying brain structures
+             </B>:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/Jaakko-Malmivuo-Robert-Plonsey-Bioelectromagnetism-Principles-and-Applications-of-Bioelectric-and-Biomagnetic-Fields.10-20-system.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+                 <IMG SRC="images/Jaakko-Malmivuo-Robert-Plonsey-Bioelectromagnetism-Principles-and-Applications-of-Bioelectric-and-Biomagnetic-Fields.10-20-system-flat.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+                 (Images taken from: Jaakko Malmivuo &amp; Robert Plonsey<BR>
+                 Bioelectromagnetism - Principles and Applications of Bioelectric and
+                 Biomagnetic Fields)
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             To define the normalization function (for each electrodes system), we
+             need to know the following <B>five landmarks</B> (front, sides, back
+             and top of the head):
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="200" CELLPADDING="2" CELLSPACING="0" BORDER="0">
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP></TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Fpz</B>
+                                 </P>
+                             </CENTER>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B></B>&nbsp;
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>T3</B><BR>
+                                     <B>(or T7)</B>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Cz</B>
+                                 </P>
+                             </CENTER>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B></B>&nbsp;
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>T4</B><BR>
+                                     <B>(or T8)</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP></TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Oz</B>
+                                 </P>
+                             </CENTER>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B></B>&nbsp;
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP></TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <P>
+             More precisely, we need to know the <B>
+                 equivalent of these landmarks
+                 in the systems you use
+             </B>. New high-density nets usually don't match
+             the standard 10-10 (or 10-5) system, so you have to figure out
+             yourself where these 5 landmarks are. This has to be done carefully,
+             f.ex. by averaging 10 subjects together, or getting this information
+             from the company who built the recording machine.
+         </P>
+         <P>
+             If one landmark has no direct equivalent, you can give a set of
+             electrode which average position will be taken. F.ex. if <B>Oz</B>
+             does not exist , you could specify &quot;<B>O1 O2</B>&quot; instead.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             From the 5 landmarks, <B>a 12 parameters affine transform</B> is
+             derived, which will account for (3 parameters for each line):
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Origin translation</B>
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Rotation</B>
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Scaling (stretching)</B>
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Shearing</B>
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             <A NAME="normalized-system"></A>The end result is a <B>centered</B>, <B>unitary</B>
+             and <B>orthogonal geometrical system</B>, hence called the <B>
+                 <A HREF="#centering-normaliz">
+                     normalized
+                     system
+                 </A>
+             </B>.
+         </P>
+         <P>
+             F.ex. see here the <B>original system</B> to be interpolated, then
+             its <B>normalized version</B> (impossible to see here is the origin
+             and the overall scaling that are completely different), and a <B>
+                 spherical
+                 version
+             </B> of the normalized system. Note that the global shape of
+             the normalized system has been preserved, which is of course not the
+             case of the spherical one:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/interpol.from-not-normalized.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/interpol.from-normalized.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/interpol.from-spherical.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Using these normalized systems is a snap, f.ex. going from system A
+             to system B, simply transform to Normalized System A, then transform
+             back to system B:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="300" CELLPADDING="2" CELLSPACING="0" BORDER="0">
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     Original Coordinate System <B>A</B>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP></TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     Original Coordinate System <B>B</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     &nbsp;|
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP></TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     |
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     Normalized Coordinate System <B>A</B>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     &nbsp;<BR>
+                                     =<BR>
+                                     (equivalent spaces)
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     Normalized Coordinate System <B>B</B>
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             <A NAME="full-transformation"></A>Here is an example of the <B>
+                 original
+                 system
+             </B>, the <B>target system</B>, and then the <B>
+                 original
+                 system finally transformed and <A HREF="windows-general-commands.html#linking">superimposed</A>
+                 onto the target system
+             </B>:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/interpol.from-not-normalized.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/interpol.to-not-normalized.png" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+                 <IMG SRC="images/interpol.from-normalized-on-to.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             See also this discussion about the <A HREF="#borders">
+                 electrodes on
+                 the border
+             </A>, and if it leads or not to <B>extrapolation</B>, and
+             this note about <A HREF="#punching-a-hole">removing too much electrodes</A>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Finally, we can add that it is <B>
+                 <I>not</I> how good the normalized
+                 systems are in absolute
+             </B> (of course, a good transformation is
+             preferred) that really matters. Rather, it is that by applying the <B>
+                 same
+                 normalization scheme on both systems
+             </B>, we can transform
+             coordinates from one system to another. <B>
+                 The normalized systems are
+                 just intermediate stages
+             </B> in the whole processing.
+         </P>
+         <H2>
+             <A NAME="dialog"></A>Tracks Interpolation dialog
+         </H2>
+         <P>
+             Call the dialog from <FONT FACE="Arial Black,Arial,Helvetica">
+                 <A HREF="all-processings.html#tools">
+                     Tools
+                     | Interpolating EEG files
+                 </A>
+             </FONT> menu, which is context sensitive:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Called from an EEG file, the processing&nbsp;applies only to this file.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     In any other case, the dialog will operate in Batch mode, requiring
+                     you to later select some files.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Then the following dialog appears:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/interpol.dialog.png" VSPACE="0" HSPACE="0" BORDER="0" height="661" width="704">
+             </P>
+         </CENTER>
+         <P>
+             <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Tracks Interpolation</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>'From' Space</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             This box deals about the <B>original system</B>.
+                         </P>
+                         <P>
+                             See this discussion about how 'From' and 'To' spaces should <A HREF="#borders">
+                                 geometrically
+                                 relate to each other
+                             </A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Electrodes coordinates file:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Give the <A HREF="files-formats-others.html#electrodes-coord">
+                                 file with the
+                                 electrodes coordinates
+                             </A>.
+                         </P>
+                         <P>
+                             You can <B>Drag &amp; Drop</B> the file directly in this box.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Bad electrodes:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Optional <B>bad channels</B> to be <A HREF="#interpol-bad-chan">interpolated</A>.
+                         </P>
+                         <P>
+                             Let the field be empty if you have no bad channels, and just use the
+                             toolbox to <A HREF="#switching-config">
+                                 switch
+                                 to another system
+                             </A>.
+                         </P>
+                         <P>
+                             Also see this note about <A HREF="#punching-a-hole">removing too much electrodes</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Re-orient, Center &amp; Normalize using Landmarks:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             We need to <A HREF="#centering-normaliz">
+                                 re-orient, center
+                                 and normalize
+                             </A> the electrodes coordinates (used in the <A HREF="#how-interpol-works">
+                                 spline
+                                 computation
+                             </A>, and also to <A HREF="#coregister-systems">coregister</A>
+                             between two systems).
+                         <P>
+                             To achieve that, you have to provide the names of the electrodes pointing
+                             to the front, left, top, right and rear (the <A HREF="#coregister-systems">5 landmarks we need</A>).
+                             Or if you're lucky, Cartool might have already recognized your electrodes system! If this is the case,
+                             electrodes names will be pre-filled for you.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Front / Left / Top / Right / Rear
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Each of these edit boxes contains the electrodes names used to point in
+                             the corresponding direction.
+                         </P>
+                         <P>
+                             You can put <B>more than one electrode</B> in one box, in this case,
+                             the <B>average</B> (3D barycenter) of the electrodes position will be
+                             taken. Useful as very often, no one electrode of a given system
+                             exactly matches the 10-10 system.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Getting landmarks:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Just handy buttons to fill these 5 boxes a little more easily...
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Cycle into predefined landmarks
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Force Cartool to cycle into its predefined, known systems, until one
+                             best matches yours.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Copy the 'To' landmarks
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Let's copy the targetted (the 'To') system landmarks.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>'To' Space</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             This box is used to specify an optional <B>destination system</B>.
+                         </P>
+                         <P>
+                             See this discussion about how 'From' and 'To' spaces should <A HREF="#borders">
+                                 geometrically
+                                 relate to each other
+                             </A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Destination space is:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Choose the <A HREF="#kind-interpolation">behavior of the interpolation</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Identical to 'From' Space</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             If you just want to <A HREF="#interpol-bad-chan">interpolate bad channels</A>,
+                             and remain in the same system, check this button.
+                         </P>
+                         <P>
+                             If this is set, you don't need to specify the remaining parameters of
+                             the 'To' box.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Another Space:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             You want to <A HREF="#switching-config">switch to another system</A>,
+                             this is the button to check!
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Front / Left / Top / Right / Rear
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Same as per the 'From' case.
+                         </P>
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Interpolation Method</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Choose the <A HREF="#how-interpol-works">type of spline</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Surface Spline
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Project the electrodes onto a plane, then use a 2D spline.
+                         </P>
+                         <P>
+                             Not recommend, unless for grid electrodes.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Spherical Spline
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Spline on a centered, unitary sphere. Results are quite good.
+                         </P>
+                         <P>
+                             The spherical version of the original system is directly derived from
+                             the <A HREF="#normalized-system">normalized system</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             3D Spline
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             3D Spline, which accounts for the real geometry of
+                             the head. <strong>This is the recommended default spline.</strong>
+                         </P>
+                         <P>
+                             Use the <A HREF="#normalized-system">normalized system</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Curr. Dens. with Spherical Spline
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Use the spline to compute the Current Source Density (aka Laplacian
+                             of the potential), as in these <A HREF="#how-interpol-works">articles</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Spline's Degree:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             This is the parameter <B><I>m</I></B> from the <A HREF="#how-interpol-works">
+                                 articles
+                                 cited
+                             </A>.
+                         </P>
+                         <P>
+                             See <A HREF="#spline-degree">this note</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Options</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Optional filename infix&nbsp;override
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The exported filenames will have these characters inserted. If empty, the
+                             infix will be a compound made from all the parameters.
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Clean up Temp Files
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Uncheck this box if you want to see by yourself how the <A HREF="#coregister-systems">
+                                 centering,
+                                 the normalization and coregistration
+                             </A> have actually been
+                             performed. And <I>cerise sur le g&acirc;teau</I>, Cartool even
+                             provides you with 2 more files: the original system finally <A HREF="#full-transformation">
+                                 transformed
+                                 into the target system
+                             </A>, and the target system also transformed
+                             back into the original system. This way you can <A HREF="windows-general-commands.html#linking">superimpose</A>
+                             these files and visually check.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Open Files Upon Completion
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Open the interpolated EEG files.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Process Current</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Enabled when called from an EEG. The interpolation applies only to <B>
+                                 this
+                                 current file
+                             </B>.
+                         </P>
+                         <P>
+                             This button remains <B>
+                                 disabled until <U>all</U> the parameter
+                                 dialogs have received enough (and consistent) informations
+                             </B>. If
+                             this is not the case, first check the current dialog: if its
+                             &quot;Next&quot; button is disabled, the problem is in the current
+                             dialog. Otherwise, browse the other dialogs for some missing informations.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Batch Process</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Enabled when not called from an EEG. This will open a dialog for you
+                             to pick the <B>set of files</B> (even from different directories) to
+                             be interpolated.
+                         </P>
+                         <P>
+                             This button remains <B>
+                                 disabled until <U>all</U> the parameter
+                                 dialogs have received enough (and consistent) informations
+                             </B>. If
+                             this is not the case, first check the current dialog: if its
+                             &quot;Next&quot; button is disabled, the problem is in the current
+                             dialog. Otherwise, browse the other dialogs for some missing informations.
+                         </P>
+                         <P>
+                             You can <B>Drag &amp; Drop files directly</B> to run the Batch Process!
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Cancel
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Quit the dialog.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Help
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Launch the Help to the right page (should be here...).
+                     </TD>
+                 </TR>
+             </TABLE>
+         </P>
+         <H2>
+             <A NAME="technical-points"></A>Interpolation - Technical points
+         </H2>
+         <H4>
+             <A NAME="centering-normaliz"></A>Re-orienting, centering &amp; normalizing
+         </H4>
+         <P>
+             After <A HREF="#coregister-systems">centering and normalizing</A>, we
+             should end up with a geometrical system which:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Origin is on the line Fpz - Oz, intersected by the orthogonal
+                     projection of Cz.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     X axis points to Fpz, and have a unitary length.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Y axis points to T3 (though it may have been slightly adjusted after
+                     projection of Cz), and have a unitary length.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Z axis points to Cz, and have a unitary length.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     All three axis are of course orthognal.
+                 </P>
+         </UL>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/interpol.normalizing.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <H4>
+             <A NAME="spline-degree"></A>Degree of the spline
+         </H4>
+         <P>
+             For a spline of degree <B><I>m</I></B>, the actual degree of the
+             polynomials it is made of is <B><I>( m - 1 )</I></B>.
+         </P>
+         <P>
+             We definitely recommend to use <B>m = 2</B>, that is polynomials of
+             degree 1, which is very close to a <B>linear interpolation</B>. The advantage is that it will <B>
+                 very unlikely create values that
+                 can exceed the minimum and maximum values of the data
+             </B>. New values will
+             remain within the range of values of the original data (most of the time).
+         </P>
+         <P>
+             Creating new extrema values could be very detrimental when computing the
+             source localization. This would produce false brain soures just beneath the
+             new extrema electrode!
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             <em><strong>Note:</strong></em> as per 2024, spline degree is not editable
+             from user, and will remain set to 2.
+         </P>
+         <H4>
+             <A NAME="borders"></A>Electrodes on the border
+         </H4>
+         <P>
+             When <A HREF="#switching-config">interpolating to another system</A>,
+             you should be sure not to have <B>extrapolation issues</B>. As a rule
+             of thumb, targetted systems which geometry overflows the original
+             system are to be avoided. See here a few fine and bad examples (the <B>original</B>
+             system is in <B>yellow</B>, the <B>targetted</B> system is in <B>blue</B>):
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>OK</B>, the original system's border is beyond the target system's border:
+                 </P>
+                 <CENTER>
+                     <P ALIGN=CENTER>
+                         <IMG SRC="images/interpol.extrapolation1.png" VSPACE="0" HSPACE="0" BORDER="0">
+                     </P>
+                 </CENTER>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>NOT OK</B>, the target system's border is beyond the original
+                     system's border:
+                 </P>
+                 <CENTER>
+                     <P ALIGN=CENTER>
+                         <IMG SRC="images/interpol.extrapolation2.png" VSPACE="0" HSPACE="0" BORDER="0">
+                     </P>
+                 </CENTER>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>NOT OK</B>, even though the original system has <I>way more electrodes</I>,
+                     their <I>geometrical distribution</I> is not wide enough to
+                     encompass the target system's border:
+                 </P>
+                 <CENTER>
+                     <P ALIGN=CENTER>
+                         <IMG SRC="images/interpol.extrapolation3.png" VSPACE="0" HSPACE="0" BORDER="0">
+                     </P>
+                 </CENTER>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>OK</B>, though the target system has a denser array of electrodes
+                     (smooth out the output):
+                 </P>
+                 <CENTER>
+                     <P ALIGN=CENTER>
+                         <IMG SRC="images/interpol.extrapolation4.png" VSPACE="0" HSPACE="0" BORDER="0">
+                     </P>
+                 </CENTER>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>OK</B>, the original and the target system extents are
+                     geometrically very close to each other (interpolating in the other
+                     direction, from the &quot;blue&quot; to the &quot;yellow&quot; system
+                     could even be tolerable):
+                 </P>
+                 <CENTER>
+                     <P ALIGN=CENTER>
+                         <IMG SRC="images/interpol.extrapolation5.png" VSPACE="0" HSPACE="0" BORDER="0">
+                     </P>
+                 </CENTER>
+         </UL>
+         <H4>
+             <A NAME="punching-a-hole"></A>Punching a hole in your geometry
+         </H4>
+         <P>
+             It is not so advisable to have to remove a bunch of electrodes
+             (though it might happen due to circumstances) that will <B>
+                 punch a
+                 big hole out of your system
+             </B>. Having fewer neighbors to
+             interpolate from will of course lead to less precise results. See
+             here just how removing 4 electrodes that are too close to each others
+             seems a pretty good promise of an awkward interpolation:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/interpol.not-enough-neighbors.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <P>
+             Noter that you can still remove / interpolate an electrode, say Fpz,
+             and use its position as a <A HREF="#coregister-systems">landmark</A>
+             for the coregistration.
+         </P>
+         <H4>
+             <A NAME="just-removing-elec"></A>Just removing electrodes
+         </H4>
+         <P>
+             In this case, using the interpolation is simply an overkill. Consider
+             the <B><A HREF="reprocess-tracks.html">Export Tracks</A></B> instead...
+         </P>
+         <H2>
+             <A NAME="results"></A>Interpolation - Results
+         </H2>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Interpolated EEG files are written in the <B>
+                         same directories as
+                         their sources
+                     </B>. File names are inserted with the <B>infix</B>
+                     string, which briefly describes the type of interpolation used.
+                     Currently, only <I><B><A HREF="files-formats-cartool.html#ep">.ep</A></B></I> <I>
+                         <B>
+                             or
+                             <A HREF="files-formats-cartool.html#eph">.eph</A>
+                         </B>
+                     </I> are outputed.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The temporary geometry files are written in the same directories as
+                     their original geometry files, which may be different from the EEG
+                     directory. The electrodes coordinates are written as <I><B><A HREF="files-formats-cartool.html#xyz">.xyz</A></B></I> files.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>
+                     (text), showing all the parameters.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

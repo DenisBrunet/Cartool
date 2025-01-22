@@ -2,908 +2,1132 @@
  <HEAD>
   <TITLE>Appendix D - Files Handled by Cartool</TITLE>
  <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css"></HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   Appendix D<BR>
-   Files Handled by Cartool</H1>
-  <P>
-   &nbsp;</P>
-  <H5>
-   <A HREF="#eeg">EEG files</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#eeg-raw">Raw EEG files</A><br><A HREF="#eeg-erp">ERP files</A></H5>
-   </UL>
-  <H5>
-   <A HREF="#freq">Frequency files</A><br><A HREF="#electrodes-coord">Electrodes coordinates files</A><br>
-   <A HREF="#solution-points">Solution Points files</A><br>
-   <A HREF="#inverse-solutions">Inverse Solution files</A><br><A HREF="#mri">MRI files</A></H5>
-  <H2>
-   <A NAME="eeg"></A>EEG files</H2>
-  <H3>
-   <A NAME="eeg-raw"></A>Raw EEG files</H3>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Description</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Version supported</B></TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Extension(s)</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Creating</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.bidmc.harvard.edu/display.asp?leaf_id=1773">Beth
-          Israel Deaconess Medical Center</A> - Depth electrodes128</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         &nbsp;</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>128</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.blsc.com/neurology/index.html">Bio-logic</A> CeeGraph</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         CeeGraphIV<BR>
-         non-compressed data</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>eeg</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.biosemi.com/">Biosemi</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>bdf</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.brainproducts.com/">Brain Products</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>eeg</B><BR>
-         <B>dat</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A> 
-         binary files</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B><A HREF="files-formats-cartool.html#sef">sef</A></B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.natus.com/index.cfm?page=company_1&amp;crid=129">Deltamed</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         32 and 64 channels<BR>
-         (old versions only)</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>dsc + eeg + mrk</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.natus.com/index.cfm?page=company_1&amp;crid=129">Deltamed</A> 
-         Coherence 5</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>eeg</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         EaSys</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         EaSys2</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>d</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.egi.com/">Electrical Geodesics</A>&nbsp;
-          - Recorded files</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         versions 1, 2, 3</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>nsr</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.egi.com/">Electrical Geodesics</A> 
-         - Converted files</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         integer<BR>
-         float</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>raw</B><BR>
-         <B>(gain + zero)</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.hsr.nl/edf/">European Data Format 
-         - EDF</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>edf</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.neurotraces.com/edf/EDFp/EDFp.html">European
-          Data Format - EDF+</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         partial</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>edf</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.micromed.eu/">micromed</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         version 4</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>trc</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.neuro.com/">Neuroscan</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         version 3, complete?</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>cnt</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://sdepl.ucsd.edu/">UCSD ERP Lab</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         ERPSS, complete?</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>rdf</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <H3>
-   <A NAME="eeg-erp"></A>ERP files</H3>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Description</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Version supported</B></TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Extension(s)</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Creating</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A> ERPs</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B><A HREF="files-formats-cartool.html#eph">eph</A></B><BR>
-         <B><A HREF="files-formats-cartool.html#ep">ep</A></B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.neuro.com/">Neuroscan</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         version 3, complete?</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>avg</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.brainproducts.com/">Brain Products</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>eeg</B><BR>
-         <B>dat</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <H2>
-   <A NAME="freq"></A>Frequency files</H2>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Description</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Version supported</B></TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Extension(s)</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Creating</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A> 
-         Frequency file</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B><A HREF="files-formats-cartool.html#freq">freq</A></B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <H2>
-   <A NAME="electrodes-coord"></A>Electrodes coordinates files</H2>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Description</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Version supported</B></TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Extension(s)</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Creating</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A> 
-         Electrodes Setup file, ELS</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B><A HREF="files-formats-cartool.html#els">els</A></B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A> 
-         coordinates file, XYZ</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B><A HREF="files-formats-cartool.html#xyz">xyz</A></B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.uzh.ch/keyinst/loreta">Loreta</A> 
-         coordinates file (identical to solution points, below)</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>sxyz</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>no</B></TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <H2>
-   <A NAME="solution-points"></A>Solution Points files</H2>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Description</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Version supported</B></TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Extension(s)</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Creating</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A> 
-         Solution Points</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B><A HREF="files-formats-cartool.html#spi">spi</A></B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.uzh.ch/keyinst/loreta">Loreta</A> 
-         coordinates file</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>sxyz</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>no</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.besa.de/">Besa</A> coordinates file</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>loc</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>no</B></TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <H2>
-   <A NAME="inverse-solutions"></A>Inverse Solution files</H2>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Description</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Version supported</B></TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Extension(s)</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Creating</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A> 
-         Lead Field Matrix</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>lf</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A> 
-         Inverse Solution Matrix</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B><A HREF="files-formats-cartool.html#is">is</A></B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A> 
-         Results of Inverse Solution computation</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B><A HREF="files-formats-cartool.html#ris">ris</A></B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.uzh.ch/keyinst/loreta">Loreta</A> 
-         Inverse Solution Matrix</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>spinv</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.besa.de/">Besa</A> Lead Field Matrix</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         complete</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>lft</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         no</TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <H2>
-   <A NAME="mri"></A>MRI files</H2>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Description</B></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Version supported</B></TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Extension(s)</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>Creating</B></TD>
-     </TR>
-        <tr>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <a href="https://nifti.nimh.nih.gov/"><strong>Nifti</strong></a></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         Version 1 and 2</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <strong>hdr + img<br>nii</strong></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-        </tr>
-     <TR>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <strong>ANALYZE-7</strong> (<A HREF="https://www.mayo.edu/bir/index_noscroll.html">Mayo Clinic</A>,
-          Rochester, USA) / <A HREF="https://www.fil.ion.ucl.ac.uk/spm/software/spm99/">SPM</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         3D volume,<BR>
-         little &amp; big endian,<BR>
-         unsigned char /<BR>
-         unsigned short /<BR>
-         signed short /<BR>
-         signed short positive</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B><A HREF="https://www.mayo.edu/bir/PDF/ANALYZE75.pdf">hdr + img</A></B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-     </TR>
-        <tr>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.brainvoyager.com/">BrainVoyager</A> 
-         format for <A HREF="https://www.besa.de/">Besa</A></TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         Version 0 only</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>vmr</B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-        </tr>
-		<tr>
-      <TD WIDTH="40%" VALIGN=TOP>
-       <UL>
-        <P>
-         <A HREF="https://www.avs.com/">Advanced Visual Systems AVS</A> field</TD>
-      <TD WIDTH="20%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         3D volume,<BR>
-         <I>byte</I> and <I>short</I> data types</TD>
-      <TD WIDTH="16%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B><A HREF="https://help.avs.com/Express/doc/help/books/dv/dvfdtype.html">fld</A></B></TD>
-      <TD WIDTH="12%" VALIGN=TOP>
-       <CENTER>
-        <P ALIGN=CENTER>
-         <B>yes</B></TD>
-        </tr>
-    </TABLE></P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             Appendix D<BR>
+             Files Handled by Cartool
+         </H1>
+         <P>
+             &nbsp;
+         </P>
+         <H5>
+             <A HREF="#eeg">EEG files</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#eeg-raw">Raw EEG files</A><br><A HREF="#eeg-erp">ERP files</A>
+             </H5>
+         </UL>
+         <H5>
+             <A HREF="#freq">Frequency files</A><br><A HREF="#electrodes-coord">Electrodes coordinates files</A><br>
+             <A HREF="#solution-points">Solution Points files</A><br>
+             <A HREF="#inverse-solutions">Inverse Solution files</A><br><A HREF="#mri">MRI files</A>
+         </H5>
+         <H2>
+             <A NAME="eeg"></A>EEG files
+         </H2>
+         <H3>
+             <A NAME="eeg-raw"></A>Raw EEG files
+         </H3>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Description</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Version supported</B>
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Extension(s)</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Creating</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.bidmc.harvard.edu/display.asp?leaf_id=1773">
+                                         Beth
+                                         Israel Deaconess Medical Center
+                                     </A> - Depth electrodes128
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     &nbsp;
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>128</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.blsc.com/neurology/index.html">Bio-logic</A> CeeGraph
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     CeeGraphIV<BR>
+                                     non-compressed data
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>eeg</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.biosemi.com/">Biosemi</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>bdf</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.brainproducts.com/">Brain Products</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>eeg</B><BR>
+                                     <B>dat</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A>
+                                     binary files
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B><A HREF="files-formats-cartool.html#sef">sef</A></B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.natus.com/index.cfm?page=company_1&amp;crid=129">Deltamed</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     32 and 64 channels<BR>
+                                     (old versions only)
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>dsc + eeg + mrk</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.natus.com/index.cfm?page=company_1&amp;crid=129">Deltamed</A>
+                                     Coherence 5
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>eeg</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     EaSys
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     EaSys2
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>d</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.egi.com/">Electrical Geodesics</A>&nbsp;
+                                     - Recorded files
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     versions 1, 2, 3
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>nsr</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.egi.com/">Electrical Geodesics</A>
+                                     - Converted files
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     integer<BR>
+                                     float
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>raw</B><BR>
+                                     <B>(gain + zero)</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.hsr.nl/edf/">
+                                         European Data Format
+                                         - EDF
+                                     </A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>edf</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.neurotraces.com/edf/EDFp/EDFp.html">
+                                         European
+                                         Data Format - EDF+
+                                     </A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     partial
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>edf</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.micromed.eu/">micromed</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     version 4
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>trc</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.neuro.com/">Neuroscan</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     version 3, complete?
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>cnt</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://sdepl.ucsd.edu/">UCSD ERP Lab</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     ERPSS, complete?
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>rdf</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="eeg-erp"></A>ERP files
+         </H3>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Description</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Version supported</B>
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Extension(s)</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Creating</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A> ERPs
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B><A HREF="files-formats-cartool.html#eph">eph</A></B><BR>
+                                     <B><A HREF="files-formats-cartool.html#ep">ep</A></B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.neuro.com/">Neuroscan</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     version 3, complete?
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>avg</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.brainproducts.com/">Brain Products</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>eeg</B><BR>
+                                     <B>dat</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <H2>
+             <A NAME="freq"></A>Frequency files
+         </H2>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Description</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Version supported</B>
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Extension(s)</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Creating</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A>
+                                     Frequency file
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B><A HREF="files-formats-cartool.html#freq">freq</A></B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <H2>
+             <A NAME="electrodes-coord"></A>Electrodes coordinates files
+         </H2>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Description</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Version supported</B>
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Extension(s)</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Creating</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A>
+                                     Electrodes Setup file, ELS
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B><A HREF="files-formats-cartool.html#els">els</A></B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A>
+                                     coordinates file, XYZ
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B><A HREF="files-formats-cartool.html#xyz">xyz</A></B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.uzh.ch/keyinst/loreta">Loreta</A>
+                                     coordinates file (identical to solution points, below)
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>sxyz</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>no</B>
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <H2>
+             <A NAME="solution-points"></A>Solution Points files
+         </H2>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Description</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Version supported</B>
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Extension(s)</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Creating</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A>
+                                     Solution Points
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B><A HREF="files-formats-cartool.html#spi">spi</A></B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.uzh.ch/keyinst/loreta">Loreta</A>
+                                     coordinates file
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>sxyz</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>no</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.besa.de/">Besa</A> coordinates file
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>loc</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>no</B>
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <H2>
+             <A NAME="inverse-solutions"></A>Inverse Solution files
+         </H2>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Description</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Version supported</B>
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Extension(s)</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Creating</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A>
+                                     Lead Field Matrix
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>lf</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A>
+                                     Inverse Solution Matrix
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B><A HREF="files-formats-cartool.html#is">is</A></B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://github.com/DenisBrunet/Cartool">Cartool</A>
+                                     Results of Inverse Solution computation
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B><A HREF="files-formats-cartool.html#ris">ris</A></B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.uzh.ch/keyinst/loreta">Loreta</A>
+                                     Inverse Solution Matrix
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>spinv</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.besa.de/">Besa</A> Lead Field Matrix
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     complete
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>lft</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     no
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <H2>
+             <A NAME="mri"></A>MRI files
+         </H2>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="90%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Description</B>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Version supported</B>
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Extension(s)</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>Creating</B>
+                         </TD>
+                     </TR>
+                     <tr>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <a href="https://nifti.nimh.nih.gov/"><strong>Nifti</strong></a>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     Version 1 and 2
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <strong>hdr + img<br>nii</strong>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </tr>
+                     <TR>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <strong>ANALYZE-7</strong> (<A HREF="https://www.mayo.edu/bir/index_noscroll.html">Mayo Clinic</A>,
+                                     Rochester, USA) / <A HREF="https://www.fil.ion.ucl.ac.uk/spm/software/spm99/">SPM</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     3D volume,<BR>
+                                     little &amp; big endian,<BR>
+                                     unsigned char /<BR>
+                                     unsigned short /<BR>
+                                     signed short /<BR>
+                                     signed short positive
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B><A HREF="https://www.mayo.edu/bir/PDF/ANALYZE75.pdf">hdr + img</A></B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </TR>
+                     <tr>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.brainvoyager.com/">BrainVoyager</A>
+                                     format for <A HREF="https://www.besa.de/">Besa</A>
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     Version 0 only
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>vmr</B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </tr>
+                     <tr>
+                         <TD WIDTH="40%" VALIGN=TOP>
+                             <UL>
+                                 <P>
+                                     <A HREF="https://www.avs.com/">Advanced Visual Systems AVS</A> field
+                         </TD>
+                         <TD WIDTH="20%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     3D volume,<BR>
+                                     <I>byte</I> and <I>short</I> data types
+                         </TD>
+                         <TD WIDTH="16%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B><A HREF="https://help.avs.com/Express/doc/help/books/dv/dvfdtype.html">fld</A></B>
+                         </TD>
+                         <TD WIDTH="12%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <B>yes</B>
+                         </TD>
+                     </tr>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

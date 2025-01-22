@@ -30,788 +30,1097 @@
 }
 </style>
  </HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   Appendix C<BR>
-   Cartool File Formats</H1>
-  <P>
-   &nbsp;</P>
-  <P>
-   <A NAME="Files-created"></A></P>
-  <P>
-   <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0" class="ms-list5-main">
-       <!-- fpstyle: 28,011110100 -->
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .csv</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#csv">Comma Separated Values</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .data</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#data">Data array</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .els</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#els">ELectrodes Setup (complex cases)</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .ep</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#ep">Evoked Potentials</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .eph</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#eph">Evoked Potentials with Header</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .epsd</H5>
-      <H5>
-       .epse</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#epsd-epse">Evoked Potentials Standard Deviation / Standard Error</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .freq</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#freq">Frequencies</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .is</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#is">Inverse Solution matrix</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .lf</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#lf">Lead Field file</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .lm</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#lm">Link Many file</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .mrk</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#mrk">Marker file</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .mtg</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#mtg">Montage file</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .ris</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#ris">Results of Inverse Solution computation</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .rois</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#rois">Regions Of Interest</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .sef</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#sef">Simple Eeg Format</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .seg</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#seg">Segmentation</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .spi</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#spi">Solution Points Irregularly spaced</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .spr</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#spr">Solution Points on Regular grid (obsolete)</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .tva</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#tva">Trigger VAlidation file</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .vrb</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#vrb">Verbose file</A></TD>
-    </TR>
-    <TR>
-     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
-      <H5>
-       .xyz</TD>
-     <TD VALIGN=TOP class="ms-list5-even">
-      <H5>
-       <A HREF="#xyz">Electrodes coordinates (simpler case)</A></TD>
-    </TR>
-   </TABLE></P>
-  <H2>
-   <I><A NAME="csv"></A>.csv</I> Comma Separated Values</H2>
-  <P>
-   This is not a format defined by Cartool, but a very handy and <A HREF="https://en.wikipedia.org/wiki/Comma-separated_values">well-recognized
-    file format</A> to store an <B>array of values</B> (handled direclty 
-   by Excel, Statistica, Cartool...)</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Basically, it is a <B>text file</B> with values on each line being 
-   separated either by a comma (<B>,</B>) or by a semi-colon (<B>;</B>), 
-   according to your language settings (just to make simple things 
-   already complicated... but Cartool will gracefully read both). You 
-   can open them either with a text editor, or directly as a spreadsheet 
-   in Excel, Statistica, etc... (Note that Cartool also works with its 
-   equivalent <A HREF="https://www.google.com/search?q=tab+separated+file+format">Tab
-    Separated text file format</A>)</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   If you have problems and/or want to change the way Cartool, Excel or 
-   all other programs behave, do the following:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    &nbsp;go to the Control Panel, choose &quot;Regional &amp; Language Options&quot;<BR>
-    <LI CLASS="mvd-P">Click on &quot;Customize&quot;<BR>
-    <LI CLASS="mvd-P">Change &quot;List Separator&quot; to force it to 
-    the character you prefer, but I recommend either a comma (<B>,</B>) 
-    or a semi-colon (<B>;</B>).</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   The <B>content organization</B> done by Cartool is the following:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    A <B>first line</B> which gives the <B>names of the variables</B>, 
-    and their <B>sequence</B>.<BR>
-    <LI CLASS="mvd-P">Then each following lines contains the data 
-    themselves, with exactly the <B>same number and same sequence of variables</B> 
-    as the first line (padding with separators if needed).<BR>
-    <LI CLASS="mvd-P">Two files with the same variable names but set in a <B>different
-     order are equivalent</B>., so you can import results / parameters 
-    from other programs quite easily.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   Just an example to make it clear, a file used to hold the files 
-   parameters for the <A HREF="computing-erps.html">averaging process</A>:</P><PRE>file;session;tva;triggers<BR>E:\Data\Eeg1.eph;1;;1 2 3 4<BR>E:\Data\Eeg1.eph;2;;5 6 7 8<BR>E:\Data\Eeg2.eph;;;1 2 3 4 5 6 7 8</PRE><P>
-   The first line enumerates the 4 variables (file, session etc...), and 
-   there are 3 lines of data with some of these variables defined, and 
-   some undefined.</P>
-  <P>
-   The order of the variables does not matter, and it could have be 
-   written as, f.ex.:</P><PRE>file;triggers;session;tva<BR>E:\Data\Eeg1.eph;1 2 3 4;1;<BR>E:\Data\Eeg1.eph;5 6 7 8;2;<BR>E:\Data\Eeg2.eph;1 2 3 4 5 6 7 8;;</PRE><H2>
-   <I><A NAME="data"></A>.data</I> Data array</H2>
-  <P>
-   A <B>text file</B> used to store and display any kind of 
-   informations, used for example in the <A HREF="microstates-segmentation.html">segmentation
-    process</A>.<BR>
-   It is a variant of the <A HREF="#seg">.seg</A> format, please refer 
-   to it for the full explanations.</P>
-  <P>
-   The only difference is in the header (first two lines) which lacks 
-   the&nbsp; number_of_clusters&nbsp; variable:</P><PRE>number_of_files&nbsp;&nbsp; number_of_time_frames<BR>number_of_tracks &nbsp; tracks_name<SUB>1</SUB>  tracks_name<SUB>2</SUB>  ...  tracks_name<SUB>n</SUB></PRE><H2>
-   <I><A NAME="els"></A>.els</I> ELectrodes Setup</H2>
-  <P>
-   A <B>text file</B> describing a setup of electrodes. It allows 
-   separate clusters of electrodes (for example 2 grids, or a few 
-   strips, or electrodes on the scalp plus some auxiliaries...), and 
-   each one of the clusters can be of a different type. Another (and 
-   obsolete) format is the <A HREF="#xyz"><I><B>.xyz</B></I></A>.</P>
-  <P>
-   First line, a magic number:</P><PRE>ES01</PRE><P>
-   Next 2 lines:</P><PRE>Total_number_of_electrodes<BR>Number_of_clusters</PRE><P>
-   Now repeat for each cluster (at least 1):</P><PRE>Cluster_name<BR>Cluster_number_of_electrodes<BR>Cluster_type</PRE><P>
-   Cluster_type&nbsp; could be seen as the dimensionality of the cluster:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <B>0</B> for <B>separated electrodes</B> (like auxiliaries), or &quot;points&quot;<BR>
-    <LI CLASS="mvd-P"><B>1</B> for a <B>strip of electrodes</B>, or &quot;line&quot;<BR>
-    <LI CLASS="mvd-P"><B>2</B> for a <B>grid of electrodes</B>, or &quot;array&quot;<BR>
-    <LI CLASS="mvd-P"><B>3</B> for a <B>3D set of electrodes</B>, usually 
-    on the scalp, that will be fitted by a 2D Delaunay triangulation 
-    surface (but in 3D...).</P>
-   </UL>
-  <P>
-   Then the list of coordinates, one per line:</P><PRE>x&nbsp;&nbsp; y&nbsp;&nbsp; z&nbsp;&nbsp; label&nbsp;&nbsp; optional_flag</PRE><P>
-   x, y, z&nbsp; are, of course, the coordinates, and label the name of 
-   the electrode. optional_flag can either be missing or be the 
-   identifier <B>Bad</B>, in which case it indicates that the electrodes 
-   has a non-significative signal (broken electrode, noisy signal, 
-   etc...), and though it will be geometrically used with its neighbors 
-   in the building of the 3D tesselation, the value of its signal will 
-   not appear to avoid spoiling the display.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   The idea of clustering electrodes is to isolate the interpolations 
-   between electrodes, so that different clusters won't interfere 
-   graphically. For example you can disjoin the auxiliaries electrodes, 
-   as you don't want to see them interpolated with regular Eeg.</P>
-  <P>
-   If two, or more, 3D clusters share the very same name, they will be 
-   merged into a single, big cluster of the same name. Still in the case 
-   some auxiliaries electrodes were recorded in the middle of regular 
-   electrodes, there are, say 3 clusters: 3D, auxs, 3D again, so the 
-   program understands that both 3D clusters are the same. If you don't 
-   want this merging, simply change the names!</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   Example:</H4><PRE>ES01<BR>41<BR>1<BR>10-10 System<BR>41<BR>3<BR>  1.000000E+0000  0.000000E+0000 -0.000000E+0000 Fpz<BR>  8.090170E-0001  5.877853E-0001 -0.000000E+0000 AF7<BR>  9.205049E-0001  0.000000E+0000  3.907311E-0001 AFz<BR>  8.090170E-0001 -5.877853E-0001 -0.000000E+0000 AF8<BR>  6.273924E-0001  7.217324E-0001  2.923717E-0001 F5<BR>  6.590572E-0001  5.336940E-0001  5.299193E-0001 F3<BR>  6.946584E-0001  0.000000E+0000  7.193398E-0001 Fz<BR>  6.590572E-0001 -5.336940E-0001  5.299193E-0001 F4<BR>  6.273924E-0001 -7.217324E-0001  2.923717E-0001 F6<BR>  3.090170E-0001  9.510565E-0001 -0.000000E+0000 FT7<BR>  3.367557E-0001  8.772786E-0001  3.420201E-0001 FC5<BR>  3.535534E-0001  3.535534E-0001  8.660254E-0001 FC1<BR>  3.583679E-0001  0.000000E+0000  9.335804E-0001 FCz<BR>  3.535534E-0001 -3.535534E-0001  8.660254E-0001 FC2<BR>  3.367557E-0001 -8.772786E-0001  3.420201E-0001 FC6<BR>  3.090170E-0001 -9.510565E-0001 -0.000000E+0000 FT8<BR> -0.000000E+0000  1.000000E+0000 -0.000000E+0000 T3<BR> -0.000000E+0000  6.946584E-0001  7.193398E-0001 C3<BR> -0.000000E+0000  3.583679E-0001  9.335804E-0001 C1<BR>  0               0               1              Cz<BR>  3.885433E-0020 -3.583679E-0001  9.335804E-0001 C2<BR>  7.531501E-0020 -6.946584E-0001  7.193398E-0001 C4<BR>  1.084202E-0019 -1.000000E+0000 -0.000000E+0000 T4<BR> -3.090170E-0001  9.510565E-0001 -0.000000E+0000 TP7<BR> -3.367557E-0001  8.772786E-0001  3.420201E-0001 CP5<BR> -3.535534E-0001  3.535534E-0001  8.660254E-0001 CP1<BR> -3.583679E-0001 -0.000000E+0000  9.335804E-0001 CPz<BR> -3.535534E-0001 -3.535534E-0001  8.660254E-0001 CP2<BR> -3.367557E-0001 -8.772786E-0001  3.420201E-0001 CP6<BR> -3.090170E-0001 -9.510565E-0001 -0.000000E+0000 TP8<BR> -6.273924E-0001  7.217324E-0001  2.923717E-0001 P5<BR> -6.590572E-0001  5.336940E-0001  5.299193E-0001 P3<BR> -6.946584E-0001 -0.000000E+0000  7.193398E-0001 Pz<BR> -6.590572E-0001 -5.336940E-0001  5.299193E-0001 P4<BR> -6.273924E-0001 -7.217324E-0001  2.923717E-0001 P6<BR> -8.090170E-0001  5.877853E-0001 -0.000000E+0000 PO7<BR> -8.619499E-0001  4.019339E-0001  3.090170E-0001 PO3<BR> -9.205049E-0001 -0.000000E+0000  3.907311E-0001 POz<BR> -8.619499E-0001 -4.019339E-0001  3.090170E-0001 PO4<BR> -8.090170E-0001 -5.877853E-0001 -0.000000E+0000 PO8<BR> -1.000000E+0000 -0.000000E+0000 -0.000000E+0000 Oz</PRE><H2>
-   <I><A NAME="ep"></A>.ep</I> Evoked Potentials</H2>
-  <P>
-   A very basic <B>text file</B> format to store an ERP, without header. 
-   This is a simple matrix of values, each line (with end-of-line) 
-   having all the electrodes values for a given time frame:</P><PRE>electrode_1 electrode_2 electrode_3 ... electrode_n</PRE><P>
-   Lines are repeated for each time frames (the number of time frames is 
-   therefore the number of lines). Cartool calculates the number of 
-   electrodes and the number of time frames by scanning the whole file 
-   at opening time. But it can not guess the sampling frequency, until 
-   the user <A HREF="eeg-display.html#filters">specify it</A>.</P>
-  <H2>
-   <I><A NAME="eph"></A>.eph</I> Evoked Potentials with Header</H2>
-  <P>
-   A very basic <B>text file</B> format to store an ERP, with a small header.</P>
-  <P>
-   The first line is the header:</P><PRE>number_of_electrodes&nbsp;&nbsp; number_of_time_frames&nbsp;&nbsp; sampling_frequency</PRE><P>
-   It is followed by the same block as in the <A HREF="#ep">.ep</A> 
-   files. Cartool does not scan the whole file to get the number of 
-   electrodes etc... as they are read (and trusted) directly from the 
-   first line.</P>
-  <H2>
-   <I><A NAME="epsd-epse"></A>.epsd</I>&nbsp; and&nbsp; <I>.epse</I>&nbsp;
-    Evoked Potentials Standard Deviation / Standard Error</H2>
-  <P>
-   Actually, the format is just the same as the <B><I><A HREF="#eph">.eph</A></I></B> one.</P>
-  <P>
-   It simply holds the Standard Deviation / Standard Error of an <A HREF="computing-erps.html">averaged</A> file.</P>
-  <H2>
-   <I><A NAME="freq"></A>.freq</I> Frequencies</H2>
-  <P>
-   A <B>binary file</B> that contains the results of some <A HREF="frequency-analysis.html">frequency
-    analysis</A>, resulting in a 3 dimensional data array 
-   (electrodes&nbsp; x&nbsp; frequencies&nbsp; x&nbsp; time).</P>
-  <P>
-   There are now two file versions, the first one being obsolete, but 
-   Cartool can still read it. The difference between the two versions is 
-   in the header, the part describing the frequencies.</P>
-  <P>
-   Anyway, for both versions, there is a <B>header</B>, composed of a <B>fixed
-    size part</B> plus a <B>variable size part</B>, then followed by the <B>data</B> 
-   organized as a matrix.</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   1) Header, fixed-size part:</H4><PRE>                                        // some strings size<BR>#define     NumFreqTypes                        6<BR>#define     MaxCharFreqType                     32<BR>#define     MaxCharFrequencyName                16<BR> <BR>                                        // type of content in the file, coded as text<BR><B>char</B>    FreqTypesNames[ NumFreqTypes ][ MaxCharFreqType ] = {<BR>    &quot;Unknown&quot;,<BR>    &quot;FFT Norm&quot;,<BR>    &quot;FFT Norm2&quot;,<BR>    &quot;FFT Complex&quot;,<BR>    &quot;FFT Approximation&quot;,<BR>    &quot;S Transform&quot;<BR>    };<BR> <BR> <BR><B>struct</B>  TFreqHeader<BR>{<BR>    <B>int</B>             Version;                // 'FR01' (obsolete) or 'FR02'<BR>    <B>char</B>            Type[MaxCharFreqType];  // of the analysis, and also data stored (see the array FreqTypesNames)<BR>    <B>int</B>             NumChannels;            // total number of electrodes<BR>    <B>int</B>             NumFrequencies;         // saved in file<BR>    <B>int</B>             NumBlocks;              // of repeated analysis, or number of resulting &quot;time frames&quot;<BR>    <B>double</B>          SamplingFrequency;      // of the data in the ORIGINAL file (1000 Hz f.ex.)<BR>    <B>double</B>          BlockFrequency;         // frequency of blocks'occurences (if 1 block is 0.5 s long amd don't overlap -&gt; 2 Hz)<BR>    <B>short</B>           Year;                   // Date of the recording<BR>    <B>short</B>           Month;                  // (can be 00-00-0000 if unknown)<BR>    <B>short</B>           Day;<BR>    <B>short</B>           Hour;                   // Time of the recording<BR>    <B>short</B>           Minute;                 // (can be 00:00:00:0000 if unknown)<BR>    <B>short</B>           Second;<BR>    <B>short</B>           Millisecond;<BR>};</PRE><H4>
-   2) Header, variable-size part:</H4><PRE>// Listing of channels'name<BR>// a matrix of  NumElectrodes * sizeof ( TFreqChannel )  chars<BR>//<BR>// To allow an easy calculation of the data origin,<BR>// be aware that each name ALWAYS take 8 bytes in the header, even if the string length is smaller than that.<BR>// The remaining part is padded with bytes set to 0, f.ex.:<BR>// binary values          70 112 122 00 00 00 00 00 65 70 55 00 00 00 00 00 ...<BR>// string equivalence      F   P   z \0              A  F  7 \0<BR><BR><BR><B>struct</B>  TFreqChannel<BR>{<BR>    <B>char</B>            ChannelName[8];<BR>};</PRE><P>
-   <U>This is the part that differs between file versions 'FR01' and 'FR02'.</U></P>
-  <P>
-   For the old version 'FR01' :</P><PRE>// Listing of the frequencies actually saved<BR>// size:  NumFrequencies * sizeof ( TFreqFrequency )<BR><BR><B>struct</B>  TFreqFrequency<BR>{<BR>    <B>double</B>          Frequency;<BR>};</PRE><P>
-   For the new version 'FR02' :</P><PRE>// Names assigned to each frequencies or bands actually saved (can be anything)<BR>// size:  NumFrequencies * sizeof ( TFreqFrequencyName )<BR><BR><B>struct</B>  TFreqFrequencyName<BR>{<BR>    <B>char</B>            FrequencyName[ MaxCharFrequencyName ];<BR>};</PRE><H4>
-   3) Data part:</H4><PRE>// Starting at file position:<BR>//<BR>// for version 'FR01'<BR>//<B>   sizeof</B> ( TFreqHeader ) + NumElectrodes * <B>sizeof</B> ( TFreqChannel ) + NumFrequencies * <B>sizeof</B> ( TFreqFrequency )<BR>//<BR>// for version 'FR02'<BR>//<B>   sizeof</B> ( TFreqHeader ) + NumElectrodes * <B>sizeof</B> ( TFreqChannel ) + NumFrequencies * <B>sizeof</B> ( TFreqFrequencyName )<BR>//<BR>// Data are stored as a matrix  NumTimeFrames x NumElectrodes x NumFrequencies<BR>// in this order: f0 f1 f2 .. fn for first electrode, f0 f1 f2 .. fn for second electrode ... etc  for first  time frame<BR>//          then  f0 f1 f2 .. fn       &quot;       &quot;                            &quot;               &quot;      for second time frame<BR>//                ...etc to the last time frame<BR>//<BR>// Data are of either type<BR>//    <B>float</B> (Little Endian - PC)   for Type == &quot;FFT Norm&quot;, &quot;FFT Norm2&quot;, &quot;FFT Approximation&quot;<BR>// or <B>complex</B> (classic C/C++ type) for Type == &quot;FFT Complex&quot;</PRE><H2>
-   <I><A NAME="is"></A>.is</I> Inverse Solution matrix</H2>
-  <P>
-   A <B>binary</B> file containing the matrix for an <A HREF="computing-inverse-solution-matrices.html">Inverse
-    Solution</A>, which has to be subsequently <A HREF="file-calculator.html#results-of-inverse">multiplied
-    by the EEG</A> to obtain the final results.</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   Magic number</H4>
-  <P>
-   <B>3 formats</B> are currently supported, specified by the magic 
-   number, the <B>first 4 characters</B> in the file:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <FONT FACE="Courier New">'IS01'</FONT> for a <B>float-type</B> matrix,</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <FONT FACE="Courier New">'IS02'</FONT> for a <B>double-type</B> 
-    matrix (though it is currently converted into float when read by Cartool),</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <FONT FACE="Courier New">'IS03'</FONT> for stacking a <B>set of 
-    float-type matrices</B>, and <B>specifying regularizations</B>.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <H3>
-   <FONT FACE="Courier New">ISO1</FONT> &amp; <FONT FACE="Courier New">ISO2</FONT> types</H3>
-  <H4>
-   Header structure</H4><PRE><B>struct</B> isheader {<BR>&nbsp;&nbsp;&nbsp; <B>char</B>            magic[ 4 ];&nbsp;       &nbsp;// 'IS01' for float-type matrix, 'IS02' for double-type matrix<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numelectrodes;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numsolutionpoints;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numregularizations;<BR>&nbsp;&nbsp;&nbsp; <B>char</B>            isinversescalar;&nbsp;&nbsp;&nbsp; // 1 if scalar, 0 if vectorial&nbsp; (<U>value</U>, and <U>not</U> text)<BR>&nbsp;&nbsp;&nbsp; } risheader;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        &nbsp;&nbsp;&nbsp;// size 13</PRE><H4>
-   Matrix structure</H4>
-  <P>
-   The matrix can contain either scalar or vectorial results, which 
-   means for each solution point there is either:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    scalar: 1 signed value,</P>
-   <LI CLASS="mvd-P">
-   <P>
-    vectorial: a 3 dimensional vector (a dipole).</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   <B>Number of rows</B> of the matrix, is scalar type:</P><PRE>numrows = numsolutionpoints</PRE><P>
-   Otherwise, if matrix is of vectorial type, each of the 3 components 
-   of the vectors are written on 3 successive rows, giving:</P><PRE>numrows = 3 * numsolutionpoints</PRE><P>
-   <B>Number of columns</B> is always:</P><PRE>numcols = numelectrodes;</PRE><P>
-   The matrix is then written row by row:<BR>
-   (matrixtype&nbsp; is either&nbsp; float&nbsp; or&nbsp; double&nbsp; 
-   according to the header field&nbsp; magic)</P><PRE>matrixtype&nbsp; matrix [ numrows ][ numcols ];</PRE><P>
-   &nbsp;</P>
-  <P>
-   Scalar example, for <I>numrows</I> rows:</P><PRE>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB><BR>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB><BR>...<BR>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB></PRE><P>
-   And vectorial example, for <I>numrows</I> rows:</P><PRE>x<SUB>0</SUB> x<SUB>1</SUB> x<SUB>2</SUB> ... x<SUB>numcols-1</SUB>   (for solution point 1, x component)<BR>y<SUB>0</SUB> y<SUB>1</SUB> y<SUB>2</SUB> ... y<SUB>numcols-1</SUB>   (for solution point 1, y component)<BR>z<SUB>0</SUB> z<SUB>1</SUB> z<SUB>2</SUB> ... z<SUB>numcols-1</SUB>   (for solution point 1, z component)<BR>x<SUB>0</SUB> x<SUB>1</SUB> x<SUB>2</SUB> ... x<SUB>numcols-1</SUB>   (for solution point 2)<BR>y<SUB>0</SUB> y<SUB>1</SUB> y<SUB>2</SUB> ... y<SUB>numcols-1</SUB><BR>z<SUB>0</SUB> z<SUB>1</SUB> z<SUB>2</SUB> ... z<SUB>numcols-1</SUB><BR>...<BR>x<SUB>0</SUB> x<SUB>1</SUB> x<SUB>2</SUB> ... x<SUB>numcols-1</SUB>   (for last solution point)<BR>y<SUB>0</SUB> y<SUB>1</SUB> y<SUB>2</SUB> ... y<SUB>numcols-1</SUB><BR>z<SUB>0</SUB> z<SUB>1</SUB> z<SUB>2</SUB> ... z<SUB>numcols-1</SUB></PRE><P>
-   &nbsp;</P>
-  <H3>
-   <FONT FACE="Courier New">ISO3</FONT> type</H3>
-  <H4>
-   Fixed Header structure</H4><PRE><B>struct</B> isfixedheader {<BR>&nbsp;&nbsp;&nbsp; <B>char</B>            magic[ 4 ];&nbsp;       &nbsp;// 'IS03'<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numelectrodes;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numsolutionpoints;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numregularizations;<BR>&nbsp;&nbsp;&nbsp; <B>char</B>            isinversescalar;&nbsp;&nbsp;&nbsp; // 1 if scalar, 0 if vectorial&nbsp; (<U>value</U>, and <U>not</U> text)<BR>&nbsp;&nbsp;&nbsp; } risheaderfixed;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        &nbsp;&nbsp;&nbsp;// size 17</PRE><P>
-   Note: the <B>number of regularizations</B> has to be &gt;= 1.</P>
-  <H4>
-   Variable Header structure</H4>
-  <P>
-   Following the fixed header part<FONT FACE="Arial,Helvetica,Monaco">, t</FONT>he
-    variable header provides the following additional informations:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    electrodes names,</P>
-   <LI CLASS="mvd-P">
-   <P>
-    solution points names,</P>
-   <LI CLASS="mvd-P">
-   <P>
-    the <B>actual values</B> used in the <A HREF="computing-inverse-solution-matrices.html">Tikhonov
-     regularizations</A>,</P>
-   <LI CLASS="mvd-P">
-   <P>
-    the <B>display names</B> for each Tikhonov regularizations.</P>
-   </UL>
-  <P>
-   <FONT FACE="Arial,Helvetica,Monaco"></FONT>&nbsp;</P><PRE><B>typedef</B> <B>char</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TElectrodeName     [ 32 ]; // 1 electrode name<BR><B>typedef</B> <B>char</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TSolutionPointName [ 16 ]; // 1 solution point name<BR><B>typedef</B> <B>char</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TRegularizationName[ 32 ]; // 1 regularization name<BR> <BR> <BR><B>struct</B> isheadervariable {<BR>    TElectrodeName      ElectrodesNames      [ NumElectrodes      ];<BR>    TSolutionPointName  SolutionPointsNames  [ NumSolutionPoints  ];<BR><B>                                double</B>              RegularizationValues [ NumRegularizations ];<BR>    TRegularizationName RegularizationNames  [ NumRegularizations ];<BR>&nbsp;&nbsp;&nbsp; } risheadervariable;&nbsp;</PRE><H4>
-   Matrix structure</H4>
-  <P>
-   The matrix content is the same as for type <FONT FACE="Courier New">'IS01'</FONT> 
-   (float matrix), simply <B>repeated by the number of regularizations</B>:</P><PRE>float               Matrices[ NumRegularizations ][ NumRows ][ NumColumns ];</PRE><H2>
-   <I><A NAME="lf"></A>.lf</I> Lead Field file</H2>
-  <P>
-   A simple <B>binary file</B> format to store a <A HREF="computing-inverse-solution-matrices.html#lead-field-what-is">vectorial
-    Lead Field</A>, in double precision.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   It has a short header:</P><PRE><B>struct</B> lfheader {<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>   number_of_electrodes;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>   number_of_solution_points;<BR>&nbsp;&nbsp;&nbsp; } lfheader;&nbsp;                        // size 8</PRE><P>
-   Then followed by the data, in <B>double precision</B>, with this 
-   ordering (multiplexing the (x,y,z) components):</P><PRE>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0</SUB>  x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1</SUB>  x<SUB>2</SUB> y<SUB>2</SUB> z<SUB>2</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB>   (for electrode number 1)<BR>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0 </SUB> x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1</SUB>  x<SUB>2</SUB> y<SUB>2</SUB> z<SUB>2</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB>   (for electrode number 2)<BR>...<BR>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0 </SUB> x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1 </SUB> x<SUB>2</SUB> y<SUB>2</SUB> z<SUB>2</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB>   (for last electrode)</PRE><P>
-   Or represented as a <I>C</I> array:</P><PRE>double              LeadField[ number_of_electrodes ][ number_of_solution_points ][ 3 ];</PRE><H2>
-   <I><A NAME="lm"></A>.lm</I> Link Many file</H2>
-  <P>
-   A <B>text</B> file containing a list of many files that have been 
-   linked by the user. The linked files have to be in whatsoever way 
-   related, though this is very versatile and open to new definitions.<BR>
-   Putting together files will allow to <B>share their informations</B> 
-   between them all, for example an Eeg linked with some electrodes 
-   coordinates will give to the Eeg the electrodes names and 3D positions.<BR>
-   The definate advantage from the link is that, depending on the files 
-   linked, <B>new functionnalities</B> are offered to the user through 
-   new type of <A HREF="terms-definitions-formulas.html#view">views</A>. Taking the same 
-   example, it brings a view showing the potential displayed as a map.</P>
-  <P>
-   See <A HREF="general-concepts.html#linkingfiles">here</A> for more explanations.</P>
-  <P>
-   The .lm file is simply a <B>list</B> of other files, written with 
-   their full path. F.ex.:</P><PRE>D:\Data\avebrain\egi125.xyz<BR>D:\Data\avebrain\myeeg.condition1.eph<BR>D:\Data\avebrain\myeeg.condition2.eph</PRE><H2>
-   <A NAME="mrk"></A><I>.mrk</I> Marker file</H2>
-  <P>
-   Contains the <A HREF="terms-definitions-formulas.html#marker">markers</A> defined by the user.</P>
-  <P>
-   There are <B>2</B> formats for <I>.mrk</I> file, the first being in <B>binary</B> 
-   form (obsolete format), the second being in <B>textual</B> form, and 
-   the one actually used as it can be easily read and modified by the user.<BR>
-   In any cases, the markers must be written <B>ordered</B>, sorted 
-   first on their starting positions then on their ending positions (if 
-   two markers have equal starting positions).<BR>
-   <B><U>It is not advised to write duplicate markers</U></B> with 
-   exactly the same starting and ending positions. Cartool can read 
-   them, can display them as superimposed markers, but you can expect 
-   unpredictable results when it comes to computing (like averaging, 
-   exporting, etc...). So don't.</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   Text format:</H4>
-  <P>
-   A first line with this characters as a magic number:</P><PRE>TL02</PRE><P>
-   Then as many text lines as needed, structured this way:</P><PRE>starting position&nbsp;&nbsp;&nbsp;&nbsp; ending position&nbsp;&nbsp;&nbsp; &quot;description text in quote&quot;</PRE><P>
-   <B>Note:</B> the current limit for the description text is 31 chars.</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   Binary format (obsolete):</H4>
-  <P>
-   A header followed by a list of markers, all in binary. The file 
-   header structure is:</P><PRE><B>struct</B> mrkheader {<BR>&nbsp;&nbsp;&nbsp; <B>char</B> magic[4];                      // always 'TL01'<BR>&nbsp;&nbsp;&nbsp; } mrkheader;&nbsp;                       // size 4</PRE><P>
-   &nbsp;</P>
-  <P>
-   And the format for a single marker is:</P><PRE>struct onemrk {<BR>&nbsp;&nbsp;&nbsp; long   Position;&nbsp;&nbsp;                  // from this TF<BR>&nbsp;&nbsp;&nbsp; long   To;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                // to this TF<BR>&nbsp;&nbsp;&nbsp; ushort Code;&nbsp;&nbsp;&nbsp;                     // trigger code<BR>&nbsp;&nbsp;&nbsp; ushort Type;&nbsp;&nbsp;&nbsp;&nbsp;                    // should always be 0x2 for a marker<BR>&nbsp;&nbsp;&nbsp; ushort Dummy;                       // not used, for the user<BR>&nbsp;&nbsp;&nbsp; char   Name[6];&nbsp;&nbsp;                   // name of the tag<BR>&nbsp;&nbsp;&nbsp; } onemrk;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                   &nbsp;&nbsp; // size 20</PRE><H2>
-   <I><A NAME="mtg"></A>.mtg</I> Montage file</H2>
-  <P>
-   A text file that defines a montage to be used with the <A HREF="eeg-display.html#menu-options">EEG
-    display</A> (it has to be created in any text editor, Cartool does 
-   not provide an editor for this task).</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   Format:</H4>
-  <P>
-   Always a first line with these characters as magic number:</P><PRE>MT01</PRE><P>
-   Then, each following lines can independently be any of these three formats:</P><PRE>el<BR>el1   el2<BR>el1   el2   name</PRE><P>
-   In the first case, the value of the electrode <FONT FACE="Courier New">el</FONT> 
-   (the name of the electrode) is taken as is.<BR>
-   In the second case, the value is the result of subtracting <FONT FACE="Courier New">el2</FONT> 
-   to <FONT FACE="Courier New">el1</FONT>.<BR>
-   The last case is the same as the second one, but a name is given to 
-   override the default one (which would be&nbsp; <FONT FACE="Courier New">el1-el2</FONT>).
-    This name must be written &quot;as is&quot;, without quotes nor spaces.</P>
-  <P>
-   Non-compliant lines (more fields, empty lines, unknown electrode 
-   names..) are simply ignored.</P>
-  <P>
-   You can put whatever you want in this file, repeating electrodes, 
-   changing their order, including <A HREF="terms-definitions-formulas.html#tracks">auxiliaries
-    or computed tracks</A>. The only limit is that the number of lines 
-   should not be more than the number of electrodes in the original file.</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   Example:</H4><PRE>MT01<BR>1     2<BR>2     3<BR>3     4<BR>4     5<BR>Aux1  Aux2  DiffAux<BR>10<BR>9<BR>8<BR>7<BR>6<BR>5<BR>4<BR>3<BR>2<BR>1</PRE><H2>
-   <I><A NAME="rois"></A>.rois</I> Regions Of Interest</H2>
-  <P>
-   This <B>text</B> file contains the required structural informations 
-   to apply regions of interest calculus on data. At the moment, it 
-   simply holds groups of indexes (of electrodes / solution points). You 
-   may not be interested on the actual file format, but rather on how to <A HREF="creating-rois.html">create
-    the ROIs</A> in Cartool, or <A HREF="about-rois.html">how to make use 
-   of them</A>?</P>
-  <P>
-   First line, the magic number to indicate that the content is about 
-   indexes (as opposite to voxels):</P><PRE>RO01</PRE><P>
-   Next 2 lines:</P><PRE>Dimension_of_original_data<BR>Number_of_rois</PRE><P>
-   What is meant by&nbsp; <FONT FACE="Courier New">Dimension_of_original_data</FONT>&nbsp;
-    is simply the number of electrodes (or solution points) of&nbsp; the 
-   original data the rois were made from. This is used only for checking 
-   you're not going to apply the .rois file to the wrong data, which 
-   usually have different dimensions.</P>
-  <P>
-   Then follows 2 lines for each roi:</P><PRE>Roi_name<BR>List_of_indexes</PRE><P>
-   The name of the roi could be anything on the line, including spaces. 
-   Quotes are not needed.</P>
-  <P>
-   Within the list of indexes, use a space to separate between each 
-   index. The end of line means the end of the list. Simple. And BTW, <B>indexes
-    start from 1</B>, not 0.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Example made from a setup of 125 electrodes, into 4 rois:</P><PRE>RO01<BR>125<BR>4<BR>Front Left<BR>26 22 33 23 18 27 24 19 44 39 34 28 25 20 49 45 40 35 29 21 12 41 36 30 13 7 46 37 31<BR>Front Right<BR>14 8 15 9 1 10 3 2 4 124 123 122 121 120 5 119 118 117 116 113 112 111 110 115 114 107 106 105 109<BR>Back Left<BR>42 47 48 43 38 32 50 51 52 53 54 56 57 58 59 60 61 67 63 64 65 66 72 70 71 69 75 74<BR>Back Right<BR>81 88 104 80 87 94 99 103 79 86 93 98 102 78 92 97 101 77 85 91 96 108 84 100 83 90 89 95</PRE><H2>
-   <I><A NAME="ris"></A>.ris</I> Results of Inverse Solution computation</H2>
-  <P>
-   This <B>binary</B> file is the final result of inverse solution 
-   computations, after the matrix has been multiplied by the Eeg. It is 
-   made of a <B>header</B> followed by a <B>matrix of floats</B>.</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   Header structure</H4><PRE><B>struct</B> risheader {<BR>&nbsp;&nbsp;&nbsp; <B>char</B>  magic[4];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        // always 'RI01'<BR>&nbsp;&nbsp;&nbsp; <B>int32</B> numsolutionpoints;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B> numtimeframes;<BR>&nbsp;&nbsp;&nbsp; <B>float</B> samplingfrequency;             // in Herz<BR>&nbsp;&nbsp;&nbsp; <B>char</B>  isinversescalar;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          // 1 if scalar, 0 if vectorial&nbsp; (<U>value</U>, and <U>not</U> text)<BR>&nbsp;&nbsp;&nbsp; } risheader;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      // size 17</PRE><P>
-   &nbsp;</P>
-  <H4>
-   Matrix structure</H4>
-  <P>
-   Number of rows:</P><PRE>numrows = numtimeframes;</PRE><P>
-   If the matrix contains scalar results, the number of columns is</P><PRE>numcols = numsolutionpoints;</PRE><P>
-   If the matrix contains vectorial results, a 3-uple (x,y,z) is 
-   written, and the number of columns is</P><PRE>numcols = 3 * numsolutionpoints;</PRE><P>
-   The matrix is then written row by row:</P><PRE>float matrix [ numrows ][ numcols ];</PRE><P>
-   &nbsp;</P>
-  <P>
-   Scalar example, for <FONT FACE="Arial,Helvetica,Monaco">numrows</FONT> rows:</P><PRE>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB><BR>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB><BR>...<BR>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB></PRE><P>
-   And vectorial example, for <FONT FACE="Arial,Helvetica,Monaco">numrows</FONT> rows:</P><PRE>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0</SUB>&nbsp; x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB><BR>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0</SUB>&nbsp; x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB><BR>...<BR>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0</SUB>&nbsp; x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB></PRE><H2>
-   <I><A NAME="sef"></A>.sef</I> Simple Eeg Format</H2>
-  <P>
-   Simple (or safe, or stupid) <B>binary format</B> containing the 
-   minimal data structure to describe correctly an EEG, either an 
-   original recording or an ERP. It has a header, made of a fixed part 
-   and a variable part, followed by the <B>calibrated</B> data (in micro-volts).</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   Fixed part of the header:</H4><PRE><B>struct</B>&nbsp; TSefHeader<BR>{<BR>&nbsp;&nbsp;&nbsp; <B>int</B>&nbsp;&nbsp;&nbsp;Version;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  // magic number filled with the wide char 'SE01'<BR>&nbsp;&nbsp;&nbsp; <B>int</B>&nbsp;&nbsp;&nbsp;NumElectrodes;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       // total number of electrodes<BR>&nbsp;&nbsp;&nbsp; <B>int</B>&nbsp;&nbsp;&nbsp;NumAuxElectrodes;&nbsp;&nbsp;&nbsp;&nbsp;          //&nbsp; out of which are auxiliaries<BR>&nbsp;&nbsp;&nbsp; <B>int</B>&nbsp;&nbsp;&nbsp;NumTimeFrames;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          // time length<BR>&nbsp;&nbsp;&nbsp; <B>float</B>&nbsp;SamplingFrequency;&nbsp;&nbsp;&nbsp;          // frequency in Hertz<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Year;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Date of the recording<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Month;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  // (set to 00-00-0000 if unknown)<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Day;<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Hour;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Time of the recording<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Minute;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // (set to 00:00:00:0000 if unknown)<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Second;<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Millisecond;<BR>};</PRE><P>
-   &nbsp;</P>
-  <H4>
-   Variable part of the header:</H4>
-  <P>
-   The names of the channels, as a matrix of&nbsp; <FONT FACE="Arial,Helvetica,Monaco">NumElectrodes</FONT> 
-   x 8 chars.</P><PRE><B>typedef</B> <B>char</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TSefChannelName[8];&nbsp;&nbsp;// 1 electrode name</PRE><P>
-   &nbsp;</P>
-  <P>
-   To allow an easy calculation of the data origin, be aware that names 
-   are <B>always stored on 8 bytes,</B> even if the string length is 
-   smaller than that. In this case, the remaining part is padded with 
-   bytes set to 0, f.ex. two consecutive names:</P>
-  <P>
-   binary 
-   values&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    70 112 122 00 00 00 00 00 65 70 55 00 00 00 00 00 ...</P>
-  <P>
-   string equivalence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; F&nbsp;&nbsp; 
-   P&nbsp;&nbsp;&nbsp;&nbsp; z&nbsp;&nbsp;&nbsp; 
-   \0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    A&nbsp; F&nbsp;&nbsp; 7&nbsp;&nbsp; \0</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   Data part:</H4>
-  <P>
-   Starting at file position:</P><PRE><B>sizeof</B> ( TSefHeader ) + 8 * NumElectrodes</PRE><P>
-   data are stored as a float (Little Endian convention - PC) matrix 
-   written row by row:</P><PRE><B>float</B> data [ NumTimeFrames ][ NumElectrodes ];</PRE><H2>
-   <I><A NAME="seg"></A>.seg</I> Segmentation</H2>
-  <P>
-   A <B>text file</B> used to store and display the results of the <A HREF="microstates-segmentation.html">segmentation
-    process</A>.</P>
-  <P>
-   First two lines is the header:</P><PRE>number_of_clusters&nbsp;&nbsp; number_of_files&nbsp;&nbsp; number_of_time_frames<BR>number_of_tracks &nbsp; tracks_name<SUB>1</SUB>  tracks_name<SUB>2</SUB>  ...  tracks_name<SUB>n</SUB></PRE><P>
-   where</P>
-  <P>
-   number_of_clusters&nbsp;&nbsp;&nbsp; is the number of clusters from 
-   the segmentation process<BR>
-   number_of_files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; is the number of 
-   files that have been segmented together<BR>
-   number_of_time_frames is the number of time frames of each segmented file<BR>
-   number_of_tracks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; is the number of 
-   informations saved for each file (f.ex. 5 for&nbsp; Gfp Dis Seg GEV EV)<BR>
-   tracks_name<SUB>i</SUB>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    is the name of the i<SUP>th</SUP> track (f.ex. &quot;Gfp&quot;)</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Then follow the data, one line per time frame (as in <A HREF="#eph">.eph</A> 
-   file). Each line concatenates the&nbsp; number_of_tracks&nbsp; 
-   variables, one file after the other, f.ex.:</P><PRE>File<SUB>1</SUB>Gfp  File<SUB>1</SUB>Dis  File<SUB>1</SUB>Seg  File<SUB>1</SUB>GEV  File<SUB>2</SUB>Gfp  File<SUB>2</SUB>Dis  File<SUB>2</SUB>Seg  File<SUB>2</SUB>GEV ... File<SUB>n</SUB>Gfp  File<SUB>n</SUB>Dis  File<SUB>n</SUB>Seg  File<SUB>n</SUB>GEV</PRE><H2>
-   <I><A NAME="spi"></A>.spi</I> Solution Points Irregularly spaced</H2>
-  <P>
-   A <B>text file</B> consisting of a <B>list of 3D points</B>, used as 
-   the solution points for the <A HREF="esi-display.html">inverse solutions</A>.
-    These points can be <B>irregularly spaced</B>, and don't need to be 
-   on any sort of a grid.</P>
-  <P>
-   &nbsp;<BR>
-   There is no header, and each line simply contains the <B>coordinates 
-   of one point</B> (floatting points values), and an <B>optional name</B> 
-   (max 15 characters):</P><PRE>x&nbsp;&nbsp; y&nbsp;&nbsp; z   optionalname</PRE><H2>
-   <I><A NAME="spr"></A>.spr</I> Solution Points in Regular grid (obsolete)</H2>
-  <P>
-   Same format as <B><I><A HREF="#spi">.spi</A></I></B>, but the points 
-   have to be <B>regularly spaced</B>. That is, there has to be the same 
-   distance (usually an integer value) between neighbors, and for all coordinates.</P>
-  <H2>
-   <I><A NAME="tva"></A>.tva</I> Trigger VAlidation file</H2>
-  <P>
-   A <B>text file</B> that stores if a trigger was right or wrong, f.ex. 
-   the choices a subject replied during an experiment.<BR>
-   There are two slightly different versions of this file, the 
-   difference being rather semantic than on the format itself:<BR>
-   &nbsp;</P>
-  <H4>
-   Version 1</H4>
-  <P>
-   Is a file <U>without header</U>, containing a serie of lines which 
-   have the following format:</P><PRE><FONT
-    SIZE="3">accepted&nbsp;&nbsp; reaction_time&nbsp;&nbsp; trigger_code</FONT></PRE><P>
-   where:</P>
-  <P>
-   <FONT SIZE="3"><FONT FACE="Courier New">accepted</FONT></FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    is either <B>0</B> (wrong answer / false) or <B>1</B> (correct 
-   answer / true)<BR>
-   <FONT SIZE="3"><FONT FACE="Courier New">reaction_time</FONT></FONT>&nbsp;&nbsp;
-    is the reaction time of the answer, <B><U>in milliseconds</U></B>, 0 otherwise<BR>
-   <FONT SIZE="3"><FONT FACE="Courier New">trigger_code</FONT></FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    is the <B>name of the trigger</B><BR>
-   <FONT SIZE="3">&nbsp;</FONT></P>
-  <H4>
-   Version 2</H4>
-  <P>
-   Is a serie of lines identical to version 1, but the file starts <U>with
-    the header</U>:</P><PRE><FONT
-    SIZE="3">TV01</FONT></PRE><P>
-   &nbsp;</P>
-  <P>
-   The difference between the two versions consist in which triggers are 
-   being listed.</P>
-  <P>
-   <B>Version 1</B> is usually the ouput of the <B>stimulation program</B>,
-    <B><U>all</U> triggers</B> of the experiment are therefore listed. 
-   So if there are three triggers A, B, C repeated 100 times each, we 
-   will have 300 lines in the file.</P>
-  <P>
-   <B>Version 2</B> is rather an output from <B>Cartool</B> itself, 
-   usually from the <A HREF="computing-erps.html">averaging process</A>. It 
-   will list <B><U>only</U> the triggers that were considered</B> during 
-   the processing. If only triggers A and B were used, we will have only 
-   200 + 1 lines in the file, the C trigger being ignored. These tva 
-   files can be used to re-do the averaging.</P>
-  <P>
-   &nbsp;</P>
-  <H4>
-   Example of version 1:</H4><PRE>1 1765  45<BR>1 977.1 43<BR>1 1191  36<BR>0 0     56<BR>0 0     35<BR>1 1309  55<BR>1 1696  49<BR>1 1211  33<BR>...</PRE><H4>
-   Example of version 2:</H4><PRE>TV01<BR>1 0 On<BR>1 0 Off<BR>0 0 On<BR>1 0 Off<BR>1 0 On<BR>0 0 Off<BR>...</PRE><H2>
-   <I><A NAME="vrb"></A>.vrb</I> Verbose file</H2>
-  <P>
-   A <B>text file</B> generated during the <A HREF="all-processings.html#tools">main
-    processings</A> of Cartool. It records all the parameters set for 
-   the processings and in some case the user's responses during the 
-   procedure. These files are generated just for your convenience, to 
-   help you store and recover how you computed that incredible files of yours!</P>
-  <H2>
-   <I><A NAME="xyz"></A>.xyz</I> Electrodes coordinates for head</H2>
-  <P>
-   A <B>text file</B> containing a list of electrodes coordinates on a 
-   scalp. For more advanced electrodes setup (strips, clusters of 
-   electrodes, grids...) see the <A HREF="#els"><B><I>.els</I></B></A> format.</P>
-  <P>
-   First line (though the radius of the cluster is not used anymore in Cartool):</P><PRE>Number_of_electrodes&nbsp; Radius_of_the_cluster</PRE><P>
-   Then a list of coordinates, one per line:</P><PRE>x&nbsp;&nbsp; y&nbsp;&nbsp; z&nbsp;&nbsp; label</PRE><H4>
-   Example:</H4><PRE>   29    1<BR>  9.510565E-0001 -3.090170E-0001 -0.000000E+0000 Fp2<BR>  6.590572E-0001 -5.336940E-0001  5.299193E-0001 F4<BR>  7.531501E-0020 -6.946584E-0001  7.193398E-0001 C4<BR> -6.590572E-0001 -5.336940E-0001  5.299193E-0001 P4<BR> -9.510565E-0001 -3.090170E-0001 -0.000000E+0000 O2<BR>  5.877853E-0001 -8.090170E-0001 -0.000000E+0000 F8<BR>  1.084202E-0019 -1.000000E+0000 -0.000000E+0000 T4<BR> -5.877853E-0001 -8.090170E-0001 -0.000000E+0000 T6<BR>  8.619499E-0001 -4.019339E-0001  3.090170E-0001 AF4<BR>  3.367557E-0001 -8.772786E-0001  3.420201E-0001 FC6<BR>  3.535534E-0001 -3.535534E-0001  8.660254E-0001 FC2<BR> -3.535534E-0001 -3.535534E-0001  8.660254E-0001 CP2<BR> -3.367557E-0001 -8.772786E-0001  3.420201E-0001 CP6<BR>  9.510565E-0001  3.090170E-0001 -0.000000E+0000 Fp1<BR>  6.590572E-0001  5.336940E-0001  5.299193E-0001 F3<BR> -0.000000E+0000  6.946584E-0001  7.193398E-0001 C3<BR> -6.590572E-0001  5.336940E-0001  5.299193E-0001 P3<BR> -9.510565E-0001  3.090170E-0001 -0.000000E+0000 O1<BR>  5.877853E-0001  8.090170E-0001 -0.000000E+0000 F7<BR> -0.000000E+0000  1.000000E+0000 -0.000000E+0000 T3<BR> -5.877853E-0001  8.090170E-0001 -0.000000E+0000 T5<BR>  8.619499E-0001  4.019339E-0001  3.090170E-0001 AF3<BR>  3.367557E-0001  8.772786E-0001  3.420201E-0001 FC5<BR>  3.535534E-0001  3.535534E-0001  8.660254E-0001 FC1<BR> -3.535534E-0001  3.535534E-0001  8.660254E-0001 CP1<BR> -3.367557E-0001  8.772786E-0001  3.420201E-0001 CP5<BR>  6.946584E-0001  0.000000E+0000  7.193398E-0001 Fz<BR>  0               0               1              Cz<BR> -6.946584E-0001 -0.000000E+0000  7.193398E-0001 Pz</PRE><P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             Appendix C<BR>
+             Cartool File Formats
+         </H1>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             <A NAME="Files-created"></A>
+         </P>
+         <P>
+             <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0" class="ms-list5-main">
+                 <!-- fpstyle: 28,011110100 -->
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .csv
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#csv">Comma Separated Values</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .data
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#data">Data array</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .els
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#els">ELectrodes Setup (complex cases)</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .ep
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#ep">Evoked Potentials</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .eph
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#eph">Evoked Potentials with Header</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .epsd
+                         </H5>
+                         <H5>
+                             .epse
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#epsd-epse">Evoked Potentials Standard Deviation / Standard Error</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .freq
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#freq">Frequencies</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .is
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#is">Inverse Solution matrix</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .lf
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#lf">Lead Field file</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .lm
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#lm">Link Many file</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .mrk
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#mrk">Marker file</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .mtg
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#mtg">Montage file</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .ris
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#ris">Results of Inverse Solution computation</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .rois
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#rois">Regions Of Interest</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .sef
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#sef">Simple Eeg Format</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .seg
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#seg">Segmentation</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .spi
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#spi">Solution Points Irregularly spaced</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .spr
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#spr">Solution Points on Regular grid (obsolete)</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .tva
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#tva">Trigger VAlidation file</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .vrb
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#vrb">Verbose file</A>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD VALIGN=TOP class="ms-list5-left" style="width: 73px">
+                         <H5>
+                             .xyz
+                     </TD>
+                     <TD VALIGN=TOP class="ms-list5-even">
+                         <H5>
+                             <A HREF="#xyz">Electrodes coordinates (simpler case)</A>
+                     </TD>
+                 </TR>
+             </TABLE>
+         </P>
+         <H2>
+             <I><A NAME="csv"></A>.csv</I> Comma Separated Values
+         </H2>
+         <P>
+             This is not a format defined by Cartool, but a very handy and <A HREF="https://en.wikipedia.org/wiki/Comma-separated_values">
+                 well-recognized
+                 file format
+             </A> to store an <B>array of values</B> (handled direclty
+             by Excel, Statistica, Cartool...)
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Basically, it is a <B>text file</B> with values on each line being
+             separated either by a comma (<B>,</B>) or by a semi-colon (<B>;</B>),
+             according to your language settings (just to make simple things
+             already complicated... but Cartool will gracefully read both). You
+             can open them either with a text editor, or directly as a spreadsheet
+             in Excel, Statistica, etc... (Note that Cartool also works with its
+             equivalent <A HREF="https://www.google.com/search?q=tab+separated+file+format">
+                 Tab
+                 Separated text file format
+             </A>)
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             If you have problems and/or want to change the way Cartool, Excel or
+             all other programs behave, do the following:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     &nbsp;go to the Control Panel, choose &quot;Regional &amp; Language Options&quot;<BR>
+             <LI CLASS="mvd-P">Click on &quot;Customize&quot;<BR>
+             <LI CLASS="mvd-P">
+                 Change &quot;List Separator&quot; to force it to
+                 the character you prefer, but I recommend either a comma (<B>,</B>)
+                 or a semi-colon (<B>;</B>).</P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The <B>content organization</B> done by Cartool is the following:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     A <B>first line</B> which gives the <B>names of the variables</B>,
+                     and their <B>sequence</B>.<BR>
+             <LI CLASS="mvd-P">
+                 Then each following lines contains the data
+                 themselves, with exactly the <B>same number and same sequence of variables</B>
+                 as the first line (padding with separators if needed).<BR>
+             <LI CLASS="mvd-P">
+                 Two files with the same variable names but set in a <B>
+                     different
+                     order are equivalent
+                 </B>., so you can import results / parameters
+                 from other programs quite easily.</P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Just an example to make it clear, a file used to hold the files
+             parameters for the <A HREF="computing-erps.html">averaging process</A>:
+         </P><PRE>file;session;tva;triggers<BR>E:\Data\Eeg1.eph;1;;1 2 3 4<BR>E:\Data\Eeg1.eph;2;;5 6 7 8<BR>E:\Data\Eeg2.eph;;;1 2 3 4 5 6 7 8</PRE><P>
+             The first line enumerates the 4 variables (file, session etc...), and
+             there are 3 lines of data with some of these variables defined, and
+             some undefined.
+         </P>
+         <P>
+             The order of the variables does not matter, and it could have be
+             written as, f.ex.:
+         </P><PRE>file;triggers;session;tva<BR>E:\Data\Eeg1.eph;1 2 3 4;1;<BR>E:\Data\Eeg1.eph;5 6 7 8;2;<BR>E:\Data\Eeg2.eph;1 2 3 4 5 6 7 8;;</PRE><H2>
+             <I><A NAME="data"></A>.data</I> Data array
+         </H2>
+         <P>
+             A <B>text file</B> used to store and display any kind of
+             informations, used for example in the <A HREF="microstates-segmentation.html">
+                 segmentation
+                 process
+             </A>.<BR>
+             It is a variant of the <A HREF="#seg">.seg</A> format, please refer
+             to it for the full explanations.
+         </P>
+         <P>
+             The only difference is in the header (first two lines) which lacks
+             the&nbsp; number_of_clusters&nbsp; variable:
+         </P><PRE>number_of_files&nbsp;&nbsp; number_of_time_frames<BR>number_of_tracks &nbsp; tracks_name<SUB>1</SUB>  tracks_name<SUB>2</SUB>  ...  tracks_name<SUB>n</SUB></PRE><H2>
+             <I><A NAME="els"></A>.els</I> ELectrodes Setup
+         </H2>
+         <P>
+             A <B>text file</B> describing a setup of electrodes. It allows
+             separate clusters of electrodes (for example 2 grids, or a few
+             strips, or electrodes on the scalp plus some auxiliaries...), and
+             each one of the clusters can be of a different type. Another (and
+             obsolete) format is the <A HREF="#xyz"><I><B>.xyz</B></I></A>.
+         </P>
+         <P>
+             First line, a magic number:
+         </P><PRE>ES01</PRE><P>
+             Next 2 lines:
+         </P><PRE>Total_number_of_electrodes<BR>Number_of_clusters</PRE><P>
+             Now repeat for each cluster (at least 1):
+         </P><PRE>Cluster_name<BR>Cluster_number_of_electrodes<BR>Cluster_type</PRE><P>
+             Cluster_type&nbsp; could be seen as the dimensionality of the cluster:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>0</B> for <B>separated electrodes</B> (like auxiliaries), or &quot;points&quot;<BR>
+             <LI CLASS="mvd-P"><B>1</B> for a <B>strip of electrodes</B>, or &quot;line&quot;<BR>
+             <LI CLASS="mvd-P"><B>2</B> for a <B>grid of electrodes</B>, or &quot;array&quot;<BR>
+             <LI CLASS="mvd-P">
+                 <B>3</B> for a <B>3D set of electrodes</B>, usually
+                 on the scalp, that will be fitted by a 2D Delaunay triangulation
+                 surface (but in 3D...).</P>
+         </UL>
+         <P>
+             Then the list of coordinates, one per line:
+         </P><PRE>x&nbsp;&nbsp; y&nbsp;&nbsp; z&nbsp;&nbsp; label&nbsp;&nbsp; optional_flag</PRE><P>
+             x, y, z&nbsp; are, of course, the coordinates, and label the name of
+             the electrode. optional_flag can either be missing or be the
+             identifier <B>Bad</B>, in which case it indicates that the electrodes
+             has a non-significative signal (broken electrode, noisy signal,
+             etc...), and though it will be geometrically used with its neighbors
+             in the building of the 3D tesselation, the value of its signal will
+             not appear to avoid spoiling the display.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The idea of clustering electrodes is to isolate the interpolations
+             between electrodes, so that different clusters won't interfere
+             graphically. For example you can disjoin the auxiliaries electrodes,
+             as you don't want to see them interpolated with regular Eeg.
+         </P>
+         <P>
+             If two, or more, 3D clusters share the very same name, they will be
+             merged into a single, big cluster of the same name. Still in the case
+             some auxiliaries electrodes were recorded in the middle of regular
+             electrodes, there are, say 3 clusters: 3D, auxs, 3D again, so the
+             program understands that both 3D clusters are the same. If you don't
+             want this merging, simply change the names!
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             Example:
+         </H4><PRE>ES01<BR>41<BR>1<BR>10-10 System<BR>41<BR>3<BR>  1.000000E+0000  0.000000E+0000 -0.000000E+0000 Fpz<BR>  8.090170E-0001  5.877853E-0001 -0.000000E+0000 AF7<BR>  9.205049E-0001  0.000000E+0000  3.907311E-0001 AFz<BR>  8.090170E-0001 -5.877853E-0001 -0.000000E+0000 AF8<BR>  6.273924E-0001  7.217324E-0001  2.923717E-0001 F5<BR>  6.590572E-0001  5.336940E-0001  5.299193E-0001 F3<BR>  6.946584E-0001  0.000000E+0000  7.193398E-0001 Fz<BR>  6.590572E-0001 -5.336940E-0001  5.299193E-0001 F4<BR>  6.273924E-0001 -7.217324E-0001  2.923717E-0001 F6<BR>  3.090170E-0001  9.510565E-0001 -0.000000E+0000 FT7<BR>  3.367557E-0001  8.772786E-0001  3.420201E-0001 FC5<BR>  3.535534E-0001  3.535534E-0001  8.660254E-0001 FC1<BR>  3.583679E-0001  0.000000E+0000  9.335804E-0001 FCz<BR>  3.535534E-0001 -3.535534E-0001  8.660254E-0001 FC2<BR>  3.367557E-0001 -8.772786E-0001  3.420201E-0001 FC6<BR>  3.090170E-0001 -9.510565E-0001 -0.000000E+0000 FT8<BR> -0.000000E+0000  1.000000E+0000 -0.000000E+0000 T3<BR> -0.000000E+0000  6.946584E-0001  7.193398E-0001 C3<BR> -0.000000E+0000  3.583679E-0001  9.335804E-0001 C1<BR>  0               0               1              Cz<BR>  3.885433E-0020 -3.583679E-0001  9.335804E-0001 C2<BR>  7.531501E-0020 -6.946584E-0001  7.193398E-0001 C4<BR>  1.084202E-0019 -1.000000E+0000 -0.000000E+0000 T4<BR> -3.090170E-0001  9.510565E-0001 -0.000000E+0000 TP7<BR> -3.367557E-0001  8.772786E-0001  3.420201E-0001 CP5<BR> -3.535534E-0001  3.535534E-0001  8.660254E-0001 CP1<BR> -3.583679E-0001 -0.000000E+0000  9.335804E-0001 CPz<BR> -3.535534E-0001 -3.535534E-0001  8.660254E-0001 CP2<BR> -3.367557E-0001 -8.772786E-0001  3.420201E-0001 CP6<BR> -3.090170E-0001 -9.510565E-0001 -0.000000E+0000 TP8<BR> -6.273924E-0001  7.217324E-0001  2.923717E-0001 P5<BR> -6.590572E-0001  5.336940E-0001  5.299193E-0001 P3<BR> -6.946584E-0001 -0.000000E+0000  7.193398E-0001 Pz<BR> -6.590572E-0001 -5.336940E-0001  5.299193E-0001 P4<BR> -6.273924E-0001 -7.217324E-0001  2.923717E-0001 P6<BR> -8.090170E-0001  5.877853E-0001 -0.000000E+0000 PO7<BR> -8.619499E-0001  4.019339E-0001  3.090170E-0001 PO3<BR> -9.205049E-0001 -0.000000E+0000  3.907311E-0001 POz<BR> -8.619499E-0001 -4.019339E-0001  3.090170E-0001 PO4<BR> -8.090170E-0001 -5.877853E-0001 -0.000000E+0000 PO8<BR> -1.000000E+0000 -0.000000E+0000 -0.000000E+0000 Oz</PRE><H2>
+             <I><A NAME="ep"></A>.ep</I> Evoked Potentials
+         </H2>
+         <P>
+             A very basic <B>text file</B> format to store an ERP, without header.
+             This is a simple matrix of values, each line (with end-of-line)
+             having all the electrodes values for a given time frame:
+         </P><PRE>electrode_1 electrode_2 electrode_3 ... electrode_n</PRE><P>
+             Lines are repeated for each time frames (the number of time frames is
+             therefore the number of lines). Cartool calculates the number of
+             electrodes and the number of time frames by scanning the whole file
+             at opening time. But it can not guess the sampling frequency, until
+             the user <A HREF="eeg-display.html#filters">specify it</A>.
+         </P>
+         <H2>
+             <I><A NAME="eph"></A>.eph</I> Evoked Potentials with Header
+         </H2>
+         <P>
+             A very basic <B>text file</B> format to store an ERP, with a small header.
+         </P>
+         <P>
+             The first line is the header:
+         </P><PRE>number_of_electrodes&nbsp;&nbsp; number_of_time_frames&nbsp;&nbsp; sampling_frequency</PRE><P>
+             It is followed by the same block as in the <A HREF="#ep">.ep</A>
+             files. Cartool does not scan the whole file to get the number of
+             electrodes etc... as they are read (and trusted) directly from the
+             first line.
+         </P>
+         <H2>
+             <I><A NAME="epsd-epse"></A>.epsd</I>&nbsp; and&nbsp; <I>.epse</I>&nbsp;
+             Evoked Potentials Standard Deviation / Standard Error
+         </H2>
+         <P>
+             Actually, the format is just the same as the <B><I><A HREF="#eph">.eph</A></I></B> one.
+         </P>
+         <P>
+             It simply holds the Standard Deviation / Standard Error of an <A HREF="computing-erps.html">averaged</A> file.
+         </P>
+         <H2>
+             <I><A NAME="freq"></A>.freq</I> Frequencies
+         </H2>
+         <P>
+             A <B>binary file</B> that contains the results of some <A HREF="frequency-analysis.html">
+                 frequency
+                 analysis
+             </A>, resulting in a 3 dimensional data array
+             (electrodes&nbsp; x&nbsp; frequencies&nbsp; x&nbsp; time).
+         </P>
+         <P>
+             There are now two file versions, the first one being obsolete, but
+             Cartool can still read it. The difference between the two versions is
+             in the header, the part describing the frequencies.
+         </P>
+         <P>
+             Anyway, for both versions, there is a <B>header</B>, composed of a <B>
+                 fixed
+                 size part
+             </B> plus a <B>variable size part</B>, then followed by the <B>data</B>
+             organized as a matrix.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             1) Header, fixed-size part:
+         </H4><PRE>                                        // some strings size<BR>#define     NumFreqTypes                        6<BR>#define     MaxCharFreqType                     32<BR>#define     MaxCharFrequencyName                16<BR> <BR>                                        // type of content in the file, coded as text<BR><B>char</B>    FreqTypesNames[ NumFreqTypes ][ MaxCharFreqType ] = {<BR>    &quot;Unknown&quot;,<BR>    &quot;FFT Norm&quot;,<BR>    &quot;FFT Norm2&quot;,<BR>    &quot;FFT Complex&quot;,<BR>    &quot;FFT Approximation&quot;,<BR>    &quot;S Transform&quot;<BR>    };<BR> <BR> <BR><B>struct</B>  TFreqHeader<BR>{<BR>    <B>int</B>             Version;                // 'FR01' (obsolete) or 'FR02'<BR>    <B>char</B>            Type[MaxCharFreqType];  // of the analysis, and also data stored (see the array FreqTypesNames)<BR>    <B>int</B>             NumChannels;            // total number of electrodes<BR>    <B>int</B>             NumFrequencies;         // saved in file<BR>    <B>int</B>             NumBlocks;              // of repeated analysis, or number of resulting &quot;time frames&quot;<BR>    <B>double</B>          SamplingFrequency;      // of the data in the ORIGINAL file (1000 Hz f.ex.)<BR>    <B>double</B>          BlockFrequency;         // frequency of blocks'occurences (if 1 block is 0.5 s long amd don't overlap -&gt; 2 Hz)<BR>    <B>short</B>           Year;                   // Date of the recording<BR>    <B>short</B>           Month;                  // (can be 00-00-0000 if unknown)<BR>    <B>short</B>           Day;<BR>    <B>short</B>           Hour;                   // Time of the recording<BR>    <B>short</B>           Minute;                 // (can be 00:00:00:0000 if unknown)<BR>    <B>short</B>           Second;<BR>    <B>short</B>           Millisecond;<BR>};</PRE><H4>
+             2) Header, variable-size part:
+         </H4><PRE>// Listing of channels'name<BR>// a matrix of  NumElectrodes * sizeof ( TFreqChannel )  chars<BR>//<BR>// To allow an easy calculation of the data origin,<BR>// be aware that each name ALWAYS take 8 bytes in the header, even if the string length is smaller than that.<BR>// The remaining part is padded with bytes set to 0, f.ex.:<BR>// binary values          70 112 122 00 00 00 00 00 65 70 55 00 00 00 00 00 ...<BR>// string equivalence      F   P   z \0              A  F  7 \0<BR><BR><BR><B>struct</B>  TFreqChannel<BR>{<BR>    <B>char</B>            ChannelName[8];<BR>};</PRE><P>
+             <U>This is the part that differs between file versions 'FR01' and 'FR02'.</U>
+         </P>
+         <P>
+             For the old version 'FR01' :
+         </P><PRE>// Listing of the frequencies actually saved<BR>// size:  NumFrequencies * sizeof ( TFreqFrequency )<BR><BR><B>struct</B>  TFreqFrequency<BR>{<BR>    <B>double</B>          Frequency;<BR>};</PRE><P>
+             For the new version 'FR02' :
+         </P><PRE>// Names assigned to each frequencies or bands actually saved (can be anything)<BR>// size:  NumFrequencies * sizeof ( TFreqFrequencyName )<BR><BR><B>struct</B>  TFreqFrequencyName<BR>{<BR>    <B>char</B>            FrequencyName[ MaxCharFrequencyName ];<BR>};</PRE><H4>
+             3) Data part:
+         </H4><PRE>// Starting at file position:<BR>//<BR>// for version 'FR01'<BR>//<B>   sizeof</B> ( TFreqHeader ) + NumElectrodes * <B>sizeof</B> ( TFreqChannel ) + NumFrequencies * <B>sizeof</B> ( TFreqFrequency )<BR>//<BR>// for version 'FR02'<BR>//<B>   sizeof</B> ( TFreqHeader ) + NumElectrodes * <B>sizeof</B> ( TFreqChannel ) + NumFrequencies * <B>sizeof</B> ( TFreqFrequencyName )<BR>//<BR>// Data are stored as a matrix  NumTimeFrames x NumElectrodes x NumFrequencies<BR>// in this order: f0 f1 f2 .. fn for first electrode, f0 f1 f2 .. fn for second electrode ... etc  for first  time frame<BR>//          then  f0 f1 f2 .. fn       &quot;       &quot;                            &quot;               &quot;      for second time frame<BR>//                ...etc to the last time frame<BR>//<BR>// Data are of either type<BR>//    <B>float</B> (Little Endian - PC)   for Type == &quot;FFT Norm&quot;, &quot;FFT Norm2&quot;, &quot;FFT Approximation&quot;<BR>// or <B>complex</B> (classic C/C++ type) for Type == &quot;FFT Complex&quot;</PRE><H2>
+             <I><A NAME="is"></A>.is</I> Inverse Solution matrix
+         </H2>
+         <P>
+             A <B>binary</B> file containing the matrix for an <A HREF="computing-inverse-solution-matrices.html">
+                 Inverse
+                 Solution
+             </A>, which has to be subsequently <A HREF="file-calculator.html#results-of-inverse">
+                 multiplied
+                 by the EEG
+             </A> to obtain the final results.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             Magic number
+         </H4>
+         <P>
+             <B>3 formats</B> are currently supported, specified by the magic
+             number, the <B>first 4 characters</B> in the file:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <FONT FACE="Courier New">'IS01'</FONT> for a <B>float-type</B> matrix,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <FONT FACE="Courier New">'IS02'</FONT> for a <B>double-type</B>
+                     matrix (though it is currently converted into float when read by Cartool),
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <FONT FACE="Courier New">'IS03'</FONT> for stacking a <B>
+                         set of
+                         float-type matrices
+                     </B>, and <B>specifying regularizations</B>.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             <FONT FACE="Courier New">ISO1</FONT> &amp; <FONT FACE="Courier New">ISO2</FONT> types
+         </H3>
+         <H4>
+             Header structure
+         </H4><PRE><B>struct</B> isheader {<BR>&nbsp;&nbsp;&nbsp; <B>char</B>            magic[ 4 ];&nbsp;       &nbsp;// 'IS01' for float-type matrix, 'IS02' for double-type matrix<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numelectrodes;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numsolutionpoints;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numregularizations;<BR>&nbsp;&nbsp;&nbsp; <B>char</B>            isinversescalar;&nbsp;&nbsp;&nbsp; // 1 if scalar, 0 if vectorial&nbsp; (<U>value</U>, and <U>not</U> text)<BR>&nbsp;&nbsp;&nbsp; } risheader;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        &nbsp;&nbsp;&nbsp;// size 13</PRE><H4>
+             Matrix structure
+         </H4>
+         <P>
+             The matrix can contain either scalar or vectorial results, which
+             means for each solution point there is either:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     scalar: 1 signed value,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     vectorial: a 3 dimensional vector (a dipole).
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             <B>Number of rows</B> of the matrix, is scalar type:
+         </P><PRE>numrows = numsolutionpoints</PRE><P>
+             Otherwise, if matrix is of vectorial type, each of the 3 components
+             of the vectors are written on 3 successive rows, giving:
+         </P><PRE>numrows = 3 * numsolutionpoints</PRE><P>
+             <B>Number of columns</B> is always:
+         </P><PRE>numcols = numelectrodes;</PRE><P>
+             The matrix is then written row by row:<BR>
+             (matrixtype&nbsp; is either&nbsp; float&nbsp; or&nbsp; double&nbsp;
+             according to the header field&nbsp; magic)
+         </P><PRE>matrixtype&nbsp; matrix [ numrows ][ numcols ];</PRE><P>
+             &nbsp;
+         </P>
+         <P>
+             Scalar example, for <I>numrows</I> rows:
+         </P><PRE>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB><BR>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB><BR>...<BR>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB></PRE><P>
+             And vectorial example, for <I>numrows</I> rows:
+         </P><PRE>x<SUB>0</SUB> x<SUB>1</SUB> x<SUB>2</SUB> ... x<SUB>numcols-1</SUB>   (for solution point 1, x component)<BR>y<SUB>0</SUB> y<SUB>1</SUB> y<SUB>2</SUB> ... y<SUB>numcols-1</SUB>   (for solution point 1, y component)<BR>z<SUB>0</SUB> z<SUB>1</SUB> z<SUB>2</SUB> ... z<SUB>numcols-1</SUB>   (for solution point 1, z component)<BR>x<SUB>0</SUB> x<SUB>1</SUB> x<SUB>2</SUB> ... x<SUB>numcols-1</SUB>   (for solution point 2)<BR>y<SUB>0</SUB> y<SUB>1</SUB> y<SUB>2</SUB> ... y<SUB>numcols-1</SUB><BR>z<SUB>0</SUB> z<SUB>1</SUB> z<SUB>2</SUB> ... z<SUB>numcols-1</SUB><BR>...<BR>x<SUB>0</SUB> x<SUB>1</SUB> x<SUB>2</SUB> ... x<SUB>numcols-1</SUB>   (for last solution point)<BR>y<SUB>0</SUB> y<SUB>1</SUB> y<SUB>2</SUB> ... y<SUB>numcols-1</SUB><BR>z<SUB>0</SUB> z<SUB>1</SUB> z<SUB>2</SUB> ... z<SUB>numcols-1</SUB></PRE><P>
+             &nbsp;
+         </P>
+         <H3>
+             <FONT FACE="Courier New">ISO3</FONT> type
+         </H3>
+         <H4>
+             Fixed Header structure
+         </H4><PRE><B>struct</B> isfixedheader {<BR>&nbsp;&nbsp;&nbsp; <B>char</B>            magic[ 4 ];&nbsp;       &nbsp;// 'IS03'<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numelectrodes;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numsolutionpoints;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>           numregularizations;<BR>&nbsp;&nbsp;&nbsp; <B>char</B>            isinversescalar;&nbsp;&nbsp;&nbsp; // 1 if scalar, 0 if vectorial&nbsp; (<U>value</U>, and <U>not</U> text)<BR>&nbsp;&nbsp;&nbsp; } risheaderfixed;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        &nbsp;&nbsp;&nbsp;// size 17</PRE><P>
+             Note: the <B>number of regularizations</B> has to be &gt;= 1.
+         </P>
+         <H4>
+             Variable Header structure
+         </H4>
+         <P>
+             Following the fixed header part<FONT FACE="Arial,Helvetica,Monaco">, t</FONT>he
+             variable header provides the following additional informations:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     electrodes names,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     solution points names,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     the <B>actual values</B> used in the <A HREF="computing-inverse-solution-matrices.html">
+                         Tikhonov
+                         regularizations
+                     </A>,
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     the <B>display names</B> for each Tikhonov regularizations.
+                 </P>
+         </UL>
+         <P>
+             <FONT FACE="Arial,Helvetica,Monaco"></FONT>&nbsp;
+         </P><PRE><B>typedef</B> <B>char</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TElectrodeName     [ 32 ]; // 1 electrode name<BR><B>typedef</B> <B>char</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TSolutionPointName [ 16 ]; // 1 solution point name<BR><B>typedef</B> <B>char</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TRegularizationName[ 32 ]; // 1 regularization name<BR> <BR> <BR><B>struct</B> isheadervariable {<BR>    TElectrodeName      ElectrodesNames      [ NumElectrodes      ];<BR>    TSolutionPointName  SolutionPointsNames  [ NumSolutionPoints  ];<BR><B>                                double</B>              RegularizationValues [ NumRegularizations ];<BR>    TRegularizationName RegularizationNames  [ NumRegularizations ];<BR>&nbsp;&nbsp;&nbsp; } risheadervariable;&nbsp;</PRE><H4>
+             Matrix structure
+         </H4>
+         <P>
+             The matrix content is the same as for type <FONT FACE="Courier New">'IS01'</FONT>
+             (float matrix), simply <B>repeated by the number of regularizations</B>:
+         </P><PRE>float               Matrices[ NumRegularizations ][ NumRows ][ NumColumns ];</PRE><H2>
+             <I><A NAME="lf"></A>.lf</I> Lead Field file
+         </H2>
+         <P>
+             A simple <B>binary file</B> format to store a <A HREF="computing-inverse-solution-matrices.html#lead-field-what-is">
+                 vectorial
+                 Lead Field
+             </A>, in double precision.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             It has a short header:
+         </P><PRE><B>struct</B> lfheader {<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>   number_of_electrodes;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B>   number_of_solution_points;<BR>&nbsp;&nbsp;&nbsp; } lfheader;&nbsp;                        // size 8</PRE><P>
+             Then followed by the data, in <B>double precision</B>, with this
+             ordering (multiplexing the (x,y,z) components):
+         </P><PRE>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0</SUB>  x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1</SUB>  x<SUB>2</SUB> y<SUB>2</SUB> z<SUB>2</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB>   (for electrode number 1)<BR>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0 </SUB> x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1</SUB>  x<SUB>2</SUB> y<SUB>2</SUB> z<SUB>2</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB>   (for electrode number 2)<BR>...<BR>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0 </SUB> x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1 </SUB> x<SUB>2</SUB> y<SUB>2</SUB> z<SUB>2</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB>   (for last electrode)</PRE><P>
+             Or represented as a <I>C</I> array:
+         </P><PRE>double              LeadField[ number_of_electrodes ][ number_of_solution_points ][ 3 ];</PRE><H2>
+             <I><A NAME="lm"></A>.lm</I> Link Many file
+         </H2>
+         <P>
+             A <B>text</B> file containing a list of many files that have been
+             linked by the user. The linked files have to be in whatsoever way
+             related, though this is very versatile and open to new definitions.<BR>
+             Putting together files will allow to <B>share their informations</B>
+             between them all, for example an Eeg linked with some electrodes
+             coordinates will give to the Eeg the electrodes names and 3D positions.<BR>
+             The definate advantage from the link is that, depending on the files
+             linked, <B>new functionnalities</B> are offered to the user through
+             new type of <A HREF="terms-definitions-formulas.html#view">views</A>. Taking the same
+             example, it brings a view showing the potential displayed as a map.
+         </P>
+         <P>
+             See <A HREF="general-concepts.html#linkingfiles">here</A> for more explanations.
+         </P>
+         <P>
+             The .lm file is simply a <B>list</B> of other files, written with
+             their full path. F.ex.:
+         </P><PRE>D:\Data\avebrain\egi125.xyz<BR>D:\Data\avebrain\myeeg.condition1.eph<BR>D:\Data\avebrain\myeeg.condition2.eph</PRE><H2>
+             <A NAME="mrk"></A><I>.mrk</I> Marker file
+         </H2>
+         <P>
+             Contains the <A HREF="terms-definitions-formulas.html#marker">markers</A> defined by the user.
+         </P>
+         <P>
+             There are <B>2</B> formats for <I>.mrk</I> file, the first being in <B>binary</B>
+             form (obsolete format), the second being in <B>textual</B> form, and
+             the one actually used as it can be easily read and modified by the user.<BR>
+             In any cases, the markers must be written <B>ordered</B>, sorted
+             first on their starting positions then on their ending positions (if
+             two markers have equal starting positions).<BR>
+             <B><U>It is not advised to write duplicate markers</U></B> with
+             exactly the same starting and ending positions. Cartool can read
+             them, can display them as superimposed markers, but you can expect
+             unpredictable results when it comes to computing (like averaging,
+             exporting, etc...). So don't.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             Text format:
+         </H4>
+         <P>
+             A first line with this characters as a magic number:
+         </P><PRE>TL02</PRE><P>
+             Then as many text lines as needed, structured this way:
+         </P><PRE>starting position&nbsp;&nbsp;&nbsp;&nbsp; ending position&nbsp;&nbsp;&nbsp; &quot;description text in quote&quot;</PRE><P>
+             <B>Note:</B> the current limit for the description text is 31 chars.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             Binary format (obsolete):
+         </H4>
+         <P>
+             A header followed by a list of markers, all in binary. The file
+             header structure is:
+         </P><PRE><B>struct</B> mrkheader {<BR>&nbsp;&nbsp;&nbsp; <B>char</B> magic[4];                      // always 'TL01'<BR>&nbsp;&nbsp;&nbsp; } mrkheader;&nbsp;                       // size 4</PRE><P>
+             &nbsp;
+         </P>
+         <P>
+             And the format for a single marker is:
+         </P><PRE>struct onemrk {<BR>&nbsp;&nbsp;&nbsp; long   Position;&nbsp;&nbsp;                  // from this TF<BR>&nbsp;&nbsp;&nbsp; long   To;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                // to this TF<BR>&nbsp;&nbsp;&nbsp; ushort Code;&nbsp;&nbsp;&nbsp;                     // trigger code<BR>&nbsp;&nbsp;&nbsp; ushort Type;&nbsp;&nbsp;&nbsp;&nbsp;                    // should always be 0x2 for a marker<BR>&nbsp;&nbsp;&nbsp; ushort Dummy;                       // not used, for the user<BR>&nbsp;&nbsp;&nbsp; char   Name[6];&nbsp;&nbsp;                   // name of the tag<BR>&nbsp;&nbsp;&nbsp; } onemrk;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                   &nbsp;&nbsp; // size 20</PRE><H2>
+             <I><A NAME="mtg"></A>.mtg</I> Montage file
+         </H2>
+         <P>
+             A text file that defines a montage to be used with the <A HREF="eeg-display.html#menu-options">
+                 EEG
+                 display
+             </A> (it has to be created in any text editor, Cartool does
+             not provide an editor for this task).
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             Format:
+         </H4>
+         <P>
+             Always a first line with these characters as magic number:
+         </P><PRE>MT01</PRE><P>
+             Then, each following lines can independently be any of these three formats:
+         </P><PRE>el<BR>el1   el2<BR>el1   el2   name</PRE><P>
+             In the first case, the value of the electrode <FONT FACE="Courier New">el</FONT>
+             (the name of the electrode) is taken as is.<BR>
+             In the second case, the value is the result of subtracting <FONT FACE="Courier New">el2</FONT>
+             to <FONT FACE="Courier New">el1</FONT>.<BR>
+             The last case is the same as the second one, but a name is given to
+             override the default one (which would be&nbsp; <FONT FACE="Courier New">el1-el2</FONT>).
+             This name must be written &quot;as is&quot;, without quotes nor spaces.
+         </P>
+         <P>
+             Non-compliant lines (more fields, empty lines, unknown electrode
+             names..) are simply ignored.
+         </P>
+         <P>
+             You can put whatever you want in this file, repeating electrodes,
+             changing their order, including <A HREF="terms-definitions-formulas.html#tracks">
+                 auxiliaries
+                 or computed tracks
+             </A>. The only limit is that the number of lines
+             should not be more than the number of electrodes in the original file.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             Example:
+         </H4><PRE>MT01<BR>1     2<BR>2     3<BR>3     4<BR>4     5<BR>Aux1  Aux2  DiffAux<BR>10<BR>9<BR>8<BR>7<BR>6<BR>5<BR>4<BR>3<BR>2<BR>1</PRE><H2>
+             <I><A NAME="rois"></A>.rois</I> Regions Of Interest
+         </H2>
+         <P>
+             This <B>text</B> file contains the required structural informations
+             to apply regions of interest calculus on data. At the moment, it
+             simply holds groups of indexes (of electrodes / solution points). You
+             may not be interested on the actual file format, but rather on how to <A HREF="creating-rois.html">
+                 create
+                 the ROIs
+             </A> in Cartool, or <A HREF="about-rois.html">
+                 how to make use
+                 of them
+             </A>?
+         </P>
+         <P>
+             First line, the magic number to indicate that the content is about
+             indexes (as opposite to voxels):
+         </P><PRE>RO01</PRE><P>
+             Next 2 lines:
+         </P><PRE>Dimension_of_original_data<BR>Number_of_rois</PRE><P>
+             What is meant by&nbsp; <FONT FACE="Courier New">Dimension_of_original_data</FONT>&nbsp;
+             is simply the number of electrodes (or solution points) of&nbsp; the
+             original data the rois were made from. This is used only for checking
+             you're not going to apply the .rois file to the wrong data, which
+             usually have different dimensions.
+         </P>
+         <P>
+             Then follows 2 lines for each roi:
+         </P><PRE>Roi_name<BR>List_of_indexes</PRE><P>
+             The name of the roi could be anything on the line, including spaces.
+             Quotes are not needed.
+         </P>
+         <P>
+             Within the list of indexes, use a space to separate between each
+             index. The end of line means the end of the list. Simple. And BTW, <B>
+                 indexes
+                 start from 1
+             </B>, not 0.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Example made from a setup of 125 electrodes, into 4 rois:
+         </P><PRE>RO01<BR>125<BR>4<BR>Front Left<BR>26 22 33 23 18 27 24 19 44 39 34 28 25 20 49 45 40 35 29 21 12 41 36 30 13 7 46 37 31<BR>Front Right<BR>14 8 15 9 1 10 3 2 4 124 123 122 121 120 5 119 118 117 116 113 112 111 110 115 114 107 106 105 109<BR>Back Left<BR>42 47 48 43 38 32 50 51 52 53 54 56 57 58 59 60 61 67 63 64 65 66 72 70 71 69 75 74<BR>Back Right<BR>81 88 104 80 87 94 99 103 79 86 93 98 102 78 92 97 101 77 85 91 96 108 84 100 83 90 89 95</PRE><H2>
+             <I><A NAME="ris"></A>.ris</I> Results of Inverse Solution computation
+         </H2>
+         <P>
+             This <B>binary</B> file is the final result of inverse solution
+             computations, after the matrix has been multiplied by the Eeg. It is
+             made of a <B>header</B> followed by a <B>matrix of floats</B>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             Header structure
+         </H4><PRE><B>struct</B> risheader {<BR>&nbsp;&nbsp;&nbsp; <B>char</B>  magic[4];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        // always 'RI01'<BR>&nbsp;&nbsp;&nbsp; <B>int32</B> numsolutionpoints;<BR>&nbsp;&nbsp;&nbsp; <B>int32</B> numtimeframes;<BR>&nbsp;&nbsp;&nbsp; <B>float</B> samplingfrequency;             // in Herz<BR>&nbsp;&nbsp;&nbsp; <B>char</B>  isinversescalar;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          // 1 if scalar, 0 if vectorial&nbsp; (<U>value</U>, and <U>not</U> text)<BR>&nbsp;&nbsp;&nbsp; } risheader;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      // size 17</PRE><P>
+             &nbsp;
+         </P>
+         <H4>
+             Matrix structure
+         </H4>
+         <P>
+             Number of rows:
+         </P><PRE>numrows = numtimeframes;</PRE><P>
+             If the matrix contains scalar results, the number of columns is
+         </P><PRE>numcols = numsolutionpoints;</PRE><P>
+             If the matrix contains vectorial results, a 3-uple (x,y,z) is
+             written, and the number of columns is
+         </P><PRE>numcols = 3 * numsolutionpoints;</PRE><P>
+             The matrix is then written row by row:
+         </P><PRE>float matrix [ numrows ][ numcols ];</PRE><P>
+             &nbsp;
+         </P>
+         <P>
+             Scalar example, for <FONT FACE="Arial,Helvetica,Monaco">numrows</FONT> rows:
+         </P><PRE>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB><BR>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB><BR>...<BR>s<SUB>0</SUB> s<SUB>1</SUB> s<SUB>2</SUB> ... s<SUB>numcols-1</SUB></PRE><P>
+             And vectorial example, for <FONT FACE="Arial,Helvetica,Monaco">numrows</FONT> rows:
+         </P><PRE>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0</SUB>&nbsp; x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB><BR>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0</SUB>&nbsp; x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB><BR>...<BR>x<SUB>0</SUB> y<SUB>0</SUB> z<SUB>0</SUB>&nbsp; x<SUB>1</SUB> y<SUB>1</SUB> z<SUB>1</SUB> ... x<SUB>numcols-1</SUB> y<SUB>numcols-1</SUB> z<SUB>numcols-1</SUB></PRE><H2>
+             <I><A NAME="sef"></A>.sef</I> Simple Eeg Format
+         </H2>
+         <P>
+             Simple (or safe, or stupid) <B>binary format</B> containing the
+             minimal data structure to describe correctly an EEG, either an
+             original recording or an ERP. It has a header, made of a fixed part
+             and a variable part, followed by the <B>calibrated</B> data (in micro-volts).
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             Fixed part of the header:
+         </H4><PRE><B>struct</B>&nbsp; TSefHeader<BR>{<BR>&nbsp;&nbsp;&nbsp; <B>int</B>&nbsp;&nbsp;&nbsp;Version;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  // magic number filled with the wide char 'SE01'<BR>&nbsp;&nbsp;&nbsp; <B>int</B>&nbsp;&nbsp;&nbsp;NumElectrodes;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       // total number of electrodes<BR>&nbsp;&nbsp;&nbsp; <B>int</B>&nbsp;&nbsp;&nbsp;NumAuxElectrodes;&nbsp;&nbsp;&nbsp;&nbsp;          //&nbsp; out of which are auxiliaries<BR>&nbsp;&nbsp;&nbsp; <B>int</B>&nbsp;&nbsp;&nbsp;NumTimeFrames;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          // time length<BR>&nbsp;&nbsp;&nbsp; <B>float</B>&nbsp;SamplingFrequency;&nbsp;&nbsp;&nbsp;          // frequency in Hertz<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Year;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Date of the recording<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Month;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  // (set to 00-00-0000 if unknown)<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Day;<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Hour;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Time of the recording<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Minute;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // (set to 00:00:00:0000 if unknown)<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Second;<BR>&nbsp;&nbsp;&nbsp; <B>short</B>&nbsp;Millisecond;<BR>};</PRE><P>
+             &nbsp;
+         </P>
+         <H4>
+             Variable part of the header:
+         </H4>
+         <P>
+             The names of the channels, as a matrix of&nbsp; <FONT FACE="Arial,Helvetica,Monaco">NumElectrodes</FONT>
+             x 8 chars.
+         </P><PRE><B>typedef</B> <B>char</B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TSefChannelName[8];&nbsp;&nbsp;// 1 electrode name</PRE><P>
+             &nbsp;
+         </P>
+         <P>
+             To allow an easy calculation of the data origin, be aware that names
+             are <B>always stored on 8 bytes,</B> even if the string length is
+             smaller than that. In this case, the remaining part is padded with
+             bytes set to 0, f.ex. two consecutive names:
+         </P>
+         <P>
+             binary
+             values&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+             70 112 122 00 00 00 00 00 65 70 55 00 00 00 00 00 ...
+         </P>
+         <P>
+             string equivalence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; F&nbsp;&nbsp;
+             P&nbsp;&nbsp;&nbsp;&nbsp; z&nbsp;&nbsp;&nbsp;
+             \0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+             A&nbsp; F&nbsp;&nbsp; 7&nbsp;&nbsp; \0
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             Data part:
+         </H4>
+         <P>
+             Starting at file position:
+         </P><PRE><B>sizeof</B> ( TSefHeader ) + 8 * NumElectrodes</PRE><P>
+             data are stored as a float (Little Endian convention - PC) matrix
+             written row by row:
+         </P><PRE><B>float</B> data [ NumTimeFrames ][ NumElectrodes ];</PRE><H2>
+             <I><A NAME="seg"></A>.seg</I> Segmentation
+         </H2>
+         <P>
+             A <B>text file</B> used to store and display the results of the <A HREF="microstates-segmentation.html">
+                 segmentation
+                 process
+             </A>.
+         </P>
+         <P>
+             First two lines is the header:
+         </P><PRE>number_of_clusters&nbsp;&nbsp; number_of_files&nbsp;&nbsp; number_of_time_frames<BR>number_of_tracks &nbsp; tracks_name<SUB>1</SUB>  tracks_name<SUB>2</SUB>  ...  tracks_name<SUB>n</SUB></PRE><P>
+             where
+         </P>
+         <P>
+             number_of_clusters&nbsp;&nbsp;&nbsp; is the number of clusters from
+             the segmentation process<BR>
+             number_of_files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; is the number of
+             files that have been segmented together<BR>
+             number_of_time_frames is the number of time frames of each segmented file<BR>
+             number_of_tracks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; is the number of
+             informations saved for each file (f.ex. 5 for&nbsp; Gfp Dis Seg GEV EV)<BR>
+             tracks_name<SUB>i</SUB>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+             is the name of the i<SUP>th</SUP> track (f.ex. &quot;Gfp&quot;)
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Then follow the data, one line per time frame (as in <A HREF="#eph">.eph</A>
+             file). Each line concatenates the&nbsp; number_of_tracks&nbsp;
+             variables, one file after the other, f.ex.:
+         </P><PRE>File<SUB>1</SUB>Gfp  File<SUB>1</SUB>Dis  File<SUB>1</SUB>Seg  File<SUB>1</SUB>GEV  File<SUB>2</SUB>Gfp  File<SUB>2</SUB>Dis  File<SUB>2</SUB>Seg  File<SUB>2</SUB>GEV ... File<SUB>n</SUB>Gfp  File<SUB>n</SUB>Dis  File<SUB>n</SUB>Seg  File<SUB>n</SUB>GEV</PRE><H2>
+             <I><A NAME="spi"></A>.spi</I> Solution Points Irregularly spaced
+         </H2>
+         <P>
+             A <B>text file</B> consisting of a <B>list of 3D points</B>, used as
+             the solution points for the <A HREF="esi-display.html">inverse solutions</A>.
+             These points can be <B>irregularly spaced</B>, and don't need to be
+             on any sort of a grid.
+         </P>
+         <P>
+             &nbsp;<BR>
+             There is no header, and each line simply contains the <B>
+                 coordinates
+                 of one point
+             </B> (floatting points values), and an <B>optional name</B>
+             (max 15 characters):
+         </P><PRE>x&nbsp;&nbsp; y&nbsp;&nbsp; z   optionalname</PRE><H2>
+             <I><A NAME="spr"></A>.spr</I> Solution Points in Regular grid (obsolete)
+         </H2>
+         <P>
+             Same format as <B><I><A HREF="#spi">.spi</A></I></B>, but the points
+             have to be <B>regularly spaced</B>. That is, there has to be the same
+             distance (usually an integer value) between neighbors, and for all coordinates.
+         </P>
+         <H2>
+             <I><A NAME="tva"></A>.tva</I> Trigger VAlidation file
+         </H2>
+         <P>
+             A <B>text file</B> that stores if a trigger was right or wrong, f.ex.
+             the choices a subject replied during an experiment.<BR>
+             There are two slightly different versions of this file, the
+             difference being rather semantic than on the format itself:<BR>
+             &nbsp;
+         </P>
+         <H4>
+             Version 1
+         </H4>
+         <P>
+             Is a file <U>without header</U>, containing a serie of lines which
+             have the following format:
+         </P><PRE><FONT SIZE="3">accepted&nbsp;&nbsp; reaction_time&nbsp;&nbsp; trigger_code</FONT></PRE><P>
+             where:
+         </P>
+         <P>
+             <FONT SIZE="3"><FONT FACE="Courier New">accepted</FONT></FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+             is either <B>0</B> (wrong answer / false) or <B>1</B> (correct
+             answer / true)<BR>
+             <FONT SIZE="3"><FONT FACE="Courier New">reaction_time</FONT></FONT>&nbsp;&nbsp;
+             is the reaction time of the answer, <B><U>in milliseconds</U></B>, 0 otherwise<BR>
+             <FONT SIZE="3"><FONT FACE="Courier New">trigger_code</FONT></FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+             is the <B>name of the trigger</B><BR>
+             <FONT SIZE="3">&nbsp;</FONT>
+         </P>
+         <H4>
+             Version 2
+         </H4>
+         <P>
+             Is a serie of lines identical to version 1, but the file starts <U>
+                 with
+                 the header
+             </U>:
+         </P><PRE><FONT SIZE="3">TV01</FONT></PRE><P>
+             &nbsp;
+         </P>
+         <P>
+             The difference between the two versions consist in which triggers are
+             being listed.
+         </P>
+         <P>
+             <B>Version 1</B> is usually the ouput of the <B>stimulation program</B>,
+             <B><U>all</U> triggers</B> of the experiment are therefore listed.
+             So if there are three triggers A, B, C repeated 100 times each, we
+             will have 300 lines in the file.
+         </P>
+         <P>
+             <B>Version 2</B> is rather an output from <B>Cartool</B> itself,
+             usually from the <A HREF="computing-erps.html">averaging process</A>. It
+             will list <B><U>only</U> the triggers that were considered</B> during
+             the processing. If only triggers A and B were used, we will have only
+             200 + 1 lines in the file, the C trigger being ignored. These tva
+             files can be used to re-do the averaging.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <H4>
+             Example of version 1:
+         </H4><PRE>1 1765  45<BR>1 977.1 43<BR>1 1191  36<BR>0 0     56<BR>0 0     35<BR>1 1309  55<BR>1 1696  49<BR>1 1211  33<BR>...</PRE><H4>
+             Example of version 2:
+         </H4><PRE>TV01<BR>1 0 On<BR>1 0 Off<BR>0 0 On<BR>1 0 Off<BR>1 0 On<BR>0 0 Off<BR>...</PRE><H2>
+             <I><A NAME="vrb"></A>.vrb</I> Verbose file
+         </H2>
+         <P>
+             A <B>text file</B> generated during the <A HREF="all-processings.html#tools">
+                 main
+                 processings
+             </A> of Cartool. It records all the parameters set for
+             the processings and in some case the user's responses during the
+             procedure. These files are generated just for your convenience, to
+             help you store and recover how you computed that incredible files of yours!
+         </P>
+         <H2>
+             <I><A NAME="xyz"></A>.xyz</I> Electrodes coordinates for head
+         </H2>
+         <P>
+             A <B>text file</B> containing a list of electrodes coordinates on a
+             scalp. For more advanced electrodes setup (strips, clusters of
+             electrodes, grids...) see the <A HREF="#els"><B><I>.els</I></B></A> format.
+         </P>
+         <P>
+             First line (though the radius of the cluster is not used anymore in Cartool):
+         </P><PRE>Number_of_electrodes&nbsp; Radius_of_the_cluster</PRE><P>
+             Then a list of coordinates, one per line:
+         </P><PRE>x&nbsp;&nbsp; y&nbsp;&nbsp; z&nbsp;&nbsp; label</PRE><H4>
+             Example:
+         </H4><PRE>   29    1<BR>  9.510565E-0001 -3.090170E-0001 -0.000000E+0000 Fp2<BR>  6.590572E-0001 -5.336940E-0001  5.299193E-0001 F4<BR>  7.531501E-0020 -6.946584E-0001  7.193398E-0001 C4<BR> -6.590572E-0001 -5.336940E-0001  5.299193E-0001 P4<BR> -9.510565E-0001 -3.090170E-0001 -0.000000E+0000 O2<BR>  5.877853E-0001 -8.090170E-0001 -0.000000E+0000 F8<BR>  1.084202E-0019 -1.000000E+0000 -0.000000E+0000 T4<BR> -5.877853E-0001 -8.090170E-0001 -0.000000E+0000 T6<BR>  8.619499E-0001 -4.019339E-0001  3.090170E-0001 AF4<BR>  3.367557E-0001 -8.772786E-0001  3.420201E-0001 FC6<BR>  3.535534E-0001 -3.535534E-0001  8.660254E-0001 FC2<BR> -3.535534E-0001 -3.535534E-0001  8.660254E-0001 CP2<BR> -3.367557E-0001 -8.772786E-0001  3.420201E-0001 CP6<BR>  9.510565E-0001  3.090170E-0001 -0.000000E+0000 Fp1<BR>  6.590572E-0001  5.336940E-0001  5.299193E-0001 F3<BR> -0.000000E+0000  6.946584E-0001  7.193398E-0001 C3<BR> -6.590572E-0001  5.336940E-0001  5.299193E-0001 P3<BR> -9.510565E-0001  3.090170E-0001 -0.000000E+0000 O1<BR>  5.877853E-0001  8.090170E-0001 -0.000000E+0000 F7<BR> -0.000000E+0000  1.000000E+0000 -0.000000E+0000 T3<BR> -5.877853E-0001  8.090170E-0001 -0.000000E+0000 T5<BR>  8.619499E-0001  4.019339E-0001  3.090170E-0001 AF3<BR>  3.367557E-0001  8.772786E-0001  3.420201E-0001 FC5<BR>  3.535534E-0001  3.535534E-0001  8.660254E-0001 FC1<BR> -3.535534E-0001  3.535534E-0001  8.660254E-0001 CP1<BR> -3.367557E-0001  8.772786E-0001  3.420201E-0001 CP5<BR>  6.946584E-0001  0.000000E+0000  7.193398E-0001 Fz<BR>  0               0               1              Cz<BR> -6.946584E-0001 -0.000000E+0000  7.193398E-0001 Pz</PRE><P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

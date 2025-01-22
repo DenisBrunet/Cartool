@@ -1,6 +1,26 @@
 ﻿/*-------------------- Cartool Reference Guide CSS */
 
 
+/*-------------------- All pages: page size limit and centering --------------------*/
+
+body {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;					/* Center the content horizontally */
+	background-color: #f9f9f9;					/* Optional: Background color */
+	}
+
+.container {
+	width: 90%;									/* Adjust width relative to the viewport */
+    max-width: 1000px;							/* Ensure a readable limit on larger screens */
+	padding: 20px;								/* Add padding for spacing */
+    margin-top: 8px;							/* Add space at the top */
+	background-color: #ffffff;					/* Optional: Background color */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);	/* Optional: Add a subtle shadow */
+	}
+
+
 /*-------------------- Headers --------------------*/
 h1, .mvd-h1 {
 	font-family:Arial,Verdana;

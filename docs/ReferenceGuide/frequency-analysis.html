@@ -2,1055 +2,1382 @@
  <HEAD>
   <TITLE>Frequency Analysis</TITLE>
  <LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css"></HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   Frequency Analysis</H1>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <H5>
-   <A HREF="#analysis">What kind of analysis?</A><br><A HREF="#run-dialog">How to run the frequency analysis</A><br>
-   <A HREF="#results">Results</A><br><A HREF="#fft-approximation">FFT Approximation</A><br>Display: <A HREF="frequency-display.html">Frequency Display</A>&nbsp; 
-   and&nbsp;&nbsp; <A HREF="frequency-display.html#advanced-display">Displaying 
-   maps for frequenciess</A></H5>
-  <H5>
-   <A HREF="#technical-points">Technical points</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#file-types-in">Files that can be processed</A><br>
-	<A HREF="#data-reference">Reference of data</A><br>
-	<A HREF="#window-time-ref">Time reference for each window</A><br>
-	<A HREF="#averaging-windows">Averaging windows</A><br><A HREF="#windowing">Windowing function</A><br>
-	<A HREF="#time-frequency">Time / frequency resolution issue</A><br>
-	<A HREF="#averaging-freqs">Averaging frequencies together</A><br>
-	<A HREF="#averaging-fft-appr">FFT Approximation and averaging</A><br>
-	<A HREF="#avg-after-norm">Averaging is done after conversion</A></H5>
-   </UL>
-  <H2>
-   <A NAME="analysis"></A>What kind of analysis?</H2>
-  <P>
-   Currently, the analysis available are:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Plain ol' <B>FFT</B><BR>
-    <LI CLASS="mvd-P"><B>Power Maps</B><SUP>*</SUP><BR>
-    <LI CLASS="mvd-P"><B><A HREF="#fft-approximation">FFT Approximation</A></B><SUP>*</SUP><BR>
-    <LI CLASS="mvd-P"><B>S-Transform</B></P>
-   </UL>
-  <P>
-   However, new analysis will be added in the future. Also, you won't 
-   find here the theory behind these methods, you can browse the 
-   internet <A HREF="https://www.google.com/search?q=FFT+analysis+beginners">about
-    the FFT</A>, and <A HREF="https://en.wikipedia.org/wiki/S_transform">the
-    S-Transform</A>.</P>
-  <P>
-   You have to first run the analysis, which generates new <A HREF="files-formats-cartool.html#freq">files</A>,
-    and then open those files to see the results. This part only refers 
-   to the <U>analysis</U> itself, the other part is <A HREF="frequency-display.html">how
-    to work with the display</A>.<BR>
-   <BR>
-   <BR>
-   <BR>
-   </P>
-  <P>
-   <A NAME="article"></A>* see article&nbsp; <B>Intracerebral dipole 
-   source localization for FFT power maps</B>&nbsp; by D. Lehman and 
-   C.M. Michel, in <I>Electroencephalography and clinical Neurophysiology</I>,
-    1990, Elsevier.</P>
-  <H2>
-   <A NAME="run-dialog"></A>How to run the frequency analysis</H2>
-  <P>
-   Call the dialog from <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
-    | Frequency Analysis</A></FONT> menu, which is context sensitive:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <A NAME="call-eeg-opened"></A>Called from an EEG file, the analysis 
-    will apply only to this very current file.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <A NAME="call-batch-mode"></A>In any other case, the dialog will 
-    operate in Batch mode, requiring you to later select some files.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   The following dialog pops out. Fill the parameters which are relevant 
-   for you, then click either on <B>Process Current</B> or <B>Batch Process</B> 
-   (according to how the dialog was invoked):</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <img height="1158" src="images/freq.analysis.dialog.png" width="960"></P>
-   </CENTER>
-  <P>
-   <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Presets:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The most used sets of parameters, which make use of either FFT's or 
-       of S-Transform.</P>
-      <P>
-       Presets can be found either for <B>surface</B> or <B>intra-cranial recordings</B>,
-        for the <B>Power Maps</B> and <B>FFT Approximation</B>, and for all 
-       these cases, with variations using a <B>STFT</B> (more time 
-       resolution). There are also presets for the <B>Wavelet S-Transform</B>.</P>
-      <P>
-       &nbsp;</P>
-      <P>
-       The most important parameters will be set, still <B><I>some 
-       parameters have to be set manually!</I></B> And, as usual, double 
-       check that all your settings make sense...</TD>
-       </tr>
-	   <tr>
-     <TD VALIGN=TOP style="width: 32%"></TD>
-     <TD WIDTH="74%" VALIGN=TOP></TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Tracks to Analyse</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Tracks to analyse</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       <A HREF="#call-eeg-opened">From an opened EEG:</A><BR>
-       Prefilled with the current <A HREF="eeg-display.html#mouse-tracks-select">selected</A> 
-       tracks, otherwise with the current displayed tracks.</P>
-      <P>
-       <A HREF="#call-batch-mode">In Batch Mode:</A><BR>
-       On first call, default is <B>*</B>, meaning all <A HREF="terms-definitions-formulas.html#tracks">regular
-        tracks</A>.</P>
-      <P>
-       You can of course modify this list. <A HREF="reprocess-tracks.html#tracks-enumerate">See
-        important note about notation</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Names from XYZ:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Optionally pointing to a file with the electrodes coordinates and 
-       names (such as <A HREF="files-formats-cartool.html#els">.els</A> and <A HREF="files-formats-cartool.html#xyz">.xyz</A>).
-        The <B>names of the electrodes are taken from this file</B>, 
-       overriding the original names from the EEG (i.e. you can rename the electrodes).<BR>
-       Be careful that the list above respect these names, otherwise you 
-       will get an error message.</P>
-      <P>
-       Constraints as in the <A HREF="general-concepts.html#linkingfiles">link
-        mechanism</A> must be respected, such as same number of electrodes, 
-       same order, etc...</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Time Windows</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Analyse From [TF]:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       First <A HREF="terms-definitions-formulas.html#time-frame">time frame</A> to be analysed,</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       to</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       and last time frame <U>required</U> for analysis.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       (...&nbsp; after clipping)</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       For info, the last time frame to be <I>actually</I> analysed, with 
-       current parameters.</P>
-      <P>
-       This number might slightly differ from the previous field due to the 
-	   subdivision in time windows.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       End of File</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Automatically set the last time frame to the <B>actual end of the 
-       current file</B>. Useful in <A HREF="#call-batch-mode">Batch Mode</A>,
-        if the files have different lengths.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Windows Size:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       For an <em>FFT analysis</em>, data is analyzed by blocks, <em>aka</em> 
-	   time windows:</P>
-	  <ul>
-		  <li>Time windows are asually <strong>integer multiples</strong> of the 
-		  sampling frequency, like 2x or 1x.</li>
-		  <li>The bigger the time window, the higher the frequency precision, 
-		  but the lower the time resolution</li>
-		  <li>The smaller the time window, the lower the frequency precision, 
-		  and the higher the time resolution</li>
-	  </ul>
-	  <P>
-       </P>
-	  <P>
-       For the <em>S-Transform</em>, there is only one single big window which 
-	   is the full time range to be analyzed.</P>
-	  <P>
-       See <A HREF="#time-frequency">this note</A> about time frequency issues.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Windows Step:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       How much stepping to do when fetching the next time window:</P>
-      <UL>
-       <LI CLASS="mvd-P">
-       <P>
-        <B>1 TF</B>: one time frame, the shortest step,</P>
-       <LI CLASS="mvd-P">
-       <P>
-        <B>25% Window</B>: 25% of the window size is used, which means 25% of 
-        new data incorporated,</P>
-       <LI CLASS="mvd-P">
-       <P>
-        <B>100% Window</B>: step across the whole current window, without any overlap.</P>
-       </UL>
-      <P>
-       &nbsp;</P>
-      <P>
-       Note that a 1 TF step is equivalent to perform a <A HREF="https://www.google.ch/search?hl=en&amp;q=Short+Term+Fourier+Transform"><B>Short
-        Term Fourier Transform</B> (STFT)</A>.</P>
-      <P>
-       A 25% step (BTW used to be <I>75% overlap</I>) is a safe way to add 
-       significantly new data to the time window.</P>
-      <P>
-       A 100% step is useful in case you have epochs pasted into a single 
-       file, and you shouldn't mix their data. So setting the window size to 
-       the epoch length, and stepping 100% is the way to go.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       windows step ... [ms]</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Showing the resulting step in [ms] between successive time windows.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Number of Window(s):</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Showing the number of time windows you get with the current parameters.</P>
-      <P>
-       If the S-Transform analysis is used, there is only 1 window which 
-       extends exactly on the time range selected above.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B><A NAME="frequencies-avail"></A>Frequencies</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Sampling Frequency:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The current sampling frequency, if available from the current file.</P>
-      <P>
-       If in Batch mode, however, this field can and should be filled by hand.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Frequency Range and Resolution:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The <B>range of frequencies</B> and the <B>frequency step/resolution</B> 
-       you can obtain with your current parameters (Sampling Frequency and 
-       Window Size).</P>
-      <P>
-       <A NAME="frequency-step"></A>For example, if step is 0.5 Hz, 
-       frequencies actually available will be: 0, 0.5, 1, 1.5 etc... Hz.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B><A NAME="frequencies-saved"></A>Saving Frequency Interval:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Specify a <B>single interval of frequencies</B>&nbsp;to be saved in 
-       the output file. Give the lowest and the highest frequencies of the 
-       interval, plus a step/resolution.</P>
-      <P>
-       The saved frequency steps can be bigger than the minimum available, 
-       f.ex. you can save by steps of 1 Hz even if the analysis offers you a 
-       0.5 Hz resolution. In this case Cartool will <A HREF="#averaging-freqs">average
-        neighboring frequencies</A>, therefore increasing the signal to 
-       noise ratio.</P>
-      <P>
-       &nbsp;</P>
-      <P>
-       Remember that it is always a good idea to constrain the <B>saved frequency 
-       range to be as small as possible</B> according to your data. Otherwise 
-	   you will have bigger and slower files, and for no use.</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Log Frequencies:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Frequencies are inherently logarithmic by nature. For small ranges of 
-	   frequencies, or to comply with usages, the whole interval of frequencies 
-	   is often used. But for more accurate, or for broader ranges of 
-	   frequencies, it is highly recommended to use a logarithmic scale instead.</P>
-      	 </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       split into <em>XX</em> per Decade</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       This tells how many subdivisions to save per decades (frequencies 
-	   multipled by 10).</P>
-	  <P>
-       F.ex. 20 values per decade means:</P>
-	  <ul>
-		  <li>20 frequency values for interval 1 to 10 [Hz]</li>
-		  <li>20 frequency values for interval 10 to 100 [Hz]</li>
-		  <li>etc..</li>
-	  </ul>
-		   </TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Saving Frequency Bands:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Save <B>any number of bands</B>, computing the <B>average</B> for each 
-       of them.</P>
-      <P>
-       Give the list of bands, separated either by a space, a comma or 
-       semi-colon. Be careful to actually <B>order the bands</B>: Cartool 
-       will follow the exact sequence you specify, so keep things consistant by 
-	   using increasing frequency bands!</P>
-      <P>
-       F.ex.:&nbsp; 0-4, 4-8, 8-12, 12-20</P>
-      <P>
-       See this note about <A HREF="#averaging-freqs">averaging frequencies</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Type of Analysis</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       You can choose between 3 well proven and robust analysis:<ul>
-		  <li>FFT</li>
-		  <li>FFT Approximation</li>
-		  <li>Wavelet (S-Transform)</li>
-	  </ul>
-		</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <BLOCKQUOTE>
-       <P>
-        <B>FFT</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The classical <B>FFT</B>, or the <B>STFT</B> (Short Term Fourier 
-       Transform) if the <I>Windows Step</I> parameter is set to 1 TF.</P>
-      <P>
-       With Average Reference data and saving the Square Norm, you can 
-       compute the <B>Power Maps</B> on surface recordings (see the Presets).</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <BLOCKQUOTE>
-       <P>
-        <B>FFT Approximation</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Projection on the least-square deviation line going through the FFT 
-       for each window (of the average-referenced data), aka best dipole 
-       fitting. Results are in the &quot;real&quot; values, and will look 
-       like an EEG with polarity (see the Presets).</P>
-      <P>
-       See this note about <A HREF="#averaging-fft-appr">averaging FFT approximation</A>.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <BLOCKQUOTE>
-       <P>
-        <B>S-Transform</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The Stockwell Transform allows for some <B>optimal time and frequency resolution</B>.</P>
-      <P>
-       Note that it applies only to a single window, which can be as big as 
-       needed by your analysis. However to reduce the computational cost, 
-       and for big ranges, use rather the plain FFT and keep the S-Transform 
-       for shorter time ranges (like a magnifier on a given area).</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>FFT Windowing Function:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       None</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       No windowing function added (or, to be totally precise, using a Flat Top 
-       windowing function).</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Hanning</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Hanning windowing function. Try <A HREF="https://www.google.com/search?q=FFT+Hanning+windowing+functions">this</A> 
-       to learn more. Also see this <A HREF="#windowing">technical point</A>.<P>
-       Recommended most of the time, except if you have no overlap between 
-	   windows, or a a single time window.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B><A NAME="windows-processed"></A>Time Windows are:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Averaged</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Analysed windows are averaged, hence the result will be a single 
-       &quot;Time Point&quot;. See&nbsp;<A HREF="#averaging-windows">this note</A> 
-       about the averaging.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       in Sequence</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Analysed windows are written sequentially, so you can have an idea of 
-       the frequencies in time. See&nbsp;<A HREF="#window-time-ref">this note</A> 
-       about the time reference.</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>FFT Time Windows Rescaling:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The FFT formula includes specifies a normalization, or divisive factor. 
-	   Problem is there is no agreement on which formula to use in practice. 
-	   Here you can specify the one to your liking:<ul>
-		  <li><strong>None</strong>: no rescaling at all</li>
-		  <li><strong>Square Root of Time Window size</strong></li>
-		  <li><strong>Time Window size</strong>, aka <strong>Parseval formula</strong>.<em><br>
-		  This is the most correct one, so if you don't know any better, keep 
-		  this option!</em></li>
-	  </ul>
-	  <P>
-       <P>
-       <em>Note: </em>this option is relevant only for <em>single forward FFT's</em>, 
-	   and not for the S-Transform (which is a forward + backward FFT all in 
-	   one!)</TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Outputting Values:</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Results of the analysis are always <em>complex values</em>. Usage is to 
-	   save only the norm or power of these complex values, but you can still 
-	   control what to actually save according to your needs:<ul>
-		  <li><strong>Real part</strong><br>Only the real part of the complex 
-		  value. Only available for the FFT Approximation analysis, though.</li>
-		  <li><strong>Norm</strong><br>The norm, or intensity of the results.</li>
-		  <li><strong>Power (Squared Norm)</strong><br>The square of the norm, 
-		  or the power of the results. Quite the default.</li>
-		  <li><strong>Complex</strong><br>The complete complex values, written 
-		  following the <B>C</B> style (double real + double imag).</li>
-		  <li><strong>Phase</strong><br>The phase of the values, in the [0 .. 
-		  2Pi) range</li>
-	  </ul>
-		</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Reference of Data</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       No Reference</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use the same reference as when the file(s) was(were) written, that 
-       is, no change in reference.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Use Current Reference</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use the reference currently in use. Useful only if the files have 
-       already been opened in Cartool, and the user has changed the reference.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Average Reference</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use the <A HREF="terms-definitions-formulas.html#formulas">average reference</A>, 
-       overriding current reference.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Other Reference</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Use the <B>average of the specified list of electrodes</B>. If only 
-       one electrode is specified, this will be the reference.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B><A NAME="file-types-out"></A>Options</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       &nbsp;</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Optional filename infix&nbsp;override:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       The saved filenames will have the specified characters inserted. 
-       Default is a combination of the type of analysis and frequency range, 
-       which can be long and clumsy for your use.</TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       All Results in Single freq File</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       This is the default ouput, a <A HREF="files-formats-cartool.html#freq">binary file</A> 
-       holding <B>all the results</B> (frequencies, electrodes, and all time windows).</P>
-      <P>
-       Use this to save space on your disk, and / or to later use the <A HREF="frequency-display.html">Frequency
-        Display</A> of Cartool.</TD>
-    </TR>
-       <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       All Results in a Sub-Directory</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Optionally saving all results in a sub-directory for a better 
-	   organization. Kind of hand if you wish to split the data with the 
-	   splitting options below.</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Open File(s) Upon Completion</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       ...of the analysis. Just be careful in <A HREF="#call-batch-mode">Batch
-        Mode</A>, this could open a lot of files! (the original EEG files 
-       are opened one at a time, then closed when done).</TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Splitting Results:</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Frequency analysis results are 3D data by nature: electrodes x time x 
-	   frequencies. To facilate either the display, the export or the processing 
-	   with other toolboxes, it comes in handy to split these data into 
-	   smalller, 2D files.</P>
-	  <P>
-       </P>
-	  <P>
-       <em>Note:</em> You can always <a href="all-processings.html#file"><strong>break 
-	   down <em>.freq</em> files</strong>, or <strong>merge 2D files back into
-	   <em>.freq</em> files</strong></a> later on.</P>
-		   </TD>
-       </tr>
-	   <tr>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <BLOCKQUOTE>
-       <P>
-        By Electrode</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Splitting results with one file per electrode.</P>
-      	 </TD>
-       </tr>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <BLOCKQUOTE>
-       <P>
-        By Frequency</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Splitting results with one file per frequency.</P>
-		</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <BLOCKQUOTE>
-       <P>
-        By Spectrum</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Splitting results with one file per spectrum.</P>
-	  <P>
-       If you <A HREF="#windows-processed"><B>process sequentially</B></A> 
-       the different time windows, there will be as <B>many output files</B> 
-       as there are of these time windows.</P>
-      <P>
-       If you <A HREF="#windows-processed"><B>average</B></A> the time 
-       windows, a <B>single file</B> with the average spectrum is produced.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Shrinking file size by.. Downsampling to Highest Freq.</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Especially useful for the S-Transform, the resulting files might very big 
-	   and carrying way too much temporal information. F.ex. if the analyzed 
-	   frequencies were in the range [5..50], you don't really care for time 
-	   steps smaller than 20 [ms]. This option will optimally downsample the 
-	   time resolution according to your parameters.<P>
-       Don't use it however if you wish to preserve a per time frame 
-	   correspondance with your original data, though.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP></TD>
-     <TD WIDTH="73%" VALIGN=TOP></TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Process Current</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Enabled when called from an EEG. The analysis applies only to <B>this 
-       current file</B>.</P>
-      <P>
-       This button remains <B>disabled until <U>all</U> the parameter 
-       dialogs have received enough (and consistent) informations</B>. If 
-       this is not the case, first check the current dialog: if its 
-       &quot;Next&quot; button is disabled, the problem is in the current 
-       dialog. Otherwise, browse the other dialogs for some missing informations.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       <B>Batch Process</B></TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Enabled when not called from an EEG. This will open a dialog for you 
-       to pick the <B>set of files</B> (even from different directories) to 
-       be analysed.</P>
-      <P>
-       This button remains <B>disabled until <U>all</U> the parameter 
-       dialogs have received enough (and consistent) informations</B>. If 
-       this is not the case, first check the current dialog: if its 
-       &quot;Next&quot; button is disabled, the problem is in the current 
-       dialog. Otherwise, browse the other dialogs for some missing informations.</P>
-      <P>
-       You can <B>Drag &amp; Drop files directly</B> to run the Batch Process!</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Cancel</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Quit the dialog.</TD>
-    </TR>
-    <TR>
-     <TD WIDTH="27%" VALIGN=TOP>
-      <P>
-       Help</TD>
-     <TD WIDTH="73%" VALIGN=TOP>
-      <P>
-       Launch the Help to the right page (should be here...).</TD>
-    </TR>
-   </TABLE></P>
-  <H2>
-   <A NAME="results"></A>Frequency analysis - Results</H2>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <A HREF="files-formats-cartool.html#freq"><B><I>.freq</I></B></A> file with 
-    all the important informations, if this <A HREF="#file-types-out">option</A> 
-    has been selected (of course recommended!). Freq files are written in 
-    the same directories as their sources. <A HREF="frequency-display.html">Open</A> 
-    them to <A HREF="frequency-display.html">work with the results</A>.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <I><a href="files-formats-cartool.html#sef"><B>.sef</B></a></I> files for each 
-    split electrode, frequency or spectrum, if any of splitting options have 
-	been used.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    <I><B>.ApproxEeg</B><A HREF="files-formats-cartool.html#ep"><B>.ep</B></A></I> 
-    file(s), for the approximated EEG of each electrode, for each saved 
-    time window (if the &quot;Spectrum&quot; option above has been 
-    selected). Note that these files also have the <B>frequencies on the 
-    horizontal axis</B>, like the Spectrum.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Verbose file <I><B>...&lt;type of analysis&gt;</B><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>&nbsp;
-     (text), showing all the parameters.</P>
-   </UL>
-  <H2>
-   <A NAME="fft-approximation"></A>FFT Approximation</H2>
-  <P>
-   The <A HREF="#article">FFT Approximation</A> is a very convenient way 
-   to retrieve an <B>EEG-like</B> signal, made of signed values, from 
-   the FFT results.</P>
-  <P>
-   To begin with, the FFT, when applied to a time window, always returns 
-   results in the Complex space <B>C</B>. Each electrode, for each 
-   frequency, is a complex number made of two parts, the real and 
-   imaginary values. Hence, we can plot them on a plane (X is the real 
-   axis, Y is the imaginary axis), here for one time window, and three 
-   successive frequencies:</P>
-  <P>
-   <IMG SRC="images/freq.fftapprox.w1f1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f2.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f3.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   &nbsp;</P>
-  <P>
-   The FFT Approximation finds the <B>best fitting line</B> in the 
-   average referenced data (equivalent to the best fitting dipole), then <B>projects</B> 
-   the electrodes complex values on this axis. Being left with a single 
-   dimension, a line, we arbitrarily assign a polarity to one direction, 
-   and voil&agrave;, we have <A HREF="frequency-display.html#advanced-display">real,
-    signed, scalar values</A>. See again the same three frequencies, for 
-   one time window, with the resulting projected electrodes:</P>
-  <P>
-   <IMG SRC="images/freq.fftapprox.w1f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f2.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f3.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   &nbsp;</P>
-  <P>
-   We repeat this operation for each time window, see here the first <B>three
-    time windows</B>, for a single frequency (see the rotating pattern 
-   due to phase shift of the signal):</P>
-  <P>
-   <IMG SRC="images/freq.fftapprox.w1f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w2f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w3f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <P>
-   &nbsp;</P>
-  <P>
-   You may have noted that the final polarity is arbitrary, which should 
-   be accounted for <A HREF="#averaging-fft-appr">in case of averaging</A>.
-    As long as patterns / topographies are concerns, this is not a real 
-   problem, though.</P>
-  <H2>
-   <A NAME="technical-points"></A>Frequency analysis - Technical points</H2>
-  <H3>
-   <A NAME="file-types-in"></A>Files that can be processed</H3>
-  <P>
-   <B>Input files</B> can be anything that looks like tracks:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    <A HREF="files-formats-others.html#eeg"><I>Any</I> EEG files recognized by Cartool,</A><BR>
-    <LI CLASS="mvd-P"><A HREF="files-formats-cartool.html#ris">Ris files</A> 
-    (Results from Inverse Solution computation),</P>
-   </UL>
-  <H3>
-   <A NAME="data-reference"></A>Reference of data</H3>
-  <P>
-   Be aware that <B>changing the reference</B> of the data <B>greatly 
-   affects the shape of the signal</B>, and therefor its frequencies. 
-   This is why the <B>Power Maps</B> and <B>FFT Approximation</B> 
-   presets activate the average reference (as well as some other 
-   parameters), to prevent any accidental change.<BR>
-   By the way, don't use these two methods for intra-cranial electrodes, 
-   this does not make sense at all (again, see <A HREF="#article">article</A>)!</P>
-  <H3>
-   <A NAME="window-time-ref"></A>Time reference for each window</H3>
-  <P>
-   Each window is a part cut from the original file, say from&nbsp;<I> t</I>&nbsp;
-    to&nbsp; <I>t + window_size - 1</I>. Once processed, the results are <B>frequencies
-    for that whole window</B>. Therefor, it is natural to attribute the <B>mean
-    time</B>&nbsp; <I>t + window_size / 2</I>&nbsp; of that window as 
-   its time position in the output file.</P>
-  <H3>
-   <A NAME="averaging-windows"></A>Averaging windows</H3>
-  <P>
-   Average occurs at the very last stage of the processing. For example, <U>after</U> 
-   the <B>Power Maps</B> have been computed. This is not equivalent to 
-   the Power Maps of the mean FFT.</P>
-  <H3>
-   <A NAME="windowing"></A>Windowing function</H3>
-  <P>
-   When using the Hanning windowing function, the results after analysis 
-   are <B>multiplied by a factor 2</B> to account for the fading 
-   introduced by the method.</P>
-  <H3>
-   <A NAME="time-frequency"></A>Time / frequency resolution issue</H3>
-  <P>
-   <B>Smaller time windows</B> gives a <B>higher time resolution</B>, 
-   but a <B>lower frequency resolution</B>. Conversely, bigger time 
-   windows gives a lower time resolution, and a higher frequency 
-   resolution. The dialog, by default, suggest a compromise between the 
-   time and frequency resolution, which the user can change.</P>
-  <P>
-   Here you can see the same time range analysed with a small (64), a 
-   medium (256) and a large (1024) time window (for a sampling frequency 
-   of 256 Hz):</P>
-  <P>
-   <IMG SRC="images/frequency1.png" WIDTH="492" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-   <IMG SRC="images/frequency2.png" WIDTH="492" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0"><BR>
-   <IMG SRC="images/frequency3.png" WIDTH="492" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0"></P>
-  <H3>
-   <A NAME="averaging-freqs"></A>Averaging frequencies together</H3>
-  <P>
-   Frequencies <I><A HREF="#frequencies-saved">saved</A></I> and <I><A HREF="#frequencies-avail">computed</A></I> 
-   usually differ, in the sense that often, <B>more frequencies are 
-   available from the transformation than there will be written to file</B>.
-    The most obvious case is when saving a frequency band, all 
-   frequencies within that band will be averaged together into a single 
-   result. Though, it also applies to the interval case, f.ex. if the 
-   saved frequencies are stepping by 1 Hz, and the transformation allows 
-   finer steps of 0.5 Hz.</P>
-  <P>
-   To take benefit from that situation, <B>Cartool will average as much 
-   as it can from the available frequencies</B> to produce the requested 
-   output results. Let's see how this works.</P>
-  <P>
-   In the <B>frequency band case</B>:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    All frequencies within the specified range (including both limits), 
-    with all the available steps (say, again, 0.5 Hz) will be averaged together.<BR>
-    <LI CLASS="mvd-P">But if the available steps are smaller than 0.25 
-    Hz, f.ex. 0.125 Hz, the steps taken will be limited to those 
-    multiples of 0.25 Hz. Stated otherwise, Cartool averages up to 0.25 
-    Hz steps.<BR>
-    <LI CLASS="mvd-P">In the S-Transform case, the <B>number</B> of 
-    frequencies averaged together has been limited to a total of 25 per 
-    band. Because the S-Transform is very smooth, and it does not provide 
-    much informations to average more, and because this transformation is 
-    very costly!</P>
-   </UL>
-  <P>
-   F.ex.: band 3-8 Hz, with steps of 0.5 Hz, will average frequencies 3, 
-   3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 and 8 Hz.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   In the <B>interval</B> case:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    You have to specify a range of frequencies, plus a step to save. If 
-    your step is greater than the transformation available step, an 
-    averaging will occur. F.ex. you ask from 3 to 8 Hz, by steps of 1 Hz, 
-    but the resolution allows up to 0.25 Hz, then frequencies 3, 3.25, 
-    3.5 and 3.75 are averaged together for your first saved frequency. 
-    Then 4, 4.25, 4.5 and 4.75 for your second saved frequency etc... 
-    Stated otherwise, they are treated like a serie of small bands.<BR>
-    <LI CLASS="mvd-P">As for the band case, averaged steps will be 
-    limited to a minimum of 0.25 Hz.<BR>
-    <LI CLASS="mvd-P">As for the band case, the <B>number</B> of 
-    frequencies averaged together for the S-Transform for each step is 
-    also limited to 25 (but this is quite unlikely to happen!).</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   In any case, you can see in the <B>verbose file</B> what are <B>exactly
-    the frequencies that have been averaged together</B>, if you have 
-   any doubt.</P>
-  <H3>
-   <A NAME="averaging-fft-appr"></A>FFT Approximation and averaging</H3>
-  <P>
-   FFT Approximation results can also be averaged, as <A HREF="#averaging-freqs">explained
-    here</A>. However some more checkings are to be done.</P>
-  <P>
-   The problems arise from the fact that the <B>results are signed, real values</B>,
-    as an actual EEG would look like. However, during the FFT 
-   Approximation process, the polarity of each <A HREF="terms-definitions-formulas.html#map">map</A> 
-   has been assigned to an arbitrary value: a map can be either <I><B>m</B></I> 
-   or <I><B>-m</B></I>, we can not know. This is an important issue when 
-   averaging together these maps, as to avoid them to cancel each other 
-   for this sign reason.</P>
-  <P>
-   Thus, Cartool, when dealing with averaging FFT Approximation maps, 
-   will perform <B>sign inversions of the maps whose correlation with 
-   each others are negative</B>. After the sign inversion the regular 
-   summation can take place.</P>
-  <H3>
-   <A NAME="avg-after-norm"></A>Averaging is done after conversion</H3>
-  <P>
-   When averaging many frequencies together (either <A HREF="#averaging-windows">this
-    case</A> or <A HREF="#averaging-freqs">this case</A>), the averaging 
-   takes place <B>after converting the results from complex to real</B> 
-   values, usually by taking the norm, the squared norm of the results, 
-   or through the FFT Approximation.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             Frequency Analysis
+         </H1>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <H5>
+             <A HREF="#analysis">What kind of analysis?</A><br><A HREF="#run-dialog">How to run the frequency analysis</A><br>
+             <A HREF="#results">Results</A><br><A HREF="#fft-approximation">FFT Approximation</A><br>Display: <A HREF="frequency-display.html">Frequency Display</A>&nbsp;
+             and&nbsp;&nbsp; <A HREF="frequency-display.html#advanced-display">
+                 Displaying
+                 maps for frequenciess
+             </A>
+         </H5>
+         <H5>
+             <A HREF="#technical-points">Technical points</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#file-types-in">Files that can be processed</A><br>
+                 <A HREF="#data-reference">Reference of data</A><br>
+                 <A HREF="#window-time-ref">Time reference for each window</A><br>
+                 <A HREF="#averaging-windows">Averaging windows</A><br><A HREF="#windowing">Windowing function</A><br>
+                 <A HREF="#time-frequency">Time / frequency resolution issue</A><br>
+                 <A HREF="#averaging-freqs">Averaging frequencies together</A><br>
+                 <A HREF="#averaging-fft-appr">FFT Approximation and averaging</A><br>
+                 <A HREF="#avg-after-norm">Averaging is done after conversion</A>
+             </H5>
+         </UL>
+         <H2>
+             <A NAME="analysis"></A>What kind of analysis?
+         </H2>
+         <P>
+             Currently, the analysis available are:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Plain ol' <B>FFT</B><BR>
+             <LI CLASS="mvd-P"><B>Power Maps</B><SUP>*</SUP><BR>
+             <LI CLASS="mvd-P"><B><A HREF="#fft-approximation">FFT Approximation</A></B><SUP>*</SUP><BR>
+             <LI CLASS="mvd-P"><B>S-Transform</B></P>
+         </UL>
+         <P>
+             However, new analysis will be added in the future. Also, you won't
+             find here the theory behind these methods, you can browse the
+             internet <A HREF="https://www.google.com/search?q=FFT+analysis+beginners">
+                 about
+                 the FFT
+             </A>, and <A HREF="https://en.wikipedia.org/wiki/S_transform">
+                 the
+                 S-Transform
+             </A>.
+         </P>
+         <P>
+             You have to first run the analysis, which generates new <A HREF="files-formats-cartool.html#freq">files</A>,
+             and then open those files to see the results. This part only refers
+             to the <U>analysis</U> itself, the other part is <A HREF="frequency-display.html">
+                 how
+                 to work with the display
+             </A>.<BR>
+             <BR>
+             <BR>
+             <BR>
+         </P>
+         <P>
+             <A NAME="article"></A>* see article&nbsp; <B>
+                 Intracerebral dipole
+                 source localization for FFT power maps
+             </B>&nbsp; by D. Lehman and
+             C.M. Michel, in <I>Electroencephalography and clinical Neurophysiology</I>,
+             1990, Elsevier.
+         </P>
+         <H2>
+             <A NAME="run-dialog"></A>How to run the frequency analysis
+         </H2>
+         <P>
+             Call the dialog from <FONT FACE="Arial Black,Arial,Helvetica">
+                 <A HREF="all-processings.html#tools">
+                     Tools
+                     | Frequency Analysis
+                 </A>
+             </FONT> menu, which is context sensitive:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A NAME="call-eeg-opened"></A>Called from an EEG file, the analysis
+                     will apply only to this very current file.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A NAME="call-batch-mode"></A>In any other case, the dialog will
+                     operate in Batch mode, requiring you to later select some files.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The following dialog pops out. Fill the parameters which are relevant
+             for you, then click either on <B>Process Current</B> or <B>Batch Process</B>
+             (according to how the dialog was invoked):
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <img height="1158" src="images/freq.analysis.dialog.png" width="960">
+             </P>
+         </CENTER>
+         <P>
+             <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Presets:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The most used sets of parameters, which make use of either FFT's or
+                             of S-Transform.
+                         </P>
+                         <P>
+                             Presets can be found either for <B>surface</B> or <B>intra-cranial recordings</B>,
+                             for the <B>Power Maps</B> and <B>FFT Approximation</B>, and for all
+                             these cases, with variations using a <B>STFT</B> (more time
+                             resolution). There are also presets for the <B>Wavelet S-Transform</B>.
+                         </P>
+                         <P>
+                             &nbsp;
+                         </P>
+                         <P>
+                             The most important parameters will be set, still <B>
+                                 <I>
+                                     some
+                                     parameters have to be set manually!
+                                 </I>
+                             </B> And, as usual, double
+                             check that all your settings make sense...
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD VALIGN=TOP style="width: 32%"></TD>
+                     <TD WIDTH="74%" VALIGN=TOP></TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Tracks to Analyse</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Tracks to analyse
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             <A HREF="#call-eeg-opened">From an opened EEG:</A><BR>
+                             Prefilled with the current <A HREF="eeg-display.html#mouse-tracks-select">selected</A>
+                             tracks, otherwise with the current displayed tracks.
+                         </P>
+                         <P>
+                             <A HREF="#call-batch-mode">In Batch Mode:</A><BR>
+                             On first call, default is <B>*</B>, meaning all <A HREF="terms-definitions-formulas.html#tracks">
+                                 regular
+                                 tracks
+                             </A>.
+                         </P>
+                         <P>
+                             You can of course modify this list. <A HREF="reprocess-tracks.html#tracks-enumerate">
+                                 See
+                                 important note about notation
+                             </A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Names from XYZ:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Optionally pointing to a file with the electrodes coordinates and
+                             names (such as <A HREF="files-formats-cartool.html#els">.els</A> and <A HREF="files-formats-cartool.html#xyz">.xyz</A>).
+                             The <B>names of the electrodes are taken from this file</B>,
+                             overriding the original names from the EEG (i.e. you can rename the electrodes).<BR>
+                             Be careful that the list above respect these names, otherwise you
+                             will get an error message.
+                         </P>
+                         <P>
+                             Constraints as in the <A HREF="general-concepts.html#linkingfiles">
+                                 link
+                                 mechanism
+                             </A> must be respected, such as same number of electrodes,
+                             same order, etc...
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Time Windows</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Analyse From [TF]:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             First <A HREF="terms-definitions-formulas.html#time-frame">time frame</A> to be analysed,
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             to
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             and last time frame <U>required</U> for analysis.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             (...&nbsp; after clipping)
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             For info, the last time frame to be <I>actually</I> analysed, with
+                             current parameters.
+                         </P>
+                         <P>
+                             This number might slightly differ from the previous field due to the
+                             subdivision in time windows.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             End of File
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Automatically set the last time frame to the <B>
+                                 actual end of the
+                                 current file
+                             </B>. Useful in <A HREF="#call-batch-mode">Batch Mode</A>,
+                             if the files have different lengths.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Windows Size:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             For an <em>FFT analysis</em>, data is analyzed by blocks, <em>aka</em>
+                             time windows:
+                         </P>
+                         <ul>
+                             <li>
+                                 Time windows are asually <strong>integer multiples</strong> of the
+                                 sampling frequency, like 2x or 1x.
+                             </li>
+                             <li>
+                                 The bigger the time window, the higher the frequency precision,
+                                 but the lower the time resolution
+                             </li>
+                             <li>
+                                 The smaller the time window, the lower the frequency precision,
+                                 and the higher the time resolution
+                             </li>
+                         </ul>
+                         <P>
+                         </P>
+                         <P>
+                             For the <em>S-Transform</em>, there is only one single big window which
+                             is the full time range to be analyzed.
+                         </P>
+                         <P>
+                             See <A HREF="#time-frequency">this note</A> about time frequency issues.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Windows Step:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             How much stepping to do when fetching the next time window:
+                         </P>
+                         <UL>
+                             <LI CLASS="mvd-P">
+                                 <P>
+                                     <B>1 TF</B>: one time frame, the shortest step,
+                                 </P>
+                             <LI CLASS="mvd-P">
+                                 <P>
+                                     <B>25% Window</B>: 25% of the window size is used, which means 25% of
+                                     new data incorporated,
+                                 </P>
+                             <LI CLASS="mvd-P">
+                                 <P>
+                                     <B>100% Window</B>: step across the whole current window, without any overlap.
+                                 </P>
+                         </UL>
+                         <P>
+                             &nbsp;
+                         </P>
+                         <P>
+                             Note that a 1 TF step is equivalent to perform a <A HREF="https://www.google.ch/search?hl=en&amp;q=Short+Term+Fourier+Transform">
+                                 <B>
+                                     Short
+                                     Term Fourier Transform
+                                 </B> (STFT)
+                             </A>.
+                         </P>
+                         <P>
+                             A 25% step (BTW used to be <I>75% overlap</I>) is a safe way to add
+                             significantly new data to the time window.
+                         </P>
+                         <P>
+                             A 100% step is useful in case you have epochs pasted into a single
+                             file, and you shouldn't mix their data. So setting the window size to
+                             the epoch length, and stepping 100% is the way to go.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             windows step ... [ms]
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Showing the resulting step in [ms] between successive time windows.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Number of Window(s):
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Showing the number of time windows you get with the current parameters.
+                         </P>
+                         <P>
+                             If the S-Transform analysis is used, there is only 1 window which
+                             extends exactly on the time range selected above.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B><A NAME="frequencies-avail"></A>Frequencies</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Sampling Frequency:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The current sampling frequency, if available from the current file.
+                         </P>
+                         <P>
+                             If in Batch mode, however, this field can and should be filled by hand.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Frequency Range and Resolution:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The <B>range of frequencies</B> and the <B>frequency step/resolution</B>
+                             you can obtain with your current parameters (Sampling Frequency and
+                             Window Size).
+                         </P>
+                         <P>
+                             <A NAME="frequency-step"></A>For example, if step is 0.5 Hz,
+                             frequencies actually available will be: 0, 0.5, 1, 1.5 etc... Hz.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B><A NAME="frequencies-saved"></A>Saving Frequency Interval:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Specify a <B>single interval of frequencies</B>&nbsp;to be saved in
+                             the output file. Give the lowest and the highest frequencies of the
+                             interval, plus a step/resolution.
+                         </P>
+                         <P>
+                             The saved frequency steps can be bigger than the minimum available,
+                             f.ex. you can save by steps of 1 Hz even if the analysis offers you a
+                             0.5 Hz resolution. In this case Cartool will <A HREF="#averaging-freqs">
+                                 average
+                                 neighboring frequencies
+                             </A>, therefore increasing the signal to
+                             noise ratio.
+                         </P>
+                         <P>
+                             &nbsp;
+                         </P>
+                         <P>
+                             Remember that it is always a good idea to constrain the <B>
+                                 saved frequency
+                                 range to be as small as possible
+                             </B> according to your data. Otherwise
+                             you will have bigger and slower files, and for no use.
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Log Frequencies:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Frequencies are inherently logarithmic by nature. For small ranges of
+                             frequencies, or to comply with usages, the whole interval of frequencies
+                             is often used. But for more accurate, or for broader ranges of
+                             frequencies, it is highly recommended to use a logarithmic scale instead.
+                         </P>
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             split into <em>XX</em> per Decade
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             This tells how many subdivisions to save per decades (frequencies
+                             multipled by 10).
+                         </P>
+                         <P>
+                             F.ex. 20 values per decade means:
+                         </P>
+                         <ul>
+                             <li>20 frequency values for interval 1 to 10 [Hz]</li>
+                             <li>20 frequency values for interval 10 to 100 [Hz]</li>
+                             <li>etc..</li>
+                         </ul>
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Saving Frequency Bands:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Save <B>any number of bands</B>, computing the <B>average</B> for each
+                             of them.
+                         </P>
+                         <P>
+                             Give the list of bands, separated either by a space, a comma or
+                             semi-colon. Be careful to actually <B>order the bands</B>: Cartool
+                             will follow the exact sequence you specify, so keep things consistant by
+                             using increasing frequency bands!
+                         </P>
+                         <P>
+                             F.ex.:&nbsp; 0-4, 4-8, 8-12, 12-20
+                         </P>
+                         <P>
+                             See this note about <A HREF="#averaging-freqs">averaging frequencies</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Type of Analysis</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             You can choose between 3 well proven and robust analysis:<ul>
+                                 <li>FFT</li>
+                                 <li>FFT Approximation</li>
+                                 <li>Wavelet (S-Transform)</li>
+                             </ul>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <BLOCKQUOTE>
+                             <P>
+                                 <B>FFT</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The classical <B>FFT</B>, or the <B>STFT</B> (Short Term Fourier
+                             Transform) if the <I>Windows Step</I> parameter is set to 1 TF.
+                         </P>
+                         <P>
+                             With Average Reference data and saving the Square Norm, you can
+                             compute the <B>Power Maps</B> on surface recordings (see the Presets).
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <BLOCKQUOTE>
+                             <P>
+                                 <B>FFT Approximation</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Projection on the least-square deviation line going through the FFT
+                             for each window (of the average-referenced data), aka best dipole
+                             fitting. Results are in the &quot;real&quot; values, and will look
+                             like an EEG with polarity (see the Presets).
+                         </P>
+                         <P>
+                             See this note about <A HREF="#averaging-fft-appr">averaging FFT approximation</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <BLOCKQUOTE>
+                             <P>
+                                 <B>S-Transform</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The Stockwell Transform allows for some <B>optimal time and frequency resolution</B>.
+                         </P>
+                         <P>
+                             Note that it applies only to a single window, which can be as big as
+                             needed by your analysis. However to reduce the computational cost,
+                             and for big ranges, use rather the plain FFT and keep the S-Transform
+                             for shorter time ranges (like a magnifier on a given area).
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>FFT Windowing Function:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             None
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             No windowing function added (or, to be totally precise, using a Flat Top
+                             windowing function).
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Hanning
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Hanning windowing function. Try <A HREF="https://www.google.com/search?q=FFT+Hanning+windowing+functions">this</A>
+                             to learn more. Also see this <A HREF="#windowing">technical point</A>.
+                         <P>
+                             Recommended most of the time, except if you have no overlap between
+                             windows, or a a single time window.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B><A NAME="windows-processed"></A>Time Windows are:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Averaged
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Analysed windows are averaged, hence the result will be a single
+                             &quot;Time Point&quot;. See&nbsp;<A HREF="#averaging-windows">this note</A>
+                             about the averaging.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             in Sequence
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Analysed windows are written sequentially, so you can have an idea of
+                             the frequencies in time. See&nbsp;<A HREF="#window-time-ref">this note</A>
+                             about the time reference.
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>FFT Time Windows Rescaling:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The FFT formula includes specifies a normalization, or divisive factor.
+                             Problem is there is no agreement on which formula to use in practice.
+                             Here you can specify the one to your liking:<ul>
+                                 <li><strong>None</strong>: no rescaling at all</li>
+                                 <li><strong>Square Root of Time Window size</strong></li>
+                                 <li>
+                                     <strong>Time Window size</strong>, aka <strong>Parseval formula</strong>.<em>
+                                         <br>
+                                         This is the most correct one, so if you don't know any better, keep
+                                         this option!
+                                     </em>
+                                 </li>
+                             </ul>
+                         <P>
+                         <P>
+                             <em>Note: </em>this option is relevant only for <em>single forward FFT's</em>,
+                             and not for the S-Transform (which is a forward + backward FFT all in
+                             one!)
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Outputting Values:</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Results of the analysis are always <em>complex values</em>. Usage is to
+                             save only the norm or power of these complex values, but you can still
+                             control what to actually save according to your needs:<ul>
+                                 <li>
+                                     <strong>Real part</strong><br>Only the real part of the complex
+                                     value. Only available for the FFT Approximation analysis, though.
+                                 </li>
+                                 <li><strong>Norm</strong><br>The norm, or intensity of the results.</li>
+                                 <li>
+                                     <strong>Power (Squared Norm)</strong><br>The square of the norm,
+                                     or the power of the results. Quite the default.
+                                 </li>
+                                 <li>
+                                     <strong>Complex</strong><br>The complete complex values, written
+                                     following the <B>C</B> style (double real + double imag).
+                                 </li>
+                                 <li>
+                                     <strong>Phase</strong><br>The phase of the values, in the [0 ..
+                                     2Pi) range
+                                 </li>
+                             </ul>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Reference of Data</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             No Reference
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Use the same reference as when the file(s) was(were) written, that
+                             is, no change in reference.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Use Current Reference
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Use the reference currently in use. Useful only if the files have
+                             already been opened in Cartool, and the user has changed the reference.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Average Reference
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Use the <A HREF="terms-definitions-formulas.html#formulas">average reference</A>,
+                             overriding current reference.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Other Reference
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Use the <B>average of the specified list of electrodes</B>. If only
+                             one electrode is specified, this will be the reference.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B><A NAME="file-types-out"></A>Options</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Optional filename infix&nbsp;override:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             The saved filenames will have the specified characters inserted.
+                             Default is a combination of the type of analysis and frequency range,
+                             which can be long and clumsy for your use.
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             All Results in Single freq File
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             This is the default ouput, a <A HREF="files-formats-cartool.html#freq">binary file</A>
+                             holding <B>all the results</B> (frequencies, electrodes, and all time windows).
+                         </P>
+                         <P>
+                             Use this to save space on your disk, and / or to later use the <A HREF="frequency-display.html">
+                                 Frequency
+                                 Display
+                             </A> of Cartool.
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             All Results in a Sub-Directory
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Optionally saving all results in a sub-directory for a better
+                             organization. Kind of hand if you wish to split the data with the
+                             splitting options below.
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Open File(s) Upon Completion
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             ...of the analysis. Just be careful in <A HREF="#call-batch-mode">
+                                 Batch
+                                 Mode
+                             </A>, this could open a lot of files! (the original EEG files
+                             are opened one at a time, then closed when done).
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Splitting Results:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Frequency analysis results are 3D data by nature: electrodes x time x
+                             frequencies. To facilate either the display, the export or the processing
+                             with other toolboxes, it comes in handy to split these data into
+                             smalller, 2D files.
+                         </P>
+                         <P>
+                         </P>
+                         <P>
+                             <em>Note:</em> You can always <a href="all-processings.html#file">
+                                 <strong>
+                                     break
+                                     down <em>.freq</em> files
+                                 </strong>, or <strong>
+                                     merge 2D files back into
+                                     <em>.freq</em> files
+                                 </strong>
+                             </a> later on.
+                         </P>
+                     </TD>
+                 </tr>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <BLOCKQUOTE>
+                             <P>
+                                 By Electrode
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Splitting results with one file per electrode.
+                         </P>
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <BLOCKQUOTE>
+                             <P>
+                                 By Frequency
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Splitting results with one file per frequency.
+                         </P>
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <BLOCKQUOTE>
+                             <P>
+                                 By Spectrum
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Splitting results with one file per spectrum.
+                         </P>
+                         <P>
+                             If you <A HREF="#windows-processed"><B>process sequentially</B></A>
+                             the different time windows, there will be as <B>many output files</B>
+                             as there are of these time windows.
+                         </P>
+                         <P>
+                             If you <A HREF="#windows-processed"><B>average</B></A> the time
+                             windows, a <B>single file</B> with the average spectrum is produced.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Shrinking file size by.. Downsampling to Highest Freq.
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Especially useful for the S-Transform, the resulting files might very big
+                             and carrying way too much temporal information. F.ex. if the analyzed
+                             frequencies were in the range [5..50], you don't really care for time
+                             steps smaller than 20 [ms]. This option will optimally downsample the
+                             time resolution according to your parameters.
+                         <P>
+                             Don't use it however if you wish to preserve a per time frame
+                             correspondance with your original data, though.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Process Current</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Enabled when called from an EEG. The analysis applies only to <B>
+                                 this
+                                 current file
+                             </B>.
+                         </P>
+                         <P>
+                             This button remains <B>
+                                 disabled until <U>all</U> the parameter
+                                 dialogs have received enough (and consistent) informations
+                             </B>. If
+                             this is not the case, first check the current dialog: if its
+                             &quot;Next&quot; button is disabled, the problem is in the current
+                             dialog. Otherwise, browse the other dialogs for some missing informations.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Batch Process</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Enabled when not called from an EEG. This will open a dialog for you
+                             to pick the <B>set of files</B> (even from different directories) to
+                             be analysed.
+                         </P>
+                         <P>
+                             This button remains <B>
+                                 disabled until <U>all</U> the parameter
+                                 dialogs have received enough (and consistent) informations
+                             </B>. If
+                             this is not the case, first check the current dialog: if its
+                             &quot;Next&quot; button is disabled, the problem is in the current
+                             dialog. Otherwise, browse the other dialogs for some missing informations.
+                         </P>
+                         <P>
+                             You can <B>Drag &amp; Drop files directly</B> to run the Batch Process!
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Cancel
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Quit the dialog.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Help
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Launch the Help to the right page (should be here...).
+                     </TD>
+                 </TR>
+             </TABLE>
+         </P>
+         <H2>
+             <A NAME="results"></A>Frequency analysis - Results
+         </H2>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A HREF="files-formats-cartool.html#freq"><B><I>.freq</I></B></A> file with
+                     all the important informations, if this <A HREF="#file-types-out">option</A>
+                     has been selected (of course recommended!). Freq files are written in
+                     the same directories as their sources. <A HREF="frequency-display.html">Open</A>
+                     them to <A HREF="frequency-display.html">work with the results</A>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <I><a href="files-formats-cartool.html#sef"><B>.sef</B></a></I> files for each
+                     split electrode, frequency or spectrum, if any of splitting options have
+                     been used.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <I><B>.ApproxEeg</B><A HREF="files-formats-cartool.html#ep"><B>.ep</B></A></I>
+                     file(s), for the approximated EEG of each electrode, for each saved
+                     time window (if the &quot;Spectrum&quot; option above has been
+                     selected). Note that these files also have the <B>
+                         frequencies on the
+                         horizontal axis
+                     </B>, like the Spectrum.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Verbose file <I><B>...&lt;type of analysis&gt;</B><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>&nbsp;
+                     (text), showing all the parameters.
+                 </P>
+         </UL>
+         <H2>
+             <A NAME="fft-approximation"></A>FFT Approximation
+         </H2>
+         <P>
+             The <A HREF="#article">FFT Approximation</A> is a very convenient way
+             to retrieve an <B>EEG-like</B> signal, made of signed values, from
+             the FFT results.
+         </P>
+         <P>
+             To begin with, the FFT, when applied to a time window, always returns
+             results in the Complex space <B>C</B>. Each electrode, for each
+             frequency, is a complex number made of two parts, the real and
+             imaginary values. Hence, we can plot them on a plane (X is the real
+             axis, Y is the imaginary axis), here for one time window, and three
+             successive frequencies:
+         </P>
+         <P>
+             <IMG SRC="images/freq.fftapprox.w1f1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f2.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f3.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The FFT Approximation finds the <B>best fitting line</B> in the
+             average referenced data (equivalent to the best fitting dipole), then <B>projects</B>
+             the electrodes complex values on this axis. Being left with a single
+             dimension, a line, we arbitrarily assign a polarity to one direction,
+             and voil&agrave;, we have <A HREF="frequency-display.html#advanced-display">
+                 real,
+                 signed, scalar values
+             </A>. See again the same three frequencies, for
+             one time window, with the resulting projected electrodes:
+         </P>
+         <P>
+             <IMG SRC="images/freq.fftapprox.w1f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f2.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f3.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             We repeat this operation for each time window, see here the first <B>
+                 three
+                 time windows
+             </B>, for a single frequency (see the rotating pattern
+             due to phase shift of the signal):
+         </P>
+         <P>
+             <IMG SRC="images/freq.fftapprox.w1f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w2f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w3f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             You may have noted that the final polarity is arbitrary, which should
+             be accounted for <A HREF="#averaging-fft-appr">in case of averaging</A>.
+             As long as patterns / topographies are concerns, this is not a real
+             problem, though.
+         </P>
+         <H2>
+             <A NAME="technical-points"></A>Frequency analysis - Technical points
+         </H2>
+         <H3>
+             <A NAME="file-types-in"></A>Files that can be processed
+         </H3>
+         <P>
+             <B>Input files</B> can be anything that looks like tracks:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A HREF="files-formats-others.html#eeg"><I>Any</I> EEG files recognized by Cartool,</A><BR>
+             <LI CLASS="mvd-P">
+                 <A HREF="files-formats-cartool.html#ris">Ris files</A>
+                 (Results from Inverse Solution computation),</P>
+         </UL>
+         <H3>
+             <A NAME="data-reference"></A>Reference of data
+         </H3>
+         <P>
+             Be aware that <B>changing the reference</B> of the data <B>
+                 greatly
+                 affects the shape of the signal
+             </B>, and therefor its frequencies.
+             This is why the <B>Power Maps</B> and <B>FFT Approximation</B>
+             presets activate the average reference (as well as some other
+             parameters), to prevent any accidental change.<BR>
+             By the way, don't use these two methods for intra-cranial electrodes,
+             this does not make sense at all (again, see <A HREF="#article">article</A>)!
+         </P>
+         <H3>
+             <A NAME="window-time-ref"></A>Time reference for each window
+         </H3>
+         <P>
+             Each window is a part cut from the original file, say from&nbsp;<I> t</I>&nbsp;
+             to&nbsp; <I>t + window_size - 1</I>. Once processed, the results are <B>
+                 frequencies
+                 for that whole window
+             </B>. Therefor, it is natural to attribute the <B>
+                 mean
+                 time
+             </B>&nbsp; <I>t + window_size / 2</I>&nbsp; of that window as
+             its time position in the output file.
+         </P>
+         <H3>
+             <A NAME="averaging-windows"></A>Averaging windows
+         </H3>
+         <P>
+             Average occurs at the very last stage of the processing. For example, <U>after</U>
+             the <B>Power Maps</B> have been computed. This is not equivalent to
+             the Power Maps of the mean FFT.
+         </P>
+         <H3>
+             <A NAME="windowing"></A>Windowing function
+         </H3>
+         <P>
+             When using the Hanning windowing function, the results after analysis
+             are <B>multiplied by a factor 2</B> to account for the fading
+             introduced by the method.
+         </P>
+         <H3>
+             <A NAME="time-frequency"></A>Time / frequency resolution issue
+         </H3>
+         <P>
+             <B>Smaller time windows</B> gives a <B>higher time resolution</B>,
+             but a <B>lower frequency resolution</B>. Conversely, bigger time
+             windows gives a lower time resolution, and a higher frequency
+             resolution. The dialog, by default, suggest a compromise between the
+             time and frequency resolution, which the user can change.
+         </P>
+         <P>
+             Here you can see the same time range analysed with a small (64), a
+             medium (256) and a large (1024) time window (for a sampling frequency
+             of 256 Hz):
+         </P>
+         <P>
+             <IMG SRC="images/frequency1.png" WIDTH="492" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+             <IMG SRC="images/frequency2.png" WIDTH="492" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0"><BR>
+             <IMG SRC="images/frequency3.png" WIDTH="492" HEIGHT="317" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <H3>
+             <A NAME="averaging-freqs"></A>Averaging frequencies together
+         </H3>
+         <P>
+             Frequencies <I><A HREF="#frequencies-saved">saved</A></I> and <I><A HREF="#frequencies-avail">computed</A></I>
+             usually differ, in the sense that often, <B>
+                 more frequencies are
+                 available from the transformation than there will be written to file
+             </B>.
+             The most obvious case is when saving a frequency band, all
+             frequencies within that band will be averaged together into a single
+             result. Though, it also applies to the interval case, f.ex. if the
+             saved frequencies are stepping by 1 Hz, and the transformation allows
+             finer steps of 0.5 Hz.
+         </P>
+         <P>
+             To take benefit from that situation, <B>
+                 Cartool will average as much
+                 as it can from the available frequencies
+             </B> to produce the requested
+             output results. Let's see how this works.
+         </P>
+         <P>
+             In the <B>frequency band case</B>:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     All frequencies within the specified range (including both limits),
+                     with all the available steps (say, again, 0.5 Hz) will be averaged together.<BR>
+             <LI CLASS="mvd-P">
+                 But if the available steps are smaller than 0.25
+                 Hz, f.ex. 0.125 Hz, the steps taken will be limited to those
+                 multiples of 0.25 Hz. Stated otherwise, Cartool averages up to 0.25
+                 Hz steps.<BR>
+             <LI CLASS="mvd-P">
+                 In the S-Transform case, the <B>number</B> of
+                 frequencies averaged together has been limited to a total of 25 per
+                 band. Because the S-Transform is very smooth, and it does not provide
+                 much informations to average more, and because this transformation is
+                 very costly!</P>
+         </UL>
+         <P>
+             F.ex.: band 3-8 Hz, with steps of 0.5 Hz, will average frequencies 3,
+             3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 and 8 Hz.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             In the <B>interval</B> case:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     You have to specify a range of frequencies, plus a step to save. If
+                     your step is greater than the transformation available step, an
+                     averaging will occur. F.ex. you ask from 3 to 8 Hz, by steps of 1 Hz,
+                     but the resolution allows up to 0.25 Hz, then frequencies 3, 3.25,
+                     3.5 and 3.75 are averaged together for your first saved frequency.
+                     Then 4, 4.25, 4.5 and 4.75 for your second saved frequency etc...
+                     Stated otherwise, they are treated like a serie of small bands.<BR>
+             <LI CLASS="mvd-P">
+                 As for the band case, averaged steps will be
+                 limited to a minimum of 0.25 Hz.<BR>
+             <LI CLASS="mvd-P">
+                 As for the band case, the <B>number</B> of
+                 frequencies averaged together for the S-Transform for each step is
+                 also limited to 25 (but this is quite unlikely to happen!).</P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             In any case, you can see in the <B>verbose file</B> what are <B>
+                 exactly
+                 the frequencies that have been averaged together
+             </B>, if you have
+             any doubt.
+         </P>
+         <H3>
+             <A NAME="averaging-fft-appr"></A>FFT Approximation and averaging
+         </H3>
+         <P>
+             FFT Approximation results can also be averaged, as <A HREF="#averaging-freqs">
+                 explained
+                 here
+             </A>. However some more checkings are to be done.
+         </P>
+         <P>
+             The problems arise from the fact that the <B>results are signed, real values</B>,
+             as an actual EEG would look like. However, during the FFT
+             Approximation process, the polarity of each <A HREF="terms-definitions-formulas.html#map">map</A>
+             has been assigned to an arbitrary value: a map can be either <I><B>m</B></I>
+             or <I><B>-m</B></I>, we can not know. This is an important issue when
+             averaging together these maps, as to avoid them to cancel each other
+             for this sign reason.
+         </P>
+         <P>
+             Thus, Cartool, when dealing with averaging FFT Approximation maps,
+             will perform <B>
+                 sign inversions of the maps whose correlation with
+                 each others are negative
+             </B>. After the sign inversion the regular
+             summation can take place.
+         </P>
+         <H3>
+             <A NAME="avg-after-norm"></A>Averaging is done after conversion
+         </H3>
+         <P>
+             When averaging many frequencies together (either <A HREF="#averaging-windows">
+                 this
+                 case
+             </A> or <A HREF="#averaging-freqs">this case</A>), the averaging
+             takes place <B>after converting the results from complex to real</B>
+             values, usually by taking the norm, the squared norm of the results,
+             or through the FFT Approximation.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>

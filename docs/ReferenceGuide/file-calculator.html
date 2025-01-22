@@ -18,1109 +18,1408 @@
 }
 </style>
  </HEAD>
- <BODY BGCOLOR="WHITE">
-  <H1>
-   File Calculator</H1>
-  <P ALIGN=LEFT>
-   &nbsp;</P>
-  <H5>
-   <A HREF="#what-is">What is the File Calculator?</A><br><A HREF="#how-to-run">How to run the File Calculator</A><br>
-   <A HREF="#expressions">Expressions</A></H5>
-  <UL>
-   <H5>
-    <A HREF="#groups-of-files">Groups of files</A><br><A HREF="#operations">Operations and functions</A><br>
-	<A HREF="#examples">Examples</A></H5>
-   </UL>
-  <H5>
-   <A HREF="#results-of-inverse">Results of Inverse Solution</A><br>
-   <A HREF="#results">Results</A><br><A HREF="#technical-points">Technical points and hints</A></H5>
-  <H2>
-   <A NAME="what-is"></A>What is the File Calculator?</H2>
-  <P ALIGN=LEFT>
-   This is a tool to <B>batch-process sets of files</B> with a <B>mathematical
-    expression</B> of your liking. There can be many sets of files to 
-   use, but each set should be somehow a coherent one, f.ex. all the 
-   files of all subjects for one condition. Expressions are composed 
-   with elementary operations, see below.</P>
-  <H2>
-   <A NAME="how-to-run"></A>How to run the File Calculator</H2>
-  <P>
-   Call the dialog from <FONT FACE="Arial Black,Arial,Helvetica"><A HREF="all-processings.html#tools">Tools
-    | File Calculator</A></FONT> menu.</P>
-  <P>
-   The following dialog pops out. Fill the parameters which are relevant 
-   for you, <B>drop the sets of files</B> to process, then click either 
-   on the <B>Process</B> button:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <IMG SRC="images/file-calculator.dialog.png" VSPACE="0" HSPACE="0" BORDER="0"></P>
-   </CENTER>
-  <DIV>
-   <P ALIGN=LEFT>
-    <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Groups of Files</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        You can Drag &amp; Drop files here.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Add New Group of Files</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Enter a new group of files.</P>
-       <P>
-        See <A HREF="#groups-of-files">this note</A> about groups.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Remove Last Group</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Does what it says (amazing).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Clear All Groups</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Clear out all the groups at once.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Read Lists from File</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        You can direclty retrieve the lists of groups previously <A HREF="#file-list-write">saved</A>.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <A NAME="file-list-write"></A>Write Lists to File</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        You can save the lists of current groups into a file, in case you 
-        want to re-use them (much recommended!).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Sort Files within Lists</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        A strange behavior of Windows is to not respect the order of the 
-        files dropped in a window. To help cure this silly habit, you can 
-        sort all the file names of all the groups already entered.</P>
-       <P>
-        Note however that Drag &amp; Dropped files are automatically sorted.</P>
-       <P>
-        <B>This is an important issue</B>, as we're going to process files in 
-        parallel between groups!</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Number of Groups:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Just a counter of the number of groups entered.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Summary list of all groups</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        One group is displayed per line.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Expression</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Enter the <A HREF="#expressions"><B>expression</B></A> to be 
-        evaluated. Be sure you have entered all the groups needed by your expression!</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B><A NAME="file-types-out"></A>Output File Type</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        EP (text)</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Text file, see the <B><I><A HREF="files-formats-cartool.html#ep">.ep</A></I></B><A HREF="files-formats-cartool.html#ep"> file</A> specification.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        EPH (text)</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Text file, see the <B><I><A HREF="files-formats-cartool.html#eph">.eph</A></I></B><A HREF="files-formats-cartool.html#eph"> file</A> specification.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        SEF (binary)</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Binary file, see the <B><I><A HREF="files-formats-cartool.html#sef">.sef</A></I></B><A HREF="files-formats-cartool.html#sef"> file</A> specification.</P>
-       <P>
-        Compact format which can handle all the basic informations for EEG.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        EDF (binary)</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Binary file, see the <B><I><A HREF="files-formats-others.html#eeg raw">.edf</A></I></B><A HREF="files-formats-others.html#eeg-raw"> file</A> specification.</P>
-       <P>
-        Useful only for data interchange, otherwise don't use (loss of precision)!</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        RIS (binary)</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Binary file, see the <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B><A HREF="files-formats-cartool.html#ris"> file</A> specification.</P>
-       <P>
-        Produced by the matrix multiplication / Inverse Solution computation.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Options</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Output Directory</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        What it says: where to put the results!</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <A NAME="generate-file-names"></A>Generate file names as:</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        &nbsp;</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Compound of Operations</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Each file name will hold a condensed version of the operations 
-        applied from the originals. See this <A HREF="#output-file-names">note</A>.</P>
-       <P>
-        Use this if you want to remember precisely what are your files, f.ex. 
-        for Inverse Solutions. Be aware that too many operations will 
-        generate very long and unreadible file names, and can even crash Cartool.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Simply Numbered</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Just generate file names as a numbered list. See this <A HREF="#output-file-names">note</A>.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP></TD>
-      <TD WIDTH="73%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        <B>Process</B></TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Run the batch processing.</P>
-       <P>
-        The button remains disabled until all parameters are OK.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Cancel</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Quit the dialog.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="27%" VALIGN=TOP>
-       <P>
-        Help</TD>
-      <TD WIDTH="73%" VALIGN=TOP>
-       <P>
-        Launch the Help to the right page (should be here...).</TD>
-     </TR>
-    </TABLE></P>
-   </DIV>
-  <H2>
-   <A NAME="expressions"></A>Expressions</H2>
-  <P>
-   You have to provide a <B>mathematical expression</B> to be applied on 
-   your files.</P>
-  <P>
-   First understand what is meant by <B>groups of files</B>, then see 
-   what <B>operations</B> can be applied to them.</P>
-  <H3>
-   <A NAME="groups-of-files"></A>Groups of files</H3>
-  <P>
-   Operands are usually whole sets of files, and <B>each set should have 
-   some coherence of its own</B>:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Having some sort of <B>semantic</B> associated to it, f.ex. all the 
-    subjects for 1 condition, or all the epochs of 1 subject etc...</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Having the <B>same number of electrodes / solution points</B> &amp; <B>same
-     number of time frames</B> among files.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Preferably files being of the <B>same types</B>, i.e. not mixing 
-    scalar and vector values.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Preferaby files having the <B>same extensions</B>, but not mandatory.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   <B>Among groups, however, sizes and types can differ</B>. However a 
-   given operation should receive compatible groups, f.ex.:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Summing, subtracting etc... between 2 groups: both groups should have 
-    the same number of electrodes, time frames, and number of files.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Multiplying matrices with EEG: the usual Line / Column dimensions 
-    criterion should be satisfied.</P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   Groups are used by <B>sequentially and synchronically processing each 
-   of their files</B>, f.ex. summing all the files of two groups:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P ALIGN=LEFT>
-        <B>Group1</B></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P ALIGN=LEFT>
-        <B>Group2</B></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P ALIGN=LEFT>
-        <B>&quot;+&quot; operation</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond1.subj1</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond2.subj1</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond1.subj1 + cond2.subj1</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond1.subj2</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond2.subj2</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond1.subj2 + cond2.subj2</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond1.subj3</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond2.subj3</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond1.subj3 + cond2.subj3</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        ...</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        ...</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        ...</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond1.subj<I>n</I></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond2.subj<I>n</I></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        cond1.subjn + cond2.subj<I>n</I></TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <P>
-   <B>Matrix multiplication</B>, though, is a special case. One matrix 
-   is taken, then all the EEG are multiplied to it, then the next 
-   matrix, and so on:</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P ALIGN=LEFT>
-        <B>Group1</B></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P ALIGN=LEFT>
-        <B>Group2</B></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P ALIGN=LEFT>
-        <B>&quot;*&quot; operation</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        matrix1</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        subj1<BR>
-        subj2<BR>
-        subj3<BR>
-        ...<BR>
-        subj<I>n</I></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        matrix1 * subj1<BR>
-        matrix1 * subj2<BR>
-        matrix1 * subj3<BR>
-        ...<BR>
-        matrix1 * subj<I>n</I></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        matrix2</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        subj1<BR>
-        subj2<BR>
-        subj3<BR>
-        ...<BR>
-        subj<I>n</I></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        matrix2 * subj1<BR>
-        matrix2 * subj2<BR>
-        matrix2 * subj3<BR>
-        ...<BR>
-        matrix2 * subj<I>n</I></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        ...</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        ...</TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        ...</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        matrix<I>m</I></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        subj1<BR>
-        subj2<BR>
-        subj3<BR>
-        ...<BR>
-        subj<I>n</I></TD>
-      <TD WIDTH="33%" VALIGN=TOP>
-       <P>
-        matrix<I>m</I> * subj1<BR>
-        matrix<I>m</I> * subj2<BR>
-        matrix<I>m</I> * subj3<BR>
-        ...<BR>
-        matrix<I>m</I> * subj<I>n</I></TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <H3>
-   <A NAME="operations"></A>Operations &amp; functions available</H3>
-  <P>
-   <I>Group</I>, <I>Group1</I>, <I>Group2</I>... are groups of files.<BR>
-   <I>Value</I> is a scalar value.<BR>
-   <I>Vector3D</I> is a 3D vector (x, y, z).</P>
-  <P>
-   &nbsp;</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Operation &amp; operands</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        <B>Description</B></TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        <B>Type of results</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP></TD>
-      <TD WIDTH="46%" VALIGN=TOP></TD>
-      <TD WIDTH="31%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Group + Value</B><BR>
-        <B>Value + Group</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Add a constant value to a group of files.<BR>
-        Input files should contain scalar values.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        scalar values</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Group + Vector3D</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Add a constant vector to a group of files.<BR>
-        Input files should contain 3D vectors.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        3D vectors</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Group1 + Group2</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Sum all files of Group1 with the files of Group2.<BR>
-        Input files should both contain either scalar values or 3D vectors, 
-        but not a mix of the two.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        scalar values if input are scalar values,<BR>
-        3D vectors if input are 3D vectors</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP></TD>
-      <TD WIDTH="46%" VALIGN=TOP></TD>
-      <TD WIDTH="31%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Group - Value</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Subtract a constant value to a group of files.<BR>
-        Input files should contain scalar values.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        scalar values</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Group - Vector3D</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Subtract a constant vector to a group of files.<BR>
-        Input files should contain 3D vectors.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        3D vectors</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Group1 - Group2</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Subtract all files of Group1 with the files of Group2.<BR>
-        Input files should both contain either scalar values or 3D vectors, 
-        but not a mix of the two.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        scalar values if input are scalar values,<BR>
-        3D vectors if input are 3D vectors</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP></TD>
-      <TD WIDTH="46%" VALIGN=TOP></TD>
-      <TD WIDTH="31%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Group * Value</B><BR>
-        <B>Value * Group</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Multiply the group of files by a constant value.<BR>
-        Input files could contain either scalar values or 3D vectors.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        scalar values if input are scalar values,<BR>
-        3D vectors if input are 3D vectors</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Group1 * Group2</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Multiply all files from Group1 by the files of Group2.<BR>
-        Group1 should contain matrices.<BR>
-        Group2 should contain files of 2D data, like EEG.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        scalar values or 3D vectors according to each matrix</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP></TD>
-      <TD WIDTH="46%" VALIGN=TOP></TD>
-      <TD WIDTH="31%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Group / Value</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Divide the group of files by a constant value.<BR>
-        Input files could contain either scalar values or 3D vectors.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        scalar values if input are scalar values,<BR>
-        3D vectors if input are 3D vectors</TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <CENTER>
-   <P ALIGN=CENTER>
-    &nbsp;</P>
-   </CENTER>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Function &amp; operands</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        <B>Description</B></TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        <B>Type of results</B></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP></TD>
-      <TD WIDTH="46%" VALIGN=TOP></TD>
-      <TD WIDTH="31%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Abs ( Group )</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Input files are scalar values: absolute values.<BR>
-        Input files are 3D vectors: norm of the vectors.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        scalar values</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP></TD>
-      <TD WIDTH="46%" VALIGN=TOP></TD>
-      <TD WIDTH="31%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Scalar ( Group )</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Input files are scalar values: values untouched.<BR>
-        Input files are 3D vectors: norm of the vectors.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        scalar values</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP></TD>
-      <TD WIDTH="46%" VALIGN=TOP></TD>
-      <TD WIDTH="31%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Sqr ( Group )</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Input files are scalar values: the square of the values.<BR>
-        Input files are 3D vectors: square of the norm of the vectors.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        scalar values</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP></TD>
-      <TD WIDTH="46%" VALIGN=TOP></TD>
-      <TD WIDTH="31%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="23%" VALIGN=TOP>
-       <P>
-        <B>Sqrt ( Group )</B></TD>
-      <TD WIDTH="46%" VALIGN=TOP>
-       <P>
-        Input files are scalar values: the square root of the values.<BR>
-        Input files are 3D vectors: not allowed.</TD>
-      <TD WIDTH="31%" VALIGN=TOP>
-       <P>
-        Group,<BR>
-        scalar values</TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <P>
-   &nbsp;</P>
-  <H3>
-   <A NAME="examples"></A>Examples of expressions</H3>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>Group1</B></TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        Handy to just rename a bunch of files, and / or convert format. Check <I>Simply
-         Numbered</I> from the <A HREF="#generate-file-names">Generate file names</A> option.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>Group1 * Group2</B></TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        Compute the results of Inverse Solutions, if Group1 holds the 
-        matrices and Group2 the EEG.<BR>
-        Outputted <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B> 
-        files can be either scalar or vectorial.</P>
-       <P>
-        See the next paragraph for more on IS.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>Group1 - Group2</B></TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        Compute the differences between two sets of files.<BR>
-        This could be either 2 EEGs or 2 results from Inverse Solution. In 
-        the last case, they can correctly be either of scalar or vectorial types.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>( 3 * Group1 + 2 * Group2 ) / 5</B></TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        Do a weighted sum of two groups.<BR>
-        Groups can be either scalars or vectorials.</TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <H2>
-   <A NAME="results-of-inverse"></A>Computing &quot;Results of Inverse Solutions&quot;</H2>
-  <P class="auto-style1">
-   !New!</P>
-  <P>
-   It is now <em><strong>strongly recommended</strong></em> to use the new 
-   dedicated tool to <a href="computing-ris.html"><strong>compute the results 
-   of inverse solutions</strong></a>.</P>
-  <P>
-   This tool offers much more controls over this process, like preprocessing 
-   filter, postprocessing standardization, per group average etc... It also 
-   performs numerous consistency checks on all the input files, so the results 
-   are also safer.</P>
-  <P>
-   <a href="computing-ris.html">Use that tool</a> - now.</P>
-  <P class="mvd-h4">
-   The old way - if you really insist:</P>
-  <P>
-   You can use the <A HREF="file-calculator.html">File Calculator</A> to 
-   produce the final stage of the Inverse Solution, what we call Results 
-   of Inverse Solution, or RIS (see <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B> 
-   files). Provided one or more <A HREF="files-formats-others.html#inverse-solutions">matrix(ces)
-    of Inverse Solution</A>, you can batch this computation according to 
-   your needs.</P>
-  <P>
-   To see how you can <B>compute the inverse matrices</B>, go <A HREF="computing-inverse-solution-matrices.html">here</A>,
-    and to see how you can <B>use these matrices for display</B>, go <A HREF="esi-display.html">here</A>.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   Say we dropped the matrices into <I>Group1</I>, and some ERPs for two 
-   conditions into <I>Group2</I> and <I>Group3</I> respectively. Here 
-   are the most common options to compute the results of inverse 
-   solutions (which one is &quot;the right one&quot; depends on your 
-   experiment, paradigm and tests):</P>
-  <P>
-   &nbsp;</P>
-  <CENTER>
-   <P ALIGN=CENTER>
-    <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>Group1 * Group2</B></P>
-       <P>
-        and</P>
-       <P>
-        <B>Group1 * Group3</B></TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        <A NAME="ris-vectorial"></A><B>Multiplying the matrices by the EEGs 
-        is the basic operation.</B></P>
-       <P>
-        The resulting files can either hold <B>vectors</B> (the most common 
-        cases) or <B>scalar values</B> for each solution points location, 
-        which is quite important to know for your next steps (usually, statistics).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP></TD>
-      <TD WIDTH="65%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>Scalar ( Group1 * Group2 )</B></P>
-       <P>
-        and</P>
-       <P>
-        <B>Scalar ( Group1 * Group3 )</B></TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        <A NAME="ris-scalar"></A>We can add a step to the multiplication, by 
-        forcing the results to be scalar values.</P>
-       <P>
-        If the results of the multiplication are <B>vectors</B>, the <I>Scalar</I> 
-        operation will convert them to their (Euclidian) <B>norm</B>. This is 
-        the same as the <I>Abs</I> function.</P>
-       <P>
-        If the results of the multiplication are already <B>scalars</B>, the <I>Scalar</I> 
-        operation will do nothing. This is <B>not</B> the same as the <I>Abs</I> 
-        function, as the <I>Abs</I> will remove the sign of the scalar 
-        values, which <I>Scalar</I> does preserve.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP></TD>
-      <TD WIDTH="65%" VALIGN=TOP></TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>Group1 * ( Group2 - Group3 )</B></P>
-       <P>
-        or</P>
-       <P>
-        <B>Group1 * Group2 - Group1 * Group3</B></TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        We can compute the difference in the inverse solution space between 
-        the two conditions. The two formula are mathematically equivalent, 
-        though the former is faster (2 operations, and only one multiplication).</P>
-       <P>
-        This formula <B>accounts for the directions of the vectors</B> in the 
-        inverse space: vectors are being subtracted between the 2 conditions.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>Abs ( Group1 * ( Group2 - Group3 ) )</B></P>
-       <P>
-        or</P>
-       <P>
-        <B>Abs ( Group1 * Group2 - Group1 * Group3 )</B></TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        Same as above, then converting to the absolute / norm values. We end 
-        up with the <B>intensity of the vectorial differences</B> between the 
-        two conditions.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>Scalar ( Group1 * Group2 )</B><BR>
-        <B>- Scalar ( Group1 * Group3 )</B></TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        For vectorial inverse, this computes the <B>difference of intensities</B> 
-        between the two conditions, without accounting whatsoever with the 
-        directions of the vectors.</P>
-       <P>
-        For scalar inverse, this computes the <B>difference of (signed) values</B> 
-        between the two conditions</P>
-       <P>
-        Results are signed scalar values (positive and negative).</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>Abs ( Scalar ( Group1 * Group2 )</B><BR>
-        <B>- Scalar ( Group1 * Group3 ) )</B></P>
-       <P>
-        <B></B>&nbsp;</TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        Same as above, then converting all differences into positive values.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>Abs ( Abs ( Group1 * Group2 )</B><BR>
-        <B>- Abs ( Group1 * Group3 ) )</B></TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        We compute here the <B>difference of absolute intensities</B> between 
-        the two conditions (without, for the vectorial inverse, accounting 
-        whatsoever for the directions of the vectors).</P>
-       <P>
-        Results are positive scalar values.</TD>
-     </TR>
-     <TR>
-      <TD WIDTH="35%" VALIGN=TOP>
-       <P>
-        <B>Abs ( Sqr ( Group1 * Group2 )</B><BR>
-        <B>- Sqr ( Group1 * Group3 ) )</B></TD>
-      <TD WIDTH="65%" VALIGN=TOP>
-       <P>
-        Just a variation of the previous formula, giving the absolute 
-        difference of powers between the two conditions.</TD>
-     </TR>
-    </TABLE></P>
-   </CENTER>
-  <H2>
-   <A NAME="results"></A>File Calculator - Results</H2>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Processed files are written in the <B>base directory</B>. File names 
-    can be either a compound of the applied operations, or a simple 
-    numbered list of files based on the base directory name. Extension is 
-    the one specified in the paramaters.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The <B>type of results</B> will depend on what you asked for, f.ex. 
-    it is usually <B>scalar values</B> (&quot;numbers&quot;), but it can 
-    be <B>vectors</B>, as from the Inverse Solution computation.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    The <B>dimensions</B> of the results also depends on the operations 
-    applied, so they can have different sizes as compared to the input files.</P>
-   <LI CLASS="mvd-P">
-   <P>
-    Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I> 
-    (text), showing all the parameters.</P>
-   </UL>
-  <H2>
-   <A NAME="technical-points"></A>File Calculator - Technical points and hints</H2>
-  <H4>
-   <A NAME="output-file-names"></A>Output file names</H4>
-  <P>
-   By default, Cartool will <A HREF="#generate-file-names">generate file names</A> 
-   that <I>reflect</I> the whole set of operations. These are not exact 
-   replicas of the expression, but rather a construction derived of it. 
-   This is meant to help remember what operations have been done on the files.</P>
-  <P>
-   To do so, it will use the original file names, insert the operators / 
-   functions used one at a time, then optinally shrink the resulting 
-   file names if they appear to be too long. F.ex.:</P>
-  <UL>
-   <LI CLASS="mvd-P">
-   <P>
-    Expression&nbsp; <B>Group1 - Group2</B>&nbsp; can generate&nbsp; <B>basprr4-basviri4.eph</B></P>
-   <LI CLASS="mvd-P">
-   <P>
-    Expression&nbsp; <B>Scalar ( Group1 * ( Group2 - Group3 ) )</B>&nbsp; 
-    can generate&nbsp; <B>Scalar(Avg152tSmacProSph.lorb1.basprr4-basviri4).ris</B></P>
-   </UL>
-  <P>
-   &nbsp;</P>
-  <P>
-   One problem arises with operator like * / and the like, which Windows 
-   does <I>not</I> want at all in file names. In these cases, a 
-   &quot;.&quot; (dot) is used instead of the operator.</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   If not a compound of operations, file names will simply repeat the 
-   last directory part of the Base Directory, then add an index value, f.ex.:</P>
-  <UL>
-   <P>
-    <B>Calc G1-G2.0001.eph</B><BR>
-    <B>Calc G1-G2.0002.eph</B><BR>
-    <B>Calc G1-G2.0003.eph</B><BR>
-    etc...</P>
-   </UL>
-  <H4>
-   Disk space</H4>
-  <P>
-   All these operations will use the disk to store the temporary and the 
-   final results. There is no way to do otherwise, as you know, this <I>is</I> 
-   a batch tool! Plus you can process gigabytes of data.</P>
-  <P>
-   Consequently, <B>think of having some significant room left on your 
-   hard drive</B>! The more elaborated your expression, the more space 
-   you need, but as a rule of thumb, say you need 3 times the amount of 
-   data you process in free space (if data are already in binary format, 
-   otherwise, maybe 2 times should be fine).</P>
-  <H4>
-   Errors</H4>
-  <P>
-   Some errors in your expression can be detected when you start the 
-   processing, like missing parenthesis, missing operands and the like.</P>
-  <P>
-   But some other errors will be only be found when reaching the 
-   problematic part, like wrong types of operands (adding vectors to scalars).</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;</P>
-  <P>
-   &nbsp;
+ <BODY>
+     <div class="container">
+         <H1>
+             File Calculator
+         </H1>
+         <P ALIGN=LEFT>
+             &nbsp;
+         </P>
+         <H5>
+             <A HREF="#what-is">What is the File Calculator?</A><br><A HREF="#how-to-run">How to run the File Calculator</A><br>
+             <A HREF="#expressions">Expressions</A>
+         </H5>
+         <UL>
+             <H5>
+                 <A HREF="#groups-of-files">Groups of files</A><br><A HREF="#operations">Operations and functions</A><br>
+                 <A HREF="#examples">Examples</A>
+             </H5>
+         </UL>
+         <H5>
+             <A HREF="#results-of-inverse">Results of Inverse Solution</A><br>
+             <A HREF="#results">Results</A><br><A HREF="#technical-points">Technical points and hints</A>
+         </H5>
+         <H2>
+             <A NAME="what-is"></A>What is the File Calculator?
+         </H2>
+         <P ALIGN=LEFT>
+             This is a tool to <B>batch-process sets of files</B> with a <B>
+                 mathematical
+                 expression
+             </B> of your liking. There can be many sets of files to
+             use, but each set should be somehow a coherent one, f.ex. all the
+             files of all subjects for one condition. Expressions are composed
+             with elementary operations, see below.
+         </P>
+         <H2>
+             <A NAME="how-to-run"></A>How to run the File Calculator
+         </H2>
+         <P>
+             Call the dialog from <FONT FACE="Arial Black,Arial,Helvetica">
+                 <A HREF="all-processings.html#tools">
+                     Tools
+                     | File Calculator
+                 </A>
+             </FONT> menu.
+         </P>
+         <P>
+             The following dialog pops out. Fill the parameters which are relevant
+             for you, <B>drop the sets of files</B> to process, then click either
+             on the <B>Process</B> button:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/file-calculator.dialog.png" VSPACE="0" HSPACE="0" BORDER="0">
+             </P>
+         </CENTER>
+         <DIV>
+             <P ALIGN=LEFT>
+                 <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Groups of Files</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 You can Drag &amp; Drop files here.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Add New Group of Files
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Enter a new group of files.
+                             </P>
+                             <P>
+                                 See <A HREF="#groups-of-files">this note</A> about groups.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Remove Last Group
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Does what it says (amazing).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Clear All Groups
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Clear out all the groups at once.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Read Lists from File
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 You can direclty retrieve the lists of groups previously <A HREF="#file-list-write">saved</A>.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <A NAME="file-list-write"></A>Write Lists to File
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 You can save the lists of current groups into a file, in case you
+                                 want to re-use them (much recommended!).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Sort Files within Lists
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 A strange behavior of Windows is to not respect the order of the
+                                 files dropped in a window. To help cure this silly habit, you can
+                                 sort all the file names of all the groups already entered.
+                             </P>
+                             <P>
+                                 Note however that Drag &amp; Dropped files are automatically sorted.
+                             </P>
+                             <P>
+                                 <B>This is an important issue</B>, as we're going to process files in
+                                 parallel between groups!
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Number of Groups:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Just a counter of the number of groups entered.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Summary list of all groups</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 One group is displayed per line.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Expression</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Enter the <A HREF="#expressions"><B>expression</B></A> to be
+                                 evaluated. Be sure you have entered all the groups needed by your expression!
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B><A NAME="file-types-out"></A>Output File Type</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 EP (text)
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Text file, see the <B><I><A HREF="files-formats-cartool.html#ep">.ep</A></I></B><A HREF="files-formats-cartool.html#ep"> file</A> specification.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 EPH (text)
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Text file, see the <B><I><A HREF="files-formats-cartool.html#eph">.eph</A></I></B><A HREF="files-formats-cartool.html#eph"> file</A> specification.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 SEF (binary)
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Binary file, see the <B><I><A HREF="files-formats-cartool.html#sef">.sef</A></I></B><A HREF="files-formats-cartool.html#sef"> file</A> specification.
+                             </P>
+                             <P>
+                                 Compact format which can handle all the basic informations for EEG.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 EDF (binary)
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Binary file, see the <B><I><A HREF="files-formats-others.html#eeg raw">.edf</A></I></B><A HREF="files-formats-others.html#eeg-raw"> file</A> specification.
+                             </P>
+                             <P>
+                                 Useful only for data interchange, otherwise don't use (loss of precision)!
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 RIS (binary)
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Binary file, see the <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B><A HREF="files-formats-cartool.html#ris"> file</A> specification.
+                             </P>
+                             <P>
+                                 Produced by the matrix multiplication / Inverse Solution computation.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Options</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Output Directory
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 What it says: where to put the results!
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <A NAME="generate-file-names"></A>Generate file names as:
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Compound of Operations
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Each file name will hold a condensed version of the operations
+                                 applied from the originals. See this <A HREF="#output-file-names">note</A>.
+                             </P>
+                             <P>
+                                 Use this if you want to remember precisely what are your files, f.ex.
+                                 for Inverse Solutions. Be aware that too many operations will
+                                 generate very long and unreadible file names, and can even crash Cartool.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Simply Numbered
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Just generate file names as a numbered list. See this <A HREF="#output-file-names">note</A>.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP></TD>
+                         <TD WIDTH="73%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 <B>Process</B>
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Run the batch processing.
+                             </P>
+                             <P>
+                                 The button remains disabled until all parameters are OK.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Cancel
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Quit the dialog.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="27%" VALIGN=TOP>
+                             <P>
+                                 Help
+                         </TD>
+                         <TD WIDTH="73%" VALIGN=TOP>
+                             <P>
+                                 Launch the Help to the right page (should be here...).
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </DIV>
+         <H2>
+             <A NAME="expressions"></A>Expressions
+         </H2>
+         <P>
+             You have to provide a <B>mathematical expression</B> to be applied on
+             your files.
+         </P>
+         <P>
+             First understand what is meant by <B>groups of files</B>, then see
+             what <B>operations</B> can be applied to them.
+         </P>
+         <H3>
+             <A NAME="groups-of-files"></A>Groups of files
+         </H3>
+         <P>
+             Operands are usually whole sets of files, and <B>
+                 each set should have
+                 some coherence of its own
+             </B>:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Having some sort of <B>semantic</B> associated to it, f.ex. all the
+                     subjects for 1 condition, or all the epochs of 1 subject etc...
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Having the <B>same number of electrodes / solution points</B> &amp; <B>
+                         same
+                         number of time frames
+                     </B> among files.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Preferably files being of the <B>same types</B>, i.e. not mixing
+                     scalar and vector values.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Preferaby files having the <B>same extensions</B>, but not mandatory.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             <B>Among groups, however, sizes and types can differ</B>. However a
+             given operation should receive compatible groups, f.ex.:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Summing, subtracting etc... between 2 groups: both groups should have
+                     the same number of electrodes, time frames, and number of files.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Multiplying matrices with EEG: the usual Line / Column dimensions
+                     criterion should be satisfied.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Groups are used by <B>
+                 sequentially and synchronically processing each
+                 of their files
+             </B>, f.ex. summing all the files of two groups:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P ALIGN=LEFT>
+                                 <B>Group1</B>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P ALIGN=LEFT>
+                                 <B>Group2</B>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P ALIGN=LEFT>
+                                 <B>&quot;+&quot; operation</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond1.subj1
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond2.subj1
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond1.subj1 + cond2.subj1
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond1.subj2
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond2.subj2
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond1.subj2 + cond2.subj2
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond1.subj3
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond2.subj3
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond1.subj3 + cond2.subj3
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 ...
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 ...
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 ...
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond1.subj<I>n</I>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond2.subj<I>n</I>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 cond1.subjn + cond2.subj<I>n</I>
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             <B>Matrix multiplication</B>, though, is a special case. One matrix
+             is taken, then all the EEG are multiplied to it, then the next
+             matrix, and so on:
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P ALIGN=LEFT>
+                                 <B>Group1</B>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P ALIGN=LEFT>
+                                 <B>Group2</B>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P ALIGN=LEFT>
+                                 <B>&quot;*&quot; operation</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 matrix1
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 subj1<BR>
+                                 subj2<BR>
+                                 subj3<BR>
+                                 ...<BR>
+                                 subj<I>n</I>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 matrix1 * subj1<BR>
+                                 matrix1 * subj2<BR>
+                                 matrix1 * subj3<BR>
+                                 ...<BR>
+                                 matrix1 * subj<I>n</I>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 matrix2
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 subj1<BR>
+                                 subj2<BR>
+                                 subj3<BR>
+                                 ...<BR>
+                                 subj<I>n</I>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 matrix2 * subj1<BR>
+                                 matrix2 * subj2<BR>
+                                 matrix2 * subj3<BR>
+                                 ...<BR>
+                                 matrix2 * subj<I>n</I>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 ...
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 ...
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 ...
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 matrix<I>m</I>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 subj1<BR>
+                                 subj2<BR>
+                                 subj3<BR>
+                                 ...<BR>
+                                 subj<I>n</I>
+                         </TD>
+                         <TD WIDTH="33%" VALIGN=TOP>
+                             <P>
+                                 matrix<I>m</I> * subj1<BR>
+                                 matrix<I>m</I> * subj2<BR>
+                                 matrix<I>m</I> * subj3<BR>
+                                 ...<BR>
+                                 matrix<I>m</I> * subj<I>n</I>
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <H3>
+             <A NAME="operations"></A>Operations &amp; functions available
+         </H3>
+         <P>
+             <I>Group</I>, <I>Group1</I>, <I>Group2</I>... are groups of files.<BR>
+             <I>Value</I> is a scalar value.<BR>
+             <I>Vector3D</I> is a 3D vector (x, y, z).
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Operation &amp; operands</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 <B>Description</B>
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 <B>Type of results</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP></TD>
+                         <TD WIDTH="46%" VALIGN=TOP></TD>
+                         <TD WIDTH="31%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Group + Value</B><BR>
+                                 <B>Value + Group</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Add a constant value to a group of files.<BR>
+                                 Input files should contain scalar values.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 scalar values
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Group + Vector3D</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Add a constant vector to a group of files.<BR>
+                                 Input files should contain 3D vectors.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 3D vectors
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Group1 + Group2</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Sum all files of Group1 with the files of Group2.<BR>
+                                 Input files should both contain either scalar values or 3D vectors,
+                                 but not a mix of the two.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 scalar values if input are scalar values,<BR>
+                                 3D vectors if input are 3D vectors
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP></TD>
+                         <TD WIDTH="46%" VALIGN=TOP></TD>
+                         <TD WIDTH="31%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Group - Value</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Subtract a constant value to a group of files.<BR>
+                                 Input files should contain scalar values.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 scalar values
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Group - Vector3D</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Subtract a constant vector to a group of files.<BR>
+                                 Input files should contain 3D vectors.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 3D vectors
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Group1 - Group2</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Subtract all files of Group1 with the files of Group2.<BR>
+                                 Input files should both contain either scalar values or 3D vectors,
+                                 but not a mix of the two.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 scalar values if input are scalar values,<BR>
+                                 3D vectors if input are 3D vectors
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP></TD>
+                         <TD WIDTH="46%" VALIGN=TOP></TD>
+                         <TD WIDTH="31%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Group * Value</B><BR>
+                                 <B>Value * Group</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Multiply the group of files by a constant value.<BR>
+                                 Input files could contain either scalar values or 3D vectors.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 scalar values if input are scalar values,<BR>
+                                 3D vectors if input are 3D vectors
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Group1 * Group2</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Multiply all files from Group1 by the files of Group2.<BR>
+                                 Group1 should contain matrices.<BR>
+                                 Group2 should contain files of 2D data, like EEG.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 scalar values or 3D vectors according to each matrix
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP></TD>
+                         <TD WIDTH="46%" VALIGN=TOP></TD>
+                         <TD WIDTH="31%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Group / Value</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Divide the group of files by a constant value.<BR>
+                                 Input files could contain either scalar values or 3D vectors.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 scalar values if input are scalar values,<BR>
+                                 3D vectors if input are 3D vectors
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 &nbsp;
+             </P>
+         </CENTER>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Function &amp; operands</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 <B>Description</B>
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 <B>Type of results</B>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP></TD>
+                         <TD WIDTH="46%" VALIGN=TOP></TD>
+                         <TD WIDTH="31%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Abs ( Group )</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Input files are scalar values: absolute values.<BR>
+                                 Input files are 3D vectors: norm of the vectors.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 scalar values
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP></TD>
+                         <TD WIDTH="46%" VALIGN=TOP></TD>
+                         <TD WIDTH="31%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Scalar ( Group )</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Input files are scalar values: values untouched.<BR>
+                                 Input files are 3D vectors: norm of the vectors.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 scalar values
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP></TD>
+                         <TD WIDTH="46%" VALIGN=TOP></TD>
+                         <TD WIDTH="31%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Sqr ( Group )</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Input files are scalar values: the square of the values.<BR>
+                                 Input files are 3D vectors: square of the norm of the vectors.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 scalar values
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP></TD>
+                         <TD WIDTH="46%" VALIGN=TOP></TD>
+                         <TD WIDTH="31%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="23%" VALIGN=TOP>
+                             <P>
+                                 <B>Sqrt ( Group )</B>
+                         </TD>
+                         <TD WIDTH="46%" VALIGN=TOP>
+                             <P>
+                                 Input files are scalar values: the square root of the values.<BR>
+                                 Input files are 3D vectors: not allowed.
+                         </TD>
+                         <TD WIDTH="31%" VALIGN=TOP>
+                             <P>
+                                 Group,<BR>
+                                 scalar values
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <P>
+             &nbsp;
+         </P>
+         <H3>
+             <A NAME="examples"></A>Examples of expressions
+         </H3>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>Group1</B>
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 Handy to just rename a bunch of files, and / or convert format. Check <I>
+                                     Simply
+                                     Numbered
+                                 </I> from the <A HREF="#generate-file-names">Generate file names</A> option.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>Group1 * Group2</B>
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 Compute the results of Inverse Solutions, if Group1 holds the
+                                 matrices and Group2 the EEG.<BR>
+                                 Outputted <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B>
+                                 files can be either scalar or vectorial.
+                             </P>
+                             <P>
+                                 See the next paragraph for more on IS.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>Group1 - Group2</B>
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 Compute the differences between two sets of files.<BR>
+                                 This could be either 2 EEGs or 2 results from Inverse Solution. In
+                                 the last case, they can correctly be either of scalar or vectorial types.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>( 3 * Group1 + 2 * Group2 ) / 5</B>
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 Do a weighted sum of two groups.<BR>
+                                 Groups can be either scalars or vectorials.
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <H2>
+             <A NAME="results-of-inverse"></A>Computing &quot;Results of Inverse Solutions&quot;
+         </H2>
+         <P class="auto-style1">
+             !New!
+         </P>
+         <P>
+             It is now <em><strong>strongly recommended</strong></em> to use the new
+             dedicated tool to <a href="computing-ris.html">
+                 <strong>
+                     compute the results
+                     of inverse solutions
+                 </strong>
+             </a>.
+         </P>
+         <P>
+             This tool offers much more controls over this process, like preprocessing
+             filter, postprocessing standardization, per group average etc... It also
+             performs numerous consistency checks on all the input files, so the results
+             are also safer.
+         </P>
+         <P>
+             <a href="computing-ris.html">Use that tool</a> - now.
+         </P>
+         <P class="mvd-h4">
+             The old way - if you really insist:
+         </P>
+         <P>
+             You can use the <A HREF="file-calculator.html">File Calculator</A> to
+             produce the final stage of the Inverse Solution, what we call Results
+             of Inverse Solution, or RIS (see <B><I><A HREF="files-formats-cartool.html#ris">.ris</A></I></B>
+             files). Provided one or more <A HREF="files-formats-others.html#inverse-solutions">
+                 matrix(ces)
+                 of Inverse Solution
+             </A>, you can batch this computation according to
+             your needs.
+         </P>
+         <P>
+             To see how you can <B>compute the inverse matrices</B>, go <A HREF="computing-inverse-solution-matrices.html">here</A>,
+             and to see how you can <B>use these matrices for display</B>, go <A HREF="esi-display.html">here</A>.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             Say we dropped the matrices into <I>Group1</I>, and some ERPs for two
+             conditions into <I>Group2</I> and <I>Group3</I> respectively. Here
+             are the most common options to compute the results of inverse
+             solutions (which one is &quot;the right one&quot; depends on your
+             experiment, paradigm and tests):
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="80%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>Group1 * Group2</B>
+                             </P>
+                             <P>
+                                 and
+                             </P>
+                             <P>
+                                 <B>Group1 * Group3</B>
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 <A NAME="ris-vectorial"></A><B>
+                                     Multiplying the matrices by the EEGs
+                                     is the basic operation.
+                                 </B>
+                             </P>
+                             <P>
+                                 The resulting files can either hold <B>vectors</B> (the most common
+                                 cases) or <B>scalar values</B> for each solution points location,
+                                 which is quite important to know for your next steps (usually, statistics).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP></TD>
+                         <TD WIDTH="65%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>Scalar ( Group1 * Group2 )</B>
+                             </P>
+                             <P>
+                                 and
+                             </P>
+                             <P>
+                                 <B>Scalar ( Group1 * Group3 )</B>
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 <A NAME="ris-scalar"></A>We can add a step to the multiplication, by
+                                 forcing the results to be scalar values.
+                             </P>
+                             <P>
+                                 If the results of the multiplication are <B>vectors</B>, the <I>Scalar</I>
+                                 operation will convert them to their (Euclidian) <B>norm</B>. This is
+                                 the same as the <I>Abs</I> function.
+                             </P>
+                             <P>
+                                 If the results of the multiplication are already <B>scalars</B>, the <I>Scalar</I>
+                                 operation will do nothing. This is <B>not</B> the same as the <I>Abs</I>
+                                 function, as the <I>Abs</I> will remove the sign of the scalar
+                                 values, which <I>Scalar</I> does preserve.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP></TD>
+                         <TD WIDTH="65%" VALIGN=TOP></TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>Group1 * ( Group2 - Group3 )</B>
+                             </P>
+                             <P>
+                                 or
+                             </P>
+                             <P>
+                                 <B>Group1 * Group2 - Group1 * Group3</B>
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 We can compute the difference in the inverse solution space between
+                                 the two conditions. The two formula are mathematically equivalent,
+                                 though the former is faster (2 operations, and only one multiplication).
+                             </P>
+                             <P>
+                                 This formula <B>accounts for the directions of the vectors</B> in the
+                                 inverse space: vectors are being subtracted between the 2 conditions.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>Abs ( Group1 * ( Group2 - Group3 ) )</B>
+                             </P>
+                             <P>
+                                 or
+                             </P>
+                             <P>
+                                 <B>Abs ( Group1 * Group2 - Group1 * Group3 )</B>
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 Same as above, then converting to the absolute / norm values. We end
+                                 up with the <B>intensity of the vectorial differences</B> between the
+                                 two conditions.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>Scalar ( Group1 * Group2 )</B><BR>
+                                 <B>- Scalar ( Group1 * Group3 )</B>
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 For vectorial inverse, this computes the <B>difference of intensities</B>
+                                 between the two conditions, without accounting whatsoever with the
+                                 directions of the vectors.
+                             </P>
+                             <P>
+                                 For scalar inverse, this computes the <B>difference of (signed) values</B>
+                                 between the two conditions
+                             </P>
+                             <P>
+                                 Results are signed scalar values (positive and negative).
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>Abs ( Scalar ( Group1 * Group2 )</B><BR>
+                                 <B>- Scalar ( Group1 * Group3 ) )</B>
+                             </P>
+                             <P>
+                                 <B></B>&nbsp;
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 Same as above, then converting all differences into positive values.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>Abs ( Abs ( Group1 * Group2 )</B><BR>
+                                 <B>- Abs ( Group1 * Group3 ) )</B>
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 We compute here the <B>difference of absolute intensities</B> between
+                                 the two conditions (without, for the vectorial inverse, accounting
+                                 whatsoever for the directions of the vectors).
+                             </P>
+                             <P>
+                                 Results are positive scalar values.
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 <B>Abs ( Sqr ( Group1 * Group2 )</B><BR>
+                                 <B>- Sqr ( Group1 * Group3 ) )</B>
+                         </TD>
+                         <TD WIDTH="65%" VALIGN=TOP>
+                             <P>
+                                 Just a variation of the previous formula, giving the absolute
+                                 difference of powers between the two conditions.
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <H2>
+             <A NAME="results"></A>File Calculator - Results
+         </H2>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Processed files are written in the <B>base directory</B>. File names
+                     can be either a compound of the applied operations, or a simple
+                     numbered list of files based on the base directory name. Extension is
+                     the one specified in the paramaters.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The <B>type of results</B> will depend on what you asked for, f.ex.
+                     it is usually <B>scalar values</B> (&quot;numbers&quot;), but it can
+                     be <B>vectors</B>, as from the Inverse Solution computation.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     The <B>dimensions</B> of the results also depends on the operations
+                     applied, so they can have different sizes as compared to the input files.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>
+                     (text), showing all the parameters.
+                 </P>
+         </UL>
+         <H2>
+             <A NAME="technical-points"></A>File Calculator - Technical points and hints
+         </H2>
+         <H4>
+             <A NAME="output-file-names"></A>Output file names
+         </H4>
+         <P>
+             By default, Cartool will <A HREF="#generate-file-names">generate file names</A>
+             that <I>reflect</I> the whole set of operations. These are not exact
+             replicas of the expression, but rather a construction derived of it.
+             This is meant to help remember what operations have been done on the files.
+         </P>
+         <P>
+             To do so, it will use the original file names, insert the operators /
+             functions used one at a time, then optinally shrink the resulting
+             file names if they appear to be too long. F.ex.:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Expression&nbsp; <B>Group1 - Group2</B>&nbsp; can generate&nbsp; <B>basprr4-basviri4.eph</B>
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Expression&nbsp; <B>Scalar ( Group1 * ( Group2 - Group3 ) )</B>&nbsp;
+                     can generate&nbsp; <B>Scalar(Avg152tSmacProSph.lorb1.basprr4-basviri4).ris</B>
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             One problem arises with operator like * / and the like, which Windows
+             does <I>not</I> want at all in file names. In these cases, a
+             &quot;.&quot; (dot) is used instead of the operator.
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             If not a compound of operations, file names will simply repeat the
+             last directory part of the Base Directory, then add an index value, f.ex.:
+         </P>
+         <UL>
+             <P>
+                 <B>Calc G1-G2.0001.eph</B><BR>
+                 <B>Calc G1-G2.0002.eph</B><BR>
+                 <B>Calc G1-G2.0003.eph</B><BR>
+                 etc...
+             </P>
+         </UL>
+         <H4>
+             Disk space
+         </H4>
+         <P>
+             All these operations will use the disk to store the temporary and the
+             final results. There is no way to do otherwise, as you know, this <I>is</I>
+             a batch tool! Plus you can process gigabytes of data.
+         </P>
+         <P>
+             Consequently, <B>
+                 think of having some significant room left on your
+                 hard drive
+             </B>! The more elaborated your expression, the more space
+             you need, but as a rule of thumb, say you need 3 times the amount of
+             data you process in free space (if data are already in binary format,
+             otherwise, maybe 2 times should be fine).
+         </P>
+         <H4>
+             Errors
+         </H4>
+         <P>
+             Some errors in your expression can be detected when you start the
+             processing, like missing parenthesis, missing operands and the like.
+         </P>
+         <P>
+             But some other errors will be only be found when reaching the
+             problematic part, like wrong types of operands (adding vectors to scalars).
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
  </BODY>
 </HTML>
