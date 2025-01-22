@@ -3,7 +3,7 @@
 
 It enables seamless real-time integration of diverse modalities such as EEG, electrodes, and MRI. Offering an array of tools, including preprocessing for EEG, electrodes, and MRI, as well as frequency and micro-states analysis, and electrical source imaging.
 
-Developed in C++ for _Windows_, Cartool is highly optimized for parallel processing, has a very small memory footprint, and very few dependencies. It has been undergoing continuous development since 1996, thanks to the [_Functional Brain Mapping Lab_](https://neurocenter-unige.ch/research-groups/christoph-michel/), Geneva, and [_CIBM_](https://www.cibm.ch), Lausanne.
+Developed in C++ for _Windows_, Cartool is highly optimized for parallel processing, has a very small memory footprint, and very few dependencies. It has been under continuous development since 1997, originally from the [**Functional Brain Mapping Lab**](https://www.google.ch/search?q="functional+brain+mapping"+fbmlab+geneva), Geneva, Switzerland, and since 2024, from the [**Geneva University Hospital**](https://www.unige.ch/medecine/neucli/groupes-de-recherche/serge-vulliemoz) and [**CIBM**](https://cibm.ch/research/software/), Switzerland.
 
 ## Pre-compiled releases
 The latest compiled version of Cartool can be found **[here](https://github.com/DenisBrunet/Cartool/releases/latest)**, and all previous versions **[there](https://github.com/DenisBrunet/Cartool/releases)**.
@@ -19,8 +19,9 @@ We have some citations policy, please visit the [CITATION](https://github.com/De
 
 ## Community
 There are a few resources to gather knowledge and get some help:
-- [Bug Reports](https://github.com/DenisBrunet/Cartool/issues)
-- [Discussions Group](https://github.com/DenisBrunet/Cartool/discussions)
+- _new_ [Bug Reports](https://github.com/DenisBrunet/Cartool/issues)
+- _new_ [GitHub Discussions Group](https://github.com/DenisBrunet/Cartool/discussions)
+- _new_ [Online Reference Guide](https://denisbrunet.github.io/Cartool/ReferenceGuide/index.html)
 - [Cartool YouTube](https://www.youtube.com/channel/UC7S3IgUeYplmrh3ji3ZK1Lw)
 - [Cartool Community](https://sites.google.com/site/cartoolcommunity)
 - [CIBM](https://cibm.ch/)
