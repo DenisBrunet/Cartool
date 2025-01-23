@@ -26,8 +26,8 @@ There are a few resources to gather knowledge and get some help:
 ## Contributing
 Our contribution policy is specified in the [CONTRIBUTING](https://github.com/DenisBrunet/Cartool/blob/main/CONTRIBUTING.md) page.
 
-## Citation
-We have some citations policy, please visit the [CITATION](https://github.com/DenisBrunet/Cartool/blob/main/CITATION.md) page.
+## Citations
+We have some citations policy for the _use_ of Cartool, please check the [Publications Citation](https://sites.google.com/site/cartoolcommunity/requirements#h.gxcqq7dlq88b) section from the [Cartool Website](https://cartoolcommunity.unige.ch).
 
 ## License
 This project is licensed under the _Apache License Version 2.0_ - see the [LICENSE.txt](https://github.com/DenisBrunet/Cartool/blob/main/LICENSE.txt) file for details.
