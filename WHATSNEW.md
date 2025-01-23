@@ -40,4 +40,4 @@
 - Creating most of the GitHub files
 
 ## 2024-03-14
-- Sources original upload
+- **Cartool Open Source kickstarting**. Original source files uploaded.
