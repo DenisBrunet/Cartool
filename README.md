@@ -8,8 +8,10 @@ Developed in C++ for _Windows_, Cartool is highly optimized for parallel process
 ## What's New
 See the [What's New page](WHATSNEW.md).
 
-## Pre-compiled releases
+## Pre-Compiled Releases
 The latest compiled version of Cartool can be found **[here](https://github.com/DenisBrunet/Cartool/releases/latest)**, and all previous versions **[there](https://github.com/DenisBrunet/Cartool/releases)**.
+
+For the executable installation guide, see these [Requirements](https://cartoolcommunity.unige.ch/requirements) and [Installation](https://cartoolcommunity.unige.ch/installation) pages.
 
 ## Compiling from sources
 The [BUILDING](https://github.com/DenisBrunet/Cartool/blob/main/BUILDING.md) page describes all the steps and the necessary tools needed to fully compile Cartool from the source code.
