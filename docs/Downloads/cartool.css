@@ -1,0 +1,254 @@
+﻿/*-------------------- Cartool Reference Guide CSS */
+
+
+/*-------------------- All pages: page size limit and centering --------------------*/
+
+body {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;					/* Center the content horizontally */
+	background-color: #f9f9f9;					/* Optional: Background color */
+	}
+
+.container {
+	width: 90%;									/* Adjust width relative to the viewport */
+    max-width: 1000px;							/* Ensure a readable limit on larger screens */
+	padding: 20px;								/* Add padding for spacing */
+    margin-top: 8px;							/* Add space at the top */
+	background-color: #ffffff;					/* Optional: Background color */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);	/* Optional: Add a subtle shadow */
+	}
+
+
+/*-------------------- Headers --------------------*/
+h1, .mvd-h1 {
+	font-family:Arial,Verdana;
+	font-size:18pt;
+	color:#FFFFFF;
+	font-weight:bold;
+	
+	padding:7pt 0pt 7pt 15pt;
+	
+	background-color:#8cafff;
+	border-width:1pt 0pt 1pt 0pt;
+	border-bottom-style:solid;
+	border-top-style:solid;
+	border-top-color:#1155e0;
+	border-bottom-color:#1155e0;
+	}
+
+h2, .mvd-h2 {
+	font-family:Arial,Verdana;
+	font-size:14pt;
+	color:#1155E0;
+	font-weight:bold;
+
+	margin:50pt 7pt 25pt 0pt;
+
+	padding:7pt 0pt 7pt 11pt;
+
+	background-color:#EFF3FF;
+	border-width:0pt 0pt 1pt 1pt;
+	border-left-style:solid;
+	border-bottom-style:solid;
+	border-left-color:#1155E0;
+	border-bottom-color:#1155E0;
+	}
+
+h3, .mvd-h3 {
+	font-family:Arial,Verdana;
+	font-size:12pt;
+	color:#1155E0;
+	font-weight:bold;
+
+	margin:24pt 50% 12pt 0pt;
+
+	padding:0pt 0pt 3pt 6pt;
+
+	background-color:#ffffff;
+	border-width:0pt 0pt 1pt 1pt;
+	border-left-style:solid;
+	border-bottom-style:solid;
+	border-left-color:#8CAFFF;
+	border-bottom-color:#8CAFFF;
+	}
+
+h4, .mvd-h4 {
+	font-family:Arial,Verdana;
+	font-size:11pt;
+	color:#2060E0;
+	font-weight:bold;
+	font-style:normal;
+
+/*	margin: 36pt 0pt 10pt 0pt;*/
+	margin:22pt 75% 8pt 0pt;
+
+/*	padding:0pt;*/
+	padding:3pt 0pt 2pt 5pt;
+
+	border-width:0pt 0pt 1pt 1pt;
+/*	border-left-style:solid;*/
+	border-bottom-style:solid;
+/*	border-left-color:#bbbbbb;*/
+	border-bottom-color:#dddddd;
+	}
+
+h5, .mvd-h5 {
+	font-family:Verdana,Arial;
+	font-size:9pt;
+	color:#000000;
+	font-weight:bold;
+	font-style:normal;
+	
+	margin: 9pt 0pt 9pt 24pt;
+	
+	padding:0pt;
+	}
+
+h6, .mvd-h6 {
+	font-family:Verdana;
+	font-size:9pt;
+	color:#1155E0;
+	font-weight:bold;
+	font-style:normal;
+	
+	margin: 0pt 0pt 0pt 48pt;
+	
+	padding:0pt;
+	}
+
+
+/*-------------------- Normal text --------------------*/
+normal, p, .mvd-normal, .mvd-p {
+	font-family: Verdana,Arial,Helvetica;
+	font-size: 9pt;
+	color: #000000;
+	font-weight: normal;
+	font-style: normal;
+	
+	margin: 5pt 5% 5pt 0pt;
+	
+	padding: 0pt;
+	line-height: 1.4;
+}
+
+
+/*-------------------- List and Bullets --------------------*/
+li, ul, .mvd-li, .mvd-ul {
+	font-family:Verdana,Arial,Helvetica;
+	color:#000000;
+	font-weight:normal;
+	font-style:normal;
+
+	font-size: 9pt;
+	
+	margin:5pt 5% 5pt 25pt;
+	
+	padding:0pt;
+	line-height:10pt;
+	}
+
+
+/*-------------------- Links --------------------*/
+a {
+	color:#1155E0;
+	text-decoration:none;
+	}
+
+a:visited {
+	color:#002D89;
+	text-decoration:none;
+	}
+
+a:hover {
+	text-decoration:underline;
+	}
+
+
+/*-------------------- Others --------------------*/
+pre, .mvd-pre {
+	font-family: "Courier New",Courier,Verdana;
+	
+	font-size: 10pt;
+
+	margin:12pt 40pt 36pt 32pt;
+	
+	padding:4pt 8pt 4pt 8pt;
+	background-color:#F0F0F0;
+	}
+
+
+listing, .mvd-listing {
+	font-family : "Courier New",Courier,Verdana;
+	font-size : 10pt;
+	}
+
+
+table {
+	font-family:Verdana,Arial,Helvetica;
+	
+	font-size: 9pt;
+	
+	color:#000000;
+	font-weight:normal;
+	font-style:normal;
+	margin:0pt;
+	padding:0pt;
+	}
+
+
+div {
+	font-family:Verdana,Arial,Helvetica;
+	
+	font-size: 9pt;
+	
+	color:#000000;
+	font-weight:normal;
+	font-style:normal;
+	margin:0pt;
+	padding:0pt;
+	}
+
+
+citation {
+	font-family:Verdana,Arial,Helvetica;
+	font-size: 10pt;
+	color:#000000;
+	font-style:normal;
+	margin:0pt;
+	padding:4pt 6pt 5pt 6pt;
+	background-color:#F4F4F4;
+	border-width:1pt;
+	border-style:solid;
+	border-color:#999999;
+	}
+
+
+bibliographie {
+	font-family:Verdana,Arial,Helvetica;
+	font-size: 10pt;
+	color:#000000;
+	text-transform:capitalize;
+	margin:0pt 0pt 8pt 0pt;
+	padding:4pt 5pt 4pt 5pt;
+	background-color:#EFF3FF;
+	border-width:0pt 0pt 1pt 1pt;
+	border-bottom-style:solid;
+	border-left-style:solid;
+	border-top-color:#BFE9FF;
+	border-bottom-color:#8CAFFF;
+	border-left-color:#8CAFFF;
+	border-right-color:#BFE9FF;
+	}
+
+
+code {
+	font-family:"Courier New",Courier;
+	font-size:10pt;
+	color:#000000;
+	font-weight:bold;
+	font-style:normal;
+	margin:0pt;
+	padding:0pt;
+	}
