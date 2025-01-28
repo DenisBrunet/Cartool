@@ -18,12 +18,13 @@ The [BUILDING](https://github.com/DenisBrunet/Cartool/blob/main/BUILDING.md) pag
 
 ## Community
 There are a few resources to gather knowledge and get some help:
+- _new_ [Cartool Website](https://denisbrunet.github.io/Cartool/index.html)
+- _new_ [Templates Data Downloads](https://denisbrunet.github.io/Cartool/downloads.html)
 - _new_ [Bug Reports](https://github.com/DenisBrunet/Cartool/issues)
 - _new_ [GitHub Discussions Group](https://github.com/DenisBrunet/Cartool/discussions)
 - _new_ [Online Reference Guide](https://denisbrunet.github.io/Cartool/ReferenceGuide/index.html)
-- _new_ [Templates Data Downloads](https://denisbrunet.github.io/Cartool/Downloads/index.html)
 - [Cartool YouTube](https://www.youtube.com/channel/UC7S3IgUeYplmrh3ji3ZK1Lw)
-- [Cartool Community](https://sites.google.com/site/cartoolcommunity)
+- (obsolete) [Cartool Community](https://sites.google.com/site/cartoolcommunity)
 - [CIBM](https://cibm.ch/)
 
 ## Contributing
