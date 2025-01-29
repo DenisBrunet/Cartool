@@ -7,32 +7,74 @@ nav {
 	font-family: Tahoma, Geneva, sans-serif;
 	font-size:10pt;
 
-    background-color: #1155E0; 		/* Blue background */
+    background-color: #f9f9f9;
     color: white;
-    padding: 5px 15px;
-    display: flex;
-    justify-content: flex-end; 		/* Align all links to the right */
-    align-items: center;
-    position: sticky; 				/* Keep menu at the top */
-    top: 0;
-    z-index: 1000;
 
-    border-radius: 14px; 			/* Round the corners */
+    padding: 0px 0px;
+
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 180px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+	border-right: 1px solid #ddd;
+	
+	box-sizing: border-box;
 }
 
-nav a {
-    color: white;
-    text-decoration: none;
-    margin: 0 12px;
+
+.nav-title {
+	font-family: Arial, sans-serif;
+    font-size: 18pt;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    color: #1155E0;
+    box-sizing: border-box;
+	text-decoration: none;
+}
+
+
+.nav-title:hover {
+    background-color: #ddd;
+	text-decoration: none;
+}
+
+
+.nav-title img {
+    width: 20px;
+    height: 20px;
+    margin-left: 11px;
+    margin-right: 10px;
+    margin-top: -2px;
+}
+
+
+nav a {
+    color: #333333;
+    text-decoration: none;
+	padding: 4px 20px;
+	display: block;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 nav a:hover {
-    text-decoration: underline;
+	background-color: #ddd;
+    border-radius: 4px;
 }
 
 .active {
-    border-bottom: 2px solid yellow;
+    font-weight: bold;
+    border-left: 8px solid #1155E0;
+    background-color: #e0e8ff;
+    padding-left: 12px;
+    border-radius: 4px;
 }
 
 
@@ -53,6 +95,8 @@ body {
     margin-top: 8px;							/* Add space at the top */
 	background-color: #ffffff;					/* Optional: Background color */
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);	/* Optional: Add a subtle shadow */
+
+    margin-left: 180px;
 	}
 
 
@@ -107,7 +151,8 @@ h3, .mvd-h3 {
 	color:#1155E0;
 	font-weight:bold;
 
-    margin: 18px 10px;
+	max-width: 80%;
+	margin: 18px 10px;
     padding: 8px 12px;
 
 	background-color:#ffffff;
@@ -130,6 +175,7 @@ h4, .mvd-h4 {
 	color:#2060E0;
 	font-weight:normal;
 
+	max-width: 45%;
     margin: 15px 10px;
     padding: 6px 10px;
 
