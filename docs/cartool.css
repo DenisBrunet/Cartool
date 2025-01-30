@@ -406,3 +406,14 @@ code {
     border-radius: 3px;
 	}
 
+  
+iframe {
+    display: block;  	/* Removes extra inline spacing */
+    width: 100%;  		/* Makes the iframe take full width of the container */
+    height: auto;  		/* Allows height to adjust dynamically */
+    border: none;  		/* Removes the black border */
+    overflow: hidden;  	/* Prevents any internal scrollbars */
+
+    margin: -30;		/* Hack to eat back the margin */
+}
+
