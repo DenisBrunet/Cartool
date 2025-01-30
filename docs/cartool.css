@@ -24,8 +24,9 @@ nav {
 	border-right: 1px solid #ddd;
 	
 	box-sizing: border-box;
-}
 
+    line-height: 1.6;
+}
 
 .nav-title {
 	font-family: Arial, sans-serif;
@@ -39,12 +40,10 @@ nav {
 	text-decoration: none;
 }
 
-
 .nav-title:hover {
     background-color: #ddd;
 	text-decoration: none;
 }
-
 
 .nav-title img {
     width: 20px;
@@ -76,6 +75,17 @@ nav a:hover {
     padding-left: 12px;
     border-radius: 4px;
 }
+
+						/* iframe left menu inclusion */
+.menu-iframe {
+    padding: 0px 0px;
+
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 180px;
+}  
 
 
 /*-------------------- All pages: page size limit and centering --------------------*/
@@ -407,6 +417,8 @@ code {
 	}
 
   
+/*-------------------- Footer --------------------*/
+
 iframe {
     display: block;  	/* Removes extra inline spacing */
     width: 100%;  		/* Makes the iframe take full width of the container */

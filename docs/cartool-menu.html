@@ -1,0 +1,47 @@
+<HTML>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartoool Menu</title>
+	<LINK REL="stylesheet" HREF="cartool.css" TYPE="text/css">
+	<base target="_parent">
+</head>  
+  
+ <BODY>
+
+	<nav>
+		<a href="index.html" 													class="nav-title"><img src="cartool-icon.48.png" alt="Cartool Logo">Cartool</a>		
+        <a href="index.html" 													class="menu-item"				>Home</a>
+        <a href="requirements.html" 											class="menu-item"				>Requirements</a>
+        <a href="installation.html" 											class="menu-item"				>Installation</a>
+        <a href="downloads.html" 												class="menu-item"				>Data Downloads</a>
+        <a href="ReferenceGuide/index.html" 									class="menu-item"				>Reference Guide</a>
+        <a href="https://www.youtube.com/@cartoolsoftwarefbmlab9452/videos"		class="menu-item external-link"	><i>YouTube Channel</i> 🔗</a>
+        <a href="https://github.com/DenisBrunet/Cartool/issues"					class="menu-item external-link"	><i>Bugs Report</i> 🔗</a>
+        <a href="https://github.com/DenisBrunet/Cartool/discussions"			class="menu-item external-link"	><i>Discussions</i> 🔗</a>
+        <a href="https://github.com/DenisBrunet/Cartool/blob/main/WHATSNEW.md"	class="menu-item external-link"	><i>What's New</i> 🔗</a>
+        <a href="https://github.com/DenisBrunet/Cartool/releases/latest"		class="menu-item external-link"	><i>Latest Release</i> 🔗</a>
+        <a href="https://github.com/DenisBrunet/Cartool" 						class="menu-item external-link"	><i>GitHub</i> 🔗</a>
+	</nav>
+
+<!--
+    <script>
+	document.addEventListener("DOMContentLoaded", function() {
+		let currentPage = window.parent.location.pathname.split("/").pop();
+		let menuItems = document.querySelectorAll(".menu-item");
+
+		menuItems.forEach(item => {
+			item.classList.remove("active"); // Remove active class from all
+
+			if (item.getAttribute("href") === currentPage) {
+				item.classList.add("active"); // Add to the correct one
+				}
+			});
+		});
+	</script>
+-->
+
+</BODY>
+
+</HTML>
