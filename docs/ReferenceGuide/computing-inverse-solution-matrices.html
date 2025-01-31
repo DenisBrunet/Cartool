@@ -757,7 +757,7 @@
                              usual choices:<ul>
                                  <li>
                                      All models currently use the <strong>
-                                         <A HREF="#LSMAC-model">
+                                         <A HREF="#lsmac-model">
                                              LSMAC (Locally Spherical
                                              Model with Anatomical Constraints) geometrical transform
                                          </A>
@@ -1361,7 +1361,7 @@
              F.ex. a subject's full head, brain and grey mask as computed by Cartool:
          </P>
          <P class="auto-style1">
-             <img height="293" SRC="images/cris.MRI-full-head.png" width="306"><img height="293" SRC="images/cris.MRI-brain.png" width="307"><img height="293" SRC="images/cris.MRI-grey-mask.png" width="307">
+             <img height="293" SRC="images/cris.mri-full-head.png" width="306"><img height="293" SRC="images/cris.mri-brain.png" width="307"><img height="293" SRC="images/cris.mri-grey-mask.png" width="307">
          </P>
          <P>
              &nbsp;
@@ -2478,7 +2478,7 @@
              with the superimposed solution points:
          </P>
          <P>
-             <img alt="Grey mask on the whole brain of newborn" height="336" SRC="images/cris.Grey-mask.Full-1.png" width="348"><img alt="" height="336" SRC="images/cris.Grey-mask.Full-2.png" width="348">
+             <img alt="Grey mask on the whole brain of newborn" height="336" SRC="images/cris.grey-mask.full-1.png" width="348"><img alt="" height="336" SRC="images/cris.grey-mask.full-2.png" width="348">
          </P>
          <P>
              &nbsp;
@@ -3034,12 +3034,12 @@
          </H5>
          <UL>
              <H5>
-                 <A HREF="#LSMAC-model">LSMAC geometrical model</A>
+                 <A HREF="#lsmac-model">LSMAC geometrical model</A>
              </H5>
              <UL>
                  <H5>
-                     <A HREF="#LSMAC-processing">Spherization step</A><br>
-                     <A HREF="#LSMAC-spherization">Spherization function</A>
+                     <A HREF="#lsmac-processing">Spherization step</A><br>
+                     <A HREF="#lsmac-spherization">Spherization function</A>
                  </H5>
              </UL>
              <H5>
@@ -3200,7 +3200,7 @@
          <UL>
              <LI CLASS="mvd-P">
                  <P>
-                     The only geometrical model currently available is the <A HREF="#LSMAC-model"> <B>LSMAC</B> model</A> (Locally
+                     The only geometrical model currently available is the <A HREF="#lsmac-model"> <B>LSMAC</B> model</A> (Locally
                      Spherical Model with Anatomical Constraints), which is very close to a BEM
                      model. Note that the older <strong>SMAC</strong> model has been retired;
                  </P>
@@ -3255,7 +3255,7 @@
              &nbsp;
          </P>
          <H4>
-             <A NAME="LSMAC-model"></A>LSMAC geometrical model
+             <A NAME="lsmac-model"></A>LSMAC geometrical model
          </H4>
          <P>
              The <strong>LSMAC geometrical model</strong> is basically a way to transform
@@ -3294,7 +3294,7 @@
          </P>
          <UL>
              <H4>
-                 <A NAME="LSMAC-processing"></A>LSMAC Spherization step
+                 <A NAME="lsmac-processing"></A>LSMAC Spherization step
              </H4>
          </UL>
          <P>
@@ -3324,7 +3324,7 @@
          </P>
          <UL>
              <H4>
-                 <A NAME="LSMAC-spherization"></A>LSMAC Spherization function
+                 <A NAME="lsmac-spherization"></A>LSMAC Spherization function
              </H4>
          </UL>
          <P>
@@ -3355,7 +3355,7 @@
          </P>
          <P>
              When this option is checked,
-             Cartool will <A HREF="#lsmac-radiuses">estimate the radii</A>
+             Cartool will <a href="#lsmac-model">estimate the radii</a>
              of the skull, CSF and brain under each electrode from the provided T1 MRI.
          </P>
          <P>
@@ -3386,7 +3386,7 @@
              each layer underneath (right):
          </P>
          <P>
-             <img SRC="images/cris.4-Shell-estimation.2.png"><img height="315" SRC="images/cris.4-Shell-estimation.1.png" width="303">
+             <img SRC="images/cris.4-shell-estimation.2.png"><img height="315" SRC="images/cris.4-shell-estimation.1.png" width="303">
          </P>
          <P>
          </P>
@@ -3532,7 +3532,7 @@
          </P>
          <P>
              Unfortunately, both thickness and relative conductivity are needed to
-             <A HREF="#lsmac-radiuses">compute a reliable the Lead Field</A>. To increase
+             <A HREF="#lsmac-model">compute a reliable the Lead Field</A>. To increase
              the confidence in the model, the user has now to specify the targeted age for
              its inverse solution. Cartool then uses two tables to convert the age to mean
              thickness and age to conductivity, then updates these two fields in the
@@ -3664,7 +3664,7 @@
              <A NAME="electromagnetic-equations"></A>Electromagnetic equations
          </P>
          <P>
-             Once assumed within a <A HREF="#LSMAC-model">(local) spherical model</A>, the
+             Once assumed within a <A HREF="#lsmac-model">(local) spherical model</A>, the
              <A HREF="#skull-from-mri">tissues thicknesses</A> and
              <A HREF="#skull-age-to-conductivity">conductivities estimated</A>, Cartool
              can proceed with the electromagnetic models, with the following optinos
