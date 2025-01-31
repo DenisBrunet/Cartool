@@ -1,4 +1,4 @@
-<HTML>
+﻿<HTML>
  <HEAD>
 
   <TITLE>Creating Inverse Solution Matrices</TITLE>
@@ -169,7 +169,7 @@
 <a href="https://www.frontiersin.org/articles/10.3389/fneur.2019.00325/full"><strong>&quot;EEG Source Imaging: A Practical Review of the Analysis Steps&quot;</strong>,<BR>C.M. Michel, D. Brunet,<BR><em>Front. Neurol.</em>, 04 April 2019</a> <BR> <BR>
 <a href="https://www.ncbi.nlm.nih.gov/pubmed/25003030"><strong>&quot;Head model and electrical source imaging: A study of 38 epileptic patients&quot;</strong>,<BR>G. Birot, L. Spinelli, S. Vulli&eacute;moz, P. M&eacute;gevand, D. Brunet, M. Seeck, C.M. Michel,<BR><em>NeuroImage: Clinical</em>, 2014</a> <BR> <BR>
 <a href="https://www.ncbi.nlm.nih.gov/pubmed/24791748"><strong>&quot;Whole-scalp EEG mapping of somatosensory evoked potentials in macaque monkeys&quot;</strong>,<BR>A.-D. Gindrat, C. Quairiaux, J. Britz, D. Brunet, F. Lanz, C.M. Michel, E.M. Rouiller,<BR><em>Brain Structure and Function</em>, 2014</a> <BR> <BR>
-<a href="https://www.hindawi.com/journals/cin/2011/813870/"><strong>&quot;Spatiotemporal Analysis of Multichannel EEG: CARTOOL&quot;</strong>,<BR>D. Brunet, M.M. Murray, C.M. Michel,<BR><em>Computational Intelligence and Neuroscience</em>, 2011</a></PRE>
+<a href="https://onlinelibrary.wiley.com/doi/10.1155/2011/813870"><strong>&quot;Spatiotemporal Analysis of Multichannel EEG: CARTOOL&quot;</strong>,<BR>D. Brunet, M.M. Murray, C.M. Michel,<BR><em>Computational Intelligence and Neuroscience</em>, 2011</a></PRE>
 
          <H3>
              <em>&quot;The practice&quot;</em>
@@ -1292,9 +1292,9 @@
          </H5>
          <UL>
              <H5>
-                 <A HREF="#mris-autoresize">Auto-Resize</A><br><A HREF="#mris-filter">Filter noise</A><br>
                  <A HREF="#mris-bias-field-cor">Bias Field correction</A><br>
-                 <A HREF="#mris-reorient">Re-orient</A>
+				 <A HREF="#mris-filter">Filter noise</A><br>
+                 <A HREF="#mris-reorient">Realign</A>
              </H5>
              <UL>
                  <H5>
@@ -1990,7 +1990,7 @@
                  <P>
                      The template <B>should preferably be <em>non-</em>spherical</B>, i.e. it is
                      far better to have a <strong>real head shape</strong>.
-                     <A HREF="#gluing-or-not-gluin">There are work-around, though</A>.
+                     <a href="coregistering-electrodes-to-mri.html#glueing">There are work-around, though</a>.
                  </P>
              <LI CLASS="mvd-P">
                  <P>
@@ -2045,7 +2045,7 @@
              Enough electrodes, with a good coverage of the head, but has a <B>
                  spherical
                  shape
-             </B>. This is not ideal, though you might be able to <A HREF="#gluing-or-not-gluin">
+             </B>. This is not ideal, though you might be able to <A HREF="coregistering-electrodes-to-mri.html#glueing">
                  proceed
                  through
              </A>, but still not recommended:
@@ -2243,7 +2243,7 @@
              &nbsp;
          </P>
          <P>
-             Here is an example where <B><A HREF="#gluing-or-not-gluin">gluing</A></B>
+             Here is an example where <B><A HREF="coregistering-electrodes-to-mri.html#glueing">gluing</A></B>
              should have been avoided, the electrodes landing <I>inside</I> the
              head through the MRI's defect is <I>not</I> a good thing:
          </P>
@@ -2748,10 +2748,7 @@
                  <P>
                      <B>Memory</B> issue is a real problem. If you encounter some
                      problems, make sure your machine has enough of physical memory, is
-                     healthy and set correctly (see <A HREF="https://cartoolcommunity.unige.ch/user-s-guide/using-cartool/being-more-efficient-with-cartool#TOC-Setting-your-machine-correctly">
-                         Setting
-                         your machine correctly
-                     </A>). If the problems remain, try to reduce
+                     healthy and set correctly. If the problems remain, try to reduce
                      the number of SPs, from 5000 down to 3000.
                  </P>
              <LI CLASS="mvd-P">
@@ -2774,7 +2771,7 @@
                  <P>
                      Now, about the sensitive topics of <B>spatial resolution</B> (grid
                      spacing) and <B>accuracy</B> (to be spot-on). If first recommend you
-                     to get an idea of <A HREF="https://electronicdesign.com/article/power/bring_accuracy_precision_and_resolution_to_your_analog_and_power_systems.aspx">
+                     to get an idea of <A HREF="https://www.google.ch/search?q=resolution+accuracy+precision">
                          <B>
                              what
                              these terms really mean
@@ -3358,7 +3355,7 @@
          </P>
          <P>
              When this option is checked,
-             Cartool will <A HREF="#LSMAC-radiuses">estimate the radii</A>
+             Cartool will <A HREF="#lsmac-radiuses">estimate the radii</A>
              of the skull, CSF and brain under each electrode from the provided T1 MRI.
          </P>
          <P>
@@ -3535,7 +3532,7 @@
          </P>
          <P>
              Unfortunately, both thickness and relative conductivity are needed to
-             <A HREF="#LSMAC-radiuses">compute a reliable the Lead Field</A>. To increase
+             <A HREF="#lsmac-radiuses">compute a reliable the Lead Field</A>. To increase
              the confidence in the model, the user has now to specify the targeted age for
              its inverse solution. Cartool then uses two tables to convert the age to mean
              thickness and age to conductivity, then updates these two fields in the
@@ -3798,8 +3795,7 @@ Paul L. Nunez, Ramesh Srinivasan,
          <UL>
              <LI CLASS="mvd-P">
                  <P>
-                     You computed a LF with <B>another model</B> (like <A HREF="https://peili.hut.fi/BEM/">BEM</A>
-                     or FEM), and want to plug it into the inversion step of Cartool,
+                     You computed a LF with <B>another model</B> (like a BEM or FEM), and want to plug it into the inversion step of Cartool,
                  </P>
              <LI CLASS="mvd-P">
                  <P>

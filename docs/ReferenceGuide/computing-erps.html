@@ -1071,7 +1071,7 @@
                              </P>
                              <P>
                                  The limits specified need <B><I>not</I></B> to be within the range of
-                                 the <A HREF="#param-duration">Pre and Post-Frames</A>. They can be <B>
+                                 the <A HREF="#param-length-0">Pre and Post-Frames</A>. They can be <B>
                                      whatever
                                      you wish
                                  </B>, Cartool will handle <B><I>all</I></B> the cases gracefully.
@@ -1231,10 +1231,10 @@
                  <LI CLASS="mvd-P">
                      <P>
                          If <B>
-                             both the <A HREF="#param-channel-check">
-                                 channel test and the
+                             both the 
+						 <a href="#channel-checking">channel test and the
                                  auxiliary test
-                             </A>
+                             </a>
                          </B> are selected, then the channels are tested
                          against the threshold corresponding to which category they belong to
                          (normal or auxiliary). If any one of the test indicates a channel as
@@ -1247,7 +1247,7 @@
                      </P>
                  <LI CLASS="mvd-P">
                      <P>
-                         &quot;<A HREF="#param-channel-check">Excluded channels</A>&quot;
+                         &quot;<A HREF="#channel-checking">Excluded channels</A>&quot;
                          means <B>excluded from the tests</B> (and from the display BTW).
                          Whatever their values, excluded channels will not be tested. You can
                          choose to save or not these channels, according to your needs. And
@@ -1584,7 +1584,7 @@
                  <LI CLASS="mvd-P">
                      <P>
                          Usually, people are filtering the data and want to see the results,
-                         so both <A HREF="#dialog-filtering">Data</A> and <A HREF="#dialog-filtering">Display</A>
+                         so both <a href="#param-filtering">Data</a> and <A HREF="#param-filtering">Display</A>
                          should be selected.
                      </P>
                  <LI CLASS="mvd-P">
@@ -1654,6 +1654,18 @@
                          epochs not intersecting the bad markers.
                      </P>
              </UL>
+             <H4>
+                 <em><a name="param-get-parameter"></a>Drag &amp; Dropping</em> a 
+				 verbose (.vrb) file</H4>
+             <P>You can <strong><em>Drag &amp; Drop</em> a verbose file</strong> 
+			 from a previous computation, and Cartool will try its best to 
+			 extract all possible parameters from it, and transpose them to the 
+			 Parameter Dialog.</P>
+		<P>There are limits, however, as verbose files output has changed many 
+		times in the History of Cartool. So the older the verbose file, the more 
+		suspicious you should be. Take this feature as a handy shortcut, but
+		<strong>double-check all your parameters anyway</strong>, especially in 
+		deep-nested boxes like <a href="#param-filtering">Other Filters</a>!</P>
              <H2>
                  <A NAME="dialog-output"></A>Output Files&nbsp;dialog
              </H2>
@@ -1903,7 +1915,7 @@
                          </TD>
                          <TD WIDTH="73%" VALIGN=TOP>
                              <P>
-                                 Select this if the <A HREF="#param-channel-check">excluded channels</A>
+                                 Select this if the <A HREF="#channel-checking">excluded channels</A>
                                  are to be written to the output files anyway. In this way, you can
                                  assure you get the expected number of tracks (though the exluded will
                                  certainly look noisy).
@@ -1916,7 +1928,7 @@
                          </TD>
                          <TD WIDTH="73%" VALIGN=TOP>
                              <P>
-                                 Select this if the <A HREF="#param-channel-check">auxiliary channels</A>
+                                 Select this if the <A HREF="#channel-checking">auxiliary channels</A>
                                  are to be written to the output files.
                          </TD>
                      </TR>
@@ -1951,11 +1963,12 @@
                          </TD>
                          <TD WIDTH="73%" VALIGN=TOP>
                              <P>
-                                 To help visualize the <A HREF="#param-epoch-origin">epoch origin</A>,
+                                 To help visualize the 
+								 <a href="#epoch-origin">epoch origin</a>,
                                  select this to conveniently add a marker on (most of) the outputed files.
                              </P>
                              <P>
-                                 It does nothing if there are no <A HREF="#param-duration">Pre-Frames</A>,
+                                 It does nothing if there are no <A HREF="#param-length-0">Pre-Frames</A>,
                                  as the first TF <I>is</I> the epoch origin (see <A HREF="#param-length-0">
                                      length
                                      and origin position
@@ -2371,7 +2384,7 @@
                      </TD>
                      <TD WIDTH="73%" VALIGN=TOP>
                          <P>
-                             If the <A HREF="#param-channel-check">regular tracks test</A> has
+                             If the <A HREF="#channel-checking">regular tracks test</A> has
                              been selected, it shows which one are concerned with the Min and Max
                              values displayed below.
                          </P>
@@ -2420,7 +2433,7 @@
                      </TD>
                      <TD WIDTH="73%" VALIGN=TOP>
                          <P>
-                             If the <A HREF="#param-channel-check">auxiliray tracks test</A> has
+                             If the <A HREF="#channel-checking">auxiliray tracks test</A> has
                              been selected, it shows which one are concerned with the Min and Max
                              values displayed below.
                          </P>
@@ -2570,7 +2583,7 @@
                              Note that on the next epoch, Cartool will refresh the tracks anyway...
                          </P>
                          <P>
-                             If the <A HREF="#param-channel-check">auxiliaries are not tested</A>,
+                             If the <A HREF="#channel-checking">auxiliaries are not tested</A>,
                              the user can freely show or hide them. The user's choice will then
                              remain valid for all epochs.
                      </TD>
@@ -2763,7 +2776,7 @@
                      </P>
                  <LI CLASS="mvd-P">
                      <P>
-                         They will also make possible to compute the epoch <A HREF="#param-epoch-origin">
+                         They will also make possible to compute the epoch <A HREF="#epoch-origin">
                              origin
                              as the reaction time
                          </A> from the trigger.

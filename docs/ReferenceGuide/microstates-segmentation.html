@@ -87,10 +87,12 @@
          <H5>
              <A HREF="#seg-dialog">How to run the Segmentation</A>
          </H5>
-         <H5 class="auto-style6">
+         <UL>
+         <H5>
              <A HREF="#segmentation-files-dialog">Files Dialog</A><br>
              <A HREF="#segmentation-parameters-dialog">Parameters Dialog</A>
          </H5>
+         </UL>
          <H5>
              <A HREF="#technical-points">Technical points &amp; hints</A><br>
              <A HREF="#seg-results">Results</A><br>
@@ -2167,23 +2169,22 @@
                  <P>
                      Any <A HREF="files-formats-others.html#eeg">EEG files</A>. Dropping <B>many</B>
                      EEG files at a time will create a new <B>
-                         <A HREF="#fitting-groups">
-                             group
+                         <a href="microstates-back-fitting-templates.html#fitting-groups">group
                              of files
-                         </A>
-                     </B>. Dropping a <B>single</B> EEG file will update the <A HREF="#fitting-template">
+                         </a>
+                     </B>. Dropping a <B>single</B> EEG file will update the <A HREF="microstates-back-fitting-templates.html">
                          template
                          file
                      </A>.<BR>
              <LI CLASS="mvd-P">
                  <B><I><A HREF="general-concepts.html#linkingfiles">.lm</A></I></B><A HREF="general-concepts.html#linkingfiles"> files</A>,
-                 each file being scanned and its content itself treated as a <A HREF="#fitting-groups">
+                 each file being scanned and its content itself treated as a <A HREF="microstates-back-fitting-templates.html#fitting-groups">
                      group
                      of files
                  </A>.<BR>
              <LI CLASS="mvd-P">
                  <I><A HREF="files-formats-cartool.html#csv"><B>.csv</B></A></I><A HREF="files-formats-cartool.html#csv"> files</A>,
-                 as a <A HREF="#file-list-write">list of groups previously saved</A>.</P>
+                 as a <a href="#file-list-format">list of groups previously saved</a>.</P>
          </UL>
          <H4>
              <A NAME="file-list-format"></A>File formats to save or retrieve the
@@ -2309,7 +2310,7 @@
              <A NAME="GEV"></A>Global Explained Variance computation
          </H4>
          <P>
-             During the <B>segmentatioin process</B>, the <A HREF="terms-definitions-formulas.html#GEV"><strong>GEV</strong></A>
+             During the <B>segmentation process</B>, the <A HREF="terms-definitions-formulas.html#GEV"><strong>GEV</strong></A>
              value is <B>computed across all the provided files</B>, as if they were
              <strong>
                  aggregated into a
@@ -2321,7 +2322,7 @@
          <P>
              However, during the <B>fitting process</B>, the <strong>GEV</strong> is computed on
              a <strong>set of groups</strong> that represent some natural <strong>
-                 <A HREF="#number-within-subjects">within-subjects size</A>
+                 <a href="microstates-back-fitting-templates.html#number-within-subjects">within-subjects size</a>
              </strong>, which in
              turns depend on your paradigm. It can even be computed on a <strong>
                  per-file
@@ -2329,10 +2330,7 @@
              </strong>, if subjects were not the same across all groups.
          </P>
          <P>
-             This has roughly the same consequence as for <A HREF="#GFP-normalization">
-                 GFP
-                 Normalization
-             </A>, in that the <strong>denominator part of the </strong>
+             This has roughly the same consequence as for GFP Normalization, in that the <strong>denominator part of the </strong>
              <A HREF="terms-definitions-formulas.html#GEV"><strong>equation</strong></A> will be different
              according to the <strong>number of files it is computed across</strong>. Not
              that the absolute sum is of any importance, but rather that individually
