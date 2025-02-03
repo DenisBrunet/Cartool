@@ -114,19 +114,19 @@ body {
 
 h1, .mvd-h1 {
     font-family: Arial, Verdana;
-    font-size: 20pt;
-    color: #FFFFFF;
+    font-size: 22pt;
+    color: #224488;
     font-weight: bold;
 
-    padding: 12pt 20pt;
-    margin: 15px 0;
+    padding: 14pt 24pt;
+	margin: 10px 0 25px 0;
 
-    background: linear-gradient(90deg, #1E1E1E, #4A90E2);
-    border: none;
+    background: linear-gradient(90deg, #DCEEFF, #A0CFFF);
+    border: 1px solid #6AA9E0;
     border-radius: 14px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 
-    line-height: 1.2;
+    line-height: 1.3;
 }
 
 
