@@ -1,113 +1,164 @@
 <HTML>
- <HEAD>
+<HEAD>
   <TITLE>Cartool EEG Software Reference Guide</TITLE>
   <link rel="icon" type="image/x-icon" href="../favicon.ico">
- <LINK REL="stylesheet" HREF="../cartool.css" TYPE="text/css">
-  </HEAD>
- <BODY>
+  <LINK REL="stylesheet" HREF="../cartool.css" TYPE="text/css">
 
-	<div class="container">
+  <style type="text/css">
 
-	<object data="../cartool-menu.html" class="menu-iframe"></object>
+.help-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px 20px;
+    padding: 20px;
+}
 
-         <H1>Cartool EEG Software<br>Reference Guide</H1>
-         <H3>
-             <A NAME="general"></A><A HREF="general-concepts.html">General Concepts</A>
-         </H3>
-         <H5>
-             <A HREF="general-concepts.html#files_and_views">Files and Views</A><br>
-             <A HREF="general-concepts.html#linkingfiles">Linking Files Together</A><br>
-             <A HREF="general-concepts.html#slave_windows">Slave Windows</A>
-         </H5>
-         <H3>
-             <A NAME="displaying"></A>Displaying
-         </H3>
-		 <h5>
-                             <A HREF="windows-general-commands.html">General Commands for all Windows</A>
-                         </h5>
-		 <h5>
-                             <A HREF="eeg-display.html">EEG Display</A><br><A HREF="frequency-display.html">
-                                 Frequency
-                                 Display
-                             </A><br>
-                             <A HREF="microstates-segmentation-display.html">Segments Display</A><br>
-                             <A HREF="potentials-maps-display.html">Scalp &amp; Intracranial Potentials Display</A>
-                         </h5>
-		 <h5>
-                             <A HREF="mri-display.html">MRIs and Volumes Display</A><br>
-                             <A HREF="esi-display.html">Inverse Solutions Display</A><br>
-                             <A HREF="about-rois.html">Using ROIs</A>
-                         </h5>
+.help-section {
+    background: #F8FAFF;
+    padding: 5px 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
-         <H3>
-             <A NAME="processing"></A><A HREF="all-processings.html">Processing, from Dialogs</A>
-         </H3>
-		 <h5>
-                             <A HREF="all-processings.html">All the processing of Cartool</A>
-                         </h5>
-                         <H5>
-                             <A HREF="reprocess-tracks.html">Reprocess / Export Tracks</A><br>
-                             <A HREF="file-calculator.html">File Calculator</A><br>
-                             <A HREF="eeg-display.html#scanning-triggers">Generate Markers from Tracks</A>
-                         </H5>
-                         <H5>
-                             <A HREF="computing-erps.html">Computing ERPs or Averaging Tracks</A><br>
-                             <A HREF="tracks-interpolation.html">Tracks Interpolation</A><br>
-                             <A HREF="frequency-analysis.html">Frequency Analysis</A><br>
-							 <A HREF="microstates-segmentation.html">Segmentation of EEG Files into Micro-States</A><br>
-                             <a href="microstates-back-fitting-templates.html">Back-Fitting Template Maps</a>
-                         </H5>
-                         <H5>
-                             <A HREF="creating-rois.html">Creating</A> &amp; <A HREF="about-rois.html">Using ROIs</A><br>
-                             <A HREF="computing-statistics.html">Statistics</A>
-                         </H5>
-                         <H5>
-                             <a href="mris-preprocessing.html">MRIs Preprocessing</a><br>MRI Coregistration to current MRI<br>MRIs
-                             Skull Stripping<br>
-                             <A HREF="mri-display.html#talairach">Talairach Coordinates Conversion</A></H5>
-		 <H5>
-                             <A HREF="creating-template-electrodes.html">Creating a Template Electrodes Coordinates</A><br>
-							 <a href="coregistering-electrodes-to-mri.html">
-                                 Coregistering Electrodes to
-                                 MRI
-                             </a>
-                         </H5>
-                         <H5>
-                             <A HREF="computing-inverse-solution-matrices.html">Creating 
-							 <em>Inverse Solution Matrices</em></A><br>
-                             <a href="computing-ris.html">Computing the <em>Results</em> of Inverse Solution</a><br>
-                             <a href="ris-to-volumes.html">Results of Inverse Solution to Volumes</a>
-                         </H5>
+.help-section H3 {
+    color: #1155E0;
+    margin-bottom: 10px;
+}
 
-         <H3>
-             <a href="command-line-interface.html">Processing, from the Command-Line</a>
-         </H3>
-		 <h5>
-             All Command-Lines <a href="command-line-interface.html">commands</a> 
-			 and <a href="command-line-interface.html#subcommandsoption">
-			 sub-commands</a></h5>
-         <H3>
-             <A NAME="appendixes"></A>Appendixes
-         </H3>
-         <H5>
-             <A HREF="problems-resolution.html">A. Problems Resolution</A><br>
-             <A HREF="terms-definitions-formulas.html">B. Cartool <em>Slang</em> &amp; Various Formulas</A><br>
-             <A HREF="files-formats-cartool.html">C. Cartool File Formats</A><br>
-             <A HREF="files-formats-others.html">D. Files Handled by Cartool</A><br>
-             <A HREF="cartool-options.html">E. Cartool Options</A>
-         </H5>
-         <P>
-             &nbsp;<br>
-         </P>
-         <P>
-             All content written by <strong>Denis Brunet</strong>, <strong>&copy; University of Geneva, Switzerland.</strong><br>
-             See the <B><a href="https://github.com/DenisBrunet/Cartool/blob/main/LICENSE.txt">license 
-			 part relative to the documentation</a></B>.
-         </P>
+.help-section ul {
+    list-style: none;
+    padding-left: 0;
+}
 
-	<iframe src="../cartool-footer.html"></iframe>
+.help-section ul li {
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
 
+.help-section ul li a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.help-section ul li a:hover {
+    color: #1155E0;
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .help-grid {
+        grid-template-columns: 1fr;
+}
+
+</style>
+
+</HEAD>
+
+<BODY>
+
+<div class="container">
+
+    <!-- Include Menu -->
+    <object data="../cartool-menu.html" class="menu-iframe"></object>
+
+    <H1>Cartool EEG Software<br>Reference Guide</H1>
+
+    <div class="help-grid">
+        <!-- General Concepts -->
+        <div class="help-section">
+            <H3><A HREF="general-concepts.html">General Concepts</A></H3>
+            <ul>
+                <li><A HREF="general-concepts.html#files_and_views">Files and Views</A></li>
+                <li><A HREF="general-concepts.html#linkingfiles"><strong>Linking Files Together</strong></A></li>
+                <li><A HREF="general-concepts.html#slave_windows">'Slave' Windows</A></li>
+            </ul>
+        </div>
+
+        <!-- Displaying -->
+        <div class="help-section">
+            <H3>Displaying</H3>
+            <ul>
+                <li><A HREF="windows-general-commands.html">General Commands for all Windows</A></li>
+                <li><A HREF="eeg-display.html"><strong>EEG Display</strong></A></li>
+                <li><A HREF="frequency-display.html"><strong>Frequency Display</strong></A></li>
+                <li><A HREF="microstates-segmentation-display.html">Segments Display</A></li>
+                <li><A HREF="potentials-maps-display.html"><strong>Scalp & Intracranial Potentials Display</strong></A></li>
+                <li><A HREF="mri-display.html"><strong>MRIs and Volumes Display</strong></A></li>
+                <li><A HREF="esi-display.html"><strong>ESI (Inverse Solutions) Display</strong></A></li>
+                <li><A HREF="about-rois.html">Using ROIs</A></li>
+            </ul>
+        </div>
+
+        <!-- Processing -->
+        <div class="help-section">
+            <H3><A HREF="all-processings.html">Processing, from Dialogs</A></H3>
+            <ul>
+                <li><A HREF="all-processings.html">Summary of all the processing of Cartool</A></li>
+                <li><A HREF="reprocess-tracks.html"><strong>Reprocess / Export Tracks</strong></A></li>
+                <li><A HREF="file-calculator.html">File Calculator</A></li>
+                <li><A HREF="eeg-display.html#scanning-triggers">Generate Markers from Tracks</A></li>
+                <li><A HREF="computing-erps.html">Computing ERPs or Averaging Tracks</A></li>
+                <li><A HREF="tracks-interpolation.html"><strong>Tracks Interpolation</strong></A></li>
+                <li><A HREF="frequency-analysis.html">Frequency Analysis</A></li>
+                <li><A HREF="microstates-segmentation.html"><strong>Segmentation of EEG Files into Micro-States</strong></A></li>
+                <li><A HREF="microstates-back-fitting-templates.html"><strong>Back-Fitting Template Maps</strong></A></li>
+                <li><A HREF="creating-rois.html">Creating</A> & <A HREF="about-rois.html">Using ROIs</A></li>
+                <li><A HREF="computing-statistics.html">Statistics</A></li>
+                <li><A HREF="mris-preprocessing.html">MRIs Preprocessing</A></li>
+                <!-- <li>MRI Coregistration</li> -->
+                <!-- <li>MRIs Skull Stripping</li> -->
+                <li><A HREF="mri-display.html#talairach">Talairach Coordinates Conversion</A></li>
+                <li><A HREF="creating-template-electrodes.html">Creating a Template Electrodes Coordinates</A></li>
+                <li><A HREF="coregistering-electrodes-to-mri.html">Coregistering Electrodes to MRI</A></li>
+                <li><A HREF="computing-inverse-solution-matrices.html"><strong>Creating <i>Inverse Solution Matrices</i></strong></A></li>
+                <li><A HREF="computing-ris.html"><strong>Computing the <i>Results</i> of Inverse Solution</strong></A></li>
+                <li><A HREF="ris-to-volumes.html">Results of Inverse Solution to Volumes</A></li>
+            </ul>
+        </div>
+
+        <!-- Command-Line -->
+        <div class="help-section">
+            <H3><a href="command-line-interface.html">Processing, from the Command-Line</a></H3>
+            <ul>
+				<li>All <a href="command-line-interface.html"><strong>commands</strong></a> & <a href="command-line-interface.html#subcommandsoption"><strong>sub-commands</strong></a></li>
+                <li><A HREF="command-line-interface.html#mainwindow">Cartool Main window control</A></li>
+                <li><A HREF="command-line-interface.html#childrenwindows">Per document window control</A></li>
+                <li><A HREF="command-line-interface.html#reprocesstracks"><strong>Reprocess / Export Tracks</strong></A></li>
+            </ul>
+        </div>
+
+        <!-- Appendices -->
+        <div class="help-section">
+            <H3>Appendixes</H3>
+            <ul>
+                <li><A HREF="problems-resolution.html">A. Problems Resolution</A></li>
+                <li><A HREF="terms-definitions-formulas.html">B. Cartool <em>Slang</em> & Formulas</A></li>
+                <li><A HREF="files-formats-cartool.html">C. Cartool File Formats</A></li>
+                <li><A HREF="files-formats-others.html">D. Files Handled by Cartool</A></li>
+                <li><A HREF="cartool-options.html">E. Cartool Options</A></li>
+            </ul>
+        </div>
     </div>
- 
- </BODY>
+
+	<P>&nbsp;<br>
+	</P>
+	<P>
+	All content written by <strong>Denis Brunet</strong>, <strong>&copy; 1997-2025 University of Geneva, Switzerland.</strong><br>
+	Refer to the relevant section of the <A HREF="https://github.com/DenisBrunet/Cartool/blob/main/LICENSE.txt"><strong>license for documentation details</strong></A>.
+	</P>
+	<P>
+	<A HREF="https://github.com/DenisBrunet/Cartool/blob/main/LICENSE.txt">&nbsp;</A>
+	</P>
+
+    <!-- Footer -->
+    <iframe src="../cartool-footer.html"></iframe>
+
+</div>
+
+</BODY>
+
 </HTML>
