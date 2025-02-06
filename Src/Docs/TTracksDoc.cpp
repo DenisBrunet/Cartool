@@ -1565,8 +1565,9 @@ if ( dotemporalfilters )
 
                                         // Adjust buffer to either original or expanded limits
                                         // Note that the previous content could be lost, though this usually is not a problem, as for filtered data, the buffer is usually evaluated as a whole
+                                        // If this is still a problem, make sure the buffer is allocated large enough beforehand
 buff.Resize (   AtLeast ( buff.GetDim1 (), NumElectrodes + ( pseudotracks ? NumPseudoTracks : 0 ) ),
-                AtLeast ( buff.GetDim2 (), (int) numtf                                            )  );
+                AtLeast ( buff.GetDim2 (), (int) ( tfoffset + numtf )                             )  );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1747,8 +1748,8 @@ if ( ! HasStandardDeviation () ) {
 long                numtf           = tf2 - tf1 + 1;
 
                                         // Mimick GetTracks by also adjusting the buffer size if needed
-buff.Resize (   AtLeast ( buff.GetDim1 (), NumElectrodes ),
-                AtLeast ( buff.GetDim2 (), (int) numtf   )  );
+buff.Resize (   AtLeast ( buff.GetDim1 (), NumElectrodes              ),
+                AtLeast ( buff.GetDim2 (), (int) ( tfoffset + numtf ) )  );
 
                                         // All SD data is already loaded into our own buffer, just copy the requested bits
 for ( int el = 0; el < NumElectrodes; el++ )

@@ -579,12 +579,13 @@ if ( ! ValidView () ) {
     }                
 
 
-//if ( ! isderived ) {
-//
-//    EegBuff.Resize ( 1, EEGDoc->GetTotalElectrodes (), BuffSize );
-//    if ( EEGDoc->HasStandardDeviation () )
-//        SdBuff.Resize ( EEGDoc->GetTotalElectrodes (), BuffSize );  // !force Dim1 with pseudo-tracks so both buffers have exactly the same memory footprint!
-//    }
+if ( ! isderived ) {
+
+    EegBuff.Resize ( 1, EEGDoc->GetTotalElectrodes (), BuffSize );
+
+    if ( EEGDoc->HasStandardDeviation () )
+        SdBuff.Resize ( EEGDoc->GetTotalElectrodes (), BuffSize );  // !force Dim1 with pseudo-tracks so both buffers have exactly the same memory footprint!
+    }
 
 TFCursor.SentTo            = 0;
 TFCursor.SentFrom          = GetViewId ();

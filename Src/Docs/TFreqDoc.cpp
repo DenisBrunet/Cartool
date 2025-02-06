@@ -175,7 +175,7 @@ void    TFreqDoc::GetTracks (   long                tf1,            long        
                                 TArray2<float>&     buff,           int                 tfoffset, 
                                 AtomType            atomtype,
                                 PseudoTracksType    pseudotracks,
-                                ReferenceType       /*reference*/,  const TSelection*   /*referencetracks*/,
+                                ReferenceType     /*reference*/,    const TSelection* /*referencetracks*/,
                                 const TRois*        rois      
                             )
 {
@@ -189,60 +189,35 @@ if ( pseudotracks == ComputePseudoTracks && ! ( buff.GetDim1 () >= NumElectrodes
 
     pseudotracks    = NoPseudoTracks;
 
+                                        // When data is positive, compute the RMS instead of the GFP by skipping the re-centering
+bool                gfpnotcentered      = IsAbsolute ( atomtype );
 
-/*                                      // force positive, otherwise trust the settings (data could still have 1 or 2 samples neg)
-if ( IsPositive ( atomtype ) ) {
-                                        // modify data now
-    if ( loadbuffdiss )
-        for ( el = 0; el < NumElectrodes; el++ )
-            if ( ! AuxTracks[ el ] )    // a priori, auxs could be anything
-                BuffDiss[ el ][ 0 ] = max ( BuffDiss[ el ][ 0 ], (float) 0 ); // fabs ( BuffDiss[ el ][ 0 ] );
-
-
-    for ( el = 0; el < NumElectrodes; el++ )
-        if ( ! AuxTracks[ el ] )        // a priori, auxs could be anything
-            for ( tf = 0, tfo = tfoffset; tf < numtf; tf++, tfo++ )
-                buff[ el ][ tfo ] = max ( buff[ el ][ tfo ], (float) 0 ); // fabs ( buff[ el ][ tfo ] );
-    } // positive data
-*/
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 int                 numtf           = tf2 - tf1 + 1;
-int                 tf;
-int                 tfo;
-int                 tfo1;
-double              numt;
-double              sum;
-double              sumsqr;
-double              avg;
-double              gfp;
-double              avg2;
-double              gfp2;
-double              temp;
-//int               eloffset        = GetFrequencyOffset ();
-                                        // check if we need to load a separate 1 TF buffer for the first dissimilarity
-bool                loadbuffdiss    = pseudotracks          // only if we compute the pseudos
-                                   && tf1 > 0;              // previous absolute TF must exist
 
+                                        // Adjust buffer to either original or expanded limits
+                                        // Note that the previous content could be lost, though this usually is not a problem, as for filtered data, the buffer is usually evaluated as a whole
+                                        // If this is still a problem, make sure the buffer is allocated large enough beforehand
+buff.Resize (   AtLeast ( buff.GetDim1 (), NumElectrodes + ( pseudotracks ? NumPseudoTracks : 0 ) ),
+                AtLeast ( buff.GetDim2 (), (int) ( tfoffset + numtf )                             )  );
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Caller doesn't have to worry about the necessary margin, it will be adjusted here!
-                                        // Note that the previous content will be lost, though this usually not a problem as when data is filtered, buffer is usually evaluated as a whole, and not a sub-part of it
-                                        // buff can only grow, not shrink
-buff.Resize (   max ( pseudotracks ? NumElectrodes + NumPseudoTracks 
-                                   : NumElectrodes, 
-                      buff.GetDim1 () ), 
-                max ( numtf, 
-                      buff.GetDim2 () ) );
 
                                         // BuffDiss dimensions could also be asserted here...
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // load buffer for the Dissimilarity of first time frame
-if ( loadbuffdiss ) 
-    ReadRawTracks ( tf1 - 1, tf1 - 1, BuffDiss );   // this is not optimal as it launches a separate read for 1 TF - also tf1 > 0 here
-else
-    BuffDiss.ResetMemory ();                        // just to be clean...
+                                        // We have to care for an optional 1 TF buffer used for dissimilarity computation
+if ( pseudotracks ) {
+    
+    if      ( tf1 == 0 )                // original or modified tf1 - Dissimilarity can not be computed 
+
+        BuffDiss.ResetMemory ();        // by safety
+
+    else if ( tf1 > 0 )                 // read an additional time point @ tf1-1 as there is addition margin from any filter here
+
+        ReadRawTracks ( tf1 - 1, tf1 - 1, BuffDiss );
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -251,92 +226,101 @@ ReadRawTracks ( tf1, tf2, buff, tfoffset );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+                                        // copied from TTracksDoc::GetTracks
 if ( pseudotracks ) {
-                                        // rely on current, or force from user
-//  bool                pseudonoavgref  = IsAbsolute ( atomtype );
-    double              rescalevector   = IsVector ( atomtype ) ? 3 : 1;
-    int                 el;
-
                                         // count only non-aux and non-bad electrodes
-    numt = GetNumValidElectrodes ();
-    if ( !numt )    numt = 1;
+    double              numt            = NonNull ( GetNumValidElectrodes () );
+    double              rescalevector   = IsVector ( atomtype ) ? 3 : 1;
+    double              avgbefore       = 0;
+    double              gfpbefore       = 1;
 
-                                        // compute pseudos
-    for ( tf = 0, tfo = tfoffset, tfo1=tfo-1; tf < numtf; tf++, tfo++, tfo1++ ) {
 
-                                        // AVG is needed in either case: pseudos or average reference
+    auto    ComputeAvg  = [ this, &numt ] ( TArray2<float>& buff, int tfo ) {
+
+        double      sum     = 0;
                                         // don't use ReferenceTracks, as we can be in an overriding case
-        for ( sum = 0, el = 0; el < NumElectrodes; el++ ) {
-            if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-            sum     += buff ( el, tfo );
-            }
-        buff ( OffAvg, tfo )   = avg   = sum / numt;
+        for ( int el = 0; el < NumElectrodes; el++ ) 
+            if ( ValidTracks[ el ] )
+                sum    += buff ( el, tfo );
+                
+        return  sum / numt;
+        };
+
+    auto    ComputeGfp  = [ this, &numt, &rescalevector ] ( TArray2<float>& buff, int tfo, double avg ) {
+
+        double      sumsqr  = 0;
+
+        for ( int el = 0; el < NumElectrodes; el++ ) 
+            if ( ValidTracks[ el ] )
+                sumsqr += Square ( buff ( el, tfo ) - avg );
+            
+        return  sqrt ( sumsqr / numt * rescalevector );
+        };
+
+    auto    ComputeDis  = [ this, &numt, &rescalevector ] ( TArray2<float>& buff1, int tfo1, double avg1, double gfp1, TArray2<float>& buff2, int tfo2, double avg2, double gfp2 ) {
+
+        double      sumsqr  = 0;
+
+        for ( int el = 0; el < NumElectrodes; el++ ) 
+            if ( ValidTracks[ el ] )
+                sumsqr += Square (   ( buff1 ( el, tfo1 ) - avg1 ) / gfp1
+                                   - ( buff2 ( el, tfo2 ) - avg2 ) / gfp2 );
+            
+        return  sqrt ( sumsqr / numt * rescalevector );
+        };
 
 
-//      if ( pseudonoavgref )
-//          avg   = 0;                  // don't center on the average
+    for ( int tf = 0, tfo = tfoffset; tf < numtf; tf++, tfo++ ) {
 
-                                        // compute GFP with average ref
-        for ( sumsqr = 0, el = 0; el < NumElectrodes; el++ ) {
-            if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-            temp    = buff ( el, tfo ) - avg;
-            sumsqr  += temp * temp;
-            }
-        buff ( OffGfp, tfo )   = gfp = sqrt ( sumsqr / numt * rescalevector );
+        double          avg     = ComputeAvg ( buff, tfo );
 
-                                        // real GFP has been saved already, now avoid some 0 division
-        if ( !gfp  )    gfp  = 1;
+        buff ( OffAvg, tfo )    = avg;  // saving real average
 
-                                        // compute DIS
-        if ( !tf )                      // first occurence of the loop?
-            if ( !tf1 ) {               // TF 0?
-                buff ( OffDis, tfo )   = 0;    // impossible to have the previous value
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+        if ( gfpnotcentered )
+            avg     = 0;                // resetting avg? GFP becomes RMS
+
+        double          gfp     = ComputeGfp ( buff, tfo, avg );
+
+        buff ( OffGfp, tfo )    = gfp;  // saving real GFP / RMS
+
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+        NonNulled ( gfp );              // just to prevent division by zero
+
+
+        if ( tf == 0 ) {                // first occurence in the loop, which means we have to handle some missing data
+
+            if ( tf1 == 0 ) {           // first actual tf: dissimilarity can not be computed, as there is no previous data to compare from
+
+                buff ( OffDis, tfo )   = 0;
                 }
-            else {                      // use local 1 TF buffer, compute again AVG, GFP, then the DIS
+            else {                      // tf1 > 0 - previous data exist and is to be found in our local 1 TF buffer
 
-                for ( sum = 0, el = 0; el < NumElectrodes; el++ ) {
-                    if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-                    sum     += BuffDiss ( CurrentFrequency, el, 0 );
-                    }
+                double      avgbuffdiss     = gfpnotcentered ? 0 : ComputeAvg ( BuffDiss, 0 );
 
-//              avg2  = pseudonoavgref ? 0 : sum / numt;
-                avg2  = sum / numt;
+                double      gfpbuffdiss     = NonNull ( ComputeGfp ( BuffDiss, 0, avgbuffdiss ) );
 
+                buff ( OffDis, tfo )        = ComputeDis    (   buff,       tfo,    avg,            gfp,
+                                                                BuffDiss,   0,      avgbuffdiss,    gfpbuffdiss );
+                } // else tf1 > 0
 
-                for ( sumsqr = 0, el = 0; el < NumElectrodes; el++ ) {
-                    if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-                    temp    = BuffDiss ( CurrentFrequency, el, 0 ) - avg2;
-                    sumsqr  += temp * temp;
-                    }
+            } // tf == 0
 
-                gfp2 = sqrt ( sumsqr / numt * rescalevector );
+        else {                          // tf > 0 - NOT the first occurence in the loop, and avgbefore and gfpbefore exist
 
-                if ( !gfp2 )    gfp2 = 1;
-
-
-                for ( sumsqr = 0, el = 0; el < NumElectrodes; el++ ) {
-                    if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-                    temp    = ( buff ( el, tfo  )                     - avg  ) / gfp
-                            - ( BuffDiss ( CurrentFrequency, el, 0 )  - avg2 ) / gfp2;
-                    sumsqr  += temp * temp;
-                    }
-
-                buff ( OffDis, tfo )   = sqrt ( sumsqr / numt * rescalevector );
-                }
-        else  {                         // NOT the first occurence in the loop
-
-            for ( sumsqr = 0, el = 0; el < NumElectrodes; el++ ) {
-                if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-                temp    = ( buff ( el, tfo  ) - avg  ) / gfp
-                        - ( buff ( el, tfo1 ) - avg2 ) / gfp2;
-                sumsqr  += temp * temp;
-                }
-            buff ( OffDis, tfo )   = sqrt ( sumsqr / numt * rescalevector );
+            buff ( OffDis, tfo )    = ComputeDis    (   buff,   tfo,        avg,        gfp,
+                                                        buff,   tfo - 1,    avgbefore,  gfpbefore );
             }
 
-        gfp2 = gfp;                     // for next occurence
-        avg2 = avg;                     // for next occurence
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // store current values for the next tf
+        avgbefore   = avg;
+        gfpbefore   = gfp;
         } // for tf
 
     } // if pseudotracks
@@ -370,66 +354,35 @@ if ( pseudotracks == ComputePseudoTracks && ! ( buff.GetDim1 () >= NumElectrodes
 
     pseudotracks    = NoPseudoTracks;
 
-/*                                      // force positive, otherwise trust the settings (data could still have 1 or 2 samples neg)
-if ( IsPositive ( atomtype ) ) {
-                                        // modify data now
-    if ( loadbuffdiss )
-        for ( el = 0; el < NumElectrodes; el++ )
-            if ( ! AuxTracks[ el ] )    // a priori, auxs could be anything
-                BuffDiss ( el, 0 ) = max ( BuffDiss ( el, 0 ), (float) 0 ); // fabs ( BuffDiss ( el, 0 ) );
-
-
-    for ( el = 0; el < NumElectrodes; el++ )
-        if ( ! AuxTracks[ el ] )        // a priori, auxs could be anything
-            for ( tf = 0, tfo = tfoffset; tf < numtf; tf++, tfo++ )
-                buff ( el, tfo ) = max ( buff ( el, tfo ), (float) 0 ); // fabs ( buff ( el, tfo ) );
-    } // positive data
-*/
-
-
-//                                        // To prevent average reference in case of positive data - Off now, always use the average ref
-//bool                pseudonoavgref  = IsAbsolute ( atomtype );
+                                        // When data is positive, compute the RMS instead of the GFP by skipping the re-centering
+bool                gfpnotcentered      = IsAbsolute ( atomtype );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 int                 numtf           = tf2 - tf1 + 1;
-int                 tf;
-int                 tfo;
-int                 tfo1;
-double              numt;
-double              sum;
-double              sumsqr;
-double              avg;
-double              gfp;
-double              avg2;
-double              gfp2;
-double              temp;
-//int               eloffset        = GetFrequencyOffset ();
-                                        // check if we need to load a separate 1 TF buffer for the first dissimilarity
-bool                loadbuffdiss    = pseudotracks          // only if we compute the pseudos
-                                   && tf1 > 0;              // previous absolute TF must exist
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Caller doesn't have to worry about the necessary margin, it will be adjusted here!
-                                        // Note that the previous content will be lost, though this usually not a problem as when data is filtered, buffer is usually evaluated as a whole, and not a sub-part of it
-                                        // buff can only grow, not shrink
-buff.Resize (   max ( NumFrequencies,
-                      buff.GetMaxPlanes () ), 
-                max ( pseudotracks ? NumElectrodes + NumPseudoTracks 
-                                   : NumElectrodes, 
-                      buff.GetDim1 () ), 
-                max ( numtf, 
-                      buff.GetDim2 () ) );
+                                        // Adjust buffer to either original or expanded limits
+                                        // Note that the previous content could be lost, though this usually is not a problem, as for filtered data, the buffer is usually evaluated as a whole
+                                        // If this is still a problem, make sure the buffer is allocated large enough beforehand
+buff.Resize (   AtLeast ( buff.GetMaxPlanes (), NumFrequencies                                         ),
+                AtLeast ( buff.GetDim1      (), NumElectrodes + ( pseudotracks ? NumPseudoTracks : 0 ) ),
+                AtLeast ( buff.GetDim2      (), (int) ( tfoffset + numtf )                             )  );
 
                                         // BuffDiss dimensions could also be asserted here...
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // load buffer for the Dissimilarity of first time frame
-if ( loadbuffdiss ) 
-    ReadFrequencies ( tf1 - 1, tf1 - 1, BuffDiss ); // this is not optimal as it launches a separate read for 1 TF - also tf1 > 0 here
-else
-    BuffDiss.ResetMemory ();                        // just to be clean...
+                                        // We have to care for an optional 1 TF buffer used for dissimilarity computation
+if ( pseudotracks ) {
+    
+    if      ( tf1 == 0 )                // original or modified tf1 - Dissimilarity can not be computed 
+
+        BuffDiss.ResetMemory ();        // by safety
+
+    else if ( tf1 > 0 )                 // read an additional time point @ tf1-1 as there is addition margin from any filter here
+
+        ReadFrequencies ( tf1 - 1, tf1 - 1, BuffDiss );
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -438,95 +391,109 @@ ReadFrequencies ( tf1, tf2, buff, tfoffset );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+                                        // transposed from TTracksDoc::GetTracks
 if ( pseudotracks ) {
-                                        // rely on current, or force from user
-    double              rescalevector   = IsVector ( atomtype ) ? 3 : 1;
-    int                 el;
-
                                         // count only non-aux and non-bad electrodes
-    numt = GetNumValidElectrodes ();
-    if ( !numt )    numt = 1;
+    double              numt            = NonNull ( GetNumValidElectrodes () );
+    double              rescalevector   = IsVector ( atomtype ) ? 3 : 1;
 
                                         // repeat independently for each frequency
+    OmpParallelFor
+
     for ( int f = 0; f < NumFrequencies; f++ ) {
-                                        // compute pseudos
-        for ( tf = 0, tfo = tfoffset, tfo1 = tfo - 1; tf < numtf; tf++, tfo++, tfo1++ ) {
 
-                                        // AVG is needed in either case: pseudos or average reference
-                                        // don't use ReferenceTracks, as we can be in an overriding case
-            for ( sum = 0, el = 0; el < NumElectrodes; el++ ) {
-                if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-                sum     += buff ( f, el, tfo );
-                }
-            buff ( f, OffAvg, tfo ) = avg   = sum / numt;
+        double              avgbefore       = 0;
+        double              gfpbefore       = 1;
 
 
-//          if ( pseudonoavgref )
-//              avg   = 0;                  // don't center on the average
+        auto    ComputeAvg  = [ this, &numt, &f ] ( TSetArray2<float>& buff, int tfo ) {
 
-                                            // compute GFP with average ref
-            for ( sumsqr = 0, el = 0; el < NumElectrodes; el++ ) {
-                if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-                temp    = buff ( f, el, tfo ) - avg;
-                sumsqr  += temp * temp;
-                }
-            buff ( f, OffGfp, tfo ) = gfp = sqrt ( sumsqr / numt * rescalevector );
+            double      sum     = 0;
+                                            // don't use ReferenceTracks, as we can be in an overriding case
+            for ( int el = 0; el < NumElectrodes; el++ ) 
+                if ( ValidTracks[ el ] )
+                    sum    += buff ( f, el, tfo );
+                
+            return  sum / numt;
+            };
 
-                                            // real GFP has been saved already, now avoid some 0 division
-            if ( !gfp  )    gfp  = 1;
+        auto    ComputeGfp  = [ this, &numt, &f, &rescalevector ] ( TSetArray2<float>& buff, int tfo, double avg ) {
 
-                                            // compute DIS
-            if ( !tf )                      // first occurence of the loop?
-                if ( !tf1 ) {               // TF 0?
-                    buff ( f, OffDis, tfo ) = 0;    // impossible to have the previous value
+            double      sumsqr  = 0;
+
+            for ( int el = 0; el < NumElectrodes; el++ ) 
+                if ( ValidTracks[ el ] )
+                    sumsqr += Square ( buff ( f, el, tfo ) - avg );
+            
+            return  sqrt ( sumsqr / numt * rescalevector );
+            };
+
+        auto    ComputeDis  = [ this, &numt, &f, &rescalevector ] ( TSetArray2<float>& buff1, int tfo1, double avg1, double gfp1, TSetArray2<float>& buff2, int tfo2, double avg2, double gfp2 ) {
+
+            double      sumsqr  = 0;
+
+            for ( int el = 0; el < NumElectrodes; el++ ) 
+                if ( ValidTracks[ el ] )
+                    sumsqr += Square (   ( buff1 ( f, el, tfo1 ) - avg1 ) / gfp1
+                                       - ( buff2 ( f, el, tfo2 ) - avg2 ) / gfp2 );
+            
+            return  sqrt ( sumsqr / numt * rescalevector );
+            };
+
+
+        for ( int tf = 0, tfo = tfoffset; tf < numtf; tf++, tfo++ ) {
+
+            double          avg     = ComputeAvg ( buff, tfo );
+
+            buff ( f, OffAvg, tfo ) = avg;  // saving real average
+
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+            if ( gfpnotcentered )
+                avg     = 0;                // resetting avg? GFP becomes RMS
+
+            double          gfp     = ComputeGfp ( buff, tfo, avg );
+
+            buff ( f, OffGfp, tfo ) = gfp;  // saving real GFP / RMS
+
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+            NonNulled ( gfp );              // just to prevent division by zero
+
+
+            if ( tf == 0 ) {                // first occurence in the loop, which means we have to handle some missing data
+
+                if ( tf1 == 0 ) {           // first actual tf: dissimilarity can not be computed, as there is no previous data to compare from
+
+                    buff ( f, OffDis, tfo ) = 0;
                     }
-                else {                      // use local 1 TF buffer, compute again AVG, GFP, then the DIS
+                else {                      // tf1 > 0 - previous data exist and is to be found in our local 1 TF buffer
 
-                    for ( sum = 0, el = 0; el < NumElectrodes; el++ ) {
-                        if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-                        sum     += BuffDiss ( f, el, 0 );
-                        }
+                    double      avgbuffdiss     = gfpnotcentered ? 0 : ComputeAvg ( BuffDiss, 0 );
 
-//                  avg2  = pseudonoavgref ? 0 : sum / numt;
-                    avg2  = sum / numt;
+                    double      gfpbuffdiss     = NonNull ( ComputeGfp ( BuffDiss, 0, avgbuffdiss ) );
 
+                    buff ( f, OffDis, tfo )     = ComputeDis    (   buff,       tfo,    avg,            gfp,
+                                                                    BuffDiss,   0,      avgbuffdiss,    gfpbuffdiss );
+                    } // else tf1 > 0
 
-                    for ( sumsqr = 0, el = 0; el < NumElectrodes; el++ ) {
-                        if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-                        temp    = BuffDiss ( f, el, 0 ) - avg2;
-                        sumsqr  += temp * temp;
-                        }
+                } // tf == 0
 
-                    gfp2 = sqrt ( sumsqr / numt * rescalevector );
+            else {                          // tf > 0 - NOT the first occurence in the loop, and avgbefore and gfpbefore exist
 
-                    if ( !gfp2 )    gfp2 = 1;
-
-
-                    for ( sumsqr = 0, el = 0; el < NumElectrodes; el++ ) {
-                        if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-                        temp    = ( buff     ( f, el, tfo ) - avg  ) / gfp
-                                - ( BuffDiss ( f, el, 0 )   - avg2 ) / gfp2;
-                        sumsqr  += temp * temp;
-                        }
-
-                    buff ( f, OffDis, tfo ) = sqrt ( sumsqr / numt * rescalevector );
-                    }
-            else  {                         // NOT the first occurence in the loop
-
-                for ( sumsqr = 0, el = 0; el < NumElectrodes; el++ ) {
-                    if ( BadTracks[ el ] || AuxTracks[ el ] )   continue;
-                    temp    = ( buff ( f, el, tfo  ) - avg  ) / gfp
-                            - ( buff ( f, el, tfo1 ) - avg2 ) / gfp2;
-                    sumsqr  += temp * temp;
-                    }
-
-                buff ( f, OffDis, tfo ) = sqrt ( sumsqr / numt * rescalevector );
+                buff ( f, OffDis, tfo ) = ComputeDis    (   buff,   tfo,        avg,        gfp,
+                                                            buff,   tfo - 1,    avgbefore,  gfpbefore );
                 }
 
-            gfp2 = gfp;                     // for next occurence
-            avg2 = avg;                     // for next occurence
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                            // store current values for the next tf
+            avgbefore   = avg;
+            gfpbefore   = gfp;
             } // for tf
+
         } // for f
 
     } // if pseudotracks
