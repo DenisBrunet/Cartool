@@ -306,6 +306,7 @@ const char          ContentNames[ NumContentType ][ ContentTypeMaxChars ] =
                     "Results of Inverse Solution",
                     "Segmentation",
                     "Data file",
+                    "Error.data file",
                     "Histogram",
                     "Frequencies",
 //                  "ICA",

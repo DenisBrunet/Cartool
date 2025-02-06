@@ -456,12 +456,12 @@ TFCursor            = TTFCursor ( EEGDoc,
                                   CDPt.GetLimitMin ()                           // opening all files at the beginning
 //                                  EEGDoc->IsContentType ( ContentTypeSeg )
 //                               || EEGDoc->IsP ()     
-////                             || EEGDoc->IsContentType ( ContentTypeData ) && ! EEGDoc->IsP ()     // .error.data: nope, use fake MaxGfpTF, which is the last track, the best criterion
+////                             || EEGDoc->IsContentType ( ContentTypeErrorData )  // .error.data: nope, use fake MaxGfpTF, which is the last track, the best criterion
 //                               || EEGDoc->IsTemplates () ? CDPt.GetLimitMin ()
 //                                                         : EEGDoc->GetMaxGfpTF ()
                                  );
 
-if ( EEGDoc->IsContentType ( ContentTypeData ) && EEGDoc->GetNumMarkers () >= 1 )
+if ( EEGDoc->IsContentType ( ContentTypeErrorData ) && EEGDoc->GetNumMarkers () >= 1 )
     TFCursor.SetPos ( (*EEGDoc)[ 0 ]->From );
 
 
@@ -826,7 +826,8 @@ else if ( EEGDoc->IsContentType ( ContentTypeSeg ) ) {
     } // Seg file
 
 
-else if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
+else if ( EEGDoc->IsContentType ( ContentTypeData      ) 
+       || EEGDoc->IsContentType ( ContentTypeErrorData ) ) {
                                         // like .error.data from Segmentation
     SelTracks.Reset ();
 
@@ -873,7 +874,7 @@ else if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
     if ( (int) SelTracks == 0 )
         SelTracks.Set ();
 
-                                        // maybe check for InfixError
+                                        // maybe check for ContentTypeErrorData
     if ( EEGDoc->IsPositive ( AtomTypeUseCurrent ) )
         SetColorTable ( AtomTypePositive );
 
@@ -886,7 +887,7 @@ else if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
 
 //  Attr.W      = Attr.H / WindowHeightToWidthRatio * 1.414;
 
-    if  ( StringIs ( ext2, InfixError ) )
+    if  ( EEGDoc->IsContentType ( ContentTypeErrorData ) )
         ShowHorizScale  = ShowHorizScaleLegal;
     } // Data file
 
@@ -945,8 +946,7 @@ if ( ! isderived ) {
     SetViewMenu ( new TMenuDescr ( IDM_EEG ) );
 
                                         // then add my local stuff (in reverse order)
-    if      ( EEGDoc->IsContentType ( ContentTypeData ) 
-           && StringIs ( ext2, InfixError ) ) {
+    if      ( EEGDoc->IsContentType ( ContentTypeErrorData ) ) {
 
         GetViewMenu ()->InsertMenu ( CM_EEGUSERSCALE,           MF_BYCOMMAND | MF_SEPARATOR	, CM_SEPARATOR, "" );
         GetViewMenu ()->InsertMenu ( CM_SEPARATOR,              MF_BYCOMMAND, CM_OPENFITTINGTEMPLATES1, "Open F&itting Dialog for templates at cursor position" );
@@ -996,7 +996,7 @@ if ( EEGDoc->IsSpecialInfix ()
     } // SpecialFilesInfix
 
 else if ( EEGDoc->IsContentType ( ContentTypeSeg        ) ) SetScaling ( EEGGLVIEW_STVINIT * Attr.H / (double) NonNull ( 125 * sqrt (       (int) SelTracks ) ) );
-else if ( EEGDoc->IsContentType ( ContentTypeData       ) ) SetScaling ( EEGGLVIEW_STVINIT * Attr.H / (double) NonNull (  66 *              (int) SelTracks )   );  
+else if ( EEGDoc->IsContentType ( ContentTypeErrorData  ) ) SetScaling ( EEGGLVIEW_STVINIT * Attr.H / (double) NonNull (  66 *              (int) SelTracks )   );  
 else if ( EEGDoc->IsContentType ( ContentTypeHistogram  ) ) SetScaling ( EEGGLVIEW_STVINIT * Attr.H / (double) NonNull (  33 * NoMore ( 50, (int) SelTracks ) ) );
 }
 
@@ -1158,7 +1158,10 @@ void    TTracksView::SetupWindow ()
 TBaseView::SetupWindow ();
 
                                         // !This will modify the current selection SelTracks!
-if ( ! ( EEGDoc->IsContentType ( ContentTypeSeg ) || EEGDoc->IsContentType ( ContentTypeData ) ) )
+if ( ! (   EEGDoc->IsContentType ( ContentTypeSeg       )
+        || EEGDoc->IsContentType ( ContentTypeData      )
+        || EEGDoc->IsContentType ( ContentTypeErrorData ) ) )
+
     CmNextRois ();
 
 
@@ -2029,30 +2032,21 @@ EEGDoc->NotifyDocViews ( vnViewUpdated, (TParam2) this, this );
                                         // returns double values to allow a nice grid even with sampling frequencies odd with 1000
 void    TTracksView::SetupHorizontalGrid ( double& hgridorg, double& hgridstep )
 {
-if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
-
-    TFileName           ext2;
-                                        // get second-to-last "extension"
-    StringCopy      ( ext2, EEGDoc->GetTitle () );
-    RemoveExtension ( ext2 );
-    GetExtension    ( ext2, ext2 );
-
+if ( EEGDoc->IsContentType ( ContentTypeErrorData ) ) {
                                         // error.data gets a specific formula
-    if ( StringIs ( ext2, InfixError ) ) {
+    hgridorg    = 0;
 
-        hgridorg    = 0;
+    hgridstep   = AtLeast ( 1, Round ( 2.5 * (   EEGDoc->GetNumTimeFrames () 
+                                                * NumIntegerDigits ( EEGDoc->GetNumTimeFrames () )
+                                                * SFont->GetAvgWidth () 
+                                             ) 
+                                                / WindowSlots[ 0 ].ToRight.Norm () 
+                                     ) 
+                          );
 
-        hgridstep   = AtLeast ( 1, Round ( 2.5 * (   EEGDoc->GetNumTimeFrames () 
-                                                   * NumIntegerDigits ( EEGDoc->GetNumTimeFrames () )
-                                                   * SFont->GetAvgWidth () 
-                                                 ) 
-                                                 / WindowSlots[ 0 ].ToRight.Norm () 
-                                         ) 
-                              );
-
-        return;
-        }
+    return;
     }
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Used to convert TF to ms
@@ -6603,7 +6597,8 @@ if      ( EEGDoc->IsContentType ( ContentTypeSeg ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // .t .p spectrum and the like will have a common scale
-else if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
+else if ( EEGDoc->IsContentType ( ContentTypeData      )
+       || EEGDoc->IsContentType ( ContentTypeErrorData ) ) {
                                         // Give each track its own scaling
     TGoEasyStats        scale       ( EEGDoc->GetTotalElectrodes () );
     bool                singlescale = EEGDoc->IsSpecialInfix () || EEGDoc->IsP ();  // special case: join all scales

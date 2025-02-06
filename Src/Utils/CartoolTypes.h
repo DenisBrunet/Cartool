@@ -763,6 +763,7 @@ enum                ContentType
                     ContentTypeRis,                     // Inverse Space data
                     ContentTypeSeg,                     // Segmentation
                     ContentTypeData,                    // Data (results)
+                    ContentTypeErrorData,               // Results from clustering - used so often it has its own type
                     ContentTypeHistogram,               // Histogram
                     ContentTypeFreq,                    // Frequency space
 //                  ContentTypeIca,                     // ICA

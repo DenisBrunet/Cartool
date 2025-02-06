@@ -546,7 +546,7 @@ else if ( dynamic_cast<TRisDoc*> ( this ) ) {
     lookfortemplates    = true;
     }
 
-
+                                        // There can be 3 different types of data hosted in a TSegDoc object
 else if ( dynamic_cast<TSegDoc*> ( this ) ) {
 
     if      ( IsExtension ( FILEEXT_SEG  ) ) {
@@ -554,9 +554,15 @@ else if ( dynamic_cast<TSegDoc*> ( this ) ) {
         Dim2Type            = DimensionTypeTime;
         }
     else if ( IsExtension ( FILEEXT_DATA ) ) {
-        ContentType         = ContentTypeData;
-
-        Dim2Type            = StringIs ( ext2, InfixError ) ? DimensionTypeSegmentation : DimensionTypeTime;
+        
+        if ( StringIs ( ext2, InfixError ) ) {
+            ContentType     = ContentTypeErrorData;
+            Dim2Type        = DimensionTypeSegmentation;
+            }
+        else {
+            ContentType     = ContentTypeData;
+            Dim2Type        = DimensionTypeTime;
+            }
         }
     }
 
