@@ -885,6 +885,9 @@ else if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
     Attr.H     *= Clip ( (int) SelTracks + 1, 1, 10 ) / 8.0;
 
 //  Attr.W      = Attr.H / WindowHeightToWidthRatio * 1.414;
+
+    if  ( StringIs ( ext2, InfixError ) )
+        ShowHorizScale  = ShowHorizScaleLegal;
     } // Data file
 
 
@@ -2024,26 +2027,48 @@ EEGDoc->NotifyDocViews ( vnViewUpdated, (TParam2) this, this );
                                         // computes the origin and stepping for the horizontal grid
                                         // works in ms if possible, in TFs otherwise
                                         // returns double values to allow a nice grid even with sampling frequencies odd with 1000
-void    TTracksView::SetupHorizontalGrid ( double &hgridorg, double &hgridstep )
+void    TTracksView::SetupHorizontalGrid ( double& hgridorg, double& hgridstep )
 {
-                                        // Compute steps
+if ( EEGDoc->IsContentType ( ContentTypeData ) ) {
 
-                                        // to convert from TF to ms
-double              tr              = EEGDoc->GetSamplingFrequency () ? TimeFrameToMilliseconds ( 1, EEGDoc->GetSamplingFrequency () ) : 1;
+    TFileName           ext2;
+                                        // get second-to-last "extension"
+    StringCopy      ( ext2, EEGDoc->GetTitle () );
+    RemoveExtension ( ext2 );
+    GetExtension    ( ext2, ext2 );
 
+                                        // error.data gets a specific formula
+    if ( StringIs ( ext2, InfixError ) ) {
+
+        hgridorg    = 0;
+
+        hgridstep   = AtLeast ( 1, Round ( 2.5 * (   EEGDoc->GetNumTimeFrames () 
+                                                   * NumIntegerDigits ( EEGDoc->GetNumTimeFrames () )
+                                                   * SFont->GetAvgWidth () 
+                                                 ) 
+                                                 / WindowSlots[ 0 ].ToRight.Norm () 
+                                         ) 
+                              );
+
+        return;
+        }
+    }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Used to convert TF to ms
+double              tr              = EEGDoc->GetSamplingFrequency () ? TimeFrameToMilliseconds ( 1, EEGDoc->GetSamplingFrequency () ) : 1;
+
                                         // horizontal space, normalized from the number of characters to number of TFs
-hgridstep   =      // cumulate length for each possible time display
-//            1.5 * ( 8 + ( EEGDoc->GetSamplingFrequency () ? 7 : 0 ) + ( EEGDoc->DateTime.MicrosecondPrecision ? 5 : 0 ) + ( EEGDoc->DateTime.RelativeTime ? 0 : 8 ) )
-              1.5 * (                                                           5
-                      + ( EEGDoc->GetSamplingFrequency ()
-                       && ! EEGDoc->IsContentType ( ContentTypeHistogram )  ?   7 : 0 )
-                      + ( EEGDoc->DateTime.MicrosecondPrecision             ?   5 : 0 )
-                      + ( EEGDoc->DateTime.RelativeTime                     ?   5 : 9 )  // relative time is quite compact, while full time is not
-                    )
-            * SFont->GetAvgWidth()
-            * CDPt.GetLength() / WindowSlots[0].ToRight.Norm()
+                                        // cumulate length for each possible time display
+hgridstep   = (                                                             5
+                + (      EEGDoc->GetSamplingFrequency ()
+                    && ! EEGDoc->IsContentType ( ContentTypeHistogram )   ? 7 : 0 )
+                + (      EEGDoc->DateTime.MicrosecondPrecision            ? 5 : 0 )
+                + (      EEGDoc->DateTime.RelativeTime                    ? 5 : 9 )     // relative time is quite compact, while full time is not
+              )
+            * 1.5
+            * SFont->GetAvgWidth ()
+            * CDPt.GetLength () / WindowSlots[ 0 ].ToRight.Norm ()
             * tr
             + 1;
 
