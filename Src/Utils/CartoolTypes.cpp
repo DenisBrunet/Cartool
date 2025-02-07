@@ -175,17 +175,17 @@ char            SkullStrippingNames[ NumSkullStrippingTypes ][ 16 ] =
 const char  EpochsNames[ NumEpochsTypes ][ 32 ] =
             {
             "Unspecified epoch",
-            "Whole time interval",
+            "Whole time line",
             "Periodic epochs",
             "Epochs from list",
             };
 
 
-const char  SkippingEpochsNames[ NumSkippingEpochsTypes ][ 64 ] =
+const char  SkippingEpochsNames[ NumSkippingEpochsTypes ][ 32 ] =
             {
             "No bad epochs",
-            "Automatically skipping bad epochs",
-            "Skipping bad epochs from list",
+            "Skipping bad epochs, automatic",
+            "Skipping bad epochs, from list",
             };
 
 
@@ -193,9 +193,9 @@ const char  SkippingEpochsNames[ NumSkippingEpochsTypes ][ 64 ] =
 
 const char  GfpPeaksDetectNames[ NumGfpPeaksDetectionTypes ][ 32 ] =
             {
-            "No GFP peaks resampling",
-            "Automatic GFP peaks resampling",
-            "GFP peaks resampling from list",
+            "No GFP Peaks extraction",
+            "GFP Peaks extraction, automatic",
+            "GFP Peaks extraction, from list",
             };
 
 

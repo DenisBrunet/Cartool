@@ -740,23 +740,23 @@ Gauge.SetRange ( gaugesegrejectsmall,   numclusters );
                                         // file names
 TFileName           BaseFileNameCluster;
 TFileName           BaseFileNameMoreCluster;
-TFileName           MainVerbFile  ;
+TFileName           MainVerbFile;
 TFileName           DetailVerbFile;
-TFileName           DataFile      ;
+TFileName           DataFile;
 TFileName           DataFileMarker;
-//TFileName           LinkFile;
-TFileName           SegFile   ;
-TFileName           LandFile  ;
-TFileName           SynthFile ;
+//TFileName         LinkFile;
+TFileName           SegFile;
+TFileName           LandFile;
+TFileName           SynthFile;
 TFileName           TemplateExtension;
 TFileName           OtherFileExtension;
-//TFileName           SegAllFile;
+//TFileName         SegAllFile;
 TFileName           CopyXyzFile;
 TFileName           ZScoreInfix;
 
 
                                         // main verbose file
-StringCopy  ( MainVerbFile, BaseFileName, "." FILEEXT_VRB  );
+StringCopy  ( MainVerbFile,         BaseFileName,   "." FILEEXT_VRB  );
 
 StringCopy  ( DataFile,             BaseFileName,   "." FILEEXT_ERRORDATA );
 StringCopy  ( DataFileMarker,       DataFile,       "." FILEEXT_MRK       );
@@ -898,7 +898,7 @@ if ( spatialfilter != SpatialFilterNone )
 
 verbose.NextTopic ( "Time parameters:" );
 {
-verbose.Put ( "Epoch(s):", EpochsNames[ epochs ] );
+verbose.Put ( "Input time interval(s):", EpochsNames[ epochs ] );
 if ( epochs == EpochsFromList ) {
 
     int         fromtf;
@@ -910,17 +910,17 @@ if ( epochs == EpochsFromList ) {
     }
 
 verbose.NextLine ();
-verbose.Put ( "Bad epochs:", SkippingEpochsNames[ badepochs ] );
+verbose.Put ( "Excluding bad epochs:", SkippingEpochsNames[ badepochs ] );
 if ( badepochs == SkippingBadEpochsList )
     verbose.Put ( "Skipping markers:", listbadepochs );
 
 verbose.NextLine ();
-verbose.Put ( "GFP Peaks resampling:", GfpPeaksDetectNames[ gfppeaks ] );
+verbose.Put ( "Data at GFP Peaks:", GfpPeaksDetectNames[ gfppeaks ] );
 if ( gfppeaks == GfpPeaksDetectionList )
     verbose.Put ( "GFP Peaks markers:", listgfppeaks  );
 
 verbose.NextLine ();
-verbose.Put ( "Time resampling:", ResamplingNames[ resampling ] );
+verbose.Put ( "Resampling data:", ResamplingNames[ resampling ] );
 if ( resampling == TimeResampling ) {
 
     verbose.Put ( "Number of repetitions:", numresamples );
@@ -1633,7 +1633,7 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
 
     verbose.NextTopic ( "Time parameters:" );
     {
-    verbose.Put ( "Epoch(s):", EpochsNames[ epochs ] );
+    verbose.Put ( "Input time interval(s):", EpochsNames[ epochs ] );
     if ( epochs == EpochsFromList ) {
 
         int         fromtf;
@@ -1645,17 +1645,17 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
         }
 
     verbose.NextLine ();
-    verbose.Put ( "Bad epochs:", SkippingEpochsNames[ badepochs ] );
+    verbose.Put ( "Excluding bad epochs:", SkippingEpochsNames[ badepochs ] );
     if ( badepochs == SkippingBadEpochsList )
         verbose.Put ( "Skipping markers:", listbadepochs );
 
     verbose.NextLine ();
-    verbose.Put ( "GFP Peaks resampling:", GfpPeaksDetectNames[ gfppeaks ] );
+    verbose.Put ( "Data at GFP Peaks:", GfpPeaksDetectNames[ gfppeaks ] );
     if ( gfppeaks == GfpPeaksDetectionList )
         verbose.Put ( "GFP Peaks markers:", listgfppeaks  );
 
     verbose.NextLine ();
-    verbose.Put ( "Time resampling:", ResamplingNames[ resampling ] );
+    verbose.Put ( "Resampling data:", ResamplingNames[ resampling ] );
     if ( resampling == TimeResampling ) {
 
         verbose.Put ( "Number of repetitions:", numresamples );

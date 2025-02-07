@@ -772,7 +772,7 @@ for ( int epochi = numepochs - 1; epochi >= 0; epochi-- ) {
 
 
 verbose.NextLine ();
-verbose.Put ( "Bad epochs:", SkippingEpochsNames[ badepochs ] );
+verbose.Put ( "Excluding bad epochs:", SkippingEpochsNames[ badepochs ] );
 if ( badepochs == SkippingBadEpochsList )
     verbose.Put ( "Skipping markers:", listbadepochs );
 }

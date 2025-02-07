@@ -687,8 +687,8 @@ for ( long tf = tfmin; tf <= tfmax; tf++ ) {
     if ( labels.IsUndefined ( tf ) )
         continue;
                                         // not the full sigma2 formula here, but simplified to: Sum sigma2 / Sum sigmad
-                                        // also calling Project/ScalarProductr instead of Correlation, as data is normalized
-                                        // polarity is not actually needed, as result is squared
+                                        // also calling Project/ScalarProduct instead of Correlation, as data is normalized
+                                        // polarity is neither needed, as result is squared afterward
     sigma2     += Square ( Norm[ tf ] * Project ( maps[ labels[ tf ] ], Data[ tf ], PolarityDirect ) );
     sigmad     += Square ( Norm[ tf ] );
     }
@@ -698,7 +698,7 @@ return  sigmad == 0 ? 0 : Clip ( sigma2 / sigmad, 0.0, 1.0 );
 
 
 //----------------------------------------------------------------------------
-                                        // From labeling, comput the GEV per cluster
+                                        // From labeling, compute the GEV per cluster
 void    TMicroStates::ComputeGevPerCluster  (   int                 nclusters,  
                                                 const TMaps&        maps,  
                                                 const TLabeling&    labels,  
@@ -714,7 +714,7 @@ double              sigmad          = 0;
 for ( long tf = 0; tf < NumTimeFrames; tf++ )
 
     if ( labels.IsDefined ( tf ) ) {
-
+                                                                                                         // no need for actual polarity here
         double          sigma2          = Square ( Norm[ tf ] * Project ( maps[ labels[ tf ] ], Data[ tf ], PolarityDirect ) );
 
         gevpercluster[ labels[ tf ] ]  += sigma2;   // GEV per cluster

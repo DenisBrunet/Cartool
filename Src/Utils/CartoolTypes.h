@@ -503,7 +503,7 @@ enum        SkippingEpochsType
             NumSkippingEpochsTypes,
             };
 
-extern  const char  SkippingEpochsNames[ NumSkippingEpochsTypes ][ 64 ];
+extern  const char  SkippingEpochsNames[ NumSkippingEpochsTypes ][ 32 ];
 
 
 //enum        BadEpochsAccuracy
