@@ -385,26 +385,36 @@ critstat.Reset ();
 
 for ( TIteratorSelectedForward ci ( critselmax ); (bool) ci; ++ci ) {
 
-    int             argmax      = ArgMax ( &var ( ci(), 0 ), reqminclusters, reqmaxclusters );
+    int             argmax          = ArgMax ( &var ( ci(), 0 ), reqminclusters, reqmaxclusters );
 
     critstat.Add ( argmax, ThreadSafetyIgnore );
     }
-
                                         // This single value seems to be the most reliable one
                                         // don't allow for interpolated value, between 2 maxes 3 and 5 f.ex. return 3 or 5, but not 4
 int                 medianargmax    = Round ( critstat.Median ( true ) );
 
-                                        // cumulate each criterion max, to give a feeling of the distribution of the maxes
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // resetting cumulated values, by safety
+for ( int ncl = reqminclusters; ncl <= reqmaxclusters; ncl++ )
+
+    var ( segMetaCrit, ncl )    = 0;
+
+                                        // cumulate each max criterion, to give a feeling of the distribution of all the maxes
 for ( int i = 0; i < critstat.GetNumItems (); i++ )
 
     var ( segMetaCrit, critstat[ i ] )++;
 
+
 NormalizeCriterion  ( var [ segMetaCrit ], minclustercrit, maxclustercrit, NormalizeTo0, NormalizeTo1, false );
+
                                         // add one more step on criterion to make it stand out in case of equality
 var ( segMetaCrit, medianargmax )++;
 
 NormalizeCriterion  ( var [ segMetaCrit ], minclustercrit, maxclustercrit, NormalizeTo0, NormalizeTo1, false );
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // extract histogram from data
                                         // it looks highly correlated to the mean rank, but not exactly
 {

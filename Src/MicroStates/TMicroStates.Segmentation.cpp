@@ -813,31 +813,27 @@ TSelection          critselmax  ( segnumvar, OrderSorted );     // criteria used
 TSelection          critsel     ( segnumvar, OrderSorted );     // both criteria merged together
 
                                         // Best criteria for RankAveraging
-                                        // Criteria 2024
-critselrank.Set ( segDunnRobust                  );
-critselrank.Set ( segGamma                       );
-critselrank.Set ( segPointBiserial               );
-critselrank.Set ( segSilhouettes                 );
-                                        // too "spiky"(?)
-critselrank.Set ( segGammaDerivRobust            );
-critselrank.Set ( segKrzanowskiLai               );
-critselrank.Set ( segKrzanowskiLaiC              );
-critselrank.Set ( isesipreset ? segPointBiserialDerivRobust : segPointBiserialDeriv );   // these variations seems slightly better for EEG vs ESI
-critselrank.Set ( segSilhouettesDeriv            );
+                                        // Criteria 2025
+critselrank.Set ( segDaviesBouldin              );
+critselrank.Set ( segPointBiserial              );
+critselrank.Set ( segSilhouettes                );
+                                        // maybe too "spiky" to be included in the "mean" criterion(?)
+critselrank.Set ( segDaviesBouldinDerivRobust   );
+critselrank.Set ( segKrzanowskiLaiC             );
+critselrank.Set ( segPointBiserialDerivRobust   );
+critselrank.Set ( segSilhouettesDeriv           );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Best criteria for ArgMax;
 
-                                        // Criteria 2024 after re-test
-                                        // EEG & ESI - 9 Criteria 2024
-critselmax.Set ( segDunnRobust                  );
-critselmax.Set ( segGamma                       );
-critselmax.Set ( segGammaDerivRobust            );
-critselmax.Set ( segKrzanowskiLai               );
+                                        // Criteria 2025 after pruning out Gamma and Dunn, which always overshoot and don't seem to contribute effectively
+                                        // EEG & ESI - 7 Criteria 2025
+critselmax.Set ( segDaviesBouldin               );
+critselmax.Set ( segDaviesBouldinDerivRobust    );
 critselmax.Set ( segKrzanowskiLaiC              );
 critselmax.Set ( segPointBiserial               );
-critselmax.Set ( isesipreset ? segPointBiserialDerivRobust : segPointBiserialDeriv );   // these variations seems slightly better for EEG vs ESI
+critselmax.Set ( segPointBiserialDerivRobust    );
 critselmax.Set ( segSilhouettes                 );
 critselmax.Set ( segSilhouettesDeriv            );
 
