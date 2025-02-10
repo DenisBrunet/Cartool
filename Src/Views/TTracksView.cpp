@@ -2491,8 +2491,8 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                                         // draw the horizontal grid - pre
         if (   CurrentDisplaySpace == DisplaySpaceNone 
             && drawhoriscale 
-            && ! IsIntensityModes () 
-            && ( how & GLPaintOwner )                  ) {
+            && IsTracksMode () 
+            && ( how & GLPaintOwner ) ) {
 
             double              x;
             double              y1;
@@ -3591,7 +3591,7 @@ if ( HasWindowSlots () && ( how & GLPaintOpaque ) ) {
                                         // draw the horizontal grid - post
         if (   CurrentDisplaySpace == DisplaySpaceNone 
             && drawhoriscale 
-            && IsIntensityModes () 
+            && ! IsTracksMode () 
             && ( how & GLPaintOwner ) ) {
 
             double              x;

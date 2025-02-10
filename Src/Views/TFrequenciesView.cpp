@@ -1256,7 +1256,10 @@ if ( how & GLPaintOpaque ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // draw vertical left limit
-        if ( CurrentDisplaySpace == DisplaySpaceNone && RenderingMode != LayoutOneTrackOneBoxXyzFlat && enoughwdeco2 && ( how & GLPaintOwner ) ) {
+        if ( CurrentDisplaySpace == DisplaySpaceNone 
+          && RenderingMode != LayoutOneTrackOneBoxXyzFlat 
+          && enoughwdeco2 
+          && ( how & GLPaintOwner ) ) {
 
             glColor4f ( AxisColor );
 
@@ -1289,9 +1292,9 @@ if ( how & GLPaintOpaque ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // draw the horizontal grid - pre
-        if (     drawhoriscale 
-            && ( IsModeSpectrum () || ! IsIntensityModes () ) 
-            && ( how & GLPaintOwner )                  ) {
+        if (   drawhoriscale 
+            && IsTracksMode ()
+            && ( how & GLPaintOwner ) ) {
 
             double  x, y1, y2, z;
 
@@ -2381,7 +2384,7 @@ if ( how & GLPaintOpaque ) {
             if (   Show3DText 
               && ( ! trackssuper || firsttrack ) 
               && ( how & GLPaintOwner )
-              && IsIntensityModes ()               ) {
+              && IsIntensityModes () ) {
 
                 bool    baseline;       // if baseline has to be drawn
                 bool    text;           // if text has to be displayed
@@ -2654,7 +2657,9 @@ if ( how & GLPaintOpaque ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // draw the horizontal grid - post
-        if ( drawhoriscale && IsIntensityModes () && ( how & GLPaintOwner ) ) {
+        if ( drawhoriscale 
+          && ( IsModeSpectrum () && firsttrack || ! IsTracksMode () )
+          && ( how & GLPaintOwner ) ) {
 
             double  x, y1, y2, z;
 
@@ -2664,7 +2669,23 @@ if ( how & GLPaintOpaque ) {
             y2  = toslot->LowLeft.Y + toslot->ToUp.Y;
             z   = toslot->LowLeft.Z;
 
-            if ( IsTimeHorizontal () ) {
+            if ( IsFreqHorizontal () ) {
+
+                glBegin ( GL_LINES );
+
+                for ( int f = hgridorg; f <= maxp; f += hgridstep ) {
+                    x = trorg.X + f / descalex;
+                    glVertex3f ( x, y1, z );
+                    glVertex3f ( x, y2, z );
+                    }
+
+                glEnd ();
+
+                for ( int f = hgridorg; f <= maxp; f += hgridstep )
+                    SFont->Print ( trorg.X + f / descalex + 3, toslot->LowLeft.Y, toslot->LowLeft.Z, FreqDoc->GetFrequencyName ( f ), TA_LEFT | TA_BOTTOM );
+                }
+
+            else if ( IsTimeHorizontal () ) {
 
 //              char    stf  [16];
 //              char    stime[16];
