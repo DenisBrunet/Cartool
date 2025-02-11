@@ -192,7 +192,7 @@ DefineCLIFlag           ( reprocsub,        "",     __ranking,              "Ran
 
 DefineCLIOptionString   ( reprocsub,        "",     __rectification,        "Rectification, i.e. making data all positive" )
 ->TypeOfOption          ( "ENUM" )
-->CheckOption           ( CLI::IsMember ( { "abs", "absolute", "power", "squared" } ) );
+->CheckOption           ( CLI::IsMember ( vector<string> ( { "abs", "absolute", "power", "squared" } ) ) );
 
 DefineCLIOptionDouble   ( reprocsub,        "",     __envelope,             "Sliding-window smoothing after rectification (positive-only data), value in [ms]" );
 NeedsCLIOption          ( reprocsub,        __envelope,     __rectification )   // dialog does not enforce this, just in case data is already positive, but we do here

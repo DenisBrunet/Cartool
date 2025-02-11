@@ -708,7 +708,7 @@ DefineCLIFlag           ( toapp,                    "",     __nosplash,         
 DefineCLIOptionString   ( toapp,                    "",     __mainwindow,           "Main window initial state" )
 ->TypeOfOption          ( "ENUM" )
 ->DefaultString         ( DefaultWindowState == SW_SHOWMAXIMIZED ? __maximized : DefaultWindowState == SW_SHOWMINIMIZED ? __minimized : __normal )
-->CheckOption           ( CLI::IsMember ( { __minimized, __maximized, __normal } ) );
+->CheckOption           ( CLI::IsMember ( vector<string> ( { __minimized, __maximized, __normal } ) ) );
 
 DefineCLIOptionInts     ( toapp,            2,      "",     __mainwindowsize,       "Main window size W,H"     );
 DefineCLIOptionInts     ( toapp,            2,      "",     __mainwindowpos,        "Main window position X,Y" );
@@ -717,7 +717,7 @@ DefineCLIOptionInts     ( toapp,            2,      "",     __mainwindowpos,    
 DefineCLIOptionStrings  ( toapp,           -1,      "",     __childwindow,          "Next child window state(s) "    Tab Tab "(could be repeated for each file)" )
 ->TypeOfOption          ( "ENUMS" )
 ->DefaultString         ( __normal )
-->CheckOption           ( CLI::IsMember ( { __minimized, __maximized, __normal } ) );
+->CheckOption           ( CLI::IsMember ( vector<string> ( { __minimized, __maximized, __normal } ) ) );
 
 DefineCLIOptionInts     ( toapp,           -1,      "",     __childwindowsize,      "Next child window size(s) W,H " Tab Tab "(could be repeated for each file)" )
 ->TypeOfOption          ( "PAIRS OF INTEGERS..." );
