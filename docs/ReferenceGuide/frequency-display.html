@@ -321,13 +321,8 @@
          </P>
          <UL>
              <LI CLASS="mvd-P">
-                 <P>
-                     <A HREF="#mode-EFt">Mode Spectrum</A>: average through the current <B>
-                         <A HREF="eeg-display.html#mouse-time-selectio">
-                             selected
-                             time
-                         </A>
-                     </B>.<BR>
+                 <A HREF="#mode-EFt">Mode Spectrum</A>: average through the current 
+                 <A HREF="eeg-display.html#mouse-time-selectio"><B>selected time</B></A>.<BR>
              <LI CLASS="mvd-P">
                  <A HREF="#mode-ET">Mode Electrodes / Frequencies</A>:
                  average the <B><A HREF="#mouse-frequency">selected frequencies</A></B>.<BR>
@@ -582,22 +577,28 @@
          </H3>
          <UL>
              <P>
-                 <B>Reference</B>
-             </P>
+                 <B>Reference</B></P>
              <UL>
                  <P>
                      Has no effect, it has no meaning to change the &quot;reference&quot;.
                  </P>
              </UL>
              <P>
-                 <B><A NAME="reset-freq-normal"></A>Reset frequency normalization</B>
-             </P>
+                 <B><A NAME="reset-freq-normal"></A>Reset frequency normalization</B></P>
              <UL>
                  <P>
-                     Recompute the <A HREF="#normalize-technical">frequency normalization</A>
+                     Recomputes the <A HREF="#normalize-technical">frequency normalization</A>
                      factors on the current time windows. To turn it off, however, simply
                      uncheck the <A HREF="#normalize-frequenci">button</A>.
                  </P>
+             </UL>
+             <P>
+                 <B><a name="save-freq-normal"></a>Saving frequency 
+				 normalization</B></P>
+             <UL>
+                 <P>
+                     Saves the <a href="#normalize-frequenci">frequency 
+					 normalization</a> curve to file.</P>
              </UL>
              <P>
                  <B>Show / hide 3D dimension description</B>
@@ -712,67 +713,51 @@
              It is well known that the power of the FFT follows a distribution
              that quickly decays with increasing frequencies. It has the huge
              disadvantage of hiding the high frequency peaks, and overemphasizing
-             the low frequency ones (which may not be that interesting). The idea
+             the low frequency ones. The idea
              to overcome this effect is to <B>normalize the power of each frequency</B>,
              so as to give each frequency the same weight. See <A HREF="#normalize-frequenci">here</A>
              for some examples.
          </P>
          <P>
-             Here is the idea used in Cartool, as we don't know in advance the
-             power distributions:
-         </P>
-         <UL>
-             <LI CLASS="mvd-P">
-                 <P>
-                     For each frequency, do:
-                     <UL>
-                         <LI CLASS="mvd-P">Scan all electrodes and all time windows (up to 1024)<BR>
-                         <LI CLASS="mvd-P">Compute the Mean and SD of all (absolute) values<BR>
-                         <LI CLASS="mvd-P">
-                             Then compute a mean value only by selecting
-                             (absolute) values within the range Mean +- ( SD / 2 ), as to reject
-                             too weak and too strong signals
-                     </UL>
-             <LI CLASS="mvd-P">
-                 With these mean powers for each frequency, inverse
-                 this curve, and normalize it.</P>
-         </UL>
+             &nbsp;</P>
+		<P>
+             The current normalization method is to simply use <strong>the 
+			 inverse of the mean frequency values across all electrodes</strong>.</P>
+		<P>
+             &nbsp;</P>
          <P>
-             &nbsp;
-         </P>
-         <P>
-             See an example of the mean powers and the resulting normalization
+             See 
+			 here an example of the mean powers and the resulting normalization
              curve (frequencies are on the X axis):
          </P>
          <P>
              <IMG SRC="images/freq.normalize1.png" WIDTH="297" HEIGHT="210" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.normalize2.png" WIDTH="297" HEIGHT="210" VSPACE="0" HSPACE="0" BORDER="0">
          </P>
          <P>
-             The time windows initally used are the first 1024 ones. But if it
-             seems it does not represent well the data, <B>
-                 you can <A HREF="#reset-freq-normal">
-                     re-apply
-                     the frequency normalization
-                 </A> anytime
-             </B> by using the current
-             displayed time windows.
-         </P>
+             &nbsp;</P>
          <P>
-             &nbsp;
-         </P>
-         <P>
-             You can judge if the normalization is doing its job correctly by
-             looking to noisy data wihout signals, as you should see the same
+             You can judge by yourself if the normalization is doing its job correctly by
+             looking at noisy data wihout signals, as you should see the same
              average intensity for all frequencies. See an example of
              &quot;noisy&quot; data vs interesting patterns that occur later on:
          </P>
          <P>
              <IMG SRC="images/freq.display.freqs-normalized.noise.png" ALIGN=TEXTTOP WIDTH="438" HEIGHT="250" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.display.freqs-normalized.signals.png" ALIGN=TEXTTOP WIDTH="438" HEIGHT="250" VSPACE="0" HSPACE="0" BORDER="0">
          </P>
-         <P>
-             Finally, note that the <B>frequency normalization applies only on the display</B>,
-             and <B>does not alter the data</B>.
-         </P>
+         <h4>
+             Notes:</h4>
+		<ul>
+			<li>You can <a href="#save-freq-normal">save the normalization curve from the 
+			 Options menu</a>.</li>
+			<li>You can <A HREF="#reset-freq-normal"><B>re-apply
+                     the frequency normalization</B> </A>anytime
+             by using the data currently
+             displayed.</li>
+			<li>The <B>frequency normalization 
+			only applies to the display</B>,
+             and <B>does not modify your data</B>.
+         </li>
+		</ul>
          <H3>
              <A NAME="freqs-auto-scaling"></A>Frequencies auto-scaling
          </H3>
