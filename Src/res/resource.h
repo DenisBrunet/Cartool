@@ -416,6 +416,7 @@
 #define CM_GRAPHIC3DTEXTURESOFF         2607
 #define CM_FREQ3DTEXT                   2700
 #define CM_FREQRESETSCALING             2701
+#define CM_FREQSAVESCALING              2702
 #define CM_INVERSEAVERAGEBEFORE         2800
 #define CM_INVERSEAVERAGEAFTER          2801
 #define CM_EXPORTXYZKEEPSEL             2900

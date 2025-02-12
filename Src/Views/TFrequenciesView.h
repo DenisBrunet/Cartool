@@ -228,6 +228,7 @@ protected:
     void            CmSetManageRangeCursor  ( owlwparam w );
     void            CmSetShow3DText         ();
     void            CmResetScaleFreqs       ();
+    void            CmSaveScaleFreqs        ();
     void            CmOffEnable             ( owl::TCommandEnabler &tce );
     void            CmAverageEnable         ( owl::TCommandEnabler &tce );
 

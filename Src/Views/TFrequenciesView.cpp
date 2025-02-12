@@ -16,6 +16,8 @@ limitations under the License.
 
 #include    <owl/pch.h>
 
+#include    "TFrequenciesView.h"
+
 #include    "MemUtil.h"
 
 #include    "Math.Stats.h"
@@ -25,8 +27,7 @@ limitations under the License.
 #include    "OpenGL.h"
 
 #include    "TFreqDoc.h"
-
-#include    "TFrequenciesView.h"
+#include    "TExportTracks.h"
 
 #pragma     hdrstop
 //-=-=-=-=-=-=-=-=-
@@ -69,6 +70,7 @@ DEFINE_RESPONSE_TABLE1(TFrequenciesView, TTracksView)
 
     EV_COMMAND          ( CM_FREQ3DTEXT,            CmSetShow3DText ),
     EV_COMMAND          ( CM_FREQRESETSCALING,      CmResetScaleFreqs ),
+    EV_COMMAND          ( CM_FREQSAVESCALING,       CmSaveScaleFreqs ),
     EV_COMMAND_ENABLE   ( CM_EEGREFMONTAGE,         CmOffEnable ),
     EV_COMMAND_ENABLE   ( CM_EEGREFAVG,             CmOffEnable ),
     EV_COMMAND_ENABLE   ( CM_EEGREFELECSINGLE,      CmOffEnable ),
@@ -121,7 +123,10 @@ FreqDoc->ClearPseudo ( SelTracks );
 
                                         // allocate a "2D" buffer, duplicating a normal Eeg #freqs times
 EegBuff   .Resize ( FreqDoc->GetNumFrequencies (), FreqDoc->GetTotalElectrodes (), BuffSize );
+
 ScaleFreqs.Resize ( FreqDoc->GetNumFrequencies () + 1 );
+ScaleFreqs.Index1.IndexMin      = StringToDouble ( FreqDoc->GetFrequencyName ( 0 ) );
+ScaleFreqs.Index1.IndexRatio    = 1 / NonNull ( StringToDouble ( FreqDoc->GetFrequencyName ( 1 ) ) - StringToDouble ( FreqDoc->GetFrequencyName ( 0 ) ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -186,8 +191,9 @@ SetColorTable ( FreqDoc->GetAtomType ( AtomTypeUseCurrent ) );
                                         // re-use EEG menu, as it is mainly the same, thus avoiding tedious updates in both
 SetViewMenu ( new TMenuDescr (IDM_EEG) );
                                         // then add my local stuff
-GetViewMenu ()->InsertMenu ( CM_EEGVOIDFILLING, MF_BYCOMMAND, CM_FREQ3DTEXT,        "Show/hide last di&mension info" );
+GetViewMenu ()->InsertMenu ( CM_SHOWALL,        MF_BYCOMMAND, CM_FREQ3DTEXT,        "Show/hide last di&mension info" );
 GetViewMenu ()->InsertMenu ( CM_EEGSETOFFSET,   MF_BYCOMMAND, CM_FREQRESETSCALING,  "Reset frequency &normalization" );
+GetViewMenu ()->InsertMenu ( CM_EEGSETOFFSET,   MF_BYCOMMAND, CM_FREQSAVESCALING,   "Saving &frequency normalization" );
 }
 
 
@@ -824,13 +830,8 @@ if ( how & GLPaintOpaque ) {
     bool                        enoughwdeco1    = CurrentDisplaySpace == DisplaySpaceNone && HasWindowSlots () && ( WindowSlots[0].ToRight.Norm() >= 40 );
     bool                        enoughwdeco2    = CurrentDisplaySpace == DisplaySpaceNone && HasWindowSlots () && ( WindowSlots[0].ToRight.Norm() >= 10 );
 
-//  double*                     scalef          = IsModeEFEnum () ? ScaleFreqs + FreqDoc->GetNumFrequencies () : ScaleFreqs;
-//  double*                     scalef          = ScaleFreqs;
-
     double                      scalev          = CurrentDisplaySpace == DisplaySpaceNone ? ScalingLevel
                                                                                           : ScalingLevel * XYZDoc->GetBounding( CurrentDisplaySpace )->Radius() / 600;
-  //double                      scalev          = ( CurrentDisplaySpace == DisplaySpaceNone ? ScalingLevel : ScalingLevel * XYZDoc->GetBounding()->Radius() / 300 ) * ScaleFreqs[ FreqDoc->GetNumFrequencies () ];
-
     double                      scaleh;
 
     double                      scalet;
@@ -1844,7 +1845,6 @@ if ( how & GLPaintOpaque ) {
                     for ( int t = minp; t <= maxp; t++ ) {
                         v = 0;
                         for ( int f = 0; f < numfreq; f++ ) // !! ScaleFreqs in absolute, EegBuff in relative
-    //                      v += ( FreqNormalize && notdiss ? ScaleFreqs[ f + firstfreq ] : 1 ) * EegBuff ( f + firstfreq, st, t );
                             v += Scaling ( f + firstfreq ) * EegBuff ( f + firstfreq, st, t );
                         v /= numfreq;
 
@@ -3934,20 +3934,12 @@ else {                                  // case 3: deltamin < 0 && deltamax > 0 
                                         // the others are relatively scaled to an average ratio
 void    TFrequenciesView::ResetScaleTracks ( const TSelection *sel )
 {
-
-//double            scalef  = FreqNormalize ? ScaleFreqs[ FCursor.GetPosMin () ] : 1;
-//double            scalef  = FreqNormalize ? IsModeET () ? ScaleFreqs[ FCursor.GetPosMin () ] : 2 * ScaleFreqs[ 0 ] : 1;
-//double            scalef  = FreqNormalize ? ScaleFreqs[ FreqDoc->GetNumFrequencies () ] : 1;
-//double            scalef  = 1;
-
 //int               firstfreq   = IsModeEFAvg () ? FCursor.GetPosMin () : 0;
 //int               lastfreq    = IsModeEFAvg () ? FCursor.GetPosMin () : FreqDoc->GetNumFrequencies () - 1;
 
                                                 // for all mode, for a smarter auto-scaling
 int                 firstfreq   = IsModeSpectrum () ? 0                                 : FCursor.GetPosMin ();
 int                 lastfreq    = IsModeSpectrum () ? FreqDoc->GetNumFrequencies () - 1 : FCursor.GetPosMax ();
-
-//double            scalef      = FreqNormalize ? ScaleFreqs[ FCursor.GetPosMin () ] : 1;
 
 long                fromtf          = 0;
 long                totf            = CDPt.GetLength() - 1;
@@ -4043,10 +4035,8 @@ if ( IsModeEFAvg () )
 
 /*                                        // also update the ranges (intensity and normalization will give very different ranges)
 if ( IsIntensityModes () ) {
-//    scalef  = FreqNormalize ? ScaleFreqs[ FCursor.GetPosMin () ] : 1;
-//    scalef  = FreqNormalize ? ScaleFreqs[ FreqDoc->GetNumFrequencies () ] : 1;
-    double  scalef  = FreqNormalize ? ScaleFreqs[ firstfreq ] : 1;
 
+    double  scalef  = FreqNormalize ? ScaleFreqs[ firstfreq ] : 1;
     double  maxValue    = scalef * FreqDoc->GetAbsMaxValue ();
     SetScalingLimits ( maxValue * 1e-9, maxValue * 1e3 );
     }
@@ -4064,14 +4054,9 @@ SetScalingLimits ( EEGGLVIEW_STVMIN, EEGGLVIEW_STVMAX );
                                         // the others are relatively scaled to an average ratio
 void    TFrequenciesView::ResetScaleFreqs ()
 {
-                                        // could be more precise by first normalizing each frequency separately
-                                        // for each electrode, then merging results
 int                 numel           = FreqDoc->GetNumElectrodes  ();
 int                 numfreq         = FreqDoc->GetNumFrequencies ();
-double              sum;
 int                 numtf           = CDPt.GetLength ();
-
-//TArray2<double>     sf ( numel, numfreq );
 
                                         // temporarily reset block shift
 if ( IsModeEFAvg () )
@@ -4079,211 +4064,62 @@ if ( IsModeEFAvg () )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/*
-                                        // process each electrode independently, as they each have different powers
-for ( int e = 0; e < numel; e++ ) {
-
-    minsum  = DBL_MAX;                    // compute the sum of all TFs, independently for each frequency
-    for ( int f = 0; f < numfreq; f++ ) {
-        sum     = 0;
-        for ( int tf = 0; tf < numtf; tf++ )
-//          sum += fabs ( EegBuff ( f, e, tf ) );
-            sum += sqrt ( fabs ( EegBuff ( f, e, tf ) ) );  // better visual aspect
-
-        sf[ e ][ f ] = sum;
-        if ( sum < minsum ) minsum = sum;   // remember the smallest sum of all frequencies
-        }
-
-    if ( minsum ) {                     // meaningful results?
-        sum = 0;
-                                        // normalize the frequencies
-        for ( int f = 0; f < numfreq; f++ ) {   // results are in (0..1]
-            sf[ e ][ f ] = minsum / ( sf[ e ][ f ] + 1e-60 );
-            sum += sf[ e ][ f ];        // cumulate the new values
-            }
-        sum /= numfreq;
-                                        // normalize so that the average result is 1
-        for ( int f = 0; f < numfreq; f++ )
-            sf[ e ][ f ] /= sum;
-        }
-    else                                // set no rescale
-        for ( int f = 0; f < numfreq; f++ )
-            sf[ e ][ f ] = 1;
-
-
-//    if ( e <=  FreqDoc->GetLastRegularIndex () ) {
-//        for ( int f = 0; f < numfreq; f++ )
-//            ooo << sf[ e ][ f ] << "\t";
-//        ooo << "\n";
-//        }
-    } // electrodes
-
-                                        // now merge all electrodes normalizations to a single one
-for ( int f = 0; f < numfreq; f++ ) {
-    sum     = 0;
-    for ( int e = 0; e <= FreqDoc->GetLastRegularIndex (); e++ )
-        sum += sf[ e ][ f ];
-
-    ScaleFreqs[ f ] = sum / FreqDoc->GetNumElectrodes();
-    }
-*/
-
-
-/*                                        // weighting is done from GFP
-                                        // which already accounts for AUXS and BADS!
-int         gfpi    = FreqDoc->GetGfpIndex ();
-
-for ( int f = 0; f < numfreq; f++ ) {
-    sum     = 0;
-
-    for ( int tf = 0; tf < numtf; tf++ )
-        sum += EegBuff ( f, gfpi, tf );
-
-    ScaleFreqs[ f ] = sum ? numtf / sum : 1;
-    }
-
-                                        // store the min for later scaling purpose
-//sum     = DBL_MAX;
-//for ( int f = 0; f < numfreq; f++ )
-//    if ( ScaleFreqs[ f ] < sum )    sum = ScaleFreqs[ f ];
-
-
-sum     = 0;                            // store the max for later scaling purpose
-for ( int f = 0; f < numfreq; f++ )
-    if ( ScaleFreqs[ f ] > sum )    sum = ScaleFreqs[ f ];
-
-                                        // mean
-//sum     = 0;
-//for ( int f = 0; f < numfreq; f++ )
-//    sum += ScaleFreqs[ f ];
-
-                                        // at the end of the buffer
-ScaleFreqs[ numfreq ] = sum / numfreq;
-*/
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-//#define     writescaling
-
-#if defined(writescaling)
-ofstream ooo ( "E:\\data\\scalefreqs.txt" );
-#endif
-
                                         // weighting is done through AVG or GFP, then rescaled to give a mean weight of 1
 TEasyStats          stat;
 
 
 for ( int f = 0; f < numfreq; f++ ) {
 
-//    stat.Reset ();
-//
-//    for ( int tf = 0; tf < numtf; tf++ ) {
-//
-////      v = 0;
-////      for ( int e = 0; e < numel; e++ )
-////          v    += fabs ( EegBuff ( f, e, tf ) );  // get abs avg
-////      stat.Add ( v, ThreadSafetyIgnore );
-//
-//        for ( int e = 0; e < numel; e++ )
-//            stat.Add ( fabs ( EegBuff ( f, e, tf ) ), ThreadSafetyIgnore );
-//        }
-//
-//    double    mean        = stat.Average ();
-//    double    sd          = stat.SD ();
-
-
     stat.Reset ();
 
-    for ( int tf = 0; tf < numtf; tf++ ) {
+    for ( int e  = 0; e  < numel; e++  )
+    for ( int tf = 0; tf < numtf; tf++ )
 
-//      v = 0;                          // get abs avg
-//      for ( int e = 0; e < numel; e++ )
-//          v    += fabs ( EegBuff ( f, e, tf ) );
-//
-//      if ( fabs ( v - meanvalue ) > sd * 0.5 )
-//          continue;
-//
-//      stat.Add ( v, ThreadSafetyIgnore );
-
-                                        // get abs avg
-//      for ( int e = 0; e < numel; e++ ) {
-//          v     = fabs ( EegBuff ( f, e, tf ) );
-//
-//          if ( fabs ( v - meanvalue ) < sd * 0.5 )
-//              stat.Add ( v, ThreadSafetyIgnore );
-//          }
-
-//      bool    badtf   = false;
-//                                      // in this version, completely ignore TF with any electrode too extreme
-//      for ( int e = 0; e < numel && ! badtf; e++ ) {
-//
-//          if ( fabs ( ZScore ( fabs ( EegBuff ( f, e, tf ) ), mean, sd ) ) > 2 ) {
-//              badtf   = true;
-//              break;
-//              }
-//          }
-//
-//      if ( badtf )
-//          continue;
+        stat.Add ( abs ( EegBuff ( f, e, tf ) ), ThreadSafetyIgnore );
 
 
-        for ( int e = 0; e < numel; e++ )
-            stat.Add ( fabs ( EegBuff ( f, e, tf ) ), ThreadSafetyIgnore );
-
-        }
-
-    sum         = stat.Average ();
-
-    ScaleFreqs[ f ] = sum;
-
-#if defined(writescaling)
-    ooo << ( ScaleFreqs[ f ] ) << "\t";
-#endif
+    ScaleFreqs[ f ]     = stat.Average ();
     }
 
-#if defined(writescaling)
-ooo << "\n";
-#endif
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // get the min of the sums
-double              minsum      = Highest ( minsum );
+                                        // get the min of averages
+double              minavg      = ScaleFreqs[ 0 ];
 
 for ( int f = 0; f < numfreq; f++ )
-    Mined ( minsum, ScaleFreqs[ f ] );
+    Mined ( minavg, ScaleFreqs[ f ] );
 
-                                        // normalize the scale
-if ( minsum != 0 ) {
+                                        // normalize the curve
+if ( minavg != 0 ) {
 
-    double      sum     = 0;
+    double      avgscale    = 0;
 
-    for ( int f = 0; f < numfreq; f++ ) {   // result in [0..1]
-        ScaleFreqs[ f ] = minsum / ( ScaleFreqs[ f ] + 1e-60 );
-        sum            += ScaleFreqs[ f ];
+    for ( int f = 0; f < numfreq; f++ ) {
+                                        // invert curve
+        ScaleFreqs[ f ] = minavg / ( ScaleFreqs[ f ] + 1e-60 );
+                                        // cumulate for proper normalization
+        avgscale       += ScaleFreqs[ f ];
         }
 
-    sum    /= numfreq;
+    avgscale   = NonNull ( avgscale / numfreq );
 
-    for ( int f = 0; f < numfreq; f++ )     // average result is 1
-        ScaleFreqs[ f ] /= NonNull ( sum );
+
+    for ( int f = 0; f < numfreq; f++ ) // average of scaling factors is 1
+        ScaleFreqs[ f ]    /= avgscale;
     }
-else
-    for ( int f = 0; f < numfreq; f++ )
-        ScaleFreqs[ f ] = 1;
 
+else { // minavg == 0
 
-#if defined(writescaling)
-                                        // output non-filtered curve
-for ( int f = 0; f < numfreq; f++ )
-    ooo << ScaleFreqs[ f ] << "\t";
-ooo << "\n";
-#endif
+    ScaleFreqs  = 1;
+    }
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+/*
+                                        // post-processing (smoothing) the curve - not really needed(?)
 double              temp1;
 double              temp2;
-                                        // smooth the curve
+
 for ( int filtersize = 1 ; filtersize > 0; filtersize-- ) {
 
     temp2 = 0;
@@ -4299,17 +4135,10 @@ for ( int filtersize = 1 ; filtersize > 0; filtersize-- ) {
         temp2 = temp1;
         }
     } // for filtersize
-
-
-#if defined(writescaling)
-                                        // output filtered curve
-for ( int f = 0; f < numfreq; f++ )
-    ooo << ( ScaleFreqs[ f ] ) << "\t";
-ooo << "\n";
-#endif
+*/
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // at the end of the buffer, a default scaling (for security in mode ET)
+                                        // setting one more dummy scaling at the end of the vector, for safety reasons in the ET display mode
 ScaleFreqs[ numfreq ] = 1;
 
 
@@ -4778,6 +4607,19 @@ ResetScaleFreqs ();
 if ( FreqNormalize )
     Invalidate ( false );
 }
+
+
+void    TFrequenciesView::CmSaveScaleFreqs ()
+{
+TFileName           file ( FreqDoc->GetDocPath () );
+
+file.ReplaceExtension ( "Normalization" "." InfixSpectrum "." FILEEXT_EEGSEF );
+
+ScaleFreqs.WriteFile ( file, "FreqNorm", FreqDoc->GetNumFrequencies () );
+
+file.Open ();
+}
+
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------

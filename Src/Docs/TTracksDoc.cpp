@@ -623,9 +623,9 @@ if ( ( StringIs ( ext2, InfixSpectrum ) || StringContains ( (const char*) filena
     ExtraContentType    = TracksContentSpectrum;
     Dim2Type            = DimensionTypeFrequency;
 
-    if ( ! DateTime.IsOriginTimeAvailable () )
-        StartingTimeFrame   = 1;
-    else
+    //if ( ! DateTime.IsOriginTimeAvailable () )
+    //    StartingTimeFrame   = 1;
+    //else
         StartingTimeFrame   = 0;        // force resetting
 
     lookforcutpaste     = false;
