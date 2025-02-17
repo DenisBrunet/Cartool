@@ -2954,6 +2954,9 @@ if ( presetfile == SegPresetFilesRestingStatesGroupResampling /*IsSegResamplingF
 
     MoveFileExtended ( errdataavg, buff );
 
+                                        // remaining .mrk file
+    DeleteFileExtended ( errdataavg, FILEEXT_MRK );
+
                                         // open the final destination file
     CartoolDocManager->OpenDoc ( buff, dtOpenOptions );
     }
@@ -3043,7 +3046,7 @@ if ( presetfile == SegPresetFilesRestingStatesGroupResampling
         StringCopy              ( buff,     "\\.(", SegmentationRisTemplateExt, "|", SegmentationEegTemplateExt, ")$" );
         gofcluster.GrepFiles    ( mergedir, buff, GrepOptionDefaultFiles );
 
-        gofcluster.CopyFilesTo  ( outputcommondir, CopyToFlags ( CopyAndKeepOriginals | CopyAllKnownBuddies ), FILEEXT_MRK );
+        gofcluster.CopyFilesTo  ( outputcommondir, CopyAndKeepOriginals, TracksBuddyExt );
         } // for merging clusters
 
                                         // temp directory

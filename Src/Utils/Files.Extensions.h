@@ -393,7 +393,7 @@ limitations under the License.
                                         // File extensions that are associated with others, like pairs of files
 #define     TracksBuddyExt          FILEEXT_BVEEG " " FILEEXT_BVDAT " " FILEEXT_BVHDR " " FILEEXT_BVMRK " " FILEEXT_MRK
 #define     VolumesBuddyExt         FILEEXT_MRIAVW_HDR " " FILEEXT_MRIAVW_IMG
-#define     AllKnownBuddyExt        TracksBuddyExt " " VolumesBuddyExt " " FILEEXT_MRK " " FILEEXT_VRB
+#define     AllKnownBuddyExt        TracksBuddyExt " " VolumesBuddyExt " " FILEEXT_VRB
 
 
 //----------------------------------------------------------------------------
