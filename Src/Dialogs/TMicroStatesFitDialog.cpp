@@ -500,7 +500,7 @@ CmClearEpochs ();
 SetBaseFilename ();
 
                                         // test the compatibility between the new template and the existing groups of files
-if ( ! CheckTracksGroup ( GoGoF.GetLast () ) )
+if ( GoGoF.IsNotEmpty () && ! CheckTracksGroup ( GoGoF.GetLast () ) )
                                         // only then erasing the whole existing group
     CmClearGroups ();
 }
@@ -513,8 +513,6 @@ bool    TMicroStatesFitFilesDialog::CheckTracksGroup ( const TGoF& gof )
 TracksCompatibleClass   tc;
 
 gof.AllTracksAreCompatible ( tc );
-
-//DBGV6 ( numtracks, numauxtracks, numsolpoints, numtf, NumFreqs, samplingfrequency, "CheckTracksGroup last GoF: numtracks, numauxtracks, numsolpoints, numtf, NumFreqs, samplingfrequency" );
 
 
 if      ( tc.NumTracks == CompatibilityNotConsistent ) {
@@ -572,7 +570,6 @@ if ( StringIsNotEmpty ( FitTransfer.TemplateFileName ) ) {
     bool                allmapris       = IsExtensionAmong          ( FitTransfer.TemplateFileName, AllRisFilesExt );
     bool                allris          = alldatris && allmapris;
 
-//    DBGV4 ( numtrackstempl, numtracks, alleeg, allris, "CheckTracksGroup last GoF: numtrackstempl, numtracks, alleeg, allris" );
 
     if ( alldatris && allmapeeg ) {
         ShowMessage (   "Hu? Are you trying to fit some EEG directly into some sorts of ESI?" NewLine 
@@ -618,7 +615,7 @@ return  true;
 
 void    TMicroStatesFitFilesDialog::AddGroupSummary ( int gofi )
 {
-if ( gofi < 0 || gofi >= (int) GoGoF )
+if ( GoGoF.IsEmpty () || gofi < 0 || gofi >= (int) GoGoF )
     return;
 
 
@@ -629,7 +626,7 @@ TFileName           buff3;
 
                                         // update dialog
 StringCopy ( buff2, ToFileName ( gof.GetFirst () ) );
-StringCopy ( buff3, ToFileName ( gof.GetLast () ) );
+StringCopy ( buff3, ToFileName ( gof.GetLast  () ) );
 
 
 if ( gof.NumFiles () == 1 )
@@ -746,6 +743,7 @@ if ( ! getfiles.Execute () )
 
 
 if ( CheckTracksGroup ( getfiles ) ) {
+
     GoGoF.Add ( getfiles, true, MaxPathShort );
 
     //SetBaseFilename ();
@@ -856,7 +854,7 @@ if ( (bool) tracksfiles ) {
         else                AddFileToGroup      ( tracksfiles[ i ], i == 0 );
 
 
-    if ( ! templatos ) {
+    if ( GoGoF.IsNotEmpty () && ! templatos ) {
 
         if ( CheckTracksGroup ( GoGoF.GetLast () ) ) {
 
@@ -901,7 +899,8 @@ if ( (bool) lmfiles ) {
                     first = false;
                     }
 
-            if ( ! first ) {            // security check, in case of only frequency files
+            if ( GoGoF.IsNotEmpty () && ! first ) { // security check, in case of only frequency files
+
                 if ( CheckTracksGroup ( GoGoF.GetLast () ) ) {
 
                     SetMaxFilesPerGroup ();
@@ -925,15 +924,18 @@ if ( (bool) lmfiles ) {
                 first = false;
                 }
 
-            if ( CheckTracksGroup ( GoGoF.GetLast () ) ) {
+            if ( GoGoF.IsNotEmpty () ) {
 
-                SetMaxFilesPerGroup ();
-                SetMaxGroupsWithinSubjects ();
+                if ( CheckTracksGroup ( GoGoF.GetLast () ) ) {
 
-                AddGroupSummary ( GoGoF.NumGroups () - 1 );
+                    SetMaxFilesPerGroup ();
+                    SetMaxGroupsWithinSubjects ();
+
+                    AddGroupSummary ( GoGoF.NumGroups () - 1 );
+                    }
+                else
+                    GoGoF.RemoveLastGroup ();
                 }
-            else
-                GoGoF.RemoveLastGroup ();
             }
         }
     }
@@ -969,16 +971,18 @@ for ( int i = 0; i < (int) remainingfiles; i++ ) {
             AddFileToGroup ( subgof[ sgi ], sgi == 0 );
 
 
-        if ( CheckTracksGroup ( GoGoF.GetLast () ) ) {
+        if ( GoGoF.IsNotEmpty () ) {
 
-            SetMaxFilesPerGroup ();
-            SetMaxGroupsWithinSubjects ();
+            if ( CheckTracksGroup ( GoGoF.GetLast () ) ) {
 
-            AddGroupSummary ( GoGoF.NumGroups () - 1 );
+                SetMaxFilesPerGroup ();
+                SetMaxGroupsWithinSubjects ();
+
+                AddGroupSummary ( GoGoF.NumGroups () - 1 );
+                }
+            else
+                GoGoF.RemoveLastGroup ();
             }
-        else
-            GoGoF.RemoveLastGroup ();
-
 
         remainingfiles.RemoveRef ( remainingfiles[ i ] );
         i--;
@@ -1000,7 +1004,7 @@ ReadParams ();
 
 void    TMicroStatesFitFilesDialog::AddFileToGroup ( const char* filename, bool first )
 {
-if ( first )                            // add a new group
+if ( GoGoF.IsEmpty () || first )        // add a new group
     GoGoF.Add ( new TGoF );
 
 
@@ -1055,15 +1059,18 @@ for ( int file = 0; file < sf.GetNumRecords (); file++ ) {
         } // for file
 
 
-    if ( CheckTracksGroup ( GoGoF.GetLast () ) ) {
+    if ( GoGoF.IsNotEmpty () ) {
 
-        SetMaxFilesPerGroup ();
-        SetMaxGroupsWithinSubjects ();
+        if ( CheckTracksGroup ( GoGoF.GetLast () ) ) {
 
-        AddGroupSummary ( GoGoF.NumGroups () - 1 );
+            SetMaxFilesPerGroup ();
+            SetMaxGroupsWithinSubjects ();
+
+            AddGroupSummary ( GoGoF.NumGroups () - 1 );
+            }
+        else
+            GoGoF.RemoveLastGroup ();
         }
-    else
-        GoGoF.RemoveLastGroup ();
     }
 
 

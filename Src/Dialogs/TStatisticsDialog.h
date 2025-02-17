@@ -225,9 +225,9 @@ class   TStatGoGoF  :   public TGoGoF
 {
 public:
 
-    const TStatGoF& GetFirst ()                                 const   { return   (TStatGoF &) TGoGoF::GetFirst (); }
+    const TStatGoF& GetFirst ()                                 const   { return   (TStatGoF &) TGoGoF::GetFirst (); }  // !Check group is not empty before calling!
           TStatGoF& GetFirst ()                                         { return   (TStatGoF &) TGoGoF::GetFirst (); }
-    const TStatGoF& GetLast  ()                                 const   { return   (TStatGoF &) TGoGoF::GetLast  (); }
+    const TStatGoF& GetLast  ()                                 const   { return   (TStatGoF &) TGoGoF::GetLast  (); }  // !Check group is not empty before calling!
           TStatGoF& GetLast  ()                                         { return   (TStatGoF &) TGoGoF::GetLast  (); }
 
 
@@ -235,7 +235,7 @@ public:
     bool            IsSomeAverage   ( int gofi1, int gofi2 )    const;
 
 
-    const TStatGoF& operator    []  ( int index )               const   { return    *( (TStatGoF *) Group[ index ] ); }
+    const TStatGoF& operator    []  ( int index )               const   { return    *( (TStatGoF *) Group[ index ] ); } // !Check index before calling!
           TStatGoF& operator    []  ( int index )                       { return    *( (TStatGoF *) Group[ index ] ); }
 };
 

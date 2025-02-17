@@ -308,9 +308,9 @@ public:
     void            Show            ( const char* title = 0 )                           const   { Show ( 0, NumGroups () - 1, title ); }
 
 
-    const TGoF&     GetFirst        ()  const                           { return   *Group.GetFirst (); }
+    const TGoF&     GetFirst        ()  const                           { return   *Group.GetFirst (); }    // !Check group is not empty before calling!
           TGoF&     GetFirst        ()                                  { return   *Group.GetFirst (); }
-    const TGoF&     GetLast         ()  const                           { return   *Group.GetLast  (); }
+    const TGoF&     GetLast         ()  const                           { return   *Group.GetLast  (); }    // !Check group is not empty before calling!
           TGoF&     GetLast         ()                                  { return   *Group.GetLast  (); }
 
 

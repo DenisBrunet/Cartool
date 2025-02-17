@@ -157,6 +157,10 @@ NumSamples      = 0;
 //----------------------------------------------------------------------------
 bool    TStatGoGoF::AllAreAverages ( int gofi1, int gofi2 ) const
 {
+if ( ! IsInsideLimits ( gofi1, gofi2, 0, NumGroups () - 1 ) )
+    return false;
+
+
 for ( int gofi = gofi1; gofi <= gofi2 ; gofi++ )
 
     if ( ! (*this)[ gofi ].IsTimeAveraged () )
@@ -169,6 +173,10 @@ return  true;
 
 bool    TStatGoGoF::IsSomeAverage ( int gofi1, int gofi2 )  const
 {
+if ( ! IsInsideLimits ( gofi1, gofi2, 0, NumGroups () - 1 ) )
+    return false;
+
+
 for ( int gofi = gofi1; gofi <= gofi2 ; gofi++ )
 
     if ( (*this)[ gofi ].IsTimeAveraged () )

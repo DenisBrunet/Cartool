@@ -1010,10 +1010,13 @@ if ( (bool) tracksfiles ) {
         AddFileToGroup ( tracksfiles[ i ], i == 0 );
 
 
-    if ( CheckTracksGroup ( GoGoF.GetLast () ) )
-        AddGroupSummary ( GoGoF.NumGroups () - 1 );
-    else
-        GoGoF.RemoveLastGroup ();
+    if ( GoGoF.IsNotEmpty () ) {
+
+        if ( CheckTracksGroup ( GoGoF.GetLast () ) )
+            AddGroupSummary ( GoGoF.NumGroups () - 1 );
+        else
+            GoGoF.RemoveLastGroup ();
+        }
 
 //  CheckXyzFile ();    // should be in TMicroStatesSegDialog class...
     }
@@ -1042,7 +1045,8 @@ if ( (bool) lmfiles ) {
                     first = false;
                     }
 
-            if ( ! first ) {            // security check, in case of only frequency files
+            if ( GoGoF.IsNotEmpty () && ! first ) { // security check, in case of only frequency files
+
                 if ( CheckTracksGroup ( GoGoF.GetLast () ) )
                     AddGroupSummary ( GoGoF.NumGroups () - 1 );
                 else
@@ -1061,10 +1065,13 @@ if ( (bool) lmfiles ) {
                 first = false;
                 }
 
-            if ( CheckTracksGroup ( GoGoF.GetLast () ) )
-                AddGroupSummary ( GoGoF.NumGroups () - 1 );
-            else
-                GoGoF.RemoveLastGroup ();
+            if ( GoGoF.IsNotEmpty () ) {
+
+                if ( CheckTracksGroup ( GoGoF.GetLast () ) )
+                    AddGroupSummary ( GoGoF.NumGroups () - 1 );
+                else
+                    GoGoF.RemoveLastGroup ();
+                }
             }
         }
     }
@@ -1092,11 +1099,13 @@ for ( int i = 0; i < (int) remainingfiles; i++ ) {
             AddFileToGroup ( subgof[ sgi ], sgi == 0 );
 
 
-        if ( CheckTracksGroup ( GoGoF.GetLast () ) )
-            AddGroupSummary ( GoGoF.NumGroups () - 1 );
-        else
-            GoGoF.RemoveLastGroup ();
+        if ( GoGoF.IsNotEmpty () ) {
 
+            if ( CheckTracksGroup ( GoGoF.GetLast () ) )
+                AddGroupSummary ( GoGoF.NumGroups () - 1 );
+            else
+                GoGoF.RemoveLastGroup ();
+            }
 
         remainingfiles.RemoveRef ( remainingfiles[ i ] );
         i--;
@@ -1136,7 +1145,7 @@ ReadParams ();
 
 void    TMicroStatesSegFilesDialog::AddFileToGroup ( const char* filename, bool first )
 {
-if ( first )                            // add a new group
+if ( GoGoF.IsEmpty () || first )        // add a new group
     GoGoF.Add ( new TGoF );
 
 
@@ -1193,10 +1202,13 @@ for ( int file = 0; file < sf.GetNumRecords (); file++ ) {
         } // for file
 
                                         // don't blindfully trust the parameter files(?)
-    if ( CheckTracksGroup ( GoGoF.GetLast () ) )
-        AddGroupSummary ( GoGoF.NumGroups () - 1 );
-    else
-        GoGoF.RemoveLastGroup ();
+    if ( GoGoF.IsNotEmpty () ) {
+
+        if ( CheckTracksGroup ( GoGoF.GetLast () ) )
+            AddGroupSummary ( GoGoF.NumGroups () - 1 );
+        else
+            GoGoF.RemoveLastGroup ();
+        }
     }
 
 
