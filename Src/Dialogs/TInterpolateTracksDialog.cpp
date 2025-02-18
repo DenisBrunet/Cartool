@@ -310,9 +310,7 @@ if ( (bool) xyzfiles ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( (bool) tracksfiles && ! BatchProcessing )
-    ShowMessage ( "Batch 'Drag & Drop' is not enabled now," NewLine 
-                  "only the current file can be processed." NewLine NewLine 
-                  "Close this file to have the Batch mode back...", InterpolationTitle, ShowMessageWarning );
+    ShowMessage ( BatchNotAvailMessage, InterpolationTitle, ShowMessageWarning );
 
 
 if ( (bool) tracksfiles && BatchProcessing )
@@ -322,7 +320,7 @@ if ( (bool) tracksfiles && BatchProcessing )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( (bool) remainingfiles )
-    remainingfiles.Show ( "Skipping non-relevant file:" );
+    remainingfiles.Show ( IrrelevantErrorMessage );
 }
 
 

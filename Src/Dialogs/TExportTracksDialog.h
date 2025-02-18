@@ -116,8 +116,8 @@ class                   TTracksDoc;
 class   TExportTracksDialog :   public  TBaseDialog
 {
 public:
-                        TExportTracksDialog ( owl::TWindow* parent, owl::TResId resId, TTracksDoc* doc );
-                       ~TExportTracksDialog ();
+                        TExportTracksDialog         ( owl::TWindow* parent, owl::TResId resId, TTracksDoc* doc );
+                       ~TExportTracksDialog         ();
 
 
     void                BatchProcess                ()  final;

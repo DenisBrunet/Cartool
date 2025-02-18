@@ -630,13 +630,13 @@ drop.DragFinish ();
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( (bool) remainingfiles )
-    remainingfiles.Show ( "Skipping non-relevant file:" );
+    remainingfiles.Show ( IrrelevantErrorMessage );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( (bool) mrifiles && ! BatchProcessing )
-    ShowMessage ( "Batch 'Drag & Drop' is not enabled now,\nonly the current file can be processed.\n\nClose this file to have the Batch mode back...", NormalizeTitleMany, ShowMessageWarning );
+    ShowMessage ( BatchNotAvailMessage, NormalizeTitleMany, ShowMessageWarning );
 
 
 if ( (bool) mrifiles && BatchProcessing ) {
@@ -644,7 +644,7 @@ if ( (bool) mrifiles && BatchProcessing ) {
     if ( CmProcessEnable () )
         BatchProcessDropped ( mrifiles );
     else
-        ShowMessage ( "Batch 'Drag & Drop' is not enabled now,\nbecause your parameters are not correct!\n\nCheck your parameters then please come back...", NormalizeTitleMany, ShowMessageWarning );
+        ShowMessage ( BatchErrorMessage, NormalizeTitleMany, ShowMessageWarning );
     }
 }
 
@@ -665,7 +665,7 @@ TBaseDialog::CmProcessCurrent ( MRIDoc->GetDocPath () );
 void    TPreprocessMrisDialog::CmBatchProcess ()
 {
 if ( ! BatchProcessing ) {
-    ShowMessage ( "Batch 'Drag & Drop' is not enabled now,\nonly the current file can be processed.\n\nClose this file to have the Batch mode back...", NormalizeTitleMany, ShowMessageWarning );
+    ShowMessage ( BatchNotAvailMessage, NormalizeTitleMany, ShowMessageWarning );
     return;
     }
 

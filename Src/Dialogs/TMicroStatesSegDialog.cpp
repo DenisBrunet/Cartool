@@ -1115,7 +1115,7 @@ for ( int i = 0; i < (int) remainingfiles; i++ ) {
                                         // Still remaining files? time to complain a bit, user always love a bit of whining once in a while...
 if ( (bool) remainingfiles )
 
-    remainingfiles.Show ( "Skipping non-relevant file:" );
+    remainingfiles.Show ( IrrelevantErrorMessage );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1896,7 +1896,7 @@ for ( int i = 0; i < (int) xyzfiles; i++ ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( (bool) remainingfiles )
-    remainingfiles.Show ( "Skipping non-relevant file:" );
+    remainingfiles.Show ( IrrelevantErrorMessage );
 }
 
 

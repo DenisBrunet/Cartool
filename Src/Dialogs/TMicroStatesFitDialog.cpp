@@ -991,7 +991,7 @@ for ( int i = 0; i < (int) remainingfiles; i++ ) {
 
 
 if ( (bool) remainingfiles )
-    remainingfiles.Show ( "Skipping non-relevant file:" );
+    remainingfiles.Show ( IrrelevantErrorMessage );
 }
 
 
@@ -1524,7 +1524,7 @@ for ( int i = 0; i < (int) xyzfiles; i++ ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( (bool) remainingfiles )
-    remainingfiles.Show ( "Skipping non-relevant file:" );
+    remainingfiles.Show ( IrrelevantErrorMessage );
 }
 
 

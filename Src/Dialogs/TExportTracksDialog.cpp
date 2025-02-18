@@ -320,8 +320,8 @@ delete  ExportTracks;
 delete  Tracks;                 delete  UseXyzDoc;              delete  XyzDocFile;
 delete  ExportRois;             delete  RoisDocFile;
 delete  TimeInterval;           delete  TriggersToKeep;         delete  TriggersToExclude;
-delete  TimeMin;                delete  TimeMax;
-delete  EndOfFile;              delete  TriggersToKeepList;     delete  TriggersToExcludeList;
+delete  TimeMin;                delete  TimeMax;                delete  EndOfFile;
+delete  TriggersToKeepList;     delete  TriggersToExcludeList;
 delete  AddChannels;
 delete  NoFilters;              delete  CurrentFilters;         delete  OtherFilters;
 delete  BaselineCorr;
@@ -410,11 +410,8 @@ if ( (bool) roifiles ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( ( (bool) tracksfiles || (bool) spreadsheetfiles || (bool) lmfiles ) && ! BatchProcessing )
-    ShowMessage (   "Batch 'Drag & Drop' is not enabled now," NewLine 
-                    "only the current file can be processed." NewLine 
-                    NewLine 
-                    "Close this file to have the Batch mode back...", 
-                    ExportTracksTitle, ShowMessageWarning );
+
+    ShowMessage ( BatchNotAvailMessage, ExportTracksTitle, ShowMessageWarning );
 
 
 if ( (bool) tracksfiles && BatchProcessing )
@@ -438,7 +435,7 @@ if ( (bool) lmfiles && BatchProcessing )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( (bool) remainingfiles )
-    remainingfiles.Show ( "Skipping non-relevant file:" );
+    remainingfiles.Show ( IrrelevantErrorMessage );
 }
 
 
@@ -466,14 +463,14 @@ tce.Enable ( CheckToBool ( ExportTracks->GetCheck() )
 void    TExportTracksDialog::CmXyzDocFileEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( CheckToBool ( ExportTracks->GetCheck() )
-          && CheckToBool ( UseXyzDoc->GetCheck() )    );
+          && CheckToBool ( UseXyzDoc   ->GetCheck() ) );
 }
 
 
 void    TExportTracksDialog::CmUseXyzDocEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( CheckToBool ( ExportTracks->GetCheck() )
-          && CheckToBool ( UseXyzDoc->GetCheck() )
+          && CheckToBool ( UseXyzDoc   ->GetCheck() )
           && ! ExportTracksTransfer.XyzLinked );
 }
 
@@ -940,7 +937,6 @@ return  true;
 void    TExportTracksDialog::CmProcessCurrentEnable ( TCommandEnabler &tce )
 {
 TransferData ( tdGetData );
-//Transfer ( (void *) &ExportTracksTransfer, tdGetData );
 
 if ( BatchProcessing ) {
     tce.Enable ( false );
@@ -954,7 +950,6 @@ tce.Enable ( CmProcessEnable () );
 void    TExportTracksDialog::CmProcessBatchEnable ( TCommandEnabler &tce )
 {
 TransferData ( tdGetData );
-//Transfer ( (void *) &ExportTracksTransfer, tdGetData );
 
 if ( ! BatchProcessing ) {
     tce.Enable ( false );

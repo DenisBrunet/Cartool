@@ -714,11 +714,7 @@ if ( (bool) xyzfiles && ! FrequencyAnalysisTransfer.XyzLinked ) {
 
 if ( (bool) tracksfiles && ! BatchProcessing )
 
-    ShowMessage (   "Batch 'Drag & Drop' is not enabled now,"   NewLine 
-                    "only the current file can be processed."   NewLine 
-                    NewLine 
-                    "Close this file to have the Batch mode back...", 
-                    FrequencyAnalysisTitle, ShowMessageWarning );
+    ShowMessage ( BatchNotAvailMessage, FrequencyAnalysisTitle, ShowMessageWarning );
 
 
 if ( (bool) tracksfiles && BatchProcessing )
@@ -728,7 +724,7 @@ if ( (bool) tracksfiles && BatchProcessing )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( (bool) remainingfiles )
-    remainingfiles.Show ( "Skipping non-relevant file:" );
+    remainingfiles.Show ( IrrelevantErrorMessage );
 }
 
 

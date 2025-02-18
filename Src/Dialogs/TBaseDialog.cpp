@@ -285,7 +285,7 @@ BatchFileNames.Reset ();
 
 
 //----------------------------------------------------------------------------
-                                        // Default just calls ProcessCurrent - The interest is for derived class to override this wil specific needs, like frequency loops
+                                        // Default just calls ProcessCurrent - The advantage is for a derived class to override this for specific needs, like frequency loops
 void    TBaseDialog::BatchProcessCurrent ()
 {
 ProcessCurrent ( 0, 0 );
@@ -484,7 +484,7 @@ else if ( ResId == IDD_FITTING1                 )   helpaddress    += "/microsta
 else if ( ResId == IDD_FITTING2                 )   helpaddress    += "/microstates-back-fitting-templates.html" "#fitting-parameters-dialog";
 else if ( ResId == IDD_FITTING3                 )   helpaddress    += "/microstates-back-fitting-templates.html" "#fitting-results-dialog";
 else if ( ResId == IDD_INTERPOLATE              )   helpaddress    += "/tracks-interpolation.html"               "#dialog";
-else if ( ResId == IDD_SCANMARKERS              )   helpaddress    += "/eeg-display.html"                        "scanning-triggers";
+else if ( ResId == IDD_SCANMARKERS              )   helpaddress    += "/eeg-display.html"                        "#scanning-triggers";
 else if ( ResId == IDD_FREQANALYSIS             )   helpaddress    += "/frequency-analysis.html";
 else if ( ResId == IDD_CREATEROIS               )   helpaddress    += "/creating-rois.html";
 else if ( ResId == IDD_CALCULATOR               )   helpaddress    += "/file-calculator.html";

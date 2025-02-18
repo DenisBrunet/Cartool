@@ -274,7 +274,7 @@ if ( (bool) risfiles )
         BatchProcessDropped ( risfiles );
         }
     else                    
-        ShowMessage ( "Batch 'Drag & Drop' is not enabled now,\nonly the current file can be processed.\n\nClose this file to have the Batch mode back...", "Export Tracks", ShowMessageWarning );
+        ShowMessage ( BatchNotAvailMessage, "Export Tracks", ShowMessageWarning );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -304,7 +304,7 @@ for ( int i = 0; i < (int) remainingfiles; i++ ) {
             BatchProcessDropped ( subgof );
             }
         else                    
-            ShowMessage ( "Batch 'Drag & Drop' is not enabled now,\nonly the current file can be processed.\n\nClose this file to have the Batch mode back...", "Export Tracks", ShowMessageWarning );
+            ShowMessage ( BatchNotAvailMessage, "Export Tracks", ShowMessageWarning );
 
 
         remainingfiles.RemoveRef ( remainingfiles[ i ] );
@@ -314,7 +314,7 @@ for ( int i = 0; i < (int) remainingfiles; i++ ) {
 
 
 if ( (bool) remainingfiles )
-    remainingfiles.Show ( "Skipping non-relevant file:" );
+    remainingfiles.Show ( IrrelevantErrorMessage );
 }
 
 
