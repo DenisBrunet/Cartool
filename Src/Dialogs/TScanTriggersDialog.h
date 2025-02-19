@@ -24,6 +24,11 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
+
+constexpr char*         ScanningTriggersTitle   = "Scanning Markers";
+
+
+//----------------------------------------------------------------------------
                                         // These structs / classes need to be byte-aligned for proper read/write to file
 BeginBytePacking
 
@@ -37,6 +42,7 @@ public:
     TEditData           Channels[ EditSizeTextLong ];
     TEditData           TimeMin [ EditSizeValue ];
     TEditData           TimeMax [ EditSizeValue ];
+    TCheckBoxData       EndOfFile;
 
     TRadioButtonData    ScanStability;
 
@@ -84,14 +90,20 @@ class   TTracksDoc;
 class   TScanTriggersDialog :    public  TBaseDialog
 {
 public:
-                        TScanTriggersDialog ( owl::TWindow* parent, owl::TResId resId, TScanTriggersStruct& transfer, TTracksDoc* doc );
-                       ~TScanTriggersDialog ();
+                        TScanTriggersDialog         ( owl::TWindow* parent, owl::TResId resId, TTracksDoc* doc );
+                       ~TScanTriggersDialog         ();
+
+
+    void                BatchProcessCurrent         ()  final;
+    void                ProcessCurrent              ( void *usetransfer = 0, const char *moreinfix = 0 )    final;
 
 
 protected:
+
     owl::TEdit          *Channels;
     owl::TEdit          *TimeMin;
     owl::TEdit          *TimeMax;
+    owl::TCheckBox      *EndOfFile;
 
     owl::TRadioButton   *ScanStability;
 
@@ -128,27 +140,26 @@ protected:
     owl::TRadioButton   *MergedCount;
 
 
-    TTracksDoc*             EEGDoc;
-    TScanTriggersStruct&    scantransfer;
+    void                EvDropFiles                 ( owl::TDropInfo drop );
+    void                CmBrowseTemplateFileName    ();
+    void                SetTemplateFileName         ( const char* file );
 
-
-    void                EvDropFiles ( owl::TDropInfo drop );
-    void                CmBrowseTemplateFileName ();
-    void                SetTemplateFileName ( char *file );
-
-    void                CmOkEnable              ( owl::TCommandEnabler &tce );
-    void                CmNotTemplateEnable     ( owl::TCommandEnabler &tce );
-    void                CmOneMarkerPerTrackEnable ( owl::TCommandEnabler &tce );
-    void                CmMergeMarkersRangeEnable ( owl::TCommandEnabler &tce );
-    void                CmThresholdEnable       ( owl::TCommandEnabler &tce );
-    void                CmDurationEnable        ( owl::TCommandEnabler &tce );
-    void                CmTemplateEnable        ( owl::TCommandEnabler &tce );
-    void                CmThresholdAboveEnable  ( owl::TCommandEnabler &tce );
-    void                CmThresholdBelowEnable  ( owl::TCommandEnabler &tce );
-    void                CmExtremaEnable         ( owl::TCommandEnabler &tce );
-    void                CmChannelsEnable        ( owl::TCommandEnabler &tce );
-    void                CmPrefixMarkerEnable    ( owl::TCommandEnabler &tce );
-    void                EvMethodChanged         ();
+    bool                CmProcessEnable             ();
+    void                CmProcessCurrentEnable      ( owl::TCommandEnabler &tce );
+    void                CmProcessBatchEnable        ( owl::TCommandEnabler &tce );
+    void                CmNotTemplateEnable         ( owl::TCommandEnabler &tce );
+    void                CmOneMarkerPerTrackEnable   ( owl::TCommandEnabler &tce );
+    void                CmMergeMarkersRangeEnable   ( owl::TCommandEnabler &tce );
+    void                CmThresholdEnable           ( owl::TCommandEnabler &tce );
+    void                CmDurationEnable            ( owl::TCommandEnabler &tce );
+    void                CmTemplateEnable            ( owl::TCommandEnabler &tce );
+    void                CmThresholdAboveEnable      ( owl::TCommandEnabler &tce );
+    void                CmThresholdBelowEnable      ( owl::TCommandEnabler &tce );
+    void                CmExtremaEnable             ( owl::TCommandEnabler &tce );
+    void                CmChannelsEnable            ( owl::TCommandEnabler &tce );
+    void                CmTimeMaxEnable             ( owl::TCommandEnabler &tce );
+    void                CmPrefixMarkerEnable        ( owl::TCommandEnabler &tce );
+    void                EvMethodChanged             ();
 
     DECLARE_RESPONSE_TABLE ( TScanTriggersDialog );
 };

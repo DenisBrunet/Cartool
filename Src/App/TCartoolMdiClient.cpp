@@ -55,6 +55,7 @@ limitations under the License.
 #include    "TPreprocessMrisDialog.h"
 #include    "TRisToVolumeDialog.h"
 #include    "TCoregistrationDialog.h"
+#include    "TScanTriggersDialog.h"
 
 using namespace std;
 using namespace owl;
@@ -137,6 +138,7 @@ DEFINE_RESPONSE_TABLE1(TCartoolMdiClient, TMDIClient)
 
     EV_COMMAND          (CM_EXPORTTRACKS,               CmExportTracks ),
     EV_COMMAND          (CM_FREQANALYSIS,               CmFreqAnalysis ),
+    EV_COMMAND          (CM_SCANTRIGGERS,               CmScanTriggers ),
 
     EV_COMMAND_AND_ID   (CM_STATISTICSTRACKS,           CmStatistics ),
     EV_COMMAND_AND_ID   (CM_STATISTICSRIS,              CmStatistics ),
@@ -727,6 +729,13 @@ TExportTracksDialog ( this, IDD_EXPORTTRACKS, 0 ).Execute ();
 
 
 //----------------------------------------------------------------------------
+void    TCartoolMdiClient::CmFreqAnalysis ()
+{
+TFrequencyAnalysisDialog ( this, IDD_FREQANALYSIS, 0 ).Execute ();
+}
+
+
+//----------------------------------------------------------------------------
 void    TCartoolMdiClient::CmInteractiveAveraging ()
 {
                                         // For this processing, we prefer not to be disturbed with any other windows
@@ -761,19 +770,19 @@ TRisToVolumeDialog ( this, IDD_RISTOVOLUME, 0 ).Execute ();
 
 
 //----------------------------------------------------------------------------
+void    TCartoolMdiClient::CmScanTriggers ()
+{
+TScanTriggersDialog ( this, IDD_SCANMARKERS, 0 ).Execute ();
+}
+
+
+//----------------------------------------------------------------------------
 void    TCartoolMdiClient::CmStatistics ( owlwparam w )
 {
 //CmCloseChildren();
 
 if      ( StatTransfer.LastDialogId == IDD_STATISTICS1 )   TStatisticsFilesDialog  ( this, IDD_STATISTICS1, w ).Execute ();
 else                                                       TStatisticsParamsDialog ( this, IDD_STATISTICS2    ).Execute ();
-}
-
-
-//----------------------------------------------------------------------------
-void    TCartoolMdiClient::CmFreqAnalysis ()
-{
-TFrequencyAnalysisDialog ( this, IDD_FREQANALYSIS, 0 ).Execute ();
 }
 
 

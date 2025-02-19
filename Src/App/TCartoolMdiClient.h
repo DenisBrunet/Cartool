@@ -84,6 +84,7 @@ protected:
     void            CmInterpolate           ();
     void            CmPreprocessMris        ();
     void            CmRisToVolume           ();
+    void            CmScanTriggers          ();
     void            CmStatistics            ( owlwparam w );
 
     void            CmSegmentEeg            ();

@@ -370,6 +370,7 @@
 #define CM_MRICOREGISTRATION            2516
 #define CM_CUTBRAINSTEM                 2517
 #define CM_CORRELATEFILES               2519
+#define CM_SCANTRIGGERS                 2520
 #define CM_HISTOTIMERAW                 2521
 #define CM_HISTOTIMESMOOTH              2522
 #define CM_HISTOTIMELOG                 2523

@@ -518,6 +518,7 @@ protected:
     void                CmInterpolateTracks     ();
     void                CmRisToVolume           ();
     void                RisToCloudVectorsUI     ();
+    void                CmScanTriggers          ();
 
     void                CmOrient                ();
     void                CmEditCopy              ();
@@ -594,7 +595,6 @@ protected:
     void                CmNextSession           ();
     void                CmNextSessionEnable     ( owl::TCommandEnabler &tce );
     void                CmEasyPublish           ();
-    void                CmScanForTriggers       ();
     void                CmScanForBadEpochs      ();
     void                CmOrientEnable          ( owl::TCommandEnabler &tce );
     void                CmSetOffset             ( owlwparam w );

@@ -46,6 +46,7 @@ limitations under the License.
 #include    "TMicroStatesFitDialog.h"
 #include    "TStatisticsDialog.h"
 #include    "TRisToVolumeDialog.h"
+#include    "TScanTriggersDialog.h"
 
 #include    "TElectrodesView.h"
 #include    "TPotentialsView.h"
@@ -62,8 +63,6 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-static  TScanTriggersStruct         ScanTransfer;
-
 extern  TExportTracksStructEx       ExportTracksTransfer;
 extern  TFrequencyAnalysisStructEx  FrequencyAnalysisTransfer;
 extern  TInterpolateTracksStructEx  InterpolateTracksTransfer;
@@ -72,6 +71,7 @@ extern  TCreateRoisDialog*          CreateRoisDlg;
 extern  TMicroStatesFitStruct       FitTransfer;
 extern  TStatStruct                 StatTransfer;
 extern  TRisToVolumeStructEx        RisToVolumeTransfer;
+extern  TScanTriggersStruct         ScanTriggersTransfer;
 
 
 //----------------------------------------------------------------------------
@@ -275,7 +275,6 @@ DEFINE_RESPONSE_TABLE1(TTracksView, TBaseView)
     EV_COMMAND_ENABLE   ( CM_EEGMRKTRIGGER,             CmSetMarkerDisplayTEnable ),
     EV_COMMAND_ENABLE   ( CM_EEGMRKEVENT,               CmSetMarkerDisplayEEnable ),
     EV_COMMAND_ENABLE   ( CM_EEGMRKMARKER,              CmSetMarkerDisplayMEnable ),
-    EV_COMMAND          ( CM_EEGMRKSCANEEG,             CmScanForTriggers ),
     EV_COMMAND          ( CM_EEGMRKMANAGE,              CmManageMarkers ),
     EV_COMMAND_AND_ID   ( CM_EEGMRKSEARCH,              CmSearchMarker ),
     EV_COMMAND_AND_ID   ( CM_EEGMRKSEARCHNEXT,          CmSearchMarker ),
@@ -322,6 +321,7 @@ DEFINE_RESPONSE_TABLE1(TTracksView, TBaseView)
     EV_COMMAND          ( CM_INTERPOLATE,               CmInterpolateTracks ),
     EV_COMMAND          ( CM_RISTOVOLUME,               CmRisToVolume ),
     EV_COMMAND          ( CM_RISTOPOINTS,               RisToCloudVectorsUI ),
+    EV_COMMAND          ( CM_SCANTRIGGERS,              CmScanTriggers ),
 
     EV_COMMAND          ( CM_EEGBASELINE,               CmBaseline ),
 
@@ -8972,706 +8972,6 @@ tce.SetCheck ( IsFlag ( DisplayMarkerType, MarkerTypeMarker ) );
 
 
 //----------------------------------------------------------------------------
-void    TTracksView::CmScanForTriggers ()
-{
-TScanTriggersStruct    &transfer    = ScanTransfer;
-
-                                        // pre-fill the dialog with current selection
-if ( (bool) Highlighted )
-    Highlighted.ToText ( transfer.Channels, GetElectrodesNames (), AuxiliaryTracksNames );
-else {
-    TSelection  sel ( SelTracks );
-
-    if ( EEGDoc->GetNumSelectedRegular ( sel ) )
-        EEGDoc->ClearPseudo ( sel );
-
-    sel.ToText ( transfer.Channels, GetElectrodesNames (), AuxiliaryTracksNames );
-    }
-
-
-if ( TFCursor.IsSplitted() ) {
-    sprintf ( transfer.TimeMin, "%0d", TFCursor.GetPosMin () );
-    sprintf ( transfer.TimeMax, "%0d", TFCursor.GetPosMax () );
-    }
-else {
-    sprintf ( transfer.TimeMin, "%0d", 0 );
-    sprintf ( transfer.TimeMax, "%0d", EEGDoc->GetNumTimeFrames() - 1 );
-    }
-
-                                        // run the dialog, which does nothing other than collecting parameters and does not run the scan
-if ( TScanTriggersDialog ( CartoolMainWindow, IDD_SCANMARKERS, transfer, EEGDoc ).Execute() == IDCANCEL )
-    return;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Now exploit the state of transfer buffer for actual processing
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // get the method type
-bool                scanstability   = CheckToBool ( transfer.ScanStability );
-bool                scanextrema     = CheckToBool ( transfer.ScanExtrema   );
-bool                scanthreshold   = CheckToBool ( transfer.ScanThreshold );
-bool                scantemplate    = CheckToBool ( transfer.ScanTemplate  );
-
-
-bool                smartslope      = CheckToBool ( transfer.ThresholdSlope ) && scanthreshold;
-
-                                        // time interval
-int                 timemin         = StringToInteger ( transfer.TimeMin );
-int                 timemax         = StringToInteger ( transfer.TimeMax );
-int                 mingap          = StringToInteger ( transfer.Gap );
-
-                                        // general checks on limits
-Clipped ( timemin, timemax, 0, (int) EEGDoc->GetNumTimeFrames() - 1 );
-
-
-                                        // select which tracks to scan
-TSelection          elsel ( EEGDoc->GetTotalElectrodes (), OrderSorted );
-elsel.Reset ();
-int                 numsel          = 0;
-
-
-TTracks<float>      eegb;
-
-TTracks<float>      templb;
-int                 templw;             // full width
-int                 templorg;           // offset to origin
-int                 templtail;          // remaining part from origin (included)
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-if ( scantemplate ) {
-
-    char               *toc;
-    int                 numeltempl      = 0;
-
-    toc = transfer.ScanTemplateFile;
-
-    if ( ! ReadFromHeader ( toc, ReadNumElectrodes, &numeltempl ) ) {
-        ShowMessage ( "Can not read the number of electrodes!", toc, ShowMessageWarning );
-        return;
-        }
-
-    if ( EEGDoc->GetNumElectrodes () != numeltempl ) {
-        ShowMessage ( "Not the same number of electrodes with template file!", toc, ShowMessageWarning );
-        return;
-        }
-
-
-    TOpenDoc< TTracksDoc >  TemplDoc ( transfer.ScanTemplateFile, OpenDocHidden );
-
-//    if ( ! (bool) TemplDoc->UsedBy )
-//        TemplDoc->MinimizeViews ();
-
-
-    templw          = TemplDoc->GetNumTimeFrames ();
-    int gfpindex    = TemplDoc->GetGfpIndex ();
-    templb.Resize ( TemplDoc->GetTotalElectrodes (), templw );
-
-                                        // read the template
-    TemplDoc->GetTracks (   0,      templw - 1, 
-                            templb, 0, 
-                            AtomTypeUseCurrent, 
-                            ComputePseudoTracks, 
-                            numeltempl > 1 ? ReferenceAverage : ReferenceAsInFile 
-                        );
-
-
-    TemplDoc.Close ();
-
-                                        // normalize template
-    double      sumdata = 0;
-
-    for ( int e = 0; e < EEGDoc->GetNumElectrodes(); e++ )
-        for ( int templi = 0; templi < templw; templi++ )
-            sumdata += templb[ e ][ templi ] * templb[ e ][ templi ];
-
-    if ( sumdata == 0 ) {
-        ShowMessage ( "Template is empty!", "Scanning with Template", ShowMessageWarning );
-        return;
-        }
-
-    templb     /= sumdata ? sqrt ( sumdata ) : 1;
-
-                                        // find relative origin in the template
-    double      maxgfp = -1;
-
-    templorg    = 0;
-
-    for ( int templi = 0; templi < templw; templi++ )
-        if ( templb[ gfpindex ][ templi ] > maxgfp ) {
-            maxgfp   = templb[ gfpindex ][ templi ];
-            templorg = templi;
-            }
-
-
-    templtail   = templw - templorg;    // tail, including the "0" position
-
-                                        // adjust boundaries
-    timemin     -= templorg;
-    if ( timemin < 0 )
-        timemin = 0;
-
-    timemax     += templtail - 1;       // timemax already includes the "0"
-    if ( timemax >= EEGDoc->GetNumTimeFrames () )
-        timemax = EEGDoc->GetNumTimeFrames () - 1;
-
-    if ( timemax - timemin + 1 < templw ) {
-        ShowMessage ( "The time interval selected is too small compared to the Template!", "Scanning with Template", ShowMessageWarning );
-        return;
-        }
-    }
-
-else { // ! scantemplate
-
-    elsel.Set ( transfer.Channels, GetElectrodesNames () );
-
-    numsel  = elsel.NumSet();
-    if ( numsel == 0 )
-        return;
-    }
-
-                                        // for the sake of speed, use a big buffer to load everyting we need at once!
-eegb.Resize ( EEGDoc->GetTotalElectrodes(), ( timemax - timemin + 1 ) );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool            onemarker       = CheckToBool ( transfer.OneMarkerPerTrack );
-bool            mergemarkers    = CheckToBool ( transfer.MergeMarkers ) && ! scantemplate;
-int             mergerange      = mergemarkers ? StringToInteger ( transfer.MergeMarkersRange ) : 0;
-
-bool            prefixmarker    = CheckToBool ( transfer.PrefixMarker       );
-bool            trackname       = CheckToBool ( transfer.TrackName          ) && onemarker;
-bool            trackvalue      = CheckToBool ( transfer.TrackValue         ) && onemarker;
-bool            relativeindex   = CheckToBool ( transfer.TrackRelativeIndex );
-bool            mergedcount     = CheckToBool ( transfer.MergedCount        ) && mergemarkers;
-
-MarkerCode      markercode;
-char            markertext  [ 256 ];
-char            prefix      [ 256 ];
-TFileName       templatename;
-
-
-if ( scantemplate && trackname ) {
-    StringCopy  ( templatename, transfer.ScanTemplateFile );
-    GetFilename ( templatename );
-    }
-else
-    ClearString ( templatename );
-
-
-StringCopy ( prefix, prefixmarker ? transfer.PrefixMarkerString : "" );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TSuperGauge         Gauge ( "Scanning Markers", timemax - timemin );
-
-                                        // prevent closing the original file, and the app !!
-EEGDoc->PreventClosing ();
-
-
-ShowTags    = true;
-
-ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
-                                        // first scan can generate temp markers
-SetMarkerType ( CombineFlags ( MarkerTypeMarker, MarkerTypeTemp ) );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-if ( scanstability || scanthreshold || scanextrema ) {
-
-    bool            update;
-    int             minstable       = StringToInteger ( transfer.StabMin );
-    int             maxstable       = StringToInteger ( transfer.StabMax );
-
-    Clipped ( minstable, maxstable, 1, timemax - timemin + 1 );
-
-
-    bool            abovethresh     = CheckToBool    ( transfer.ThresholdAbove ) && scanthreshold;
-    double          threshabove     = StringToDouble ( transfer.ThresholdAboveValue );
-    bool            belowthresh     = CheckToBool    ( transfer.ThresholdBelow ) && scanthreshold;
-    double          threshbelow     = StringToDouble ( transfer.ThresholdBelowValue );
-    int             besttf;
-    bool            duration;
-    bool            timing;
-    bool            condition;
-
-
-    bool            scanmin         = CheckToBool    ( transfer.ScanMin ) && scanextrema;
-    bool            scanmax         = CheckToBool    ( transfer.ScanMax ) && scanextrema;
-    double          delta1;
-    double          delta2;
-    int             dsd;
-
-
-                                        // store info for each channel
-    enum            {
-                    value2      =   0,  // value before -2
-                    value1,             // value before -1
-                    value,
-                    onset,
-                    count,
-                    nextonset,
-                    numscanvar
-                    };
-
-    TArray2<float>  chan ( EEGDoc->GetTotalElectrodes(), numscanvar );
-
-                                        // get the whole data at once, already filtered
-    EEGDoc->GetTracks   (   timemin,    timemax, 
-                            eegb,       0, 
-                            AtomTypeUseCurrent, 
-                            ComputePseudoTracks, 
-                            ReferenceUsingCurrent 
-                        );
-
-                                        // reset counters
-    for ( TIteratorSelectedForward eli ( elsel ); (bool) eli; ++eli ) {
-
-        chan[ eli() ][ value2    ]  =  0;
-        chan[ eli() ][ value1    ]  =  0;
-        chan[ eli() ][ value     ]  =  eegb[ eli() ][ 0 ];
-        chan[ eli() ][ onset     ]  = -1;
-        chan[ eli() ][ count     ]  =  0;
-        chan[ eli() ][ nextonset ]  = -1;
-        }
-
-
-    for ( int tf = timemin, tfi = 0; tf <= timemax && ! VkEscape (); tf++, tfi++ ) {
-
-        Gauge.Next ();
-
-
-        int         binarycode      = 1;
-
-        for ( TIteratorSelectedForward eli ( elsel ); (bool) eli; ++eli, binarycode <<= 1 ) {
-
-            int     i               = eli();
-
-                                        // compute the condition
-            update      = scanstability &&                                   eegb[ i ][ tfi ] == chan[ i ][ value ]
-                       || scanthreshold && ( ! abovethresh || abovethresh && eegb[ i ][ tfi ] >= threshabove )
-                                        && ( ! belowthresh || belowthresh && eegb[ i ][ tfi ] <= threshbelow );
-
-            if ( update ) {
-                                        // store duration informations, if needed
-
-                                        // push previous values
-                chan[ i ][ value2 ] = chan[ i ][ value1 ];
-                chan[ i ][ value1 ] = chan[ i ][ value  ];
-                                        // store current value
-                chan[ i ][ value ]  = eegb[ i ][ tfi ];
-                                        // increment counter
-                chan[ i ][ count ]++;
-                                        // TF of first occurence
-                if ( chan[ i ][ onset ] < 0 )
-                    chan[ i ][ onset ] = scanstability && tf > timemin ? tf - 1 : tf;
-                }
-
-                                        // condition not OK, or leaving an OK condition, or last TF (finishing the job), or not concerned by duration
-            if ( ! update || tf == timemax ) {
-
-                           // no duration for Min / Max
-                duration    = scanextrema || chan[ i ][ count ] >= minstable && chan[ i ][ count ] <= maxstable;
-
-
-                if      ( scanstability )   condition   = (bool) chan[ i ][ value ];    // stability for non-null values
-
-                else if ( scanthreshold )   condition   = ( ! abovethresh || abovethresh && chan[ i ][ value ] >= threshabove )
-                                                       && ( ! belowthresh || belowthresh && chan[ i ][ value ] <= threshbelow );
-
-                else if ( scanextrema && tf - timemin > 2  ) {
-                                        // actually, 1 TF too late here, but doesn't harm, except when scanning very small intervals (like 4 TF)
-
-                                        // problem if there is a plateau somewhere (rare case)
-                    delta1      = chan[ i ][ value1 ] - chan[ i ][ value2 ];
-                    delta2      = chan[ i ][ value  ] - chan[ i ][ value1 ];
-
-                    delta1      = delta1 > 0 ? 1 : delta1 < 0 ? -1 : 0;
-                    delta2      = delta2 > 0 ? 1 : delta2 < 0 ? -1 : 0;
-                                        // "laplacian of signs"
-                    dsd         = delta2 - delta1;
-
-                    condition   = scanmax && dsd == -2 || scanmin && dsd ==  2;
-
-                    if ( condition ) {  // we never entered the previous "if", so we are late of 1 TF, so update these fields now
-                        chan[ i ][ onset ] = tf - 2;                // onset is there
-                        }
-                    }
-                else                        condition   = false;
-
-
-                timing      = chan[ i ][ onset ] > ( chan[ i ][ nextonset ] - ( scanextrema ? 1 : 0 ) );
-
-
-                if ( duration && timing && condition ) {
-
-                                        // default position is the onset
-                    besttf = chan[ i ][ onset ];
-
-
-                    if ( smartslope ) { // adjust the tf to the highest slope, either before or after
-
-                                        // we need to know which test it is
-                        bool    isitdown        = belowthresh && chan[ i ][ value ] <= threshbelow;
-                                        // clip index to safe range
-                        int     besttfi         = Clip ( besttf - timemin, 1, timemax - timemin - 1 );
-                                        // slope at current best tf
-                        double  delta0          = ( isitdown ? -1 : 1 ) * ( eegb[ i ][ besttfi + 1 ] - eegb[ i ][ besttfi - 1 ] );
-
-
-                                        // scan after
-                        int     besttfup        = besttf;
-                        double  bestdeltaup     = 0;
-
-                        delta1      = delta0;
-
-                        for ( int tf2i = besttfi, tf2 = timemin + tf2i; tf2 <= timemax - 1; tf2i++, tf2++ ) {
-
-                            delta2  = ( isitdown ? -1 : 1 ) * ( eegb[ i ][ tf2i + 1 ] - eegb[ i ][ tf2i - 1 ] );
-
-//                            DBGV3 ( tf2, delta1, delta2, "UP: tf2, delta1, delta2" );
-
-                            if ( delta2 >= delta1 ) {
-                                bestdeltaup     = delta2;
-                                besttfup        = tf2;
-                                delta1          = delta2;
-                                }
-                            else
-                                break;
-                            }
-
-                                        // scan before
-                        int     besttfdown      = besttf;
-                        double  bestdeltadown   = 0;
-
-                        delta1      = delta0;
-
-                        for ( int tf2i = besttfi, tf2 = timemin + tf2i; tf2 >= timemin + 1; tf2i--, tf2-- ) {
-
-                            delta2  = ( isitdown ? -1 : 1 ) * ( eegb[ i ][ tf2i + 1 ] - eegb[ i ][ tf2i - 1 ] );
-
-//                            DBGV3 ( tf2, delta1, delta2, "DOWN: tf2, delta1, delta2" );
-
-                            if ( delta2 >= delta1 ) {
-                                bestdeltadown   = delta2;
-                                besttfdown      = tf2;
-                                delta1          = delta2;
-                                }
-                            else
-                                break;
-                            }
-
-                                        // take the one side with highest slope
-                        besttf      = besttfup == besttfdown      ? besttf
-                                    : bestdeltaup > bestdeltadown ? besttfup : besttfdown;
-
-//                        DBGV4 ( chan[ i ][ onset ], besttfup, besttfdown, besttf, "tf, besttfup, besttfdown, besttf" );
-                        } // smartslope
-
-
-
-                    markercode = (MarkerCode) binarycode;
-
-                                        // cook marker name
-                    ClearString ( markertext );
-
-                    if ( StringIsNotEmpty ( prefix ) )
-                        StringCopy ( markertext, prefix );
-
-                    if ( trackname )
-                        StringAppend ( markertext, StringIsEmpty ( markertext ) ? "" : " ", GetElectrodeName ( i ) );
-
-                    if ( trackvalue )
-                        sprintf ( StringEnd ( markertext ), "%s%g",  StringIsEmpty ( markertext ) ? "" : " ", chan[ i ][ value ] );
-
-                    if ( relativeindex )
-                        sprintf ( StringEnd ( markertext ), "%s%0d", StringIsEmpty ( markertext ) ? "" : " ", binarycode );
-
-                    if ( StringLength ( markertext ) > MarkerNameMaxLength - 1 )
-                        StringShrink ( markertext, markertext, MarkerNameMaxLength - 1 );
-
-
-                                        // everything OK, add marker
-                    EEGDoc->InsertMarker ( TMarker ( besttf, besttf,
-                                                     markercode,
-                                                     markertext,
-                                                     mergemarkers ? MarkerTypeTemp : MarkerTypeMarker ), false );
-
-                                        // set next possible onset, for this track
-                    chan[ i ][ nextonset ]  = tf + mingap - 1;
-                    } // if adding marker
-
-
-                                        // push previous values
-                chan[ i ][ value2 ] = chan[ i ][ value1 ];
-                chan[ i ][ value1 ] = chan[ i ][ value  ];
-                                        // store current value
-                chan[ i ][ value ]  = eegb[ i ][ tfi ];
-                                        // reset counter
-                chan[ i ][ count ]  = 0;
-                                        // reset TF of first occurence
-                chan[ i ][ onset ]  = -1;
-                } // current track & TF not qualified
-
-            } // for track
-
-        } // for tf
-
-    } // scanstability || scanthreshold || scanextrema
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/*
-                                        // add a Gaussian filtering, which does not realy help at the end
-#define     halfgauss   10
-#define     fullgauss   ( 2 * halfgauss + 1 )
-#define     resextr     ( halfgauss + 1 )
-
-else if ( scanextrema && timemax - timemin >= 2 * resextr ) {
-
-    double          g1, g2, g3;
-    double          gauss[ fullgauss ];
-
-
-
-    for ( int k = 1; k <= fullgauss; k++ ) {
-        gauss[ k - 1 ] = 1;
-
-        for ( int j = k - 1; j > 0; j-- )
-            gauss[ j - 1 ] += gauss[ j - 1 - 1 ];
-        }
-
-    for ( int tf = timemin + resextr; tf <= timemax - resextr; tf++ ) {
-
-        EEGDoc->GetTracks ( tf - resextr, tf + resextr, eegb, 0, &gtparams );
-
-
-            g1  = eegb[ i ][ halfgauss + 1 ] * gauss[ halfgauss ];
-            g2  = eegb[ i ][ halfgauss + 2 ] * gauss[ halfgauss ];
-            g3  = eegb[ i ][ halfgauss + 3 ] * gauss[ halfgauss ];
-
-            for ( int r = 0; r < halfgauss; r ++ ) {
-                g1  += ( eegb[ i ][ r     ] + eegb[ i ][ 2 * halfgauss - r     ] ) * gauss[ r ];
-                g2  += ( eegb[ i ][ r + 1 ] + eegb[ i ][ 2 * halfgauss - r + 1 ] ) * gauss[ r ];
-                g3  += ( eegb[ i ][ r + 2 ] + eegb[ i ][ 2 * halfgauss - r + 2 ] ) * gauss[ r ];
-                }
-
-            delta1  = g2 - g1;
-            delta2  = g3 - g2;
-*/
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-else if ( scantemplate ) {
-
-    double          sumdata;
-    double          corrdata;
-    double          thresh      = StringToDouble ( transfer.ScanTemplateThreshold ) / 100.0;
-    int             maxtf       = timemin;
-    double          maxcorr     = -DBL_MAX;
-    bool            corrabove   = false;
-    int             e;
-    int             templi;
-    int             numel       = EEGDoc->GetNumElectrodes();
-
-                                        // get the whole data at once, already filtered
-    EEGDoc->GetTracks   (   timemin,    timemax, 
-                            eegb,       0, 
-                            AtomTypeUseCurrent, 
-                            ComputePseudoTracks, 
-                            EEGDoc->GetNumElectrodes () > 1 ? ReferenceAverage : ReferenceAsInFile 
-                        );
-
-                                        // tfi starts at beginning of template (not templorg)
-    for ( int tf = timemin, tfi = 0; tf <= timemax - templw + 1 && ! VkEscape (); tf++, tfi++ ) {
-
-        Gauge.Next ();
-
-                                        // a bit of screen refreshing, tamplate scanning is inherently slower, it is nice to animate something!
-        if ( Truncate ( ( tfi * 4.0 ) / ( timemax - timemin ) ) != Truncate ( ( ( tfi + 1 ) * 4.0 ) / ( timemax - timemin ) ) ) {
-            Invalidate ( false );
-//          ShowNow ();
-//          UpdateApplication;
-            }
-
-                                        // compute correlation
-        corrdata = sumdata = 0;
-
-        for ( e = 0; e < numel; e++ )
-            for ( templi = 0; templi < templw; templi++ ) {
-                corrdata += eegb[ e ][ tfi + templi ] * templb[ e ][       templi ];
-                sumdata  += eegb[ e ][ tfi + templi ] * eegb  [ e ][ tfi + templi ];
-                }
-
-        corrdata   /= sumdata ? sqrt ( sumdata ) : 1;
-
-
-        if ( corrdata < thresh ) {
-
-            if ( corrabove ) {          // a previous found?
-
-                markercode     = (MarkerCode) Round ( maxcorr * 100 );
-
-                                        // cook marker name
-                ClearString ( markertext );
-
-                if ( StringIsNotEmpty ( prefix ) )
-                    StringCopy ( markertext, prefix );
-
-                if ( trackname )        // replace track name by template file name
-                    StringAppend ( markertext, StringIsEmpty ( markertext ) ? "" : " ", templatename );
-
-                if ( trackvalue )       // replace track value by correlation value
-                    sprintf ( StringEnd ( markertext ), "%s%0d", StringIsEmpty ( markertext ) ? "" : " ", Round ( maxcorr * 100 ) );
-
-                if ( StringLength ( markertext ) > MarkerNameMaxLength - 1 )
-                    StringShrink ( markertext, markertext, MarkerNameMaxLength - 1 );
-
-
-                                        // everything OK, add marker
-                EEGDoc->InsertMarker ( TMarker ( maxtf + templorg, maxtf + templorg, markercode, markertext, MarkerTypeMarker ), false );
-
-                                        // jump (update the 2 indexes)
-                tf          = max ( maxtf           + mingap - 1, tf  );
-                tfi         = max ( maxtf - timemin + mingap - 1, tfi );
-
-                maxtf       = tf;
-                maxcorr     = -DBL_MAX;
-                corrabove   = false;
-                }
-
-            continue;
-            }
-
-
-        corrabove = true;               // ok, we found at least something
-
-        if ( corrdata > maxcorr ) {     // but keep only the best
-            maxtf   = tf;
-            maxcorr = corrdata;
-            }
-
-        } // for tf
-
-    } // scantemplate
-
-
-Gauge.HappyEnd ();
-
-
-SetMarkerType ( MarkerTypeMarker );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // post processing
-if ( mergemarkers ) {
-
-    const MarkersList&  markers         = EEGDoc->GetMarkersList ();
-    TMarker             marker;
-    int                 numtemp         = EEGDoc->GetNumMarkers ( MarkerTypeTemp );
-    TMarker*            tempmarkers     = new TMarker[ numtemp ];
-    double              position;
-
-                                        // copy temp markers to temp list
-    for ( int i = 0, markeri = 0; i < markers.Num (); i++ )
-
-        if ( IsFlag ( markers[ i ]->Type, MarkerTypeTemp ) )
-
-            tempmarkers[ markeri++ ] = *(markers[ i ]);
-
-                                        // delete temp markers from main list
-    EEGDoc->RemoveMarkers ( MarkerTypeTemp, false );
-
-
-    int                 markeri2;
-                                        // scan temp list for overlaps
-    for ( int markeri = 0; markeri < numtemp; markeri++ ) {
-
-                                        // go beyond limit, to avoid missing the last marker
-        for ( markeri2 = markeri; markeri2 <= numtemp; markeri2++ ) {
-
-                                        // test only From, we know there is no extent
-            if ( markeri2 < numtemp && abs ( tempmarkers[ markeri2 ].From - tempmarkers[ markeri ].From ) <= mergerange )
-                continue;
-
-                                        // scan the range of markers
-            markercode      = 0;
-            position        = 0;
-
-            for ( int markeri3 = markeri; markeri3 < markeri2; markeri3++ ) {
-
-                position    += tempmarkers[ markeri3 ].From;
-
-                if ( mergedcount )
-                    markercode++;          // either count
-                else                    // or do a binary combination
-                    markercode |= tempmarkers[ markeri3 ].Code;
-                }
-
-            position        /= markeri2 - markeri;
-
-
-                                        // cook marker name
-            ClearString ( markertext );
-
-            if ( StringIsNotEmpty ( prefix ) )
-                StringCopy ( markertext, prefix );
-
-            if ( relativeindex || mergedcount )
-                sprintf ( StringEnd ( markertext ), "%s%0d", StringIsEmpty ( markertext ) ? "" : " ", markercode );
-
-            if ( StringLength ( markertext ) > MarkerNameMaxLength - 1 )
-                StringShrink ( markertext, markertext, MarkerNameMaxLength - 1 );
-
-
-                                        // update all these fields
-            tempmarkers[ markeri ].From   =
-            tempmarkers[ markeri ].To     = position;
-            tempmarkers[ markeri ].Type   = MarkerTypeMarker;
-            tempmarkers[ markeri ].Code   = markercode;
-            StringCopy ( tempmarkers[ markeri ].Name, markertext );
-
-                                        // OK to add it
-            EEGDoc->InsertMarker ( tempmarkers[ markeri ], false );
-
-                                        // step over any merged markers
-            markeri = markeri2 - 1;
-
-
-            break;                      // the second loop
-            } // for markeri2
-
-        } // for markeri
-
-    delete[] tempmarkers;
-
-    } // mergemarkers
-
-
-EEGDoc->CommitMarkers ( true );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // show the markers
-ShowTags            = EEGDoc->GetNumMarkers ( DisplayMarkerType );
-
-ButtonGadgetSetState    ( IDB_SHOWMARKERS, ShowTags );
-
-EEGDoc->NotifyViews     ( vnReloadData, EV_VN_RELOADDATA_TRG );
-                                        // clear highlighted tracks
-Highlighted.Reset ();
-EEGDoc->NotifyDocViews  ( vnNewHighlighted, (TParam2) &Highlighted );
-
-Invalidate ( false );
-
-EEGDoc->AllowClosing ();
-}
-
-
-//----------------------------------------------------------------------------
 void    TTracksView::CmScanForBadEpochs ()
 {
 char                answer[ 256 ];
@@ -10488,7 +9788,7 @@ else if ( StringIsEmpty ( transfer.RoisDocFile ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // run the dialog, which will do everything by itself
-TExportTracksDialog ( CartoolMdiClient, IDD_EXPORTTRACKS, EEGDoc ).Execute();
+TExportTracksDialog ( CartoolMdiClient, IDD_EXPORTTRACKS, EEGDoc ).Execute ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -10757,6 +10057,67 @@ RisToCloudVectors   (
 
 if ( (int) outgof <= 10 )
     outgof.OpenFiles ();
+}
+
+
+//----------------------------------------------------------------------------
+void    TTracksView::CmScanTriggers ()
+{
+
+if ( (bool) Montage ) {
+    ShowMessage ( "Can not scan tracks while in montage mode.", ExportTracksTitle, ShowMessageWarning );
+    return;
+    }
+
+                                        // use a common transfer buffer
+TScanTriggersStruct&    transfer       = ScanTriggersTransfer;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // use a local selection
+TSelection          sel;
+
+
+if      ( (bool) Highlighted ) {
+
+    Highlighted.ToText ( transfer.Channels, GetElectrodesNames (), AuxiliaryTracksNames );
+    }
+
+else if ( (bool) SelTracks ) {
+
+    TSelection  sel ( SelTracks );
+
+    if ( EEGDoc->GetNumSelectedRegular ( sel ) )
+        EEGDoc->ClearPseudo ( sel );
+
+    sel.ToText ( transfer.Channels, GetElectrodesNames (), AuxiliaryTracksNames );
+    }
+
+else {                                  // no selection
+    StringCopy  ( transfer.Channels, "*" );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // time
+if ( TFCursor.IsSplitted () ) {
+
+    IntegerToString ( transfer.TimeMin, TFCursor.GetPosMin () );
+    IntegerToString ( transfer.TimeMax, TFCursor.GetPosMax () );
+    transfer.EndOfFile  = BoolToCheck ( false );
+    }
+else {
+
+    IntegerToString ( transfer.TimeMin, 0 );
+    IntegerToString ( transfer.TimeMax, EEGDoc->GetNumTimeFrames() - 1 );
+    transfer.EndOfFile  = BoolToCheck ( true  );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // run the dialog, which will do everything by itself
+TScanTriggersDialog ( this, IDD_SCANMARKERS, EEGDoc ).Execute ();
+
 }
 
 
