@@ -38,7 +38,7 @@ enum                SpatialFilterType;
                                         // absolute min frequency allowed in Cartool (doubt it makes any sense)
 constexpr double    EegFilterMinFrequency           = 0.001;
                                         // default high pass value to suggest in dialogs
-constexpr double    EegFilterDefaultMinFrequency    = 0.1;
+constexpr double    EegFilterDefaultMinFrequency    = 1.0; // was: 0.1;
 
                                         
 constexpr int       EegMaxFilterSide                = ( 10 * 5000 ) / 2;    // margin needed for the lowest freq of 0.1Hz, with max sampling rate of 5000Hz
