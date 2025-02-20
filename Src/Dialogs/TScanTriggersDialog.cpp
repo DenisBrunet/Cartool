@@ -715,7 +715,6 @@ bool            trackvalue      = CheckToBool ( transfer->TrackValue         ) &
 bool            relativeindex   = CheckToBool ( transfer->TrackRelativeIndex );
 bool            mergedcount     = CheckToBool ( transfer->MergedCount        ) && mergemarkers;
 
-MarkerCode      markercode;
 char            markertext  [ 256 ];
 char            prefix      [ 256 ];
 TFileName       templatename;
@@ -740,18 +739,10 @@ TSuperGauge         Gauge ( ScanningTriggersTitle, timemax - timemin );
 EEGDoc->PreventClosing ();
 
 
-TTracksView*        eegview         = dynamic_cast<TTracksView*> ( EEGDoc->GetViewList () );
-
-if ( eegview ) {
-
-    //eegview->ShowTags    = true;
-    //eegview->ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
-                                            // first scan can generate temp markers
-    eegview->SetMarkerType ( CombineFlags ( MarkerTypeMarker, MarkerTypeTemp ) );
-    }
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+MarkersList         newmarkers;
+
 
 if ( scanstability || scanthreshold || scanextrema ) {
 
@@ -814,7 +805,7 @@ if ( scanstability || scanthreshold || scanextrema ) {
         }
 
 
-    for ( int tf = timemin, tfi = 0; tf <= timemax && ! VkEscape (); tf++, tfi++ ) {
+    for ( int tf = timemin, tfi = 0; tf <= timemax; tf++, tfi++ ) {
 
         Gauge.Next ();
 
@@ -948,7 +939,7 @@ if ( scanstability || scanthreshold || scanextrema ) {
 
 
 
-                    markercode = (MarkerCode) binarycode;
+                    MarkerCode  markercode = (MarkerCode) binarycode;
 
                                         // cook marker name
                     ClearString ( markertext );
@@ -970,10 +961,10 @@ if ( scanstability || scanthreshold || scanextrema ) {
 
 
                                         // everything OK, add marker
-                    EEGDoc->AppendMarker ( TMarker ( besttf, besttf,
-                                                     markercode,
-                                                     markertext,
-                                                     mergemarkers ? MarkerTypeTemp : MarkerTypeMarker ), false );
+                    newmarkers.Append ( new TMarker (   besttf, besttf,
+                                                        markercode,
+                                                        markertext,
+                                                        mergemarkers ? MarkerTypeTemp : MarkerTypeMarker ) );
 
                                         // set next possible onset, for this track
                     chan[ i ][ nextonset ]  = tf + mingap - 1;
@@ -1050,7 +1041,7 @@ else if ( scantemplate ) {
 
             if ( corrabove ) {          // a previous found?
 
-                markercode     = (MarkerCode) Round ( maxcorr * 100 );
+                MarkerCode  markercode     = (MarkerCode) Round ( maxcorr * 100 );
 
                                         // cook marker name
                 ClearString ( markertext );
@@ -1069,7 +1060,7 @@ else if ( scantemplate ) {
 
 
                                         // everything OK, add marker
-                EEGDoc->AppendMarker ( TMarker ( maxtf + templorg, maxtf + templorg, markercode, markertext, MarkerTypeMarker ), false );
+                newmarkers.Append ( new TMarker ( maxtf + templorg, maxtf + templorg, markercode, markertext, MarkerTypeMarker ) );
 
                                         // jump (update the 2 indexes)
                 tf          = max ( maxtf           + mingap - 1, tf  );
@@ -1095,38 +1086,14 @@ else if ( scantemplate ) {
 
     } // scantemplate
 
-                                        // Using AppendMarker does not enforce a sorted list, so do it now
-EEGDoc->SortMarkers ();
-
-
-Gauge.HappyEnd ();
-
-
-if ( eegview )
-
-    eegview->SetMarkerType ( MarkerTypeMarker );
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // post-processing
 if ( mergemarkers ) {
+                                        // newmarkers list was not forced sort, but it should actually BE sorted
+    MarkersList         mergedmarkers;
 
-    const MarkersList&  markers         = EEGDoc->GetMarkersList ();
-    TMarker             marker;
-    int                 numtemp         = EEGDoc->GetNumMarkers ( MarkerTypeTemp );
-    vector<TMarker>     tempmarkers ( numtemp );
-    double              position;
-
-                                        // copy temp markers to temp list
-    for ( int i = 0, markeri = 0; i < markers.Num (); i++ )
-
-        if ( IsFlag ( markers[ i ]->Type, MarkerTypeTemp ) )
-
-            tempmarkers[ markeri++ ] = *(markers[ i ]);
-
-                                        // delete temp markers from main list
-    EEGDoc->RemoveMarkers ( MarkerTypeTemp, false );
-
+    int                 numtemp         = newmarkers.Num ();
 
     int                 markeri2;
                                         // scan temp list for overlaps
@@ -1136,21 +1103,21 @@ if ( mergemarkers ) {
         for ( markeri2 = markeri; markeri2 <= numtemp; markeri2++ ) {
 
                                         // test only From, we know there is no extent
-            if ( markeri2 < numtemp && abs ( tempmarkers[ markeri2 ].From - tempmarkers[ markeri ].From ) <= mergerange )
+            if ( markeri2 < numtemp && abs ( newmarkers[ markeri2 ]->From - newmarkers[ markeri ]->From ) <= mergerange )
                 continue;
 
                                         // scan the range of markers
-            markercode      = 0;
-            position        = 0;
+            MarkerCode  markercode      = 0;
+            double      position        = 0;
 
             for ( int markeri3 = markeri; markeri3 < markeri2; markeri3++ ) {
 
-                position    += tempmarkers[ markeri3 ].From;
+                position    += newmarkers[ markeri3 ]->From;
 
                 if ( mergedcount )
                     markercode++;          // either count
                 else                    // or do a binary combination
-                    markercode |= tempmarkers[ markeri3 ].Code;
+                    markercode |= newmarkers[ markeri3 ]->Code;
                 }
 
             position        /= markeri2 - markeri;
@@ -1168,16 +1135,8 @@ if ( mergemarkers ) {
             if ( StringLength ( markertext ) > MarkerNameMaxLength - 1 )
                 StringShrink ( markertext, markertext, MarkerNameMaxLength - 1 );
 
-
-                                        // update all these fields
-            tempmarkers[ markeri ].From   = position;
-            tempmarkers[ markeri ].To     = position;
-            tempmarkers[ markeri ].Type   = MarkerTypeMarker;
-            tempmarkers[ markeri ].Code   = markercode;
-            StringCopy ( tempmarkers[ markeri ].Name, markertext );
-
-                                        // OK to add it
-            EEGDoc->AppendMarker ( tempmarkers[ markeri ], false );
+                                        // OK to add
+            mergedmarkers.Append ( new TMarker ( position, position, markercode, markertext, MarkerTypeMarker ) );
 
                                         // step over any merged markers
             markeri = markeri2 - 1;
@@ -1188,22 +1147,35 @@ if ( mergemarkers ) {
 
         } // for markeri
 
-
-    EEGDoc->SortMarkers ();
-
+    EEGDoc->AppendMarkers   ( mergedmarkers );
     } // mergemarkers
+
+else {
+
+    EEGDoc->AppendMarkers   ( newmarkers    );
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Save to file!
+                                        // Sort and clean-up
+EEGDoc->SortAndCleanMarkers ();
+
+                                        // Time to save to file!
 EEGDoc->CommitMarkers ( true );
+
+
+Gauge.HappyEnd ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // show the markers
+TTracksView*        eegview         = dynamic_cast<TTracksView*> ( EEGDoc->GetViewList () );
+
+
 //if ( eegview ) {
     //ShowTags            = EEGDoc->GetNumMarkers ( DisplayMarkerType );
     //ButtonGadgetSetState    ( IDB_SHOWMARKERS, ShowTags );
+    //eegview->SetMarkerType ( MarkerTypeMarker );
     //}
 
 EEGDoc->NotifyViews     ( vnReloadData, EV_VN_RELOADDATA_TRG );
@@ -1218,7 +1190,7 @@ if ( eegview )
 EEGDoc->AllowClosing ();
 
 
-CartoolApplication->SetMainTitle ( "Scanned Markers", EEGDoc->GetDocPath () );
+CartoolApplication->SetMainTitle ( ScanningTriggersTitle, EEGDoc->GetDocPath () );
 
 UpdateApplication;
 }
