@@ -862,7 +862,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
         writingepochslist   = goodepochslist;
 
                                         // let's be consistent and writing in the same order as the input
-        writingepochslist.Sort ();
+        writingepochslist.SortMarkers ();
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

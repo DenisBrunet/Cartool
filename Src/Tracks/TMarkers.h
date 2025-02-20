@@ -194,25 +194,33 @@ public:
     long            GetLongestMarker    ( MarkerType type = AllMarkerTypes )  const;
     long            GetMarkersTotalLength(MarkerType type = AllMarkerTypes )  const;
 
-
+                                                                                                        // Sorting is enforced
+    void            SetMarkers          ( const TMarkers& markers );
+    void            SetMarkers          ( const MarkersList& markerslist );
+    void            SetMarkers          ( const char* file );
+                                                                                                        // Sorting is not enforced
     void            AppendMarker        ( const TMarker& marker, bool commit = true );
+    void            AppendMarkers       ( const TMarkers& markers );
+    void            AppendMarkers       ( const MarkersList& markerslist );
+    void            AppendMarkers       ( const char* file );
+                                                                                                        // Sorting is enforced
     int             InsertMarker        ( const TMarker& marker, bool commit = true, int indexfrom = 0 );
     void            InsertMarkers       ( const char* file, bool commit = true );
     void            InsertMarkers       ( const TMarkers& markers, const char *filteredwith = "*" );    // copy from another marker list while also filtering
     void            InsertMarkers       ( const MarkersList& markerslist );
 
-    void            RemoveMarkers       ( long from, long to, MarkerType type, bool commit );             // removes markers fully included into time interval
-    void            RemoveMarkers       ( MarkerType type, bool commit );                                 // removes markers of given type
-    void            RemoveMarkers       ( const char* greppedwith, MarkerType type, bool commit );        // removes grepped markers
-    void            RemoveMarkers       ( const TMarkers& removelist, MarkerType type, bool commit );     // remove every parts from the list
+    void            RemoveMarkers       ( long from, long to, MarkerType type, bool commit );           // removes markers fully included into time interval
+    void            RemoveMarkers       ( MarkerType type, bool commit );                               // removes markers of given type
+    void            RemoveMarkers       ( const char* greppedwith, MarkerType type, bool commit );      // removes grepped markers
+    void            RemoveMarkers       ( const TMarkers& removelist, MarkerType type, bool commit );   // remove every parts from the list
 
-    void            ClipMarkers         ( long from, long to, MarkerType type, bool commit );             // punching markers with time interval
-    void            ClipMarkers         ( const TMarkers& cliplist, MarkerType type, bool commit );       // punching markers with the given marker list
+    void            ClipMarkers         ( long from, long to, MarkerType type, bool commit );           // punching markers with time interval
+    void            ClipMarkers         ( const TMarkers& cliplist, MarkerType type, bool commit );     // punching markers with the given marker list
 
     void            KeepMarkers         ( long from, long to, MarkerType type, bool commit );
     void            KeepMarkers         ( const char* greppedwith, bool commit );
 
-    void            Sort                ();
+    void            SortMarkers         ();
 
 
     void            EpochsToMarkers         ( EpochsType epochs, const TStrings* epochfrom, const TStrings* epochto, long mintf, long maxtf, long periodiclength );   // will not include non-overlapping epochs
@@ -236,8 +244,8 @@ public:
     bool            CompactConsecutiveMarkers   ( bool identicalnames, long mergedmaxlength = Highest<long> (), bool commit = true );
 
 
-    MarkersList&        GetMarkersList      ()              { return Markers; }
     const MarkersList&  GetMarkersList      ()  const       { return Markers; }
+          MarkersList&  GetMarkersList      ()              { return Markers; }
     bool            TimeRangeToIndexes      ( MarkerType type, long timemin, long timemax, int &indexmin, int &indexmax );
 
 

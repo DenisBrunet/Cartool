@@ -970,7 +970,7 @@ if ( scanstability || scanthreshold || scanextrema ) {
 
 
                                         // everything OK, add marker
-                    EEGDoc->InsertMarker ( TMarker ( besttf, besttf,
+                    EEGDoc->AppendMarker ( TMarker ( besttf, besttf,
                                                      markercode,
                                                      markertext,
                                                      mergemarkers ? MarkerTypeTemp : MarkerTypeMarker ), false );
@@ -1069,7 +1069,7 @@ else if ( scantemplate ) {
 
 
                                         // everything OK, add marker
-                EEGDoc->InsertMarker ( TMarker ( maxtf + templorg, maxtf + templorg, markercode, markertext, MarkerTypeMarker ), false );
+                EEGDoc->AppendMarker ( TMarker ( maxtf + templorg, maxtf + templorg, markercode, markertext, MarkerTypeMarker ), false );
 
                                         // jump (update the 2 indexes)
                 tf          = max ( maxtf           + mingap - 1, tf  );
@@ -1094,6 +1094,9 @@ else if ( scantemplate ) {
         } // for tf
 
     } // scantemplate
+
+                                        // Using AppendMarker does not enforce a sorted list, so do it now
+EEGDoc->SortMarkers ();
 
 
 Gauge.HappyEnd ();
@@ -1174,7 +1177,7 @@ if ( mergemarkers ) {
             StringCopy ( tempmarkers[ markeri ].Name, markertext );
 
                                         // OK to add it
-            EEGDoc->InsertMarker ( tempmarkers[ markeri ], false );
+            EEGDoc->AppendMarker ( tempmarkers[ markeri ], false );
 
                                         // step over any merged markers
             markeri = markeri2 - 1;
@@ -1185,9 +1188,14 @@ if ( mergemarkers ) {
 
         } // for markeri
 
+
+    EEGDoc->SortMarkers ();
+
     } // mergemarkers
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Save to file!
 EEGDoc->CommitMarkers ( true );
 
 

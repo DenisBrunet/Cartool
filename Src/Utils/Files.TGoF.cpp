@@ -2288,7 +2288,7 @@ for ( int rsi = 0; rsi < numresamples; rsi++ ) {
                                         // let's be consistent and writing in the same order as the input
     for ( int fi = 0; fi < numfiles; fi++ ) {
 
-        writingepochslist[ fi ].Sort ();
+        writingepochslist[ fi ].SortMarkers ();
                                         // does it help?        
 //      writingepochslist[ fi ].CompactConsecutiveMarkers ( false, 1000 /*MAXLONG*/, false ) ) {
         }
