@@ -527,8 +527,8 @@ else {
     AppendMarkers   ( MarkersFileName );
     }
 
-                                        // sort the whole thing
-SortMarkers ();
+                                        // check & sort the whole list
+SortAndCleanMarkers ();
 
                                         // we just read things from a file(s), nothing new here!
 MarkersDirty    = false;
@@ -715,15 +715,31 @@ return  false;
 
 
 //----------------------------------------------------------------------------
+                                        // Try to avoid calling this method, which can be quite slow for a big amount of markers
 bool    TMarkers::HasMarker ( const TMarker& marker )
 {
 for ( int i = 0; i < (int) Markers; i++ )
 
-    if ( *Markers[ i ] == marker )             // tests for content, NOT for pointers!
+    if ( *Markers[ i ] == marker )      // tests for content, NOT for pointers!
 
         return  true;
 
 return  false;
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Force sort the content - Output will therefore also be sorted
+void    TMarkers::SortAndCleanMarkers ()
+{
+SortMarkers ();
+
+
+for ( int i = 0; i < (int) Markers - 1; i++ )
+
+    if ( *Markers[ i ] == *Markers[ i + 1 ] )
+
+        Markers.Remove ( Markers[ i + 1 ] );
 }
 
 
@@ -747,7 +763,7 @@ ResetMarkers    ();
 
 AppendMarkers   ( markers );
 
-SortMarkers     ();
+SortAndCleanMarkers ();
 }
 
 
@@ -758,7 +774,7 @@ ResetMarkers    ();
 
 AppendMarkers   ( markerslist );
 
-SortMarkers     ();
+SortAndCleanMarkers ();
 }
 
 
@@ -769,38 +785,28 @@ ResetMarkers    ();
 
 AppendMarkers   ( file );
 
-SortMarkers     ();
+SortAndCleanMarkers ();
 }
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::AppendMarker ( const TMarker& marker, bool commit )
+void    TMarkers::AppendMarker ( const TMarker& marker )
 {
 if ( TracksDoc && marker.IsNotOverlappingInterval ( (long) 0, TracksDoc->GetNumTimeFrames () - 1 ) )
     return;
 
-
-if ( HasMarker ( marker ) )
-    return;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // make a new marker, and clip its length
+                                        // clone marker + clip its length
 TMarker*            markerc         = new TMarker ( marker );
 
-if ( TracksDoc )  Clipped ( markerc->From, markerc->To, (long) 0, TracksDoc->GetNumTimeFrames () - 1 );
+if ( TracksDoc )
+    Clipped ( markerc->From, markerc->To, (long) 0, TracksDoc->GetNumTimeFrames () - 1 );
 
                                         // just put it at the end
 Markers.Append ( markerc );
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 if ( IsFlag ( marker.Type, MarkerTypeUserCoded ) )
     MarkersDirty    = true;
-
-if ( MarkersDirty && commit )
-    CommitMarkers ( true );
 }
 
 
@@ -809,7 +815,7 @@ void    TMarkers::AppendMarkers ( const TMarkers& markers )
 {
 for ( int i = 0; i < (int) markers; i++ )
 
-    AppendMarker ( *markers[ i ], false );      // no commit here!
+    AppendMarker ( *markers[ i ] );
 }
 
 
@@ -818,7 +824,7 @@ void    TMarkers::AppendMarkers ( const MarkersList& markerslist )
 {
 for ( int i = 0; i < (int) markerslist; i++ )
 
-    AppendMarker ( *markerslist[ i ], false );  // no commit here!
+    AppendMarker ( *markerslist[ i ] );
 }
 
 
@@ -831,7 +837,7 @@ markers.ReadFile ( file );
 
 for ( int i = 0; i < (int) markers; i++ )
 
-    AppendMarker ( *markers[ i ], false );
+    AppendMarker ( *markers[ i ] );
 }
 
 
@@ -966,14 +972,14 @@ if      ( IsMagicNumber ( magic, TLBIN_MAGICNUMBER2 ) ) {
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // just append
-        AppendMarker ( marker, false );
+        AppendMarker ( marker );
         }
 
     } // TLBIN_MAGICNUMBER2
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // finally sort new list
-SortMarkers ();
+                                        // check & sort the whole list
+SortAndCleanMarkers ();
 }
 
 
@@ -984,8 +990,6 @@ void    TMarkers::InsertMarkers ( const char* file, bool commit )
 TMarkers            markers;
                                         // list from file is sorted here
 markers.ReadFile ( file );
-                                        // make sure our list is sorted, too, insertion will be faster
-markers.SortMarkers ();
 
 
 int                 indexfrom       = 0;
@@ -994,6 +998,9 @@ for ( int i = 0; i < (int) markers; i++ )
                                         // insert by sorting, and don't write to file now!
                                         // provide / update last insertion index so we can insert faster an already sorted list
     indexfrom   = InsertMarker ( *markers[ i ], false, indexfrom );
+
+                                        // check & sort the whole list
+//SortAndCleanMarkers ();
 
                                         // we can prevent writing a file we just opened
 if ( MarkersDirty && commit )
@@ -1010,21 +1017,18 @@ TSplitStrings       filteredwithsplit ( filteredwith, UniqueStrings );
                                         // make sure the list is sorted, insertion will be faster
 TMarkers            markerssorted ( markers );
 
-markerssorted.SortMarkers ();
-
 
 int                 indexfrom       = 0;
 
 for ( int i = 0; i < (int) markerssorted; i++ )
 
-    if ( filteredwithsplit.Contains ( markerssorted[ i ]->Name ) ) {
-
-//      DBGV2 ( markers[ i ]->From, markers[ i ]->To, markers[ i ]->Name );
+    if ( filteredwithsplit.Contains ( markerssorted[ i ]->Name ) )
                                         // insert by sorting, and don't write to file now!
                                         // provide / update last insertion index so we can insert faster an already sorted list
         indexfrom   = InsertMarker ( *markerssorted[ i ], false, indexfrom );
-        }
 
+                                        // check & sort the whole list
+//SortAndCleanMarkers ();
 }
 
 
@@ -1036,6 +1040,9 @@ void    TMarkers::InsertMarkers ( const MarkersList& markerslist )
 for ( int i = 0; i < (int) markerslist; i++ )
 
     InsertMarker ( *markerslist[ i ], false ); // no commit here!
+
+                                        // check & sort the whole list
+//SortAndCleanMarkers ();
 }
 
 
@@ -1123,8 +1130,7 @@ else if ( epochs == EpochWholeTime ) {
     marker.From        = mintf;
     marker.To          = maxtf;
 
-//  AppendMarker ( marker, false );           // insert at the end
-    InsertMarker ( marker, false );           // insert by sorting, don't write to file now
+    AppendMarker ( marker );            // insert at the end
     } // EpochWholeTime
 
 
@@ -1158,14 +1164,13 @@ else if ( epochs == EpochsFromList ) {
         marker.To          = totf;
 
 
-        AppendMarker ( marker, false );       // insert at the end
-//      InsertMarker ( marker, false );       // insert by sorting, don't write to file now
+        AppendMarker ( marker );        // insert at the end
         } // for epoch
 
-
-    SortMarkers ();
     } // EpochsFromList
 
+                                        // check & sort the whole list
+SortAndCleanMarkers ();
 }
 
 
@@ -1216,7 +1221,7 @@ for ( long tfi1 = 0; tfi1 < numtf; tfi1++ ) {
             if ( postfixvalue )
                 StringAppend ( marker.Name, ":", FloatToString ( buff, track ( ( tfi1 + tfi2 ) / 2 ), 3 ) );    // !should scan for max value instead!
 
-            AppendMarker ( marker, false );
+            AppendMarker ( marker );
 
                                         // jump past current end
             tfi1    = tfi2;
@@ -1226,9 +1231,10 @@ for ( long tfi1 = 0; tfi1 < numtf; tfi1++ ) {
         } // for tfi2
     } // for tfi1
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // finally sort new list
-SortMarkers ();
+                                        // check & sort the whole list
+SortAndCleanMarkers ();
 }
 
 
@@ -1255,8 +1261,7 @@ if ( ! ( mintf <= maxtf && steptf > 0 ) ) {
 //    marker.From        = mintf;
 //    marker.To          = maxtf;
 //
-////  AppendMarker ( marker, false );           // insert at the end
-//    InsertMarker ( marker, false );           // insert by sorting, don't write to file now
+//    AppendMarker ( marker );          // insert at the end
 
     return;
     }
@@ -1280,14 +1285,13 @@ for ( long epochmin = mintf, epochmax = epochmin + steptf - 1; epochmin <= maxtf
     marker.To          = Clip ( epochmax, mintf, maxtf );
 
 
-    AppendMarker ( marker, false );           // insert at the end
-//  InsertMarker ( marker, false );           // insert by sorting, don't write to file now
+    AppendMarker ( marker );            // insert at the end
     } // for epoch
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-SortMarkers ();
+                                        // check & sort the whole list
+SortAndCleanMarkers ();
 }
 
 
@@ -1342,15 +1346,14 @@ for ( long tf0 = 1; tf0 < NumTime - 1; tf0++ ) {
         marker.From        =
         marker.To          = mintf + tf0;
 
-        AppendMarker ( marker, false );       // insert at the end
-//      InsertMarker ( marker, false );       // insert by sorting, don't write to file now
+        AppendMarker ( marker );        // insert at the end
         }
 
     } // for tf0
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // finally sort new list
-//SortMarkers ();
+                                        // check & sort the whole list
+SortAndCleanMarkers ();
 }
 
 
@@ -1392,15 +1395,14 @@ for ( long tf = AtLeast ( (long) 1, mintf ); tf <= NoMore ( NumTimeFrames - 2, m
         marker.From        =
         marker.To          = tf;
 
-        AppendMarker ( marker, false );       // insert at the end
-//      InsertMarker ( marker, false );       // insert by sorting, don't write to file now
+        AppendMarker ( marker );        // insert at the end
         }
 
     } // for tf0
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // finally sort new list
-SortMarkers ();
+                                        // check & sort the whole list
+SortAndCleanMarkers ();
 }
 
 
@@ -1427,7 +1429,7 @@ StringCopy ( markername, StringIsEmpty ( newmarkername ) ? MarkerNameBlock : new
 if ( StringIsEmpty ( inputmarkernames ) ) {
 
     if ( flag == ExcludingMarkers )       // no excluded zones? return the whole time range
-        AppendMarker ( TMarker ( fromtf, totf, /*0, lasttimeframes,*/ 0, markername, MarkerTypeTemp ), false );
+        AppendMarker ( TMarker ( fromtf, totf, /*0, lasttimeframes,*/ 0, markername, MarkerTypeTemp ) );
 
     return;
     }
@@ -1480,7 +1482,7 @@ for ( long tf = 0 /*fromtf*/; tf <= /*lasttimeframes*/ totf; tf++ ) {
     if ( flag == KeepingMarkers   && segi != 0
       || flag == ExcludingMarkers && segi == 0 )
                                         // we can append at the end
-        AppendMarker ( TMarker ( begintf, endtf, 0, markername, MarkerTypeTemp ), false );
+        AppendMarker ( TMarker ( begintf, endtf, 0, markername, MarkerTypeTemp ) );
 
                                         // next segment will begin after current TF
     begintf     = tf + 1;
@@ -1491,12 +1493,8 @@ for ( long tf = 0 /*fromtf*/; tf <= /*lasttimeframes*/ totf; tf++ ) {
                                         // remove markers not completely within requested limits
 KeepMarkers   ( fromtf, totf, AllMarkerTypes, false );
 
-                                        // compact any touching markers together (names don't matter), but not too long either, as Coherence5 does not like it (plus it needs more memory)
-                                        // !NOT compacting anymore, it seems it highly degrade performance if the contiguous blocks are a lot!
-//CompactConsecutiveMarkers ( false, 500000, false );
-
-
-//Show ( "MarkersToTimeChunks" );
+                                        // check & sort the whole list
+SortAndCleanMarkers ();
 }
 
 
@@ -1543,9 +1541,11 @@ for ( long tf = fromtf; tf + chunksize - 1 <= totf; tf += chunksize ) {
     marker.Type    = MarkerTypeTemp;
     StringCopy ( marker.Name, MarkerNameBlock, MarkerNameMaxLength - 1 );
 
-    AppendMarker ( marker, false );
+    AppendMarker ( marker );
     }
 
+                                        // check & sort the whole list
+SortAndCleanMarkers ();
 }
 
 
@@ -1613,7 +1613,7 @@ for ( int i = 0; i < (int) oldlist; i++ ) {
 
     if ( oldlist[ i ]->Length () == 1 ) {
 
-        AppendMarker ( *oldlist[ i ], false );
+        AppendMarker ( *oldlist[ i ] );
 
         continue;
         }
@@ -1621,12 +1621,12 @@ for ( int i = 0; i < (int) oldlist; i++ ) {
                                         // slice this marker
     for ( ULONG j = 0; j < oldlist[ i ]->Length (); j++ )
 
-        AppendMarker ( TMarker ( oldlist[ i ]->From + j, oldlist[ i ]->From + j, oldlist[ i ]->Code, oldlist[ i ]->Name, oldlist[ i ]->Type ), false );
+        AppendMarker ( TMarker ( oldlist[ i ]->From + j, oldlist[ i ]->From + j, oldlist[ i ]->Code, oldlist[ i ]->Name, oldlist[ i ]->Type ) );
 
     }
 
-
-SortMarkers ();
+                                        // check & sort the whole list
+SortAndCleanMarkers ();
 }
 
 
@@ -2037,7 +2037,7 @@ for ( int i = 0; i < (int) Markers; i++ )
 //  if ( filteredwithsplit.Contains ( Markers[ i ]->Name ) )
     if ( grepmarker.Matched ( Markers[ i ]->Name ) )
 
-        markers.AppendMarker ( *Markers[ i ], false );
+        markers.AppendMarker ( *Markers[ i ] );
 
                                         // finally replace with markers
 SetMarkers ( markers );

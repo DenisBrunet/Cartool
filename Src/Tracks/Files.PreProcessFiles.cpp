@@ -800,7 +800,6 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
     int                 fromtf;
     int                 totf;
 //  TFileName           gfppeaksmrk;
-//  TMarkers            goodepochslist;
 
                                         // epochlist can be the whole time range in the simplest scenario
                                         // !force entering loop even if empty, to actually update directory & gogofout!
@@ -820,7 +819,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
         if      ( gfppeaks == NoGfpPeaksDetection )
                                         // generate a single epoch
-            goodepochslist.AppendMarker ( TMarker ( fromtf, totf, 0, MarkerNameBlock, MarkerTypeTemp ), false );
+            goodepochslist.AppendMarker ( TMarker ( fromtf, totf, 0, MarkerNameBlock, MarkerTypeTemp ) );
 
 
         else if ( gfppeaks == GfpPeaksDetectionAuto )
@@ -857,12 +856,11 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // these are the markers to be written
-
-        writingepochslist   = goodepochslist;
-
                                         // let's be consistent and writing in the same order as the input
-        writingepochslist.SortMarkers ();
+        goodepochslist.SortAndCleanMarkers ();
+
+                                        // these are the markers to be written
+        writingepochslist   = goodepochslist;
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

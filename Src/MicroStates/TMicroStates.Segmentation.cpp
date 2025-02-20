@@ -2974,7 +2974,7 @@ for ( TIteratorSelectedForward vi ( varout ); (bool) vi; ++vi )
                                         // Complimentary adding a marker to the optimal position in error file
 TMarkers            argmetacritrmk;
 
-argmetacritrmk.AppendMarker ( TMarker ( argmetacrit - 1, argmetacrit - 1, MarkerDefaultCode, InfixBestClustering, MarkerTypeMarker ), false );
+argmetacritrmk.AppendMarker ( TMarker ( argmetacrit - 1, argmetacrit - 1, MarkerDefaultCode, InfixBestClustering, MarkerTypeMarker ) );
 
 argmetacritrmk.WriteFile ( DataFileMarker );
 

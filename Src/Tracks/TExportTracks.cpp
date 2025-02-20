@@ -604,6 +604,9 @@ if ( Markers.IsEmpty ()
 
     return;
 
+                                        // By safety, we don't want identical or unsorted triggers / markers
+Markers.SortAndCleanMarkers ();
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -744,6 +747,9 @@ void    TExportTracks::WriteMarkers ()
 {
 if ( Markers.IsEmpty () || OutputTriggers == NoTriggersNoMarkers )
     return;
+
+                                        // By safety, we don't want identical or unsorted triggers / markers
+Markers.SortAndCleanMarkers ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

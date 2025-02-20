@@ -522,7 +522,7 @@ if      ( timeoptions == ExportTimeInterval ) {
     maxtimechunk    = intimenum;
 
                                         // here, we have a single interval in our list
-    timechunks.AppendMarker ( TMarker ( intimemin, intimemax, 1, "Block", MarkerTypeTemp ), false );
+    timechunks.AppendMarker ( TMarker ( intimemin, intimemax, 1, "Block", MarkerTypeTemp ) );
 
 
     if ( downsample ) {
@@ -721,12 +721,12 @@ if ( concatenateoptions == ConcatenateTime && intimenum != 0 ) {
                                         // time position is already correct for output
     expfile.Markers.AppendMarker ( TMarker (  *concatoutputtime, 
                                               StringCopy  ( buff, "Concat", IntegerToString ( batchfileindex + 1, /*3*/ NumIntegerDigits ( NumBatchFiles ) ) ), 
-                                              MarkerTypeMarker ), false );
+                                              MarkerTypeMarker ) );
 
 
     expfile.Markers.AppendMarker ( TMarker (  *concatoutputtime, 
                                               EEGDoc->GetTitle (), 
-                                              MarkerTypeMarker ), false );
+                                              MarkerTypeMarker ) );
     }
 
                                         // Averaging is not concerned with saving these markers
@@ -741,7 +741,7 @@ if ( sequenceoptions == SequenceProcessing ) {
 
                                         // !we keep the original marker type!
                                         // !we assume remaintags to be sorted!
-        expfile.Markers.AppendMarker ( marker, false );
+        expfile.Markers.AppendMarker ( marker );
         }
 
                                         // finito

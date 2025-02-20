@@ -611,7 +611,7 @@ for ( int tf = 0;         tf < numtf;     tf++ )
 
 if ( maxmetacrit > 0 ) {
 
-    argmaxmetacritrmk.AppendMarker ( TMarker ( argmaxmetacrit, argmaxmetacrit, MarkerDefaultCode, InfixBestClustering, MarkerTypeMarker ), false );
+    argmaxmetacritrmk.AppendMarker ( TMarker ( argmaxmetacrit, argmaxmetacrit, MarkerDefaultCode, InfixBestClustering, MarkerTypeMarker ) );
 
     AddExtension    ( expdata.Filename, FILEEXT_MRK );
 

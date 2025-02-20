@@ -2281,14 +2281,14 @@ for ( int rsi = 0; rsi < numresamples; rsi++ ) {
         randtf0     = mappedtf ( randindex[ i ], TFIndex   );
 
                         // assign to this file's list,   and TF within that file
-        writingepochslist[ randfile ].AppendMarker ( TMarker ( randtf0, randtf0, 0, "RandMarker" /*TagNameBlock*/, MarkerTypeTemp ), false );
+        writingepochslist[ randfile ].AppendMarker ( TMarker ( randtf0, randtf0, 0, "RandMarker" /*TagNameBlock*/, MarkerTypeTemp ) );
 
         } // for each sample
 
                                         // let's be consistent and writing in the same order as the input
     for ( int fi = 0; fi < numfiles; fi++ ) {
 
-        writingepochslist[ fi ].SortMarkers ();
+        writingepochslist[ fi ].SortAndCleanMarkers ();
                                         // does it help?        
 //      writingepochslist[ fi ].CompactConsecutiveMarkers ( false, 1000 /*MAXLONG*/, false ) ) {
         }
@@ -2978,7 +2978,7 @@ for ( int i = 0; i < (int) Strings; i++ ) {
 
         onetaglist.ResetMarkers ();
 
-        onetaglist.AppendMarker    ( oneepoch, false );
+        onetaglist.AppendMarker    ( oneepoch );
 
                                         // Epoch file name
         StringCopy          ( onefilename, Strings[ i ] );

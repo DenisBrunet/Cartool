@@ -199,7 +199,7 @@ public:
     void            SetMarkers          ( const MarkersList& markerslist );
     void            SetMarkers          ( const char* file );
                                                                                                         // Sorting is not enforced
-    void            AppendMarker        ( const TMarker& marker, bool commit = true );
+    void            AppendMarker        ( const TMarker& marker );
     void            AppendMarkers       ( const TMarkers& markers );
     void            AppendMarkers       ( const MarkersList& markerslist );
     void            AppendMarkers       ( const char* file );
@@ -221,6 +221,7 @@ public:
     void            KeepMarkers         ( const char* greppedwith, bool commit );
 
     void            SortMarkers         ();
+    void            SortAndCleanMarkers ();                                                             // Sorting and removing duplicates
 
 
     void            EpochsToMarkers         ( EpochsType epochs, const TStrings* epochfrom, const TStrings* epochto, long mintf, long maxtf, long periodiclength );   // will not include non-overlapping epochs

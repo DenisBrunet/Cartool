@@ -8671,7 +8671,7 @@ for ( int firsti = 0; firsti < oldmarkers.Num (); firsti++ ) {
 
 if ( markersdirty ) {                   // some markers added?
 
-    EEGDoc->SetMarkers      ( newmarkers ); // will sort markers
+    EEGDoc->SetMarkers      ( newmarkers ); // will sort & clean markers
 
     EEGDoc->CommitMarkers   ( true );
 
