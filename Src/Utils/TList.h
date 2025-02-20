@@ -135,6 +135,7 @@ public:
     void            SetBackward(       TList<TypeD>&    List )  { if ( (bool) List )  { P =                     List.GetLastAtom  (); Index = (int) List - 1; } else Reset (); }
     void            SetBackward( const TList<TypeD>&    List )  { if ( (bool) List )  { P = (TListAtom<TypeD>*) List.GetLastAtom  (); Index = (int) List - 1; } else Reset (); }
 
+    TListAtom<TypeD>*   Current  ()                             { return P; }
     void			Next     ()                                 { if ( P )  { P = P->Next;     Index++; } }
     void			Previous ()                                 { if ( P )  { P = P->Previous; Index--; } }
 
@@ -148,8 +149,8 @@ public:
                     operator int                ()  const       { return Index;			}
                     operator       TypeD*       ()              { return P ? P->To : 0;	}
                     operator const TypeD*       ()  const       { return P ? P->To : 0;	}
-                    operator TListAtom<TypeD>*  ()	            { return P ? P     : 0; }
-                    operator TListAtom<TypeD>*  ()	const       { return P ? P     : 0; }
+                    operator TListAtom<TypeD>*  ()	            { return P;             }
+                    operator TListAtom<TypeD>*  ()	const       { return P;             }
 
 
 protected:

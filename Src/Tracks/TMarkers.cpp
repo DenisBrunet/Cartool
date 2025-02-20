@@ -296,13 +296,12 @@ MarkersDirty        = false;
 
         TMarkers::TMarkers ( const char* file )
 {
-                                            // can set MarkersDirty, so do it beforehand
-StringCopy  ( MarkersFileName, file );
-SetMarkers  ( MarkersFileName );
-
 TracksDoc           = 0;
 MarkersFileName.Reset ();
 MarkersDirty        = false;
+                                        // !forward any error from file!
+StringCopy  ( MarkersFileName, file );
+SetMarkers  ( MarkersFileName );
 }
 
 
@@ -530,8 +529,8 @@ else {
                                         // check & sort the whole list
 SortAndCleanMarkers ();
 
-                                        // we just read things from a file(s), nothing new here!
-MarkersDirty    = false;
+                                        // !forward any error from file!
+//MarkersDirty    = false;
 
 
 return  true;
@@ -734,12 +733,29 @@ void    TMarkers::SortAndCleanMarkers ()
 {
 SortMarkers ();
 
+                                        // When playing directly within the list, DO NOT USE []
+TListIterator<TMarker>  iterator;
+bool                    listdirty       = false;
+                                                                 // next marker should exist
+for ( iterator.SetForward ( Markers ); iterator.Current () != 0 && iterator.Current ()->Next != 0; ) {
 
-for ( int i = 0; i < (int) Markers - 1; i++ )
+    if ( *iterator.Current ()->To == *iterator.Current ()->Next->To ) {
 
-    if ( *Markers[ i ] == *Markers[ i + 1 ] )
+        Markers.Remove ( iterator.Current ()->Next->To );
 
-        Markers.Remove ( Markers[ i + 1 ] );
+        listdirty   = true;
+        }
+    else 
+        iterator.Next ();
+    }
+
+
+if ( listdirty ) {
+                                        // rebuild indexes
+    Markers.UpdateIndexes ();
+                                        // !forward any error from file!
+    MarkersDirty    = true;
+    }
 }
 
 
@@ -835,9 +851,13 @@ TMarkers            markers;
 
 markers.ReadFile ( file );
 
+
 for ( int i = 0; i < (int) markers; i++ )
 
     AppendMarker ( *markers[ i ] );
+
+                                        // !forward any error from file!
+MarkersDirty    = markers.MarkersDirty;
 }
 
 
@@ -894,10 +914,8 @@ void    TMarkers::ReadFile ( const char* file )
 {
                                         // clear everything
 ResetMarkers ();
-
                                         // ResetMarkers sets the Dirty flag, so reset it
 MarkersDirty    = false;
-
 
 if ( ! CanOpenFile ( file ) )
     return;
@@ -951,16 +969,12 @@ if      ( IsMagicNumber ( magic, TLBIN_MAGICNUMBER2 ) ) {
         SkipFirstWords ( buff, buff, 2 );
 
         StringCleanup ( buff );
-
-//        ShowMessage ( buff, "remaining marker name" );
                                         // correct syntax is between 2 quotes: "ABC"
                                         // otherwise take the string as is, but it will skip spaces at each sides
 //      if ( *buff == '\"' && *LastChar ( buff, 1 ) == '\"' )
             ReplaceChars ( buff, DoubleQuote, "" );
 
         StringCopy ( marker.Name, StringIsEmpty ( buff ) ? MarkerNameDefault : buff, MarkerNameMaxLength - 1 );
-
-//        ShowMessage ( marker.Name, "marker.Name" );
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -978,6 +992,9 @@ if      ( IsMagicNumber ( magic, TLBIN_MAGICNUMBER2 ) ) {
     } // TLBIN_MAGICNUMBER2
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // AppendMarker sets the Dirty flag, so reset it
+MarkersDirty    = false;
+
                                         // check & sort the whole list
 SortAndCleanMarkers ();
 }

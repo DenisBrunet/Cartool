@@ -157,6 +157,9 @@ if ( ! IsOpen () ) {
     
     InitMarkers     ();
 
+    if ( MarkersDirty )                 // file had some inconsistencies? overwrite it
+        CommitMarkers ( true );
+
     InitLimits      ( InitFast );       // sets both min/max limits and AtomType
 
 //  InitAtomType    ();                 // currently done in InitLimits
