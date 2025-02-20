@@ -8570,73 +8570,112 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to merge exactly overlapping m
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-MarkersList&        markers         = EEGDoc->GetMarkersList ();
-TMarker*            tomarker;
-char                newname     [ 256 ];
-bool                markersdirty       = false;
-long                lastfrom        = -1;
-long                lastto          = -1;
-int                 countmerged     = 0;
+TSuperGauge     Gauge;
+
+Gauge.Set       ( "Merging Markers" );
+
+Gauge.AddPart   ( 0, EEGDoc->GetNumMarkers () );
 
 
-newname[ MarkerNameMaxLength - 1 ] = 0;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-                                        // scan all triggers
-for ( int i = 0; i < markers.Num (); i++ ) {
+const MarkersList&  oldmarkers      = EEGDoc->GetMarkersList ();
+MarkersList         newmarkers;
 
-    tomarker        = markers[ i ];
+bool                markersdirty    = false;
+char                newname     [ 10 * MarkerNameMaxLength ];
 
-    if ( ! IsFlag ( tomarker->Type, MarkerTypeUserCoded ) )
+                                        // merge accounts only for user markers types only, the other ones are copied as is, even if they mix with a series of identical markers
+for ( int firsti = 0; firsti < oldmarkers.Num (); firsti++ ) {
+
+    Gauge.SetValue ( 0, firsti );
+
+    const TMarker*  firstmarker = oldmarkers[ firsti ];
+
+                                        // not of proper type?
+    if ( ! IsFlag ( firstmarker->Type, MarkerTypeUserCoded ) ) {
+
+        newmarkers.Append ( new TMarker ( *firstmarker ) );
+
         continue;
+        }
 
-                                        // markers are sorted, so all equal positions are contiguous in the list
-    if ( tomarker->From == lastfrom && tomarker->To == lastto ) {
-                                        // same as previous
-        countmerged++;
 
-        StringAppend ( newname, " ", tomarker->Name );
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-        markersdirty   = true;
-        } // same as previous
+    int     countmerged     = 0;
+    int     countskipped    = 0;
+                                        // browse through following possible identical markers
+    for ( int nexti = firsti + 1; nexti < oldmarkers.Num (); nexti++ ) {
 
-                                          // not same as previous, or the last merge?
-    if ( ! ( tomarker->From == lastfrom && tomarker->To == lastto ) 
-         || ( i == markers.Num () - 1 && countmerged > 1 )       ) {
-                                        // do we leave a previously merging situation?
-        if ( countmerged > 1 ) {
+        const TMarker*  nextmarker  = oldmarkers[ nexti ];
 
-            if ( StringLength ( newname ) >= MarkerNameMaxLength )
-                StringShrink ( newname, newname, MarkerNameMaxLength - 1 );
+                                        // not of proper type?
+        if ( ! IsFlag ( nextmarker->Type, MarkerTypeUserCoded ) ) {
+                                        // might not be inserted at the right position, fix this with a final Sort
+            newmarkers.Append ( new TMarker ( *nextmarker ) );
 
-//            DBGM ( newname, "merging into" );
+            countskipped++;             // we need to keep track of the irrelevant ones, too
 
-                                        // rewind the exact number of steps
-            for ( int j = 0; j < countmerged; j++ )
-//                DBGM ( markers[ i - j - 1 ]->Name, "to be updated" );
-                StringCopy ( markers[ i - j - 1 ]->Name, newname );
-
+            continue;
             }
 
-                                        // new position
-        lastfrom        = tomarker->From;
-        lastto          = tomarker->To;
-        countmerged     = 1;
 
-        StringCopy ( newname, tomarker->Name );
-        } // not same as previous
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // same position and same type (by safety)?
+        if ( nextmarker->From == firstmarker->From 
+          && nextmarker->To   == firstmarker->To  
+          && nextmarker->Type == firstmarker->Type  ) {
+                                        // first merge? init with first name
+            if ( countmerged == 0 )
+                StringCopy  ( newname, firstmarker->Name );
 
-    } // for markers
+                                        // append next name
+            if ( StringIsNot ( nextmarker->Name, firstmarker->Name ) )
+                StringAppend    ( newname, " ", nextmarker->Name );
+
+                                        // counting number of successive identical markers
+            countmerged++;
+            } // identical
+        else
+
+            break; // not identical - stop the loop
+
+        } // for nexti
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // nothing merged?
+    if ( countmerged == 0 ) {
+                                        // simply copy
+        newmarkers.Append ( new TMarker ( *firstmarker ) );
+        }
+
+    else {                              // some merged
+
+        if ( StringLength ( newname ) >= MarkerNameMaxLength )
+            StringShrink ( newname, newname, MarkerNameMaxLength - 1 );
+
+        newmarkers.Append ( new TMarker ( firstmarker->From, firstmarker->To, firstmarker->Code, newname, firstmarker->Type ) );
+                                        // global flag that we actually did something
+        markersdirty   = true;
+        }
+
+                                        // skip the (possible) merged and the (possible) irrelevant markers
+    firsti         += countmerged + countskipped;
+
+    } // for firsti
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( markersdirty ) {                   // some markers added?
 
-    EEGDoc->CommitMarkers ( true );
-                                        // reloading everything will get rid of the duplicates!
-    EEGDoc->InitMarkers ();
+    EEGDoc->SetMarkers      ( newmarkers ); // will sort markers
 
-                                        // assume we want to see the results!
+    EEGDoc->CommitMarkers   ( true );
+
+                                        // assuming user wants to see the results..
     ShowTags    = true;
 
     if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
@@ -8646,6 +8685,9 @@ if ( markersdirty ) {                   // some markers added?
 
     EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
     }
+
+
+Gauge.Finished ();
 }
 
 

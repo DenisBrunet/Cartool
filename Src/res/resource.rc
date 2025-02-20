@@ -448,7 +448,7 @@ BEGIN
         MENUITEM "Replace substr&ings in marker names", CM_EEGMRKSUBSTITUTENAMES
         MENUITEM "Rege&xp marker names substitution", CM_EEGMRKREGEXPNAMES
         MENUITEM SEPARATOR
-        MENUITEM "Mer&Ge exact overlapping markers", CM_EEGMRKMERGEOVERLAPPING
+        MENUITEM "Mer&Ge exactly overlapping markers", CM_EEGMRKMERGEOVERLAPPING
         MENUITEM "Merge identical contig&Uous markers", CM_EEGMRKMERGECONTIGUOUS
         MENUITEM SEPARATOR
         MENUITEM "&Scanning tracks to generate markers", CM_SCANTRIGGERS
