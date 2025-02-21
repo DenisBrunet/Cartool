@@ -351,15 +351,15 @@ return  *this;
 
 
 //----------------------------------------------------------------------------
-bool    TMarkers::CommitMarkers ( bool force )
+void    TMarkers::CommitMarkers ( bool force )
 {
 if ( IsInMemory () ) {
     MarkersDirty    = false;
-    return true;
+    return;
     }
 
 if ( ! ( MarkersDirty || force ) )
-    return true;
+    return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -382,7 +382,7 @@ else
 
 if ( MarkersDirty && ! force )
     if ( ! GetAnswerFromUser ( "Markers have been modified, do you want to save them to file now?", ToFileName ( file ) ) )
-        return true;
+        return;
 
 
 file.CheckExtendedPath ();
@@ -402,7 +402,7 @@ else {                                  // write to file
     if ( ! os.good () ) {
         MarkersDirty    = false;        // we will lose the markers
         ShowMessage ( "Marker file can not be written to disk!" NewLine "Check if disk is full or if file is write-protected...", file, ShowMessageWarning );
-        return false;
+        return;
         }
 
     WriteMarkerHeader ( os );
@@ -420,8 +420,6 @@ else {                                  // write to file
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 MarkersDirty    = false;
-
-return  true;
 }
 
 

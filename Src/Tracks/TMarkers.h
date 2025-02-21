@@ -166,7 +166,7 @@ public:
 
 
     bool            InitMarkers         ( const char* file = 0 );   // reads both EEG triggers and .mrk file - does not commit before, nor after loading, MarkersDirty is false
-    bool            CommitMarkers       ( bool force = false );
+    void            CommitMarkers       ( bool force = false );
     virtual void    ReadNativeMarkers   ()                  {}      // to read any associated file with markers
     void            ResetMarkers        ();
 
