@@ -832,7 +832,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                         // use list given by user
             goodepochslist.InsertMarkers ( markers, listgfppeaks );
 
-            goodepochslist.KeepMarkers   ( fromtf, totf, AllMarkerTypes, false );
+            goodepochslist.KeepMarkers   ( fromtf, totf, AllMarkerTypes );
 
             } // GfpPeaksDetectionList
 
@@ -850,8 +850,8 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                         // excluding some time chunks?
         if ( badepochs != NoSkippingBadEpochs ) {
                                         // does nothing if list is empty...
-            if ( gfppeaks == NoGfpPeaksDetection )  goodepochslist.ClipMarkers   ( badepochslist, AllMarkerTypes, false );   
-            else                                    goodepochslist.RemoveMarkers ( badepochslist, AllMarkerTypes, false );   // we could simply use ClipMarkers here, too
+            if ( gfppeaks == NoGfpPeaksDetection )  goodepochslist.ClipMarkers   ( badepochslist, AllMarkerTypes );   
+            else                                    goodepochslist.RemoveMarkers ( badepochslist, AllMarkerTypes ); // we could simply use ClipMarkers here, too
             }
 
 

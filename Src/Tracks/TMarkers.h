@@ -171,12 +171,13 @@ public:
     void            ResetMarkers        ();
 
 
-    bool            IsEmpty             ()      const       { return    Markers.IsEmpty ();                        }
-    bool            IsNotEmpty          ()      const       { return    Markers.IsNotEmpty ();                     }
-    bool            IsInMemory          ()      const       { return    TracksDoc == 0 && MarkersFileName.IsEmpty ();    }
-    bool            AreMarkersDirty     ()      const       { return    MarkersDirty;                              }
+    bool            IsEmpty             ()      const       { return    Markers.IsEmpty ();                             }
+    bool            IsNotEmpty          ()      const       { return    Markers.IsNotEmpty ();                          }
+    bool            IsInMemory          ()      const       { return    TracksDoc == 0 && MarkersFileName.IsEmpty ();   }
+    bool            AreMarkersDirty     ()      const       { return    MarkersDirty;                                   }
+    void            SetMarkersDirty     ( bool dirty=true ) { MarkersDirty = dirty;                                     }
 
-    int             GetNumMarkers       ()      const       { return    Markers.Num ();                            }
+    int             GetNumMarkers       ()      const       { return    Markers.Num ();                                 }
     int             GetNumMarkers       ( MarkerType type )               const;
 
     bool            HasMarker           ( const TMarker& marker );     // !test for equivalent content, NOT pointers!
@@ -195,30 +196,30 @@ public:
     long            GetMarkersTotalLength(MarkerType type = AllMarkerTypes )  const;
 
                                                                                                         // Sorting is enforced
-    void            SetMarkers          ( const TMarkers& markers );
-    void            SetMarkers          ( const MarkersList& markerslist );
-    void            SetMarkers          ( const char* file );
+    void            SetMarkers          ( const TMarkers&       markers );
+    void            SetMarkers          ( const MarkersList&    markerslist );
+    void            SetMarkers          ( const char*           file );
                                                                                                         // Sorting is not enforced
-    void            AppendMarker        ( const TMarker& marker );
-    void            AppendMarkers       ( const TMarkers& markers );
-    void            AppendMarkers       ( const MarkersList& markerslist );
-    void            AppendMarkers       ( const char* file );
-                                                                                                        // Sorting is enforced
-    int             InsertMarker        ( const TMarker& marker, bool commit = true, int indexfrom = 0 );
-    void            InsertMarkers       ( const char* file, bool commit = true );
-    void            InsertMarkers       ( const TMarkers& markers, const char *filteredwith = "*" );    // copy from another marker list while also filtering
-    void            InsertMarkers       ( const MarkersList& markerslist );
+    void            AppendMarker        ( const TMarker&        marker );
+    void            AppendMarkers       ( const TMarkers&       markers );
+    void            AppendMarkers       ( const MarkersList&    markerslist );
+    void            AppendMarkers       ( const char*           file );
+                                                                                                        // Sorting is enforced - For a lot of insertion use  ( AppendMarker(s) + SortAndCleanMarkers )  combo
+    int             InsertMarker        ( const TMarker&        marker, int indexfrom = 0 );
+    void            InsertMarkers       ( const TMarkers&       markers, const char *filteredwith = "*" );// copy from another marker list while also filtering
+    void            InsertMarkers       ( const MarkersList&    markerslist );
+    void            InsertMarkers       ( const char*           file );
 
-    void            RemoveMarkers       ( long from, long to, MarkerType type, bool commit );           // removes markers fully included into time interval
-    void            RemoveMarkers       ( MarkerType type, bool commit );                               // removes markers of given type
-    void            RemoveMarkers       ( const char* greppedwith, MarkerType type, bool commit );      // removes grepped markers
-    void            RemoveMarkers       ( const TMarkers& removelist, MarkerType type, bool commit );   // remove every parts from the list
+    void            RemoveMarkers       ( long from, long to,           MarkerType type );              // removes markers fully included into time interval
+    void            RemoveMarkers       (                               MarkerType type );              // removes markers of given type
+    void            RemoveMarkers       ( const char* greppedwith,      MarkerType type );              // removes grepped markers
+    void            RemoveMarkers       ( const TMarkers& removelist,   MarkerType type );              // remove every parts from the list
 
-    void            ClipMarkers         ( long from, long to, MarkerType type, bool commit );           // punching markers with time interval
-    void            ClipMarkers         ( const TMarkers& cliplist, MarkerType type, bool commit );     // punching markers with the given marker list
+    void            ClipMarkers         ( long from, long to,           MarkerType type );              // punching markers with time interval
+    void            ClipMarkers         ( const TMarkers& cliplist,     MarkerType type );              // punching markers with the given marker list
 
-    void            KeepMarkers         ( long from, long to, MarkerType type, bool commit );
-    void            KeepMarkers         ( const char* greppedwith, bool commit );
+    void            KeepMarkers         ( long from, long to,           MarkerType type );
+    void            KeepMarkers         ( const char* greppedwith );
 
     void            SortMarkers         ();
     void            SortAndCleanMarkers ();                                                             // Sorting and removing duplicates
@@ -242,7 +243,7 @@ public:
     void            ConcatenateToVector     ( TArray1<long>& concattf )                const;
     void            ProjectToVector         ( TArray1<bool>& projecttf, long numtf )   const;
 
-    bool            CompactConsecutiveMarkers   ( bool identicalnames, long mergedmaxlength = Highest<long> (), bool commit = true );
+    bool            CompactConsecutiveMarkers   ( bool identicalnames, long mergedmaxlength = Highest<long> () );
 
 
     const MarkersList&  GetMarkersList      ()  const       { return Markers; }

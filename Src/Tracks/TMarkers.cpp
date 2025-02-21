@@ -870,7 +870,7 @@ MarkersDirty    = oldmarkersdirty || markers.MarkersDirty;
 
 
 //----------------------------------------------------------------------------
-int     TMarkers::InsertMarker ( const TMarker& marker, bool commit, int indexfrom )
+int     TMarkers::InsertMarker ( const TMarker& marker, int indexfrom )
 {
 if ( TracksDoc && marker.IsNotOverlappingInterval ( (long) 0, TracksDoc->GetNumTimeFrames () - 1 ) )
     return  0;
@@ -907,9 +907,6 @@ else                        Markers.Insert ( markerc, Markers[ i ] );
 
 if ( IsFlag ( marker.Type, MarkerTypeUserCoded ) )
     MarkersDirty    = true;
-
-if ( MarkersDirty && commit )
-    CommitMarkers ( true );
 
                                         // return index of inserted element
 return  i;
@@ -1010,7 +1007,7 @@ SortAndCleanMarkers ();
 
 //----------------------------------------------------------------------------
                                         // Can read non-sorted file correctly
-void    TMarkers::InsertMarkers ( const char* file, bool commit )
+void    TMarkers::InsertMarkers ( const char* file )
 {
 TMarkers            markers;
                                         // list from file is sorted here
@@ -1022,15 +1019,10 @@ int                 indexfrom       = 0;
 for ( int i = 0; i < (int) markers; i++ )
                                         // insert by sorting, and don't write to file now!
                                         // provide / update last insertion index so we can insert faster an already sorted list
-    indexfrom   = InsertMarker ( *markers[ i ], false, indexfrom );
+    indexfrom   = InsertMarker ( *markers[ i ], indexfrom );
 
                                         // check & sort the whole list
 //SortAndCleanMarkers ();
-
-                                        // we can prevent writing a file we just opened
-if ( MarkersDirty && commit )
-
-    CommitMarkers ( true );
 }
 
 
@@ -1050,7 +1042,7 @@ for ( int i = 0; i < (int) markerssorted; i++ )
     if ( filteredwithsplit.Contains ( markerssorted[ i ]->Name ) )
                                         // insert by sorting, and don't write to file now!
                                         // provide / update last insertion index so we can insert faster an already sorted list
-        indexfrom   = InsertMarker ( *markerssorted[ i ], false, indexfrom );
+        indexfrom   = InsertMarker ( *markerssorted[ i ], indexfrom );
 
                                         // check & sort the whole list
 //SortAndCleanMarkers ();
@@ -1064,7 +1056,7 @@ void    TMarkers::InsertMarkers ( const MarkersList& markerslist )
 {
 for ( int i = 0; i < (int) markerslist; i++ )
 
-    InsertMarker ( *markerslist[ i ], false ); // no commit here!
+    InsertMarker ( *markerslist[ i ] );
 
                                         // check & sort the whole list
 //SortAndCleanMarkers ();
@@ -1518,7 +1510,7 @@ for ( long tf = 0 /*fromtf*/; tf <= /*lasttimeframes*/ totf; tf++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // remove markers not completely within requested limits
-KeepMarkers   ( fromtf, totf, AllMarkerTypes, false );
+KeepMarkers   ( fromtf, totf, AllMarkerTypes );
 
                                         // check & sort the whole list
 SortAndCleanMarkers ();
@@ -1754,7 +1746,7 @@ return  maxpos;
 //----------------------------------------------------------------------------
                                         // compact joining markers, either to=from, to=from-1, from=to, from=to+1
                                         // does not test for Type, Name; does not concatenate Names either
-bool    TMarkers::CompactConsecutiveMarkers ( bool identicalnames, long mergedmaxlength, bool commit )
+bool    TMarkers::CompactConsecutiveMarkers ( bool identicalnames, long mergedmaxlength )
 {
 if ( IsEmpty () )
     return  false;
@@ -1835,10 +1827,6 @@ for ( ; (bool) remaining; ) {
     Markers.Append ( toaggregate );
     }
 
-
-if ( MarkersDirty && commit )
-    CommitMarkers ( true );
-
                                         // tell if list was touched
 return  markersdirty;
 }
@@ -1846,7 +1834,7 @@ return  markersdirty;
 
 //----------------------------------------------------------------------------
                                         // Will remove markers within given boundary
-void    TMarkers::RemoveMarkers ( long from, long to, MarkerType type, bool commit )
+void    TMarkers::RemoveMarkers ( long from, long to, MarkerType type )
 {
 KeepFlags   ( type, AllMarkerTypes );
 
@@ -1856,42 +1844,39 @@ if ( ! type )
 
 MarkersList             markersok;
 
-                                        // copy markers OK to a temp list
+                                            // copy markers OK to a temp list
 for ( int i = 0; i < (int) Markers; i++ ) {
 
     if (   IsFlag ( Markers[ i ]->Type, type )
         && IsInsideLimits ( Markers[ i ]->From, Markers[ i ]->To, from, to ) )
 
-        delete ( Markers[ i ] );           // delete object, but not pointer (yet)
+        delete ( Markers[ i ] );            // delete object, but not pointer (yet)
     else
-        markersok.Append ( Markers[ i ] );    // save pointer
+        markersok.Append ( Markers[ i ] );  // save pointer
     }
 
 
-if ( (int) markersok == (int) Markers )       // nothing to remove
+if ( (int) markersok == (int) Markers )     // nothing to remove
     return;
 
 
-if ( markersok.IsEmpty () )                // all to be erased
-    Markers.Reset ( false );               // objects are already deleted, only clear-up the pointers now
+if ( markersok.IsEmpty () )                 // all to be erased
+    Markers.Reset ( false );                // objects are already deleted, only clear-up the pointers now
 
 else {
     Markers.Reset ( false );
 
     for ( int i = 0; i < (int) markersok; i++ )
-        Markers.Append ( markersok[ i ] );    // just copy the pointer
+        Markers.Append ( markersok[ i ] );  // just copy the pointer
     }
 
 
 MarkersDirty    = true;
-
-if ( MarkersDirty && commit )
-    CommitMarkers ( true );
 }
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::RemoveMarkers ( MarkerType type, bool commit )
+void    TMarkers::RemoveMarkers ( MarkerType type )
 {
 KeepFlags   ( type, AllMarkerTypes );
 
@@ -1903,15 +1888,11 @@ if ( type == AllMarkerTypes )
     ResetMarkers ();
 
 else
-    RemoveMarkers ( Lowest<long> (), Highest<long> (), type, commit );
-
-
-if ( MarkersDirty && commit )
-    CommitMarkers ( true );
+    RemoveMarkers ( Lowest<long> (), Highest<long> (), type );
 }
 
 
-void    TMarkers::RemoveMarkers ( const char* greppedwith, MarkerType type, bool commit )
+void    TMarkers::RemoveMarkers ( const char* greppedwith, MarkerType type )
 {
 KeepFlags   ( type, AllMarkerTypes );
 
@@ -1922,52 +1903,49 @@ if ( ! type || StringIsEmpty ( greppedwith ) )
 MarkersList             markersok;
 TStringGrep             greptags ( greppedwith, GrepOptionDefaultMarkers );
 
-                                        // copy markers OK to a temp list
+                                            // copy markers OK to a temp list
 for ( int i = 0; i < (int) Markers; i++ ) {
 
     if ( IsFlag ( Markers[ i ]->Type, type )
 //    && StringContains ( Markers[ i ]->Name, regexp ) )   // old & simplistic
       && greptags.Matched ( Markers[ i ]->Name ) )
 
-        delete ( Markers[ i ] );           // delete object, but not pointer (yet)
+        delete ( Markers[ i ] );            // delete object, but not pointer (yet)
     else
-        markersok.Append ( Markers[ i ] );    // save pointer
+        markersok.Append ( Markers[ i ] );  // save pointer
     }
 
 
-if ( (int) markersok == (int) Markers )       // nothing to remove
+if ( (int) markersok == (int) Markers )     // nothing to remove
     return;
 
 
-if ( markersok.IsEmpty () )                // all to be erased
-    Markers.Reset ( false );               // objects are already deleted, only clear-up the pointers now
+if ( markersok.IsEmpty () )                 // all to be erased
+    Markers.Reset ( false );                // objects are already deleted, only clear-up the pointers now
 
 else {
     Markers.Reset ( false );
 
     for ( int i = 0; i < (int) markersok; i++ )
-        Markers.Append ( markersok[ i ] );    // just copy the pointer
+        Markers.Append ( markersok[ i ] );  // just copy the pointer
     }
 
 
 MarkersDirty    = true;
-
-if ( MarkersDirty && commit )
-    CommitMarkers ( true );
 }
 
 
-void    TMarkers::RemoveMarkers ( const TMarkers& removelist, MarkerType type, bool commit )
+void    TMarkers::RemoveMarkers ( const TMarkers& removelist, MarkerType type )
 {
 for ( int ki = 0; ki < (int) removelist; ki++ )
 
-    RemoveMarkers ( removelist[ ki ]->From, removelist[ ki ]->To, type, commit );
+    RemoveMarkers ( removelist[ ki ]->From, removelist[ ki ]->To, type );
 }
 
 
 //----------------------------------------------------------------------------
                                         // Will punch through existing markers
-void    TMarkers::ClipMarkers ( long from, long to, MarkerType type, bool commit )
+void    TMarkers::ClipMarkers ( long from, long to, MarkerType type )
 {
 KeepFlags   ( type, AllMarkerTypes );
 
@@ -2030,29 +2008,26 @@ for ( int i = 0; i < (int) clippedtags; i++ )
 
 
 MarkersDirty    = true;
-
-if ( MarkersDirty && commit )
-    CommitMarkers ( true );
 }
 
 
-void    TMarkers::ClipMarkers ( const TMarkers& cliplist, MarkerType type, bool commit )
+void    TMarkers::ClipMarkers ( const TMarkers& cliplist, MarkerType type )
 {
 for ( int ki = 0; ki < (int) cliplist; ki++ )
 
-    ClipMarkers ( cliplist[ ki ]->From, cliplist[ ki ]->To, type, commit );
+    ClipMarkers ( cliplist[ ki ]->From, cliplist[ ki ]->To, type );
 }
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::KeepMarkers ( long from, long to, MarkerType type, bool commit )
+void    TMarkers::KeepMarkers ( long from, long to, MarkerType type )
 {
-RemoveMarkers ( Lowest<long> (), from - 1,         type, false  );
-RemoveMarkers ( to + 1,          Highest<long> (), type, commit );
+RemoveMarkers ( Lowest<long> (), from - 1,         type );
+RemoveMarkers ( to + 1,          Highest<long> (), type );
 }
 
 
-void    TMarkers::KeepMarkers ( const char* greppedwith, bool commit )
+void    TMarkers::KeepMarkers ( const char* greppedwith )
 {
 //TSplitStrings     filteredwithsplit ( filteredwith, UniqueStrings );
 TStringGrep         grepmarker ( greppedwith, GrepOptionDefaultMarkers );
@@ -2068,10 +2043,6 @@ for ( int i = 0; i < (int) Markers; i++ )
 
                                         // finally replace with markers
 SetMarkers ( markers );
-
-
-if ( MarkersDirty && commit )
-    CommitMarkers ( true );
 }
 
 

@@ -140,8 +140,6 @@ for ( int i = 0; i < NumItems; i++ ) {
     StringCopy ( buff, "Flag" );
 
     InsertMarker ( TMarker ( fromtf, totf, 2, buff, MarkerTypeTrigger ) );
-
-//    DBGV2 ( fromtf, totf, buff );
     }
 
 
@@ -185,8 +183,6 @@ for ( int i = 0; i < NumItems; i++ ) {
 
 
         InsertMarker ( TMarker ( fromtf, totf, 3, buff, MarkerTypeTrigger ) );
-
-//        DBGV2 ( fromtf, totf, buff );
         }
 
     }
@@ -228,8 +224,6 @@ for ( int i = 0; i < NumItems; i++ ) {
 
 
         InsertMarker ( TMarker ( fromtf, totf, 4, buff, MarkerTypeTrigger ) );
-
-//        DBGV2 ( fromtf, totf, buff );
         }
 
     }
@@ -259,8 +253,6 @@ for ( int i = 0; i < NumItems; i++ ) {
     IntegerToString ( buff, Triggers[ i ].Type );
 
     InsertMarker ( TMarker ( fromtf, totf, Triggers[ i ].Type, buff, MarkerTypeTrigger ) );
-
-//    DBGV2 ( fromtf, totf, buff );
     }
 
 }

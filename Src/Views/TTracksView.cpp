@@ -8050,7 +8050,7 @@ static char         QuickMarkerStrings[ 9 ][ MarkerNameMaxLength ];
 
 void    TTracksView::AddMarker ( int predefined )
 {
-char                name    [ 256 ];
+char                name    [ MarkerNameMaxLength ];
 
                                         // using some numpad shortcuts
 if ( IsInsideLimits ( predefined, 1, 9 ) ) {
@@ -8088,7 +8088,13 @@ else {                                  // ask user to choose in a list
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-EEGDoc->InsertMarker ( TMarker ( TFCursor.GetPosMin (), TFCursor.GetPosMax (), MarkerDefaultCode, name, MarkerTypeMarker ) );
+EEGDoc->AppendMarker ( TMarker ( TFCursor.GetPosMin (), TFCursor.GetPosMax (), MarkerDefaultCode, name, MarkerTypeMarker ) );
+
+EEGDoc->SortAndCleanMarkers ();
+
+if ( EEGDoc->AreMarkersDirty () )
+    EEGDoc->CommitMarkers ( true );
+
 
 ShowTags    = true;
 
@@ -8171,7 +8177,6 @@ if ( EEGDoc->GetNumMarkers () == 0 )
 
 const MarkersList&  markers         = EEGDoc->GetMarkersList ();
 TMarker             marker;
-bool                markersdirty    = false;
 
                                         // scan all triggers
 for ( int i = 0; i < markers.Num (); i++ ) {
@@ -8182,13 +8187,13 @@ for ( int i = 0; i < markers.Num (); i++ ) {
     marker          = *(markers[ i ]);
     marker.Type     = MarkerTypeMarker;
 
-    EEGDoc->InsertMarker ( marker, false );
-
-    markersdirty    = true;
+    EEGDoc->AppendMarker ( marker );
     }
 
 
-if ( markersdirty ) {
+if ( EEGDoc->AreMarkersDirty () ) {
+
+    EEGDoc->SortAndCleanMarkers ();
                                         // just commit once
     EEGDoc->CommitMarkers ( true );
                                         // assume we want to see the results!
@@ -8213,13 +8218,8 @@ if ( EEGDoc->GetNumMarkers () == 0 ) {
     }
 
 
-const MarkersList&  markers         = EEGDoc->GetMarkersList ();
-TMarker             marker;
-long                code;
 ulong               mask            = 0xFF;
 char                buff[ 256 ];
-bool                markersdirty       = false;
-
 
 sprintf ( buff, "%u", mask );
 
@@ -8232,15 +8232,21 @@ mask    = (ulong) atol ( buff );
 if ( ! mask )
     return;
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+const MarkersList&  markers         = EEGDoc->GetMarkersList ();
+MarkersList         splitmarkers;
+
                                         // scan all triggers
 for ( int i = 0; i < markers.Num (); i++ ) {
 
-    marker            = *(markers[ i ]);
+    TMarker     marker      = *(markers[ i ]);
 
     if ( ! IsFlag ( marker.Type, DisplayMarkerType ) ) // ( MarkerTypeUserCoded | MarkerTypeHardCoded ) ) )
         continue;
                                         // convert name to integer
-    code    = StringToLong ( marker.Name );
+    long        code        = StringToLong ( marker.Name );
                                         // nothing?
     if ( ! code || ! ( code & mask ) )
         continue;
@@ -8249,23 +8255,26 @@ for ( int i = 0; i < markers.Num (); i++ ) {
 
                                         // now scan all of its bits
     for ( uint i = 0, b = 1; i < 32; i++, b <<= 1 )
+
         if ( code & mask & b ) {
                                         // just for consistency
             marker.Code    = (MarkerCode) b;
                                         // create new name
-            sprintf ( buff, "%u", b );
-            StringCopy ( marker.Name, buff, MarkerNameMaxLength - 1 );
+            sprintf ( marker.Name, "%u", b );
 
-            EEGDoc->InsertMarker ( marker, false );
-
-            markersdirty       = true;
+            splitmarkers.Append ( new TMarker ( marker ) );
             } // if b
     } // for i
 
 
-if ( markersdirty ) {
+if ( splitmarkers.IsNotEmpty () ) {
+
+    EEGDoc->AppendMarkers       ( splitmarkers );
+
+    EEGDoc->SortAndCleanMarkers ();
                                         // just commit once
-    EEGDoc->CommitMarkers ( true );
+    EEGDoc->CommitMarkers       ( true );
+
                                         // assume we want to see the results!
     ShowTags    = true;
 
@@ -8325,7 +8334,6 @@ if ( ! greppy.IsValid () )
 
 MarkersList&        markers         = EEGDoc->GetMarkersList ();
 char                name   [ 2 * MarkerNameMaxLength ];
-bool                markersdirty    = false;
 
                                         // scan all triggers
 for ( int i = 0; i < markers.Num (); i++ ) {
@@ -8349,14 +8357,14 @@ for ( int i = 0; i < markers.Num (); i++ ) {
                                         // safely clip result
         StringCopy ( tomarker->Name, name, MarkerNameMaxLength - 1 );
 
-        markersdirty   = true;
+        EEGDoc->SetMarkersDirty ();
         }
     } // for i
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( markersdirty ) {                   // some markers changed?
+if ( EEGDoc->AreMarkersDirty () ) {
 
     EEGDoc->CommitMarkers ( true );
                                         // assume we want to see the results!
@@ -8412,7 +8420,6 @@ MarkersList&        markers         = EEGDoc->GetMarkersList ();
 char                name   [ 2 * MarkerNameMaxLength ];
 char                before [ MarkerNameMaxLength ];
 char                after  [ MarkerNameMaxLength ];
-bool                markersdirty    = false;
 
                                         // scan all triggers
 for ( int i = 0; i < markers.Num (); i++ ) {
@@ -8457,14 +8464,14 @@ for ( int i = 0; i < markers.Num (); i++ ) {
                                         // directly poke into the marker
         StringCopy ( tomarker->Name, name, MarkerNameMaxLength - 1 );
 
-        markersdirty   = true;
+        EEGDoc->SetMarkersDirty ();
         }
     } // for i
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( markersdirty ) {                   // some markers changed?
+if ( EEGDoc->AreMarkersDirty () ) {
 
     EEGDoc->CommitMarkers ( true );
                                         // assume we want to see the results!
@@ -8515,7 +8522,6 @@ newname[ MarkerNameMaxLength - 1 ] = 0;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 MarkersList&        markers         = EEGDoc->GetMarkersList ();
-bool                markersdirty    = false;
 
                                         // scan all triggers
 for ( int i = 0; i < markers.Num (); i++ ) {
@@ -8534,13 +8540,13 @@ for ( int i = 0; i < markers.Num (); i++ ) {
 
     StringCopy ( tomarker->Name, newname );
 
-    markersdirty   = true;
+    EEGDoc->SetMarkersDirty ();
     } // for markers
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( markersdirty ) {                   // some markers added?
+if ( EEGDoc->AreMarkersDirty () ) {
 
     EEGDoc->CommitMarkers ( true );
                                         // assume we want to see the results!
@@ -8669,7 +8675,7 @@ for ( int firsti = 0; firsti < oldmarkers.Num (); firsti++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( markersdirty ) {                   // some markers added?
+if ( markersdirty ) {
 
     EEGDoc->SetMarkers      ( newmarkers ); // will sort & clean markers
 
@@ -8705,7 +8711,7 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to merge identical contiguous 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compact identical markers, resulting markers could be of any length
-if ( EEGDoc->CompactConsecutiveMarkers ( true, Highest<long> (), false ) ) {
+if ( EEGDoc->CompactConsecutiveMarkers ( true, Highest<long> () ) ) {
                                         // some markers added?
     EEGDoc->CommitMarkers ( true );
                                         // reloading everything will get rid of the duplicates!
@@ -8847,7 +8853,13 @@ if ( StringIsEmpty ( file ) )
     return;
 
 
-EEGDoc->InsertMarkers ( file, true );
+EEGDoc->AppendMarkers ( file );
+
+EEGDoc->SortAndCleanMarkers ();
+
+//if ( EEGDoc->AreMarkersDirty () )
+    EEGDoc->CommitMarkers ( true );
+
 
 ShowTags    = true;
 
@@ -8868,17 +8880,6 @@ if ( ! getfile.Execute () )
 
 
 AddFileMarkers ( getfile );
-
-/*
-EEGDoc->InsertMarkers ( getfile );
-
-
-ShowTags    = true;
-
-ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
-
-EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
-*/
 }
 
 
@@ -8889,7 +8890,10 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to delete the markers within c
     return;
 
 
-EEGDoc->RemoveMarkers ( TFCursor.GetPosMin(), TFCursor.GetPosMax(), MarkerTypeMarker, true );
+EEGDoc->RemoveMarkers ( TFCursor.GetPosMin(), TFCursor.GetPosMax(), MarkerTypeMarker );
+
+if ( EEGDoc->AreMarkersDirty () )
+    EEGDoc->CommitMarkers ( true );
 
 
 ShowTags    = true;
@@ -8921,7 +8925,10 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to delete these markers?" NewL
     return;
 
 
-EEGDoc->RemoveMarkers ( regexp, MarkerTypeUserCoded, true );
+EEGDoc->RemoveMarkers ( regexp, MarkerTypeUserCoded );
+
+if ( EEGDoc->AreMarkersDirty () )
+    EEGDoc->CommitMarkers ( true );
 
 
 //ShowTags    = false;
@@ -8962,7 +8969,10 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to delete ALL markers?" NewLin
     return;
 
                                         // OK, do it!
-EEGDoc->RemoveMarkers ( MarkerTypeMarker, true );
+EEGDoc->RemoveMarkers ( MarkerTypeMarker );
+
+if ( EEGDoc->AreMarkersDirty () )
+    EEGDoc->CommitMarkers ( true );
 
 
 ShowTags    = false;
@@ -9049,7 +9059,9 @@ if ( StringIsEmpty ( markerprefix ) )
                                         // force deleting existing markers
 //char                regexp[ MarkerNameMaxLength ];
 //StringCopy ( regexp, "(Bad|bad)" );
-//EEGDoc->RemoveMarkers ( MarkerTypeUserCoded, regexp, true );
+//EEGDoc->RemoveMarkers ( MarkerTypeUserCoded, regexp );
+//if ( EEGDoc->AreMarkersDirty () )
+//    EEGDoc->CommitMarkers ( true );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -9069,8 +9081,9 @@ badepochs.BadEpochsToMarkers    (   0,      filename,
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Insert to current document
-EEGDoc->InsertMarkers ( badepochs );
+EEGDoc->AppendMarkers ( badepochs );
 
+EEGDoc->SortAndCleanMarkers ();
                                         // push the new markers to disk now
 EEGDoc->CommitMarkers ( true );
 
@@ -9119,7 +9132,6 @@ int                 timemin         = 0;                                // scan 
 int                 timemax         = EEGDoc->GetNumTimeFrames () - 1;  // 
 double              tf              = timemin;
 TMarker             marker ( 0, 0, 100, name, MarkerTypeMarker );
-bool                markersdirty       = false;
 
 
 for ( int i = 0; tf <= timemax; i++ ) {
@@ -9128,16 +9140,15 @@ for ( int i = 0; tf <= timemax; i++ ) {
 
     marker.Set ( tf );
 
-    EEGDoc->InsertMarker ( marker, false );
-
-    markersdirty       = true;
-
+    EEGDoc->AppendMarker ( marker );
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( markersdirty ) {                      // some markers added?
+if ( EEGDoc->AreMarkersDirty () ) {
+
+    EEGDoc->SortAndCleanMarkers ();
 
     EEGDoc->CommitMarkers ( true );
                                         // reloading everything will get rid of the duplicates!
@@ -11583,8 +11594,6 @@ for ( int tf = 0; tf < numtf; tf++ ) {
             elstats.Add ( data ( e, tf ) );
 
     data ( gfpi, tf )   = elstats.SD ();
-
-//    DBGV2 ( tf, data ( gfpi, tf ), "TF  SD" );
     } // for tf
 
 
@@ -11605,11 +11614,13 @@ for ( int tf = 0; tf < numtf; ++tf ) {
 //    long                fromtf          = EEGDoc->GetNumTimeFrames () * 0.10;
 //    long                totf            = EEGDoc->GetNumTimeFrames () * 0.90;
 //    int                 step            = max ( Round ( ( totf - fromtf + 1 ) / 150.0 ), 1 );
-//    EEGDoc->InsertMarker ( TMarker ( fromtf + tf / 3 * step + ( tf % 3 - 1 ), fromtf + tf / 3 * step + ( tf % 3 - 1 ), 100, goodtf[ tf ] ? "Analyze OK" : "Analyze BAD", MarkerTypeMarker ) );
+//    EEGDoc->AppendMarker ( TMarker ( fromtf + tf / 3 * step + ( tf % 3 - 1 ), fromtf + tf / 3 * step + ( tf % 3 - 1 ), 100, goodtf[ tf ] ? "Analyze OK" : "Analyze BAD", MarkerTypeMarker ) );
+//    EEGDoc->SortAndCleanMarkers ();
+//    if ( EEGDoc->AreMarkersDirty () )
+//        EEGDoc->CommitMarkers ( true );
     }
 
 //EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
-//DBGV3 ( (int) goodtf, numtf, ((double) goodtf) / numtf * 100, "NumTF: OK, max, %" );
 }
 
 

@@ -2757,7 +2757,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 /*
         if ( docseg ) {
                                         // clear a possibly existing list
-            docseg->RemoveMarkers ( AllMarkerTypes, true );
+            docseg->RemoveMarkers ( AllMarkerTypes );
 
                                         // add 2 markers for each epoch
             for ( int epochi = numepochs - 1; epochi >= 0; epochi-- ) {
@@ -2790,11 +2790,11 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
                 docseg->GetNextMarker ( marker );
                                         // remove a single marker if at 0
                 if ( numt == 1 && marker.From == 0 ) {
-                    docseg->RemoveMarkers ( 0, MaxNumTF, AllMarkerTypes, true );
+                    docseg->RemoveMarkers ( 0, MaxNumTF, AllMarkerTypes );
                     break;
                     }
                 else if ( ( marker.From - lastpos ) <= 1 ) {
-                    docseg->RemoveMarkers ( lastpos, lastpos, AllMarkerTypes, true );
+                    docseg->RemoveMarkers ( lastpos, lastpos, AllMarkerTypes );
                     marker.From    = lastpos;
                     numt        = docseg->GetNumMarkers();
                     i--;
@@ -2802,6 +2802,10 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 
                 lastpos = marker.From;
                 } // num triggers
+
+
+            if ( docseg->AreMarkersDirty () )
+                docseg->CommitMarkers ( true );
 
                                         // refresh the views with what remains of markers
             docseg->NotifyDocViews ( vnReloadData, EV_VN_RELOADDATA_TRG );

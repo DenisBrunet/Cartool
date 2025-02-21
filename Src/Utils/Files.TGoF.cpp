@@ -2290,7 +2290,7 @@ for ( int rsi = 0; rsi < numresamples; rsi++ ) {
 
         writingepochslist[ fi ].SortAndCleanMarkers ();
                                         // does it help?        
-//      writingepochslist[ fi ].CompactConsecutiveMarkers ( false, 1000 /*MAXLONG*/, false ) ) {
+//      writingepochslist[ fi ].CompactConsecutiveMarkers ( false, 1000 /*MAXLONG*/ ) ) {
         }
 
 
@@ -2911,7 +2911,7 @@ for ( int i = 0; i < (int) Strings; i++ ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Filtering markers
-    eegmarkers.KeepMarkers ( greppedwith, false );
+    eegmarkers.KeepMarkers ( greppedwith );
 
                                         // check what remains after filtering the markers
     if ( eegmarkers.IsEmpty () ) {

@@ -539,8 +539,8 @@ if      ( timeoptions == ExportTimeInterval ) {
         remaintags  = *EEGDoc;
 
                                         // then manually clipping outside timechunks
-        if ( intimemin > 0              )   remaintags.ClipMarkers ( 0,             intimemin - 1,     AllMarkerTypes, false );
-        if ( intimemax < lasttimeframe  )   remaintags.ClipMarkers ( intimemax + 1, lasttimeframe,     AllMarkerTypes, false );
+        if ( intimemin > 0              )   remaintags.ClipMarkers ( 0,             intimemin - 1,     AllMarkerTypes );
+        if ( intimemax < lasttimeframe  )   remaintags.ClipMarkers ( intimemax + 1, lasttimeframe,     AllMarkerTypes );
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -597,7 +597,7 @@ else if ( timeoptions == ExportTimeTriggers ) {
         cliptags.MarkersToTimeChunks   ( *EEGDoc, triggerstokeeplist, ExcludingMarkers, 
                                           0, lasttimeframe );
                                         // punching all time periods from excludetags - overlapping markers OK
-        remaintags.ClipMarkers ( cliptags, AllMarkerTypes, false );
+        remaintags.ClipMarkers ( cliptags, AllMarkerTypes );
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -654,9 +654,9 @@ else if ( timeoptions == ExcludeTimeTriggers ) {
                                         // all the other markers - overlapping markers OK
         remaintags  = *EEGDoc;
 
-        remaintags.RemoveMarkers   ( triggerstoexcludelist, AllMarkerTypes, false );
+        remaintags.RemoveMarkers   ( triggerstoexcludelist, AllMarkerTypes );
                                         // punching all time periods from excludetags - overlapping markers OK
-        remaintags.ClipMarkers ( excludetags, AllMarkerTypes, false );
+        remaintags.ClipMarkers ( excludetags, AllMarkerTypes );
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -669,7 +669,7 @@ else if ( timeoptions == ExcludeTimeTriggers ) {
         for ( int ti = 0; ti < timechunks.GetNumMarkers (); ti++ ) {
                                         // adding splice markers (only) in-between 2 deleted blocks
             if ( ti > 0 )
-                remaintags.InsertMarker ( TMarker ( timechunks[ ti ]->From, "Splice", MarkerTypeMarker ), false );
+                remaintags.InsertMarker ( TMarker ( timechunks[ ti ]->From, "Splice", MarkerTypeMarker ) );
 
             for ( long tfi = timechunks[ ti ]->From; tfi <= timechunks[ ti ]->To; tfi++, tf0++ )
 

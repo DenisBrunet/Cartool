@@ -2424,6 +2424,7 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
     bool    starteeg    = true;
 
     for ( long tf = 0; tf < NumTimeFrames; tf++ ) {
+
         if ( tf - tforg == NumTF[ curreeg ] ) {
             tforg  += NumTF[ curreeg ];
             curreeg++;
@@ -2431,10 +2432,14 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
             }
 
         if ( labels[ tf ] != lastlabel || starteeg ) {
+
             lastlabel = labels[ tf ];
 
             sprintf ( buff, "S%0d", lastlabel + 1 );
             GDoc->GetEegDoc( curreeg )->InsertMarker ( TMarker ( AbsTFToRelTF[ tf ], AbsTFToRelTF[ tf ], (MarkerCode) (lastlabel + 1), buff, MarkerTypeTrigger ) );
+
+            if ( GDoc->GetEegDoc( curreeg )->AreMarkersDirty () )
+                GDoc->GetEegDoc( curreeg )->CommitMarkers ( true );
             }
 
         starteeg = false;

@@ -3800,16 +3800,18 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
             StringCopy ( markerepoch.Name, MessageEpochBadEpoch );
 
-            EegDoc->InsertMarker ( markerepoch, false );
+            EegDoc->AppendMarker ( markerepoch );
             }
 
         if ( IsFlag ( marker.Code, (MarkerCode) TriggerTvaNotOk ) ) {
 
             StringCopy ( markerepoch.Name, MessageEpochBadTva );
 
-            EegDoc->InsertMarker ( markerepoch, false );
+            EegDoc->AppendMarker ( markerepoch );
             }
         }
+
+    EegDoc->SortMarkers ();
 
                                         // Update view with the temp pre-labelled markers
     EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
@@ -3879,7 +3881,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
             numtriggrej++;
 
             StringCopy ( markerepoch.Name, MessageEpochBadUser );
-            EegDoc->InsertMarker ( markerepoch, false );
+            EegDoc->InsertMarker ( markerepoch );
 
 //          if ( automode == AutoNone )
 //              EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
@@ -3927,7 +3929,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
             numtriggrej++;
 
             StringCopy          ( markerepoch.Name, MessageEpochBadAuto );
-            EegDoc->InsertMarker   ( markerepoch, false );
+            EegDoc->InsertMarker( markerepoch );
             EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
 
             if ( ! ( automode == AutoAcceptAll || IsFreqLoop () ) ) {
@@ -3953,7 +3955,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
             numtriggacc++;
 
             StringCopy          ( markerepoch.Name, MessageEpochOkUser );
-            EegDoc->InsertMarker   ( markerepoch, false );
+            EegDoc->InsertMarker( markerepoch );
 
 //          if ( automode == AutoNone )
 //              EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
@@ -4096,7 +4098,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
 
                 StringCopy ( markerepoch.Name, MessageEpochSeemsOk );
-                EegDoc->InsertMarker ( markerepoch, false );
+                EegDoc->InsertMarker ( markerepoch );
                 EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
                 }
             else {
@@ -4118,7 +4120,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
 
                 StringCopy ( markerepoch.Name, MessageEpochSeemsBad );
-                EegDoc->InsertMarker ( markerepoch, false );
+                EegDoc->InsertMarker ( markerepoch );
                 EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
                 }
 
@@ -4324,7 +4326,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                         ResetFlags ( markersfiltered[ currtrigg ]->Code, (MarkerCode) TriggerAccepted );
 
                                         // clear trigger choice display
-                        EegDoc->RemoveMarkers ( markersfiltered[ currtrigg ]->From, markersfiltered[ currtrigg ]->From, MarkerTypeTemp, false );
+                        EegDoc->RemoveMarkers ( markersfiltered[ currtrigg ]->From, markersfiltered[ currtrigg ]->From, MarkerTypeTemp );
                         EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
                         break;
                         }
@@ -4409,7 +4411,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                                         // update display
         if ( automode != AutoAcceptCond ) {
                                         // clear trigger choice display
-            EegDoc->RemoveMarkers ( markerepoch.From, markerepoch.To, MarkerTypeTemp, false );
+            EegDoc->RemoveMarkers ( markerepoch.From, markerepoch.To, MarkerTypeTemp );
 
             if ( automode == AutoNone )
                 EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
@@ -4424,7 +4426,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 //              ShowMessage ( "Restarting the whole computation for this file!", "Channel exclusion" );
 
                                         // clean-up previous answers
-            EegDoc->RemoveMarkers ( MarkerTypeTemp, false );
+            EegDoc->RemoveMarkers ( MarkerTypeTemp );
 
             if ( automode == AutoNone )
                 EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
@@ -4466,7 +4468,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
             numtriggrej++;
 
             StringCopy ( markerepoch.Name, MessageEpochBadUser );
-            EegDoc->InsertMarker ( markerepoch, false );
+            EegDoc->InsertMarker ( markerepoch );
 
             if ( automode == AutoNone )
                 EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
@@ -4482,7 +4484,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
             numtriggacc++;
 
             StringCopy ( markerepoch.Name, MessageEpochOkUser );
-            EegDoc->InsertMarker ( markerepoch, false );
+            EegDoc->InsertMarker ( markerepoch );
 
             if ( automode == AutoNone )
                 EegDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
@@ -4958,7 +4960,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    EegDoc->RemoveMarkers ( MarkerTypeTemp, false );
+    EegDoc->RemoveMarkers ( MarkerTypeTemp );
 
                                         // close the current document - be smart, don't close before re-opening!
     if (    lasteeg 

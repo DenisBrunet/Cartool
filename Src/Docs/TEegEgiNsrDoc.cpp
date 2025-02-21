@@ -1365,7 +1365,7 @@ if ( markers.size () ) {
 
         if ( IsInsideLimits ( from, to, (long) 0, NumTimeFrames - 1 ) )
 //          AppendMarker ( TMarker ( from, to, markers[i].Code, markers[i].Name, markers[i].Type ) );
-            InsertMarker ( TMarker ( from, to, markers[i].Code, markers[i].Name, markers[i].Type ), false );
+            InsertMarker ( TMarker ( from, to, markers[i].Code, markers[i].Name, markers[i].Type ) );
         }
     }
 }

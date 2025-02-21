@@ -157,21 +157,21 @@ do {
             DateTime    = TDateTime ( yy, MM, dd, hh, mm, ss, 0, timesign * uu );
             InitDateTime ();
             InsertMarker ( TMarker ( fromtf, totf, (MarkerCode) StringToInteger ( bvmdesc ),
-                                  StringIsNotEmpty ( bvmdesc ) ? bvmdesc : StringIsNotEmpty ( bvmtype ) ? bvmtype : "New Segment",
-                                  MarkerTypeEvent   ) );
+                                     StringIsNotEmpty ( bvmdesc ) ? bvmdesc : StringIsNotEmpty ( bvmtype ) ? bvmtype : "New Segment",
+                                     MarkerTypeEvent   ) );
             continue;
             }
         else if ( StringIs ( bvmtype, "Trigger"  )
                || StringIs ( bvmtype, "Stimulus" ) ) {
             InsertMarker ( TMarker ( fromtf, totf, (MarkerCode) StringToInteger ( bvmdesc ),
-                                  StringIsNotEmpty ( bvmdesc ) ? bvmdesc : StringIsNotEmpty ( bvmtype ) ? bvmtype : MarkerNameTrigger,
-                                  MarkerTypeTrigger ) );
+                                     StringIsNotEmpty ( bvmdesc ) ? bvmdesc : StringIsNotEmpty ( bvmtype ) ? bvmtype : MarkerNameTrigger,
+                                     MarkerTypeTrigger ) );
             continue;
             }
         else { // Response, Comment, SyncStatus, Time_0 (?) or "Time 0" (??), "DC Correction" (?)
             InsertMarker ( TMarker ( fromtf, totf, (MarkerCode) StringToInteger ( bvmdesc ),
-                                  StringIsNotEmpty ( bvmdesc ) ? bvmdesc : StringIsNotEmpty ( bvmtype ) ? bvmtype : MarkerNameEvent,
-                                  MarkerTypeEvent   ) );
+                                     StringIsNotEmpty ( bvmdesc ) ? bvmdesc : StringIsNotEmpty ( bvmtype ) ? bvmtype : MarkerNameEvent,
+                                     MarkerTypeEvent   ) );
             continue;
             }
 
