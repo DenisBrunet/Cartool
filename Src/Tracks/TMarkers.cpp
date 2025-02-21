@@ -277,7 +277,7 @@ MarkersDirty        = false;
 
         TMarkers::TMarkers ( const MarkersList& markerslist )
 {
-                                        // can set MarkersDirty, so do it beforehand
+                                        // ignore MarkersDirty
 SetMarkers  ( markerslist );
 
 TracksDoc           = 0;
@@ -299,7 +299,7 @@ MarkersDirty        = false;
 TracksDoc           = 0;
 MarkersFileName.Reset ();
 MarkersDirty        = false;
-                                        // !forward any error from file!
+                                        // !forward any change from reading file!
 StringCopy  ( MarkersFileName, file );
 SetMarkers  ( MarkersFileName );
 }
@@ -324,7 +324,7 @@ Markers.Reset ( true );
 //----------------------------------------------------------------------------
         TMarkers::TMarkers ( const TMarkers& op )
 {
-                                        // can set MarkersDirty, so do it beforehand
+                                        // ignore MarkersDirty
 SetMarkers ( op.Markers );
 
 TracksDoc           = op.TracksDoc;
@@ -338,7 +338,7 @@ TMarkers&   TMarkers::operator= ( const TMarkers& op2 )
 if ( &op2 == this )
     return  *this;
 
-                                        // can set MarkersDirty, so do it beforehand
+                                        // ignore MarkersDirty
 SetMarkers ( op2.Markers );
 
 TracksDoc           = op2.TracksDoc;
@@ -517,19 +517,19 @@ if ( StringIsEmpty ( file ) ) {
         StringAppend ( mrkfile, ".", IntegerToString ( TracksDoc->GetCurrentSession (), 0 ) );
 
     AddExtension    ( mrkfile, FILEEXT_MRK );
-
+                                        // !forward any change from reading file!
     AppendMarkers   ( mrkfile );
     }
 else {
     StringCopy      ( MarkersFileName, file );
-
+                                        // !forward any change from reading file!
     AppendMarkers   ( MarkersFileName );
     }
 
                                         // check & sort the whole list
 SortAndCleanMarkers ();
 
-                                        // !forward any error from file!
+                                        // !forward any change from reading file!
 //MarkersDirty    = false;
 
 
@@ -731,18 +731,24 @@ return  false;
                                         // Force sort the content - Output will therefore also be sorted
 void    TMarkers::SortAndCleanMarkers ()
 {
+                                        // save time, also avoiding changing the MarkersDirty flag uselessly
+if ( GetNumMarkers () < 2 )
+    return;
+
+                                        // does not update MarkersDirty
 SortMarkers ();
 
                                         // When playing directly within the list, DO NOT USE []
 TListIterator<TMarker>  iterator;
 bool                    listdirty       = false;
-                                                                 // next marker should exist
-for ( iterator.SetForward ( Markers ); iterator.Current () != 0 && iterator.Current ()->Next != 0; ) {
+
+                                        // testing if NEXT marker exists
+for ( iterator.SetForward ( Markers ); iterator.Current ()->Next != 0; ) {
 
     if ( *iterator.Current ()->To == *iterator.Current ()->Next->To ) {
 
         Markers.Remove ( iterator.Current ()->Next->To );
-
+                                        // change occured
         listdirty   = true;
         }
     else 
@@ -753,7 +759,7 @@ for ( iterator.SetForward ( Markers ); iterator.Current () != 0 && iterator.Curr
 if ( listdirty ) {
                                         // rebuild indexes
     Markers.UpdateIndexes ();
-                                        // !forward any error from file!
+                                        // set only if marker list was actually changed
     MarkersDirty    = true;
     }
 }
@@ -795,10 +801,11 @@ SortAndCleanMarkers ();
 
 
 //----------------------------------------------------------------------------
+                                        // !returned MarkersDirty reflects any change from reading the file only!
 void    TMarkers::SetMarkers ( const char* file )
 {
 ResetMarkers    ();
-
+                                        // !forward any change from reading file!
 AppendMarkers   ( file );
 
 SortAndCleanMarkers ();
@@ -820,7 +827,7 @@ if ( TracksDoc )
                                         // just put it at the end
 Markers.Append ( markerc );
 
-
+                                        // changing state only for markers, the one that can be aved to file by the user
 if ( IsFlag ( marker.Type, MarkerTypeUserCoded ) )
     MarkersDirty    = true;
 }
@@ -845,19 +852,22 @@ for ( int i = 0; i < (int) markerslist; i++ )
 
 
 //----------------------------------------------------------------------------
+                                        // !returned MarkersDirty reflects any change from reading the file only!
 void    TMarkers::AppendMarkers ( const char* file )
 {
 TMarkers            markers;
-
+                                        // !forward any change from reading file!
 markers.ReadFile ( file );
 
+                                        // save current dirty state
+bool                oldmarkersdirty = MarkersDirty;
 
 for ( int i = 0; i < (int) markers; i++ )
 
     AppendMarker ( *markers[ i ] );
 
-                                        // !forward any error from file!
-MarkersDirty    = markers.MarkersDirty;
+                                        // !forward any change from reading file!
+MarkersDirty    = oldmarkersdirty || markers.MarkersDirty;
 }
 
 
@@ -1069,6 +1079,8 @@ void    TMarkers::SortMarkers ()
 _Sort ( 0, GetNumMarkers () - 1 );
 
 Markers.UpdateIndexes ( true );
+
+//MarkersDirty    = true;               // content hasn't really changed, has it?
 }
 
                                         // Works directly with atoms from the list
@@ -1881,7 +1893,7 @@ if ( MarkersDirty && commit )
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::RemoveMarkers ( MarkerType type, bool commit = true )
+void    TMarkers::RemoveMarkers ( MarkerType type, bool commit )
 {
 KeepFlags   ( type, AllMarkerTypes );
 
