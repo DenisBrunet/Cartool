@@ -267,6 +267,7 @@ TriggerColors.GLize ( hn );
 // Routines therefore assume this fact, and have to specify
 // if they want or not to effectively write on disk.
 
+                                        // Resets MarkersDirty; Sorting
         TMarkers::TMarkers ()
 {
 TracksDoc           = 0;
@@ -274,34 +275,28 @@ MarkersFileName.Reset ();
 MarkersDirty        = false;
 }
 
-
+                                        // Sets MarkersDirty; Sorting
         TMarkers::TMarkers ( const MarkersList& markerslist )
 {
-                                        // ignore MarkersDirty
-SetMarkers  ( markerslist );
-
 TracksDoc           = 0;
 MarkersFileName.Reset ();
-MarkersDirty        = false;
+MarkersDirty        = SetMarkers ( markerslist ) == MarkersRemovedDuplicate;    // update current state
 }
 
-
-        TMarkers::TMarkers ( const TTracksDoc* tracksdoc ) :
-        TracksDoc ( tracksdoc )
+                                        // Resets MarkersDirty; Sorting
+        TMarkers::TMarkers ( const TTracksDoc* tracksdoc )
+      : TracksDoc ( tracksdoc )
 {
 MarkersFileName.Reset ();
 MarkersDirty        = false;
 }
 
-
+                                        // Sets MarkersDirty; Sorting
         TMarkers::TMarkers ( const char* file )
 {
 TracksDoc           = 0;
-MarkersFileName.Reset ();
-MarkersDirty        = false;
-                                        // !forward any change from reading file!
-StringCopy  ( MarkersFileName, file );
-SetMarkers  ( MarkersFileName );
+MarkersFileName     = file;
+MarkersDirty        = SetMarkers ( MarkersFileName ) == MarkersRemovedDuplicate;    // update current state
 }
 
 
@@ -324,12 +319,10 @@ Markers.Reset ( true );
 //----------------------------------------------------------------------------
         TMarkers::TMarkers ( const TMarkers& op )
 {
-                                        // ignore MarkersDirty
-SetMarkers ( op.Markers );
-
 TracksDoc           = op.TracksDoc;
 MarkersFileName     = op.MarkersFileName;
-MarkersDirty        = op.MarkersDirty;
+//MarkersDirty      = op.MarkersDirty;              // copy state from op
+MarkersDirty        = SetMarkers ( op.Markers );    // update current state
 }
 
 
@@ -338,12 +331,11 @@ TMarkers&   TMarkers::operator= ( const TMarkers& op2 )
 if ( &op2 == this )
     return  *this;
 
-                                        // ignore MarkersDirty
-SetMarkers ( op2.Markers );
 
 TracksDoc           = op2.TracksDoc;
 MarkersFileName     = op2.MarkersFileName;
-MarkersDirty        = op2.MarkersDirty;
+//MarkersDirty      = op2.MarkersDirty;             // copy state from op
+MarkersDirty        = SetMarkers ( op2.Markers );   // update current state
 
 
 return  *this;
@@ -351,7 +343,7 @@ return  *this;
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::CommitMarkers ( bool force )
+void    TMarkers::CommitMarkers ( bool force, VerboseType verbose )
 {
 if ( IsInMemory () ) {
     MarkersDirty    = false;
@@ -369,18 +361,18 @@ TFileName           file;
                                         // default name, taken at last time in case of "Save As"
 if ( MarkersFileName.IsEmpty () ) {
                                         // check for multi-session -> multi mrk files
-    StringCopy      ( file, TracksDoc->GetDocPath () );
+    file    = TracksDoc->GetDocPath ();
 
     if ( TracksDoc->GetCurrentSession () >= 1 )
-        StringAppend( file, ".", IntegerToString ( TracksDoc->GetCurrentSession () ) );
+        file.AddExtension ( IntegerToString ( TracksDoc->GetCurrentSession () ) );
 
-    AddExtension    ( file, FILEEXT_MRK );
+    file.AddExtension ( FILEEXT_MRK );
     }
 else
-    StringCopy ( file, MarkersFileName );
+    file    = MarkersFileName;
 
 
-if ( MarkersDirty && ! force )
+if ( verbose == Verbose )
     if ( ! GetAnswerFromUser ( "Markers have been modified, do you want to save them to file now?", ToFileName ( file ) ) )
         return;
 
@@ -496,7 +488,9 @@ for ( int i = 0; i < (int) Markers; i++ )
 
 
 //----------------------------------------------------------------------------
-bool    TMarkers::InitMarkers ( const char* file )
+                                        // Sets MarkersDirty
+                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
+MarkersError    TMarkers::InitMarkers ( const char* file )
 {
                                         // clear everything
 ResetMarkers ();
@@ -504,6 +498,10 @@ ResetMarkers ();
                                         // read optional native markers first
 ReadNativeMarkers ();
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+MarkersError        readerror;
                                         // then additional mrk file
 if ( StringIsEmpty ( file ) ) {
 
@@ -515,23 +513,26 @@ if ( StringIsEmpty ( file ) ) {
         StringAppend ( mrkfile, ".", IntegerToString ( TracksDoc->GetCurrentSession (), 0 ) );
 
     AddExtension    ( mrkfile, FILEEXT_MRK );
-                                        // !forward any change from reading file!
-    AppendMarkers   ( mrkfile );
+                                        // store any error from reading file
+    readerror   = AppendMarkers   ( mrkfile );
     }
 else {
     StringCopy      ( MarkersFileName, file );
-                                        // !forward any change from reading file!
-    AppendMarkers   ( MarkersFileName );
+                                        // store any error from reading file
+    readerror   = AppendMarkers   ( MarkersFileName );
     }
 
-                                        // check & sort the whole list
-SortAndCleanMarkers ();
 
-                                        // !forward any change from reading file!
-//MarkersDirty    = false;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+MarkersError        cleanerror      = SortAndCleanMarkers ();
 
-return  true;
+                                        // Markers are considered dirty only if file had duplicates, and/or if merge had duplicates
+MarkersDirty    = readerror  == MarkersRemovedDuplicate
+               || cleanerror == MarkersRemovedDuplicate;
+
+                                        // also return an error message
+return  MarkersDirty ? MarkersRemovedDuplicate : NoMarkersError;
 }
 
 
@@ -727,39 +728,47 @@ return  false;
 
 //----------------------------------------------------------------------------
                                         // Force sort the content - Output will therefore also be sorted
-void    TMarkers::SortAndCleanMarkers ()
+                                        // Does NOT update MarkersDirty
+                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
+MarkersError    TMarkers::SortAndCleanMarkers ()
 {
                                         // save time, also avoiding changing the MarkersDirty flag uselessly
 if ( GetNumMarkers () < 2 )
-    return;
+    return  NoMarkersError;
 
                                         // does not update MarkersDirty
 SortMarkers ();
 
                                         // When playing directly within the list, DO NOT USE []
 TListIterator<TMarker>  iterator;
-bool                    listdirty       = false;
+bool                    removedduplicates   = false;
 
                                         // testing if NEXT marker exists
 for ( iterator.SetForward ( Markers ); iterator.Current ()->Next != 0; ) {
 
     if ( *iterator.Current ()->To == *iterator.Current ()->Next->To ) {
-
-        Markers.Remove ( iterator.Current ()->Next->To );
-                                        // change occured
-        listdirty   = true;
+                                        // remove the next duplicate
+        const TMarker*  todelete    = iterator.Current ()->Next->To;
+                                        // remove from list
+        Markers.Remove ( todelete );
+                                        // remove from memory
+        delete  todelete;
+                                        // change occurred
+        removedduplicates   = true;
         }
     else 
         iterator.Next ();
     }
 
 
-if ( listdirty ) {
+if ( removedduplicates ) {
                                         // rebuild indexes
-    Markers.UpdateIndexes ();
-                                        // set only if marker list was actually changed
-    MarkersDirty    = true;
+    Markers.UpdateIndexes ( true );
+
+    return  MarkersRemovedDuplicate;
     }
+else
+    return  NoMarkersError;
 }
 
 
@@ -777,36 +786,32 @@ return  0;
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::SetMarkers ( const TMarkers& markers )
+                                        // Sets MarkersDirty; Sorting
+MarkersError    TMarkers::SetMarkers ( const TMarkers& markers )
 {
 ResetMarkers    ();
 
-AppendMarkers   ( markers );
-
-SortAndCleanMarkers ();
+return  InsertMarkers ( markers );
 }
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::SetMarkers ( const MarkersList& markerslist )
+                                        // Sets MarkersDirty; Sorting
+MarkersError    TMarkers::SetMarkers ( const MarkersList& markerslist )
 {
 ResetMarkers    ();
 
-AppendMarkers   ( markerslist );
-
-SortAndCleanMarkers ();
+return  InsertMarkers ( markerslist );
 }
 
 
 //----------------------------------------------------------------------------
-                                        // !returned MarkersDirty reflects any change from reading the file only!
-void    TMarkers::SetMarkers ( const char* file )
+                                        // Sets MarkersDirty; Sorting
+MarkersError    TMarkers::SetMarkers ( const char* file )
 {
 ResetMarkers    ();
-                                        // !forward any change from reading file!
-AppendMarkers   ( file );
-
-SortAndCleanMarkers ();
+                                        // Currently ignores error from file
+return  InsertMarkers ( file );
 }
 
 
@@ -816,6 +821,8 @@ void    TMarkers::AppendMarker ( const TMarker& marker )
 if ( TracksDoc && marker.IsNotOverlappingInterval ( (long) 0, TracksDoc->GetNumTimeFrames () - 1 ) )
     return;
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // clone marker + clip its length
 TMarker*            markerc         = new TMarker ( marker );
 
@@ -825,6 +832,8 @@ if ( TracksDoc )
                                         // just put it at the end
 Markers.Append ( markerc );
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // changing state only for markers, the one that can be aved to file by the user
 if ( IsFlag ( marker.Type, MarkerTypeUserCoded ) )
     MarkersDirty    = true;
@@ -832,40 +841,57 @@ if ( IsFlag ( marker.Type, MarkerTypeUserCoded ) )
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::AppendMarkers ( const TMarkers& markers )
+                                        // Returned error code: NoMarkersError
+MarkersError    TMarkers::AppendMarkers ( const TMarkers& markers, const char* filteredwith )
 {
-for ( int i = 0; i < (int) markers; i++ )
+if ( StringIsEmpty ( filteredwith ) || StringIs ( filteredwith, "*" ) ) {
 
-    AppendMarker ( *markers[ i ] );
+    for ( int i = 0; i < (int) markers; i++ )
+
+        AppendMarker ( *markers[ i ] );
+    }
+else {
+
+    TSplitStrings       filteredwithsplit ( filteredwith, UniqueStrings );
+
+    for ( int i = 0; i < (int) markers; i++ )
+
+        if ( filteredwithsplit.Contains ( markers[ i ]->Name ) )
+
+            AppendMarker ( *markers[ i ] );
+    }
+
+return  NoMarkersError;
 }
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::AppendMarkers ( const MarkersList& markerslist )
+                                        // Returned error code: NoMarkersError
+MarkersError    TMarkers::AppendMarkers ( const MarkersList& markerslist )
 {
 for ( int i = 0; i < (int) markerslist; i++ )
 
     AppendMarker ( *markerslist[ i ] );
+
+return  NoMarkersError;
 }
 
 
 //----------------------------------------------------------------------------
-                                        // !returned MarkersDirty reflects any change from reading the file only!
-void    TMarkers::AppendMarkers ( const char* file )
+                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate, MarkersFileMissing, MarkersFileError
+MarkersError    TMarkers::AppendMarkers ( const char* file )
 {
 TMarkers            markers;
-                                        // !forward any change from reading file!
-markers.ReadFile ( file );
+                                        // store if file had some errors
+MarkersError        readerror       = markers.ReadFile ( file );
 
-                                        // save current dirty state
-bool                oldmarkersdirty = MarkersDirty;
 
 for ( int i = 0; i < (int) markers; i++ )
-
+                                        // updates MarkersDirty
     AppendMarker ( *markers[ i ] );
 
-                                        // !forward any change from reading file!
-MarkersDirty    = oldmarkersdirty || markers.MarkersDirty;
+                                        // forward any error from ReadFile
+return  readerror;
 }
 
 
@@ -876,14 +902,9 @@ if ( TracksDoc && marker.IsNotOverlappingInterval ( (long) 0, TracksDoc->GetNumT
     return  0;
 
 
-if ( HasMarker ( marker ) )
-    return  0;
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 int                 i;
-
                                         // we have an optional index from where to start searching
 for ( i = indexfrom; i < (int) Markers; i++ )
                                         // stop at first element in the list that is beyond marker
@@ -893,7 +914,7 @@ for ( i = indexfrom; i < (int) Markers; i++ )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // make a new marker, and clip its length
+                                        // clone marker + clip its length
 TMarker*            markerc            = new TMarker ( marker );
 
 if ( TracksDoc )  Clipped ( markerc->From, markerc->To, (long) 0, TracksDoc->GetNumTimeFrames () - 1 );
@@ -904,18 +925,19 @@ else                        Markers.Insert ( markerc, Markers[ i ] );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+                                        // changing state only for markers, the one that can be aved to file by the user
 if ( IsFlag ( marker.Type, MarkerTypeUserCoded ) )
     MarkersDirty    = true;
 
-                                        // return index of inserted element
+                                        // return index of inserted element for next call
 return  i;
 }
 
 
 //----------------------------------------------------------------------------
                                         // Read from file, then sort
-void    TMarkers::ReadFile ( const char* file )
+                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate, MarkersFileMissing, MarkersFileError
+MarkersError    TMarkers::ReadFile ( const char* file )
 {
                                         // clear everything
 ResetMarkers ();
@@ -923,7 +945,7 @@ ResetMarkers ();
 MarkersDirty    = false;
 
 if ( ! CanOpenFile ( file ) )
-    return;
+    return  MarkersFileMissing;         // but not considered a problem
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -940,126 +962,103 @@ is.read ( (char *) &magic, sizeof ( magic ) );
 if ( ! IsMagicNumber ( magic, TLBIN_MAGICNUMBER2 ) ) {
 
 //  ShowMessage ( "Can not recognize this marker file (unknown magic number)!", "Open file", ShowMessageWarning );
-    return;
+    return  MarkersFileError;
     }
-                                        // avoid reading & writing at the same time
-                                        // in case we read the associated mrk file
-if      ( IsMagicNumber ( magic, TLBIN_MAGICNUMBER2 ) ) {
-                                        // reopen as text file
-    is.close ();
-    is.open  ( file );
-                                        // skip header
-    is.getline ( buff, KiloByte );
 
-
-    while ( ! is.eof () ) {
-                                        // get next line
-        is.getline ( buff, KiloByte );
-
-                                        // be nice when encountering an empty line
-        if ( StringIsEmpty ( buff ) )
-            continue;
-
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // extract TF limits
-        sscanf ( buff, "%ld %ld", &marker.From, &marker.To );
-
-        CheckOrder ( marker.From, marker.To );
-
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // extract name - goes through a lot of hoops to try to recover non-conforming files
-                                        // get everything past the 2 TFs
-        SkipFirstWords ( buff, buff, 2 );
-
-        StringCleanup ( buff );
-                                        // correct syntax is between 2 quotes: "ABC"
-                                        // otherwise take the string as is, but it will skip spaces at each sides
-//      if ( *buff == '\"' && *LastChar ( buff, 1 ) == '\"' )
-            ReplaceChars ( buff, DoubleQuote, "" );
-
-        StringCopy ( marker.Name, StringIsEmpty ( buff ) ? MarkerNameDefault : buff, MarkerNameMaxLength - 1 );
-
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // code and type
-        marker.Code    = (MarkerCode) StringToInteger ( marker.Name );
-
-        marker.Type    = MarkerTypeMarker;
-
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // just append
-        AppendMarker ( marker );
-        }
-
-    } // TLBIN_MAGICNUMBER2
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // AppendMarker sets the Dirty flag, so reset it
+                                        // avoid reading & writing at the same time
+                                        // in case we read the associated mrk file
+
+                                        // reopen as text file
+is.close ();
+is.open  ( file );
+                                        // skip header
+is.getline ( buff, KiloByte );
+
+
+while ( ! is.eof () ) {
+                                        // get next line
+    is.getline ( buff, KiloByte );
+
+                                        // be nice when encountering an empty line
+    if ( StringIsEmpty ( buff ) )
+        continue;
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // extract TF limits
+    sscanf ( buff, "%ld %ld", &marker.From, &marker.To );
+
+    CheckOrder ( marker.From, marker.To );
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // extract name - goes through a lot of hoops to try to recover non-conforming files
+                                        // get everything past the 2 TFs
+    SkipFirstWords ( buff, buff, 2 );
+
+    StringCleanup ( buff );
+                                        // correct syntax is between 2 quotes: "ABC"
+                                        // otherwise take the string as is, but it will skip spaces at each sides
+//  if ( *buff == '\"' && *LastChar ( buff, 1 ) == '\"' )
+        ReplaceChars ( buff, DoubleQuote, "" );
+
+    StringCopy ( marker.Name, StringIsEmpty ( buff ) ? MarkerNameDefault : buff, MarkerNameMaxLength - 1 );
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // code and type
+    marker.Code    = (MarkerCode) StringToInteger ( marker.Name );
+
+    marker.Type    = MarkerTypeMarker;
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    AppendMarker ( marker );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // AppendMarker sets MarkersDirty, so reset it
 MarkersDirty    = false;
 
                                         // check & sort the whole list
-SortAndCleanMarkers ();
+return  SortAndCleanMarkers ();
 }
 
 
 //----------------------------------------------------------------------------
-                                        // Can read non-sorted file correctly
-void    TMarkers::InsertMarkers ( const char* file )
+                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
+MarkersError    TMarkers::InsertMarkers ( const char* file )
 {
-TMarkers            markers;
-                                        // list from file is sorted here
-markers.ReadFile ( file );
+MarkersError        readerror       = AppendMarkers ( file );
 
-
-int                 indexfrom       = 0;
-
-for ( int i = 0; i < (int) markers; i++ )
-                                        // insert by sorting, and don't write to file now!
-                                        // provide / update last insertion index so we can insert faster an already sorted list
-    indexfrom   = InsertMarker ( *markers[ i ], indexfrom );
-
-                                        // check & sort the whole list
-//SortAndCleanMarkers ();
+MarkersError        cleanerror      = SortAndCleanMarkers ();
+                                        // forward any error from ReadFile
+return  readerror  == MarkersRemovedDuplicate
+     || cleanerror == MarkersRemovedDuplicate ? MarkersRemovedDuplicate : NoMarkersError;
 }
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::InsertMarkers ( const TMarkers& markers, const char *filteredwith )
+                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
+MarkersError    TMarkers::InsertMarkers ( const TMarkers& markers, const char* filteredwith )
 {
-TSplitStrings       filteredwithsplit ( filteredwith, UniqueStrings );
+AppendMarkers ( markers, filteredwith );
 
-                                        // make sure the list is sorted, insertion will be faster
-TMarkers            markerssorted ( markers );
-
-
-int                 indexfrom       = 0;
-
-for ( int i = 0; i < (int) markerssorted; i++ )
-
-    if ( filteredwithsplit.Contains ( markerssorted[ i ]->Name ) )
-                                        // insert by sorting, and don't write to file now!
-                                        // provide / update last insertion index so we can insert faster an already sorted list
-        indexfrom   = InsertMarker ( *markerssorted[ i ], indexfrom );
-
-                                        // check & sort the whole list
-//SortAndCleanMarkers ();
+return  SortAndCleanMarkers ();
 }
 
 
 //----------------------------------------------------------------------------
-                                        // sometime we have a TList object insted of a TMarkers
-                                        // no sort here
-void    TMarkers::InsertMarkers ( const MarkersList& markerslist )
+                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
+MarkersError    TMarkers::InsertMarkers ( const MarkersList& markerslist )
 {
-for ( int i = 0; i < (int) markerslist; i++ )
+AppendMarkers ( markerslist );
 
-    InsertMarker ( *markerslist[ i ] );
-
-                                        // check & sort the whole list
-//SortAndCleanMarkers ();
+return  SortAndCleanMarkers ();
 }
 
 
@@ -1069,8 +1068,6 @@ void    TMarkers::SortMarkers ()
 _Sort ( 0, GetNumMarkers () - 1 );
 
 Markers.UpdateIndexes ( true );
-
-//MarkersDirty    = true;               // content hasn't really changed, has it?
 }
 
                                         // Works directly with atoms from the list
@@ -1188,6 +1185,8 @@ else if ( epochs == EpochsFromList ) {
 
     } // EpochsFromList
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check & sort the whole list
 SortAndCleanMarkers ();
 }
@@ -1370,6 +1369,7 @@ for ( long tf0 = 1; tf0 < NumTime - 1; tf0++ ) {
 
     } // for tf0
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check & sort the whole list
 SortAndCleanMarkers ();
@@ -1418,6 +1418,7 @@ for ( long tf = AtLeast ( (long) 1, mintf ); tf <= NoMore ( NumTimeFrames - 2, m
         }
 
     } // for tf0
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check & sort the whole list
@@ -1528,7 +1529,6 @@ for ( int i = 0; i < (int) Markers; i++ )
 
     if ( IsOverlappingInterval  (   mintf,              maxtf,
                                     Markers[ i ]->From,    Markers[ i ]->To ) )
-
         return  true;
 
 
@@ -1563,6 +1563,8 @@ for ( long tf = fromtf; tf + chunksize - 1 <= totf; tf += chunksize ) {
     AppendMarker ( marker );
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check & sort the whole list
 SortAndCleanMarkers ();
 }
@@ -1577,8 +1579,6 @@ for ( int i = 0; i < (int) Markers; i++ ) {
     Markers[ i ]->From   = TruncateTo ( Markers[ i ]->From, downsampling );
     Markers[ i ]->To     = TruncateTo ( Markers[ i ]->To  , downsampling );
     }
-
-//Show ( "Markers to grid" );
 }
 
 
@@ -1593,8 +1593,6 @@ for ( int i = 0; i < (int) Markers; i++ ) {
     Markers[ i ]->From  /= downsampling;
     Markers[ i ]->To    /= downsampling;
     }
-
-//Show ( "Markers downsampled" );
 }
 
 
@@ -1611,8 +1609,6 @@ for ( int i = 0; i < (int) Markers; i++ ) {
                                         //   - ending to last upsampled TF
     Markers[ i ]->To     = ( Markers[ i ]->To + 1 ) * upsampling - 1;
     }
-
-//Show ( "Markers upsampled" );
 }
 
                                         // reslice all markers to sequences of 1 TF markers
@@ -1644,6 +1640,8 @@ for ( int i = 0; i < (int) oldlist; i++ ) {
 
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check & sort the whole list
 SortAndCleanMarkers ();
 }
@@ -1745,11 +1743,12 @@ return  maxpos;
 
 //----------------------------------------------------------------------------
                                         // compact joining markers, either to=from, to=from-1, from=to, from=to+1
-                                        // does not test for Type, Name; does not concatenate Names either
-bool    TMarkers::CompactConsecutiveMarkers ( bool identicalnames, long mergedmaxlength )
+                                        // does not test for Type nor Name
+                                        // does not concatenate Names either
+void    TMarkers::CompactConsecutiveMarkers ( bool identicalnames, long mergedmaxlength )
 {
 if ( IsEmpty () )
-    return  false;
+    return;
 
 
 MarkersList             remaining ( Markers ); // do a local copy of pointers
@@ -1758,7 +1757,6 @@ TMarker*                todelete;
 bool                    mergedsome;
 bool                    namesok;
 bool                    markersdirty        = false;
-
 
                                         // clear current pointer list
 Markers.Reset ( false );
@@ -1769,8 +1767,6 @@ for ( ; (bool) remaining; ) {
                                         // use the pointer, we will not destroy the actual object, just updating it
     toaggregate     =  remaining.GetFirst ();
     remaining.Remove ( remaining.GetFirst () );
-
-//    toaggregate->Show ( "toaggregate - before" );
 
                                         // try to merge one of the remaining marker
     do {
@@ -1785,13 +1781,13 @@ for ( ; (bool) remaining; ) {
             if      ( ( toaggregate->To == remaining[ i ]->From || toaggregate->To == remaining[ i ]->From - 1 )
                    && namesok ) {
 
-//                remaining[ i ]->Show ( "to merge" );
-
                 toaggregate->To     = remaining[ i ]->To;
 
                 todelete            = remaining[ i ];
-                remaining.Remove ( remaining[ i ] );    // remove pointer from list
-                delete ( todelete );             // we still have the pointer copy to object, so delete it
+
+                remaining.Remove    ( todelete );   // remove object from list
+
+                delete              ( todelete );   // remove object from memory
 
                 mergedsome          = true;
                 break;
@@ -1799,13 +1795,14 @@ for ( ; (bool) remaining; ) {
                                         // or merge on the left?
             else if ( ( toaggregate->From == remaining[ i ]->To || toaggregate->From == remaining[ i ]->To + 1 )
                    && namesok ) {
-//                remaining[ i ]->Show ( "to merge" );
 
                 toaggregate->From   = remaining[ i ]->From;
 
                 todelete            = remaining[ i ];
-                remaining.Remove ( remaining[ i ] );    // remove pointer from list
-                delete ( todelete );             // we still have the pointer copy to object, so delete it
+
+                remaining.Remove    ( todelete );   // remove object from list
+
+                delete              ( todelete );   // remove object from memory
 
                 mergedsome          = true;
                 break;
@@ -1815,20 +1812,23 @@ for ( ; (bool) remaining; ) {
 
 
         markersdirty  |= mergedsome;
-        MarkersDirty  |= mergedsome;
 
                              // length test will not work correctly, if markers are not sorted
         } while ( mergedsome && toaggregate->Length () <= mergedmaxlength );
-
-
-//    toaggregate->Show ( "toaggregate - after" );
 
                                         // insertion assumes marker list was sorted upon call time
     Markers.Append ( toaggregate );
     }
 
-                                        // tell if list was touched
-return  markersdirty;
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( markersdirty )
+    Markers.UpdateIndexes ( true );
+                                        // either old MarkersDirty state, or it has been actually updated
+MarkersDirty   |= markersdirty;
+
+SortAndCleanMarkers ();
 }
 
 
@@ -1892,6 +1892,7 @@ else
 }
 
 
+//----------------------------------------------------------------------------
 void    TMarkers::RemoveMarkers ( const char* greppedwith, MarkerType type )
 {
 KeepFlags   ( type, AllMarkerTypes );
@@ -1935,6 +1936,7 @@ MarkersDirty    = true;
 }
 
 
+//----------------------------------------------------------------------------
 void    TMarkers::RemoveMarkers ( const TMarkers& removelist, MarkerType type )
 {
 for ( int ki = 0; ki < (int) removelist; ki++ )
@@ -1992,7 +1994,7 @@ for ( int i = 0; i < (int) Markers; i++ ) {
         clippedtags.Append ( new TMarker ( Markers[ i ]->From, from - 1,       Markers[ i ]->Code, Markers[ i ]->Name, Markers[ i ]->Type ) );
         clippedtags.Append ( new TMarker ( to + 1,          Markers[ i ]->To,  Markers[ i ]->Code, Markers[ i ]->Name, Markers[ i ]->Type ) );
 
-        delete ( Markers[ i ] );           // delete current object, but not pointer (yet)
+        delete ( Markers[ i ] );           // delete current object, but not the pointer (yet)
         }
     }
 
@@ -2000,12 +2002,14 @@ for ( int i = 0; i < (int) Markers; i++ ) {
 Markers.Reset ( false );                // some objects are already deleted, only clear-up the pointers now
 
 
-InsertMarkers ( clippedtags );          // this will copy the data..
+InsertMarkers ( clippedtags );          // first copy the data..
 
-                                        // ..so delete the list now.
+                                        // ..so we can now delete the list
 for ( int i = 0; i < (int) clippedtags; i++ )
     delete  clippedtags[ i ];
 
+
+//SortAndCleanMarkers ();
 
 MarkersDirty    = true;
 }
@@ -2023,7 +2027,10 @@ for ( int ki = 0; ki < (int) cliplist; ki++ )
 void    TMarkers::KeepMarkers ( long from, long to, MarkerType type )
 {
 RemoveMarkers ( Lowest<long> (), from - 1,         type );
+
 RemoveMarkers ( to + 1,          Highest<long> (), type );
+
+//SortAndCleanMarkers ();
 }
 
 
