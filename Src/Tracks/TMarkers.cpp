@@ -416,64 +416,6 @@ MarkersDirty    = false;
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::WriteFile ( const char* file, MarkerType type, long mintf, long maxtf )   const
-{
-if ( StringIsEmpty ( file ) )
-    return;
-
-
-if ( GetNumMarkers ( type ) == 0 ) {
-                                        // delete file if no markers of the given type
-    DeleteFileExtended ( file );
-
-    return;
-    }
-
-                                        // requiring both limits for the moment
-bool                testtimelimits  = mintf >= 0 && maxtf >= 0;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // write to file
-ofstream            os ( (char*) TFileName ( file, TFilenameExtendedPath ) );
-
-if ( os.fail () ) {
-    ShowMessage ( "Marker file can not be written to disk!" NewLine "Check if disk is full or if file is write-protected...", file, ShowMessageWarning );
-    return;
-    }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-WriteMarkerHeader ( os );
-
-
-for ( int i = 0; i < (int) Markers; i++ ) {
-
-    if ( ! IsFlag ( Markers[ i ]->Type, type ) )
-        continue;
-
-
-    if ( testtimelimits ) {
-                                        // in case markers are sorted, we can get out here
-        if ( Markers[ i ]->From > maxtf )
-            break;
-
-                                        // optionally keeping only those markers completely within time interval
-        if ( ! IsInsideLimits ( Markers[ i ]->From, Markers[ i ]->To, mintf, maxtf ) )
-            continue;
-        }
-
-
-    os  << Markers[ i ];
-    } // for markers
-
-
-os.close ();
-}
-
-
-//----------------------------------------------------------------------------
 void    TMarkers::Show ( const char* title )    const
 {
 if ( IsEmpty () ) {
@@ -773,6 +715,40 @@ else
 
 
 //----------------------------------------------------------------------------
+void    TMarkers::SortMarkers ()
+{
+_Sort ( 0, GetNumMarkers () - 1 );
+
+Markers.UpdateIndexes ( true );
+}
+
+                                        // Works directly with atoms from the list
+void    TMarkers::_Sort ( int l, int r )
+{
+if ( r <= l )   return;
+
+
+int                 i               = l;
+int                 j               = r;
+const TMarker*      v               = Markers[ ( l + r ) / 2 ];
+
+
+do {
+    while ( *Markers[ i ] < *v            )     i++;
+    while ( *v            < *Markers[ j ] )     j--;
+
+    if ( i <= j )
+        Permutate ( Markers.GetAtom ( i++ )->To, Markers.GetAtom ( j-- )->To ); // atoms actually remain in place, we just permutate the To pointers
+
+    } while ( i <= j );
+
+
+if ( l < j )    _Sort ( l, j );
+if ( i < r )    _Sort ( i, r );
+}
+
+
+//----------------------------------------------------------------------------
 const TMarker*  TMarkers::GetMarker ( const char* markername )  const
 {
 for ( int i = 0; i < (int) Markers; i++ )
@@ -782,36 +758,6 @@ for ( int i = 0; i < (int) Markers; i++ )
         return  Markers[ i ];
 
 return  0;
-}
-
-
-//----------------------------------------------------------------------------
-                                        // Sets MarkersDirty; Sorting
-MarkersError    TMarkers::SetMarkers ( const TMarkers& markers )
-{
-ResetMarkers    ();
-
-return  InsertMarkers ( markers );
-}
-
-
-//----------------------------------------------------------------------------
-                                        // Sets MarkersDirty; Sorting
-MarkersError    TMarkers::SetMarkers ( const MarkersList& markerslist )
-{
-ResetMarkers    ();
-
-return  InsertMarkers ( markerslist );
-}
-
-
-//----------------------------------------------------------------------------
-                                        // Sets MarkersDirty; Sorting
-MarkersError    TMarkers::SetMarkers ( const char* file )
-{
-ResetMarkers    ();
-                                        // Currently ignores error from file
-return  InsertMarkers ( file );
 }
 
 
@@ -935,6 +881,69 @@ return  i;
 
 
 //----------------------------------------------------------------------------
+                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
+MarkersError    TMarkers::InsertMarkers ( const TMarkers& markers, const char* filteredwith )
+{
+AppendMarkers ( markers, filteredwith );
+
+return  SortAndCleanMarkers ();
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
+MarkersError    TMarkers::InsertMarkers ( const MarkersList& markerslist )
+{
+AppendMarkers ( markerslist );
+
+return  SortAndCleanMarkers ();
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
+MarkersError    TMarkers::InsertMarkers ( const char* file )
+{
+MarkersError        readerror       = AppendMarkers ( file );
+
+MarkersError        cleanerror      = SortAndCleanMarkers ();
+                                        // forward any error from ReadFile
+return  readerror  == MarkersRemovedDuplicate
+     || cleanerror == MarkersRemovedDuplicate ? MarkersRemovedDuplicate : NoMarkersError;
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Sets MarkersDirty; Sorting
+MarkersError    TMarkers::SetMarkers ( const TMarkers& markers )
+{
+ResetMarkers    ();
+
+return  InsertMarkers ( markers );
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Sets MarkersDirty; Sorting
+MarkersError    TMarkers::SetMarkers ( const MarkersList& markerslist )
+{
+ResetMarkers    ();
+
+return  InsertMarkers ( markerslist );
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Sets MarkersDirty; Sorting
+MarkersError    TMarkers::SetMarkers ( const char* file )
+{
+ResetMarkers    ();
+                                        // Currently ignores error from file
+return  InsertMarkers ( file );
+}
+
+
+//----------------------------------------------------------------------------
                                         // Read from file, then sort
                                         // Returned error codes: NoMarkersError, MarkersRemovedDuplicate, MarkersFileMissing, MarkersFileError
 MarkersError    TMarkers::ReadFile ( const char* file )
@@ -1030,69 +1039,60 @@ return  SortAndCleanMarkers ();
 
 
 //----------------------------------------------------------------------------
-                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
-MarkersError    TMarkers::InsertMarkers ( const char* file )
+void    TMarkers::WriteFile ( const char* file, MarkerType type, long mintf, long maxtf )   const
 {
-MarkersError        readerror       = AppendMarkers ( file );
-
-MarkersError        cleanerror      = SortAndCleanMarkers ();
-                                        // forward any error from ReadFile
-return  readerror  == MarkersRemovedDuplicate
-     || cleanerror == MarkersRemovedDuplicate ? MarkersRemovedDuplicate : NoMarkersError;
-}
+if ( StringIsEmpty ( file ) )
+    return;
 
 
-//----------------------------------------------------------------------------
-                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
-MarkersError    TMarkers::InsertMarkers ( const TMarkers& markers, const char* filteredwith )
-{
-AppendMarkers ( markers, filteredwith );
+if ( GetNumMarkers ( type ) == 0 ) {
+                                        // delete file if no markers of the given type
+    DeleteFileExtended ( file );
 
-return  SortAndCleanMarkers ();
-}
+    return;
+    }
 
-
-//----------------------------------------------------------------------------
-                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
-MarkersError    TMarkers::InsertMarkers ( const MarkersList& markerslist )
-{
-AppendMarkers ( markerslist );
-
-return  SortAndCleanMarkers ();
-}
+                                        // requiring both limits for the moment
+bool                testtimelimits  = mintf >= 0 && maxtf >= 0;
 
 
-//----------------------------------------------------------------------------
-void    TMarkers::SortMarkers ()
-{
-_Sort ( 0, GetNumMarkers () - 1 );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // write to file
+ofstream            os ( (char*) TFileName ( file, TFilenameExtendedPath ) );
 
-Markers.UpdateIndexes ( true );
-}
-
-                                        // Works directly with atoms from the list
-void    TMarkers::_Sort ( int l, int r )
-{
-if ( r <= l )   return;
+if ( os.fail () ) {
+    ShowMessage ( "Marker file can not be written to disk!" NewLine "Check if disk is full or if file is write-protected...", file, ShowMessageWarning );
+    return;
+    }
 
 
-int                 i               = l;
-int                 j               = r;
-const TMarker*      v               = Markers[ ( l + r ) / 2 ];
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+WriteMarkerHeader ( os );
 
 
-do {
-    while ( *Markers[ i ] < *v            )     i++;
-    while ( *v            < *Markers[ j ] )     j--;
+for ( int i = 0; i < (int) Markers; i++ ) {
 
-    if ( i <= j )
-        Permutate ( Markers.GetAtom ( i++ )->To, Markers.GetAtom ( j-- )->To ); // atoms actually remain in place, we just permutate the To pointers
-
-    } while ( i <= j );
+    if ( ! IsFlag ( Markers[ i ]->Type, type ) )
+        continue;
 
 
-if ( l < j )    _Sort ( l, j );
-if ( i < r )    _Sort ( i, r );
+    if ( testtimelimits ) {
+                                        // in case markers are sorted, we can get out here
+        if ( Markers[ i ]->From > maxtf )
+            break;
+
+                                        // optionally keeping only those markers completely within time interval
+        if ( ! IsInsideLimits ( Markers[ i ]->From, Markers[ i ]->To, mintf, maxtf ) )
+            continue;
+        }
+
+
+    os  << Markers[ i ];
+    } // for markers
+
+
+os.close ();
 }
 
 
@@ -1751,68 +1751,67 @@ if ( IsEmpty () )
     return;
 
 
-MarkersList             remaining ( Markers ); // do a local copy of pointers
-TMarker*                toaggregate;        // current marker we try to aggregate
-TMarker*                todelete;
-bool                    mergedsome;
-bool                    namesok;
-bool                    markersdirty        = false;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Make sure markers are sorted!
+SortAndCleanMarkers ();
+
+
+MarkersList         remaining ( Markers );  // do a local copy of pointers
+bool                mergedsome;
+bool                markersdirty    = false;
+TListIterator<TMarker>  iterator;
 
                                         // clear current pointer list
 Markers.Reset ( false );
 
 
-for ( ; (bool) remaining; ) {
-                                        // pick next marker, try to upgrade it
+while ( (bool) remaining ) {
+                                        // pick first remaining marker, and try to extend it with any of the following ones
                                         // use the pointer, we will not destroy the actual object, just updating it
-    toaggregate     =  remaining.GetFirst ();
-    remaining.Remove ( remaining.GetFirst () );
+    TMarker*    toaggregate     =  remaining.GetFirst ();
+
+    remaining.Remove ( toaggregate );
 
                                         // try to merge one of the remaining marker
     do {
         mergedsome      = false;
 
-                                        // loop into remaining markers for a match to the current aggregate
-        for ( int i = 0; i < (int) remaining; i++ ) {
+                                        // When playing directly within the list, DO NOT USE []
+        for ( iterator.SetForward ( remaining ); (bool) iterator; ) {
 
-            namesok     = identicalnames && StringIs ( toaggregate->Name, remaining[ i ]->Name ) || ! identicalnames;
+                                        // we can break right away here, as the markers are first sorted on the From field
+            if ( iterator()->From > toaggregate->To + 1 )
+                break;
+
+
+            bool    namesok     =   identicalnames && StringIs ( toaggregate->Name, iterator()->Name )
+                               || ! identicalnames;
 
                                         // merge on the right?
-            if      ( ( toaggregate->To == remaining[ i ]->From || toaggregate->To == remaining[ i ]->From - 1 )
+            if      ( (    toaggregate->To == iterator()->From 
+                        || toaggregate->To == iterator()->From - 1 )
                    && namesok ) {
 
-                toaggregate->To     = remaining[ i ]->To;
+                toaggregate->To     = iterator()->To;
 
-                todelete            = remaining[ i ];
+                TMarker* todelete   = iterator();
 
                 remaining.Remove    ( todelete );   // remove object from list
 
                 delete              ( todelete );   // remove object from memory
 
                 mergedsome          = true;
+
                 break;
                 }
-                                        // or merge on the left?
-            else if ( ( toaggregate->From == remaining[ i ]->To || toaggregate->From == remaining[ i ]->To + 1 )
-                   && namesok ) {
+            else 
+                iterator.Next ();
 
-                toaggregate->From   = remaining[ i ]->From;
-
-                todelete            = remaining[ i ];
-
-                remaining.Remove    ( todelete );   // remove object from list
-
-                delete              ( todelete );   // remove object from memory
-
-                mergedsome          = true;
-                break;
-                }
-
-            } // foreach remaining
+            } // for remaining
 
 
-        markersdirty  |= mergedsome;
-
+        if ( mergedsome )
+            markersdirty    = true;
                              // length test will not work correctly, if markers are not sorted
         } while ( mergedsome && toaggregate->Length () <= mergedmaxlength );
 
@@ -1823,12 +1822,14 @@ for ( ; (bool) remaining; ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( markersdirty )
-    Markers.UpdateIndexes ( true );
-                                        // either old MarkersDirty state, or it has been actually updated
-MarkersDirty   |= markersdirty;
+if ( markersdirty ) {
 
-SortAndCleanMarkers ();
+    Markers.UpdateIndexes ( true );
+
+    SortAndCleanMarkers ();
+
+    MarkersDirty    = true;
+    }
 }
 
 
@@ -1860,7 +1861,10 @@ if ( (int) markersok == (int) Markers )     // nothing to remove
     return;
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 if ( markersok.IsEmpty () )                 // all to be erased
+
     Markers.Reset ( false );                // objects are already deleted, only clear-up the pointers now
 
 else {
@@ -1921,7 +1925,10 @@ if ( (int) markersok == (int) Markers )     // nothing to remove
     return;
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 if ( markersok.IsEmpty () )                 // all to be erased
+
     Markers.Reset ( false );                // objects are already deleted, only clear-up the pointers now
 
 else {

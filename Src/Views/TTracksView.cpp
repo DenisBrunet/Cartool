@@ -8702,13 +8702,13 @@ if ( EEGDoc->GetNumMarkers ( MarkerTypeUserCoded ) == 0 ) {
     return;
     }
 
-if ( ! GetAnswerFromUser ( "Are you sure you want to merge identical contiguous markers (no undo) ?", "Merging Contiguous Markers" ) )
+if ( ! GetAnswerFromUser ( "Are you sure you want to merge identical," NewLine "contiguous markers (no undo) ?", "Merging Contiguous Markers" ) )
     return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compact identical markers, resulting markers could be of any length
-EEGDoc->CompactConsecutiveMarkers ( true, Highest<long> () );
+EEGDoc->CompactConsecutiveMarkers ( true );
 
 
 if ( EEGDoc->AreMarkersDirty () ) {
