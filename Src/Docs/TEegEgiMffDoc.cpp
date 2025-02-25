@@ -253,7 +253,7 @@ for ( int i = 0; i < (int) eventsfiles; i++ ) {
                 markercode     = (MarkerCode) StringToInteger ( code );
                                         // ready, insert (ie by sorting) new marker
                                         // insert as temp, for further merging overlapping triggers
-                InsertMarker ( TMarker ( tf1, tf2, markercode, code, /*markertype*/ MarkerTypeTemp ) );
+                AppendMarker ( TMarker ( tf1, tf2, markercode, code, /*markertype*/ MarkerTypeTemp ) );
                 } // if dinfile
 
             else { // Multi-Port ECI
@@ -270,7 +270,7 @@ for ( int i = 0; i < (int) eventsfiles; i++ ) {
                 markercode     = (MarkerCode) 100;
 
                                         // ready, insert (ie by sorting) new marker
-//              InsertMarker ( TMarker ( tf1, tf2, markercode, markername, markertype ) );
+//              AppendMarker ( TMarker ( tf1, tf2, markercode, markername, markertype ) );
 
 
                                         // scan associated keys
@@ -292,7 +292,7 @@ for ( int i = 0; i < (int) eventsfiles; i++ ) {
                     StringClip ( keycode, MarkerNameMaxLength - 1 );
 
                                         // add "key" marker, associated to current marker
-//                  InsertMarker ( TMarker ( tf1, tf2, markercode, keycode, markertype ) );
+//                  AppendMarker ( TMarker ( tf1, tf2, markercode, keycode, markertype ) );
 
                                         // append to a single marker, but length is not enough
                                         // !don't put ',' in the name, BrainVision doesn't like that!
@@ -304,7 +304,7 @@ for ( int i = 0; i < (int) eventsfiles; i++ ) {
                                         // append to a big, single marker (note that length can be a problem)
                 StringClip ( markername, MarkerNameMaxLength - 1 );
 
-                InsertMarker ( TMarker ( tf1, tf2, markercode, markername, markertype ) );
+                AppendMarker ( TMarker ( tf1, tf2, markercode, markername, markertype ) );
 
                 } // if Multi-Port ECI
 
@@ -313,10 +313,9 @@ for ( int i = 0; i < (int) eventsfiles; i++ ) {
         } while ( fiv.good () ); // read event
 
 
-//    allcodes.Show ( "all codes" );
+    SortAndCleanMarkers ();
 
     fiv.close ();
-
     } // for eventsfile
 
 

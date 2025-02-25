@@ -2804,8 +2804,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
                 } // num triggers
 
 
-            if ( docseg->AreMarkersDirty () )
-                docseg->CommitMarkers ( true );
+            docseg->CommitMarkers ();
 
                                         // refresh the views with what remains of markers
             docseg->NotifyDocViews ( vnReloadData, EV_VN_RELOADDATA_TRG );

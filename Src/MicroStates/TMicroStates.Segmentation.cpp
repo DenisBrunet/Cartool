@@ -2438,8 +2438,7 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
             sprintf ( buff, "S%0d", lastlabel + 1 );
             GDoc->GetEegDoc( curreeg )->InsertMarker ( TMarker ( AbsTFToRelTF[ tf ], AbsTFToRelTF[ tf ], (MarkerCode) (lastlabel + 1), buff, MarkerTypeTrigger ) );
 
-            if ( GDoc->GetEegDoc( curreeg )->AreMarkersDirty () )
-                GDoc->GetEegDoc( curreeg )->CommitMarkers ( true );
+            GDoc->GetEegDoc( curreeg )->CommitMarkers ();
             }
 
         starteeg = false;

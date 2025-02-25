@@ -229,6 +229,7 @@ public:
 
 
     void            ClipFileName            ( int from, int to );   // only the (last) file name part
+    char*           AddExtension            ( const char* ext    )  { return  crtl::AddExtension     ( FileName, ext    );  }
     char*           ReplaceExtension        ( const char* newext )  { return  crtl::ReplaceExtension ( FileName, newext );  }
     char*           ReplaceDir              ( const char* newdir )  { return  crtl::ReplaceDir       ( FileName, newdir );  }
     char*           GetFilename             ()                      { return  crtl::GetFilename      ( FileName );          }

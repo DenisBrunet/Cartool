@@ -168,6 +168,9 @@ if ( numtags != 0 ) {
 
     delete []   TagDefList;
     }
+
+
+SortAndCleanMarkers ();
 }
 
 

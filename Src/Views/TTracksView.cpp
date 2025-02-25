@@ -8092,8 +8092,7 @@ EEGDoc->AppendMarker ( TMarker ( TFCursor.GetPosMin (), TFCursor.GetPosMax (), M
 
 EEGDoc->SortAndCleanMarkers ();
 
-if ( EEGDoc->AreMarkersDirty () )
-    EEGDoc->CommitMarkers ( true );
+EEGDoc->CommitMarkers ();
 
 
 ShowTags    = true;
@@ -8195,7 +8194,7 @@ if ( EEGDoc->AreMarkersDirty () ) {
 
     EEGDoc->SortAndCleanMarkers ();
                                         // just commit once
-    EEGDoc->CommitMarkers ( true );
+    EEGDoc->CommitMarkers ();
                                         // assume we want to see the results!
     ShowTags    = true;
 
@@ -8269,11 +8268,9 @@ for ( int i = 0; i < markers.Num (); i++ ) {
 
 if ( splitmarkers.IsNotEmpty () ) {
 
-    EEGDoc->AppendMarkers       ( splitmarkers );
-
-    EEGDoc->SortAndCleanMarkers ();
+    EEGDoc->InsertMarkers   ( splitmarkers );
                                         // just commit once
-    EEGDoc->CommitMarkers       ( true );
+    EEGDoc->CommitMarkers   ();
 
                                         // assume we want to see the results!
     ShowTags    = true;
@@ -8366,7 +8363,7 @@ for ( int i = 0; i < markers.Num (); i++ ) {
 
 if ( EEGDoc->AreMarkersDirty () ) {
 
-    EEGDoc->CommitMarkers ( true );
+    EEGDoc->CommitMarkers ();
                                         // assume we want to see the results!
     ShowTags    = true;
 
@@ -8473,7 +8470,7 @@ for ( int i = 0; i < markers.Num (); i++ ) {
 
 if ( EEGDoc->AreMarkersDirty () ) {
 
-    EEGDoc->CommitMarkers ( true );
+    EEGDoc->CommitMarkers ();
                                         // assume we want to see the results!
     ShowTags    = true;
 
@@ -8548,7 +8545,7 @@ for ( int i = 0; i < markers.Num (); i++ ) {
 
 if ( EEGDoc->AreMarkersDirty () ) {
 
-    EEGDoc->CommitMarkers ( true );
+    EEGDoc->CommitMarkers ();
                                         // assume we want to see the results!
     ShowTags    = true;
 
@@ -8679,7 +8676,7 @@ if ( markersdirty ) {
 
     EEGDoc->SetMarkers      ( newmarkers ); // will sort & clean markers
 
-    EEGDoc->CommitMarkers   ( true );
+    EEGDoc->CommitMarkers   ();
 
                                         // assuming user wants to see the results..
     ShowTags    = true;
@@ -8711,11 +8708,12 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to merge identical contiguous 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compact identical markers, resulting markers could be of any length
-if ( EEGDoc->CompactConsecutiveMarkers ( true, Highest<long> () ) ) {
-                                        // some markers added?
-    EEGDoc->CommitMarkers ( true );
-                                        // reloading everything will get rid of the duplicates!
-    EEGDoc->InitMarkers ();
+EEGDoc->CompactConsecutiveMarkers ( true, Highest<long> () );
+
+
+if ( EEGDoc->AreMarkersDirty () ) {
+
+    EEGDoc->CommitMarkers ();
 
                                         // assume we want to see the results!
     ShowTags    = true;
@@ -8853,12 +8851,9 @@ if ( StringIsEmpty ( file ) )
     return;
 
 
-EEGDoc->AppendMarkers ( file );
+EEGDoc->InsertMarkers ( file );
 
-EEGDoc->SortAndCleanMarkers ();
-
-//if ( EEGDoc->AreMarkersDirty () )
-    EEGDoc->CommitMarkers ( true );
+EEGDoc->CommitMarkers ();
 
 
 ShowTags    = true;
@@ -8892,8 +8887,7 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to delete the markers within c
 
 EEGDoc->RemoveMarkers ( TFCursor.GetPosMin(), TFCursor.GetPosMax(), MarkerTypeMarker );
 
-if ( EEGDoc->AreMarkersDirty () )
-    EEGDoc->CommitMarkers ( true );
+EEGDoc->CommitMarkers ();
 
 
 ShowTags    = true;
@@ -8927,8 +8921,7 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to delete these markers?" NewL
 
 EEGDoc->RemoveMarkers ( regexp, MarkerTypeUserCoded );
 
-if ( EEGDoc->AreMarkersDirty () )
-    EEGDoc->CommitMarkers ( true );
+EEGDoc->CommitMarkers ();
 
 
 //ShowTags    = false;
@@ -8949,9 +8942,11 @@ if ( ! getfile.Execute () )
     return;
 
 
-EEGDoc->CommitMarkers ();
+EEGDoc->CommitMarkers   ( false, Verbose );
 
-EEGDoc->InitMarkers ( getfile );
+EEGDoc->InitMarkers     ( getfile );
+
+EEGDoc->CommitMarkers   ();
 
 
 ShowTags    = true;
@@ -8971,8 +8966,7 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to delete ALL markers?" NewLin
                                         // OK, do it!
 EEGDoc->RemoveMarkers ( MarkerTypeMarker );
 
-if ( EEGDoc->AreMarkersDirty () )
-    EEGDoc->CommitMarkers ( true );
+EEGDoc->CommitMarkers ();
 
 
 ShowTags    = false;
@@ -9060,8 +9054,7 @@ if ( StringIsEmpty ( markerprefix ) )
 //char                regexp[ MarkerNameMaxLength ];
 //StringCopy ( regexp, "(Bad|bad)" );
 //EEGDoc->RemoveMarkers ( MarkerTypeUserCoded, regexp );
-//if ( EEGDoc->AreMarkersDirty () )
-//    EEGDoc->CommitMarkers ( true );
+//EEGDoc->CommitMarkers ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -9081,11 +9074,9 @@ badepochs.BadEpochsToMarkers    (   0,      filename,
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Insert to current document
-EEGDoc->AppendMarkers ( badepochs );
-
-EEGDoc->SortAndCleanMarkers ();
+EEGDoc->InsertMarkers ( badepochs );
                                         // push the new markers to disk now
-EEGDoc->CommitMarkers ( true );
+EEGDoc->CommitMarkers ();
 
                                         // long story to show the results
 SetMarkerType ( MarkerTypeMarker );
@@ -9150,9 +9141,7 @@ if ( EEGDoc->AreMarkersDirty () ) {
 
     EEGDoc->SortAndCleanMarkers ();
 
-    EEGDoc->CommitMarkers ( true );
-                                        // reloading everything will get rid of the duplicates!
-//  EEGDoc->InitMarkers ();
+    EEGDoc->CommitMarkers ();
 
                                         // assume we want to see the results!
     SetMarkerType ( MarkerTypeMarker );
@@ -11616,8 +11605,7 @@ for ( int tf = 0; tf < numtf; ++tf ) {
 //    int                 step            = max ( Round ( ( totf - fromtf + 1 ) / 150.0 ), 1 );
 //    EEGDoc->AppendMarker ( TMarker ( fromtf + tf / 3 * step + ( tf % 3 - 1 ), fromtf + tf / 3 * step + ( tf % 3 - 1 ), 100, goodtf[ tf ] ? "Analyze OK" : "Analyze BAD", MarkerTypeMarker ) );
 //    EEGDoc->SortAndCleanMarkers ();
-//    if ( EEGDoc->AreMarkersDirty () )
-//        EEGDoc->CommitMarkers ( true );
+//    EEGDoc->CommitMarkers ();
     }
 
 //EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );

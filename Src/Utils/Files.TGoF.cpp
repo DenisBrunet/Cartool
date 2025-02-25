@@ -2280,7 +2280,7 @@ for ( int rsi = 0; rsi < numresamples; rsi++ ) {
         randfile    = mappedtf ( randindex[ i ], FileIndex );
         randtf0     = mappedtf ( randindex[ i ], TFIndex   );
 
-                        // assign to this file's list,   and TF within that file
+                        // assign to this file's list,         and TF within that file
         writingepochslist[ randfile ].AppendMarker ( TMarker ( randtf0, randtf0, 0, "RandMarker" /*TagNameBlock*/, MarkerTypeTemp ) );
 
         } // for each sample

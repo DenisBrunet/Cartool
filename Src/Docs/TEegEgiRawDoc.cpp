@@ -155,6 +155,9 @@ for ( tfi=1; tfi < NumTimeFrames; tfi++ ) {
         AppendMarker ( TMarker ( tfi, tfi, dincode, dinname, MarkerTypeTrigger ) );
         }
     }
+
+
+SortAndCleanMarkers ();
 }
 
 

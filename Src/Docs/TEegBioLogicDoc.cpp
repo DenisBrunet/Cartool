@@ -146,13 +146,13 @@ if ( ifsmrk.good () ) {
 
             case    MARKER_TAG :
                 tf = mrk.marker_point_num - frompn;
-                InsertMarker ( TMarker ( tf, tf, EEGBIODOC_MARKERCODE_TAG, EEGBIODOC_MARKERTEXT_TAG, MarkerTypeTrigger ) );
+                AppendMarker ( TMarker ( tf, tf, EEGBIODOC_MARKERCODE_TAG, EEGBIODOC_MARKERTEXT_TAG, MarkerTypeTrigger ) );
 
                 break;
 
             case    MARKER_PUSH_BUTTON :
                 tf = mrk.marker_point_num - frompn;
-                InsertMarker ( TMarker ( tf, tf, EEGBIODOC_MARKERCODE_PUSHB, EEGBIODOC_MARKERTEXT_PUSHB, MarkerTypeTrigger ) );
+                AppendMarker ( TMarker ( tf, tf, EEGBIODOC_MARKERCODE_PUSHB, EEGBIODOC_MARKERTEXT_PUSHB, MarkerTypeTrigger ) );
 
                 break;
 
@@ -161,7 +161,7 @@ if ( ifsmrk.good () ) {
                 ifsmrk.read ( (char *) &datac, sizeof ( datac ) );
 
                 tf = mrk.marker_point_num - frompn;
-                InsertMarker ( TMarker ( tf, tf, datac.marker_comment_type, datac.marker_comment_text, MarkerTypeTrigger ) );
+                AppendMarker ( TMarker ( tf, tf, datac.marker_comment_type, datac.marker_comment_text, MarkerTypeTrigger ) );
 
                 break;
 
@@ -172,6 +172,8 @@ if ( ifsmrk.good () ) {
 
         } while ( (long) mrk.marker_next_offset != MARKER_TERMINATOR && ifsmrk.good() && !breakloop );
 
+
+    SortAndCleanMarkers ();
 
     ifsmrk.close ();
     }

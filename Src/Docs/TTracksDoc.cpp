@@ -153,12 +153,11 @@ if ( ! IsOpen () ) {
         ReferenceTracks = TSelection ( TotalElectrodes, OrderSorted );
         ReferenceTracks.Reset ();
         }
-
     
-    InitMarkers     ();
 
-    if ( MarkersDirty )                 // file had some inconsistencies? overwrite it
-        CommitMarkers ( true );
+    InitMarkers     ();
+                                        // rewrite file if it had some inconsistencies
+    CommitMarkers   ();
 
     InitLimits      ( InitFast );       // sets both min/max limits and AtomType
 
@@ -1186,12 +1185,15 @@ if ( ! UpdateSession ( newcs ) )        // some sessions can be fishy
 CurrSequence    = newcs;
 
                                         // do some postprocessing to update state variables
-InitDateTime ();
+InitDateTime    ();
 
-
+                                        // markers file should already be up-to-date
 //CommitMarkers ();
+
                                         // this will delete all existing markers, then load the new ones
-InitMarkers ();
+InitMarkers     ();
+                                        // rewrite file if it had some inconsistencies
+CommitMarkers   ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1147,21 +1147,18 @@ if ( mergemarkers ) {
 
         } // for markeri
 
-    EEGDoc->AppendMarkers   ( mergedmarkers );
+    EEGDoc->InsertMarkers   ( mergedmarkers );
     } // mergemarkers
 
 else {
 
-    EEGDoc->AppendMarkers   ( newmarkers    );
+    EEGDoc->InsertMarkers   ( newmarkers    );
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Sort and clean-up
-EEGDoc->SortAndCleanMarkers ();
-
                                         // Time to save to file!
-EEGDoc->CommitMarkers ( true );
+EEGDoc->CommitMarkers ();
 
 
 Gauge.HappyEnd ();

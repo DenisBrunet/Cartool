@@ -170,6 +170,9 @@ if ( setup.ContinousType == ContinousTypeEventTable1
 else if (  setup.ContinousType == ContinousType2ExtraChannels ) {
                                         // TODO, when the case actually happens
     };
+
+
+SortAndCleanMarkers ();
 }
 
 

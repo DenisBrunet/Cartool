@@ -152,6 +152,9 @@ for ( tfi=1; tfi < NumTimeFrames; tfi++ ) {
 
     oldbp   = bp;
     }
+
+
+SortAndCleanMarkers ();
 }
 
 

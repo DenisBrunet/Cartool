@@ -105,6 +105,9 @@ for ( int r=0; r < NumRecords; r++ ) {
     if ( r < NumRecords - 1 )
         ifs.seekg ( RecordSize[ r ] - sizeof ( RAWRHDR ), ios::cur );
     } // for records
+
+
+SortAndCleanMarkers ();
 }
 
 

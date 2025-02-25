@@ -191,6 +191,9 @@ if ( l != 0 ) {                         // reach the EOF with an unfinished trig
 
     AppendMarker ( TMarker ( starttf, NumTimeFrames - 1, (MarkerCode) l, triggername, MarkerTypeTrigger ) );
     }
+
+
+SortAndCleanMarkers ();
 }
 
 

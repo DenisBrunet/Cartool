@@ -1364,10 +1364,12 @@ if ( markers.size () ) {
         to      = Truncate ( MillisecondsToTimeFrame ( markers[ i ].To   - offsetms + 0.5, SamplingFrequency ) );
 
         if ( IsInsideLimits ( from, to, (long) 0, NumTimeFrames - 1 ) )
-//          AppendMarker ( TMarker ( from, to, markers[i].Code, markers[i].Name, markers[i].Type ) );
-            InsertMarker ( TMarker ( from, to, markers[i].Code, markers[i].Name, markers[i].Type ) );
+            AppendMarker ( TMarker ( from, to, markers[i].Code, markers[i].Name, markers[i].Type ) );
         }
     }
+
+
+SortAndCleanMarkers ();
 }
 
 
