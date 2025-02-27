@@ -98,6 +98,7 @@ DEFINE_RESPONSE_TABLE1 (TInverseView, TSecondaryView)
     EV_VN_RELOADDATA,
     EV_VN_NEWHIGHLIGHTED,
     EV_VN_VIEWUPDATED,
+    EV_VN_SESSIONUPDATED,
 
     EV_COMMAND          ( IDB_2OBJECT,              Cm2Object ),
     EV_COMMAND          ( IDB_ORIENT,               CmOrient ),
@@ -2903,19 +2904,6 @@ if ( MButtonDown ) {
 
 
 //----------------------------------------------------------------------------
-bool    TInverseView::VnViewUpdated ( TBaseView *view )
-{
-if ( !view )
-    return true;
-
-//Invalidate ( false );
-ShowNow ();
-
-return true;
-}
-
-
-//----------------------------------------------------------------------------
 void    TInverseView::CmMriEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( Show3DMri || ( (bool) ClipPlane[0] || (bool) ClipPlane[1] || (bool) ClipPlane[2] ) ); //|| Show2DIs );
@@ -3740,17 +3728,20 @@ if ( (bool) AnimTF ) {
     }
 
 
-MRCNumTF       = TFCursor.GetPosMax() - TFCursor.GetPosMin() + 1;
+MRCNumTF       = TFCursor.GetLength ();
 
 
 switch  ( wparam ) {
+
     case    IDB_RANGEAVE:
+
         ManageRangeCursor   = MRCAverage;
         MRCNumTF   = 1;
         GetInverse ( TFCursor.GetPosMin(), TFCursor.GetPosMax() );
         break;
 
     case    IDB_RANGESEQ:
+
         ManageRangeCursor   = MRCSequence;
 
         CmSetStepTF ( 0 );
@@ -3758,6 +3749,7 @@ switch  ( wparam ) {
         break;
 
     case    IDB_RANGEANI:
+
         ManageRangeCursor   = MRCAnimation;
 
         AnimTF.Stop ();
@@ -3796,7 +3788,7 @@ switch ( timerId ) {
             AnimTF.Stop ();
                                         // reload everything
             TFCursor    = SavedTFCursor;
-            MRCNumTF    = TFCursor.GetPosMax() - TFCursor.GetPosMin() + 1;
+            MRCNumTF    = TFCursor.GetLength ();
             }
         else {                          // allow to change speed
             AnimTF.SetInterval ( MRCStepTF <= 4 ? 20 : 2 * MRCStepTF + 20 );
@@ -4206,7 +4198,7 @@ if ( ! IsFriendView ( tfc->SentTo ) )
 if ( *tfc == TFCursor )    return false;
 
 
-long    oldMRCNumTF = TFCursor.GetLength ();
+long                oldMRCNumTF     = TFCursor.GetLength ();
 
 
 TFCursor            = *tfc;             // transfer positions
@@ -4272,46 +4264,47 @@ Rois->Set ();
 }
 
 
+//----------------------------------------------------------------------------
 bool    TInverseView::VnReloadData ( int what )
 {
 switch ( what ) {
 
-  case EV_VN_RELOADDATA_REF:
-  case EV_VN_RELOADDATA_EEG:
-
-    SearchAndSetIntensity ();
-
-    IsSignedData        = ! ISDoc ->IsAbsolute ( AtomTypeUseCurrent );
-
-    SetColorTable ( ISDoc->GetAtomType ( AtomTypeUseCurrent ) );
-
-    SetItemsInWindow ();
-
-    RedoSurfaceIS = true;
-
-//  Invalidate ( false );
-    ShowNow ( RDW_INVALIDATE | RDW_UPDATENOW );
-
-    break;
-
-
-  case EV_VN_RELOADDATA_CAPTION:
-
-    UpdateCaption ();
-
-    break;
-
-
-  case EV_VN_RELOADDATA_DOCPOINTERS:
-
-    ReloadRoi ();
-
-    if ( ! Rois )
+    case EV_VN_RELOADDATA_REF:
+    case EV_VN_RELOADDATA_EEG:
+    
+        SearchAndSetIntensity ();
+    
+        IsSignedData        = ! ISDoc ->IsAbsolute ( AtomTypeUseCurrent );
+    
+        SetColorTable ( ISDoc->GetAtomType ( AtomTypeUseCurrent ) );
+    
+        SetItemsInWindow ();
+    
+        RedoSurfaceIS = true;
+    
+//      Invalidate ( false );
+        ShowNow ( RDW_INVALIDATE | RDW_UPDATENOW );
+    
         break;
-
-    Invalidate ( false );
-    break;
-
+    
+    
+    case EV_VN_RELOADDATA_CAPTION:
+    
+        UpdateCaption ();
+    
+        break;
+    
+    
+    case EV_VN_RELOADDATA_DOCPOINTERS:
+    
+        ReloadRoi ();
+    
+        if ( ! Rois )
+            break;
+    
+        Invalidate ( false );
+        break;
+    
     }
 
 
@@ -4319,6 +4312,7 @@ return true;
 }
 
 
+//----------------------------------------------------------------------------
 bool    TInverseView::VnNewHighlighted ( TSelection *sel )
 {
     // message can be either for electrodes or SPs                                if 0, accept all
@@ -4341,6 +4335,71 @@ if ( Highlighted != *sel ) {
 
 return  true;
 }
+
+
+//----------------------------------------------------------------------------
+bool    TInverseView::VnViewUpdated ( TBaseView *view )
+{
+if ( !view )
+    return true;
+
+//Invalidate ( false );
+ShowNow ();
+
+return true;
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Changing session on-the-fly has little impact, as most data is fetched in real time anyway
+bool    TInverseView::VnSessionUpdated ( void* )
+{
+auto                savedtfcursor   = TFCursor;
+
+TFCursor            = TTFCursor (   EEGDoc,
+                                    0, 
+                                    EEGDoc->GetNumTimeFrames () - 1,
+                                    Clip ( TFCursor.GetPosMin (), (long) 0, EEGDoc->GetNumTimeFrames () - 1 ),
+                                    Clip ( TFCursor.GetPosMax (), (long) 0, EEGDoc->GetNumTimeFrames () - 1 )
+                                 );
+
+TFCursor.SentTo     = savedtfcursor.SentTo;
+TFCursor.SentFrom   = savedtfcursor.SentFrom;
+
+
+MRCNumTF   = TFCursor.GetLength ();
+
+
+if ( ManageRangeCursor == MRCAverage ) {
+    MRCNumTF   = 1;
+
+    GetInverse ( TFCursor.GetPosMin(), TFCursor.GetPosMax() );
+    }
+else if ( IsMRCSequence () ) {
+    if ( MRCNumTF != savedtfcursor.GetLength () )   // reset only in case user changed the selection size
+        CmSetStepTF ( 0 );              // set a default spacing
+    }
+
+
+SearchAndSetIntensity ();
+    
+IsSignedData        = ! ISDoc ->IsAbsolute ( AtomTypeUseCurrent );
+    
+SetColorTable ( ISDoc->GetAtomType ( AtomTypeUseCurrent ) );
+    
+UpdateCaption ();
+
+AnimTF.Stop ();
+
+SetItemsInWindow ();
+
+RedoSurfaceIS = true;
+
+Invalidate ( false );
+
+return  true;
+}
+
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------

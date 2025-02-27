@@ -1147,8 +1147,8 @@ return NumSequences <= 1 ? 0 : CurrSequence + 1;
 //----------------------------------------------------------------------------
 void    TTracksDoc::GoToSession ( int newsession )
 {
-                                        // not allowed to switch if used in a link, or no sessions within eeg
-if ( NumSequences <= 1 || ! CanClose () )
+                                        // switching sessions "live" is now possible, even with linked views
+if ( NumSequences <= 1 )
     return;
 
 

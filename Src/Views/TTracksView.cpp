@@ -6195,6 +6195,8 @@ CDPt                = TInterval (   0,
 CDP                 = &CDPt;
 
 
+auto                savedtfcursor   = TFCursor;
+
 TFCursor            = TTFCursor (   EEGDoc,
                                     CDPt.GetLimitMin  (), 
                                     CDPt.GetLimitMax  (),
@@ -6202,8 +6204,8 @@ TFCursor            = TTFCursor (   EEGDoc,
                                     CDPt.ClipLimit    ( TFCursor.GetPosMax () )
                                  );
 
-TFCursor.SentTo     = 0;
-TFCursor.SentFrom   = GetViewId ();
+TFCursor.SentTo     = savedtfcursor.SentTo;
+TFCursor.SentFrom   = savedtfcursor.SentFrom;
 
 LastCursorPosMin    = -1;
 LastCursorPosMax    = -1;
@@ -6228,6 +6230,10 @@ ReloadBuffers ();
 ResetScaleTracks ();
 
 Invalidate ( false );
+
+if ( TFCursor != savedtfcursor )
+                                        // propagate the new TFCursor
+    EEGDoc->NotifyViews ( vnNewTFCursor, (TParam2) &TFCursor, this );
 
 return  true;
 }

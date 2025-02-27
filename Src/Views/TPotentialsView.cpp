@@ -65,6 +65,7 @@ DEFINE_RESPONSE_TABLE1 (TPotentialsView, TSecondaryView)
     EV_VN_NEWHIGHLIGHTED,
     EV_VN_NEWBADSELECTION,
     EV_VN_VIEWUPDATED,
+    EV_VN_SESSIONUPDATED,
 
     EV_COMMAND          ( IDB_2OBJECT,          Cm2Object ),
     EV_COMMAND          ( IDB_ORIENT,           CmOrient ),
@@ -2073,7 +2074,7 @@ if ( (bool) AnimTF ) {
     return;
     }
 
-MRCNumTF       = TFCursor.GetPosMax() - TFCursor.GetPosMin() + 1;
+MRCNumTF       = TFCursor.GetLength ();
 
 
 GetTracks ( TFCursor.GetPosMin(), TFCursor.GetPosMax() );
@@ -2146,7 +2147,7 @@ switch ( timerId ) {
 //          MRCDoAnimation = false;
                                         // reload everything
             TFCursor    = SavedTFCursor;
-            MRCNumTF    = TFCursor.GetPosMax() - TFCursor.GetPosMin() + 1;
+            MRCNumTF    = TFCursor.GetLength ();
             }
         else {                          // allow to change speed
             AnimTF.SetInterval ( MRCStepTF <= 4 ? 20 : 2 * MRCStepTF + 20 );
@@ -2317,6 +2318,7 @@ if ( TFCursor.IsSplitted() )
 }
 
 
+//----------------------------------------------------------------------------
 bool    TPotentialsView::VnNewTFCursor ( TTFCursor *tfc )
 {
 if ( ! IsFriendView ( tfc->SentTo ) )
@@ -2366,6 +2368,7 @@ return false;
 }
 
 
+//----------------------------------------------------------------------------
 bool    TPotentialsView::VnReloadData (int what)
 {
 switch ( what ) {
@@ -2373,7 +2376,7 @@ switch ( what ) {
   case EV_VN_RELOADDATA_REF:
   case EV_VN_RELOADDATA_EEG:
 
-    MRCNumTF       = TFCursor.GetPosMax() - TFCursor.GetPosMin() + 1;
+    MRCNumTF       = TFCursor.GetLength ();
 
     GetTracks ( TFCursor.GetPosMin(), TFCursor.GetPosMax() );
 
@@ -2410,6 +2413,7 @@ return true;
 }
 
 
+//----------------------------------------------------------------------------
 bool    TPotentialsView::VnNewHighlighted ( TSelection *sel )
 {
     // message can be either for electrodes or SPs                                if 0, accept all
@@ -2432,6 +2436,7 @@ return  true;
 }
 
 
+//----------------------------------------------------------------------------
 bool    TPotentialsView::VnNewBadSelection ( TSelection *sel )
 {
   // if 0, accept all
@@ -2449,6 +2454,7 @@ return  true;
 }
 
 
+//----------------------------------------------------------------------------
 bool    TPotentialsView::VnViewUpdated ( TBaseView *view )
 {
 if ( !view )
@@ -2468,6 +2474,47 @@ ShowNow ();
 
 return true;
 }
+
+
+//----------------------------------------------------------------------------
+                                        // Changing session on-the-fly has little impact, as most data is fetched in real time anyway
+bool    TPotentialsView::VnSessionUpdated ( void* )
+{
+auto                savedtfcursor   = TFCursor;
+
+TFCursor            = TTFCursor (   EEGDoc,
+                                    0, 
+                                    EEGDoc->GetNumTimeFrames () - 1,
+                                    Clip ( TFCursor.GetPosMin (), (long) 0, EEGDoc->GetNumTimeFrames () - 1 ),
+                                    Clip ( TFCursor.GetPosMax (), (long) 0, EEGDoc->GetNumTimeFrames () - 1 )
+                                 );
+
+TFCursor.SentTo     = savedtfcursor.SentTo;
+TFCursor.SentFrom   = savedtfcursor.SentFrom;
+
+
+MRCNumTF    = TFCursor.GetLength ();
+
+GetTracks ( TFCursor.GetPosMin(), TFCursor.GetPosMax() );
+
+SearchAndSetIntensity ( false );
+
+SetColorTable ( EEGDoc->GetAtomType ( AtomTypeUseCurrent ) );
+
+if ( ManageRangeCursor == MRCAverage ) {
+    Average ();
+    MRCNumTF   = 1;
+    }
+
+UpdateCaption ();
+
+SetItemsInWindow ();
+
+Invalidate ( false );
+
+return  true;
+}
+
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------

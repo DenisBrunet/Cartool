@@ -90,7 +90,8 @@ public:
 
     bool                    VnNewTFCursor           ( TTFCursor *tfcursor );
     bool                    VnReloadData            ( int what );
-    virtual bool            VnNewHighlighted        ( TSelection *sel );
+    bool                    VnNewHighlighted        ( TSelection *sel );
+    bool                    VnSessionUpdated        ( void* );
 
     void                    GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane );
     bool                    IsRenderingMode         ( int renderingmode )   const;

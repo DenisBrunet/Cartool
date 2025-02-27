@@ -287,7 +287,11 @@ protected:
     void                    SetupWindow             ();
     void                    DrawMinMax              ( TPointFloat& pos, bool colormin, bool showminmaxcircle, double scale );
 
+    bool                    VnNewTFCursor           ( TTFCursor *tfcursor );
+    bool                    VnReloadData            ( int what );
+    bool                    VnNewHighlighted        ( TSelection *sel );
     bool                    VnViewUpdated           ( TBaseView *view );
+    bool                    VnSessionUpdated        ( void* );
 
     void                    EvSetFocus              ( HWND hwnd )                               {           TBaseView::EvSetFocus         ( hwnd );                       }
     void                    EvKillFocus             ( HWND hwnd )                               {           TBaseView::EvKillFocus        ( hwnd );                       }
@@ -356,10 +360,6 @@ protected:
     void                    CmNextRoisEnable        ( owl::TCommandEnabler &tce );
     void                    CmPrecedenceBeforeEnable( owl::TCommandEnabler &tce );
     void                    CmPrecedenceAfterEnable ( owl::TCommandEnabler &tce );
-
-    virtual bool            VnNewTFCursor           ( TTFCursor *tfcursor );
-    virtual bool            VnReloadData            ( int what );
-    virtual bool            VnNewHighlighted        ( TSelection *sel );
 
     DECLARE_RESPONSE_TABLE (TInverseView);
 };

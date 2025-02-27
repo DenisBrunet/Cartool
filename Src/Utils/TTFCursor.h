@@ -72,6 +72,7 @@ public:
     TTFCursor&      operator    =       ( const TTFCursor& op2 );               // assignation, copy the position through micro-second conversions
 
     bool            operator    ==      ( const TTFCursor& op2 )        const;  // equal if both cursors return the same position in micro-seconds
+    bool            operator    !=      ( const TTFCursor& op2 )        const   { return  ! ( *this == op2 ); }
 
 
 private:
