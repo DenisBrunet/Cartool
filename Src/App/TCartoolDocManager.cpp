@@ -553,9 +553,6 @@ if ( ! IsExtensionAmong ( filename, AllCartoolSaveFileExt " " AllCommitTracksExt
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-//DBGM ( filename, "TheApp::Save As" );
-
                                         // Setting new file name
 if ( ! doc->SetDocPath ( filename ) )
     return;
@@ -785,7 +782,7 @@ TFileName           pathok ( path, (TFilenameFlags) ( TFilenameMsDosToWindows | 
 //StringCopy ( path, pathok );          // not allowed anymore - do we really need to propagate the potentially updated path back?
 
 
-TDocTemplate       *tpl             = MatchTemplate ( pathok );
+TDocTemplate*       tpl             = MatchTemplate ( pathok );
 
 if ( tpl == 0 ) {
                                         // unknown file type, try this and get out
@@ -796,7 +793,7 @@ if ( tpl == 0 ) {
 
                                         // here is a legal file extension
 
-TBaseDoc           *doc             = IsOpen        ( pathok ); // if already open, return a pointer to it
+TBaseDoc*           doc             = IsOpen        ( pathok ); // if already open, return a pointer to it
 
 
 bool                oldav           = CartoolApplication->AnimateViews;
@@ -1031,7 +1028,7 @@ TBaseDoc*       TCartoolDocManager::GetCurrentBaseDoc   ()                      
 
 
 //----------------------------------------------------------------------------
-void    TCartoolDocManager::CloseView ( TView *view )
+void    TCartoolDocManager::CloseView ( TView* view )
 {
 if ( view == 0 )
     return;
@@ -1057,30 +1054,34 @@ return  0;
 }
 
 
-void    TCartoolDocManager::CloseViews ( TDocument *doc, TLinkManyDoc* god )
+void    TCartoolDocManager::CloseViews ( TDocument* doc, TView* notthisview, TLinkManyDoc* god )
 {
-//DBGM ( "", "Close Views" );
-
 if ( doc == 0 || doc->GetViewList () == 0 )
     return;
 
+                                        // view can be destroyed, so we need to store nextview beforehand
+for ( TView *view = doc->GetViewList(), *nextview = doc->NextView ( view ); view != 0; view = nextview, nextview = doc->NextView ( view ) ) {
 
-TView*          view;
-TView*          nextview;
-TBaseView*      baseview;
+    //PostEvent ( dnClose, *view );     // does not seem to work, or to work fast enough
 
-                                        // be careful with the linked list of pointers!
-for ( view = doc->GetViewList(), nextview = doc->NextView ( view ); view != 0; view = nextview, nextview = doc->NextView ( view ) ) {
-
-    baseview = dynamic_cast<TBaseView *> ( view );
-                                        // if optional group provided, skip if this view is not belonging to it
-    if ( baseview && god && baseview->GODoc != god )
+                                        // caller may wish to delete all but this one view
+    if ( notthisview && view == notthisview )
         continue;
 
-    if ( baseview )
-        baseview->Destroy ();           // better
-    else
-        delete view;                    // default
+
+    TBaseView*  baseview    = dynamic_cast<TBaseView*> ( view );
+    
+                                        // our type of view?
+    if ( baseview ) {
+                                        // delete if god unspecified, or a matching god
+        if ( god == 0 || baseview->GODoc == god )
+
+            baseview->Destroy ();       // recommended way
+        }
+    else { // ! baseview
+
+        delete  view;                   // fall-back
+        }
     }
 }
 

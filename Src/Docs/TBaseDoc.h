@@ -84,7 +84,8 @@ public:
     TBaseView*          GetViewList         ()  const;
     TBaseView*          GetViewList         ( TLinkManyDoc* group, bool equal = true );
     TBaseView*          NextView            ( const owl::TView* view );
-    TBaseView*          NextView            ( TBaseView* bview, TLinkManyDoc* group, bool equal=true );
+    TBaseView*          NextView            ( const TBaseView* bview, TLinkManyDoc* group, bool equal = true );
+    bool                HasView             ( const owl::TView* searchedview );
 
     void                SetFocus            ( owl::uint viewid );
     void                MinimizeViews       ();

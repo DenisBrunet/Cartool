@@ -1341,13 +1341,14 @@ KnownOrientation    = false;
 SetMri  ( (MriInitFlags) ( MriInitBackgroundKeep | MriInitIsoSurfaceCutDetect | MriInitTypeKeep | MriInitReorientDetect ), BackgroundValue );
 
 /*
+                                        // !See TTracksDoc::GoToSession for up-to-date use!
 TMriWinView  *view;
                                         // remember the first window's position
 TRect   wr = GetViewList()->GetParentO()->GetWindowRect();
 CartoolMdiClient->ScreenToClient ( wr );
 
                                         // kill all old views
-CartoolDocManager->Close Views ( this );// use dnClose
+CartoolDocManager->CloseViews ( this );
                                         // and just before it closes the doc
                                         // create a new one
 view    = new TMriWinView ( *this, 0 );

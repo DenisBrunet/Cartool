@@ -95,8 +95,8 @@ public:
     TBaseDoc*       OpenDoc             ( const char* path, long flags );
     void            CloseDoc            ( TBaseDoc *doc, bool refresh = true );
     void            CloseDoc            ( const char *filename, bool refresh = true );
-    void            CloseViews          ( owl::TDocument *doc, TLinkManyDoc* god = 0 );
-    void            CloseView           ( owl::TView *view );
+    void            CloseView           ( owl::TView* view );
+    void            CloseViews          ( owl::TDocument* doc, owl::TView* notthisview = 0, TLinkManyDoc* god = 0 );
 
     owl::TDocTemplate*  MatchTemplate   ( const char *path );     // virtual, although the Help says it is not
     TBaseDoc*       DocListNext         ( owl::TDocument *doc );

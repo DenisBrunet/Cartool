@@ -1198,28 +1198,37 @@ CommitMarkers   ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // save some of the display states, if view exists
-                                                                     // should search better for the last/current view of this doc
-TTracksView*        tracksview      = dynamic_cast<TTracksView*> ( GetViewList () );
 
+TBaseView*          currentview     = CartoolDocManager->GetCurrentView ();
+TTracksView*        tracksview      = 0;
 
+                                        // current view belongs to this doc?
+if ( HasView ( currentview ) )
+
+    tracksview      = dynamic_cast<TTracksView*> ( currentview );
+
+                                        // view does not belong to this doc, or is not a proper TTracksView?
+if ( tracksview == 0 )
+                                        // fall-back to first view of this doc
+    tracksview      = dynamic_cast<TTracksView*> ( GetViewList () );
+
+                                        // finally got a TTracksView?
 if ( tracksview ) {
 
     TTracksViewState    tracksviewstate;
 
     tracksviewstate.SaveState ( tracksview );
 
-                                        // destroy everything
-    CartoolDocManager->CloseViews ( this );
-     
-                                        // and create a new view while it's hot enough
-    tracksview                      = new TTracksView ( *this );
+                                        // first append the new view, so we can keep the doc alive, and before destroying all the other views
+    TTracksView*    newtracksview   = new TTracksView ( *this );
 
-    CartoolDocManager->PostEvent ( dnCreate, *tracksview );
-                                        // force application to process event - now
-    UpdateApplication;
+    CartoolDocManager->PostEvent ( dnCreate, *newtracksview );
+
+                                        // destroy all but the last view
+    CartoolDocManager->CloseViews ( this, newtracksview );
 
                                         // restore some of the display states
-    tracksviewstate.RestoreState ( tracksview );
+    tracksviewstate.RestoreState ( newtracksview );
     }
 
 

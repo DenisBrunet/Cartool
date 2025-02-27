@@ -201,6 +201,24 @@ return  dynamic_cast<TBaseView*> ( TDocument::GetViewList() );
 
 
 //----------------------------------------------------------------------------
+bool    TBaseDoc::HasView ( const TView* searchedview )
+{
+if ( TDocument::GetViewList () == 0 || searchedview == 0 )
+    return  false;
+
+                                        // check if current view really belongs to this doc
+for ( TView* view = TDocument::GetViewList(); view != 0; view = TDocument::NextView ( view ) )
+
+    if ( view == searchedview )
+    
+        return  true;
+
+
+return  false;
+}
+
+
+//----------------------------------------------------------------------------
 TBaseView* TBaseDoc::GetViewList ( TLinkManyDoc* group, bool equal )
 {
 TView*          view;
@@ -229,7 +247,7 @@ return  dynamic_cast<TBaseView*> ( TDocument::NextView ( view ) );
 }
 
 
-TBaseView*  TBaseDoc::NextView ( TBaseView* bview, TLinkManyDoc* group, bool equal )
+TBaseView*  TBaseDoc::NextView ( const TBaseView* bview, TLinkManyDoc* group, bool equal )
 {
 TView*          view;
 TBaseView*      baseview;
