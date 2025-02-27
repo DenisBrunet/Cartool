@@ -1193,6 +1193,10 @@ return  TBaseView::CanClose();
 //----------------------------------------------------------------------------
 void    TTracksView::EvSetFocus ( HWND hwnd )
 {
+                                        // in case of doc closing with multiple views, prevent the next view to steal the focus
+if ( ! EEGDoc->IsOpen () )
+    return;
+
 TBaseView::EvSetFocus ( hwnd );
 
 if ( GODoc )    GODoc->LastEegViewId    = GetViewId();
