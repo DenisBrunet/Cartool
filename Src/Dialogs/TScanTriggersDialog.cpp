@@ -1161,7 +1161,7 @@ else {
 EEGDoc->CommitMarkers ();
 
 
-Gauge.HappyEnd ();
+Gauge.Finished ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
