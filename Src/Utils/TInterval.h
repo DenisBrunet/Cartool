@@ -31,47 +31,48 @@ class   TInterval
 {
 public:
 
-    inline              TInterval       ();
-    inline              TInterval       ( long limitmin, long limitmax, unsigned long limitlength = 0, long defmin = -1, long defmax = -1 );
+    inline                  TInterval           ();
+    inline                  TInterval           ( long limitmin, long limitmax, unsigned long limitlength = 0, long defmin = -1, long defmax = -1 );
 
 
-    inline void         Reset           ();
+    inline void             Reset               ();
 
-    inline void         SetMin          ( long mi,         bool keeplength = false );
-    inline void         AddMin          ( long deltami,    bool keeplength = false );
-    inline void         SetMax          ( long ma,         bool keeplength = false );
-    inline void         AddMax          ( long deltama,    bool keeplength = false );
-    inline void         SetMinMax       ( long mi, long ma );
-    inline void         SetMinLength    ( long mi, unsigned long le,           bool keeplength = false );
-    inline void         SetMaxLength    ( long ma, unsigned long le,           bool keeplength = false );
-    inline void         SetLength       ( unsigned long le, bool frommin,      bool keeplength = false );
-    inline void         SetLength       ( unsigned long le, long aroundcenter, bool keeplength = false );
+    inline void             SetMin              ( long mi,         bool keeplength = false );
+    inline void             AddMin              ( long deltami,    bool keeplength = false );
+    inline void             SetMax              ( long ma,         bool keeplength = false );
+    inline void             AddMax              ( long deltama,    bool keeplength = false );
+    inline void             SetMinMax           ( long mi, long ma );
+    inline void             SetMinLength        ( long mi, unsigned long le,           bool keeplength = false );
+    inline void             SetMaxLength        ( long ma, unsigned long le,           bool keeplength = false );
+    inline void             SetLength           ( unsigned long le, bool frommin,      bool keeplength = false );
+    inline void             SetLength           ( unsigned long le, long aroundcenter, bool keeplength = false );
 
 
-    long                GetMin          ()  const   { return Min; }
-    long                GetMax          ()  const   { return Max; }
-    unsigned long       GetLength       ()  const   { return Length; }
-    long                GetMiddle       ()  const   { return ( Min + Max ) / 2; }
-    long                GetLimitMin     ()  const   { return LimitMin; }
-    long                GetLimitMax     ()  const   { return LimitMax; }
-    unsigned long       GetLimitLength  ()  const   { return LimitLength; }     // limit of current the length
-    unsigned long       GetTotalLength  ()  const   { return (unsigned long) ( LimitMax - LimitMin + 1 ); }
+    long                    GetMin              ()          const   { return Min; }
+    long                    GetMax              ()          const   { return Max; }
+    unsigned long           GetLength           ()          const   { return Length; }
+    long                    GetMiddle           ()          const   { return ( Min + Max ) / 2; }
+    long                    GetLimitMin         ()          const   { return LimitMin; }
+    long                    GetLimitMax         ()          const   { return LimitMax; }
+    unsigned long           GetLimitLength      ()          const   { return LimitLength; }     // limit of current the length
+    unsigned long           GetTotalLength      ()          const   { return (unsigned long) ( LimitMax - LimitMin + 1 ); }
 
-    long                ClipLimit       ( long  p ) const   { return crtl::Clip    ( p, LimitMin, LimitMax ); }
-    inline void         ClippedLimit    ( long &p ) const   {        crtl::Clipped ( p, LimitMin, LimitMax ); }
+    long                    ClipLimit           ( long  p ) const   { return crtl::Clip    ( p, LimitMin, LimitMax ); }
+    inline void             ClippedLimit        ( long &p ) const   {        crtl::Clipped ( p, LimitMin, LimitMax ); }
 
-    inline bool         operator    ==  ( const TInterval& op2 )    const;
-//  inline TInterval&   operator    |   ( const TInterval& op2 )    const;
+
+    inline bool             operator    ==      ( const TInterval& op2 )    const;
+//  inline TInterval&       operator    |       ( const TInterval& op2 )    const;
 
 
 protected:
 
-    long            Min;
-    long            Max;
-    unsigned long   Length;
-    long            LimitMin;
-    long            LimitMax;
-    unsigned long   LimitLength;
+    long                    Min;
+    long                    Max;
+    unsigned long           Length;
+    long                    LimitMin;
+    long                    LimitMax;
+    unsigned long           LimitLength;
 
     inline unsigned long    LengthFromMinMax    ()          const   { return (unsigned long) ( Max - Min + 1 ); }
     inline void             ClipLength          ()                  { if ( Length > LimitLength ) SetMinLength ( Min, LimitLength, true ); }    // provide a default clipping
