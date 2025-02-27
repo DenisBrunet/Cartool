@@ -32,8 +32,10 @@ class   TInterval
 public:
 
     inline              TInterval       ();
-    inline              TInterval       ( long limin, long limax, unsigned long liml = 0 );
+    inline              TInterval       ( long limitmin, long limitmax, unsigned long limitlength = 0, long defmin = -1, long defmax = -1 );
 
+
+    inline void         Reset           ();
 
     inline void         SetMin          ( long mi,         bool keeplength = false );
     inline void         AddMin          ( long deltami,    bool keeplength = false );
@@ -55,6 +57,8 @@ public:
     unsigned long       GetLimitLength  ()  const   { return LimitLength; }     // limit of current the length
     unsigned long       GetTotalLength  ()  const   { return (unsigned long) ( LimitMax - LimitMin + 1 ); }
 
+    long                ClipLimit       ( long  p ) const   { return crtl::Clip    ( p, LimitMin, LimitMax ); }
+    inline void         ClippedLimit    ( long &p ) const   {        crtl::Clipped ( p, LimitMin, LimitMax ); }
 
     inline bool         operator    ==  ( const TInterval& op2 )    const;
 //  inline TInterval&   operator    |   ( const TInterval& op2 )    const;
@@ -69,10 +73,8 @@ protected:
     long            LimitMax;
     unsigned long   LimitLength;
 
-    inline unsigned long    LengthFromMinMax    ()          const;  // just a formula
-    inline void             ClipLimit           ( long &p ) const;  // clip within Limits
-    inline void             ClipLength          ();                 // clip length
-
+    inline unsigned long    LengthFromMinMax    ()          const   { return (unsigned long) ( Max - Min + 1 ); }
+    inline void             ClipLength          ()                  { if ( Length > LimitLength ) SetMinLength ( Min, LimitLength, true ); }    // provide a default clipping
 };
 
 
@@ -82,53 +84,46 @@ protected:
                                         // default constructor, just a nice init
         TInterval::TInterval ()
 {
-LimitMin        = LimitMax  = 0;
-LimitLength     = 1;
-Min             = Max       = 0;
-Length          = LengthFromMinMax ();
+Reset ();
 }
 
                                         // constructor with boundaries
-        TInterval::TInterval ( long limin, long limax, unsigned long liml )
+        TInterval::TInterval ( long limitmin, long limitmax, unsigned long limitlength, long defmin, long defmax )
 {
+Reset ();
+
                                         // set limits plus checking
-LimitMin        = limin;
-LimitMax        = limax;
+LimitMin        = limitmin;
+LimitMax        = limitmax;
 
 CheckOrder ( LimitMin, LimitMax ); 
 
                                         // default limit in length is the whole extend
 LimitLength     = LimitMax - LimitMin + 1;
                                         // if specified, overload default limit length
-if ( liml > 0 )
-    LimitLength = min ( liml, LimitLength );
+if ( limitlength > 0 )
+    Mined ( LimitLength, limitlength );
 
-                                        // set default init position
-Min             = 
-Max             = LimitMin + LimitLength / 2; // LimitMin;
+                                        // set default init position, or use optional parameter(s)
+Min     = defmin >= 0 ? defmin : LimitMin + LimitLength / 2;
+Max     = defmax >= 0 ? defmax : Min;
 
+Clipped ( Min, Max, LimitMin, LimitMax );
                                         // set length
 Length          = LengthFromMinMax ();
+                                        // and check it
+SetLength ( Length, true, true );
 }
 
 
-//----------------------------------------------------------------------------
-unsigned long   TInterval::LengthFromMinMax ()  const
+void    TInterval::Reset ()
 {
-return (unsigned long) ( Max - Min + 1 );
-}
-
-                                        // variable has to be within limits
-void    TInterval::ClipLimit ( long &p )    const
-{
-crtl::Clipped ( p, LimitMin, LimitMax );
-}
-
-                                        // length has to be less than a limit
-void    TInterval::ClipLength ()
-{
-if ( Length > LimitLength )             // provide a default clipping
-    SetMinLength ( Min, LimitLength, true );
+LimitMin        = 0;
+LimitMax        = 0;
+LimitLength     = 1;
+Min             = 0;
+Max             = 0;
+Length          = 1;
 }
 
 
@@ -139,7 +134,7 @@ void    TInterval::SetMin ( long mi, bool keeplength )
 {
 Min   = mi;
 
-ClipLimit ( Min );
+ClippedLimit ( Min );
 
 if ( keeplength )
     SetLength ( Length, true, true );
@@ -160,7 +155,7 @@ void    TInterval::SetMax ( long ma, bool keeplength )
 {
 Max   = ma;
 
-ClipLimit ( Max );
+ClippedLimit ( Max );
 
 if ( keeplength )
     SetLength ( Length, false, true );
@@ -179,12 +174,13 @@ SetMax ( Max + deltama, keeplength );
                                         // except boundary, set the min and max
 void    TInterval::SetMinMax ( long mi, long ma )
 {
-                                        // permutate?
-if ( mi < ma )        { Min = mi; Max = ma; }
-else                  { Min = ma; Max = mi; }
+Min     = mi;
+Max     = ma;
 
-ClipLimit ( Min );
-ClipLimit ( Max );
+CheckOrder ( Min, Max );
+
+ClippedLimit ( Min );
+ClippedLimit ( Max );
                                         // set new length & check
 Length = LengthFromMinMax ();
 ClipLength ();
@@ -198,7 +194,7 @@ void    TInterval::SetMinLength ( long mi, unsigned long le, bool keeplength )
 {
 Min   = mi;
 
-ClipLimit ( Min );
+ClippedLimit ( Min );
 
 SetLength ( le, true, keeplength );
 }
@@ -208,7 +204,7 @@ void    TInterval::SetMaxLength ( long ma, unsigned long le, bool keeplength )
 {
 Max   = ma;
 
-ClipLimit ( Max );
+ClippedLimit ( Max );
 
 SetLength ( le, false, keeplength );
 }
@@ -223,14 +219,14 @@ else if ( le > LimitLength )    le = LimitLength;
 if ( frommin ) {
 
     Max = Min + le - 1;
-    ClipLimit ( Max );
+    ClippedLimit ( Max );
     Length = LengthFromMinMax ();
                                         // strict length ?
     if ( keeplength && Length != le ) {
 
         Max = LimitMax;                 // adjust from max
         Min = Max - le + 1;
-        ClipLimit ( Min );
+        ClippedLimit ( Min );
         Length = LengthFromMinMax ();
                                         // still can not make it?
         if ( Length != le ) {
@@ -242,14 +238,14 @@ if ( frommin ) {
 else {                                  // from max
 
     Min = Max - le + 1;
-    ClipLimit ( Min );
+    ClippedLimit ( Min );
     Length = LengthFromMinMax ();
                                         // strict length ?
     if ( keeplength && Length != le ) {
 
         Min = LimitMin;                 // adjust from min
         Max = Min + le - 1;
-        ClipLimit ( Max );
+        ClippedLimit ( Max );
         Length = LengthFromMinMax ();
                                         // still can not make it?
         if ( Length != le ) {

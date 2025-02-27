@@ -368,6 +368,7 @@ public:
     virtual bool        VnNewHighlighted        ( TSelection *sel );
     virtual bool        VnNewBadSelection       ( TSelection *sel );
     virtual bool        VnNewAuxSelection       ( TSelection *sel );
+    virtual bool        VnSessionUpdated        ( void* );
 
 
 protected:

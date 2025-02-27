@@ -133,28 +133,25 @@ if ( viewid ) {
 //----------------------------------------------------------------------------
 bool    TBaseDoc::NotifyDocViews ( int event, TParam2 item, TView* viewexclude, TDocument* docexclude )
 {
-TBaseDoc*           doc;
-bool                result;
-bool                rr;
-
                                         // send message to its own views firsw
-result  = NotifyViews ( event, item, viewexclude );
+bool                globalresult    = NotifyViews ( event, item, viewexclude );
 
                                         // .. then to all views of all docs pointing to this doc
 for ( int i = 0; i < (int) UsedBy; i++ ) {
 
-    doc     = dynamic_cast<TBaseDoc*> ( UsedBy[ i ] );
+    TBaseDoc*   doc     = dynamic_cast<TBaseDoc*> ( UsedBy[ i ] );
 
     if ( doc && doc != docexclude ) {
 
-        rr      = doc->NotifyDocViews ( event, item, viewexclude, this );  // looks like hierarchical?
-//      rr      = doc->NotifyViews ( event, item );
-        result  = result || rr;
+        bool    oneresult   = doc->NotifyDocViews ( event, item, viewexclude, this );  // looks like hierarchical?
+//      bool    oneresult   = doc->NotifyViews    ( event, item );
+
+        globalresult        = globalresult || oneresult;
         }
     }
 
 
-return result;
+return  globalresult;
 }
 
 
@@ -172,23 +169,24 @@ if ( view == 0 )
 
 
 uint                friendid        = view->FriendshipId;
-bool                result          = false;
+bool                globalresult    = false;
 
 for ( TBaseDoc*  doc = CartoolDocManager->DocListNext ( 0 ); doc != 0; doc = CartoolDocManager->DocListNext ( doc ) )
 for ( TBaseView* v = doc->GetViewList (); v != 0; v = doc->NextView ( v ) )
 
     if ( v->IsFriendship ( friendid ) ) {
 
-//      bool    rr      = doc->NotifyViews (event, item, viewexclude);
-        bool    rr      = doc->QueryViews ( event, item, viewexclude );
+//      bool    oneresult   = doc->NotifyViews ( event, item, viewexclude );
+        bool    oneresult   = doc->QueryViews  ( event, item, viewexclude );
 
-        result  = result || rr;     // !done this way to make sure QueryViews got called, even if result is already true - do not change that!
+                                    // !done this way to make sure QueryViews got called, even if result is already true - do not change that!
+        globalresult        = globalresult || oneresult;
 
         break;                      // go to next document
         }
 
 
-return  result;
+return  globalresult;
 }
 
 

@@ -83,6 +83,7 @@ enum    OwlCustomEvents     : OwlNotifyIdType
         vnNewAuxSelection,
         vnViewDestroyed,
         vnViewUpdated,
+        vnSessionUpdated,
         };
 
 
@@ -112,7 +113,7 @@ NOTIFY_SIG  (vnReloadData,      int )
                                         // specifying WHAT to reload:
 enum    VnReloadDataCodes : int 
         {
-        EV_VN_RELOADDATA_EEG            = 1,
+        EV_VN_RELOADDATA_EEG,
         EV_VN_RELOADDATA_FREQ,
         EV_VN_RELOADDATA_TRG,
         EV_VN_RELOADDATA_DOCPOINTERS,
@@ -214,6 +215,17 @@ owl::TResult    DecodeVnViewUpdated     (   void* i,    owl::TParam1,   owl::TPa
 NOTIFY_SIG  (vnViewUpdated,     TBaseView* )
 
 #define EV_VN_VIEWUPDATED       VN_DEFINE   (vnViewUpdated, VnViewUpdated, DecodeVnViewUpdated)
+
+
+//----------------------------------------------------------------------------
+                                        // update session - using a fake void* parameter for the moment
+template <class T, bool (T::*M)( void* )>
+owl::TResult    DecodeVnSessionUpdated  (   void* i,    owl::TParam1 ,   owl::TParam2 p2    )
+{ return ( static_cast<T*>( i )->*M ) ( (void*) ( p2 ) ) ? TRUE : FALSE; }
+
+NOTIFY_SIG  (vnSessionUpdated,  void* )
+
+#define EV_VN_SESSIONUPDATED    VN_DEFINE   (vnSessionUpdated, VnSessionUpdated, DecodeVnSessionUpdated)
 
 
 //----------------------------------------------------------------------------

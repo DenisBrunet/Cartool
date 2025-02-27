@@ -61,13 +61,13 @@ LimitMax            = limitmax;
 CheckOrder  ( LimitMin, LimitMax );
 
 
-if ( initmax < initmin )                            initmax = initmin;
+CheckOrder  ( initmin, initmax );
 
-if ( initmin >= LimitMin && initmin <= LimitMax )   PosMin  = initmin;
-else                                                PosMin  = LimitMin;
+if ( IsInsideLimits ( initmin, LimitMin, LimitMax ) )   PosMin  = initmin;
+else                                                    PosMin  = LimitMin;
 
-if ( initmax >= LimitMin && initmax <= LimitMax )   PosMax  = initmax;
-else                                                PosMax  = PosMin;
+if ( IsInsideLimits ( initmax, LimitMin, LimitMax ) )   PosMax  = initmax;
+else                                                    PosMax  = PosMin;
 
 
 PosPivot            = PosMin;

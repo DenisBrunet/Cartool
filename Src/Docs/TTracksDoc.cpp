@@ -1144,6 +1144,7 @@ return NumSequences <= 1 ? 0 : CurrSequence + 1;
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksDoc::GoToSession ( int newsession )
 {
                                         // not allowed to switch if used in a link, or no sessions within eeg
@@ -1172,10 +1173,14 @@ else {
 
     newcs--;
     }
-
                                         // no change in session?
 if ( newcs == oldcs )
     return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // do some postprocessing to update state variables
+auto                olddatetime     = DateTime;
 
                                         // apply changes, specific to each doc
 if ( ! UpdateSession ( newcs ) )        // some sessions can be fishy
@@ -1184,8 +1189,12 @@ if ( ! UpdateSession ( newcs ) )        // some sessions can be fishy
                                         // OK, this is the new session!
 CurrSequence    = newcs;
 
-                                        // do some postprocessing to update state variables
+
 InitDateTime    ();
+                                        // restore old state
+DateTime.RelativeTime           = olddatetime.RelativeTime;
+DateTime.RelativeTimeOffset     = olddatetime.RelativeTimeOffset;
+DateTime.MicrosecondPrecision   = olddatetime.MicrosecondPrecision;
 
                                         // markers file should already be up-to-date
 //CommitMarkers ();
@@ -1196,43 +1205,12 @@ InitMarkers     ();
 CommitMarkers   ();
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // save some of the display states, if view exists
-
-TBaseView*          currentview     = CartoolDocManager->GetCurrentView ();
-TTracksView*        tracksview      = 0;
-
-                                        // current view belongs to this doc?
-if ( HasView ( currentview ) )
-
-    tracksview      = dynamic_cast<TTracksView*> ( currentview );
-
-                                        // view does not belong to this doc, or is not a proper TTracksView?
-if ( tracksview == 0 )
-                                        // fall-back to first view of this doc
-    tracksview      = dynamic_cast<TTracksView*> ( GetViewList () );
-
-                                        // finally got a TTracksView?
-if ( tracksview ) {
-
-    TTracksViewState    tracksviewstate;
-
-    tracksviewstate.SaveState ( tracksview );
-
-                                        // first append the new view, so we can keep the doc alive, and before destroying all the other views
-    TTracksView*    newtracksview   = new TTracksView ( *this );
-
-    CartoolDocManager->PostEvent ( dnCreate, *newtracksview );
-
-                                        // destroy all but the last view
-    CartoolDocManager->CloseViews ( this, newtracksview );
-
-                                        // restore some of the display states
-    tracksviewstate.RestoreState ( newtracksview );
-    }
-
-
 UpdateTitle ();
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+NotifyDocViews  ( vnSessionUpdated );
 }
 
 
@@ -1796,7 +1774,7 @@ if ( *bad != BadTracks ) {
         SetReferenceType ( Reference );
                                         // tell the good news to others
     if ( notify )
-        NotifyViews ( vnNewBadSelection, (TParam2) &BadTracks ); // send only to track, not xyz
+        NotifyViews    ( vnNewBadSelection, (TParam2) &BadTracks ); // send only to track, not xyz
 //      NotifyDocViews ( vnNewBadSelection, (TParam2) &BadTracks ); // send to xyz, which will send to all linked eegs...
     }
 }

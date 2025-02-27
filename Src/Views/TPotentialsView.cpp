@@ -2319,11 +2319,6 @@ if ( TFCursor.IsSplitted() )
 
 bool    TPotentialsView::VnNewTFCursor ( TTFCursor *tfc )
 {
-#ifdef CARTOOL_DEBUGMESSAGES
-DBGV4 ( tfc->SentFrom, tfc->SentTo, tfc->GetPosMin (), tfc->GetPosMax (), "TPotentialsView::VnNewTFCursor  From To  Min Max" );
-#endif // CARTOOL_DEBUGMESSAGES
-
-
 if ( ! IsFriendView ( tfc->SentTo ) )
     return false;                       // not for me !
 

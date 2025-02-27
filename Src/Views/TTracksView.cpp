@@ -180,6 +180,7 @@ DEFINE_RESPONSE_TABLE1(TTracksView, TBaseView)
     EV_VN_NEWHIGHLIGHTED,
     EV_VN_NEWBADSELECTION,
     EV_VN_NEWAUXSELECTION,
+    EV_VN_SESSIONUPDATED,
 
     EV_COMMAND          ( IDB_2OBJECT,                  Cm2Object ),
     EV_COMMAND          ( IDB_ORIENT,                   CmOrient ),
@@ -467,6 +468,7 @@ if ( EEGDoc->IsContentType ( ContentTypeErrorData ) && EEGDoc->GetNumMarkers () 
 
 TFCursor.SentTo     = 0;
 TFCursor.SentFrom   = 0;
+
 LastCursorPosMin    = -1;
 LastCursorPosMax    = -1;
                                         // a general offset, to view around this specific value
@@ -587,8 +589,8 @@ if ( ! isderived ) {
         SdBuff.Resize ( EEGDoc->GetTotalElectrodes (), BuffSize );  // !force Dim1 with pseudo-tracks so both buffers have exactly the same memory footprint!
     }
 
-TFCursor.SentTo            = 0;
-TFCursor.SentFrom          = GetViewId ();
+TFCursor.SentTo     = 0;
+TFCursor.SentFrom   = GetViewId ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -6026,6 +6028,7 @@ switch ( what ) {
 
 
   case EV_VN_RELOADDATA_CAPTION:
+
     UpdateCaption ();
     break;
     }
@@ -6037,11 +6040,6 @@ return true;
 //----------------------------------------------------------------------------
 bool    TTracksView::VnNewTFCursor ( TTFCursor *tfc )
 {
-#ifdef CARTOOL_DEBUGMESSAGES
-DBGV4 ( tfc->SentFrom, tfc->SentTo, tfc->GetPosMin (), tfc->GetPosMax (), "TTracksView::VnNewTFCursor  From To  Min Max" );
-#endif // CARTOOL_DEBUGMESSAGES
-
-
 if ( tfc->SentTo != GetViewId() )
     return false;                       // not for me !
 
@@ -6059,7 +6057,7 @@ if ( SyncCDPtTFCursor )
 else {
     TFCursor           = *tfc;          // copy new cursor
     TFCursor.SentTo    = tfc->SentFrom;
-    TFCursor.SentFrom  = GetViewId();
+    TFCursor.SentFrom  = GetViewId ();
 
     if ( pmin >= CDPt.GetMin() && pmax <= CDPt.GetMax() )
         DrawTFCursor ( true );
@@ -6146,7 +6144,6 @@ ReloadBuffers ();
 ResetScaleTracks ();
 
 Invalidate ( false );
-//ShowNow ();
 
 return  true;
 }
@@ -6167,7 +6164,70 @@ ReloadBuffers ();
 ResetScaleTracks ();
 
 Invalidate ( false );
-//ShowNow ();
+
+return  true;
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Changing session on-the-fly will modify:
+                                        //  - Number of time frames
+                                        //  - Date and time of origin
+                                        //  - Sampling Frequency
+bool    TTracksView::VnSessionUpdated ( void* )
+{
+                                        // Most importantly, duration has changed, so we need to update these buffers
+BuffSize            = NoMore ( EEGDoc->GetNumTimeFrames (), (long) EegMaxPointsDisplay );
+
+EegBuff.Resize ( 1, EEGDoc->GetTotalElectrodes (), BuffSize );
+
+if ( EEGDoc->HasStandardDeviation () )
+    SdBuff.Resize ( EEGDoc->GetTotalElectrodes (), BuffSize );
+
+
+                                        // Updated as collaterals:
+CDPt                = TInterval (   0, 
+                                    EEGDoc->GetNumTimeFrames () - 1, 
+                                    BuffSize,
+                                    CDPt.GetMin (),
+                                    CDPt.GetMax ()
+                                );
+CDP                 = &CDPt;
+
+
+TFCursor            = TTFCursor (   EEGDoc,
+                                    CDPt.GetLimitMin  (), 
+                                    CDPt.GetLimitMax  (),
+                                    CDPt.ClipLimit    ( TFCursor.GetPosMin () ),
+                                    CDPt.ClipLimit    ( TFCursor.GetPosMax () )
+                                 );
+
+TFCursor.SentTo     = 0;
+TFCursor.SentFrom   = GetViewId ();
+
+LastCursorPosMin    = -1;
+LastCursorPosMax    = -1;
+
+
+//CheckCDPtAndTFCursor ( true );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Resetting a few display flags
+if ( ! EEGDoc->DateTime.IsOriginDateAvailable () )
+    ShowDate        = false;
+
+if ( EEGDoc->GetSamplingFrequency () == 0 )
+    ShowTime        = false;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // reload data which may have changed due to bad tracks
+ReloadBuffers ();
+
+ResetScaleTracks ();
+
+Invalidate ( false );
 
 return  true;
 }
