@@ -565,7 +565,7 @@ protected:
     void                CmSetMarkerDisplayMEnable ( owl::TCommandEnabler &tce );
     void                CmManageMarkers         ();
     void                CmSearchMarker          ( owlwparam w );
-    void                CmTriggerToMarker       ();
+    void                CmDuplicateTriggersToMarkers ();
     void                CmSplitMarkers          ();
     void                CmRenameOverwriteMarker ();
     void                CmRenameSubstringMarkers();

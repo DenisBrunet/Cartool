@@ -259,7 +259,7 @@ DEFINE_RESPONSE_TABLE1(TTracksView, TBaseView)
     EV_COMMAND          ( CM_EEGMRKADDFILE,             CmAddFileMarkers ),
     EV_COMMAND          ( CM_EEGMRKDELETE,              CmDeleteMarker ),
     EV_COMMAND          ( CM_EEGMRKDELETENAME,          CmDeleteMarkersByName ),
-    EV_COMMAND          ( CM_EEGMRKTRIGGERTOMARKER,     CmTriggerToMarker ),
+    EV_COMMAND          ( CM_EEGMRKTRIGGERTOMARKER,     CmDuplicateTriggersToMarkers ),
     EV_COMMAND          ( CM_EEGMRKSPLIT,               CmSplitMarkers ),
     EV_COMMAND          ( CM_EEGMRKOVERWRITENAMES,      CmRenameOverwriteMarker ),
     EV_COMMAND          ( CM_EEGMRKSUBSTITUTENAMES,     CmRenameSubstringMarkers ),
@@ -8240,43 +8240,60 @@ MarkerStrings.Sort ();
 
 
 //----------------------------------------------------------------------------
-void    TTracksView::CmTriggerToMarker ()
+void    TTracksView::CmDuplicateTriggersToMarkers ()
 {
 if ( EEGDoc->GetNumMarkers () == 0 )
     return;
 
 
-const MarkersList&  markers         = EEGDoc->GetMarkersList ();
-TMarker             marker;
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+int                 currsession     = EEGDoc->GetCurrentSession ();
 
-                                        // scan all triggers
-for ( int i = 0; i < markers.Num (); i++ ) {
 
-    if ( ! IsFlag ( markers[ i ]->Type, MarkerTypeHardCoded ) )
-        continue;
-                                        // copy & change type
-    marker          = *(markers[ i ]);
-    marker.Type     = MarkerTypeMarker;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    EEGDoc->AppendMarker ( marker );
+for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+
+    EEGDoc->GoToSession ( sessioni );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    const MarkersList&  markers         = EEGDoc->GetMarkersList ();
+    TMarker             marker;
+
+                                            // scan all triggers
+    for ( int i = 0; i < markers.Num (); i++ ) {
+
+        if ( ! IsFlag ( markers[ i ]->Type, MarkerTypeHardCoded ) )
+            continue;
+                                            // copy & change type
+        marker          = *(markers[ i ]);
+        marker.Type     = MarkerTypeMarker;
+
+        EEGDoc->AppendMarker ( marker );
+        }
+
+
+    if ( EEGDoc->AreMarkersDirty () ) {
+
+        EEGDoc->SortAndCleanMarkers ();
+                                            // just commit once
+        EEGDoc->CommitMarkers ();
+                                            // assume we want to see the results!
+        ShowTags    = true;
+
+        if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
+            CmSetMarkerDisplay ( CM_EEGMRKMARKER );
+
+        ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+
+        EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+        }
     }
 
 
-if ( EEGDoc->AreMarkersDirty () ) {
-
-    EEGDoc->SortAndCleanMarkers ();
-                                        // just commit once
-    EEGDoc->CommitMarkers ();
-                                        // assume we want to see the results!
-    ShowTags    = true;
-
-    if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
-        CmSetMarkerDisplay ( CM_EEGMRKMARKER );
-
-    ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
-
-    EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
-    }
+if ( allsessions )
+    EEGDoc->GoToSession ( currsession );
 }
 
 
@@ -8304,56 +8321,71 @@ if ( ! mask )
     return;
 
 
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+int                 currsession     = EEGDoc->GetCurrentSession ();
+
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-const MarkersList&  markers         = EEGDoc->GetMarkersList ();
-MarkersList         splitmarkers;
+for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
 
-                                        // scan all triggers
-for ( int i = 0; i < markers.Num (); i++ ) {
+    EEGDoc->GoToSession ( sessioni );
 
-    TMarker     marker      = *(markers[ i ]);
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( ! IsFlag ( marker.Type, DisplayMarkerType ) ) // ( MarkerTypeUserCoded | MarkerTypeHardCoded ) ) )
-        continue;
-                                        // convert name to integer
-    long        code        = StringToLong ( marker.Name );
-                                        // nothing?
-    if ( ! code || ! ( code & mask ) )
-        continue;
-                                        // just change the type
-    marker.Type       = MarkerTypeMarker;
+    const MarkersList&  markers         = EEGDoc->GetMarkersList ();
+    MarkersList         splitmarkers;
 
-                                        // now scan all of its bits
-    for ( uint i = 0, b = 1; i < 32; i++, b <<= 1 )
+                                            // scan all triggers
+    for ( int i = 0; i < markers.Num (); i++ ) {
 
-        if ( code & mask & b ) {
-                                        // just for consistency
-            marker.Code    = (MarkerCode) b;
-                                        // create new name
-            sprintf ( marker.Name, "%u", b );
+        TMarker     marker      = *(markers[ i ]);
 
-            splitmarkers.Append ( new TMarker ( marker ) );
-            } // if b
-    } // for i
+        if ( ! IsFlag ( marker.Type, DisplayMarkerType ) ) // ( MarkerTypeUserCoded | MarkerTypeHardCoded ) ) )
+            continue;
+                                            // convert name to integer
+        long        code        = StringToLong ( marker.Name );
+                                            // nothing?
+        if ( ! code || ! ( code & mask ) )
+            continue;
+                                            // just change the type
+        marker.Type       = MarkerTypeMarker;
+
+                                            // now scan all of its bits
+        for ( uint i = 0, b = 1; i < 32; i++, b <<= 1 )
+
+            if ( code & mask & b ) {
+                                            // just for consistency
+                marker.Code    = (MarkerCode) b;
+                                            // create new name
+                sprintf ( marker.Name, "%u", b );
+
+                splitmarkers.Append ( new TMarker ( marker ) );
+                } // if b
+        } // for i
 
 
-if ( splitmarkers.IsNotEmpty () ) {
+    if ( splitmarkers.IsNotEmpty () ) {
 
-    EEGDoc->InsertMarkers   ( splitmarkers );
-                                        // just commit once
-    EEGDoc->CommitMarkers   ();
+        EEGDoc->InsertMarkers   ( splitmarkers );
+                                            // just commit once
+        EEGDoc->CommitMarkers   ();
 
-                                        // assume we want to see the results!
-    ShowTags    = true;
+                                            // assume we want to see the results!
+        ShowTags    = true;
 
-    if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
-        CmSetMarkerDisplay ( CM_EEGMRKMARKER );
+        if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
+            CmSetMarkerDisplay ( CM_EEGMRKMARKER );
 
-    ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+        ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
 
-    EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+        EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+        }
     }
+
+
+if ( allsessions )
+    EEGDoc->GoToSession ( currsession );
 }
 
 
@@ -9280,7 +9312,7 @@ if ( ! GetInputFromUser ( "Interval between consecutive markers, in whatever uni
 double              intervalintf    = StringToTimeFrame ( buff, EEGDoc->GetSamplingFrequency () );
 
                                         // could also be an absolute origin, user should be able to specify that
-if ( ! GetInputFromUser ( "Offset of the first marker, relative to the beginning of file (TF, ms, s, HH:mm:ss):", GenerateAutoEpochsTitle, buff, "0", this ) )
+if ( ! GetInputFromUser ( "Offset of the first marker, relative to the beginning of session (TF, ms, s, HH:mm:ss):", GenerateAutoEpochsTitle, buff, "0", this ) )
     return;
 
 double              offsetintf      = StringToTimeFrame ( buff, EEGDoc->GetSamplingFrequency () );
@@ -9292,47 +9324,63 @@ if ( ! GetInputFromUser ( "Name of the generated markers:", GenerateAutoEpochsTi
     return;
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                 timemin         = 0;                                // scan whole time range
-int                 timemax         = EEGDoc->GetNumTimeFrames () - 1;  // 
-double              tf              = timemin;
-TMarker             marker ( 0, 0, 100, name, MarkerTypeMarker );
-
-
-for ( int i = 0; tf <= timemax; i++ ) {
-                                        // generate positions as multiples of the given interval, so that no rounding errors occur
-    tf      = Truncate ( offsetintf + i * intervalintf );
-
-    marker.Set ( tf );
-
-    EEGDoc->AppendMarker ( marker );
-    }
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+int                 currsession     = EEGDoc->GetCurrentSession ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( EEGDoc->AreMarkersDirty () ) {
+for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
 
-    EEGDoc->SortAndCleanMarkers ();
+    EEGDoc->GoToSession ( sessioni );
 
-    EEGDoc->CommitMarkers ();
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-                                        // assume we want to see the results!
-    SetMarkerType ( MarkerTypeMarker );
+    int                 timemin         = 0;                                // scan whole time range
+    int                 timemax         = EEGDoc->GetNumTimeFrames () - 1;  // 
+    double              tf              = timemin;
+    TMarker             marker ( 0, 0, 100, name, MarkerTypeMarker );
 
-    ShowTags    = true;
 
-    ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+    for ( int i = 0; tf <= timemax; i++ ) {
+                                            // generate positions as multiples of the given interval, so that no rounding errors occur
+        tf      = Truncate ( offsetintf + i * intervalintf );
 
-    EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+        marker.Set ( tf );
 
-    Invalidate ( false );
+        EEGDoc->AppendMarker ( marker );
+        }
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if ( EEGDoc->AreMarkersDirty () ) {
+
+        EEGDoc->SortAndCleanMarkers ();
+
+        EEGDoc->CommitMarkers ();
+
+                                            // assume we want to see the results!
+        SetMarkerType ( MarkerTypeMarker );
+
+        ShowTags    = true;
+
+        ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+
+        EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+
+        Invalidate ( false );
+        }
     }
 
+
+if ( allsessions )
+    EEGDoc->GoToSession ( currsession );
 }
 
 
+//----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 void    TTracksView::CmFilter ()
 {
