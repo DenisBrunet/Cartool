@@ -8382,11 +8382,17 @@ if ( ! GetInputFromUser (   withintime ? "Regexp 'search' string, within current
 if ( StringIsEmpty ( search ) )
     return;
 
+
 if ( ! GetInputFromUser ( "Regexp 'replace' string:", title, replace, replace, this ) )
     return;
 
 if ( /* StringIsEmpty ( to ) ||*/ StringIs ( replace, search ) )
     return;
+
+
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 ? GetAnswerFromUser ( "Applying to all sessions?", title, this ) 
+                                                                    : false;
+int                 currsession     = EEGDoc->GetCurrentSession ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -8399,51 +8405,62 @@ if ( ! greppy.IsValid () )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-MarkersList&        markers         = EEGDoc->GetMarkersList ();
-char                name   [ 2 * MarkerNameMaxLength ];
+for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
 
-                                        // scan all triggers
-for ( int i = 0; i < markers.Num (); i++ ) {
+    EEGDoc->GoToSession ( sessioni );
 
-    TMarker*    tomarker    = markers[ i ];
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( ! IsFlag ( tomarker->Type, MarkerTypeUserCoded ) )
-        continue;
+    MarkersList&        markers         = EEGDoc->GetMarkersList ();
+    char                name   [ 2 * MarkerNameMaxLength ];
 
-    if ( withintime && tomarker->From > TFCursor.GetPosMax () )
-        break;
+                                            // scan all triggers
+    for ( int i = 0; i < markers.Num (); i++ ) {
 
-    if ( withintime && ! IsInsideLimits ( tomarker->From, tomarker->To, TFCursor.GetPosMin (), TFCursor.GetPosMax () ) )
-        continue;
+        TMarker*    tomarker    = markers[ i ];
 
-                                        // copy to bigger temp variable
-    StringCopy ( name, tomarker->Name );
+        if ( ! IsFlag ( tomarker->Type, MarkerTypeUserCoded ) )
+            continue;
+
+        if ( withintime && tomarker->From > TFCursor.GetPosMax () )
+            break;
+
+        if ( withintime && ! IsInsideLimits ( tomarker->From, tomarker->To, TFCursor.GetPosMin (), TFCursor.GetPosMax () ) )
+            continue;
+
+                                            // copy to bigger temp variable
+        StringCopy ( name, tomarker->Name );
     
 
-    if ( greppy.SearchAndReplace ( name ) ) {
-                                        // safely clip result
-        StringCopy ( tomarker->Name, name, MarkerNameMaxLength - 1 );
+        if ( greppy.SearchAndReplace ( name ) ) {
+                                            // safely clip result
+            StringCopy ( tomarker->Name, name, MarkerNameMaxLength - 1 );
 
-        EEGDoc->SetMarkersDirty ();
+            EEGDoc->SetMarkersDirty ();
+            }
+        } // for i
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if ( EEGDoc->AreMarkersDirty () ) {
+
+        EEGDoc->CommitMarkers ();
+                                            // assume we want to see the results!
+        ShowTags    = true;
+
+        if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
+            CmSetMarkerDisplay ( CM_EEGMRKMARKER );
+
+        ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+
+        EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
         }
-    } // for i
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-if ( EEGDoc->AreMarkersDirty () ) {
-
-    EEGDoc->CommitMarkers ();
-                                        // assume we want to see the results!
-    ShowTags    = true;
-
-    if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
-        CmSetMarkerDisplay ( CM_EEGMRKMARKER );
-
-    ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
-
-    EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
     }
+
+
+if ( allsessions )
+    EEGDoc->GoToSession ( currsession );
 }
 
 
@@ -8474,6 +8491,7 @@ if ( ! GetInputFromUser (   withintime ? "Substring to be replaced (case sensiti
 if ( StringIsEmpty ( from ) )
     return;
 
+
 if ( ! GetInputFromUser ( "Replaced by new substring (empty for deletion):", title, to, to, this ) )
     return;
 
@@ -8481,76 +8499,93 @@ if ( /* StringIsEmpty ( to ) ||*/ StringIs ( to, from ) )
     return;
 
 
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 ? GetAnswerFromUser ( "Applying to all sessions?", title, this ) 
+                                                                    : false;
+int                 currsession     = EEGDoc->GetCurrentSession ();
+
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-MarkersList&        markers         = EEGDoc->GetMarkersList ();
-char                name   [ 2 * MarkerNameMaxLength ];
-char                before [ MarkerNameMaxLength ];
-char                after  [ MarkerNameMaxLength ];
+for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
 
-                                        // scan all triggers
-for ( int i = 0; i < markers.Num (); i++ ) {
+    EEGDoc->GoToSession ( sessioni );
 
-    TMarker*    tomarker    = markers[ i ];
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( ! IsFlag ( tomarker->Type, MarkerTypeUserCoded ) )
-        continue;
+    MarkersList&        markers         = EEGDoc->GetMarkersList ();
+    char                name   [ 2 * MarkerNameMaxLength ];
+    char                before [ MarkerNameMaxLength ];
+    char                after  [ MarkerNameMaxLength ];
 
-    if ( withintime && tomarker->From > TFCursor.GetPosMax () )
-        break;
+                                            // scan all triggers
+    for ( int i = 0; i < markers.Num (); i++ ) {
 
-    if ( withintime && ! IsInsideLimits ( tomarker->From, tomarker->To, TFCursor.GetPosMin (), TFCursor.GetPosMax () ) )
-        continue;
+        TMarker*    tomarker    = markers[ i ];
 
+        if ( ! IsFlag ( tomarker->Type, MarkerTypeUserCoded ) )
+            continue;
 
-    StringCopy ( name, tomarker->Name );
-    int         index       = 0;
-
-
-    do {
-        char*       toc;
-
-        if ( ( toc = StringContains ( name + index, from, StringContainsCase ) ) == 0 )
+        if ( withintime && tomarker->From > TFCursor.GetPosMax () )
             break;
 
-        int         db  = toc - name;
-        if ( db )       StringCopy  ( before, name, db );
-        else            ClearString ( before );
+        if ( withintime && ! IsInsideLimits ( tomarker->From, tomarker->To, TFCursor.GetPosMin (), TFCursor.GetPosMax () ) )
+            continue;
 
-        int         da  = StringLength ( name ) - ( ( toc - name ) + StringLength ( from ) );
-        if ( da )       StringCopy  ( after, toc + StringLength ( from ), da );
-        else            ClearString ( after );
 
-        StringCopy  ( name, before, to, after );
+        StringCopy ( name, tomarker->Name );
+        int         index       = 0;
 
-        index = db + StringLength ( to );
-        } while ( true );
 
-                                        // update marker?
-    if ( StringIsNot ( tomarker->Name, name ) ) {
-                                        // directly poke into the marker
-        StringCopy ( tomarker->Name, name, MarkerNameMaxLength - 1 );
+        do {
+            char*       toc;
 
-        EEGDoc->SetMarkersDirty ();
+            if ( ( toc = StringContains ( name + index, from, StringContainsCase ) ) == 0 )
+                break;
+
+            int         db  = toc - name;
+            if ( db )       StringCopy  ( before, name, db );
+            else            ClearString ( before );
+
+            int         da  = StringLength ( name ) - ( ( toc - name ) + StringLength ( from ) );
+            if ( da )       StringCopy  ( after, toc + StringLength ( from ), da );
+            else            ClearString ( after );
+
+            StringCopy  ( name, before, to, after );
+
+            index = db + StringLength ( to );
+            } while ( true );
+
+                                            // update marker?
+        if ( StringIsNot ( tomarker->Name, name ) ) {
+                                            // directly poke into the marker
+            StringCopy ( tomarker->Name, name, MarkerNameMaxLength - 1 );
+
+            EEGDoc->SetMarkersDirty ();
+            }
+        } // for i
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if ( EEGDoc->AreMarkersDirty () ) {
+
+        EEGDoc->CommitMarkers ();
+                                            // assume we want to see the results!
+        ShowTags    = true;
+
+        if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
+            CmSetMarkerDisplay ( CM_EEGMRKMARKER );
+
+        ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+
+        EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
         }
-    } // for i
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-if ( EEGDoc->AreMarkersDirty () ) {
-
-    EEGDoc->CommitMarkers ();
-                                        // assume we want to see the results!
-    ShowTags    = true;
-
-    if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
-        CmSetMarkerDisplay ( CM_EEGMRKMARKER );
-
-    ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
-
-    EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
     }
+
+
+if ( allsessions )
+    EEGDoc->GoToSession ( currsession );
 }
 
 
@@ -8985,13 +9020,30 @@ if ( ! GetInputFromUser ( "Give a text expression of the marker names to delete 
 if ( StringIsEmpty ( regexp ) )
     return;
 
+
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 ? GetAnswerFromUser ( "Applying to all sessions?", "Deleting Markers by Name", this ) 
+                                                                    : false;
+int                 currsession     = EEGDoc->GetCurrentSession ();
+
+
 if ( ! GetAnswerFromUser ( "Are you sure you want to delete these markers?" NewLine "(can not be undone)", "Deleting Markers by Name" ) )
     return;
 
 
-EEGDoc->RemoveMarkers ( regexp, MarkerTypeUserCoded );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-EEGDoc->CommitMarkers ();
+for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+
+    EEGDoc->GoToSession     ( sessioni );
+
+    EEGDoc->RemoveMarkers   ( regexp, MarkerTypeUserCoded );
+
+    EEGDoc->CommitMarkers   ();
+    }
+
+
+if ( allsessions )
+    EEGDoc->GoToSession ( currsession );
 
 
 //ShowTags    = false;
@@ -9033,10 +9085,24 @@ void    TTracksView::CmClearMarkers ()
 if ( ! GetAnswerFromUser ( "Are you sure you want to delete ALL markers?" NewLine "(can not be undone)", "Deleting Markers" ) )
     return;
 
-                                        // OK, do it!
-EEGDoc->RemoveMarkers ( MarkerTypeMarker );
 
-EEGDoc->CommitMarkers ();
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 ? GetAnswerFromUser ( "Applying to all sessions?", "Deleting Markers by Name", this ) 
+                                                                    : false;
+int                 currsession     = EEGDoc->GetCurrentSession ();
+
+
+for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+
+    EEGDoc->GoToSession     ( sessioni );
+
+    EEGDoc->RemoveMarkers   ( MarkerTypeMarker );
+
+    EEGDoc->CommitMarkers   ();
+    }
+
+
+if ( allsessions )
+    EEGDoc->GoToSession ( currsession );
 
 
 ShowTags    = false;
