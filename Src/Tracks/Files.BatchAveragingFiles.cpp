@@ -761,7 +761,7 @@ for ( int risi = 0; risi < (int) gof; risi++ ) {
         
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // get whole data set
-    risbuff.ReadFile ( gof[ risi ], datatype, ref );
+    risbuff.ReadFile ( gof[ risi ], 0, datatype, ref );
 
                                         // try to recover the sampling frequency on each file
     if ( samplingfrequency == 0 && risbuff.GetSamplingFrequency () > 0 )
@@ -1056,7 +1056,7 @@ for ( int repi = 0; repi < numrepeatavg; repi++ ) {
             Gauge.Next ( 0 );
 
                                         // get whole data set
-        risbuff.ReadFile ( gof[ randindex[ randi ] ], datatype, ref );
+        risbuff.ReadFile ( gof[ randindex[ randi ] ], 0, datatype, ref );
 
                                         // try to recover the sampling frequency on each file
         if ( samplingfrequency == 0 && risbuff.GetSamplingFrequency () > 0 )

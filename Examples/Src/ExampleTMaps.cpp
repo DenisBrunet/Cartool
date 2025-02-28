@@ -59,8 +59,8 @@ AtomType            datatype        = AtomTypeScalar;   // EEG is signed, scalar
 ReferenceType       ref             = ReferenceAverage; // Data will be read and averaged reference'd straight away
 
                                         // Read the maps with proper data type and reference set
-TMaps               maps        ( filemaps,      datatype, ref );
-TMaps               templates   ( filetemplates, datatype, ref );
+TMaps               maps        ( filemaps,      0, datatype, ref );
+TMaps               templates   ( filetemplates, 0, datatype, ref );
 
 
 cout << "Num tracks                 = " << maps.GetDimension () << fastendl;

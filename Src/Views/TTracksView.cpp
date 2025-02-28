@@ -9231,9 +9231,9 @@ char                answer[ 256 ];
 
 if ( ! GetOptionsFromUser (     "How precise would you like the search to be:"          NewLine 
                                 NewLine 
-                                Tab "- (L)iberal " Tab Tab Tab "(more flagged as bad)"  NewLine 
-                                Tab "- (R)egular " Tab Tab Tab "(best compromise)"      NewLine 
-                                Tab "- (S)trict "  Tab Tab Tab "(less flagged as bad)"  NewLine 
+                                Tab "- (L)iberal " Tab Tab Tab Tab          "(more flagged as bad)"  NewLine 
+                                Tab "- (R)egular " Tab Tab Tab Tab          "(best compromise)"      NewLine 
+                                Tab "- (S)trict "  Tab Tab Tab Tab          "(less flagged as bad)"  NewLine 
                                 Tab "- Specific tolerance, in [0..100]" Tab "(0: super-liberal; 100: super-strict)", 
                                 BadEpochsTitle, "LRS+-.0123456789", "R", answer ) )
     return;
@@ -9266,35 +9266,53 @@ if ( StringIsEmpty ( markerprefix ) )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TMarkers            badepochs;
-TFileName           filename ( EEGDoc->GetDocPath () );
-
-                                        // Search for bad epochs
-badepochs.BadEpochsToMarkers    (   0,      filename, 
-                                    tolerance, 
-                                    markerprefix, 
-                                    (bool) Highlighted  ? &Highlighted 
-                                  : (bool) BadTracks    ? &BadTracks 
-                                  :                       0
-                                );
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+int                 currsession     = EEGDoc->GetCurrentSession ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Insert to current document
-EEGDoc->InsertMarkers ( badepochs );
-                                        // push the new markers to disk now
-EEGDoc->CommitMarkers ();
 
-                                        // long story to show the results
-SetMarkerType ( MarkerTypeMarker );
+for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
 
-ShowTags            = EEGDoc->GetNumMarkers ( DisplayMarkerType );
+    EEGDoc->GoToSession ( sessioni );
 
-ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+    TMarkers            badepochs;
+    TFileName           filename ( EEGDoc->GetDocPath () );
 
-Invalidate ( false );
+                                            // Search for bad epochs
+    badepochs.BadEpochsToMarkers    (   0,      
+                                        filename,           sessioni,
+                                        tolerance, 
+                                        markerprefix, 
+                                        (bool) Highlighted  ? &Highlighted 
+                                      : (bool) BadTracks    ? &BadTracks 
+                                      :                       0
+                                    );
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                            // Insert to current document
+    EEGDoc->InsertMarkers ( badepochs );
+                                            // push the new markers to disk now
+    EEGDoc->CommitMarkers ();
+
+                                            // long story to show the results
+    SetMarkerType ( MarkerTypeMarker );
+
+    ShowTags            = EEGDoc->GetNumMarkers ( DisplayMarkerType );
+
+    ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+
+    EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+
+    Invalidate ( false );
+    }
+
+
+if ( allsessions )
+    EEGDoc->GoToSession ( currsession );
 }
 
 

@@ -163,7 +163,7 @@ if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
                                         // It could also be a TRisDoc*, and reading only the blocks needed...
 TMaps               ris;
 
-ris.ReadFile ( risfile, AtomTypePositive, ReferenceNone );
+ris.ReadFile ( risfile, 0, AtomTypePositive, ReferenceNone );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

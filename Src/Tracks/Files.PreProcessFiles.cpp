@@ -393,7 +393,7 @@ if ( subsamplesallfiles ) {
         if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
 
 
-        Data.ReadFile ( gof[ fi ], AtomTypeScalar /*datatype*/, ReferenceAsInFile );
+        Data.ReadFile ( gof[ fi ], 0, AtomTypeScalar /*datatype*/, ReferenceAsInFile );
 
                                         // !split in 2 here, as each loop has to test its own overflowing limit!
         if ( ! mergecomplex || mergecomplex && IsEven ( fi ) )
@@ -468,7 +468,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                         // reading data only if really needed
     if ( computefiles || istempfile )
 
-        Data.ReadFile   ( filenamein, AtomTypeScalar /*datatype*/, ReferenceAsInFile );
+        Data.ReadFile   ( filenamein, 0, AtomTypeScalar /*datatype*/, ReferenceAsInFile );
 
     numeegelec  = Data.GetDimension ();
                                         // this might be changed by the preprocessing, so just make sure we start each file anew
@@ -774,7 +774,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
     if      ( badepochs == SkippingBadEpochsAuto )
                                         // gracefully extract the bad epochs
-        badepochslist.BadEpochsToMarkers    (   ToData,     0,
+        badepochslist.BadEpochsToMarkers    (   ToData,     0,      0, 
                                                 badepochstolerance, 
                                                 MarkerNameAutoBadEpoch,
                                                 0
@@ -930,7 +930,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
             if ( dualdata ) {
                                         // read with the general case
-                TMaps               altesi ( (*dualgofin)[ fi ], DualDataPresets[ dualdata ].DataType, ReferenceAsInFile );
+                TMaps               altesi ( (*dualgofin)[ fi ], 0, DualDataPresets[ dualdata ].DataType, ReferenceAsInFile );
 
                 if ( timelinedisrupted )
                     altesi.SetSamplingFrequency ( 0 );

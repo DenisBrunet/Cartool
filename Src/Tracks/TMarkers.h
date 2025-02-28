@@ -244,7 +244,7 @@ public:
     void            MaxTrackToMarkers       ( const TArray1<double> &track, long mintf, long maxtf, bool peak, const char* name = 0 );    // scan a track, save local max positions
     void            MarkersToTimeChunks     ( const TMarkers& inputmarkers, const char* inputmarkernames, MarkersChunksFlags flag, long fromtf, long totf, const char* newmarkername = 0 ); // create markers from a list of markers, within a range of time frames - !also consolidate overlapping epochs!
     void            CreateTimeChunks        ( const TTracksDoc* EEGDoc, double blockdurationms, long fromtf, long totf );                   // create markers from arbitrary length
-    void            BadEpochsToMarkers      ( const TMaps* mapsin, const char* filename, double tolerance, const char* newmarkername = 0, const TSelection* ignoretracks = 0 );  // scan tracks, guessing where the bad epochs are
+    void            BadEpochsToMarkers      ( const TMaps* mapsin, const char* filename, int session, double tolerance, const char* newmarkername = 0, const TSelection* ignoretracks = 0 );  // scan tracks, guessing where the bad epochs are
     void            TestingAgainst          ( const TMarkers& trainingset, long numtf, double& truepositiverate, double& truenegativerate, double& falsepositiverate, double& falsenegativerate )    const;
     bool            IsOverlapping           ( long mintf, long maxtf )  const;
 

@@ -664,7 +664,7 @@ TMaps               templatemaps;
 
 if ( mapordering == MapOrderingFromTemplates ) {
                                         // highest priority re-ordering option
-    templatemaps.ReadFile   (   templatesfile,   
+    templatemaps.ReadFile   (   templatesfile,  0,
                                 datatype,       ReferenceNone 
                             );
 

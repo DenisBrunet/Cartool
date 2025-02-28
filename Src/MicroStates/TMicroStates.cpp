@@ -833,7 +833,7 @@ TMarkers            rejectmarkers;
 
 if      ( badepochs == SkippingBadEpochsAuto )
                                         // Search for bad epochs
-    rejectmarkers.BadEpochsToMarkers ( 0, eegfile, badepochstolerance, MarkerNameAutoBadEpoch );
+    rejectmarkers.BadEpochsToMarkers ( 0, eegfile, 0, badepochstolerance, MarkerNameAutoBadEpoch );
 
 
 else if ( badepochs == SkippingBadEpochsList ) {

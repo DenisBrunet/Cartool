@@ -150,7 +150,8 @@ TFileName           _basefile;
 
 //----------------------------------------------------------------------------
                                         // Maps to criteria
-void    ComputeBadEpochsCriteria    (   const TMaps*        mapsin,                     const char*         filename,
+void    ComputeBadEpochsCriteria    (   const TMaps*        mapsin,
+                                        const char*         filename,                   int                 session,
                                         double              targetsamplingfrequency,
                                         FilterTypes         filtertype,                 const double*       freqcut,
                                         double              badduration,
@@ -171,7 +172,7 @@ if ( Gauge )    Gauge->Next ( -1, SuperGaugeUpdateTitle );
 
 
 const TMaps*        tomapsin        = mapsin    ? mapsin
-                                                : new TMaps ( filename, AtomTypeScalar, ReferenceNone );
+                                                : new TMaps ( filename, session, AtomTypeScalar, ReferenceNone );
 
 double              samplingfrequencyin= tomapsin->GetSamplingFrequency ();
 
@@ -660,7 +661,8 @@ if ( badduration > 0 ) {
 
 //----------------------------------------------------------------------------
                                         // Compute criteria in 2 different bands
-void    ComputeBadEpochsCriteriaBands(  const TMaps*        mapsin,                     const char*         filename,
+void    ComputeBadEpochsCriteriaBands(  const TMaps*        mapsin,
+                                        const char*         filename,                   int                 session,
                                         const TSelection*   ignoretracks,
                                         double              targetsamplingfrequency,
                                         double              badduration,
@@ -686,7 +688,7 @@ AtomType            datatype            = isesi ? AtomTypePositive : AtomTypeSca
 ReferenceType       dataref             = ReferenceNone; // GetProcessingRef ( isesi ? ProcessingReferenceESI : ProcessingReferenceNone );
 
 const TMaps*        tomapsin            = mapsin    ? mapsin
-                                                    : new TMaps ( filename, datatype, dataref );
+                                                    : new TMaps ( filename, session, datatype, dataref );
 
 double              samplingfrequencyin= tomapsin->GetSamplingFrequency ();
 
@@ -726,7 +728,8 @@ TVector<float>      criteriab [ NumBadEpochsCriteria ];
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // First frequency band
-ComputeBadEpochsCriteria    (   &maps,  0,
+ComputeBadEpochsCriteria    (   &maps,
+                                0,                          0,
                                 targetsamplingfrequency,                    // downsampling done once for all
                                 filtertype1,                &filtercut1,    // first filter
                                 badduration,
@@ -743,7 +746,8 @@ for ( int beci = MinCriteriaTracks; beci <= MaxCriteriaTracks; beci++ )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Second frequency band
-ComputeBadEpochsCriteria    (   &maps,  0,
+ComputeBadEpochsCriteria    (   &maps,
+                                0,                          0,
                                 targetsamplingfrequency,                    // downsampling done once for all
                                 filtertype2,                &filtercut2,    // second filter
                                 badduration,
@@ -1178,7 +1182,8 @@ criteria[ MetaCritAlli ].Filter ( FilterTypeBinarize, p );
                                         // Basically, it looks at the Non-Gaussianity among electrodes at a given time position
                                         // It can somehow be related to Nelson rules for a special case of EEG (f.ex. more points above mean ~= skewness)
                                         // and is definitely a Statistical Process Control (SPC) method
-void    TMarkers::BadEpochsToMarkers    (   const TMaps*        mapsin,             const char*     filename,
+void    TMarkers::BadEpochsToMarkers    (   const TMaps*        mapsin,             
+                                            const char*         filename,       int             session,
                                             double              tolerance,
                                             const char*         newmarkername,
                                             const TSelection*   ignoretracks
@@ -1240,7 +1245,8 @@ TVector<float>      criteria [ TotalCriteriaBandsTracks ];
 double              samplingfrequency;
 
 
-ComputeBadEpochsCriteriaBands   (   mapsin,                     filename,
+ComputeBadEpochsCriteriaBands   (   mapsin,
+                                    filename,               session,
                                     ignoretracks,
                                     BadEpochsTargetSampling,    // we can heavily downsample, targetting 125[Hz]
                                     badduration,

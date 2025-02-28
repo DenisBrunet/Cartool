@@ -151,10 +151,10 @@ class   TMaps
 public:
                     TMaps                       ();
                     TMaps                       ( int nummaps, int dim );
-                    TMaps                       ( const char* filename, AtomType datatype, ReferenceType reference, TStrings* tracksnames = 0 );
+                    TMaps                       ( const char* filename, int session, AtomType datatype, ReferenceType reference, TStrings* tracksnames = 0 );
                     TMaps                       ( const TGoMaps* gogomaps );
-                    TMaps                       ( const TGoF& gof, AtomType datatype, ReferenceType reference, TStrings*    tracksnames = 0 );
-                    TMaps                       ( const TMaps &op, int downsampling, const TSelection* ignoretracks = 0 );
+//                  TMaps                       ( const TGoF& gof, AtomType datatype, ReferenceType reference, TStrings*    tracksnames = 0 );  // !char* could cast to a TGoF!
+                    TMaps                       ( const TMaps& op, int downsampling, const TSelection* ignoretracks = 0 );
                    ~TMaps                       ();
 
 
@@ -203,17 +203,17 @@ public:
     void            ComputeZScorePositive       ( ZScoreType how, TArray2<float>& zscorevalues )    const;
     void            ComputeZScoreVectorial      ( ZScoreType how, TArray2<float>& zscorevalues )    const;
     void            Correlate                   ( TMaps& maps1, TMaps& maps2, CorrelateType how, PolarityType polarity, ReferenceType reference, int numrand = 0, TMaps* pvalues = 0, char* infix = 0 );
-    bool            Covariance3DVectorial       ( AMatrix33& Cov, const TSelection* tfok = 0 )    const;
+    bool            Covariance3DVectorial       ( AMatrix33& Cov, const TSelection* tfok = 0 )      const;
     bool            FilterSpatial               ( SpatialFilterType filtertype, const char *xyzfile );
     void            FilterTime                  ( FilterTypes filtertype, FctParams& params, bool showprogress = false );
-    TMapAtomType    GetMinValue                 ()                                          const;
-    TMapAtomType    GetMaxValue                 ()                                          const;
-    TMapAtomType    GetAbsMaxValue              ()                                          const;
-    void            GetNullElectrodes           ( TSelection& sel )                         const;
-    bool            IsZScorePositiveShifted     ()                                          const;
-    void            Mean                        ( int frommap, int tomap, TMap& avgmap )    const;
-    void            Median                      ( int frommap, int tomap, TMap& avgmap )    const;
-    void            Multiply                    ( const AMatrix& T, TMaps& results )        const;
+    TMapAtomType    GetMinValue                 ()                                                  const;
+    TMapAtomType    GetMaxValue                 ()                                                  const;
+    TMapAtomType    GetAbsMaxValue              ()                                                  const;
+    void            GetNullElectrodes           ( TSelection& sel )                                 const;
+    bool            IsZScorePositiveShifted     ()                                                  const;
+    void            Mean                        ( int frommap, int tomap, TMap& avgmap )            const;
+    void            Median                      ( int frommap, int tomap, TMap& avgmap )            const;
+    void            Multiply                    ( const AMatrix& T, TMaps& results )                const;
     void            NoMore                      ( TMapAtomType maxv );
     void            Normalize                   ( AtomType datatype, int nummaps = -1, bool centeraverage = false );
     void            NormalizeSolutionPoints     ( AtomType datatype, int nummaps = -1 );
@@ -250,8 +250,8 @@ public:
     void            AddGaussianNoise            ( double sigmadata, double percentsnr1, double percentsnr2 );
 
 
-    void            ReadFile                    ( const char* filename, AtomType datatype, ReferenceType reference, TStrings*    tracksnames = 0, TStrings*    freqsnames = 0, int dim1goes = ReadGoMapsToDimension, int dim2goes = ReadGoMapsToNumMaps, int dim3goes = ReadGoMapsIgnore, int dimmargin = 0 );
-    void            ReadFile                    ( const char* filename, AtomType datatype, ReferenceType reference, const TMarkers& keeplist, TStrings*    tracksnames = 0 );
+    void            ReadFile                    ( const char* filename, int session, AtomType datatype, ReferenceType reference, TStrings*    tracksnames = 0, TStrings*    freqsnames = 0, int dim1goes = ReadGoMapsToDimension, int dim2goes = ReadGoMapsToNumMaps, int dim3goes = ReadGoMapsIgnore, int dimmargin = 0 );
+    void            ReadFile                    ( const char* filename, int session, AtomType datatype, ReferenceType reference, const TMarkers& keeplist, TStrings*    tracksnames = 0 );
     void            ReadFiles                   ( const TGoF& gof,      AtomType datatype, ReferenceType reference, TStrings*    tracksnames = 0 );
     void            WriteFile                   ( const char* filename, bool vectorial = false, double samplingfrequency = 0, const TStrings*    tracksnames = 0 )  const;
     void            WriteFileEpochs             ( const char* filename, bool vectorial,         double samplingfrequency,     const TMarkers& keeplist, const TStrings*    tracksnames = 0 )  const; 

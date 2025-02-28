@@ -1263,7 +1263,7 @@ for ( int toei = 0; toei < maxelto; toei++ )
 
 Gauge.Next ( gaugeinterpolglobal, SuperGaugeUpdateTitle );
 
-TMaps               datain  ( eegdoc->GetDocPath (), AtomTypeScalar, ReferenceAsInFile );
+TMaps               datain  ( eegdoc->GetDocPath (), 0, AtomTypeScalar, ReferenceAsInFile );
 
 TMaps               dataout ( maxtf, TargetSpace == BackToOriginalElectrodes ? eegdoc->GetNumElectrodes () 
                                                                              : maxelto );

@@ -253,7 +253,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
                     }
 
                                         // Read & preprocess data
-                mapsi.ReadFile ( filenames1[ i ], datatype1, ReferenceNone, 
+                mapsi.ReadFile ( filenames1[ i ], 0, datatype1, ReferenceNone, 
                                  0, 0,
                                  dim1goes1, dim2goes1, dim3goes1 );
 
@@ -275,7 +275,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
                 }
 
                                         // Read & preprocess data
-            mapsj.ReadFile ( filenames2[ j ], datatype2, ReferenceNone,
+            mapsj.ReadFile ( filenames2[ j ], 0, datatype2, ReferenceNone,
                              0, 0,
                              dim1goes2, dim2goes2, dim3goes2 );
 
@@ -334,7 +334,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
                         }
 
                                         // Read & preprocess data
-                    mapsi.ReadFile  (   filenames1[ i ], datatype1, ReferenceNone, 
+                    mapsi.ReadFile  (   filenames1[ i ], 0, datatype1, ReferenceNone, 
                                         &tracksnamesi, &freqsnamesi,
                                         dim1goes1, dim2goes1, dim3goes1,
                                         cliptf 
@@ -348,7 +348,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
                     }
 
                                         // Read & preprocess data
-                mapsj.ReadFile ( filenames2[ j ], datatype2, ReferenceNone,
+                mapsj.ReadFile ( filenames2[ j ], 0, datatype2, ReferenceNone,
                                  0, 0,
                                  dim1goes2, dim2goes2, dim3goes2,
                                  cliptf );
@@ -394,7 +394,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
                     }
 
                                         // Read & preprocess data
-                mapsi.ReadFile  (   filenames1[ i ], datatype1, ReferenceNone, 
+                mapsi.ReadFile  (   filenames1[ i ], 0, datatype1, ReferenceNone, 
                                     &tracksnamesi, &freqsnamesi,
                                     dim1goes1, dim2goes1, dim3goes1,
                                     cliptf 
@@ -415,7 +415,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
                         }
 
                                         // Read & preprocess data
-                    mapsj.ReadFile  (   filenames2[ j ], datatype2, ReferenceNone,
+                    mapsj.ReadFile  (   filenames2[ j ], 0, datatype2, ReferenceNone,
                                         &tracksnamesj, 0,
                                         dim1goes2, dim2goes2, dim3goes2,
                                         cliptf 

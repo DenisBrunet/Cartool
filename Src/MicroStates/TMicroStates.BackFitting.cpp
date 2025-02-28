@@ -696,8 +696,8 @@ TLabeling           labels;
 ReferenceType       templateref         = GetProcessingRef ( isesipreset ? ProcessingReferenceESI : ProcessingReferenceEEG );
 
 
-templatemaps.ReadFile   (   TemplateFileName,   
-                            datatype,   ReferenceNone 
+templatemaps.ReadFile   (   TemplateFileName,   0,
+                            datatype,           ReferenceNone 
                         );
 
 PreprocessMaps          (   templatemaps,

@@ -75,7 +75,7 @@ if ( gauge )
 
 TStrings            xyznames;
 
-TMaps               maps ( filename, datatype, dataref, &xyznames );
+TMaps               maps ( filename, 0, datatype, dataref, &xyznames );
 
 //int                 numel           = maps.GetDimension ();
 //int                 numtf           = maps.GetNumMaps   ();

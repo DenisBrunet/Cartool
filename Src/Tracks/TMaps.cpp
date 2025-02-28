@@ -116,8 +116,8 @@ ToMapsArray         = 0;
 Resize ( nummaps, dim );
 }
 
-
-        TMaps::TMaps ( const char* filename, AtomType datatype, ReferenceType reference, TStrings* tracksnames )
+                                        // Constructor allows to specify a session number
+        TMaps::TMaps ( const char* filename, int session, AtomType datatype, ReferenceType reference, TStrings* tracksnames )
 {
 Maps                = 0;
 NumMaps             = 0;
@@ -128,7 +128,7 @@ SamplingFrequency   = 0;
 ToMapsArray         = 0;
 #endif
 
-ReadFile ( filename, datatype, reference, tracksnames );
+ReadFile ( filename, session, datatype, reference, tracksnames );
 }
 
                                         // Concatenate all TGoMaps into a single, big TMaps
@@ -146,7 +146,7 @@ ToMapsArray         = 0;
 Set ( gogomaps );
 }
 
-
+/*
         TMaps::TMaps ( const TGoF& gof, AtomType datatype, ReferenceType reference, TStrings* tracksnames )
 {
 Maps                = 0;
@@ -160,7 +160,7 @@ ToMapsArray         = 0;
 
 ReadFiles ( gof, datatype, reference, tracksnames );
 }
-
+*/
 
 //----------------------------------------------------------------------------
                                         // copy while downsampling, and optionally skipping some tracks
@@ -4664,7 +4664,7 @@ for ( int mi = 0; mi < NumMaps; mi++ ) {
                                         // Optional dimorders tells how to load the data, from a virtual EEG / FREQ point of view (definitely not the file structure!)
                                         // The reference order is  EEG[ el ][ tf ]  or  FREQ[ el ][ tf ][ f ]
                                         // Default is to load a time series of Maps
-void    TMaps::ReadFile     (   const char*         filename,
+void    TMaps::ReadFile     (   const char*         filename,       int                 session,
                                 AtomType            datatype,       ReferenceType       reference,
                                 TStrings*           tracksnames,    TStrings*           freqsnames,
                                 int                 dim1goes,       int                 dim2goes,       int             dim3goes,
@@ -4729,6 +4729,8 @@ if ( numfreq > 0 ) {
                                         // frequency file case, caller has to specify where to send 2 dimensions + a fixed index for the remaining dimension
     TOpenDoc<TFreqDoc>  FreqDoc ( filename, OpenDocHidden );
 
+                                        // Frequency files do not have sessions
+
     if ( tracksnames )
         *tracksnames    = *FreqDoc->GetElectrodesNames ();
 
@@ -4763,6 +4765,11 @@ if ( numfreq > 0 ) {
 else if ( datatype != AtomTypeVector ) {
                                         // open as an EEG
     TOpenDoc< TTracksDoc >  EEGDoc ( filename, OpenDocHidden );
+
+                                        // go to session, if relevant
+    if ( IsInsideLimits ( session, 1, EEGDoc->GetNumSessions () ) )
+        EEGDoc->GoToSession ( session );
+
 
     if ( tracksnames )
         *tracksnames    = *EEGDoc->GetElectrodesNames ();
@@ -4818,6 +4825,8 @@ else if ( datatype == AtomTypeVector ) {
 
     TOpenDoc< TRisDoc >     RISDoc ( filename, OpenDocHidden );
 
+                                        // RIS files do not have sessions
+
     if ( tracksnames )
         *tracksnames    = *RISDoc->GetElectrodesNames ();
 
@@ -4861,8 +4870,8 @@ else if ( datatype == AtomTypeVector ) {
 //----------------------------------------------------------------------------
                                         // Simplified to read only from a list of TF
                                         // Designed to be working on both scalar and vectorial data
-void    TMaps::ReadFile     (   const char*         filename,
-                                AtomType            datatype,       ReferenceType   reference,
+void    TMaps::ReadFile     (   const char*         filename,       int                 session,
+                                AtomType            datatype,       ReferenceType       reference,
                                 const TMarkers&     keeplist,
                                 TStrings*           tracksnames
                             )
@@ -4902,6 +4911,10 @@ const TMarker*      tomarker;
 if      ( datatype != AtomTypeVector ) {
                                         // open as an EEG
     TOpenDoc< TTracksDoc >  EEGDoc ( filename, OpenDocHidden );
+
+
+    if ( IsInsideLimits ( session, 1, EEGDoc->GetNumSessions () ) )
+        EEGDoc->GoToSession ( session );
 
 
     if ( tracksnames )
@@ -5014,7 +5027,7 @@ int                 mabs            = 0;
 for ( int gofi = 0; gofi < gof.NumFiles (); gofi++ ) {
 
                                         // reading 1 file - that's the most duplicated data that will be encountered
-    TMaps           onetmaps ( gof[ gofi ], datatype, reference, tracksnames && tracksnames->IsEmpty () ? tracksnames : 0 );
+    TMaps           onetmaps ( gof[ gofi ], 0, datatype, reference, tracksnames && tracksnames->IsEmpty () ? tracksnames : 0 );
 
 
     if ( SamplingFrequency == 0 && onetmaps.GetSamplingFrequency () > 0 )
@@ -5673,7 +5686,7 @@ DeallocateMemory ();
                                         // Read and create a TMaps for each file
 for ( int gofi = 0; gofi < gof.NumFiles (); gofi++ ) {
 
-    TMaps*            newgom      = new TMaps ( gof[ gofi ], datatype, reference, tracksnames && tracksnames->IsEmpty () ? tracksnames : 0 );
+    TMaps*            newgom      = new TMaps ( gof[ gofi ], 0, datatype, reference, tracksnames && tracksnames->IsEmpty () ? tracksnames : 0 );
 
 //    DBGV4 ( gofi + 1, gof->NumFiles (), newgom->GetNumMaps (), newgom->GetDimension (), (*gof)[ gofi ] );
 

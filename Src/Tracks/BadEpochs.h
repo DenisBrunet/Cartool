@@ -133,7 +133,8 @@ enum        BadEpochsCriteriaEnum
             };
 
 
-void    ComputeBadEpochsCriteria        (   const TMaps*        mapsin,                     const char*         filename,
+void    ComputeBadEpochsCriteria        (   const TMaps*        mapsin,
+                                            const char*         filename,                   int                 session,
                                             double              targetsamplingfrequency,
                                             FilterTypes         filtertype,                 const double*       freqcut,
                                             double              badduration,
@@ -150,7 +151,8 @@ constexpr int       NumCriteriaBands                = 2;
 constexpr int       ComputeCriteriaBandsGaugeCount  = NumCriteriaBands * ComputeCriteriaGaugeCount + 1;
 
 
-void    ComputeBadEpochsCriteriaBands   (   const TMaps*        mapsin,                     const char*         filename,
+void    ComputeBadEpochsCriteriaBands   (   const TMaps*        mapsin,
+                                            const char*         filename,                   int                 session,
                                             const TSelection*   ignoretracks,
                                             double              targetsamplingfrequency,
                                             double              badduration,

@@ -67,7 +67,7 @@ TMaps               data;
 
 for ( int fi = 0; fi < (int) gof; fi++ ) {
 
-    data.ReadFile  ( gof[ fi ], datatype, ReferenceAsInFile );
+    data.ReadFile  ( gof[ fi ], 0, datatype, ReferenceAsInFile );
 
     ProcessResults  (   data,           datatype,   reference,
                         ranking, 
@@ -137,8 +137,8 @@ for ( int i = 0; i < (int) gof; i++ ) {
     if ( Gauge.IsAlive () )     Gauge.Next ( 0 );
 
 
-    if ( layout == AllFilesOneCentroid )        mapsin.ReadFiles ( gof,      datatype, ReferenceNone );   // reading & concatenating all files at once
-    else /*OneFileOneCentroid*/                 mapsin.ReadFile  ( gof[ i ], datatype, ReferenceNone );   // reading a single file
+    if ( layout == AllFilesOneCentroid )        mapsin.ReadFiles ( gof,         datatype, ReferenceNone );   // reading & concatenating all files at once
+    else /*OneFileOneCentroid*/                 mapsin.ReadFile  ( gof[ i ], 0, datatype, ReferenceNone );   // reading a single file
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

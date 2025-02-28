@@ -2305,10 +2305,10 @@ for ( int rsi = 0; rsi < numresamples; rsi++ ) {
             continue;
 
                                         // !reading only the interesting part! -> multiple reads, less memory instead of "1" big read, more memory
-        Data.ReadFile   ( Strings[ fi ], AtomTypeScalar /*datatype*/, ReferenceAsInFile, writingepochslist[ fi ], tracksnames.IsEmpty () ? &tracksnames : 0 );
+        Data.ReadFile   ( Strings[ fi ], 0, AtomTypeScalar /*datatype*/, ReferenceAsInFile, writingepochslist[ fi ], tracksnames.IsEmpty () ? &tracksnames : 0 );
 
         if ( gofalt )
-            DataAlt.ReadFile    ( (*gofalt)[ fi ], AtomTypeScalar /*datatype*/, ReferenceAsInFile, writingepochslist[ fi ], tracksnamesalt.IsEmpty () ? &tracksnamesalt : 0 );
+            DataAlt.ReadFile    ( (*gofalt)[ fi ], 0, AtomTypeScalar /*datatype*/, ReferenceAsInFile, writingepochslist[ fi ], tracksnamesalt.IsEmpty () ? &tracksnamesalt : 0 );
 
                                         // Concatenate these maps
         for ( int tf0 = 0; tf0 < Data.GetNumMaps (); tf0++, tfconcat++ ) {
@@ -2874,7 +2874,7 @@ for ( int i = 0; i < (int) Strings; i++ ) {
                                         // Read data now
 //  TStrings            tracksnames;
                                         // these are temp files, we don't care for names
-    TMaps               maps ( Strings[ i ], AtomTypeScalar, ReferenceAsInFile/*, &tracksnames*/ );
+    TMaps               maps ( Strings[ i ], 0, AtomTypeScalar, ReferenceAsInFile/*, &tracksnames*/ );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
