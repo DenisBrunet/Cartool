@@ -114,7 +114,7 @@ do {
                                         // reached the given scope?
     else if ( StringIsNotEmpty ( withinscope )
            && buff[ 0 ] == '/' && StringStartsWith ( buff + 1, withinscope ) ) {
-//           && buff[ 0 ] == '/' && StringContains ( withinscope, buff + 1, StringContainsCase | StringContainsForward ) ) {    // ?does not work?
+//         && buff[ 0 ] == '/' && StringContains ( withinscope, buff + 1, CaseSensitive | StringContainsForward ) ) {    // ?does not work?
                                         // searched element not found
         is.seekg ( currentpos, ios::beg );  // if missing / failed, restore position from entry call, otherwise the position is at the end of withinscope
 
@@ -210,7 +210,7 @@ do {
     is.getline ( buff, 1024, '>' );
 
                                         // reached the end of given scope?
-    if ( buff[ 0 ] == '/' && StringContains ( withinscope, buff + 1, StringContainsCase | StringContainsForward ) ) {
+    if ( buff[ 0 ] == '/' && StringContains ( withinscope, buff + 1, CaseSensitive | StringContainsForward ) ) {
 
         return  true;
         }

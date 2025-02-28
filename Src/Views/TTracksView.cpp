@@ -8420,7 +8420,7 @@ if ( StringIsEmpty ( search ) )
 if ( ! GetInputFromUser ( "Regexp 'replace' string:", title, replace, replace, this ) )
     return;
 
-if ( /* StringIsEmpty ( to ) ||*/ StringIs ( replace, search ) )
+if ( /* StringIsEmpty ( to ) ||*/ StringIs ( replace, search, CaseSensitive ) )
     return;
 
 
@@ -8528,7 +8528,7 @@ if ( StringIsEmpty ( from ) )
 if ( ! GetInputFromUser ( "Replaced by new substring (empty for deletion):", title, to, to, this ) )
     return;
 
-if ( /* StringIsEmpty ( to ) ||*/ StringIs ( to, from ) )
+if ( /* StringIsEmpty ( to ) ||*/ StringIs ( to, from, CaseSensitive ) )
     return;
 
 
@@ -8571,7 +8571,7 @@ for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <=
         do {
             char*       toc;
 
-            if ( ( toc = StringContains ( name + index, from, StringContainsCase ) ) == 0 )
+            if ( ( toc = StringContains ( name + index, from, CaseSensitive ) ) == 0 )
                 break;
 
             int         db  = toc - name;
@@ -8588,7 +8588,7 @@ for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <=
             } while ( true );
 
                                             // update marker?
-        if ( StringIsNot ( tomarker->Name, name ) ) {
+        if ( StringIsNot ( tomarker->Name, name, CaseSensitive ) ) {
                                             // directly poke into the marker
             StringCopy ( tomarker->Name, name, MarkerNameMaxLength - 1 );
 

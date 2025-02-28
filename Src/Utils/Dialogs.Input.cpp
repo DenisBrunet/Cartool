@@ -501,12 +501,12 @@ if ( StringIsEmpty ( filefilter ) )
 else {
     StringCopy ( OFNDialogFilter, filefilter );
                                         // always complete with a general file filter
-    if ( ! StringContains ( (const char*) OFNDialogFilter, FILEFILTER_ALL, StringContainsCase ) )
+    if ( ! StringContains ( (const char*) OFNDialogFilter, FILEFILTER_ALL, CaseSensitive ) )
         StringAppend ( OFNDialogFilter, "|" AllFilesFilter );
     }
 
                                         // needs to convert from old style of file filter?
-if ( ! StringContains ( (const char*) OFNDialogFilter, "|", StringContainsCase ) )
+if ( ! StringContains ( (const char*) OFNDialogFilter, "|", CaseSensitive ) )
     return;
                                         // convert from old to new (>=XP) file filter style
                                         // now separated by nulls, & ending with one more null
@@ -764,7 +764,7 @@ StringReplace ( allexts, "*.", " " );
 StringReplace ( allexts, ";",  " " );
 
 if ( StringIsSpace  ( allexts )
-  || StringContains ( (const char*) allexts, "*", StringContainsCase ) )  // included an "*.*"
+  || StringContains ( (const char*) allexts, "*", CaseSensitive ) )  // included an "*.*"
     return;
 
 //DBGM ( allexts, "All Extensions" );
@@ -778,11 +778,11 @@ if ( *toc == '.' )  toc++;
 StringCopy ( firstext, toc );
 
                                         // trim trailing chars after first ";..."
-if ( ( toc = StringContains ( (char*) firstext, (char*) ";", StringContainsCase ) ) != 0 )
+if ( ( toc = StringContains ( (char*) firstext, (char*) ";", CaseSensitive ) ) != 0 )
     ClearString ( toc );
 
                                         // don't allow for a remaining '*' or '.'
-if ( StringContains ( (const char*) firstext, "*", StringContainsCase )
+if ( StringContains ( (const char*) firstext, "*", CaseSensitive )
   || StringStartsWith ( firstext, "." ) )
     ClearString ( firstext );
 

@@ -37,7 +37,7 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-bool    StringIs ( const char* s1, const char* s2 )
+bool    StringIs ( const char* s1, const char* s2, StringFlags flags )
 {
 if ( ! s1 || ! s2 )
     return false;
@@ -45,16 +45,18 @@ if ( ! s1 || ! s2 )
 if ( ! *s1 && ! *s2 )
     return true;
 
-return  ! _stricmp ( s1, s2 );
+return  IsFlag ( flags, CaseSensitive ) ? !  strcmp  ( s1, s2 ) 
+                                        : ! _stricmp ( s1, s2 );
 }
 
 
-bool    StringIsNot ( const char* s1, const char* s2 )
+bool    StringIsNot ( const char* s1, const char* s2, StringFlags flags )
 {
-return  ! StringIs ( s1, s2 );
+return  ! StringIs ( s1, s2, flags );
 }
 
 
+//----------------------------------------------------------------------------
 bool    StringIsEmpty ( const char* s )
 {
 return  s == 0 || ( s != 0 && *s == 0 );
@@ -67,6 +69,7 @@ return  s != 0 && *s != 0;
 }
 
 
+//----------------------------------------------------------------------------
 bool    StringIsSpace ( const char* s )
 {
 if ( ! s || ! *s )
@@ -84,7 +87,7 @@ return  true;
 //----------------------------------------------------------------------------
 bool    isconsonant ( char c )
 {
-return  StringContains ( "bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZçñ", c, StringContainsCase );
+return  StringContains ( "bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZçñ", c, CaseSensitive );
 }
 
 
@@ -184,6 +187,7 @@ return  s;
 }
 */
 
+//----------------------------------------------------------------------------
 bool            CheckToBool ( TCheckBoxData c )
 {
 return  c == owl::BF_CHECKED;
@@ -202,6 +206,7 @@ return  BoolToCheck ( StringToBool ( s ) );
 }
 
 
+//----------------------------------------------------------------------------
 char*   StringPlural    ( bool isplural,   bool space )
 {
 return  isplural ? "s" : space ? " " : "";
@@ -214,6 +219,7 @@ return  StringPlural ( v > 1, space );
 }
 
 
+//----------------------------------------------------------------------------
 bool    StringStartsWith ( const char* searched, const char* tosearch, int maxlength )
 {
 if ( !searched || !tosearch )
@@ -225,8 +231,23 @@ if ( !*searched && !*tosearch )
 return  ! _strnicmp ( searched, tosearch, maxlength == -1 ? StringLength ( tosearch ) : maxlength );
 }
 
+
+bool    StringEndsWith ( const char* searched, const char* tosearch )
+{
+if ( !searched || !tosearch )
+    return false;
+
+if ( !*searched && !*tosearch )
+    return true;
+
+return  StringLength ( searched ) >= StringLength ( tosearch ) ? ! _strnicmp ( StringEnd ( searched ) - StringLength ( tosearch ), tosearch, StringLength ( tosearch ) )
+                                                               : false;
+}
+
+
+//----------------------------------------------------------------------------
                                         // StringContainsBackward not implemented
-const char*   StringContains ( const char* searched, const char* tosearch, int flags )
+const char* StringContains ( const char* searched, const char* tosearch, StringFlags flags )
 {
 if ( !searched || !tosearch )
     return  0;
@@ -237,11 +258,11 @@ if ( !*searched && !*tosearch )
 
 const char*         toc;
 
-if ( flags & StringContainsCase )
+if ( IsFlag ( flags, CaseSensitive ) )
 
     toc     = strstr ( searched, tosearch );
                                         // default is no case
-else /*if ( flags & StringContainsNocase )*/ {
+else /*if ( IsFlag ( flags, CaseInsensitive ) )*/ {
                                         // Windows function - see your compiler
     toc     = StrStrI ( searched, tosearch );
 
@@ -272,44 +293,32 @@ else /*if ( flags & StringContainsNocase )*/ {
 return  toc;
 }
 
-                                        // StringContainsCase / StringContainsNocase not implemented
-char*               StringContains   ( char* searched, char* tosearch, int flags )
+                                        // CaseSensitive / CaseInsensitive not implemented
+char*       StringContains   ( char* searched, char* tosearch, StringFlags flags )
 {
 return  (char *) StringContains ( (const char* ) searched, (const char* ) tosearch, flags ); 
 }
 
                                         // Testing a single char
-const char*   StringContains ( const char* searched, const char tosearch, int flags )
+const char* StringContains ( const char* searched, const char tosearch, StringFlags flags )
 {
 if ( !searched || !*searched )
     return  0;
 
 
-if      ( flags & StringContainsBackward )      return  strrchr ( searched, tosearch );
+if      ( IsFlag ( flags, StringContainsBackward ) )    return  strrchr ( searched, tosearch );
                                         // default is forward
-else  /*( flags & StringContainsForward  )*/    return  strchr  ( searched, tosearch );
+else  /*( IsFlag ( flags, StringContainsForward  ) )*/  return  strchr  ( searched, tosearch );
 }
 
 
-char*   StringContains ( char* searched, char tosearch, int flags )
+char*       StringContains ( char* searched, char tosearch, StringFlags flags )
 {
 return  (char *) StringContains ( (const char* ) searched, (const char) tosearch, flags ); 
 }
 
 
-bool    StringEndsWith ( const char* searched, const char* tosearch )
-{
-if ( !searched || !tosearch )
-    return false;
-
-if ( !*searched && !*tosearch )
-    return true;
-
-return  StringLength ( searched ) >= StringLength ( tosearch ) ? ! _strnicmp ( StringEnd ( searched ) - StringLength ( tosearch ), tosearch, StringLength ( tosearch ) )
-                                                               : false;
-}
-
-
+//----------------------------------------------------------------------------
 bool    IsStringAmong ( const char* search, const char* among )
 {
 if ( search == 0 || among == 0 )
@@ -334,7 +343,6 @@ return  strchr ( among, search );
 
 
 //----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 void    ClearString ( char* s, long size )
 {
 if ( ! s )
@@ -355,6 +363,7 @@ else               *s = EOS;
 }
 
 
+//----------------------------------------------------------------------------
 void    SetString ( char* s, char fill, long size )
 {
 if ( ! s && size > 0 )
@@ -366,6 +375,7 @@ SetVirtualMemory ( s, size, fill );
 }
 
 
+//----------------------------------------------------------------------------
 long    StringLength ( const char* s )
 {
 if ( ! s )
@@ -387,6 +397,7 @@ return  StringLength ( s ) + 1;         // accounting for the null terminator
 }
 
 
+//----------------------------------------------------------------------------
 char*           StringEnd ( char* s )
 {
 if ( ! s )
@@ -405,6 +416,7 @@ return  s + strlen ( s );
 }
 
 
+//----------------------------------------------------------------------------
 char*   LastChar ( char* s, long countingfromend )
 {
 if ( ! s )                              // null pointer
@@ -448,6 +460,7 @@ return  s + strlen ( s ) - countingfromend;
 }
 
 
+//----------------------------------------------------------------------------
 char*   StringClip ( char* s, long length )
 {
 if ( StringLength ( s ) > length )
@@ -487,6 +500,7 @@ return  s;
 }
 
 
+//----------------------------------------------------------------------------
 char*   StringCopy ( char* to, const char* from, long maxlength )
 {
 if ( ! to || ! from )
@@ -538,6 +552,7 @@ return  to;
 }
 
 
+//----------------------------------------------------------------------------
 char*   StringAppend ( char* to, const char* tail1, const char* tail2, const char* tail3, const char* tail4, const char* tail5, const char* tail6, const char* tail7, const char* tail8 )
 {
 if ( ! to )
@@ -585,6 +600,7 @@ return  StringAppend ( to, IntegerToString ( tailstring, tail ) );
 }
 
 
+//----------------------------------------------------------------------------
 char*   StringPrepend ( char* to, const char* head )
 {
 if ( ! to )
@@ -609,6 +625,7 @@ return  to;
 }
 
 
+//----------------------------------------------------------------------------
 char*   AppendSeparator ( char* to, const char* separator )
 {
 if ( ! to )
@@ -633,6 +650,8 @@ StringAppend        ( to, separator );
 return  to;
 }
 
+
+//----------------------------------------------------------------------------
                                         // tobereplaced MUST contain something, it will NOT replace empty strings with something else
 void    StringReplace ( char* s, const char* tobereplaced, const char* replacedwith )
 {
@@ -672,12 +691,14 @@ do {
 }
 
 
+//----------------------------------------------------------------------------
 void    StringDelete     ( char* s, const char* tobedeleted )
 {
 StringReplace   ( s, tobedeleted, "" );
 }
 
 
+//----------------------------------------------------------------------------
 void    StringRepeat ( char* s, char torepeat, UINT num )
 {
 if ( !s || !torepeat )
@@ -737,13 +758,13 @@ MoveVirtualMemory ( s, s + firstnonspacei, length - firstnonspacei + 1 );
 
 
 //----------------------------------------------------------------------------
-
 void    StringNoSpace    ( char* s )
 {
 ReplaceChars ( s, " \t\n", "" );
 }
 
 
+//----------------------------------------------------------------------------
 void    ReplaceChars ( char* s, const char* tobereplaced, const char* replacedwith )
 {
 if ( !s || !tobereplaced || !replacedwith )
@@ -772,12 +793,14 @@ for ( const char* tosearch = tobereplaced, *toreplace = replacedwith; *tosearch;
 }
 
 
+//----------------------------------------------------------------------------
 void    DeleteChars ( char* s, const char* tobedeleted )
 {
 ReplaceChars ( s, tobedeleted, "" );
 }
 
 
+//----------------------------------------------------------------------------
 void    KeepChars ( char* s, const char* tobekept )
 {
 if ( !s || !tobekept )
@@ -795,6 +818,7 @@ for ( int i = 0; i < StringLength ( s ); i++ )
 }
 
 
+//----------------------------------------------------------------------------
 char*   JumpToChars ( char* s, char* reachchars )
 {
 if ( !s || !reachchars )
@@ -808,6 +832,7 @@ return  s + strcspn ( s, reachchars );
 }
 
 
+//----------------------------------------------------------------------------
 void    ClipToChars ( char* s, char* reachchars )
 {
 if ( !s || !reachchars )
@@ -824,6 +849,7 @@ if ( toc )
 }
 
 
+//----------------------------------------------------------------------------
 int     CountChar   ( const char* s, char searched )
 {
 if ( StringIsEmpty ( s ) || !searched )
@@ -840,6 +866,7 @@ return  count;
 }
 
 
+//----------------------------------------------------------------------------
 int     StringNumLines ( const char* s )
 {
 if ( StringIsEmpty ( s ) )
@@ -849,6 +876,7 @@ return  CountChar ( s, '\n' ) + 1;
 }
 
 
+//----------------------------------------------------------------------------
 char*   StringToUppercase ( char* s )
 {
 if ( StringIsEmpty ( s ) )

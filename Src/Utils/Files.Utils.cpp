@@ -423,7 +423,7 @@ TFileName           file;
 StringCopy ( realdir, dir );                // work with a local copy
 
 
-bool                dirhaswildchar  = StringContains ( (const char*) realdir, "*", StringContainsCase );
+bool                dirhaswildchar  = StringContains ( (const char*) realdir, "*", CaseSensitive );
 
 
 if ( dirhaswildchar ) {                 // search will begin at directory level

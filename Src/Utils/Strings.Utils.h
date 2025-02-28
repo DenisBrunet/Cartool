@@ -27,14 +27,15 @@ namespace crtl {
 class               TFileName;
 
 
-enum                {
-                    StringContainsForward       = 0x01,
-                    StringContainsBackward      = 0x02,
+enum                StringFlags
+                    {
+                    CaseSensitive           = 0x01,
+                    CaseInsensitive         = 0x02,
 
-                    StringContainsCase          = 0x10,
-                    StringContainsNocase        = 0x20,
+                    StringContainsForward   = 0x10,
+                    StringContainsBackward  = 0x20,
 
-                    StringContainsDefault       = StringContainsForward | StringContainsNocase
+                    StringContainsDefault   = CaseInsensitive | StringContainsForward,
                     };
 
 
@@ -48,16 +49,16 @@ enum                {
 #define             EOS                     '\0'
 
 
-bool                StringIs         ( const char* s1, const char* s2 );
-bool                StringIsNot      ( const char* s1, const char* s2 );
+bool                StringIs         ( const char* s1, const char* s2, StringFlags flags = CaseInsensitive );
+bool                StringIsNot      ( const char* s1, const char* s2, StringFlags flags = CaseInsensitive );
 bool                StringIsEmpty    ( const char* s );
 bool                StringIsNotEmpty ( const char* s );
 bool                StringIsSpace    ( const char* s );
 bool                StringStartsWith ( const char* searched, const char* tosearch, int maxlength = -1 );
-const char*         StringContains   ( const char* searched, const char* tosearch, int flags = StringContainsDefault );   // StringContainsCase / StringContainsNocase not implemented
-char*               StringContains   ( char*       searched, char*       tosearch, int flags = StringContainsDefault );   // StringContainsBackward not implemented
-const char*         StringContains   ( const char* searched, const char  tosearch, int flags = StringContainsDefault );   // StringContainsCase / StringContainsNocase not implemented
-char*               StringContains   ( char*       searched, char        tosearch, int flags = StringContainsDefault );
+const char*         StringContains   ( const char* searched, const char* tosearch, StringFlags flags = StringContainsDefault ); // CaseSensitive / CaseInsensitive not implemented
+char*               StringContains   ( char*       searched, char*       tosearch, StringFlags flags = StringContainsDefault ); // StringContainsBackward not implemented
+const char*         StringContains   ( const char* searched, const char  tosearch, StringFlags flags = StringContainsDefault ); // CaseSensitive / CaseInsensitive not implemented
+char*               StringContains   ( char*       searched, char        tosearch, StringFlags flags = StringContainsDefault );
 bool                StringEndsWith   ( const char* searched, const char* tosearch );
 bool                IsStringAmong    ( const char* search,   const char* among );
 
