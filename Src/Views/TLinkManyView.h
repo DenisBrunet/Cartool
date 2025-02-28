@@ -46,11 +46,11 @@ enum    {
 class   TLinkManyView : public  TBaseView
 {
 public:
-                        TLinkManyView ( TLinkManyDoc& doc, owl::TWindow* parent = 0 );
+                        TLinkManyView       ( TLinkManyDoc& doc, owl::TWindow* parent = 0 );
 
 
-    static const char*  StaticName          ()  { return "LinkMany &Display"; }
-    const char*         GetViewName         ()  { return StaticName(); }
+    static const char*  StaticName          ()                                          { return "LinkMany &Display"; }
+    const char*         GetViewName         ()                                          { return StaticName(); }
 
     void                CreateGadgets       ();
 
@@ -71,9 +71,12 @@ protected:
     void                EvSetFocus          ( HWND hwnd )                               { TBaseView::EvSetFocus  ( hwnd );  }
     void                EvKillFocus         ( HWND hwnd )                               { TBaseView::EvKillFocus ( hwnd );  }
     void                EvKeyDown           ( owl::uint key, owl::uint repeatCount, owl::uint flags );
-    void                EvLButtonDown       ( owl::uint, const owl::TPoint &p );
-    void                EvLButtonDblClk     ( owl::uint, const owl::TPoint & );
+    void                EvLButtonDown       ( owl::uint, const owl::TPoint& );
+    void                EvLButtonDblClk     ( owl::uint, const owl::TPoint& );
     void                EvSize              ( owl::uint, const owl::TSize& );
+
+    bool                VnReloadData        ( int what );
+    bool                VnSessionUpdated    ( void* );
 
     void                CmGTV               ( owlwparam w );
     void                CmAddToGroup        ();
@@ -81,7 +84,6 @@ protected:
     void                CmSyncUtility       ( owlwparam w );
     void                CmCommandsCloning   ();
 
-    bool                VnReloadData        ( int what );
 
     DECLARE_RESPONSE_TABLE (TLinkManyView);
 };

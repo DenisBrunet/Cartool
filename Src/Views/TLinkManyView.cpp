@@ -46,6 +46,9 @@ DEFINE_RESPONSE_TABLE1 (TLinkManyView, TBaseView)
     EV_WM_LBUTTONDOWN,
     EV_WM_LBUTTONDBLCLK,
 
+    EV_VN_RELOADDATA,
+    EV_VN_SESSIONUPDATED,
+
     EV_COMMAND_AND_ID   ( IDB_GTVKEEPSIZE,      CmGTV ),
     EV_COMMAND_AND_ID   ( IDB_GTVSTANDSIZE,     CmGTV ),
     EV_COMMAND_AND_ID   ( IDB_GTVFIT,           CmGTV ),
@@ -56,8 +59,6 @@ DEFINE_RESPONSE_TABLE1 (TLinkManyView, TBaseView)
     EV_COMMAND_AND_ID   ( CM_SYNCBETWEENEEG,    CmSyncUtility ),
     EV_COMMAND_AND_ID   ( CM_DESYNCBETWEENEEG,  CmSyncUtility ),
     EV_COMMAND          ( CM_COMMANDSCLONING,   CmCommandsCloning ),
-
-    EV_VN_RELOADDATA,
 
 END_RESPONSE_TABLE;
 
@@ -458,7 +459,7 @@ for ( view = doc->GetViewList (); view != 0; view = doc->NextView ( view ) ) {
                                         // act upon non-proprietary views, or views belonging only to this group
     if ( view->GODoc && view->GODoc != GODoc ) continue;
 
-    wasiconic = view->IsWindowMinimized ();
+    wasiconic   = view->IsWindowMinimized ();
 
     if ( wasiconic )    view->WindowRestore  ();
     else                view->WindowMinimize ();
@@ -540,11 +541,21 @@ bool    TLinkManyView::VnReloadData ( int what )
 switch ( what ) {
 
   case EV_VN_RELOADDATA_DOCPOINTERS:
+
     Invalidate ( false );
     break;
     }
 
 return true;
+}
+
+
+//----------------------------------------------------------------------------
+bool    TLinkManyView::VnSessionUpdated ( void* )
+{
+Invalidate ( false );
+
+return  true;
 }
 
 
