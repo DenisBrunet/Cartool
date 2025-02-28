@@ -7913,6 +7913,7 @@ RefreshLinkedWindow () ;
 
 
 //----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 void    TTracksView::CmShowTags ()
 {
 ShowTags    = ! ShowTags;
@@ -7923,6 +7924,7 @@ Invalidate ( false );
 }
 
 
+//----------------------------------------------------------------------------
 void    TTracksView::GoToMarker ( const TMarker* marker, bool centerextended )
 {
                                         // out of current display ?
@@ -8390,8 +8392,7 @@ if ( /* StringIsEmpty ( to ) ||*/ StringIs ( replace, search ) )
     return;
 
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 ? GetAnswerFromUser ( "Applying to all sessions?", title, this ) 
-                                                                    : false;
+bool                allsessions     = ! withintime && EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", title, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
 
 
@@ -8499,8 +8500,7 @@ if ( /* StringIsEmpty ( to ) ||*/ StringIs ( to, from ) )
     return;
 
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 ? GetAnswerFromUser ( "Applying to all sessions?", title, this ) 
-                                                                    : false;
+bool                allsessions     = ! withintime && EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", title, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
 
 
@@ -8600,15 +8600,12 @@ if ( EEGDoc->GetNumMarkers ( MarkerTypeUserCoded ) == 0 ) {
     }
 
                                         // This could be quite brutal to overwrite all markers, better ask
-//bool                withintime      = TFCursor.IsSplitted () 
+bool                withintime      = TFCursor.IsSplitted ();
 //                                   || ! GetAnswerFromUser ( "Do you wish to modify ALL markers?", title, this );
-                                        // or just work within the current cursor range, all the time
-bool                withintime      = true;
-
 
 static char         newname[ 2 * MarkerNameMaxLength ];
 
-if ( ! GetInputFromUser (   "Give the new marker name, applied to current time range:", 
+if ( ! GetInputFromUser (   withintime ? "Give the new marker name, applied within current time range:" : "Give the new marker name, applied on the whole file:", 
                             title, 
                             newname, newname, 
                             this ) )
@@ -8621,46 +8618,61 @@ if ( StringIsEmpty ( newname ) )
 newname[ MarkerNameMaxLength - 1 ] = 0;
 
 
+bool                allsessions     = ! withintime && EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+int                 currsession     = EEGDoc->GetCurrentSession ();
+
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-MarkersList&        markers         = EEGDoc->GetMarkersList ();
+for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+
+    EEGDoc->GoToSession     ( sessioni );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    MarkersList&        markers         = EEGDoc->GetMarkersList ();
 
                                         // scan all triggers
-for ( int i = 0; i < markers.Num (); i++ ) {
+    for ( int i = 0; i < markers.Num (); i++ ) {
 
-    TMarker*    tomarker    = markers[ i ];
+        TMarker*    tomarker    = markers[ i ];
 
-    if ( ! IsFlag ( tomarker->Type, MarkerTypeUserCoded ) )
-        continue;
+        if ( ! IsFlag ( tomarker->Type, MarkerTypeUserCoded ) )
+            continue;
 
-    if ( withintime && tomarker->From > TFCursor.GetPosMax () )
-        break;
+        if ( withintime && tomarker->From > TFCursor.GetPosMax () )
+            break;
 
-    if ( withintime && ! IsInsideLimits ( tomarker->From, tomarker->To, TFCursor.GetPosMin (), TFCursor.GetPosMax () ) )
-        continue;
-
-
-    StringCopy ( tomarker->Name, newname );
-
-    EEGDoc->SetMarkersDirty ();
-    } // for markers
+        if ( withintime && ! IsInsideLimits ( tomarker->From, tomarker->To, TFCursor.GetPosMin (), TFCursor.GetPosMax () ) )
+            continue;
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        StringCopy ( tomarker->Name, newname );
 
-if ( EEGDoc->AreMarkersDirty () ) {
+        EEGDoc->SetMarkersDirty ();
+        } // for markers
 
-    EEGDoc->CommitMarkers ();
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if ( EEGDoc->AreMarkersDirty () ) {
+
+        EEGDoc->CommitMarkers ();
                                         // assume we want to see the results!
-    ShowTags    = true;
+        ShowTags    = true;
 
-    if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
-        CmSetMarkerDisplay ( CM_EEGMRKMARKER );
+        if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
+            CmSetMarkerDisplay ( CM_EEGMRKMARKER );
 
-    ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+        ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
 
-    EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+        EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+        }
     }
+
+
+if ( allsessions )
+    EEGDoc->GoToSession ( currsession );
 }
 
 
@@ -8676,126 +8688,141 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to merge exactly overlapping m
     return;
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TSuperGauge     Gauge;
-
-Gauge.Set       ( "Merging Markers" );
-
-Gauge.AddPart   ( 0, EEGDoc->GetNumMarkers () );
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+int                 currsession     = EEGDoc->GetCurrentSession ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-const MarkersList&  oldmarkers      = EEGDoc->GetMarkersList ();
-MarkersList         newmarkers;
+for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
 
-bool                markersdirty    = false;
-char                newname     [ 10 * MarkerNameMaxLength ];
+    EEGDoc->GoToSession ( sessioni );
 
-                                        // merge accounts only for user markers types only, the other ones are copied as is, even if they mix with a series of identical markers
-for ( int firsti = 0; firsti < oldmarkers.Num (); firsti++ ) {
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    Gauge.SetValue ( 0, firsti );
+    TSuperGauge     Gauge;
 
-    const TMarker*  firstmarker = oldmarkers[ firsti ];
+    Gauge.Set       ( "Merging Markers" );
 
-                                        // not of proper type?
-    if ( ! IsFlag ( firstmarker->Type, MarkerTypeUserCoded ) ) {
-
-        newmarkers.Append ( new TMarker ( *firstmarker ) );
-
-        continue;
-        }
+    Gauge.AddPart   ( 0, EEGDoc->GetNumMarkers () );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    int     countmerged     = 0;
-    int     countskipped    = 0;
-                                        // browse through following possible identical markers
-    for ( int nexti = firsti + 1; nexti < oldmarkers.Num (); nexti++ ) {
+    const MarkersList&  oldmarkers      = EEGDoc->GetMarkersList ();
+    MarkersList         newmarkers;
 
-        const TMarker*  nextmarker  = oldmarkers[ nexti ];
+    bool                markersdirty    = false;
+    char                newname     [ 10 * MarkerNameMaxLength ];
 
-                                        // not of proper type?
-        if ( ! IsFlag ( nextmarker->Type, MarkerTypeUserCoded ) ) {
-                                        // might not be inserted at the right position, fix this with a final Sort
-            newmarkers.Append ( new TMarker ( *nextmarker ) );
+                                            // merge accounts only for user markers types only, the other ones are copied as is, even if they mix with a series of identical markers
+    for ( int firsti = 0; firsti < oldmarkers.Num (); firsti++ ) {
 
-            countskipped++;             // we need to keep track of the irrelevant ones, too
+        Gauge.SetValue ( 0, firsti );
+
+        const TMarker*  firstmarker = oldmarkers[ firsti ];
+
+                                            // not of proper type?
+        if ( ! IsFlag ( firstmarker->Type, MarkerTypeUserCoded ) ) {
+
+            newmarkers.Append ( new TMarker ( *firstmarker ) );
 
             continue;
             }
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // same position and same type (by safety)?
-        if ( nextmarker->From == firstmarker->From 
-          && nextmarker->To   == firstmarker->To  
-          && nextmarker->Type == firstmarker->Type  ) {
-                                        // first merge? init with first name
-            if ( countmerged == 0 )
-                StringCopy  ( newname, firstmarker->Name );
 
-                                        // append next name
-            if ( StringIsNot ( nextmarker->Name, firstmarker->Name ) )
-                StringAppend    ( newname, " ", nextmarker->Name );
+        int     countmerged     = 0;
+        int     countskipped    = 0;
+                                            // browse through following possible identical markers
+        for ( int nexti = firsti + 1; nexti < oldmarkers.Num (); nexti++ ) {
 
-                                        // counting number of successive identical markers
-            countmerged++;
-            } // identical
-        else
+            const TMarker*  nextmarker  = oldmarkers[ nexti ];
 
-            break; // not identical - stop the loop
+                                            // not of proper type?
+            if ( ! IsFlag ( nextmarker->Type, MarkerTypeUserCoded ) ) {
+                                            // might not be inserted at the right position, fix this with a final Sort
+                newmarkers.Append ( new TMarker ( *nextmarker ) );
 
-        } // for nexti
+                countskipped++;             // we need to keep track of the irrelevant ones, too
+
+                continue;
+                }
+
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                            // same position and same type (by safety)?
+            if ( nextmarker->From == firstmarker->From 
+              && nextmarker->To   == firstmarker->To  
+              && nextmarker->Type == firstmarker->Type  ) {
+                                            // first merge? init with first name
+                if ( countmerged == 0 )
+                    StringCopy  ( newname, firstmarker->Name );
+
+                                            // append next name
+                if ( StringIsNot ( nextmarker->Name, firstmarker->Name ) )
+                    StringAppend    ( newname, " ", nextmarker->Name );
+
+                                            // counting number of successive identical markers
+                countmerged++;
+                } // identical
+            else
+
+                break; // not identical - stop the loop
+
+            } // for nexti
+
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                            // nothing merged?
+        if ( countmerged == 0 ) {
+                                            // simply copy
+            newmarkers.Append ( new TMarker ( *firstmarker ) );
+            }
+
+        else {                              // some merged
+
+            if ( StringLength ( newname ) >= MarkerNameMaxLength )
+                StringShrink ( newname, newname, MarkerNameMaxLength - 1 );
+
+            newmarkers.Append ( new TMarker ( firstmarker->From, firstmarker->To, firstmarker->Code, newname, firstmarker->Type ) );
+                                            // global flag that we actually did something
+            markersdirty   = true;
+            }
+
+                                            // skip the (possible) merged and the (possible) irrelevant markers
+        firsti         += countmerged + countskipped;
+
+        } // for firsti
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // nothing merged?
-    if ( countmerged == 0 ) {
-                                        // simply copy
-        newmarkers.Append ( new TMarker ( *firstmarker ) );
+
+    if ( markersdirty ) {
+
+        EEGDoc->SetMarkers      ( newmarkers ); // will sort & clean markers
+
+        EEGDoc->CommitMarkers   ();
+
+                                            // assuming user wants to see the results..
+        ShowTags    = true;
+
+        if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
+            CmSetMarkerDisplay ( CM_EEGMRKMARKER );
+
+        ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+
+        EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
         }
 
-    else {                              // some merged
 
-        if ( StringLength ( newname ) >= MarkerNameMaxLength )
-            StringShrink ( newname, newname, MarkerNameMaxLength - 1 );
-
-        newmarkers.Append ( new TMarker ( firstmarker->From, firstmarker->To, firstmarker->Code, newname, firstmarker->Type ) );
-                                        // global flag that we actually did something
-        markersdirty   = true;
-        }
-
-                                        // skip the (possible) merged and the (possible) irrelevant markers
-    firsti         += countmerged + countskipped;
-
-    } // for firsti
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-if ( markersdirty ) {
-
-    EEGDoc->SetMarkers      ( newmarkers ); // will sort & clean markers
-
-    EEGDoc->CommitMarkers   ();
-
-                                        // assuming user wants to see the results..
-    ShowTags    = true;
-
-    if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
-        CmSetMarkerDisplay ( CM_EEGMRKMARKER );
-
-    ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
-
-    EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+    Gauge.Finished ();
     }
 
 
-Gauge.Finished ();
+if ( allsessions )
+    EEGDoc->GoToSession ( currsession );
 }
 
 
@@ -8811,26 +8838,40 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to merge identical," NewLine "
     return;
 
 
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+int                 currsession     = EEGDoc->GetCurrentSession ();
+
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+
+    EEGDoc->GoToSession ( sessioni );
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compact identical markers, resulting markers could be of any length
-EEGDoc->CompactConsecutiveMarkers ( true );
+    EEGDoc->CompactConsecutiveMarkers ( true );
 
 
-if ( EEGDoc->AreMarkersDirty () ) {
+    if ( EEGDoc->AreMarkersDirty () ) {
 
-    EEGDoc->CommitMarkers ();
+        EEGDoc->CommitMarkers ();
 
                                         // assume we want to see the results!
-    ShowTags    = true;
+        ShowTags    = true;
 
-    if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
-        CmSetMarkerDisplay ( CM_EEGMRKMARKER );
+        if ( ! IsFlag ( DisplayMarkerType, MarkerTypeMarker ) )
+            CmSetMarkerDisplay ( CM_EEGMRKMARKER );
 
-    ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
+        ButtonGadgetSetState ( IDB_SHOWMARKERS, ShowTags );
 
-    EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+        EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
+        }
     }
 
+
+if ( allsessions )
+    EEGDoc->GoToSession ( currsession );
 }
 
 
@@ -9021,8 +9062,7 @@ if ( StringIsEmpty ( regexp ) )
     return;
 
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 ? GetAnswerFromUser ( "Applying to all sessions?", "Deleting Markers by Name", this ) 
-                                                                    : false;
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Deleting Markers by Name", this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
 
 
@@ -9086,8 +9126,7 @@ if ( ! GetAnswerFromUser ( "Are you sure you want to delete ALL markers?" NewLin
     return;
 
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 ? GetAnswerFromUser ( "Applying to all sessions?", "Deleting Markers by Name", this ) 
-                                                                    : false;
+bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Deleting Markers by Name", this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
 
 
