@@ -54,18 +54,20 @@ public:
     bool                IsEmpty         ()  const           { return	NumInside == 0; }
     bool                IsNotEmpty      ()  const           { return    NumInside != 0; }
 
-    TListAtom<TypeD>*   IsInside        ( const void* toatom )     const;
+    TListAtom<TypeD>*   IsInside        ( const TypeD* toatom )     const;
 
 
     void                Append          ( const TypeD*  toatom );
     void                Append          ( const TList&  list   );
     bool                Insert          ( const TypeD*  toatom, const TypeD* beforeatom );
 
-    void                Remove          ( const TypeD* toatom );
-    void                RemoveLast      ( int num = 1 );
+    void                Remove          ( const TListAtom<TypeD>* tolistatom, bool releasecontent );            // from a list node - safer
+    void                Remove          ( const TypeD* toatom,                bool releasecontent = false );    // from content - might have side effects, if multiple elements happen to be equal
+    void                RemoveFirst     ( bool releasecontent, int num = 1 );
+    void                RemoveLast      ( bool releasecontent, int num = 1 );
     void                Reset           ( bool releasecontent );
 
-    void                Permutate       ( TypeD* toatom1, TypeD* toatom2 );
+    void                Permutate       ( const TypeD* toatom1, const TypeD* toatom2 );
     void                RevertOrder     ();
 
 
@@ -103,14 +105,11 @@ public:
     TList<TypeD>&       operator    =   ( double op2 )      { return *this; }   // null operator, to allow TArray3< TList > to run ReadFile correctly
 
 
-protected:
+private:
 
     TListAtom<TypeD>*   First;
     TListAtom<TypeD>*   Last;
     int                 NumInside;
-
-
-private:
                                         // provide a direct access mechanism, with an array of pointers to Atoms
                                         // !check any derived classes or objects that mess up directly with the atoms if it needs to call  UpdateIndexes  when done!
     TArray1< TListAtom<TypeD>* >    AtomIndexes;
@@ -455,7 +454,7 @@ return  IsInsideLimits ( index, 0, NumInside - 1 ) ? AtomIndexes[ index ] : 0;
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::Permutate ( TypeD *toatom1, TypeD *toatom2 )
+void    TList<TypeD>::Permutate ( const TypeD *toatom1, const TypeD *toatom2 )
 {
 if ( IsEmpty () )
     return;
@@ -472,7 +471,7 @@ if ( p2 == 0 )
 
 
 OmpCriticalBegin (TListPermutate)
-                                        // just permutating the pointers to content!
+                                        // just permutating the POINTERS to content!
 Permutate ( p1->To, p2->To );
 
 AtomIndexesIsDirty  = true;
@@ -510,51 +509,32 @@ UpdateIndexes ( true );
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::Remove ( const TypeD *toatom )
+void    TList<TypeD>::Remove ( const TListAtom<TypeD>* tolistatom, bool releasecontent )
 {
-if ( IsEmpty () || toatom == 0 )
+if ( IsEmpty () || tolistatom == 0 )
     return;
 
 
 OmpCriticalBegin (TListRemove)
+                                        // store previous and next atoms pointers - could be 0
+TListAtom<TypeD>*           previousatom            = tolistatom->Previous;
+TListAtom<TypeD>*           nextatom                = tolistatom->Next;
 
-TListAtom<TypeD>*   p;
-TListAtom<TypeD>*   pn;
 
-if ( First->To == toatom ) {
+if ( previousatom )         previousatom->Next      = nextatom;     // could be 0 when removing last element
+if ( nextatom     )         nextatom    ->Previous  = previousatom; // could be 0 when removing first element
 
-    pn              = First->Next;
 
-    delete  First;
+if ( First == tolistatom )  First                   = nextatom;     // could be 0 when removing last element
+if ( Last  == tolistatom )  Last                    = previousatom; // same
 
-    First           = pn;
+                                        // finally, we can delete objects
+if ( releasecontent )
+    delete  tolistatom->To;             // first, content if requested by caller
 
-    if ( First == 0 )                   // now empty
-        Last            = 0;
-    else
-        First->Previous = 0;
-    }
+delete  tolistatom;                     // then the list atom itself
 
-else { // not first element, so get the element just before
-
-    for ( p = First; p->Next != 0; p = p->Next )
-
-        if ( p->Next->To == toatom ) {
-            pn              = p->Next->Next;
-
-            delete  p->Next;
-
-            p->Next         = pn;
-
-            if ( pn == 0 )              // deleted the last?
-                Last            = p;
-            else
-                pn->Previous    = p;
-
-            break;
-            }
-    }
-
+                                        // decrement count
 NumInside--;
 AtomIndexesIsDirty  = true;
 
@@ -564,54 +544,66 @@ OmpCriticalEnd
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::RemoveLast ( int num )
+void    TList<TypeD>::Remove ( const TypeD *toatom, bool releasecontent )
+{
+Remove ( IsInside ( toatom ), releasecontent );
+}
+
+
+//----------------------------------------------------------------------------
+template <class TypeD>
+void    TList<TypeD>::RemoveFirst ( bool releasecontent, int num )
 {
 if ( IsEmpty () || num < 1 )
     return;
 
                                         // remove all?
 if ( num >= NumInside ) {
-    Reset ( false );
+    Reset ( releasecontent );
     return;
     }
 
-OmpCriticalBegin (TListRemoveLast)
-                                        // some remains
-TListAtom<TypeD>*   p;
-TListAtom<TypeD>*   pp;
 
-
-for ( p = Last; p->Previous != 0 && num > 0; num-- ) {
-
-    pp      = p->Previous;
-    delete  p;
-    p       = pp;
-
-    NumInside--;
-    }
-
-p->Next     = 0;
-Last        = p;
-
-AtomIndexesIsDirty  = true;
-
-OmpCriticalEnd
+for ( ; num > 0; num-- )
+    Remove ( First, releasecontent );
 }
 
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-TListAtom<TypeD>*  TList<TypeD>::IsInside ( const void* toatom ) const
+void    TList<TypeD>::RemoveLast ( bool releasecontent, int num )
+{
+if ( IsEmpty () || num < 1 )
+    return;
+
+                                        // remove all?
+if ( num >= NumInside ) {
+    Reset ( releasecontent );
+    return;
+    }
+
+
+for ( ; num > 0; num-- )
+    Remove ( Last, releasecontent );
+}
+
+
+//----------------------------------------------------------------------------
+template <class TypeD>
+TListAtom<TypeD>*  TList<TypeD>::IsInside ( const TypeD* toatom ) const
 {
 if ( IsEmpty () || toatom == 0 )
     return  0;
+
 
 TListAtom<TypeD>*   p               = 0;
 
 OmpCriticalBegin (TListIsInside)
 
 for ( p = First; p != 0; p = p->Next )
+                                        // returns first element with pointer to content equality
     if ( p->To == toatom )
+
         break;
 
 OmpCriticalEnd

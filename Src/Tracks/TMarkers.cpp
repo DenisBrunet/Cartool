@@ -103,6 +103,7 @@ bool     operator==  ( const TMarker& op1, const TMarker& op2 )
 {
 return  op1.From == op2.From 
      && op1.To   == op2.To
+//   && op1.Code == op2.Code        // not accounted for
      && op1.Type == op2.Type
      && _stricmp ( op1.Name, op2.Name ) == 0;
 }
@@ -118,7 +119,8 @@ bool     operator>  ( const TMarker& op1, const TMarker& op2 )
 {
 return  op1.From >  op2.From
      || op1.From == op2.From  && op1.To >  op2.To
-     || op1.From == op2.From  && op1.To == op2.To && _stricmp ( op1.Name, op2.Name ) > 0;
+     || op1.From == op2.From  && op1.To == op2.To && op1.Type >  op2.Type
+     || op1.From == op2.From  && op1.To == op2.To && op1.Type == op2.Type && _stricmp ( op1.Name, op2.Name ) >  0;
 }
 
 
@@ -126,7 +128,8 @@ bool     operator<  ( const TMarker& op1, const TMarker& op2 )
 {
 return  op1.From <  op2.From
      || op1.From == op2.From  && op1.To <  op2.To
-     || op1.From == op2.From  && op1.To == op2.To && _stricmp ( op1.Name, op2.Name ) < 0;
+     || op1.From == op2.From  && op1.To == op2.To && op1.Type <  op2.Type
+     || op1.From == op2.From  && op1.To == op2.To && op1.Type == op2.Type && _stricmp ( op1.Name, op2.Name ) <  0;
 }
 
 
@@ -161,8 +164,8 @@ StringAppend ( buff, "Duration" Tab Tab,IntegerToString  ( buff2, Length () ) );
 StringAppend ( buff, NewLine );
 //StringAppend ( buff, "Type" Tab Tab,    IntegerToString  ( buff2, Type      ) );
 StringAppend ( buff, "Type" Tab Tab,    IsFlag ( Type, MarkerTypeTrigger  ) ? MarkerNameTrigger
-                                      : IsFlag ( Type, MarkerTypeMarker   ) ? MarkerNameMarker
                                       : IsFlag ( Type, MarkerTypeEvent    ) ? MarkerNameEvent
+                                      : IsFlag ( Type, MarkerTypeMarker   ) ? MarkerNameMarker
                                       : IsFlag ( Type, MarkerTypeTemp     ) ? MarkerNameTemporary
                                       :                                      "Unknown",
                                         IsFlag ( Type, MarkerTypeToRemove ) ? MarkerNameToRemove : "" );
@@ -689,12 +692,8 @@ bool                    removedduplicates   = false;
 for ( iterator.SetForward ( Markers ); iterator.Current ()->Next != 0; ) {
 
     if ( *iterator.Current ()->To == *iterator.Current ()->Next->To ) {
-                                        // remove the next duplicate
-        const TMarker*  todelete    = iterator.Current ()->Next->To;
-                                        // remove from list
-        Markers.Remove ( todelete );
-                                        // remove from memory
-        delete  todelete;
+
+        Markers.Remove ( iterator.Current()->Next, true );
                                         // change occurred
         removedduplicates   = true;
         }
@@ -1770,7 +1769,7 @@ while ( (bool) remaining ) {
                                         // use the pointer, we will not destroy the actual object, just updating it
     TMarker*    toaggregate     =  remaining.GetFirst ();
 
-    remaining.Remove ( toaggregate );
+    remaining.RemoveFirst ( false );
 
                                         // try to merge one of the remaining marker
     do {
@@ -1794,11 +1793,7 @@ while ( (bool) remaining ) {
 
                 toaggregate->To     = iterator()->To;
 
-                TMarker* todelete   = iterator();
-
-                remaining.Remove    ( todelete );   // remove object from list
-
-                delete              ( todelete );   // remove object from memory
+                remaining.Remove    ( iterator.Current (), true );  // remove from memory and from list
 
                 mergedsome          = true;
 

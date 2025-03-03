@@ -2250,15 +2250,17 @@ if ( CaptureMode == CaptureGLLink ) {
     if ( view != this )
                                         // already pointed to?
         if ( Using.IsInside ( view ) ) {
+
             view->UsedBy.Remove ( this );
-            Using.Remove ( view );
+            Using       .Remove ( view );
             Invalidate ( false );
 //            ShowNow ();
             }
         else {
             if ( ! UsedBy.IsInside ( view ) ) {
+
                 view->UsedBy.Append ( this );
-                Using.Append ( view );
+                Using       .Append ( view );
                 Invalidate ( false );
 //                ShowNow ();
 

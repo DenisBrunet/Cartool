@@ -1424,7 +1424,7 @@ Gauge.FinishParts ();
 
 CartoolObjects.CartoolApplication->SetMainTitle   ( BadEpochsTitle, "", Gauge );
 
-Gauge.HappyEnd ();
+Gauge.Finished ();
 }
 
 

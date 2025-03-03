@@ -1239,13 +1239,13 @@ if ( ! ( IsExtensionAmong ( doc->GetDocPath (), AllEegFreqFilesExt     )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // doc already in this group ?
-if ( ListEegDoc .IsInside ( (void *) doc ) )    return  false;
-if ( ListXyzDoc .IsInside ( (void *) doc ) )    return  false;
-if ( ListSpDoc.  IsInside ( (void *) doc ) )    return  false;
-if ( ListIsDoc.  IsInside ( (void *) doc ) )    return  false;
-if ( ListRisDoc .IsInside ( (void *) doc ) )    return  false;
-if ( ListRoisDoc.IsInside ( (void *) doc ) )    return  false;
-if ( ListMriDoc .IsInside ( (void *) doc ) )    return  false;
+if ( ListEegDoc .IsInside ( (TTracksDoc*)         doc ) )   return  false;
+if ( ListXyzDoc .IsInside ( (TElectrodesDoc*)     doc ) )   return  false;
+if ( ListSpDoc.  IsInside ( (TSolutionPointsDoc*) doc ) )   return  false;
+if ( ListIsDoc.  IsInside ( (TInverseMatrixDoc*)  doc ) )   return  false;
+if ( ListRisDoc .IsInside ( (TRisDoc*)            doc ) )   return  false;
+if ( ListMriDoc .IsInside ( (TVolumeDoc*)         doc ) )   return  false;
+if ( ListRoisDoc.IsInside ( (TRoisDoc*)           doc ) )   return  false;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1260,13 +1260,13 @@ TGoF                lrois;
 TGoF                lmri;
 
 
-for ( int i = 0; i < (int) ListEegDoc;  i++ )   leeg    .Add ( ListEegDoc [ i ]->GetDocPath() );
-for ( int i = 0; i < (int) ListXyzDoc;  i++ )   lxyz    .Add ( ListXyzDoc [ i ]->GetDocPath() );
-for ( int i = 0; i < (int) ListSpDoc;   i++ )   lsp     .Add ( ListSpDoc  [ i ]->GetDocPath() );
-for ( int i = 0; i < (int) ListIsDoc;   i++ )   lis     .Add ( ListIsDoc  [ i ]->GetDocPath() );
-for ( int i = 0; i < (int) ListRisDoc;  i++ )   lris    .Add ( ListRisDoc [ i ]->GetDocPath() );
-for ( int i = 0; i < (int) ListMriDoc;  i++ )   lmri    .Add ( ListMriDoc [ i ]->GetDocPath() );
-for ( int i = 0; i < (int) ListRoisDoc; i++ )   lrois   .Add ( ListRoisDoc[ i ]->GetDocPath() );
+for ( int i = 0; i < (int) ListEegDoc;  i++ )   leeg .Add ( ListEegDoc [ i ]->GetDocPath () );
+for ( int i = 0; i < (int) ListXyzDoc;  i++ )   lxyz .Add ( ListXyzDoc [ i ]->GetDocPath () );
+for ( int i = 0; i < (int) ListSpDoc;   i++ )   lsp  .Add ( ListSpDoc  [ i ]->GetDocPath () );
+for ( int i = 0; i < (int) ListIsDoc;   i++ )   lis  .Add ( ListIsDoc  [ i ]->GetDocPath () );
+for ( int i = 0; i < (int) ListRisDoc;  i++ )   lris .Add ( ListRisDoc [ i ]->GetDocPath () );
+for ( int i = 0; i < (int) ListMriDoc;  i++ )   lmri .Add ( ListMriDoc [ i ]->GetDocPath () );
+for ( int i = 0; i < (int) ListRoisDoc; i++ )   lrois.Add ( ListRoisDoc[ i ]->GetDocPath () );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

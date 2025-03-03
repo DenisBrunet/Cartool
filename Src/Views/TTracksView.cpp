@@ -4763,8 +4763,9 @@ if      ( CaptureMode == CaptureGLLink ) {
             return;
                                         // already pointed to?
         if ( Using.IsInside ( view ) ) {
+
             view->UsedBy.Remove ( this );
-            Using.Remove ( view );
+            Using       .Remove ( view );
             Invalidate ( false );
             }
         else {

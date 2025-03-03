@@ -3754,10 +3754,7 @@ bool    TGoGoF::RemoveLastGroup ()
 if ( IsEmpty () )
     return  false;
 
-
-delete  ( Group.GetLast () );           // delete object
-
-Group.RemoveLast ();                    // remove pointer from list
+Group.RemoveLast ( true );
 
 return true;
 }

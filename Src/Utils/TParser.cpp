@@ -801,7 +801,7 @@ if ( IsEmpty () )
 
 TToken*     totok   = Tokens.GetLast ();
 
-Tokens.RemoveLast ();                   // remove from the list, but don't destroy actual data
+Tokens.RemoveLast ( false );            // remove from the list, but don't destroy actual data
 
 Tokens.UpdateIndexes ();
 

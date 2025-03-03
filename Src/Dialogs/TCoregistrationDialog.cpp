@@ -1169,8 +1169,7 @@ switch ( op ) {
                 UndoMatrices.Append ( new TCoregistrationTransform ( Transform ) );
 
 
-                delete  RedoMatrices.GetLast ();
-                RedoMatrices.RemoveLast ();
+                RedoMatrices.RemoveLast ( true );
 
                                         // do it only once
                 if ( op == IDC_REDOLAST )
@@ -1187,8 +1186,7 @@ switch ( op ) {
                 RedoMatrices.Append ( new TCoregistrationTransform ( Transform ) );
 
 
-                delete  UndoMatrices.GetLast ();
-                UndoMatrices.RemoveLast ();
+                UndoMatrices.RemoveLast ( true );
 
                                         // update with new last undo matrix
                 Transform   = UndoMatrices.IsNotEmpty () ? *UndoMatrices.GetLast () : TransformInit;
