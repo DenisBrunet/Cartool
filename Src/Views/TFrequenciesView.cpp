@@ -3467,8 +3467,8 @@ if      ( CaptureMode == CaptureGLLink ) {
                                         // already pointed to?
         if ( Using.IsInside ( view ) ) {
 
-            view->UsedBy.Remove ( this );
-            Using       .Remove ( view );
+            view->UsedBy.Remove ( this, DontDeallocate );
+            Using       .Remove ( view, DontDeallocate );
             Invalidate ( false );
             }
         else {
@@ -3504,9 +3504,9 @@ if      ( CaptureMode == CaptureGLLink ) {
         TListIterator<TBaseView>    iteratorview;
 
         foreachin ( Using, iteratorview )
-            iteratorview ()->UsedBy.Remove ( this );
+            iteratorview ()->UsedBy.Remove ( this, DontDeallocate );
 
-        Using.Reset ( false );
+        Using.Reset ( DontDeallocate );
         Invalidate ( false );
         }
     }

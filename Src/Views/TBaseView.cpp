@@ -301,21 +301,21 @@ if ( ! CartoolApplication->Closing ) {
 
     foreachin ( UsedBy, iterator ) {
                                         // remove, and refresh
-        iterator ()->Using.Remove ( this );
-        iterator ()->Invalidate ( false );
+        iterator ()->Using.Remove ( this, DontDeallocate );
+        iterator ()->Invalidate   ( false );
         }
     }
 
-UsedBy.Reset ( false );
+UsedBy.Reset ( DontDeallocate );
 
                                         // don't use these windows anymore
 if ( ! CartoolApplication->Closing ) {  // maybe the windows pointed to are already destroyed?
 
     foreachin ( Using, iterator )
-        iterator ()->UsedBy.Remove ( this );
+        iterator ()->UsedBy.Remove ( this, DontDeallocate );
     }
 
-Using.Reset ( false );
+Using.Reset ( DontDeallocate );
 }
 
 
@@ -2251,8 +2251,8 @@ if ( CaptureMode == CaptureGLLink ) {
                                         // already pointed to?
         if ( Using.IsInside ( view ) ) {
 
-            view->UsedBy.Remove ( this );
-            Using       .Remove ( view );
+            view->UsedBy.Remove ( this, DontDeallocate );
+            Using       .Remove ( view, DontDeallocate );
             Invalidate ( false );
 //            ShowNow ();
             }
@@ -2278,9 +2278,9 @@ if ( CaptureMode == CaptureGLLink ) {
         TListIterator<TBaseView>    iterator;
 
         foreachin ( Using, iterator )
-            iterator ()->UsedBy.Remove ( this );
+            iterator ()->UsedBy.Remove ( this, DontDeallocate );
 
-        Using.Reset ( false );
+        Using.Reset ( DontDeallocate );
         Invalidate ( false );
         //ShowNow ();
         }

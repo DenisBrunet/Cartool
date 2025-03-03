@@ -64,7 +64,7 @@ public:
     bool                IsDirty             ()                              { return TFileDocument::IsDirty (); }
     bool                IsUsedBy            ()  const                       { return (bool) UsedBy;             }
     void                AddLink             ( const owl::TDocument* doc )   { UsedBy.Append ( doc );            }
-    void                RemoveLink          ( const owl::TDocument* doc )   { UsedBy.Remove ( doc );            }
+    void                RemoveLink          ( const owl::TDocument* doc )   { UsedBy.Remove ( doc, DontDeallocate );}
     void                PreventClosing      ()                              { DoNotClose    = true;             }
     void                AllowClosing        ()                              { DoNotClose    = false;            }
 

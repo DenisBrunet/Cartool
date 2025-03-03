@@ -4097,8 +4097,8 @@ if ( getheadmodel ) {
             }
 
                                         // unplug from display
-        fullmriview->Using. Remove ( modelview   );
-        modelview  ->UsedBy.Remove ( fullmriview );
+        fullmriview->Using. Remove ( modelview  , DontDeallocate );
+        modelview  ->UsedBy.Remove ( fullmriview, DontDeallocate );
         fullmriview->ShowNow ();
         }
                                         // choosing to proceed anyway(?)
@@ -4249,8 +4249,8 @@ if ( MriHead.IsOpen () && xyzcoregistertomri ) {
             }
 
                                         // unplug from display
-        fullmriview->Using. Remove ( xyzview     );
-        xyzview    ->UsedBy.Remove ( fullmriview );
+        fullmriview->Using. Remove ( xyzview    , DontDeallocate );
+        xyzview    ->UsedBy.Remove ( fullmriview, DontDeallocate );
         fullmriview->ShowNow ();
         fullmriview->WindowMinimize ();
         } // if interactive

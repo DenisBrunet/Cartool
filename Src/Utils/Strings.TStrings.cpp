@@ -133,7 +133,7 @@ for ( int i = 0; i < (int) Strings; i++ )
     delete[] ( Strings[ i ] );
 
 
-Strings.Reset ( false );                // then the pointers
+Strings.Reset ( DontDeallocate );       // then the pointers
 
 
                                         // when allocation will be an object, and not an array of char:
@@ -564,7 +564,7 @@ if ( IsEmpty () )
     return;
 
                                         // !Removes by comparing pointers, NOT string!
-Strings.Remove ( (char *) string );      // from list
+Strings.Remove ( (char *) string, DontDeallocate ); // from list
 
 delete[] ( string );                    // from memory
 }

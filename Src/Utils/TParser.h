@@ -282,7 +282,7 @@ public:
     void                    Push            ( const TToken* token );
     TToken*                 Pop             ();
     void                    Insert          ( TToken* token, const TToken* beforetoken )    { Tokens.Insert ( token, beforetoken ); Tokens.UpdateIndexes (); }
-    void                    Remove          ( const TToken* token )                         { Tokens.Remove ( token );              Tokens.UpdateIndexes (); }
+    void                    Remove          ( const TToken* token )                         { Tokens.Remove ( token, DontDeallocate ); Tokens.UpdateIndexes (); }
 
 
     int                     GetNumTokens    ()  const   { return    Tokens.Num (); }

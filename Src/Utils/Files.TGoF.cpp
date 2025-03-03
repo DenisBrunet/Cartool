@@ -3668,7 +3668,7 @@ for ( int gofi = 0; gofi < (int) Group; gofi++ )
     Group[ gofi ]->Reset ();
 
                                         // delete content & structure
-Group.Reset ( true );
+Group.Reset ( Deallocate );
 }
 
 
@@ -3754,7 +3754,7 @@ bool    TGoGoF::RemoveLastGroup ()
 if ( IsEmpty () )
     return  false;
 
-Group.RemoveLast ( true );
+Group.RemoveLast ( Deallocate );
 
 return true;
 }

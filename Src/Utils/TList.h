@@ -40,6 +40,13 @@ public:
 
 
 //----------------------------------------------------------------------------
+                                        // Used to control if actual data has to be deleted:
+enum        DeallocateType
+            {
+            DontDeallocate,
+            Deallocate,
+            };
+
                                         // List itself
                                         // It will actually store TypeD*, allocation is done on the caller side
 template <class TypeD>
@@ -61,11 +68,11 @@ public:
     void                Append          ( const TList&  list   );
     bool                Insert          ( const TypeD*  toatom, const TypeD* beforeatom );
 
-    void                Remove          ( const TListAtom<TypeD>* tolistatom, bool releasecontent );            // from a list node - safer
-    void                Remove          ( const TypeD* toatom,                bool releasecontent = false );    // from content - might have side effects, if multiple elements happen to be equal
-    void                RemoveFirst     ( bool releasecontent, int num = 1 );
-    void                RemoveLast      ( bool releasecontent, int num = 1 );
-    void                Reset           ( bool releasecontent );
+    void                Remove          ( const TListAtom<TypeD>* tolistatom, DeallocateType deallocate );  // from a list node - safer
+    void                Remove          ( const TypeD* toatom,                DeallocateType deallocate );  // from content - might have side effects, if multiple elements happen to be equal
+    void                RemoveFirst     ( DeallocateType deallocate, int num = 1 );
+    void                RemoveLast      ( DeallocateType deallocate, int num = 1 );
+    void                Reset           ( DeallocateType deallocate );
 
     void                Permutate       ( const TypeD* toatom1, const TypeD* toatom2 );
     void                RevertOrder     ();
@@ -184,7 +191,7 @@ template <class TypeD>
         TList<TypeD>::~TList ()
 {
                                         // default is to NOT destroy content, as we deal with a list of pointers - caller should take care of the actual release beforehand
-Reset ( false );
+Reset ( DontDeallocate );
 }
 
 
@@ -207,7 +214,7 @@ if ( &op2 == this )
     return  *this;
 
 
-Reset ( false );
+Reset ( DontDeallocate );
 
 Append ( op2 );
 
@@ -216,7 +223,7 @@ return  *this;
 
 
 template <class TypeD>
-void    TList<TypeD>::Reset ( bool releasecontent )
+void    TList<TypeD>::Reset ( DeallocateType deallocate )
 {
 if ( IsEmpty () )
     return;
@@ -228,7 +235,7 @@ TListAtom<TypeD>*   p;
 TListAtom<TypeD>*   p2;
 
                                         // first, optionally destroy actual content
-if ( releasecontent )
+if ( deallocate == Deallocate )
 
     for ( p = First; p != 0; p = p->Next )
 
@@ -494,7 +501,7 @@ for ( p = Last; p != 0; p = p->Previous )
     revlist.Append ( p->To );
 
 
-Reset ( false );
+Reset ( DontDeallocate );
 
                                         // copy back the reverted temp list
 for ( p = revlist.First; p != 0; p = p->Next )
@@ -509,7 +516,7 @@ UpdateIndexes ( true );
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::Remove ( const TListAtom<TypeD>* tolistatom, bool releasecontent )
+void    TList<TypeD>::Remove ( const TListAtom<TypeD>* tolistatom, DeallocateType deallocate )
 {
 if ( IsEmpty () || tolistatom == 0 )
     return;
@@ -529,7 +536,7 @@ if ( First == tolistatom )  First                   = nextatom;     // could be 
 if ( Last  == tolistatom )  Last                    = previousatom; // same
 
                                         // finally, we can delete objects
-if ( releasecontent )
+if ( deallocate == Deallocate )
     delete  tolistatom->To;             // first, content if requested by caller
 
 delete  tolistatom;                     // then the list atom itself
@@ -544,47 +551,47 @@ OmpCriticalEnd
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::Remove ( const TypeD *toatom, bool releasecontent )
+void    TList<TypeD>::Remove ( const TypeD *toatom, DeallocateType deallocate )
 {
-Remove ( IsInside ( toatom ), releasecontent );
+Remove ( IsInside ( toatom ), deallocate );
 }
 
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::RemoveFirst ( bool releasecontent, int num )
+void    TList<TypeD>::RemoveFirst ( DeallocateType deallocate, int num )
 {
 if ( IsEmpty () || num < 1 )
     return;
 
                                         // remove all?
 if ( num >= NumInside ) {
-    Reset ( releasecontent );
+    Reset ( deallocate );
     return;
     }
 
 
 for ( ; num > 0; num-- )
-    Remove ( First, releasecontent );
+    Remove ( First, deallocate );
 }
 
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::RemoveLast ( bool releasecontent, int num )
+void    TList<TypeD>::RemoveLast ( DeallocateType deallocate, int num )
 {
 if ( IsEmpty () || num < 1 )
     return;
 
                                         // remove all?
 if ( num >= NumInside ) {
-    Reset ( releasecontent );
+    Reset ( deallocate );
     return;
     }
 
 
 for ( ; num > 0; num-- )
-    Remove ( Last, releasecontent );
+    Remove ( Last, deallocate );
 }
 
 

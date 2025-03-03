@@ -315,7 +315,7 @@ if ( ! IsEmpty () )
     MarkersDirty    = true;
 
                                         // delete content & structure
-Markers.Reset ( true );
+Markers.Reset ( Deallocate );
 }
 
 
@@ -693,7 +693,7 @@ for ( iterator.SetForward ( Markers ); iterator.Current ()->Next != 0; ) {
 
     if ( *iterator.Current ()->To == *iterator.Current ()->Next->To ) {
 
-        Markers.Remove ( iterator.Current()->Next, true );
+        Markers.Remove ( iterator.Current()->Next, Deallocate );
                                         // change occurred
         removedduplicates   = true;
         }
@@ -1761,7 +1761,7 @@ bool                markersdirty    = false;
 TListIterator<TMarker>  iterator;
 
                                         // clear current pointer list
-Markers.Reset ( false );
+Markers.Reset ( DontDeallocate );
 
 
 while ( (bool) remaining ) {
@@ -1769,7 +1769,7 @@ while ( (bool) remaining ) {
                                         // use the pointer, we will not destroy the actual object, just updating it
     TMarker*    toaggregate     =  remaining.GetFirst ();
 
-    remaining.RemoveFirst ( false );
+    remaining.RemoveFirst ( DontDeallocate );
 
                                         // try to merge one of the remaining marker
     do {
@@ -1793,7 +1793,7 @@ while ( (bool) remaining ) {
 
                 toaggregate->To     = iterator()->To;
 
-                remaining.Remove    ( iterator.Current (), true );  // remove from memory and from list
+                remaining.Remove    ( iterator.Current (), Deallocate );    // remove from memory and from list
 
                 mergedsome          = true;
 
@@ -1860,10 +1860,10 @@ if ( (int) markersok == (int) Markers )     // nothing to remove
 
 if ( markersok.IsEmpty () )                 // all to be erased
 
-    Markers.Reset ( false );                // objects are already deleted, only clear-up the pointers now
+    Markers.Reset ( DontDeallocate );       // objects are already deleted, only clear-up the pointers now
 
 else {
-    Markers.Reset ( false );
+    Markers.Reset ( DontDeallocate );
 
     for ( int i = 0; i < (int) markersok; i++ )
         Markers.Append ( markersok[ i ] );  // just copy the pointer
@@ -1924,10 +1924,10 @@ if ( (int) markersok == (int) Markers )     // nothing to remove
 
 if ( markersok.IsEmpty () )                 // all to be erased
 
-    Markers.Reset ( false );                // objects are already deleted, only clear-up the pointers now
+    Markers.Reset ( DontDeallocate );       // objects are already deleted, only clear-up the pointers now
 
 else {
-    Markers.Reset ( false );
+    Markers.Reset ( DontDeallocate );
 
     for ( int i = 0; i < (int) markersok; i++ )
         Markers.Append ( markersok[ i ] );  // just copy the pointer
@@ -2001,7 +2001,7 @@ for ( int i = 0; i < (int) Markers; i++ ) {
     }
 
 
-Markers.Reset ( false );                // some objects are already deleted, only clear-up the pointers now
+Markers.Reset ( DontDeallocate );       // some objects are already deleted, only clear-up the pointers now
 
 
 InsertMarkers ( clippedtags );          // first copy the data..

@@ -317,7 +317,7 @@ Reset ();
 void    TVolumeRegions::Reset ()
 {
                                         // delete content & structure
-Group.Reset ( true );
+Group.Reset ( Deallocate );
 }
 
 

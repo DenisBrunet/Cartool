@@ -5422,7 +5422,7 @@ for ( int gofi = 0; gofi < (int) Group; gofi++ )
     Group[ gofi ]->DeallocateMemory ();
 
                                         // delete content & structure
-Group.Reset ( true );
+Group.Reset ( Deallocate );
 }
 
 
@@ -5599,7 +5599,7 @@ else
 
 void    TGoMaps::Remove ( const TMaps* maps )
 {
-Group.Remove ( maps );
+Group.Remove ( maps, DontDeallocate );
 }
 
 
@@ -5749,7 +5749,7 @@ for ( int gofi = 0; gofi < (int) Group; gofi++ )
     Group[ gofi ]->DeallocateMemory ();
 
                                         // delete content & structure
-Group.Reset ( true );
+Group.Reset ( Deallocate );
 }
 
 
@@ -5803,7 +5803,7 @@ else
 
 void    TGoGoMaps::Remove ( const TGoMaps* gomaps )
 {
-Group.Remove ( gomaps );
+Group.Remove ( gomaps, DontDeallocate );
 }
 
 

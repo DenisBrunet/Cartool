@@ -396,7 +396,7 @@ if ( numspirr && (bool) ListMriDoc ) {
     if ( ! ListSpDoc[ 0 ]->BuildInterpolation ( SPInterpolation1NN, togrey ) ) {
 #endif
 //      ListSpDoc()->RemoveLink ( this );
-//      ListSpDoc.Remove ( ListSpDoc() );
+//      ListSpDoc.Remove ( ListSpDoc(), DontDeallocate );
 
         Close ();               // a bit rough, but needed to clean up correctly the place
         return false;
@@ -597,13 +597,13 @@ if ( ! CartoolApplication->Closing ) {
     } // not closing application
 
 
-ListEegDoc  .Reset ( false );
-ListRisDoc  .Reset ( false );
-ListXyzDoc  .Reset ( false );
-ListSpDoc   .Reset ( false );
-ListIsDoc   .Reset ( false );
-ListMriDoc  .Reset ( false );
-ListRoisDoc .Reset ( false );
+ListEegDoc  .Reset ( DontDeallocate );
+ListRisDoc  .Reset ( DontDeallocate );
+ListXyzDoc  .Reset ( DontDeallocate );
+ListSpDoc   .Reset ( DontDeallocate );
+ListIsDoc   .Reset ( DontDeallocate );
+ListMriDoc  .Reset ( DontDeallocate );
+ListRoisDoc .Reset ( DontDeallocate );
 
 
 return  TFileDocument::Close ();
@@ -1328,7 +1328,7 @@ if      ( adding == addeeg
                                         // re-sort the whole list after each insertion, better f.ex. for subjects or epochs
     leeg.Sort ();
                                         // !don't delete doc pointers!
-    ListEegDoc.Reset ( false );
+    ListEegDoc.Reset ( DontDeallocate );
                                         // now can loop in the correct order
     for ( int gofi = 0; gofi < (int) leeg; gofi++ )
                                         // insert back           IsOpen returns the document* from the path, and we know it is open already
@@ -1405,7 +1405,7 @@ if ( adding == addsp && (bool) ListMriDoc ) {
     if ( ! ListSpDoc[ 0 ]->BuildInterpolation ( SPInterpolation1NN, togrey ) ) {
 #endif
         doc->RemoveLink ( this );
-        ListSpDoc.Remove ( (TSolutionPointsDoc*) doc );
+        ListSpDoc.Remove ( (TSolutionPointsDoc*) doc, DontDeallocate );
         goto AbortAddToGroup;
         }
     }
@@ -1427,7 +1427,7 @@ if ( adding == addmri && numspirr ) {
     if ( ! ListSpDoc[ 0 ]->BuildInterpolation ( SPInterpolation1NN, togrey ) ) {
 #endif
         doc->RemoveLink ( this );
-        ListSpDoc.Remove ( (TSolutionPointsDoc*) doc );
+        ListSpDoc.Remove ( (TSolutionPointsDoc*) doc, DontDeallocate );
         goto AbortAddToGroup;
         }
     }
@@ -2282,8 +2282,8 @@ for ( int i = 0; i < (int) ListXyzDoc; i++ )
     ListXyzDoc[ i ]->RemoveLink ( this );
 
 
-ListEegDoc.Reset ( false );
-ListXyzDoc.Reset ( false );
+ListEegDoc.Reset ( DontDeallocate );
+ListXyzDoc.Reset ( DontDeallocate );
 
 return  true;
 }

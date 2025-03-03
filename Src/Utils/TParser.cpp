@@ -779,7 +779,7 @@ for ( int tokeni = 0; tokeni < Tokens.Num (); tokeni++ )
 
 
 
-Tokens.Reset ( false );                 // reset only the pointers to data
+Tokens.Reset ( DontDeallocate );        // reset only the pointers to data
 }
 
 
@@ -801,7 +801,7 @@ if ( IsEmpty () )
 
 TToken*     totok   = Tokens.GetLast ();
 
-Tokens.RemoveLast ( false );            // remove from the list, but don't destroy actual data
+Tokens.RemoveLast ( DontDeallocate );   // remove from the list, but don't destroy actual data
 
 Tokens.UpdateIndexes ();
 

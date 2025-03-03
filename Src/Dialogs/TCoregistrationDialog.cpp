@@ -449,8 +449,8 @@ void    TCoregistrationDialog::CleanUp ( bool destroydialog )
 
 if ( MriView && XyzView ) {
                                         // unplug from display
-    MriView->Using. Remove ( XyzView );
-    XyzView->UsedBy.Remove ( MriView );
+    MriView->Using. Remove ( XyzView, DontDeallocate );
+    XyzView->UsedBy.Remove ( MriView, DontDeallocate );
 
     MriView->WindowSetPosition ( 0, 0, 800, 800 );
     }
@@ -484,8 +484,8 @@ if ( CanCloseMriView && MriView && MriView->BaseDoc->CanClose ( true ) ) {
     }
 
 
-UndoMatrices.Reset ( true );
-RedoMatrices.Reset ( true );
+UndoMatrices.Reset ( Deallocate );
+RedoMatrices.Reset ( Deallocate );
 
 
  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -763,8 +763,8 @@ TVector3Double      InitScale;
                                         // By safety, reset all these guys
 Transform    .Reset ();
 TransformInit.Reset ();
-UndoMatrices .Reset ( true );
-RedoMatrices .Reset ( true );
+UndoMatrices .Reset ( Deallocate );
+RedoMatrices .Reset ( Deallocate );
 
                                         // NOT to be done for CoregisterXyzToMriReload
 if      ( Processing == CoregisterXyzToMriScratch ) {
@@ -1147,8 +1147,8 @@ switch ( op ) {
 
             Transform   = TransformInit;
 
-            UndoMatrices.Reset ( true );
-            RedoMatrices.Reset ( true );
+            UndoMatrices.Reset ( Deallocate );
+            RedoMatrices.Reset ( Deallocate );
 
             SetCheck ( Glue, Transform.Gluing );
 
@@ -1169,7 +1169,7 @@ switch ( op ) {
                 UndoMatrices.Append ( new TCoregistrationTransform ( Transform ) );
 
 
-                RedoMatrices.RemoveLast ( true );
+                RedoMatrices.RemoveLast ( Deallocate );
 
                                         // do it only once
                 if ( op == IDC_REDOLAST )
@@ -1186,7 +1186,7 @@ switch ( op ) {
                 RedoMatrices.Append ( new TCoregistrationTransform ( Transform ) );
 
 
-                UndoMatrices.RemoveLast ( true );
+                UndoMatrices.RemoveLast ( Deallocate );
 
                                         // update with new last undo matrix
                 Transform   = UndoMatrices.IsNotEmpty () ? *UndoMatrices.GetLast () : TransformInit;
@@ -1221,7 +1221,7 @@ switch ( op ) {
             else                                                                    Transform.ScaleZ ( v );
 
             UndoMatrices.Append ( new TCoregistrationTransform ( Transform ) );
-            RedoMatrices.Reset ( true );
+            RedoMatrices.Reset ( Deallocate );
 
             break;
 
@@ -1240,7 +1240,7 @@ switch ( op ) {
             else                                                                    Transform.TranslateZ ( v );
 
             UndoMatrices.Append ( new TCoregistrationTransform ( Transform ) );
-            RedoMatrices.Reset ( true );
+            RedoMatrices.Reset ( Deallocate );
 
             break;
 
@@ -1259,7 +1259,7 @@ switch ( op ) {
             else                                                                    Transform.RotateZ ( v );
 
             UndoMatrices.Append ( new TCoregistrationTransform ( Transform ) );
-            RedoMatrices.Reset ( true );
+            RedoMatrices.Reset ( Deallocate );
 
             break;
 
@@ -1267,7 +1267,7 @@ switch ( op ) {
                                                                                     Transform.ToggleGlueing ();
 
             UndoMatrices.Append ( new TCoregistrationTransform ( Transform ) );
-            RedoMatrices.Reset ( true );
+            RedoMatrices.Reset ( Deallocate );
 
             break;
     }
