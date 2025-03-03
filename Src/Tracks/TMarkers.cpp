@@ -693,7 +693,7 @@ for ( iterator.SetForward ( Markers ); iterator.Current ()->Next != 0; ) {
 
     if ( *iterator.Current ()->To == *iterator.Current ()->Next->To ) {
 
-        Markers.Remove ( iterator.Current()->Next, Deallocate );
+        Markers.RemoveAtom ( iterator.Current()->Next, Deallocate );
                                         // change occurred
         removedduplicates   = true;
         }
@@ -1793,7 +1793,7 @@ while ( (bool) remaining ) {
 
                 toaggregate->To     = iterator()->To;
 
-                remaining.Remove    ( iterator.Current (), Deallocate );    // remove from memory and from list
+                remaining.RemoveAtom ( iterator.Current (), Deallocate );   // remove from memory and from list
 
                 mergedsome          = true;
 

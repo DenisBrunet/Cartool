@@ -68,8 +68,8 @@ public:
     void                Append          ( const TList&  list   );
     bool                Insert          ( const TypeD*  toatom, const TypeD* beforeatom );
 
-    void                Remove          ( const TListAtom<TypeD>* tolistatom, DeallocateType deallocate );  // from a list node - safer
-    void                Remove          ( const TypeD* toatom,                DeallocateType deallocate );  // from content - might have side effects, if multiple elements happen to be equal
+    void                RemoveAtom      ( const TListAtom<TypeD>* tolistatom, DeallocateType deallocate );  // from a list node - safer
+    void                Remove          ( const TypeD*            toatom,     DeallocateType deallocate );  // from content - might have side effects, if multiple elements happen to be equal
     void                RemoveFirst     ( DeallocateType deallocate, int num = 1 );
     void                RemoveLast      ( DeallocateType deallocate, int num = 1 );
     void                Reset           ( DeallocateType deallocate );
@@ -516,7 +516,7 @@ UpdateIndexes ( true );
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::Remove ( const TListAtom<TypeD>* tolistatom, DeallocateType deallocate )
+void    TList<TypeD>::RemoveAtom ( const TListAtom<TypeD>* tolistatom, DeallocateType deallocate )
 {
 if ( IsEmpty () || tolistatom == 0 )
     return;
@@ -551,9 +551,9 @@ OmpCriticalEnd
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::Remove ( const TypeD *toatom, DeallocateType deallocate )
+void    TList<TypeD>::Remove ( const TypeD* toatom, DeallocateType deallocate )
 {
-Remove ( IsInside ( toatom ), deallocate );
+RemoveAtom ( IsInside ( toatom ), deallocate );
 }
 
 
@@ -572,7 +572,7 @@ if ( num >= NumInside ) {
 
 
 for ( ; num > 0; num-- )
-    Remove ( First, deallocate );
+    RemoveAtom ( First, deallocate );
 }
 
 
@@ -591,7 +591,7 @@ if ( num >= NumInside ) {
 
 
 for ( ; num > 0; num-- )
-    Remove ( Last, deallocate );
+    RemoveAtom ( Last, deallocate );
 }
 
 
