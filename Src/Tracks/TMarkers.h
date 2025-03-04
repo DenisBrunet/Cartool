@@ -149,10 +149,16 @@ void        WriteMarker         (   std::ofstream&  os,
 
 enum                MarkersError
                     {
-                    NoMarkersError,
-                    MarkersFileMissing,
-                    MarkersFileError,
-                    MarkersRemovedDuplicate,
+                    NoMarkersError          = 0x00,
+
+                    MarkersFileMissing      = 0x01,
+                    MarkersFileError        = 0x02,
+                    MarkersFileErrors       = MarkersFileMissing | MarkersFileError,
+
+                    MarkersNotInserted      = 0x10,
+                    MarkersClipped          = 0x20,
+                    MarkersRemovedDuplicate = 0x40,
+                    MarkersInsertErrors     = MarkersNotInserted | MarkersClipped | MarkersRemovedDuplicate,
                     };
 
 
@@ -212,12 +218,12 @@ public:
     MarkersError    SetMarkers              ( const MarkersList&    markerslist );
     MarkersError    SetMarkers              ( const char*           file );
                                                                                                     // Sets MarkersDirty; Not Sorting
-    void            AppendMarker            ( const TMarker&        marker );
+    MarkersError    AppendMarker            ( const TMarker&        marker );
     MarkersError    AppendMarkers           ( const TMarkers&       markers, const char *filteredwith = 0 );
     MarkersError    AppendMarkers           ( const MarkersList&    markerslist );
     MarkersError    AppendMarkers           ( const char*           file );
                                                                                                     // Sets MarkersDirty; Sorting
-    int             InsertMarker            ( const TMarker&        marker, int indexfrom = 0 );
+    MarkersError    InsertMarker            ( const TMarker&        marker, int* indexfrom = 0 );
     MarkersError    InsertMarkers           ( const TMarkers&       markers, const char *filteredwith = 0 );
     MarkersError    InsertMarkers           ( const MarkersList&    markerslist );
     MarkersError    InsertMarkers           ( const char*           file );
@@ -282,7 +288,7 @@ protected:
 
     MarkersList     Markers;
     TFileName       MarkersFileName;
-    bool            MarkersDirty;
+    bool            MarkersDirty;           // Only set for Append / Insert / Remove operations - any error can be checked by testing returned values
 
 
     void            _Sort  ( int l, int r );

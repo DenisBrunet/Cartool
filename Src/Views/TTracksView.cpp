@@ -8275,7 +8275,7 @@ for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <=
         }
 
 
-    if ( EEGDoc->AreMarkersDirty () ) {
+    if ( EEGDoc->AreMarkersDirty () ) {     // does not check for MarkersInsertErrors errors
 
         EEGDoc->SortAndCleanMarkers ();
                                             // just commit once

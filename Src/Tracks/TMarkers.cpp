@@ -283,7 +283,8 @@ MarkersDirty        = false;
 {
 TracksDoc           = 0;
 MarkersFileName.Reset ();
-MarkersDirty        = SetMarkers ( markerslist ) == MarkersRemovedDuplicate;    // update current state
+//MarkersDirty        = IsFlag ( SetMarkers ( markerslist ), MarkersInsertErrors );   // update current state if any insertion error
+MarkersDirty        = SetMarkers ( markerslist ) != NoMarkersError;     // update current state
 }
 
                                         // Resets MarkersDirty; Sorting
@@ -299,7 +300,8 @@ MarkersDirty        = false;
 {
 TracksDoc           = 0;
 MarkersFileName     = file;
-MarkersDirty        = SetMarkers ( MarkersFileName ) == MarkersRemovedDuplicate;    // update current state
+//MarkersDirty        = IsFlag ( SetMarkers ( MarkersFileName ), MarkersInsertErrors );   // update current state if any insertion error
+MarkersDirty        = SetMarkers ( MarkersFileName ) != NoMarkersError;  // update current state
 }
 
 
@@ -324,8 +326,8 @@ Markers.Reset ( Deallocate );
 {
 TracksDoc           = op.TracksDoc;
 MarkersFileName     = op.MarkersFileName;
-//MarkersDirty      = op.MarkersDirty;              // copy state from op
-MarkersDirty        = SetMarkers ( op.Markers );    // update current state
+//MarkersDirty      = op.MarkersDirty;                              // copy state from op
+MarkersDirty        = SetMarkers ( op.Markers ) != NoMarkersError;  // update current state
 }
 
 
@@ -337,8 +339,8 @@ if ( &op2 == this )
 
 TracksDoc           = op2.TracksDoc;
 MarkersFileName     = op2.MarkersFileName;
-//MarkersDirty      = op2.MarkersDirty;             // copy state from op
-MarkersDirty        = SetMarkers ( op2.Markers );   // update current state
+//MarkersDirty      = op2.MarkersDirty;                             // copy state from op
+MarkersDirty        = SetMarkers ( op2.Markers ) != NoMarkersError; // update current state
 
 
 return  *this;
@@ -446,7 +448,8 @@ ReadNativeMarkers ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-MarkersError        readerror;
+MarkersError        appenderror;
+
                                         // then additional mrk file
 if ( StringIsEmpty ( file ) ) {
 
@@ -459,12 +462,12 @@ if ( StringIsEmpty ( file ) ) {
 
     AddExtension    ( mrkfile, FILEEXT_MRK );
                                         // store any error from reading file
-    readerror   = AppendMarkers   ( mrkfile );
+    appenderror     = AppendMarkers   ( mrkfile );
     }
 else {
     StringCopy      ( MarkersFileName, file );
                                         // store any error from reading file
-    readerror   = AppendMarkers   ( MarkersFileName );
+    appenderror     = AppendMarkers   ( MarkersFileName );
     }
 
 
@@ -472,12 +475,11 @@ else {
 
 MarkersError        cleanerror      = SortAndCleanMarkers ();
 
-                                        // Markers are considered dirty only if file had duplicates, and/or if merge had duplicates
-MarkersDirty    = readerror  == MarkersRemovedDuplicate
-               || cleanerror == MarkersRemovedDuplicate;
+MarkersError        initerror       = CombineFlags ( appenderror, cleanerror );
+                                        // Markers are considered dirty only if file had duplicates, and/or if merge had duplicates, or markers were clipped
+MarkersDirty        = IsFlag ( initerror, MarkersInsertErrors );
 
-                                        // also return an error message
-return  MarkersDirty ? MarkersRemovedDuplicate : NoMarkersError;
+return  initerror;
 }
 
 
@@ -761,39 +763,47 @@ return  0;
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::AppendMarker ( const TMarker& marker )
+                                        // Returned error codes: NoMarkersError, MarkersNotInserted, MarkersClipped
+MarkersError    TMarkers::AppendMarker ( const TMarker& marker )
 {
 if ( TracksDoc && marker.IsNotOverlappingInterval ( (long) 0, TracksDoc->GetNumTimeFrames () - 1 ) )
-    return;
+    return  MarkersNotInserted;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // clone marker + clip its length
-TMarker*            markerc         = new TMarker ( marker );
+TMarker*            markercopy      = new TMarker ( marker );
+
 
 if ( TracksDoc )
-    Clipped ( markerc->From, markerc->To, (long) 0, TracksDoc->GetNumTimeFrames () - 1 );
+    Clipped ( markercopy->From, markercopy->To, (long) 0, TracksDoc->GetNumTimeFrames () - 1 );
 
                                         // just put it at the end
-Markers.Append ( markerc );
+Markers.Append ( markercopy );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // changing state only for markers, the one that can be aved to file by the user
 if ( IsFlag ( marker.Type, MarkerTypeUserCoded ) )
     MarkersDirty    = true;
+
+
+return  markercopy->From == marker.From && markercopy->To == marker.To  ? NoMarkersError
+                                                                        : MarkersClipped;
 }
 
 
 //----------------------------------------------------------------------------
-                                        // Returned error code: NoMarkersError
+                                        // Returned error code: NoMarkersError, MarkersNotInserted, MarkersClipped
 MarkersError    TMarkers::AppendMarkers ( const TMarkers& markers, const char* filteredwith )
 {
+MarkersError        appenderror     = NoMarkersError;
+
 if ( StringIsEmpty ( filteredwith ) || StringIs ( filteredwith, "*" ) ) {
 
     for ( int i = 0; i < (int) markers; i++ )
 
-        AppendMarker ( *markers[ i ] );
+        CombinedFlags ( appenderror, AppendMarker ( *markers[ i ] ) );
     }
 else {
 
@@ -803,70 +813,80 @@ else {
 
         if ( filteredwithsplit.Contains ( markers[ i ]->Name ) )
 
-            AppendMarker ( *markers[ i ] );
+            CombinedFlags ( appenderror, AppendMarker ( *markers[ i ] ) );
     }
 
-return  NoMarkersError;
+return  appenderror;
 }
 
 
 //----------------------------------------------------------------------------
-                                        // Returned error code: NoMarkersError
+                                        // Returned error code: NoMarkersError, MarkersNotInserted, MarkersClipped
 MarkersError    TMarkers::AppendMarkers ( const MarkersList& markerslist )
 {
+MarkersError        appenderror     = NoMarkersError;
+
 for ( int i = 0; i < (int) markerslist; i++ )
 
-    AppendMarker ( *markerslist[ i ] );
+    CombinedFlags ( appenderror, AppendMarker ( *markerslist[ i ] ) );
 
-return  NoMarkersError;
+return  appenderror;
 }
 
 
 //----------------------------------------------------------------------------
-                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate, MarkersFileMissing, MarkersFileError
+                                        // Returned error codes: NoMarkersError, MarkersNotInserted, MarkersClipped, MarkersRemovedDuplicate, MarkersFileMissing, MarkersFileError
 MarkersError    TMarkers::AppendMarkers ( const char* file )
 {
 TMarkers            markers;
                                         // store if file had some errors
-MarkersError        readerror       = markers.ReadFile ( file );
+MarkersError        readfileerror   = markers.ReadFile ( file );
 
+
+MarkersError        appenderror     = NoMarkersError;
 
 for ( int i = 0; i < (int) markers; i++ )
                                         // updates MarkersDirty
-    AppendMarker ( *markers[ i ] );
+    CombinedFlags ( appenderror, AppendMarker ( *markers[ i ] ) );
 
-                                        // forward any error from ReadFile
-return  readerror;
+                                        // returns compound error codes
+return  CombineFlags ( readfileerror, appenderror );
 }
 
 
 //----------------------------------------------------------------------------
-int     TMarkers::InsertMarker ( const TMarker& marker, int indexfrom )
+MarkersError    TMarkers::InsertMarker ( const TMarker& marker, int* indexfrom )
 {
 if ( TracksDoc && marker.IsNotOverlappingInterval ( (long) 0, TracksDoc->GetNumTimeFrames () - 1 ) )
-    return  0;
+    return  MarkersNotInserted;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 int                 i;
-                                        // we have an optional index from where to start searching
-for ( i = indexfrom; i < (int) Markers; i++ )
+                                        // we might have an optional index from where to start searching (insertion sort)
+for ( i = indexfrom ? *indexfrom : 0; i < (int) Markers; i++ )
                                         // stop at first element in the list that is beyond marker
     if ( *Markers[ i ] > marker )
 
         break;
 
+                                        // return index of inserted element for next call (insertion sort)
+if ( indexfrom )
+    *indexfrom = i;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // clone marker + clip its length
-TMarker*            markerc            = new TMarker ( marker );
-
-if ( TracksDoc )  Clipped ( markerc->From, markerc->To, (long) 0, TracksDoc->GetNumTimeFrames () - 1 );
+TMarker*            markercopy      = new TMarker ( marker );
 
 
-if ( i == (int) Markers )   Markers.Append ( markerc );               // nothing past marker?
-else                        Markers.Insert ( markerc, Markers[ i ] );
+if ( TracksDoc )
+    Clipped ( markercopy->From, markercopy->To, (long) 0, TracksDoc->GetNumTimeFrames () - 1 );
+
+
+if ( i == (int) Markers )   Markers.Append ( markercopy );              // nothing past marker?
+else                        Markers.Insert ( markercopy, Markers[ i ] );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -874,41 +894,45 @@ else                        Markers.Insert ( markerc, Markers[ i ] );
 if ( IsFlag ( marker.Type, MarkerTypeUserCoded ) )
     MarkersDirty    = true;
 
-                                        // return index of inserted element for next call
-return  i;
+
+return  markercopy->From == marker.From && markercopy->To == marker.To  ? NoMarkersError
+                                                                        : MarkersClipped;
 }
 
 
 //----------------------------------------------------------------------------
-                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
+                                        // Returned error codes: NoMarkersError, MarkersNotInserted, MarkersClipped, MarkersRemovedDuplicate
 MarkersError    TMarkers::InsertMarkers ( const TMarkers& markers, const char* filteredwith )
 {
-AppendMarkers ( markers, filteredwith );
-
-return  SortAndCleanMarkers ();
-}
-
-
-//----------------------------------------------------------------------------
-                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
-MarkersError    TMarkers::InsertMarkers ( const MarkersList& markerslist )
-{
-AppendMarkers ( markerslist );
-
-return  SortAndCleanMarkers ();
-}
-
-
-//----------------------------------------------------------------------------
-                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
-MarkersError    TMarkers::InsertMarkers ( const char* file )
-{
-MarkersError        readerror       = AppendMarkers ( file );
+MarkersError        appenderror     = AppendMarkers ( markers, filteredwith );
 
 MarkersError        cleanerror      = SortAndCleanMarkers ();
-                                        // forward any error from ReadFile
-return  readerror  == MarkersRemovedDuplicate
-     || cleanerror == MarkersRemovedDuplicate ? MarkersRemovedDuplicate : NoMarkersError;
+                                        // returns compound error codes
+return  CombineFlags ( appenderror, cleanerror );
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Returned error codes: NoMarkersError, MarkersNotInserted, MarkersClipped, MarkersRemovedDuplicate
+MarkersError    TMarkers::InsertMarkers ( const MarkersList& markerslist )
+{
+MarkersError        appenderror     = AppendMarkers ( markerslist );
+
+MarkersError        cleanerror      = SortAndCleanMarkers ();
+                                        // returns compound error codes
+return  CombineFlags ( appenderror, cleanerror );
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Returned error codes: NoMarkersError, MarkersNotInserted, MarkersClipped, MarkersNotInserted, MarkersClipped, MarkersRemovedDuplicate
+MarkersError    TMarkers::InsertMarkers ( const char* file )
+{
+MarkersError        appenderror     = AppendMarkers ( file );
+
+MarkersError        cleanerror      = SortAndCleanMarkers ();
+                                        // returns compound error codes
+return  CombineFlags ( appenderror, cleanerror );
 }
 
 
@@ -944,7 +968,7 @@ return  InsertMarkers ( file );
 
 //----------------------------------------------------------------------------
                                         // Read from file, then sort
-                                        // Returned error codes: NoMarkersError, MarkersRemovedDuplicate, MarkersFileMissing, MarkersFileError
+                                        // Returned error codes: NoMarkersError, MarkersNotInserted, MarkersClipped, MarkersRemovedDuplicate, MarkersFileMissing, MarkersFileError
 MarkersError    TMarkers::ReadFile ( const char* file )
 {
                                         // clear everything
@@ -952,8 +976,17 @@ ResetMarkers ();
                                         // ResetMarkers sets the Dirty flag, so reset it
 MarkersDirty    = false;
 
-if ( ! CanOpenFile ( file ) )
-    return  MarkersFileMissing;         // but not considered a problem
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+MarkersError        readerror       = NoMarkersError;
+
+if ( ! CanOpenFile ( file ) ) {
+                                        // missing file is not actually considered a problem, just no markers
+    readerror   = MarkersFileMissing;
+
+    return  readerror;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -970,13 +1003,17 @@ is.read ( (char *) &magic, sizeof ( magic ) );
 if ( ! IsMagicNumber ( magic, TLBIN_MAGICNUMBER2 ) ) {
 
 //  ShowMessage ( "Can not recognize this marker file (unknown magic number)!", "Open file", ShowMessageWarning );
-    return  MarkersFileError;
+
+    readerror   = MarkersFileError;
+
+    return  readerror;
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // avoid reading & writing at the same time
                                         // in case we read the associated mrk file
+MarkersError        appenderror     = NoMarkersError;
 
                                         // reopen as text file
 is.close ();
@@ -1024,16 +1061,19 @@ while ( ! is.eof () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    AppendMarker ( marker );
+    CombinedFlags ( appenderror, AppendMarker ( marker ) );
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // AppendMarker sets MarkersDirty, so reset it
-MarkersDirty    = false;
-
                                         // check & sort the whole list
-return  SortAndCleanMarkers ();
+MarkersError        cleanerror      = SortAndCleanMarkers ();
+
+MarkersError        readfileerror   = CombineFlags ( readerror, appenderror, cleanerror );
+                                        // Markers are considered dirty only if file had duplicates, and/or if merge had duplicates, or markers were clipped
+MarkersDirty        = IsFlag ( readfileerror, MarkersInsertErrors );
+                                        // returns compound error codes
+return  readfileerror;
 }
 
 

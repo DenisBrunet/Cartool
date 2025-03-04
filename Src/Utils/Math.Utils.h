@@ -287,6 +287,12 @@ return  (TypeD) ( flags1 | flags2 );
 }
 
 template <typename TypeD>
+inline  void    CombinedFlags(  TypeD&  flags1, TypeD   flags2 ) 
+{
+flags1  = (TypeD) ( flags1 | flags2 );
+}
+
+template <typename TypeD>
 inline  TypeD   CombineFlags(   TypeD   flags1, TypeD   flags2 , TypeD   flags3 ) 
 {
 return  (TypeD) ( flags1 | flags2 | flags3 );
