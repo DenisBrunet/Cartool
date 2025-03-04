@@ -30,9 +30,10 @@ template <class TypeD>
 class   TListAtom
 {
 public:
-                        TListAtom ( const TypeD* toatom = 0 ) : To ( (TypeD*) toatom ), Next ( 0 ), Previous ( 0 )     {}
+                        TListAtom ( const TypeD* todata = 0 )
+                      : ToData ( (TypeD*) todata ), Next ( 0 ), Previous ( 0 )      {}
 
-    TypeD*              To;
+    TypeD*              ToData;
 
     TListAtom<TypeD>*   Next;
     TListAtom<TypeD>*   Previous;
@@ -61,27 +62,27 @@ public:
     bool                IsEmpty         ()  const           { return	NumInside == 0; }
     bool                IsNotEmpty      ()  const           { return    NumInside != 0; }
 
-    TListAtom<TypeD>*   IsInside        ( const TypeD* toatom )     const;
+    bool                IsInside        ( const TypeD* todata )     const;
 
 
-    void                Append          ( const TypeD*  toatom );
-    void                Append          ( const TList&  list   );
-    bool                Insert          ( const TypeD*  toatom, const TypeD* beforeatom );
+    void                Append          ( const TypeD* todata );
+    void                Append          ( const TList& list   );
+    bool                Insert          ( const TypeD* todata, const TypeD* beforedata );
 
     void                RemoveAtom      ( const TListAtom<TypeD>* tolistatom, DeallocateType deallocate );  // from a list node - safer
-    void                Remove          ( const TypeD*            toatom,     DeallocateType deallocate );  // from content - might have side effects, if multiple elements happen to be equal
+    void                Remove          ( const TypeD*            todata,     DeallocateType deallocate );  // from content - might have side effects, if multiple elements happen to be equal
     void                RemoveFirst     ( DeallocateType deallocate, int num = 1 );
     void                RemoveLast      ( DeallocateType deallocate, int num = 1 );
     void                Reset           ( DeallocateType deallocate );
 
-    void                Permutate       ( const TypeD* toatom1, const TypeD* toatom2 );
+    void                Permutate       ( const TypeD* todata1, const TypeD* todata2 );
     void                RevertOrder     ();
 
 
-          TypeD*                GetFirst        ()          { return    First ? First->To : 0; }
-    const TypeD*                GetFirst        ()  const   { return    First ? First->To : 0; }
-          TypeD*                GetLast         ()          { return    Last  ? Last ->To : 0; }
-    const TypeD*                GetLast         ()  const   { return    Last  ? Last ->To : 0; }
+          TypeD*                GetFirst        ()          { return    First ? First->ToData : 0; }
+    const TypeD*                GetFirst        ()  const   { return    First ? First->ToData : 0; }
+          TypeD*                GetLast         ()          { return    Last  ? Last ->ToData : 0; }
+    const TypeD*                GetLast         ()  const   { return    Last  ? Last ->ToData : 0; }
 
           TListAtom<TypeD>*     GetFirstAtom    ()          { return    First; }
     const TListAtom<TypeD>*     GetFirstAtom    ()  const   { return    First; }
@@ -89,7 +90,9 @@ public:
     const TListAtom<TypeD>*     GetLastAtom     ()  const   { return    Last;  }
 
           TListAtom<TypeD>*     GetAtom         ( int index );
-    const TListAtom<TypeD>*     GetAtom         ( int index )   const;
+    const TListAtom<TypeD>*     GetAtom         ( int index )           const;
+          TListAtom<TypeD>*     GetAtom         ( const TypeD* todata );
+    const TListAtom<TypeD>*     GetAtom         ( const TypeD* todata ) const;
 
                                         // gets an array of pointers to data, for fast direct access
     void                GetIndexes      ( TArray1<TListAtom<TypeD> *>&  indexes )   const;
@@ -146,17 +149,17 @@ public:
     void			Previous ()                                 { if ( P )  { P = P->Previous; Index--; } }
 
 
-          TypeD*    operator ()                 ()              { return P ? P->To : 0;	}
-    const TypeD*    operator ()                 ()  const       { return P ? P->To : 0;	}
+          TypeD*    operator ()                 ()              { return P ? P->ToData : 0;	}
+    const TypeD*    operator ()                 ()  const       { return P ? P->ToData : 0;	}
 
-                    operator bool               ()              { return P != 0;		}
-                    operator bool               ()  const       { return P != 0;		}
-                    operator int                ()              { return Index;			}
-                    operator int                ()  const       { return Index;			}
-                    operator       TypeD*       ()              { return P ? P->To : 0;	}
-                    operator const TypeD*       ()  const       { return P ? P->To : 0;	}
-                    operator TListAtom<TypeD>*  ()	            { return P;             }
-                    operator TListAtom<TypeD>*  ()	const       { return P;             }
+                    operator bool               ()              { return P != 0;		    }
+                    operator bool               ()  const       { return P != 0;		    }
+                    operator int                ()              { return Index;			    }
+                    operator int                ()  const       { return Index;			    }
+                    operator       TypeD*       ()              { return P ? P->ToData : 0;	}
+                    operator const TypeD*       ()  const       { return P ? P->ToData : 0;	}
+                    operator TListAtom<TypeD>*  ()	            { return P;                 }
+                    operator TListAtom<TypeD>*  ()	const       { return P;                 }
 
 
 protected:
@@ -239,9 +242,9 @@ if ( deallocate == Deallocate )
 
     for ( p = First; p != 0; p = p->Next )
 
-        if ( p->To != 0 )
+        if ( p->ToData != 0 )
 
-            delete  p->To;
+            delete  p->ToData;
 
                                         // then only destroy list structure itself
 for ( p = First, p2 = p ? p->Next : 0; p != 0; p = p2, p2 = p ? p->Next : 0 )
@@ -262,16 +265,16 @@ OmpCriticalEnd
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::Append ( const TypeD* toatom )
+void    TList<TypeD>::Append ( const TypeD* todata )
 {
 OmpCriticalBegin (TListAppend)
 
 if ( IsEmpty () )
 
-    Last    = First         = new TListAtom<TypeD> ( toatom );
+    Last    = First         = new TListAtom<TypeD> ( todata );
 
 else {
-    Last->Next              = new TListAtom<TypeD> ( toatom );
+    Last->Next              = new TListAtom<TypeD> ( todata );
     Last->Next->Previous    = Last;
     Last                    = Last->Next;
     }
@@ -289,22 +292,22 @@ void    TList<TypeD>::Append ( const TList &list )
 TListAtom<TypeD>*   p;
 
 for ( p = list.First; p != 0; p = p->Next )
-    Append ( p->To );
+    Append ( p->ToData );
 
 UpdateIndexes ( true );
 }
 
 
 template <class TypeD>
-bool    TList<TypeD>::Insert ( const TypeD* toatom, const TypeD* beforeatom )
+bool    TList<TypeD>::Insert ( const TypeD* todata, const TypeD* beforedata )
 {
-if ( IsEmpty () || beforeatom == 0 ) {
-    Append ( toatom );
+if ( IsEmpty () || beforedata == 0 ) {
+    Append ( todata );
     return  true;
     }
 
 
-TListAtom<TypeD>*   postatom    = IsInside ( beforeatom );
+TListAtom<TypeD>*   postatom    = GetAtom ( beforedata );
 
 if ( ! postatom )                       // not found the before atom?
     return  false;
@@ -312,7 +315,7 @@ if ( ! postatom )                       // not found the before atom?
 
 OmpCriticalBegin (TListInsert)
 
-TListAtom<TypeD>*   newatom     = new TListAtom<TypeD> ( toatom );
+TListAtom<TypeD>*   newatom     = new TListAtom<TypeD> ( todata );
 TListAtom<TypeD>*   preatom;
                                         // before first?
 if ( postatom == First ) {
@@ -361,7 +364,7 @@ int                 i;
 TListAtom<TypeD>*   p;
 
 for ( i = 0, p = First ; p != 0; p = p->Next, i++ )
-    indexes[ i ]    = p->To;
+    indexes[ i ]    = p->ToData;
 }
 
                                         // refresh our private fast access index array - thread safe(?)
@@ -387,7 +390,7 @@ TypeD&  TList<TypeD>::operator() ( int index )
 {
 UpdateIndexes ();
 
-return  *AtomIndexes[ index ]->To;
+return  *AtomIndexes[ index ]->ToData;
 }
 
 
@@ -397,7 +400,7 @@ const TypeD&    TList<TypeD>::operator() ( int index ) const
                                         // hack until all methods are correctly const'ed
 const_cast<TList*>( this )->UpdateIndexes ();
 
-return  *AtomIndexes[ index ]->To;
+return  *AtomIndexes[ index ]->ToData;
 }
 
 
@@ -406,7 +409,7 @@ TypeD*  TList<TypeD>::operator[] ( int index )
 {
 UpdateIndexes ();
 
-return  IsInsideLimits ( index, 0, NumInside - 1 ) ? AtomIndexes[ index ]->To : 0;
+return  IsInsideLimits ( index, 0, NumInside - 1 ) ? AtomIndexes[ index ]->ToData : 0;
 }
 
 
@@ -416,7 +419,7 @@ const TypeD*    TList<TypeD>::operator[] ( int index ) const
                                         // hack until all methods are correctly const'ed
 const_cast<TList*>( this )->UpdateIndexes ();
 
-return  IsInsideLimits ( index, 0, NumInside - 1 ) ? AtomIndexes[ index ]->To : 0;
+return  IsInsideLimits ( index, 0, NumInside - 1 ) ? AtomIndexes[ index ]->ToData : 0;
 }
 
 
@@ -426,27 +429,6 @@ TListAtom<TypeD>*   TList<TypeD>::GetAtom ( int index )
 UpdateIndexes ();
 
 return  IsInsideLimits ( index, 0, NumInside - 1 ) ? AtomIndexes[ index ] : 0;
-
-
-/*                                      // old & slow code
-if ( IsEmpty () || index < 0 || index >= Num () )
-    return  0;
-
-
-int                 i;
-TListAtom<TypeD>*   p;
-
-if ( index < Num () / 2 ) {                 // choose the closest end
-    for ( i = 0, p = First ; p != 0; p = p->Next, i++ )
-        if ( i == index )   return  p;
-    }
-else {
-    for ( i = Num () - 1, p = Last; p != 0; p = p->Previous, i-- )
-        if ( i == index )   return  p;
-    }
-
-return  0;
-*/
 }
 
 
@@ -461,17 +443,17 @@ return  IsInsideLimits ( index, 0, NumInside - 1 ) ? AtomIndexes[ index ] : 0;
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::Permutate ( const TypeD *toatom1, const TypeD *toatom2 )
+void    TList<TypeD>::Permutate ( const TypeD *todata1, const TypeD *todata2 )
 {
 if ( IsEmpty () )
     return;
 
-TListAtom<TypeD>*   p1              = IsInside ( toatom1 );
+TListAtom<TypeD>*   p1              = GetAtom ( todata1 );
 
 if ( p1 == 0 )
     return;
 
-TListAtom<TypeD>*   p2              = IsInside ( toatom2 );
+TListAtom<TypeD>*   p2              = GetAtom ( todata2 );
 
 if ( p2 == 0 )
     return;
@@ -479,7 +461,7 @@ if ( p2 == 0 )
 
 OmpCriticalBegin (TListPermutate)
                                         // just permutating the POINTERS to content!
-Permutate ( p1->To, p2->To );
+Permutate ( p1->ToData, p2->ToData );
 
 AtomIndexesIsDirty  = true;
 
@@ -498,14 +480,14 @@ TList<TypeD>        revlist;
 TListAtom<TypeD>*   p;
                                         // revert copy to a temp list
 for ( p = Last; p != 0; p = p->Previous )
-    revlist.Append ( p->To );
+    revlist.Append ( p->ToData );
 
 
 Reset ( DontDeallocate );
 
                                         // copy back the reverted temp list
 for ( p = revlist.First; p != 0; p = p->Next )
-    Append ( p->To );
+    Append ( p->ToData );
 
 
 AtomIndexesIsDirty  = true;
@@ -537,7 +519,7 @@ if ( Last  == tolistatom )  Last                    = previousatom; // same
 
                                         // finally, we can delete objects
 if ( deallocate == Deallocate )
-    delete  tolistatom->To;             // first, content if requested by caller
+    delete  tolistatom->ToData;             // first, content if requested by caller
 
 delete  tolistatom;                     // then the list atom itself
 
@@ -551,9 +533,9 @@ OmpCriticalEnd
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-void    TList<TypeD>::Remove ( const TypeD* toatom, DeallocateType deallocate )
+void    TList<TypeD>::Remove ( const TypeD* todata, DeallocateType deallocate )
 {
-RemoveAtom ( IsInside ( toatom ), deallocate );
+RemoveAtom ( GetAtom ( todata ), deallocate );
 }
 
 
@@ -597,25 +579,72 @@ for ( ; num > 0; num-- )
 
 //----------------------------------------------------------------------------
 template <class TypeD>
-TListAtom<TypeD>*  TList<TypeD>::IsInside ( const TypeD* toatom ) const
+const TListAtom<TypeD>*     TList<TypeD>::GetAtom ( const TypeD* todata )   const
 {
-if ( IsEmpty () || toatom == 0 )
+if ( IsEmpty () || todata == 0 )
     return  0;
 
 
-TListAtom<TypeD>*   p               = 0;
+const TListAtom<TypeD>* p       = 0;
 
-OmpCriticalBegin (TListIsInside)
+OmpCriticalBegin (TListGetAtom)
 
 for ( p = First; p != 0; p = p->Next )
                                         // returns first element with pointer to content equality
-    if ( p->To == toatom )
+    if ( p->ToData == todata )
 
         break;
 
 OmpCriticalEnd
 
 return  p;
+}
+
+
+template <class TypeD>
+TListAtom<TypeD>*  TList<TypeD>::GetAtom ( const TypeD* todata )
+{
+if ( IsEmpty () || todata == 0 )
+    return  0;
+
+
+TListAtom<TypeD>*   p           = 0;
+
+OmpCriticalBegin (TListGetAtom)
+
+for ( p = First; p != 0; p = p->Next )
+                                        // returns first element with pointer to content equality
+    if ( p->ToData == todata )
+
+        break;
+
+OmpCriticalEnd
+
+return  p;
+}
+
+
+//----------------------------------------------------------------------------
+template <class TypeD>
+bool    TList<TypeD>::IsInside ( const TypeD* todata ) const
+{
+if ( IsEmpty () || todata == 0 )
+    return  0;
+
+
+bool                isinside        = false;
+
+OmpCriticalBegin (TListIsInside)
+
+for ( TListAtom<TypeD>* p = First; p != 0; p = p->Next )
+                                        // returns first element with pointer to content equality
+    if ( isinside = ( p->ToData == todata ) )
+
+        break;
+
+OmpCriticalEnd
+
+return  isinside;
 }
 
 

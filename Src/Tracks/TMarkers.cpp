@@ -691,7 +691,7 @@ bool                    removedduplicates   = false;
                                         // testing if NEXT marker exists
 for ( iterator.SetForward ( Markers ); iterator.Current ()->Next != 0; ) {
 
-    if ( *iterator.Current ()->To == *iterator.Current ()->Next->To ) {
+    if ( *iterator.Current ()->ToData == *iterator.Current ()->Next->ToData ) {
 
         Markers.RemoveAtom ( iterator.Current()->Next, Deallocate );
                                         // change occurred
@@ -737,7 +737,7 @@ do {
     while ( *v            < *Markers[ j ] )     j--;
 
     if ( i <= j )
-        Permutate ( Markers.GetAtom ( i++ )->To, Markers.GetAtom ( j-- )->To ); // atoms actually remain in place, we just permutate the To pointers
+        Permutate ( Markers.GetAtom ( i++ )->ToData, Markers.GetAtom ( j-- )->ToData ); // atoms actually remain in place, we just permutate the To pointers
 
     } while ( i <= j );
 

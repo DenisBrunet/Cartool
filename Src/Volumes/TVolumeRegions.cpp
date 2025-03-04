@@ -400,7 +400,7 @@ do {
     while ( (*f) ( v,           Group[ j ] ) )      j--;
 
     if ( i <= j )
-        Permutate ( Group.GetAtom ( i++ )->To, Group.GetAtom ( j-- )->To );   // content remain in place, only the pointers are permutated
+        Permutate ( Group.GetAtom ( i++ )->ToData, Group.GetAtom ( j-- )->ToData );   // content remain in place, only the pointers are permutated
 
     } while ( i <= j );
 }

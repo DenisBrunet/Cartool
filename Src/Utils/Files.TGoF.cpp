@@ -254,8 +254,8 @@ for ( int i = 0; i < (int) Strings; i++ ) {
     StringCopy  ( toc, filename   );
 
                                         // delete old string, without releasing the list atom, and make it point to the new memory string instead
-    delete[]    Strings.GetAtom ( i )->To;
-    Strings.GetAtom ( i )->To = toc;
+    delete[]    Strings.GetAtom ( i )->ToData;
+    Strings.GetAtom ( i )->ToData = toc;
     }
 }
 

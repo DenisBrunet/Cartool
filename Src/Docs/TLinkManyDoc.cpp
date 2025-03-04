@@ -1986,7 +1986,9 @@ else if ( w == CM_DESYNCBETWEENEEG ) {
 
                                         // eeg-to-eeg
             for ( eegatom2 = ((TListAtom<TTracksDoc> *) iteratoreeg)->Next; eegatom2 != 0; eegatom2 = eegatom2->Next ) {
-                doceeg2 = eegatom2->To;
+
+                doceeg2 = eegatom2->ToData;
+
                 for ( view2 = doceeg2->GetViewList ( this ); view2 != 0; view2 = doceeg2->NextView (view2, this) )
                                         // this pair shouldn't remains friends...
                     if ( view->IsFriendView ( view2 ) ) {
@@ -2039,7 +2041,9 @@ else if ( w == CM_DESYNCBETWEENEEG ) {
         for ( view = iteratorris ()->GetViewList ( this ); view != 0; view = iteratorris ()->NextView ( view, this ) )
 
             for ( risatom2 = ((TListAtom<TRisDoc> *) iteratorris)->Next; risatom2 != 0; risatom2 = risatom2->Next ) {
-                docris2 = risatom2->To;
+
+                docris2 = risatom2->ToData;
+
                 for ( view2 = docris2->GetViewList ( this ); view2 != 0; view2 = docris2->NextView (view2, this) )
                                         // this pair shouldn't remains friends...
                     if ( view->IsFriendView ( view2 ) ) {

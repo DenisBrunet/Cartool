@@ -689,7 +689,7 @@ do {
     while ( _stricmp ( v,            Strings[ j ] ) < 0 )   j--;
 
     if ( i <= j )
-        Permutate ( Strings.GetAtom ( i++ )->To, Strings.GetAtom ( j-- )->To );   // actual data remain in place, we only permutate the 'To' parts
+        Permutate ( Strings.GetAtom ( i++ )->ToData, Strings.GetAtom ( j-- )->ToData );   // actual data remain in place, we only permutate the 'To' parts
 
     } while ( i <= j );
 
