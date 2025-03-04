@@ -54,72 +54,72 @@ template <class TypeD>
 class   TList
 {
 public:
-                        TList ();
-    virtual            ~TList ();       // does NOT release actual content, but only the list structure - user has to call Reset ( true ) to actually release content
+                            TList           ();
+    virtual                ~TList           (); // does NOT release actual content, but only the list structure itself - user has to call Reset ( Deallocate ) beforehand to actually release content
 
 
-    int                 Num             ()  const           { return    NumInside; }
-    bool                IsEmpty         ()  const           { return	NumInside == 0; }
-    bool                IsNotEmpty      ()  const           { return    NumInside != 0; }
+    int                     Num             ()  const           { return    NumInside; }
+    bool                    IsEmpty         ()  const           { return	NumInside == 0; }
+    bool                    IsNotEmpty      ()  const           { return    NumInside != 0; }
 
-    bool                IsInside        ( const TypeD* todata )     const;
-
-
-    void                Append          ( const TypeD* todata );
-    void                Append          ( const TList& list   );
-    bool                Insert          ( const TypeD* todata, const TypeD* beforedata );
-
-    void                RemoveAtom      ( const TListAtom<TypeD>* tolistatom, DeallocateType deallocate );  // from a list node - safer
-    void                Remove          ( const TypeD*            todata,     DeallocateType deallocate );  // from content - might have side effects, if multiple elements happen to be equal
-    void                RemoveFirst     ( DeallocateType deallocate, int num = 1 );
-    void                RemoveLast      ( DeallocateType deallocate, int num = 1 );
-    void                Reset           ( DeallocateType deallocate );
-
-    void                Permutate       ( const TypeD* todata1, const TypeD* todata2 );
-    void                RevertOrder     ();
+    bool                    IsInside        ( const TypeD* todata )     const;
 
 
-          TypeD*                GetFirst        ()          { return    First ? First->ToData : 0; }
-    const TypeD*                GetFirst        ()  const   { return    First ? First->ToData : 0; }
-          TypeD*                GetLast         ()          { return    Last  ? Last ->ToData : 0; }
-    const TypeD*                GetLast         ()  const   { return    Last  ? Last ->ToData : 0; }
+    void                    Append          ( const TypeD* todata );
+    void                    Append          ( const TList& list   );
+    bool                    Insert          ( const TypeD* todata, const TypeD* beforedata );
 
-          TListAtom<TypeD>*     GetFirstAtom    ()          { return    First; }
-    const TListAtom<TypeD>*     GetFirstAtom    ()  const   { return    First; }
-          TListAtom<TypeD>*     GetLastAtom     ()          { return    Last;  }
-    const TListAtom<TypeD>*     GetLastAtom     ()  const   { return    Last;  }
+    void                    RemoveAtom      ( const TListAtom<TypeD>* tolistatom, DeallocateType deallocate );  // from a list node - safer
+    void                    Remove          ( const TypeD*            todata,     DeallocateType deallocate );  // from content - might have side effects, if multiple elements happen to be equal
+    void                    RemoveFirst     ( DeallocateType deallocate, int num = 1 );
+    void                    RemoveLast      ( DeallocateType deallocate, int num = 1 );
+    void                    Reset           ( DeallocateType deallocate );
 
-          TListAtom<TypeD>*     GetAtom         ( int index );
-    const TListAtom<TypeD>*     GetAtom         ( int index )           const;
-          TListAtom<TypeD>*     GetAtom         ( const TypeD* todata );
-    const TListAtom<TypeD>*     GetAtom         ( const TypeD* todata ) const;
+    void                    Permutate       ( const TypeD* todata1, const TypeD* todata2 );
+    void                    RevertOrder     ();
+
+
+          TypeD*            GetFirst        ()                  { return    First ? First->ToData : 0; }
+    const TypeD*            GetFirst        ()  const           { return    First ? First->ToData : 0; }
+          TypeD*            GetLast         ()                  { return    Last  ? Last ->ToData : 0; }
+    const TypeD*            GetLast         ()  const           { return    Last  ? Last ->ToData : 0; }
+
+          TListAtom<TypeD>* GetFirstAtom    ()                  { return    First; }
+    const TListAtom<TypeD>* GetFirstAtom    ()  const           { return    First; }
+          TListAtom<TypeD>* GetLastAtom     ()                  { return    Last;  }
+    const TListAtom<TypeD>* GetLastAtom     ()  const           { return    Last;  }
+
+          TListAtom<TypeD>* GetAtom         ( int index );
+    const TListAtom<TypeD>* GetAtom         ( int index )           const;
+          TListAtom<TypeD>* GetAtom         ( const TypeD* todata );
+    const TListAtom<TypeD>* GetAtom         ( const TypeD* todata ) const;
 
                                         // gets an array of pointers to data, for fast direct access
-    void                GetIndexes      ( TArray1<TListAtom<TypeD> *>&  indexes )   const;
-    void                GetIndexes      ( TArray1<TypeD *>&             indexes )   const;
-    void                UpdateIndexes   ( bool force = false ); // !this part is currently not thread / parallel safe, and should be called only once before entering a parallel block!
+    void                    GetIndexes      ( TArray1<TListAtom<TypeD> *>&  indexes )   const;
+    void                    GetIndexes      ( TArray1<TypeD *>&             indexes )   const;
+    void                    UpdateIndexes   ( bool force = false ); // !this part is currently not thread / parallel safe, and should be called only once before entering a parallel block!
 
 
     TList<TypeD>                        ( const TList<TypeD>& op  );
-    TList<TypeD>&       operator    =   ( const TList<TypeD>& op2 );
+    TList<TypeD>&           operator    =   ( const TList<TypeD>& op2 );
 
-                                        // array-style access
-          TypeD&        operator    ()  ( int index );          // indexed access - returns a reference
-    const TypeD&        operator    ()  ( int index )   const;  
-          TypeD*        operator    []  ( int index );          // indexed access - returns a pointer
-    const TypeD*        operator    []  ( int index )   const;
+                                            // array-style access
+          TypeD&            operator    ()  ( int index );          // indexed access - returns a reference
+    const TypeD&            operator    ()  ( int index )   const;  
+          TypeD*            operator    []  ( int index );          // indexed access - returns a pointer
+    const TypeD*            operator    []  ( int index )   const;
 
-                        operator bool   ()  const           { return NumInside > 0; }
-                        operator int    ()  const           { return NumInside;     }
+                            operator bool   ()  const           { return NumInside > 0; }
+                            operator int    ()  const           { return NumInside;     }
 
-    TList<TypeD>&       operator    =   ( double op2 )      { return *this; }   // null operator, to allow TArray3< TList > to run ReadFile correctly
+    TList<TypeD>&           operator    =   ( double op2 )      { return *this; }   // null operator, to allow TArray3< TList > to run ReadFile correctly
 
 
 private:
 
-    TListAtom<TypeD>*   First;
-    TListAtom<TypeD>*   Last;
-    int                 NumInside;
+    TListAtom<TypeD>*       First;
+    TListAtom<TypeD>*       Last;
+    int                     NumInside;
                                         // provide a direct access mechanism, with an array of pointers to Atoms
                                         // !check any derived classes or objects that mess up directly with the atoms if it needs to call  UpdateIndexes  when done!
     TArray1< TListAtom<TypeD>* >    AtomIndexes;
