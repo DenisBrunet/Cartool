@@ -124,12 +124,30 @@ return  op1.From >  op2.From
 }
 
 
+bool     operator>= ( const TMarker& op1, const TMarker& op2 )
+{
+return  op1.From >= op2.From
+     || op1.From == op2.From  && op1.To >= op2.To
+     || op1.From == op2.From  && op1.To == op2.To && op1.Type >= op2.Type
+     || op1.From == op2.From  && op1.To == op2.To && op1.Type == op2.Type && _stricmp ( op1.Name, op2.Name ) >= 0;
+}
+
+
 bool     operator<  ( const TMarker& op1, const TMarker& op2 )
 {
 return  op1.From <  op2.From
      || op1.From == op2.From  && op1.To <  op2.To
      || op1.From == op2.From  && op1.To == op2.To && op1.Type <  op2.Type
      || op1.From == op2.From  && op1.To == op2.To && op1.Type == op2.Type && _stricmp ( op1.Name, op2.Name ) <  0;
+}
+
+
+bool     operator<= ( const TMarker& op1, const TMarker& op2 )
+{
+return  op1.From <= op2.From
+     || op1.From == op2.From  && op1.To <= op2.To
+     || op1.From == op2.From  && op1.To == op2.To && op1.Type <= op2.Type
+     || op1.From == op2.From  && op1.To == op2.To && op1.Type == op2.Type && _stricmp ( op1.Name, op2.Name ) <= 0;
 }
 
 
@@ -855,6 +873,10 @@ return  CombineFlags ( readfileerror, appenderror );
 
 
 //----------------------------------------------------------------------------
+                                        // This method, though very handy, should avoided as much as possible, unless:
+                                        //  - there are very few markers
+                                        //  - caller inserts from an ordered list and keeps tracks of indexfrom
+                                        // For most cases, prefer the combo AppendMarker + Sort once done
 MarkersError    TMarkers::InsertMarker ( const TMarker& marker, int* indexfrom )
 {
 if ( TracksDoc && marker.IsNotOverlappingInterval ( (long) 0, TracksDoc->GetNumTimeFrames () - 1 ) )

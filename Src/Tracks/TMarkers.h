@@ -115,9 +115,11 @@ public:
 
 
     friend bool     operator    ==  ( const TMarker& op1, const TMarker& op2 );   // testing position, type and name - used to test for duplicates
-    friend bool     operator    !=  ( const TMarker& op1, const TMarker& op2 );   // testing position, type and name - used to test for duplicates
-    friend bool     operator    >   ( const TMarker& op1, const TMarker& op2 );   // testing ONLY position - used for sorting
-    friend bool     operator    <   ( const TMarker& op1, const TMarker& op2 );   // testing ONLY position - used for sorting
+    friend bool     operator    !=  ( const TMarker& op1, const TMarker& op2 );
+    friend bool     operator    >   ( const TMarker& op1, const TMarker& op2 );
+    friend bool     operator    >=  ( const TMarker& op1, const TMarker& op2 );
+    friend bool     operator    <   ( const TMarker& op1, const TMarker& op2 );
+    friend bool     operator    <=  ( const TMarker& op1, const TMarker& op2 );
 };
 
 
@@ -223,7 +225,7 @@ public:
     MarkersError    AppendMarkers           ( const MarkersList&    markerslist );
     MarkersError    AppendMarkers           ( const char*           file );
                                                                                                     // Sets MarkersDirty; Sorting
-    MarkersError    InsertMarker            ( const TMarker&        marker, int* indexfrom = 0 );
+    MarkersError    InsertMarker            ( const TMarker&        marker, int* indexfrom = 0 );   // Avoid this one if possible
     MarkersError    InsertMarkers           ( const TMarkers&       markers, const char *filteredwith = 0 );
     MarkersError    InsertMarkers           ( const MarkersList&    markerslist );
     MarkersError    InsertMarkers           ( const char*           file );
