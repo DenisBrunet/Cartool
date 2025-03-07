@@ -1745,34 +1745,6 @@ for ( int i = 0; i < (int) Markers; i++ )
 
 
 //----------------------------------------------------------------------------
-long   TMarkers::GetLongestMarker ( MarkerType type )   const
-{
-long                maxlength       = 0;
-
-
-for ( int i = 0; i < (int) Markers; i++ )
-    if ( IsFlag ( Markers[ i ]->Type, type ) )
-        Maxed ( maxlength, Markers[ i ]->Length () );
-
-
-return  maxlength;
-}
-
-                                        // !doesn't check for overlaps between markers!
-long   TMarkers::GetMarkersTotalLength ( MarkerType type )   const
-{
-long                totallength     = 0;
-
-
-for ( int i = 0; i < (int) Markers; i++ )
-    if ( IsFlag ( Markers[ i ]->Type, type ) )
-        totallength    += Markers[ i ]->Length ();
-
-
-return  totallength;
-}
-
-
 long   TMarkers::GetMinPosition ( MarkerType type )   const
 {
 long                minpos          = Highest ( minpos );
@@ -1798,6 +1770,34 @@ for ( int i = 0; i < (int) Markers; i++ )
 
 
 return  maxpos;
+}
+
+
+long   TMarkers::GetLongestMarker ( MarkerType type )   const
+{
+long                maxlength       = 0;
+
+
+for ( int i = 0; i < (int) Markers; i++ )
+    if ( IsFlag ( Markers[ i ]->Type, type ) )
+        Maxed ( maxlength, Markers[ i ]->Length () );
+
+
+return  maxlength;
+}
+
+                                        // !doesn't check for overlaps between markers!
+long   TMarkers::GetMarkersTotalLength ( MarkerType type )   const
+{
+long                totallength     = 0;
+
+
+for ( int i = 0; i < (int) Markers; i++ )
+    if ( IsFlag ( Markers[ i ]->Type, type ) )
+        totallength    += Markers[ i ]->Length ();
+
+
+return  totallength;
 }
 
 
@@ -2128,19 +2128,17 @@ MarkersDirty    = true;
 //----------------------------------------------------------------------------
 void    TMarkers::KeepMarkers ( const char* greppedwith )
 {
-//TSplitStrings     filteredwithsplit ( filteredwith, UniqueStrings );
 TStringGrep         grepmarker ( greppedwith, GrepOptionDefaultMarkers );
 TMarkers            markers;
 
                                         // Scan list and copy the markers to be kept in another list
 for ( int i = 0; i < (int) Markers; i++ )
 
-//  if ( filteredwithsplit.Contains ( Markers[ i ]->Name ) )
     if ( grepmarker.Matched ( Markers[ i ]->Name ) )
 
         markers.AppendMarker ( *Markers[ i ] );
 
-                                        // finally replace with markers
+                                        // finally replace with the grepped markers
 SetMarkers ( markers );
 }
 
