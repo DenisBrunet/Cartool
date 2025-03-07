@@ -697,7 +697,6 @@ return  false;
                                         // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
 MarkersError    TMarkers::SortAndCleanMarkers ()
 {
-                                        // save time, also avoiding changing the MarkersDirty flag uselessly
 if ( GetNumMarkers () < 2 )
     return  NoMarkersError;
 
@@ -1572,7 +1571,7 @@ for ( long tf = 0 /*fromtf*/; tf <= /*lasttimeframes*/ totf; tf++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // remove markers not completely within requested limits
-KeepMarkers   ( fromtf, totf, AllMarkerTypes );
+KeepMarkers   ( fromtf, totf );
 
                                         // check & sort the whole list
 SortAndCleanMarkers ();
@@ -1891,7 +1890,24 @@ if ( markersdirty ) {
 
 
 //----------------------------------------------------------------------------
-                                        // Will remove markers within given boundary
+void    TMarkers::RemoveMarkers ( MarkerType type )
+{
+KeepFlags   ( type, AllMarkerTypes );
+
+if ( ! type )
+    return;
+
+
+if ( type == AllMarkerTypes )
+    ResetMarkers ();
+
+else
+    RemoveMarkers ( Lowest<long> (), Highest<long> (), type );
+}
+
+
+//----------------------------------------------------------------------------
+                                        // Will remove markers fully within given interval
 void    TMarkers::RemoveMarkers ( long from, long to, MarkerType type )
 {
 KeepFlags   ( type, AllMarkerTypes );
@@ -1933,23 +1949,6 @@ else {
 
 
 MarkersDirty    = true;
-}
-
-
-//----------------------------------------------------------------------------
-void    TMarkers::RemoveMarkers ( MarkerType type )
-{
-KeepFlags   ( type, AllMarkerTypes );
-
-if ( ! type )
-    return;
-
-
-if ( type == AllMarkerTypes )
-    ResetMarkers ();
-
-else
-    RemoveMarkers ( Lowest<long> (), Highest<long> (), type );
 }
 
 
@@ -2055,8 +2054,8 @@ for ( int i = 0; i < (int) Markers; i++ ) {
 
                                         // here the interval cuts current marker in 2
     else {
-        clippedtags.Append ( new TMarker ( Markers[ i ]->From, from - 1,       Markers[ i ]->Code, Markers[ i ]->Name, Markers[ i ]->Type ) );
-        clippedtags.Append ( new TMarker ( to + 1,          Markers[ i ]->To,  Markers[ i ]->Code, Markers[ i ]->Name, Markers[ i ]->Type ) );
+        clippedtags.Append ( new TMarker ( Markers[ i ]->From, from - 1,         Markers[ i ]->Code, Markers[ i ]->Name, Markers[ i ]->Type ) );
+        clippedtags.Append ( new TMarker ( to + 1,             Markers[ i ]->To, Markers[ i ]->Code, Markers[ i ]->Name, Markers[ i ]->Type ) );
 
         delete ( Markers[ i ] );           // delete current object, but not the pointer (yet)
         }
@@ -2088,16 +2087,45 @@ for ( int ki = 0; ki < (int) cliplist; ki++ )
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::KeepMarkers ( long from, long to, MarkerType type )
+                                        // Keeping markers only fully within interval
+void    TMarkers::KeepMarkers ( long from, long to )
 {
-RemoveMarkers ( Lowest<long> (), from - 1,         type );
+MarkersList             markersok;
 
-RemoveMarkers ( to + 1,          Highest<long> (), type );
+                                            // copy markers OK to a temp list
+for ( int i = 0; i < (int) Markers; i++ ) {
 
-//SortAndCleanMarkers ();
+    if ( ! IsInsideLimits ( Markers[ i ]->From, Markers[ i ]->To, from, to ) )
+
+        delete ( Markers[ i ] );            // delete object, but not pointer (yet)
+    else
+        markersok.Append ( Markers[ i ] );  // save pointer
+    }
+
+
+if ( (int) markersok == (int) Markers )     // nothing to remove
+    return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( markersok.IsEmpty () )                 // all to be erased
+
+    Markers.Reset ( DontDeallocate );       // objects are already deleted, only clear-up the pointers now
+
+else {
+    Markers.Reset ( DontDeallocate );
+
+    for ( int i = 0; i < (int) markersok; i++ )
+        Markers.Append ( markersok[ i ] );  // just copy the pointer
+    }
+
+
+MarkersDirty    = true;
 }
 
 
+//----------------------------------------------------------------------------
 void    TMarkers::KeepMarkers ( const char* greppedwith )
 {
 //TSplitStrings     filteredwithsplit ( filteredwith, UniqueStrings );

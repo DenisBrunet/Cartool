@@ -230,15 +230,15 @@ public:
     MarkersError    InsertMarkers           ( const MarkersList&    markerslist );
     MarkersError    InsertMarkers           ( const char*           file );
                                                                                                     // Sets MarkersDirty
-    void            RemoveMarkers           ( long from, long to,           MarkerType type );
     void            RemoveMarkers           (                               MarkerType type );
+    void            RemoveMarkers           ( long from, long to,           MarkerType type );
     void            RemoveMarkers           ( const char* greppedwith,      MarkerType type );
     void            RemoveMarkers           ( const TMarkers& removelist,   MarkerType type );
                                                                                                     // Sets MarkersDirty
     void            ClipMarkers             ( long from, long to,           MarkerType type );
     void            ClipMarkers             ( const TMarkers& cliplist,     MarkerType type );
                                                                                                     // Sets MarkersDirty
-    void            KeepMarkers             ( long from, long to,           MarkerType type );
+    void            KeepMarkers             ( long from, long to      );
     void            KeepMarkers             ( const char* greppedwith );
 
     void            SortMarkers             ();                                                     // Does not set MarkersDirty

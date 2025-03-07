@@ -772,21 +772,23 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
     TMarkers            badepochslist;
 
 
-    if      ( badepochs == SkippingBadEpochsAuto )
+    if      ( badepochs == SkippingBadEpochsAuto ) {
                                         // gracefully extract the bad epochs
         badepochslist.BadEpochsToMarkers    (   ToData,     0,      0, 
                                                 badepochstolerance, 
                                                 MarkerNameAutoBadEpoch,
                                                 0
                                             );
+        }
 
-    else if ( badepochs == SkippingBadEpochsList )
+    else if ( badepochs == SkippingBadEpochsList ) {
                                         // use list given by user
                                         // better than  InsertMarkers  as it will consolidate overlapping epochs
-            badepochslist.MarkersToTimeChunks ( markers,                listbadepochs,          KeepingMarkers, 
-                                                0,                      ToData->GetNumMaps () /*maxnumtf*/ - 1, 
-                                                MarkerNameAutoBadEpoch 
-                                                );
+        badepochslist.MarkersToTimeChunks ( markers,                listbadepochs,          KeepingMarkers, 
+                                            0,                      ToData->GetNumMaps () /*maxnumtf*/ - 1, 
+                                            MarkerNameAutoBadEpoch 
+                                            );
+        }
 
 //  badepochslist.WriteFile ( "E:\\Data\\Epochs.Bad.mrk" );
 
@@ -832,7 +834,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                         // use list given by user
             goodepochslist.InsertMarkers ( markers, listgfppeaks );
 
-            goodepochslist.KeepMarkers   ( fromtf, totf, AllMarkerTypes );
+            goodepochslist.KeepMarkers   ( fromtf, totf );
 
             } // GfpPeaksDetectionList
 
