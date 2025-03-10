@@ -100,7 +100,7 @@ public:
     void                    UpdateIndexes   ( bool force = false ); // !this part is currently not thread / parallel safe, and should be called only once before entering a parallel block!
 
 
-    TList<TypeD>                        ( const TList<TypeD>& op  );
+    TList<TypeD>                            ( const TList<TypeD>& op  );
     TList<TypeD>&           operator    =   ( const TList<TypeD>& op2 );
 
                                             // array-style access
@@ -287,11 +287,13 @@ OmpCriticalEnd
 
 
 template <class TypeD>
-void    TList<TypeD>::Append ( const TList &list )
+void    TList<TypeD>::Append ( const TList& list )
 {
-TListAtom<TypeD>*   p;
+                                        // does not work with itself
+if ( &list == this || list.IsEmpty () )
+    return;
 
-for ( p = list.First; p != 0; p = p->Next )
+for ( TListAtom<TypeD>* p = list.First; p != 0; p = p->Next )
     Append ( p->ToData );
 
 UpdateIndexes ( true );
