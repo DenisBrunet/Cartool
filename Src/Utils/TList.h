@@ -505,6 +505,20 @@ void    TList<TypeD>::RemoveAtom ( const TListAtom<TypeD>* tolistatom, Deallocat
 if ( IsEmpty () || tolistatom == 0 )
     return;
 
+/*                                        // should we take some resources to test if the atom really belongs?
+bool                atombelongs = false;
+
+for ( TListAtom<TypeD>* p = First; p != 0; p = p->Next )
+    if ( p == tolistatom ) {
+        atombelongs = true;
+        break;
+        }
+
+if ( ! atombelongs )
+    return;
+*/
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 OmpCriticalBegin (TListRemove)
                                         // store previous and next atoms pointers - could be 0
@@ -521,7 +535,7 @@ if ( Last  == tolistatom )  Last                    = previousatom; // same
 
                                         // finally, we can delete objects
 if ( deallocate == Deallocate )
-    delete  tolistatom->ToData;             // first, content if requested by caller
+    delete  tolistatom->ToData;         // first, content if requested by caller
 
 delete  tolistatom;                     // then the list atom itself
 
