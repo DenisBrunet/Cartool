@@ -884,17 +884,17 @@ if ( TracksDoc && marker.IsNotOverlappingInterval ( (long) 0, TracksDoc->GetNumT
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                 i;
+int                 inserti;
                                         // we might have an optional index from where to start searching (insertion sort)
-for ( i = indexfrom ? *indexfrom : 0; i < (int) Markers; i++ )
+for ( inserti = indexfrom ? *indexfrom : 0; inserti < (int) Markers; inserti++ )
                                         // stop at first element in the list that is beyond marker
-    if ( *Markers[ i ] > marker )
+    if ( Markers ( inserti ) > marker )
 
         break;
 
                                         // return index of inserted element for next call (insertion sort)
 if ( indexfrom )
-    *indexfrom = i;
+    *indexfrom = inserti;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -906,8 +906,8 @@ if ( TracksDoc )
     Clipped ( markercopy->From, markercopy->To, (long) 0, TracksDoc->GetNumTimeFrames () - 1 );
 
 
-if ( i == (int) Markers )   Markers.Append ( markercopy );              // nothing past marker?
-else                        Markers.Insert ( markercopy, Markers[ i ] );
+if ( inserti == (int) Markers ) Markers.Append ( markercopy );      // nothing past marker?
+else                            Markers.Insert ( markercopy, Markers[ inserti ] );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

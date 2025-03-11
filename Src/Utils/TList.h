@@ -67,7 +67,7 @@ public:
 
     void                    Append          ( const TypeD* todata );
     void                    Append          ( const TList& list   );
-    bool                    Insert          ( const TypeD* todata, const TypeD* beforedata );
+    void                    Insert          ( const TypeD* todata, const TypeD* beforedata );
 
     void                    RemoveAtom      ( const TListAtom<TypeD>* tolistatom, DeallocateType deallocate );  // from a list node - safer
     void                    Remove          ( const TypeD*            todata,     DeallocateType deallocate );  // from content - might have side effects, if multiple elements happen to be equal
@@ -267,6 +267,9 @@ OmpCriticalEnd
 template <class TypeD>
 void    TList<TypeD>::Append ( const TypeD* todata )
 {
+if ( todata == 0 )
+    return;
+
 OmpCriticalBegin (TListAppend)
 
 if ( IsEmpty () )
@@ -300,19 +303,23 @@ UpdateIndexes ( true );
 }
 
 
+//----------------------------------------------------------------------------
 template <class TypeD>
-bool    TList<TypeD>::Insert ( const TypeD* todata, const TypeD* beforedata )
+void    TList<TypeD>::Insert ( const TypeD* todata, const TypeD* beforedata )
 {
+if ( todata == 0 )
+    return;
+
 if ( IsEmpty () || beforedata == 0 ) {
     Append ( todata );
-    return  true;
+    return;
     }
 
 
 TListAtom<TypeD>*   postatom    = GetAtom ( beforedata );
 
 if ( ! postatom )                       // not found the before atom?
-    return  false;
+    return;
 
 
 OmpCriticalBegin (TListInsert)
@@ -339,7 +346,7 @@ AtomIndexesIsDirty  = true;
 
 OmpCriticalEnd
 
-return  true;
+return;
 }
 
 
