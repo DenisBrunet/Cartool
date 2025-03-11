@@ -312,8 +312,8 @@ StringCopy      ( DefaultTitle, ApplicationFileName );
 if ( StringIsNotEmpty ( ProdVersion ) )
     StringAppend    ( DefaultTitle, "  ", ProdVersion );
 
-if ( StringIsNotEmpty ( ProdRevision ) )
-    StringAppend    ( DefaultTitle, "  (", ProdRevision, ")" );
+//if ( StringIsNotEmpty ( ProdRevision ) )
+//    StringAppend    ( DefaultTitle, "  (", ProdRevision, ")" );
 
 
 #if defined (_CONSOLE)
