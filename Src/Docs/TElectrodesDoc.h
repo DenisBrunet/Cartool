@@ -70,11 +70,11 @@ public:
                             TElectrodesDoc ( owl::TDocument *parent = 0 );
 
 
-    bool                    InitDoc ();
+    bool                    InitDoc         ()                  final;
 
 
-    bool                    IsGrid ()                           const   { return  ExtraContentType == ElContentTypeGrid; }
-    bool                    IsHead ()                           const   { return  ExtraContentType == ElContentTypeSurface; }
+    bool                    IsGrid          ()                  const   { return  ExtraContentType == ElContentTypeGrid; }
+    bool                    IsHead          ()                  const   { return  ExtraContentType == ElContentTypeSurface; }
 
 
     int                     GetNumElectrodes()                  const   { return NumElectrodes; }

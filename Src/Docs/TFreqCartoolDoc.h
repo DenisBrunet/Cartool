@@ -119,11 +119,11 @@ public:
                     TFreqCartoolDoc ( owl::TDocument *parent = 0 );
 
 
-    bool            CanClose        ();
-    bool            Close           ();
-    bool            Commit          ( bool force = false );
-    bool            IsOpen          () final                { return InputStream != 0; }
-    bool            Open            ( int mode, const char *path = 0 );
+    bool            CanClose        ()                                  final;
+    bool            Close           ()                                  final;
+    bool            Commit          ( bool force = false )              final;
+    bool            IsOpen          ()                                  final   { return InputStream != 0; }
+    bool            Open            ( int mode, const char *path = 0 )  final;
 
 
     static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );

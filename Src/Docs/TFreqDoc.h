@@ -96,10 +96,10 @@ public:
                     TFreqDoc                    ( owl::TDocument *parent = 0 );
 
                                         // owl::TDocument
-    bool            InitDoc                     ();
+    bool            InitDoc                     ()                  final;
 
                                         // TLimits
-    void            InitLimits                  ( InitType how )        final;
+    void            InitLimits                  ( InitType how )    final;
 
                                         // TTracksDoc
     void            SetReferenceType            ( ReferenceType ref, const char* tracks = 0, const TStrings* elnames = 0, bool verbose = true ) final   { Reference = ReferenceAsInFile; }  // re-referencing not allowed

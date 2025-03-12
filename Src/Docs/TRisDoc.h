@@ -48,10 +48,10 @@ public:
                     TRisDoc         ( owl::TDocument *parent = 0 );
 
 
-    bool            Open            ( int mode, const char* path = 0 );
-    bool            CanClose        ();
-    bool            Close           ();
-    bool            IsOpen          ()  final               { return Tracks.IsAllocated (); }
+    bool            Open            ( int mode, const char* path = 0 )  final;
+    bool            CanClose        ()                                  final;
+    bool            Close           ()                                  final;
+    bool            IsOpen          ()                                  final   { return Tracks.IsAllocated (); }
     bool            CommitRis       ( bool force = false );
 
 

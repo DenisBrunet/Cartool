@@ -67,9 +67,9 @@ public:
                     TSolutionPointsDoc  ( owl::TDocument *parent = 0 );
 
 
-    bool            Commit	            ( bool force = false );
-    bool            InitDoc             ();
-    bool            Revert	            ( bool force = false );
+    bool            Commit	            ( bool force = false )  final;
+    bool            InitDoc             ()                      final;
+    bool            Revert	            ( bool force = false )  final;
 
 
     bool            IsOpen	            ()                      final   { return  (bool) GetPoints (); }

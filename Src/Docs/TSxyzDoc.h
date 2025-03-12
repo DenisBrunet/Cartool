@@ -29,7 +29,8 @@ public:
                     TSxyzDoc ( owl::TDocument *parent = 0 );
 
 
-    bool            Open            ( int mode, const char* path = 0 );
+    bool            Open            ( int mode, const char* path = 0 )  final;
+
     static bool     ReadFromHeader  ( const char *file, ReadFromHeaderType what, void* answer );
 
 };

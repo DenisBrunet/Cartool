@@ -66,16 +66,16 @@ public:
     bool                CommandsCloning;
 
                                             // owl::TDocument
-    bool                CanClose        ();
-    bool                Close	        ();
-    bool                Commit	        ( bool force = false );
-    bool                InitDoc         ();
-    bool                IsOpen	        ()  final;
-    bool                Open 	        ( int mode, const char* path = 0 );
-    bool                Revert	        ( bool force = false );
+    bool                CanClose        ()                                  final;
+    bool                Close	        ()                                  override;
+    bool                Commit	        ( bool force = false )              override;
+    bool                InitDoc         ()                                  final;
+    bool                IsOpen	        ()                                  final;
+    bool                Open 	        ( int mode, const char* path = 0 )  override;
+    bool                Revert	        ( bool force = false )              override;
 
                                             // TBaseDoc
-    bool                NotifyDocViews  ( int event, owl::TParam2 item = 0, owl::TView *vexclude = 0, owl::TDocument *dexclude = 0 );
+    bool                NotifyDocViews  ( int event, owl::TParam2 item = 0, owl::TView *vexclude = 0, owl::TDocument *dexclude = 0 )    final;
 
 
     int                 GetNumEegDoc   ()       const   { return (int) ListEegDoc;  }
@@ -132,11 +132,11 @@ public:
                    ~TDynamicLinkManyDoc ();
 
 
-    bool            Open 	    ( int mode, const char* path = 0 )  { return true; }
-    bool            Commit	    ( bool force = false )              { SetDirty ( false ); return true; }
-    bool            Revert	    ( bool force = false )              { SetDirty ( false ); return true; }
-    bool            Close       ();
-//  bool            CanClose    ()                                  { return false; }   // closing only by destroying the object
+    bool            Open 	    ( int mode, const char* path = 0 )  final   { return true; }
+    bool            Commit	    ( bool force = false )              final   { SetDirty ( false ); return true; }
+    bool            Revert	    ( bool force = false )              final   { SetDirty ( false ); return true; }
+    bool            Close       ()                                  final;
+//  bool            CanClose    ()                                  final   { return false; }   // closing only by destroying the object
 };
 
 

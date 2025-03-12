@@ -141,15 +141,15 @@ public:
     TDateTime       DateTime;
 
                                         // owl::TDocument
-    bool            InitDoc         ();
-    bool            IsDirty         ();
-    bool            Revert          ( bool force = false );
-    bool            Commit          ( bool force = false );
-    bool            CanClose        ()                          { return  TBaseDoc::CanClose ( true   ); }  // force it to be silent, so that filtered (or any other edit) EEG will not request from user
-    bool            CanClose        ( bool silent )             { return  TBaseDoc::CanClose ( silent ); }
+    bool            InitDoc         ()                      override;
+    bool            IsDirty         ()                      final;
+    bool            Revert          ( bool force = false )  final;
+    bool            Commit          ( bool force = false )  override;
+    bool            CanClose        ()                      override    { return  TBaseDoc::CanClose ( true   ); }  // owl::TDocument method, force it to be silent, so that filtered (or any other edit) EEG will not request from user
+    using TBaseDoc::CanClose      /*( bool silent )*/;                                                              // Cartool version
 
 
-    void            InitLimits      ( InitType how )    override;   // TLimits
+    void            InitLimits      ( InitType how )        override;   // TLimits
     void            InitContentType ();
 //  void            InitAtomType    ();
     void            InitReference   ();
@@ -230,7 +230,7 @@ public:
     virtual void    GoToSession         ( int newsession = 0 );
     virtual bool    UpdateSession       ( int newsession )      { return true; }
     virtual void    UpdateTitle         ();
-    char*           GetBaseFileName     ( char* basefilename )  const;  // the base name to be used for any processing ouput (removing extension, caring for mff directory...)
+    char*           GetBaseFileName     ( char* basefilename )  const final;    // the base name to be used for any processing ouput (removing extension, caring for mff directory...)
 
                                         // Reading the RAW TRACKS directly from the file
     virtual void    ReadRawTracks       ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )    = 0;

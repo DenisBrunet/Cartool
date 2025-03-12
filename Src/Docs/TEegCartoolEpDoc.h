@@ -29,9 +29,9 @@ public:
                     TEegCartoolEpDoc    ( owl::TDocument *parent = 0 );
 
 
-    bool            CanClose            ();
-    bool            IsOpen              ()  final           { return Tracks.IsAllocated (); }
-    bool            Open 	            ( int mode, const char* path = 0 );
+    bool            CanClose        ()                                  override;
+    bool            IsOpen          ()                                  final       { return Tracks.IsAllocated (); }
+    bool            Open            ( int mode, const char *path = 0 )  override;
 
 
     static bool     ReadFromHeader      ( const char* file, ReadFromHeaderType what, void* answer );

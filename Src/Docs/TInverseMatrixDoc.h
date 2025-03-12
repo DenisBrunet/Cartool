@@ -39,24 +39,24 @@ public:
 
 
     bool            Close	();
-    bool            Commit	( bool force = false );
-    bool            Revert	( bool force = false );
-    bool            IsOpen	()                  final   { return  NumSolPoints > 0; }
-    bool            InitDoc ();
+    bool            Commit	( bool force = false )  final;
+    bool            Revert	( bool force = false )  final;
+    bool            IsOpen	()                      final   { return  NumSolPoints > 0; }
+    bool            InitDoc ()                      final;
 
 
-    size_t          AtomSize ()                 const   { return sizeof ( AReal ); }
-    size_t          SingleMatrixMemorySize()    const   { return GetNumLines () * NumElectrodes * AtomSize (); }
+    size_t          AtomSize ()                     const   { return sizeof ( AReal ); }
+    size_t          SingleMatrixMemorySize()        const   { return GetNumLines () * NumElectrodes * AtomSize (); }
 
-    int             GetNumElectrodes      ()    const   { return    NumElectrodes; }
-    int             GetNumSolPoints       ()    const   { return    NumSolPoints; }
-    int             GetNumLines           ()    const   { return    IsVector ( AtomTypeUseOriginal ) ? 3 * NumSolPoints : NumSolPoints; }
+    int             GetNumElectrodes      ()        const   { return    NumElectrodes; }
+    int             GetNumSolPoints       ()        const   { return    NumSolPoints; }
+    int             GetNumLines           ()        const   { return    IsVector ( AtomTypeUseOriginal ) ? 3 * NumSolPoints : NumSolPoints; }
 
-    bool            IsStackMatrices       ()    const   { return    (bool) NumRegularizations; }
-    int             GetNumRegularizations ()    const   { return    NumRegularizations; }
-    int             GetMaxRegularization  ()    const   { return    IsStackMatrices () ? NumRegularizations : 1; }  // returns 1 for 0 or 1 regularization, NumRegularizations otherwise
+    bool            IsStackMatrices       ()        const   { return    (bool) NumRegularizations; }
+    int             GetNumRegularizations ()        const   { return    NumRegularizations; }
+    int             GetMaxRegularization  ()        const   { return    IsStackMatrices () ? NumRegularizations : 1; }  // returns 1 for 0 or 1 regularization, NumRegularizations otherwise
     int             GetRegularizationIndex ( const char *regstring )    const;
-    const TStrings* GetRegularizationsNames ()  const   { return   &RegularizationsNames; }
+    const TStrings* GetRegularizationsNames ()      const   { return   &RegularizationsNames; }
 
     int             GetBestRegularization       ( const TMap* map, TTracksView* eegview, long tf )  const;                                  // either map or eegview + tf
     int             GetGlobalRegularization     ( const TMaps* maps, TTracksView* eegview, long fromtf, long totf, long steptf )    const;  // either from maps or range of tf from eegview

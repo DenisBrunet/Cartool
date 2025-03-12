@@ -37,8 +37,8 @@ public:
                     TVolumeNiftiDoc ( owl::TDocument *parent = 0 );
 
                                             // owl::TDocument
-    bool            Commit  ( bool force = false );
-    bool            Open    ( int mode, const char *path = 0 );
+    bool            Commit  ( bool force = false )              final;
+    bool            Open    ( int mode, const char *path = 0 )  final;
 
 protected:
 };

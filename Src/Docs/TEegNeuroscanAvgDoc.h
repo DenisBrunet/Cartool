@@ -31,8 +31,8 @@ public:
                     TEegNeuroscanAvgDoc ( owl::TDocument *parent = 0 );
 
 
-    bool            CanClose        ();
-    bool            Open            ( int mode, const char *path = 0 );
+    bool            CanClose        ()                                  final;
+    bool            Open            ( int mode, const char *path = 0 )  final;
 
 
     static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );

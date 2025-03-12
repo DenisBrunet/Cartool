@@ -27,17 +27,18 @@ namespace crtl {
 class	TRoisDoc    :   public  TBaseDoc
 {
 public:
-                    TRoisDoc ( owl::TDocument *parent = 0 );
-                   ~TRoisDoc ();
+                    TRoisDoc        ( owl::TDocument *parent = 0 );
+                   ~TRoisDoc        ();
 
                                         // owl::TDocument
-    bool            InitDoc ();
-    static bool     ReadFromHeader ( const char* file, ReadFromHeaderType what, void* answer );
-    bool            Open 	( int mode, const char* path = 0 );
-    bool            Close	();
-    bool            IsOpen	()  final               { return  ROIs; }
-    bool            Commit	( bool force = false );
-    bool            Revert	( bool force = false );
+    bool            InitDoc         ()                                  final;
+    bool            Open 	        ( int mode, const char* path = 0 )  final;
+    bool            Close	        ()                                  final;
+    bool            IsOpen	        ()                                  final       { return  ROIs; }
+    bool            Commit	        ( bool force = false )              final;
+    bool            Revert	        ( bool force = false )              final;
+
+    static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );
 
 
     TRois*          ROIs;

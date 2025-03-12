@@ -29,10 +29,10 @@ public:
                     TSegDoc ( owl::TDocument *parent = 0 );
 
 
-    bool            Open            ( int mode, const char *path=0 );
-    bool            Close           ();
-    bool            IsOpen          ()  final               { return Tracks.IsAllocated (); }
-    bool            CanClose        ();
+    bool            Open            ( int mode, const char *path = 0 )  final;
+    bool            Close           ()                                  final;
+    bool            IsOpen          ()                                  final       { return Tracks.IsAllocated (); }
+    bool            CanClose        ()                                  final;
 
 
     static bool     ReadFromHeader  ( const char* file, ReadFromHeaderType what, void* answer );

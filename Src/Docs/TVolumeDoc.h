@@ -122,10 +122,10 @@ public:
                     TVolumeDoc ( owl::TDocument *parent = 0 );
 
                                         // owl::TDocument
-    bool            InitDoc ();
-    bool            Close   ();
-    bool            IsOpen  ()              final       { return  Data.IsAllocated (); }
-    bool            Revert  ( bool force = false );
+    bool            InitDoc ()                          final;
+    bool            Close   ()                          final;
+    bool            IsOpen  ()                          final   { return  Data.IsAllocated (); }
+    bool            Revert  ( bool force = false )      final;
 
                                         // TLimits
     void            InitLimits      ( InitType how )    final;

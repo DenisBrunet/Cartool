@@ -125,10 +125,10 @@ public:
                     TEegEgiMffDoc   ( owl::TDocument *parent = 0 );
 
 
-    bool            CanClose        ();
-    bool            Close           ();
-    bool            IsOpen          () final            { return FileStream.IsOpen (); }
-    bool            Open            ( int mode, const char *path = 0 );
+    bool            CanClose        ()                                  final;
+    bool            Close           ()                                  final;
+    bool            IsOpen          ()                                  final       { return FileStream.IsOpen (); }
+    bool            Open            ( int mode, const char *path = 0 )  final;
 
 
     void            ReadRawTracks   ( long tf1, long tf2, TArray2<float> &buff, int tfoffset = 0 )  final;
