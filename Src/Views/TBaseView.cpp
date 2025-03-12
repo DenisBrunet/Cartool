@@ -2035,6 +2035,11 @@ Invalidate ( false );
 //----------------------------------------------------------------------------
 void    TBaseView::EvSetFocus ( HWND hwnd )
 {
+                                        // in case of doc closing with multiple views, prevent all the other views from inheriting the focus, too
+if ( ! BaseDoc->IsOpen () )
+    return;
+
+
 TWindowView::EvSetFocus ( hwnd );
 
 

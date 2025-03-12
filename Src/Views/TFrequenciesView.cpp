@@ -271,6 +271,11 @@ ControlBarGadgets[ FREQGLVIEW_CBG_COLOR             ]   = new TButtonGadgetDpi (
 //----------------------------------------------------------------------------
 void    TFrequenciesView::EvSetFocus ( HWND hwnd )
 {
+                                        // in case of doc closing with multiple views, prevent all the other views from inheriting the focus, too
+if ( ! FreqDoc->IsOpen () )
+    return;
+
+
 TTracksView::EvSetFocus ( hwnd );
                                         // update keys that might have changed between focus switches
                                         // VkKey is a real-time polling

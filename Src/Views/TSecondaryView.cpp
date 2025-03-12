@@ -228,6 +228,11 @@ switch ( key ) {
 //----------------------------------------------------------------------------
 void    TSecondaryView::EvSetFocus ( HWND hwnd )
 {
+                                        // in case of doc closing with multiple views, prevent all the other views from inheriting the focus, too
+if ( ! EEGDoc->IsOpen () )
+    return;
+
+
 TBaseView::EvSetFocus ( hwnd );
 
 
