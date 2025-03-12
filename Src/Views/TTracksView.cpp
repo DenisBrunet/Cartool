@@ -9090,7 +9090,7 @@ if ( EEGDoc->GetNumMarkers ( MarkerTypeUserCoded ) == 0 ) {
 
 static char         regexp[ MarkerNameMaxLength ];
 
-if ( ! GetInputFromUser ( "Give a text expression of the marker names to delete (no undo!)" NewLine "(like 'marker', 'mark*', 'mark?r'):", "Deleting Markers by Name", regexp, regexp, this ) )
+if ( ! GetInputFromUser ( "Give a text expression of the marker names to delete (Perl regular expression)" NewLine "(like 'marker', 'marker(1|2)', 'ma?rk(er)?'):", "Deleting Markers by Name", regexp, regexp, this ) )
     return;
 
 if ( StringIsEmpty ( regexp ) )
