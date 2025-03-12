@@ -6041,25 +6041,25 @@ return true;
 
 
 //----------------------------------------------------------------------------
-bool    TTracksView::VnNewTFCursor ( TTFCursor *tfc )
+bool    TTracksView::VnNewTFCursor ( const TTFCursor* tfcursor )
 {
-if ( tfc->SentTo != GetViewId() )
+if ( tfcursor->SentTo != GetViewId() )
     return false;                       // not for me !
 
                                         // keep tracks of the sender
-LinkedViewId    = tfc->SentFrom;
+LinkedViewId    = tfcursor->SentFrom;
 
 
-long    pmin    = TFCursor.TranslateCursorTF ( tfc, tfc->GetPosMin() );
-long    pmax    = TFCursor.TranslateCursorTF ( tfc, tfc->GetPosMax() );
+long    pmin    = TFCursor.TranslateCursorTF ( tfcursor, tfcursor->GetPosMin() );
+long    pmax    = TFCursor.TranslateCursorTF ( tfcursor, tfcursor->GetPosMax() );
 
 
 if ( SyncCDPtTFCursor )
     CheckCDPtAndTFCursor ( false );
 
 else {
-    TFCursor           = *tfc;          // copy new cursor
-    TFCursor.SentTo    = tfc->SentFrom;
+    TFCursor           = *tfcursor;          // copy new cursor
+    TFCursor.SentTo    = tfcursor->SentFrom;
     TFCursor.SentFrom  = GetViewId ();
 
     if ( pmin >= CDPt.GetMin() && pmax <= CDPt.GetMax() )
@@ -6084,7 +6084,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TTracksView::VnNewSelection ( TSelection *sel )
+bool    TTracksView::VnNewSelection ( const TSelection *sel )
 {
 if ( SelTracks != *sel ) {
 
@@ -6100,7 +6100,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TTracksView::VnNewHighlighted ( TSelection *sel )
+bool    TTracksView::VnNewHighlighted ( const TSelection *sel )
 {
     // message can be either for electrodes or SPs                                if 0, accept all
 if ( abs ( sel->Size () - Highlighted.Size () ) > NumPseudoTracks || sel->SentFrom && sel->SentFrom != LinkedViewId )
@@ -6132,7 +6132,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TTracksView::VnNewBadSelection ( TSelection *sel )
+bool    TTracksView::VnNewBadSelection ( const TSelection *sel )
 {
   // if 0, accept all
 if ( sel->SentFrom && sel->SentFrom != LinkedViewId )
@@ -6153,7 +6153,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TTracksView::VnNewAuxSelection ( TSelection *sel )
+bool    TTracksView::VnNewAuxSelection ( const TSelection *sel )
 {
 //if ( sel->SentFrom != LinkedViewId )
 //    return true;                      // not for me !

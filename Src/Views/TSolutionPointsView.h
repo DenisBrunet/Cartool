@@ -56,7 +56,7 @@ public:
     bool                        IsRenderingMode     ( int renderingmode )                                           final   { return renderingmode == RenderingOpaque; }
 
     bool                        ModifyPickingInfo   ( TPointFloat& Picking, char *buff )                            final;
-    virtual bool                VnNewHighlighted    ( TSelection *sel );
+    virtual bool                VnNewHighlighted    ( const TSelection *sel );
 
 
 protected:

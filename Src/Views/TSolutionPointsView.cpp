@@ -1171,7 +1171,7 @@ if ( MButtonDown ) {
 
 
 //----------------------------------------------------------------------------
-bool    TSolutionPointsView::VnNewHighlighted ( TSelection *sel )
+bool    TSolutionPointsView::VnNewHighlighted ( const TSelection *sel )
 {
         // message can be either for electrodes or SPs
 if ( abs ( sel->Size () - Highlighted.Size () ) > NumPseudoTracks /*|| sel->SentFrom && sel->SentFrom != LinkedViewId*/ )

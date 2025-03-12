@@ -287,9 +287,9 @@ protected:
     void                    SetupWindow             ()                                                      final;
     void                    DrawMinMax              ( TPointFloat& pos, bool colormin, bool showminmaxcircle, double scale );
 
-    bool                    VnNewTFCursor           ( TTFCursor *tfcursor );
+    bool                    VnNewTFCursor           ( const TTFCursor* tfcursor );
     bool                    VnReloadData            ( int what );
-    bool                    VnNewHighlighted        ( TSelection *sel );
+    bool                    VnNewHighlighted        ( const TSelection *sel );
     bool                    VnViewUpdated           ( TBaseView *view );
     bool                    VnSessionUpdated        ( void* );
 

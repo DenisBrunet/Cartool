@@ -138,11 +138,11 @@ public:
     void            EvKeyUp     ( owl::uint key, owl::uint repeatCount, owl::uint flags );
 
     bool            VnReloadData        ( int what )                                final;
-//  bool            VnNewTFCursor       ( TTFCursor *tfcursor )                     final;
-//  bool            VnNewSelection      ( TSelection *sel )                         final;
-//  bool            VnNewHighlighted    ( TSelection *hl )                          final;
-    bool            VnNewBadSelection   ( TSelection *bad )                         final;
-    bool            VnNewAuxSelection   ( TSelection *bad )                         final;
+//  bool            VnNewTFCursor       ( const TTFCursor* tfcursor )               final;
+//  bool            VnNewSelection      ( const TSelection *sel )                   final;
+//  bool            VnNewHighlighted    ( const TSelection *hl )                    final;
+    bool            VnNewBadSelection   ( const TSelection *bad )                   final;
+    bool            VnNewAuxSelection   ( const TSelection *bad )                   final;
     void            EvLButtonDown       ( owl::uint, const owl::TPoint &p );
     void            EvLButtonUp         ( owl::uint, const owl::TPoint &p );
     void            EvMouseMove         ( owl::uint, const owl::TPoint &p );

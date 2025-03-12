@@ -3720,7 +3720,7 @@ if ( LButtonDown || MButtonDown || RButtonDown ) {
 
 
 //----------------------------------------------------------------------------
-bool    TFrequenciesView::VnNewBadSelection ( TSelection *bad )
+bool    TFrequenciesView::VnNewBadSelection ( const TSelection *bad )
 {
 TTracksView::VnNewBadSelection ( bad );
 
@@ -3734,7 +3734,7 @@ return  true;
 }
 
 
-bool    TFrequenciesView::VnNewAuxSelection ( TSelection *aux )
+bool    TFrequenciesView::VnNewAuxSelection ( const TSelection *aux )
 {
 TTracksView::VnNewAuxSelection ( aux );
 

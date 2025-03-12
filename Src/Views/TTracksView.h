@@ -363,11 +363,11 @@ public:
     void                EvKeyUp                 ( owl::uint key, owl::uint repeatCount, owl::uint flags );
 
     virtual bool        VnReloadData            ( int what );
-    virtual bool        VnNewTFCursor           ( TTFCursor *tfcursor );
-    virtual bool        VnNewSelection          ( TSelection *sel );
-    virtual bool        VnNewHighlighted        ( TSelection *sel );
-    virtual bool        VnNewBadSelection       ( TSelection *sel );
-    virtual bool        VnNewAuxSelection       ( TSelection *sel );
+    virtual bool        VnNewTFCursor           ( const TTFCursor* tfcursor );
+    virtual bool        VnNewSelection          ( const TSelection *sel );
+    virtual bool        VnNewHighlighted        ( const TSelection *sel );
+    virtual bool        VnNewBadSelection       ( const TSelection *sel );
+    virtual bool        VnNewAuxSelection       ( const TSelection *sel );
     virtual bool        VnSessionUpdated        ( void* );
 
 

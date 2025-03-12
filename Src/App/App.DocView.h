@@ -39,7 +39,7 @@ template <class T> struct THandler { typedef void (T::*type) ( int dpi, const TR
 
 #endif
 
-template <class T, void (T::*M) ( int, const TRect& )>
+template <class T, void (T::*M) (int, const TRect&)>
 static TResult Decode ( void* i, TParam1 p1, TParam2 p2 ) {
 
     struct  TForwarder {
@@ -102,7 +102,7 @@ enum    OwlCustomEvents     : OwlNotifyIdType
 
 //----------------------------------------------------------------------------
                                         // reload data from doc, data from file has changed
-template <class T, bool (T::*M) ( int )>
+template <class T, bool (T::*M) (int)>
 owl::TResult    DecodeVnReloadData      (   void* i,    owl::TParam1,   owl::TParam2 p2     )
 { return ( static_cast<T*>( i )->*M ) ( int ( p2 ) ) ? TRUE : FALSE; }
 
@@ -127,18 +127,18 @@ enum    VnReloadDataCodes : int
                                         // a new Time Frame cursor is available
 class       TTFCursor;
 
-template <class T, bool (T::*M) ( TTFCursor* )>
+template <class T, bool (T::*M) (const TTFCursor*)>
 owl::TResult    DecodeVnNewTFCursor     (   void* i,    owl::TParam1,   owl::TParam2 p2     )
-{ return ( static_cast<T*>( i )->*M ) ( (TTFCursor*) ( p2 ) ) ? TRUE : FALSE; }
+{ return ( static_cast<T*>( i )->*M ) ( (const TTFCursor*) ( p2 ) ) ? TRUE : FALSE; }
 
-NOTIFY_SIG  (vnNewTFCursor,     TTFCursor* )
+NOTIFY_SIG  (vnNewTFCursor,     const TTFCursor* )
 
 #define EV_VN_NEWTFCURSOR       VN_DEFINE   (vnNewTFCursor, VnNewTFCursor, DecodeVnNewTFCursor)
 
 
 //----------------------------------------------------------------------------
                                         // a synchronization was done
-template <class T, bool (T::*M) ( const TTFCursor* )>
+template <class T, bool (T::*M) (const TTFCursor*)>
 owl::TResult    DecodeVnViewSync        (   void* i,    owl::TParam1,   owl::TParam2 p2     )
 { return ( static_cast<T*>( i )->*M ) ( (const TTFCursor*) ( p2 ) ) ? TRUE : FALSE; }
 
@@ -151,44 +151,44 @@ NOTIFY_SIG  (vnViewSync,        const TTFCursor* )
                                         // a new selection is available
 class       TSelection;
 
-template <class T, bool (T::*M) ( TSelection* )>
+template <class T, bool (T::*M) (const TSelection*)>
 owl::TResult    DecodeVnNewSelection    (   void* i,    owl::TParam1,   owl::TParam2 p2     )
-{ return ( static_cast<T*>( i )->*M ) ( (TSelection*) ( p2 ) ) ? TRUE : FALSE; }
+{ return ( static_cast<T*>( i )->*M ) ( (const TSelection*) ( p2 ) ) ? TRUE : FALSE; }
 
-NOTIFY_SIG  (vnNewSelection,    TSelection* )
+NOTIFY_SIG  (vnNewSelection,    const TSelection* )
 
 #define EV_VN_NEWSELECTION      VN_DEFINE   (vnNewSelection, VnNewSelection, DecodeVnNewSelection)
 
 
 //----------------------------------------------------------------------------
                                         // a new highlighted set of tracks is available
-template <class T, bool (T::*M) ( TSelection* )>
+template <class T, bool (T::*M) (const TSelection*)>
 owl::TResult    DecodeVnNewHighlighted  (   void* i,    owl::TParam1,   owl::TParam2 p2     )
-{ return ( static_cast<T*>( i )->*M ) ( (TSelection*) ( p2 ) ) ? TRUE : FALSE; }
+{ return ( static_cast<T*>( i )->*M ) ( (const TSelection*) ( p2 ) ) ? TRUE : FALSE; }
 
-NOTIFY_SIG  (vnNewHighlighted,  TSelection* )
+NOTIFY_SIG  (vnNewHighlighted,  const TSelection* )
 
 #define EV_VN_NEWHIGHLIGHTED    VN_DEFINE   (vnNewHighlighted, VnNewHighlighted, DecodeVnNewHighlighted)
 
 
 //----------------------------------------------------------------------------
                                         // a new bad set of tracks is available
-template <class T, bool (T::*M) ( TSelection* )>
+template <class T, bool (T::*M) (const TSelection*)>
 owl::TResult    DecodeVnNewBadSelection (   void* i,    owl::TParam1,   owl::TParam2 p2     )
-{ return ( static_cast<T*>( i )->*M ) ( (TSelection*) ( p2 ) ) ? TRUE : FALSE; }
+{ return ( static_cast<T*>( i )->*M ) ( (const TSelection*) ( p2 ) ) ? TRUE : FALSE; }
 
-NOTIFY_SIG  (vnNewBadSelection, TSelection* )
+NOTIFY_SIG  (vnNewBadSelection, const TSelection* )
 
 #define EV_VN_NEWBADSELECTION   VN_DEFINE   (vnNewBadSelection, VnNewBadSelection, DecodeVnNewBadSelection)
 
 
 //----------------------------------------------------------------------------
                                         // a new aux set of tracks is available
-template <class T, bool (T::*M) ( TSelection* )>
+template <class T, bool (T::*M) (const TSelection*)>
 owl::TResult    DecodeVnNewAuxSelection (   void* i,    owl::TParam1,   owl::TParam2 p2     )
-{ return ( static_cast<T*>( i )->*M ) ( (TSelection*) ( p2 ) ) ? TRUE : FALSE; }
+{ return ( static_cast<T*>( i )->*M ) ( (const TSelection*) ( p2 ) ) ? TRUE : FALSE; }
 
-NOTIFY_SIG  (vnNewAuxSelection, TSelection* )
+NOTIFY_SIG  (vnNewAuxSelection, const TSelection* )
 
 #define EV_VN_NEWAUXSELECTION   VN_DEFINE   (vnNewAuxSelection, VnNewAuxSelection, DecodeVnNewAuxSelection)
 
@@ -197,7 +197,7 @@ NOTIFY_SIG  (vnNewAuxSelection, TSelection* )
                                         // a view is about to be destroyed
 class       TBaseView;
 
-template <class T, bool (T::*M)( TBaseView* )>
+template <class T, bool (T::*M) (TBaseView*)>
 owl::TResult    DecodeVnViewDestroyed   (   void* i,    owl::TParam1,   owl::TParam2 p2     )
 { return ( static_cast<T*>( i )->*M ) ( (TBaseView*) ( p2 ) ) ? TRUE : FALSE; }
 
@@ -208,7 +208,7 @@ NOTIFY_SIG  (vnViewDestroyed,   TBaseView* )
 
 //----------------------------------------------------------------------------
                                         // update views
-template <class T, bool (T::*M)( TBaseView* )>
+template <class T, bool (T::*M) (TBaseView*)>
 owl::TResult    DecodeVnViewUpdated     (   void* i,    owl::TParam1,   owl::TParam2 p2     )
 { return ( static_cast<T*>( i )->*M ) ( (TBaseView*) ( p2 ) ) ? TRUE : FALSE; }
 
@@ -219,7 +219,7 @@ NOTIFY_SIG  (vnViewUpdated,     TBaseView* )
 
 //----------------------------------------------------------------------------
                                         // update session - using a fake void* parameter for the moment
-template <class T, bool (T::*M)( void* )>
+template <class T, bool (T::*M) (void*)>
 owl::TResult    DecodeVnSessionUpdated  (   void* i,    owl::TParam1 ,   owl::TParam2 p2    )
 { return ( static_cast<T*>( i )->*M ) ( (void*) ( p2 ) ) ? TRUE : FALSE; }
 

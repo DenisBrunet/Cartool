@@ -92,7 +92,7 @@ public:
 
 
     bool                    ModifyPickingInfo   ( TPointFloat& Picking, char* buff )                            final;
-    virtual bool            VnNewHighlighted    ( TSelection* sel );
+    virtual bool            VnNewHighlighted    ( const TSelection* sel );
 
 
 protected:
@@ -136,7 +136,7 @@ protected:
 //  void                    EvCaptureChanged    ( HWND );
     void                    EvMouseWheel        ( owl::uint modKeys, int zDelta, const owl::TPoint& p );
 
-    bool                    VnNewBadSelection   ( TSelection *sel );
+    bool                    VnNewBadSelection   ( const TSelection *sel );
 
     using        TBaseView::Cm2Object;
     using        TBaseView::CmMagnifier;

@@ -4189,19 +4189,19 @@ tce.SetCheck ( AveragingPrecedence == AverageAfterInverse );
 
 
 //----------------------------------------------------------------------------
-bool    TInverseView::VnNewTFCursor ( TTFCursor *tfc )
+bool    TInverseView::VnNewTFCursor ( const TTFCursor* tfcursor )
 {
-if ( ! IsFriendView ( tfc->SentTo ) )
+if ( ! IsFriendView ( tfcursor->SentTo ) )
     return false;                     // not for me !
 
 
-if ( *tfc == TFCursor )    return false;
+if ( *tfcursor == TFCursor )    return false;
 
 
 long                oldMRCNumTF     = TFCursor.GetLength ();
 
 
-TFCursor            = *tfc;             // transfer positions
+TFCursor            = *tfcursor;             // transfer positions
 TFCursor.SentTo     = LinkedViewId;
 TFCursor.SentFrom   = GetViewId();
 
@@ -4236,7 +4236,7 @@ RedoSurfaceIS = true;
     ShowNow ( RDW_INVALIDATE | RDW_UPDATENOW );
 
                                         // send the cursor to the EEG view also, if it is not the original sender
-if ( tfc->SentFrom != LinkedViewId )
+if ( tfcursor->SentFrom != LinkedViewId )
     EEGDoc->QueryViews ( vnNewTFCursor, (TParam2) &TFCursor, this );
 
 return false;
@@ -4313,7 +4313,7 @@ return true;
 
 
 //----------------------------------------------------------------------------
-bool    TInverseView::VnNewHighlighted ( TSelection *sel )
+bool    TInverseView::VnNewHighlighted ( const TSelection *sel )
 {
     // message can be either for electrodes or SPs                                if 0, accept all
 if ( abs ( sel->Size () - Highlighted.Size () ) > NumPseudoTracks || sel->SentFrom && sel->SentFrom != LinkedViewId )

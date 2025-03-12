@@ -88,9 +88,9 @@ public:
     void                    CreateGadgets           ()  final;
 
 
-    bool                    VnNewTFCursor           ( TTFCursor *tfcursor );
+    bool                    VnNewTFCursor           ( const TTFCursor* tfcursor );
     bool                    VnReloadData            ( int what );
-    bool                    VnNewHighlighted        ( TSelection *sel );
+    bool                    VnNewHighlighted        ( const TSelection *sel );
     bool                    VnSessionUpdated        ( void* );
 
     void                    GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane )    final;
@@ -162,7 +162,7 @@ protected:
     void                    EvTimer                 ( owl::uint timerId );
     void                    EvMouseWheel            ( owl::uint modKeys, int zDelta, const owl::TPoint& p );
 
-    bool                    VnNewBadSelection       ( TSelection *sel );
+    bool                    VnNewBadSelection       ( const TSelection *sel );
     bool                    VnViewUpdated           ( TBaseView *view );
 
     using        TBaseView::Cm2Object;

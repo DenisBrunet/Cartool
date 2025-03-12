@@ -1544,7 +1544,7 @@ switch ( timerId ) {
 
 
 //----------------------------------------------------------------------------
-bool    TElectrodesView::VnNewBadSelection ( TSelection *sel )
+bool    TElectrodesView::VnNewBadSelection ( const TSelection *sel )
 {
 //if ( sel->SentFrom != LinkedViewId )
 //    return true;                        // not for me !
@@ -1564,7 +1564,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-bool    TElectrodesView::VnNewHighlighted ( TSelection *sel )
+bool    TElectrodesView::VnNewHighlighted ( const TSelection *sel )
 {
     // message can be either for electrodes or SPs                                if 0, accept all
 if ( abs ( sel->Size () - Highlighted.Size () ) > NumPseudoTracks ) // || sel->SentFrom && sel->SentFrom != LinkedViewId )
