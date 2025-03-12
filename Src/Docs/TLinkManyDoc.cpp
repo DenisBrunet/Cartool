@@ -611,7 +611,7 @@ return  TFileDocument::Close ();
 
 
 //----------------------------------------------------------------------------
-bool    TLinkManyDoc::IsOpen ()   const
+bool    TLinkManyDoc::IsOpen ()
 {
 return  (bool) ListEegDoc 
      || (bool) ListXyzDoc 

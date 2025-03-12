@@ -30,7 +30,7 @@ public:
 
 
     bool            CanClose            ();
-    bool            IsOpen              ()  const           { return NumElectrodes > 0; }
+    bool            IsOpen              ()  final           { return Tracks.IsAllocated (); }
     bool            Open 	            ( int mode, const char* path = 0 );
 
 

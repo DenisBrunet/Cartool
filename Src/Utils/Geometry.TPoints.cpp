@@ -942,7 +942,7 @@ Sort ();
 //----------------------------------------------------------------------------
                                         // Keeping the useful points for head modeling, the one that are the most "patatoid-looking", avoiding the eyes, ears, jaws...
 void    TPoints::KeepTopHeadPoints (
-                                const TVolumeDoc&   mridoc, 
+                                TVolumeDoc&         mridoc,             // !NOT const TVolumeDoc& because IsOpen is not const!
                                 TVector3Float       centertranslate,
                                 bool                rebalance,
                                 const TMatrix44*    mriabstoguillotine

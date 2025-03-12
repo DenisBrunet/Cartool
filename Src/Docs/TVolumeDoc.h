@@ -124,7 +124,7 @@ public:
                                         // owl::TDocument
     bool            InitDoc ();
     bool            Close   ();
-    bool            IsOpen  ()              const       { return  (bool) Data; }
+    bool            IsOpen  ()              final       { return  Data.IsAllocated (); }
     bool            Revert  ( bool force = false );
 
                                         // TLimits

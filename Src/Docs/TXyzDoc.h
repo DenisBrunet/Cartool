@@ -32,7 +32,7 @@ public:
     bool            Close	        ();
     bool            Commit	        ( bool force = false );
     bool            Revert	        ( bool force = false );
-    bool            IsOpen	        ()  const                   { return  NumElectrodes > 0; }
+    bool            IsOpen	        ()  final                   { return  NumElectrodes > 0; }
     bool            Open 	        ( int mode, const char *path = 0 );
 
 

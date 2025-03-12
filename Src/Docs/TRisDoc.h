@@ -51,7 +51,7 @@ public:
     bool            Open            ( int mode, const char* path = 0 );
     bool            CanClose        ();
     bool            Close           ();
-    bool            IsOpen          ()  const               { return  NumElectrodes > 0; }
+    bool            IsOpen          ()  final               { return Tracks.IsAllocated (); }
     bool            CommitRis       ( bool force = false );
 
 

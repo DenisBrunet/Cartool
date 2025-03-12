@@ -52,14 +52,14 @@ public:
     bool            IsOpen              ()      const   { return  Dim1 != 0; }
 
     void            Reset               ();
-    bool            Set                 ( char *file );
+    bool            Set                 ( char* file );
 
-    int             GetDim1             ()     const   { return  Dim1; }
-    int             GetDim2             ()     const   { return  Dim2; }
-    size_t          AtomSize            ()     const   { return  OriginalAtomType == AtomTypeVector ? 3 : 1; }
+    int             GetDim1             ()      const   { return  Dim1; }
+    int             GetDim2             ()      const   { return  Dim2; }
+    size_t          AtomSize            ()      const   { return  OriginalAtomType == AtomTypeVector ? 3 : 1; }
 
-    int             GetNumElectrodes    ()     const   { return  Dim1; }
-    int             GetNumSolutionPoints()     const   { return  Dim2; }
+    int             GetNumElectrodes    ()      const   { return  Dim1; }
+    int             GetNumSolutionPoints()      const   { return  Dim2; }
 
     bool            ReadFile            ( AMatrix&        K );  // Armadillo format
     bool            ReadFile            ( TArray2<float>& K );  // Cartool format

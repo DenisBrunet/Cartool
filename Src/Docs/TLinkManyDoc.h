@@ -70,7 +70,7 @@ public:
     bool                Close	        ();
     bool                Commit	        ( bool force = false );
     bool                InitDoc         ();
-    bool                IsOpen	        ()  const;
+    bool                IsOpen	        ()  final;
     bool                Open 	        ( int mode, const char* path = 0 );
     bool                Revert	        ( bool force = false );
 

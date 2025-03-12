@@ -72,7 +72,7 @@ public:
     bool            Revert	            ( bool force = false );
 
 
-    bool            IsOpen	            ()                      const   { return  (bool) GetPoints (); }
+    bool            IsOpen	            ()                      final   { return  (bool) GetPoints (); }
     bool            IsGrid              ()                      const   { return  IsGeometryGrid            ( ExtraContentType ); }
     bool            IsGridNotAligned    ()                      const   { return  IsGeometryGridNotAligned  ( ExtraContentType ); }
     bool            IsGridAligned       ()                      const   { return  IsGeometryGridAligned     ( ExtraContentType ); }

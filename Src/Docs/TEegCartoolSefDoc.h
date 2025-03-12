@@ -81,7 +81,7 @@ public:
 
     bool            CanClose        ();
     bool            Close           ();
-    bool            IsOpen          ()  const           { return NumElectrodes > 0; }
+    bool            IsOpen          ()  final           { return FileStream.IsOpen (); }
     bool            Open            ( int mode, const char *path = 0 );
 
 

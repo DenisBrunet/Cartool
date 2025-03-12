@@ -97,7 +97,6 @@ public:
 
                                         // owl::TDocument
     bool            InitDoc                     ();
-    bool            IsOpen	                    ()              const       { return  NumFrequencies > 0; }
 
                                         // TLimits
     void            InitLimits                  ( InitType how )        final;

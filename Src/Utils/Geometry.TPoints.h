@@ -123,7 +123,7 @@ public:
     void            DownsamplePoints    ( int targetsize );
     void            GetSurfacePoints    ( const Volume& volume, const TPointFloat& center, bool includebottom = true );
     void            Invert              ();
-    void            KeepTopHeadPoints   ( const TVolumeDoc& mridoc, TVector3Float centertranslate, bool rebalance, const TMatrix44* mriabstoguillotine = 0 );
+    void            KeepTopHeadPoints   ( TVolumeDoc& mridoc, TVector3Float centertranslate, bool rebalance, const TMatrix44* mriabstoguillotine = 0 );
     void            Normalize           ();
     void            ResurfacePoints     ( const Volume& surface, const Volume& gradient, TPointFloat center, const TMatrix44* mriabstoguillotine = 0, double inflating = 0 );
 

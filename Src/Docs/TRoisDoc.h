@@ -35,7 +35,7 @@ public:
     static bool     ReadFromHeader ( const char* file, ReadFromHeaderType what, void* answer );
     bool            Open 	( int mode, const char* path = 0 );
     bool            Close	();
-    bool            IsOpen	()  const               { return  ROIs; }
+    bool            IsOpen	()  final               { return  ROIs; }
     bool            Commit	( bool force = false );
     bool            Revert	( bool force = false );
 

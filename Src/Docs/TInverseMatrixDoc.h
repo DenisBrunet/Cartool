@@ -41,7 +41,7 @@ public:
     bool            Close	();
     bool            Commit	( bool force = false );
     bool            Revert	( bool force = false );
-    bool            IsOpen	()                  const   { return  NumSolPoints > 0; }
+    bool            IsOpen	()                  final   { return  NumSolPoints > 0; }
     bool            InitDoc ();
 
 
