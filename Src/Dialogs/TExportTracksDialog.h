@@ -120,8 +120,8 @@ public:
                        ~TExportTracksDialog         ();
 
 
-    void                BatchProcess                ()  final;
-    void                BatchProcessCurrent         ()  final;
+    void                BatchProcess                ()                                                      final;
+    void                BatchProcessCurrent         ()                                                      final;
     void                ProcessCurrent              ( void *usetransfer = 0, const char *moreinfix = 0 )    final;
 
 

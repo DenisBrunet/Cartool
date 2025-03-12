@@ -94,7 +94,7 @@ public:
                        ~TScanTriggersDialog         ();
 
 
-    void                BatchProcessCurrent         ()  final;
+    void                BatchProcessCurrent         ()                                                      final;
     void                ProcessCurrent              ( void *usetransfer = 0, const char *moreinfix = 0 )    final;
 
 

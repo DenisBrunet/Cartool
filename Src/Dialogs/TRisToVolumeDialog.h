@@ -178,7 +178,7 @@ protected:
     void            CheckRisAndSp           (       TGoF& gofris )  const;
 
 
-    void            ProcessCurrent          ( void *usetransfer = 0, const char *moreinfix = 0 );
+    void            ProcessCurrent          ( void *usetransfer = 0, const char *moreinfix = 0 )    final;
     bool            CmProcessEnable         ();
     void            CmProcessCurrentEnable  ( owl::TCommandEnabler &tce );
     void            CmProcessBatchEnable    ( owl::TCommandEnabler &tce );

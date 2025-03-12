@@ -258,14 +258,14 @@ public:
     virtual void    CmProcessCurrent        ();                             // calls BatchProcess with a single file
     void            CmProcessCurrent        ( const char* file );
 
-    virtual void    BatchProcessDropped     ( TGoF& gof               );    // calls BatchProcess with a Group of Files
-    virtual void    BatchProcessLmFile      ( char* lmfile            );    // calls BatchProcess with files from a lm file
-    virtual void    BatchProcessSplitFile   ( char* splitfile         );    // calls BatchProcess with files from a csv file
+    void            BatchProcessDropped     ( TGoF& gof               );    // calls BatchProcess with a Group of Files
+    void            BatchProcessLmFile      ( char* lmfile            );    // calls BatchProcess with files from a lm file
+    void            BatchProcessSplitFile   ( char* splitfile         );    // calls BatchProcess with files from a csv file
     virtual void    BatchProcess            ();                             // loop in the files and calls ProcessCurrent
     virtual void    BatchProcessCurrent     ();                             // a call to actual ProcessCurrent - here for overriding purposes
     virtual void    ProcessCurrent          ( void* usetransfer = 0, const char* moreinfix = 0 )    {}  // this is where the ACTUAL processing should be put
 
-    virtual void    BatchProcessGroups      ( TGoGoF *gogof, int bygroupsof, int testinggroups, void *usetransfer, bool endadvertised = true ); // loop within groups, including a frequency loop if relevant
+    void            BatchProcessGroups      ( TGoGoF *gogof, int bygroupsof, int testinggroups, void *usetransfer, bool endadvertised = true ); // loop within groups, including a frequency loop if relevant
     virtual void    ProcessGroups           ( TGoGoF *gogof, int gofi1, int gofi2, void *usetransfer )  {}  // this is where the ACTUAL processing should be put
 
 

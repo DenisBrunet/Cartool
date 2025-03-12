@@ -219,7 +219,8 @@ public:
 
 
 protected:
-    void            ProcessGroups       ( TGoGoF* gogof, int gofi1, int gofi2, void* usetransfer );
+
+    void            ProcessGroups       ( TGoGoF* gogof, int gofi1, int gofi2, void* usetransfer )  final;
 
 
     void            CmOk                ();
@@ -493,7 +494,7 @@ public:
     void                ChannelToExcludeReadOnly( bool read )       { TracksToExclude->SetReadOnly ( read ); }
 
 
-    void                ProcessGroups           ( TGoGoF* gogof, int gofi1, int gofi2, void* usetransfer );
+    void                ProcessGroups           ( TGoGoF* gogof, int gofi1, int gofi2, void* usetransfer )  final;
 
 
 protected:
@@ -507,7 +508,7 @@ protected:
     bool                EpochState;
 
 
-    void                SetupWindow             ()  final;
+    void                SetupWindow             ()                  final;
     void                CloseWindow             ( int retvalue )    final   { if ( canClose )   TBaseDialog::CloseWindow(retvalue); }
     void                Destroy                 ( int retvalue )    final   { if ( canClose )   TBaseDialog::Destroy(retvalue); }
     void                EvTimer                 ( UINT timerId );

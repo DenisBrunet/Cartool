@@ -391,7 +391,7 @@ protected:
     static TStatGoGoF   GoGoF;
 
 
-    void                ProcessGroups       ( TGoGoF* gogof, int gofi1, int gofi2, void* usetransfer ); // TBaseDialog
+    void                ProcessGroups       ( TGoGoF* gogof, int gofi1, int gofi2, void* usetransfer )  final;
 
 
     void                CmOk                ();

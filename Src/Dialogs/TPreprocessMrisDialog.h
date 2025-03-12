@@ -239,10 +239,10 @@ protected:
     TVolumeDoc*         MRIDoc;             // current MRI to process
 
 
-    void                CmBatchProcess          ();
-    void                CmProcessCurrent        ();
-    void                BatchProcess            ();
-    void                ProcessCurrent          ( void *usetransfer = 0, const char *moreinfix = 0 );
+    void                CmBatchProcess          ()                                                      final;
+    void                CmProcessCurrent        ()                                                      final;
+    void                BatchProcess            ()                                                      final;
+    void                ProcessCurrent          ( void *usetransfer = 0, const char *moreinfix = 0 )    final;
 
 
     void                EvDropFiles             ( owl::TDropInfo drop );

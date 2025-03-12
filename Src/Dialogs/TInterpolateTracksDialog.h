@@ -160,11 +160,11 @@ protected:
     TInterpolateTracks  IT;                 // wrapping and handling all intermediate files and objects together
 
 
-    void                BatchProcess            ();
-    void                ProcessCurrent          ( void* usetransfer = 0, const char* moreinfix = 0 );
+    void                BatchProcess            ()                                                      final;
+    void                ProcessCurrent          ( void* usetransfer = 0, const char* moreinfix = 0 )    final;
 
 
-    void                SetupWindow             ()  final;
+    void                SetupWindow             ()                                                      final;
     void                EvDropFiles             ( owl::TDropInfo drop );
 
     void                CmBrowseXyzFileName     ( owlwparam w );

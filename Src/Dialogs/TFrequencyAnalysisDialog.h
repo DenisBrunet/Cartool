@@ -306,11 +306,11 @@ protected:
     int                 CurrentPreset;
 
 
-    void                BatchProcess                    ();
-    void                ProcessCurrent                  ( void *usetransfer = 0, const char *moreinfix = 0 );
+    void                BatchProcess                    ()                                                      final;
+    void                ProcessCurrent                  ( void *usetransfer = 0, const char *moreinfix = 0 )    final;
 
 
-    void                SetupWindow                     ()  final;
+    void                SetupWindow                     ()                                                      final;
     void                EvDropFiles                     ( owl::TDropInfo drop );
 
     int                 GetDefaultBlocksize             ();
