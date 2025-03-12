@@ -523,7 +523,7 @@ protected:
 
 
 
-    void                SetupWindow                         ();
+    void                SetupWindow                         ()  final;
     void                EvDropFiles                         ( owl::TDropInfo drop );
 
     void                CmOkEnable                          ( owl::TCommandEnabler &tce )   { TStatisticsDialog::CmOkEnable ( tce ); }

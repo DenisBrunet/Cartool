@@ -262,7 +262,7 @@ protected:
     int             NumConditions;
 
 
-    void            SetupWindow             ();
+    void            SetupWindow             ()  final;
     void            CmOk                    ();
     void            CmOkEnable              ( owl::TCommandEnabler &tce );
 

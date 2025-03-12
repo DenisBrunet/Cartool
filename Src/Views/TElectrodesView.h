@@ -77,9 +77,9 @@ public:
 
 
     static const char*      StaticName          ()                          { return "&Electrodes Display"; }
-    const char*             GetViewName         ()                  const   { return StaticName (); }
+    const char*             GetViewName         ()                  final   { return StaticName (); }
 
-    void                    CreateGadgets       ();
+    void                    CreateGadgets       ()                  final;
 
 
     TElectrodesDoc*         GetXYZDoc           ()                          { return XYZDoc; }
@@ -87,11 +87,11 @@ public:
     const TStrings*         GetElectrodesNames  ()                  const   { return XYZDoc->GetElectrodesNames (); }
 
 
-    void                    GLPaint             ( int how, int renderingmode, TGLClipPlane* otherclipplane );
-    bool                    IsRenderingMode     ( int renderingmode );
+    void                    GLPaint             ( int how, int renderingmode, TGLClipPlane* otherclipplane )    final;
+    bool                    IsRenderingMode     ( int renderingmode )                                           final;
 
 
-    bool                    ModifyPickingInfo   ( TPointFloat& Picking, char* buff );
+    bool                    ModifyPickingInfo   ( TPointFloat& Picking, char* buff )                            final;
     virtual bool            VnNewHighlighted    ( TSelection* sel );
 
 
@@ -117,13 +117,13 @@ protected:
     TGLMaterial<GLfloat>    MaterialTri2;
 
 
-    bool                    ValidView           ()                                          { return XYZDoc->GetNumElectrodes(); }
+    bool                    ValidView           ()  final                                   { return XYZDoc->GetNumElectrodes(); }
 
-    void                    Paint               ( owl::TDC& dc, bool erase, owl::TRect& rect );
-    void                    SetupWindow         ();
+    void                    Paint               ( owl::TDC& dc, bool erase, owl::TRect& rect )  final;
+    void                    SetupWindow         ()                                              final;
 
-    void                    EvSetFocus          ( HWND hwnd )                               { TBaseView::EvSetFocus     ( hwnd );   }
-    void                    EvKillFocus         ( HWND hwnd )                               { TBaseView::EvKillFocus    ( hwnd );   }
+    using        TBaseView::EvSetFocus;
+    using        TBaseView::EvKillFocus;
     void                    EvKeyDown           ( owl::uint key, owl::uint repeatCount, owl::uint flags );
     void                    EvLButtonDown       ( owl::uint, const owl::TPoint& p );
     void                    EvLButtonUp         ( owl::uint, const owl::TPoint& p );
@@ -138,10 +138,10 @@ protected:
 
     bool                    VnNewBadSelection   ( TSelection *sel );
 
-    void                    Cm2Object           ()                                          { TBaseView::Cm2Object   (); }
-    void                    CmMagnifier         ()                                          { TBaseView::CmMagnifier (); }
+    using        TBaseView::Cm2Object;
+    using        TBaseView::CmMagnifier;
 
-    void                    CmOrient            ();
+    void                    CmOrient            ()  final;
     void                    CmFlip              ( owlwparam wparam );
 //  void                    CmFlipEnable        ( owl::TCommandEnabler &tce );
     void                    CmSetShowElectrodes ();
@@ -150,7 +150,7 @@ protected:
     void                    CmSetCutPlane       ( owlwparam wparam );
     void                    CmSetFlatView       ();
     void                    CmSetFlatViewEnable ( owl::TCommandEnabler &tce );
-    void                    CmSetShiftDepthRange( owlwparam w );
+    void                    CmSetShiftDepthRange( owlwparam w ) final;
     void                    CmExportXyz         ( owlwparam w );
     void                    CmExportDelaunay    ();
 

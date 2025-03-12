@@ -66,49 +66,49 @@ class   TTracksView;
 class   TSecondaryView  :   public  TBaseView
 {
 public:
-                    TSecondaryView  ( TTracksDoc &doc, owl::TWindow *parent = 0, TLinkManyDoc *group=0 );
+                        TSecondaryView          ( TTracksDoc& doc, owl::TWindow* parent = 0, TLinkManyDoc* group = 0 );
 
 
-    virtual bool    VnViewSync      ( TTFCursor *tfcursor );
-                                        // dynamically return the current eeg view associated
-    TTracksView *   GetEegView      ();
+    bool                VnViewSync              ( const TTFCursor* tfcursor );
+                                                
+    TTracksView*        GetEegView              ();     // dynamically returns the current associated eeg view
 
 
 protected:
 
-    TTracksDoc*     EEGDoc;
+    TTracksDoc*         EEGDoc;
 
-    TTFCursor       TFCursor;
-    TTFCursor       SavedTFCursor;
-    int             ManageRangeCursor;
-    int             MRCNumTF;
-    int             MRCStepTF;
-    bool            MRCSequenceOrder;
-    bool            MRCDoAnimation;
-    bool            ShowSequenceLabels;
-
-
-    inline bool     IsMRCSequence           ()  const           { return ( ManageRangeCursor & MRCAnySequence ); }
+    TTFCursor           TFCursor;
+    TTFCursor           SavedTFCursor;
+    int                 ManageRangeCursor;
+    int                 MRCNumTF;
+    int                 MRCStepTF;
+    bool                MRCSequenceOrder;
+    bool                MRCDoAnimation;
+    bool                ShowSequenceLabels;
 
 
-    virtual void    UpdateCaption           ();   // with time of cursor
-    void            CreateBaseGadgets       ();
+    inline bool         IsMRCSequence           ()  const           { return ( ManageRangeCursor & MRCAnySequence ); }
 
-    void            EvKeyDown               ( owl::uint key, owl::uint repeatCount, owl::uint flags );
-    void            EvSetFocus              ( HWND);
-    void            EvKillFocus             ( HWND hwnd )       { TBaseView::EvKillFocus ( hwnd ); }
-    void            EvPaletteChanged        ( HWND );
-    void            EvLButtonDown           ( owl::uint, const owl::TPoint& p );
 
-    virtual void    CmSyncViews             ();
-    virtual void    CmSetManageRangeCursor  ( owlwparam wparam ) = 0;
-    virtual void    CmSetStepTF             ( owlwparam wparam );
-    virtual void    CmSpecifyScaling        ();
-    virtual void    CmShowSequenceLabels    ();
+    void                UpdateCaption           ();     // with time of cursor
+    void                CreateBaseGadgets       ();
+
+    void                EvKeyDown               ( owl::uint key, owl::uint repeatCount, owl::uint flags );
+    void                EvSetFocus              ( HWND);
+    using    TBaseView::EvKillFocus;
+    void                EvPaletteChanged        ( HWND );
+    void                EvLButtonDown           ( owl::uint, const owl::TPoint& p );
+
+    void                CmSyncViews             ();
+    virtual void        CmSetManageRangeCursor  ( owlwparam wparam ) = 0;
+    virtual void        CmSetStepTF             ( owlwparam wparam );
+    void                CmSpecifyScaling        ();
+    void                CmShowSequenceLabels    ();
 
                                         // Transmitting messages to the EegView - not used anymore(?)
-//  void            CmToEeg                 ()                              { CartoolDocManager->GetView ( LinkedViewId )->ForwardMessage ( false ); }
-//  void            CmToEegEnable           ( owl::TCommandEnabler &tce )   { CartoolDocManager->GetView ( LinkedViewId )->EvCommandEnable (tce); }
+//  void                CmToEeg                 ()                              { CartoolDocManager->GetView ( LinkedViewId )->ForwardMessage ( false ); }
+//  void                CmToEegEnable           ( owl::TCommandEnabler &tce )   { CartoolDocManager->GetView ( LinkedViewId )->EvCommandEnable (tce); }
 
     DECLARE_RESPONSE_TABLE(TSecondaryView);
 };

@@ -184,7 +184,7 @@ protected:
     long                ConcatOutputTime;
 
 
-    void                SetupWindow                 ();
+    void                SetupWindow                 ()  final;
     void                EvDropFiles                 ( owl::TDropInfo drop );
     void                SetBaseFilename             ();
 

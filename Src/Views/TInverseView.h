@@ -190,18 +190,18 @@ public:
 
 
     static const char*      StaticName              ()                      { return "&Sources Localization"; }
-    const char*             GetViewName             ()                      { return StaticName(); }
+    const char*             GetViewName             ()  final               { return StaticName(); }
 
-    void                    CreateGadgets           ();
-
-
-    void                    GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane );
-    void                    HintsPaint              ();
-    bool                    IsRenderingMode         ( int renderingmode );
+    void                    CreateGadgets           ()  final;
 
 
-    const TBaseDoc*         GetGeometryDoc          ()              const   { return MRIDocBackg ? MRIDocBackg : BaseDoc; }     // ESI has no geometry info in itself, let's delegate to the background MRI instead
-    bool                    ModifyPickingInfo       ( TPointFloat& Picking, char *buff );
+    void                    GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane )    final;
+    void                    HintsPaint              ()                                                              final;
+    bool                    IsRenderingMode         ( int renderingmode )                                           final;
+
+
+    const TBaseDoc*         GetGeometryDoc          ()  const final         { return MRIDocBackg ? MRIDocBackg : BaseDoc; }     // ESI has no geometry info in itself, let's delegate to the background MRI instead
+    bool                    ModifyPickingInfo       ( TPointFloat& Picking, char *buff )                            final;
 
 
 protected:
@@ -269,22 +269,22 @@ protected:
     void                    SetScaling              ( double negv, double posv, bool forcesymetric = true ) final;
     void                    UpdateScaling           ()                                                      final;
 
-    bool                    ValidView               ();
+    bool                    ValidView               ()                                                      final;
     inline int              NumVisiblePlanes        ();
     long                    SearchAndSetIntensity   ( bool precise = false ); // returns the TF position
     void                    SetSliceSize            ();
     void                    SetShowSlices           ( bool newtype );
     void                    SetTotalSlices          ();
     void                    SetItemsInWindow        ();
-    void                    FitItemsInWindow        ( int numitems, owl::TSize itemsize, int &byx, int &byy, owl::TRect *winrect = 0 );
-    void                    SetColorTable           ( AtomType datatype );
+    void                    FitItemsInWindow        ( int numitems, owl::TSize itemsize, int &byx, int &byy, owl::TRect *winrect = 0 )  final;
+    void                    SetColorTable           ( AtomType datatype )                                   final;
     void                    InitMri                 ();
     void                    ReloadRoi               ();
 //  void                    FilterIs                ();
     void                    GetInverse              ( int tf1, int tf2 );
 
-    void                    Paint                   ( owl::TDC& dc, bool erase, owl::TRect& rect );
-    void                    SetupWindow             ();
+    void                    Paint                   ( owl::TDC& dc, bool erase, owl::TRect& rect )          final;
+    void                    SetupWindow             ()                                                      final;
     void                    DrawMinMax              ( TPointFloat& pos, bool colormin, bool showminmaxcircle, double scale );
 
     bool                    VnNewTFCursor           ( TTFCursor *tfcursor );
@@ -293,8 +293,8 @@ protected:
     bool                    VnViewUpdated           ( TBaseView *view );
     bool                    VnSessionUpdated        ( void* );
 
-    void                    EvSetFocus              ( HWND hwnd )                               {           TBaseView::EvSetFocus         ( hwnd );                       }
-    void                    EvKillFocus             ( HWND hwnd )                               {           TBaseView::EvKillFocus        ( hwnd );                       }
+    using        TBaseView::EvSetFocus;
+    using        TBaseView::EvKillFocus;
     void                    EvKeyDown               ( owl::uint key, owl::uint repeatCount, owl::uint flags );
     void                    EvKeyUp                 ( owl::uint key, owl::uint repeatCount, owl::uint flags );
     void                    EvLButtonDblClk         ( owl::uint, const owl::TPoint & );
@@ -309,14 +309,14 @@ protected:
     void                    EvTimer                 ( owl::uint timerId );
     void                    EvMouseWheel            ( owl::uint modKeys, int zDelta, const owl::TPoint& p );
 
-    void                    Cm2Object               ()  { TBaseView::Cm2Object   ();                }
-    void                    CmMagnifier             ()  { TBaseView::CmMagnifier ();                }
-    void                    CmShowSequenceLabels    ()  { TSecondaryView::CmShowSequenceLabels (); }
+    using        TBaseView::Cm2Object;
+    using        TBaseView::CmMagnifier;
+    using   TSecondaryView::CmShowSequenceLabels;
 
     void                    CmSetCutPlane           ( owlwparam wparam );
     void                    CmShiftCutPlane         ( owlwparam wparam, bool forward );
     void                    CmSetCutPlaneEnable     ( owl::TCommandEnabler &tce );
-    void                    CmOrient                ();
+    void                    CmOrient                ()  final;
 
     void                    CmSetShow2DIs           ( owlwparam wparam );
     void                    CmSetShow3DIs           ();
@@ -329,21 +329,21 @@ protected:
     void                    CmSetSliceMode          ();
     void                    CmSetNumSlices          ( owlwparam wparam );
     void                    CmMoveSlice             ( owlwparam wparam );
-    void                    CmSetStepTF             ( owlwparam wparam );
+    void                    CmSetStepTF             ( owlwparam wparam )    final;
     void                    CmShowMinMax            ( owlwparam wparam );
     void                    CmSetBrightness         ( owlwparam wparam );
     void                    CmSetContrast           ( owlwparam wparam );
-    void                    CmSetManageRangeCursor  ( owlwparam wparam );
+    void                    CmSetManageRangeCursor  ( owlwparam wparam )    final;
     void                    CmSetScalingAdapt       ();
     void                    CmNextColorTable        ();
     void                    CmSetFindMinMax         ();
     void                    CmSearchTFMax           ();
     void                    CmSearchRegularization  ( owlwparam w );
     void                    CmSetShowSP             ();
-    void                    CmShowAll               ( owlwparam w );
-    void                    CmShowColorScale        ();
-    void                    CmShowOrientation       ();
-    void                    CmSetShiftDepthRange    ( owlwparam wparam );
+    void                    CmShowAll               ( owlwparam w )         final;
+    void                    CmShowColorScale        ()                      final;
+    void                    CmShowOrientation       ()                      final;
+    void                    CmSetShiftDepthRange    ( owlwparam wparam )    final;
     void                    CmSetIntensityLevelEnable ( owl::TCommandEnabler &tce );
     void                    CmIsEnable              ( owl::TCommandEnabler &tce );
     void                    CmMriEnable             ( owl::TCommandEnabler &tce );

@@ -166,20 +166,20 @@ public:
 
 
     static const char*          StaticName          ()              { return "&Volume Display"; }
-    const char*                 GetViewName         ()              { return StaticName(); }
+    const char*                 GetViewName         ()  final       { return StaticName(); }
 
-    void                        CreateGadgets       ();
+    void                        CreateGadgets       ()  final;
 
 
     TVolumeDoc *                GetMRIDoc           ()              { return MRIDoc; }
 
 
-    void                        GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane );
+    void                        GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane )    final;
 //  void                        GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane, TGLVolume *volume );    // we need an additional volume object as parameter, used by the inverse display
-    void                        HintsPaint          ();
-    bool                        IsRenderingMode     ( int renderingmode );
+    void                        HintsPaint          ()                                                              final;
+    bool                        IsRenderingMode     ( int renderingmode )                                           final;
 
-    bool                        ModifyPickingInfo   ( TPointFloat& Picking, char *buff );
+    bool                        ModifyPickingInfo   ( TPointFloat& Picking, char *buff )                            final;
 
 
     TGLVolume                   GLVolume; // giving full access to other views
@@ -231,22 +231,22 @@ protected:
     void                        ApplyEditingTool    ( EditingToolsEnum tool, EditingModeEnum how, TPointFloat pos1, TPointFloat pos2, double radius, double depth, double feather );
 
 
-    bool                        ValidView               ()          { return MRIDoc->GetData(); }
+    bool                        ValidView               ()                                              final   { return MRIDoc->GetData(); }
     void                        SetBoxParameters        ();
     void                        SearchAndSetIntensity   ();
     void                        SetIsoSurfaceCut        ( bool automatic, double bt = 0 );
     void                        SetItemsInWindow        ();
-    void                        SetColorTable           ( AtomType datatype );
+    void                        SetColorTable           ( AtomType datatype )                           final;
     void                        SetDefaultSurfaceMode   ();
     bool                        IsSignedData            ()  const   { return MRIDoc->IsScalar ( AtomTypeUseCurrent ); }
 
-    void                        Paint                   ( owl::TDC& dc, bool erase, owl::TRect &rect );
-    void                        SetupWindow             ();
-    bool                        SetDocTitle             ( LPCTSTR docname, int index );
+    void                        Paint                   ( owl::TDC& dc, bool erase, owl::TRect &rect )  final;
+    void                        SetupWindow             ()                                              final;
+    bool                        SetDocTitle             ( LPCTSTR docname, int index )                  final;
     void                        DrawMinMax              ( TPointFloat& pos, bool colormin, bool showminmaxcircle, double scale );
 
-    void                        EvSetFocus              ( HWND hwnd )                           {   TBaseView::EvSetFocus  ( hwnd );    }
-    void                        EvKillFocus             ( HWND hwnd )                           {   TBaseView::EvKillFocus ( hwnd );    }
+    using            TBaseView::EvSetFocus;
+    using            TBaseView::EvKillFocus;
     void                        EvKeyDown               ( owl::uint key, owl::uint repeatCount, owl::uint flags );
     void                        EvLButtonDown           ( owl::uint, const owl::TPoint &p );
     void                        EvLButtonUp             ( owl::uint, const owl::TPoint &p );
@@ -261,10 +261,10 @@ protected:
 
     bool                        VnViewUpdated           ( TBaseView *view );
 
-    void                        Cm2Object               ()          { TBaseView::Cm2Object   (); }
-    void                        CmMagnifier             ()          { TBaseView::CmMagnifier (); }
+    using            TBaseView::Cm2Object;
+    using            TBaseView::CmMagnifier;
 
-    void                        CmSetRenderingMode      ();
+    void                        CmSetRenderingMode      ()  final;
     void                        CmSetCutPlane           ( owlwparam wparam );
     void                        CmShiftCutPlane         ( owlwparam wparam, bool forward );
 //  void                        CmSetVolumeEnable       ( owl::TCommandEnabler &tce );
@@ -285,12 +285,12 @@ protected:
     void                        CmSetScalingAdapt       ();
     void                        CmSetIntensityLevelEnable ( owl::TCommandEnabler &tce );
     void                        CmIsoMode               ( owlwparam wparam );
-    void                        CmSetShiftDepthRange    ( owlwparam wparam );
+    void                        CmSetShiftDepthRange    ( owlwparam wparam )    final;
     void                        CmSetSliceMode          ();
     void                        CmSetNumSlices          ( owlwparam wparam );
     void                        CmMoveSlice             ( owlwparam wparam );
     void                        CmSliceModeEnable       ( owl::TCommandEnabler &tce );
-    void                        CmOrient                ();
+    void                        CmOrient                ()                      final;
     void                        CmSetOrientation        ();
     void                        CmResetOrientation      ();
     void                        CmResetOrientationEnable( owl::TCommandEnabler &tce );

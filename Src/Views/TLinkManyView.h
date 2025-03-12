@@ -50,26 +50,27 @@ public:
 
 
     static const char*  StaticName          ()                                          { return "LinkMany &Display"; }
-    const char*         GetViewName         ()                                          { return StaticName(); }
+    const char*         GetViewName         ()  final                                   { return StaticName(); }
 
-    void                CreateGadgets       ();
+    void                CreateGadgets       ()  final;
 
-    void                SetupWindow         ();
-    void                GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane );
+    void                SetupWindow         ()  final;
+    void                GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane )    final;
 
     owl::TSize          GetBestSize         ();
 
 
 protected:
-    bool                CanClose            ()                                          { return owl::TWindowView::CanClose (); }
+    bool                CanClose            ()  final                                   { return owl::TWindowView::CanClose (); }
 
     int                 GetNumLines ();
     void                ViewIndexToPosition ( int i, TGLCoordinates<float> &p );
     TBaseDoc*           PositionToDoc       ( const owl::TPoint &p );
 
-    void                Paint               ( owl::TDC& dc, bool erase, owl::TRect& rect );
-    void                EvSetFocus          ( HWND hwnd )                               { TBaseView::EvSetFocus  ( hwnd );  }
-    void                EvKillFocus         ( HWND hwnd )                               { TBaseView::EvKillFocus ( hwnd );  }
+    void                Paint               ( owl::TDC& dc, bool erase, owl::TRect& rect )  final;
+
+    using    TBaseView::EvSetFocus;
+    using    TBaseView::EvKillFocus;
     void                EvKeyDown           ( owl::uint key, owl::uint repeatCount, owl::uint flags );
     void                EvLButtonDown       ( owl::uint, const owl::TPoint& );
     void                EvLButtonDblClk     ( owl::uint, const owl::TPoint& );

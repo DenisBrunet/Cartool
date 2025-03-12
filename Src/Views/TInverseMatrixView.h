@@ -38,12 +38,12 @@ public:
 
 
     static const char*  StaticName              ()          { return "Inverse &Matrix"; }
-    const char*         GetViewName             ()          { return StaticName(); }
+    const char*         GetViewName             ()  final   { return StaticName(); }
 
-    void                CreateGadgets           ();
+    void                CreateGadgets           ()  final;
 
 
-    void                GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane );
+    void                GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane )    final;
 
 
 protected:
@@ -51,9 +51,9 @@ protected:
     TInverseMatrixDoc*  ISDoc;
 
 
-    bool                ValidView               ()          { return ISDoc->GetNumElectrodes(); }
+    bool                ValidView               ()  final   { return ISDoc->GetNumElectrodes(); }
 
-    void                Paint                   ( owl::TDC& dc, bool erase, owl::TRect& rect );
+    void                Paint                   ( owl::TDC& dc, bool erase, owl::TRect& rect )  final;
 
 
     void                CmSetAveragingBefore    ( owlwparam w );

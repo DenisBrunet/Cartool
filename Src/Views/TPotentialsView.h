@@ -83,9 +83,9 @@ public:
 
 
     static const char*      StaticName              ()                      { return "&Potentials Display"; }
-    const char*             GetViewName             ()                      { return StaticName(); }
+    const char*             GetViewName             ()  final               { return StaticName(); }
 
-    void                    CreateGadgets           ();
+    void                    CreateGadgets           ()  final;
 
 
     bool                    VnNewTFCursor           ( TTFCursor *tfcursor );
@@ -93,13 +93,13 @@ public:
     bool                    VnNewHighlighted        ( TSelection *sel );
     bool                    VnSessionUpdated        ( void* );
 
-    void                    GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane );
-    bool                    IsRenderingMode         ( int renderingmode )   const;
+    void                    GLPaint                 ( int how, int renderingmode, TGLClipPlane *otherclipplane )    final;
+    bool                    IsRenderingMode         ( int renderingmode )                                           final;
 
 
-    const TBaseDoc*         GetGeometryDoc          ()              const   { return XYZDoc ? XYZDoc : BaseDoc; }   // Potentials display has no geometry info in itself, let's delegate to the background XYZ instead
-    bool                    ModifyPickingInfo       ( TPointFloat& Picking, char *buff );
-    int                     GetCurrXyz              ()              const   { return CurrXyz; }
+    const TBaseDoc*         GetGeometryDoc          ()  const final         { return XYZDoc ? XYZDoc : BaseDoc; }   // Potentials display has no geometry info in itself, let's delegate to the background XYZ instead
+    bool                    ModifyPickingInfo       ( TPointFloat& Picking, char *buff )                            final;
+    int                     GetCurrXyz              ()  const               { return CurrXyz; }
 
 
 protected:
@@ -138,15 +138,15 @@ protected:
 
 
     void                    GetTracks               ( int tf1, int tf2 );
-    bool                    ValidView               ()  const       { return GODoc && GODoc->GetNumXyzDoc() && EEGDoc->GetNumTimeFrames(); }
+    bool                    ValidView               ()                                              final   { return GODoc && GODoc->GetNumXyzDoc() && EEGDoc->GetNumTimeFrames(); }
     long                    SearchAndSetIntensity   ( bool precise = false );
     void                    Average                 ();
     void                    SetItemsInWindow        ();
-    void                    FitItemsInWindow        ( int numitems, owl::TSize itemsize, int &byx, int &byy, owl::TRect *winrect = 0 );
+    void                    FitItemsInWindow        ( int numitems, owl::TSize itemsize, int &byx, int &byy, owl::TRect *winrect = 0 )  final;
     void                    InitXyz                 ();
 
-    void                    Paint                   ( owl::TDC& dc, bool erase, owl::TRect& rect );
-    void                    SetupWindow             ();
+    void                    Paint                   ( owl::TDC& dc, bool erase, owl::TRect& rect )  final;
+    void                    SetupWindow             ()                                              final;
 
     void                    EvKeyDown               ( owl::uint key, owl::uint repeatCount, owl::uint flags );
     void                    EvKeyUp                 ( owl::uint key, owl::uint repeatCount, owl::uint flags );
@@ -165,11 +165,11 @@ protected:
     bool                    VnNewBadSelection       ( TSelection *sel );
     bool                    VnViewUpdated           ( TBaseView *view );
 
-    void                    Cm2Object               ()          { TBaseView::Cm2Object   ();                }
-    void                    CmMagnifier             ()          { TBaseView::CmMagnifier ();                }
-    void                    CmShowSequenceLabels    ()          { TSecondaryView::CmShowSequenceLabels (); }
+    using        TBaseView::Cm2Object;
+    using        TBaseView::CmMagnifier;
+    using   TSecondaryView::CmShowSequenceLabels;
 
-    void                    CmOrient                ();
+    void                    CmOrient                ()  final;
     void                    CmSetBrightness         ( owlwparam wparam );
     void                    CmSetContrast           ( owlwparam wparam );
     void                    CmSetIntensityLevelEnable ( owl::TCommandEnabler &tce );
@@ -179,21 +179,21 @@ protected:
     void                    CmNextColorTable        ();
     void                    CmSetShowZero           ();
     void                    CmSetShowMinMax         ();
-    void                    CmSetStepTF             ( owlwparam wparam );
+    void                    CmSetStepTF             ( owlwparam wparam )    final;
     void                    CmNextXyz               ();
     void                    CmXyzEnable             ( owl::TCommandEnabler &tce );
     void                    CmSetScalingAdapt       ();
     void                    CmSetInterpolation      ( owlwparam wparam );
 //  void                    CmSetExtrapolation      ( owlwparam wparam );
     void                    CmSearchTFMax           ();
-    void                    CmSetManageRangeCursor  ( owlwparam wparam );
-    void                    CmSetRenderingMode      ();
+    void                    CmSetManageRangeCursor  ( owlwparam wparam )    final;
+    void                    CmSetRenderingMode      ()                      final;
     void                    CmSetFlatView           ();
     void                    CmSetFlatViewEnable     ( owl::TCommandEnabler &tce );
-    void                    CmShowAll               ( owlwparam w );
-    void                    CmShowColorScale        ();
-    void                    CmShowAxis              ();
-    void                    CmSetShiftDepthRange    ( owlwparam wparam );
+    void                    CmShowAll               ( owlwparam w )         final;
+    void                    CmShowColorScale        ()                      final;
+    void                    CmShowAxis              ()                      final;
+    void                    CmSetShiftDepthRange    ( owlwparam wparam )    final;
     void                    CmSetShowTracks         ();
 
     DECLARE_RESPONSE_TABLE (TPotentialsView);

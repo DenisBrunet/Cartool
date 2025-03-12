@@ -359,7 +359,7 @@ ShowNow ();
 
 
 //----------------------------------------------------------------------------
-bool    TSecondaryView::VnViewSync ( TTFCursor *tfc )
+bool    TSecondaryView::VnViewSync ( const TTFCursor* tfc )
 {
 //if ( ! IsFriendView ( tfc->SentTo ) )
 //    return false;                     // not for me !

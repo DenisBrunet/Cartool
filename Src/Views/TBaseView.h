@@ -400,9 +400,9 @@ public:
     TLinkManyDoc*           GODoc;      // points to the optional group which owns this window - used for messaging
 
 
-    crtl::TList<TBaseView>  Using;      // Other windows that will be used to render this one, cumulating their graphical results
-    crtl::TList<TBaseView>  UsedBy;     // Windows that use me for rendering - the counterpart of Using
-    bool                    IsUsedBy ()                                     const   { return (bool) UsedBy; }
+    TList<TBaseView>        Using;      // Other windows that will be used to render this one, cumulating their graphical results
+    TList<TBaseView>        UsedBy;     // Windows that use me for rendering - the counterpart of Using
+    bool                    IsUsedBy            ()                          const   { return (bool) UsedBy; }
 
                                         // Windows
     UINT                    FriendshipId;       // General syncing between any windows: views with the same FriendshipId will share messages
@@ -420,8 +420,8 @@ public:
     owl::TSize              WindowClientOffset;
     owl::TSize              StandSize;
     UINT                    LinkedViewId;       // view ID which controls another one: f.ex. 1 potentials view -> 1 tracks view
-    owl::TResult            EvCommand           ( owl::uint id, THandle hWndCtl, owl::uint notifyCode );
-    owl::TResult            WindowProc          ( owl::uint msg, owl::TParam1 p1, owl::TParam2 p2 );
+    owl::TResult            EvCommand           ( owl::uint id, THandle hWndCtl, owl::uint notifyCode ) final;
+    owl::TResult            WindowProc          ( owl::uint msg, owl::TParam1 p1, owl::TParam2 p2 )     final;
 
                                                 // Replicating windows utilities, passing the proper parent object each time
     WindowState             GetWindowState      ()                                          const   { return crtl::GetWindowState    ( GetParentO () );             }
@@ -459,7 +459,7 @@ public:
     int                     NumControlBarGadgets;
     owl::TGadget**          ControlBarGadgets;  // pointers to local gadgets
     virtual void            CreateGadgets       ()                      = 0;
-    virtual void            DestroyGadgets      ();
+    void                    DestroyGadgets      ();
     void                    ButtonGadgetSetState( owl::TGadget *tog, bool down );
     void                    ButtonGadgetSetState( int Id, bool down );
 
@@ -475,9 +475,9 @@ public:
     bool                    IsCommandReceiver   ()                      const   { return   GetCommandsCloning () && CartoolApplication->LastActiveBaseView != this; } // receiving message from another view via command cloning
 
                                         // owl::TWindowView
-    bool                    CanClose            ();
-    void                    SetupWindow         ();
-    virtual void            SetFocusBack        ( UINT backto );
+    bool                    CanClose            ()                      override;
+    void                    SetupWindow         ()                      override;
+    void                    SetFocusBack        ( UINT backto );
     void                    EvSetFocus          ( HWND );
     void                    EvKillFocus         ( HWND );
     void                    EvKeyDown           ( owl::uint key, owl::uint repeatCount, owl::uint flags );
@@ -497,10 +497,10 @@ public:
     TGLMatrix*              GetModelRotMatrix       ()                              { return &ModelRotMatrix; }
 
                                         // basically taking the Doc transform, but allows to branch to another docs/views
-    virtual const TBaseDoc*             GetGeometryDoc      ()              const   { return BaseDoc; }
-    virtual const TGeometryTransform*   GetGeometryTransform()              const   { return GetGeometryDoc ()->GetGeometryTransform (); }
-    virtual const TDisplaySpaces&       GetDisplaySpaces    ()              const   { return GetGeometryDoc ()->GetDisplaySpaces     (); }
-    int                                 GetCurrentSpace     ()              const   { return CurrentDisplaySpace; };
+    virtual const TBaseDoc*     GetGeometryDoc      ()                      const   { return BaseDoc; }
+    const TGeometryTransform*   GetGeometryTransform()                      const   { return GetGeometryDoc ()->GetGeometryTransform (); }
+    const TDisplaySpaces&       GetDisplaySpaces    ()                      const   { return GetGeometryDoc ()->GetDisplaySpaces     (); }
+    int                         GetCurrentSpace     ()                      const   { return CurrentDisplaySpace; };
 
 
 protected:
@@ -591,50 +591,50 @@ protected:
     bool                    GetCommandsCloning      ()      const;
 
                                         // owl::TWindowView
-    bool                    SetDocTitle             ( LPCTSTR docname, int index );
+    bool                    SetDocTitle             ( LPCTSTR docname, int index )  override;
     void                    EvGetMinMaxInfo         ( MINMAXINFO& minmaxinfo );
     void                    EvTimer                 ( owl::uint timerId );
     void                    UpdateCaptionUsing      ( char *buff );
 
-    virtual bool            VnViewDestroyed         ( TBaseView* view );
+    bool                    VnViewDestroyed         ( TBaseView* view );
 
-    virtual void            CmEditUndo                  ();
-    virtual void            CmEditUndoEnable            ( owl::TCommandEnabler& tce );
-    virtual void            CmGeometryTransform         ();
-    virtual void            CmGeometryTransformEnable   ( owl::TCommandEnabler& tce );
-    virtual void            Cm2Object                   ();
+    void                    CmEditUndo                  ();
+    void                    CmEditUndoEnable            ( owl::TCommandEnabler& tce );
+    void                    CmGeometryTransform         ();
+    void                    CmGeometryTransformEnable   ( owl::TCommandEnabler& tce );
+    void                    Cm2Object                   ();
 
                                         // OpenGL
-    virtual void            PrePaint                ( owl::TDC& dc, owl::TRect& rect, double objectradiusx, double objectradiusy, double objectradiusz );
+    void                    PrePaint                ( owl::TDC& dc, owl::TRect& rect, double objectradiusx, double objectradiusy, double objectradiusz );
     virtual void            AntialiasingPaint       ();
     virtual void            NestedPaints            ();
-    virtual void            GLPaint                 ( int how, int renderingmode, TGLClipPlane* clipplane ) {}
-    virtual void            PostPaint               ( owl::TDC& dc );
+    virtual void            GLPaint                 ( int how, int renderingmode, TGLClipPlane* clipplane )     {}
+    void                    PostPaint               ( owl::TDC& dc );
     virtual void            HintsPaint              (); // more related to the window itself
 
     virtual void            SetColorTable           ( AtomType datatype );
 
     void                    SetWindowCoordinates    ( bool savestate = true );
     void                    ResetWindowCoordinates  ( bool restorestate = true );
-    virtual void            GLEditCopyBitmap        ();// special copy, due to OpenGL specificities
+    virtual void            GLEditCopyBitmap        (); // special copy, due to OpenGL specificities
     void                    GLLButtonDown           ( owl::uint, const owl::TPoint& p );
     void                    GLMouseMove             ( owl::uint, const owl::TPoint& p );
 
-    virtual void            CmSetRenderingMode      ()                      {}
+    virtual void            CmSetRenderingMode      ()      {}
     virtual void            CmOrient                ();
     void                    SetOrient               ( TBaseDoc* doc );
-    virtual void            CmMagnifier             ();
+    void                    CmMagnifier             ();
     virtual void            CmShowAll               ( owlwparam w );
-    virtual void            CmShowInfos             ();
+    void                    CmShowInfos             ();
     virtual void            CmShowAxis              ();
     virtual void            CmShowColorScale        ();
     virtual void            CmShowOrientation       ();
-    virtual void            CmShowSizeBox           ();
-    virtual void            CmShowBoundingBox       ();
+    void                    CmShowSizeBox           ();
+    void                    CmShowBoundingBox       ();
     virtual void            CmSetShiftDepthRange    ( owlwparam w );
     int                     NextRois                ( int currrois, int dimrois );
 
-    virtual bool            NotSmallWindow          ()                      { return PaintRect.Height () >= SmallWindowHeight && PaintRect.Width () >= SmallWindowWidth; }
+    bool                    NotSmallWindow          ()                      { return PaintRect.Height () >= SmallWindowHeight && PaintRect.Width () >= SmallWindowWidth; }
     void                    AxisToBorder            ( TGLCoordinates<GLfloat>& dir, TGLCoordinates<GLfloat>& border1, int& textattr1, TGLCoordinates<GLfloat>& border2, int& textattr2 );
     void                    DrawOrientation         ( const TOrientationType* boxsides = 0 );
     void                    DrawAxis                ();

@@ -483,7 +483,7 @@ Invalidate ( false );
 
 
 //----------------------------------------------------------------------------
-bool    TPotentialsView::IsRenderingMode ( int renderingmode )  const
+bool    TPotentialsView::IsRenderingMode ( int renderingmode )
 {
 if      ( renderingmode == RenderingOpaque      )   return RenderingMode == PotentialsRenderingSpheres     || RenderingMode == PotentialsRenderingSolid;
 else if ( renderingmode == RenderingTransparent )   return RenderingMode == PotentialsRenderingTransparent || RenderingMode == PotentialsRenderingOvercast;

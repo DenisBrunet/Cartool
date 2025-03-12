@@ -41,7 +41,7 @@ public:
     virtual        ~TCartoolMdiClient       ();
 
 
-    bool            CanClose                ();
+    bool            CanClose                ()  final;
 
     void            RefreshWindows          ();
 
@@ -56,7 +56,7 @@ public:
 
 protected:
 
-    void            SetupWindow             ();
+    void            SetupWindow             ()  final;
     void            BeforeClosing           ();
 
     void            CmNewEmptyLM            ();

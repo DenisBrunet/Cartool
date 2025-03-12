@@ -346,7 +346,7 @@ protected:
     owl::TCheckBox      *AcceptAll;
 
 
-    void                SetupWindow                     ();
+    void                SetupWindow                     ()  final;
     char*               TfToMs                          ( int tf, char *buff );
 
     void                EvPresetsChange                 ();
@@ -507,9 +507,9 @@ protected:
     bool                EpochState;
 
 
-    void                SetupWindow             ();
-    void                CloseWindow             ( int retvalue )    { if ( canClose )   TBaseDialog::CloseWindow(retvalue); }
-    void                Destroy                 ( int retvalue )    { if ( canClose )   TBaseDialog::Destroy(retvalue); }
+    void                SetupWindow             ()  final;
+    void                CloseWindow             ( int retvalue )    final   { if ( canClose )   TBaseDialog::CloseWindow(retvalue); }
+    void                Destroy                 ( int retvalue )    final   { if ( canClose )   TBaseDialog::Destroy(retvalue); }
     void                EvTimer                 ( UINT timerId );
 
     void                CmButtonPressed         ( owlwparam wparam );

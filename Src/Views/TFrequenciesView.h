@@ -113,15 +113,15 @@ public:
     friend          TTracksViewScrollbar;
 
     static const char*  StaticName      ()              { return "&Frequency Display"; }
-    const char*         GetViewName     ()              { return StaticName(); }
+    const char*         GetViewName     ()  final       { return StaticName(); }
 
-    void                CreateGadgets   ();
+    void                CreateGadgets   ()  final;
 
 
     TFreqDoc*       GetFreqDoc          ()              { return FreqDoc; }
-    void            UpdateCaption       ()                                          final;
+    void            UpdateCaption       ();
     void            DrawTFCursor        ( bool undrawold, bool localhdc = true )    final;
-    void            GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane );
+    void            GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane )    final;
     void            DrawHighlighted     ( int i, bool highlight )                   final;
                                         // return the electrode name by priority: montage, xyz, pseudo-tracks, then original name
     const char*         GetElectrodeName    ( int eli, bool mtg = true )            final;
@@ -132,8 +132,8 @@ public:
     void            GetTracks ( long tf1, long tf2, TArray2<float> &buff, ReferenceType ref = ReferenceUsingCurrent )   final;
 
 
-    void            HintsPaint  ();
-    void            Paint       ( owl::TDC& dc, bool erase, owl::TRect& rect );
+    void            HintsPaint  ()                                                  final;
+    void            Paint       ( owl::TDC& dc, bool erase, owl::TRect& rect )      final;
     void            EvKeyDown   ( owl::uint key, owl::uint repeatCount, owl::uint flags );
     void            EvKeyUp     ( owl::uint key, owl::uint repeatCount, owl::uint flags );
 
@@ -194,7 +194,7 @@ protected:
     void            EvSetFocus          ( HWND );
     void            EvKillFocus         ( HWND );
 
-    bool            ValidView           ()              { return FreqDoc && FreqDoc->GetNumTimeFrames() > 0 && FreqDoc->GetNumElectrodes() > 0; }
+    bool            ValidView           ()                                                              final   { return FreqDoc && FreqDoc->GetNumTimeFrames() > 0 && FreqDoc->GetNumElectrodes() > 0; }
     void            SetPartWindows      ( TSelection &sel, bool refresh = true )                        final;
     void            UpdateBuffers       ( long oldtfmin, long oldtfmax, long newtfmin, long newtfmax )  final;
     bool            HasStandardDeviation()  const final { return false; }
@@ -209,7 +209,7 @@ protected:
                                         // a few internal functions to make things a bit simpler
     void            SetCDP              ();
     void            GetRelHorizRange    ( long& minp, long& maxp, long& nump ); // returns the correct horizontal range depending on mode
-    void            SetColorTable       ( AtomType datatype );
+    void            SetColorTable       ( AtomType datatype )   final;
 
 
     void            CmSetRenderingMode      ()                  final;

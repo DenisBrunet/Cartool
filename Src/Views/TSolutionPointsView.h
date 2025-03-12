@@ -42,9 +42,9 @@ public:
 
 
     static const char*          StaticName          ()                          { return "&Solution Points"; }
-    const char*                 GetViewName         ()                  const   { return StaticName (); }
+    const char*                 GetViewName         ()                  final   { return StaticName (); }
 
-    void                        CreateGadgets       ();
+    void                        CreateGadgets       ()                  final;
 
 
     TSolutionPointsDoc*         GetSPDoc            ()                          { return SPDoc; }
@@ -52,10 +52,10 @@ public:
     const TStrings*             GetSPNames          ()                  const   { return SPDoc->GetSPNames (); }
 
 
-    void                        GLPaint             ( int how, int renderingmode, TGLClipPlane* otherclipplane );
-    bool                        IsRenderingMode     ( int renderingmode )       { return renderingmode == RenderingOpaque; }
+    void                        GLPaint             ( int how, int renderingmode, TGLClipPlane* otherclipplane )    final;
+    bool                        IsRenderingMode     ( int renderingmode )                                           final   { return renderingmode == RenderingOpaque; }
 
-    bool                        ModifyPickingInfo   ( TPointFloat& Picking, char *buff );
+    bool                        ModifyPickingInfo   ( TPointFloat& Picking, char *buff )                            final;
     virtual bool                VnNewHighlighted    ( TSelection *sel );
 
 
@@ -71,9 +71,9 @@ protected:
 
 
     void                        SetupWindow         ();
-    void                        Paint               ( owl::TDC& dc, bool erase, owl::TRect& rect );
-    void                        EvSetFocus          ( HWND hwnd )                               { TBaseView::EvSetFocus  ( hwnd );  }
-    void                        EvKillFocus         ( HWND hwnd )                               { TBaseView::EvKillFocus ( hwnd );  }
+    void                        Paint               ( owl::TDC& dc, bool erase, owl::TRect& rect )  final;
+    using            TBaseView::EvSetFocus;
+    using            TBaseView::EvKillFocus;
     void                        EvKeyDown           ( owl::uint key, owl::uint repeatCount, owl::uint flags );
     void                        EvLButtonDown       ( owl::uint, const owl::TPoint &p );
     void                        EvLButtonUp         ( owl::uint, const owl::TPoint &p );
@@ -85,14 +85,14 @@ protected:
     void                        EvTimer             ( owl::uint timerId );
     void                        EvMouseWheel        ( owl::uint modKeys, int zDelta, const owl::TPoint& p );
 
-    void                        Cm2Object           ()                          { TBaseView::Cm2Object   (); }
-    void                        CmOrient            ()                          { TBaseView::CmOrient    (); }
-    void                        CmMagnifier         ()                          { TBaseView::CmMagnifier (); }
+    using            TBaseView::Cm2Object;
+    using            TBaseView::CmOrient;
+    using            TBaseView::CmMagnifier;
 
-    void                        CmSetRenderingMode  ();
+    void                        CmSetRenderingMode  ()  final;
     void                        CmSetCutPlane       ( owlwparam wparam );
     void                        CmSetCutPlaneMode   ();
-    void                        CmSetShiftDepthRange( owlwparam wparam );
+    void                        CmSetShiftDepthRange( owlwparam wparam )    final;
     void                        CmSetShowNames      ();
     void                        CmExportText        ()                          { SPDoc->ExportText(); }
 

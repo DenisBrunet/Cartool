@@ -138,11 +138,11 @@ NOTIFY_SIG  (vnNewTFCursor,     TTFCursor* )
 
 //----------------------------------------------------------------------------
                                         // a synchronization was done
-template <class T, bool (T::*M) ( TTFCursor* )>
+template <class T, bool (T::*M) ( const TTFCursor* )>
 owl::TResult    DecodeVnViewSync        (   void* i,    owl::TParam1,   owl::TParam2 p2     )
-{ return ( static_cast<T*>( i )->*M ) ( (TTFCursor*) ( p2 ) ) ? TRUE : FALSE; }
+{ return ( static_cast<T*>( i )->*M ) ( (const TTFCursor*) ( p2 ) ) ? TRUE : FALSE; }
 
-NOTIFY_SIG  (vnViewSync,        TTFCursor* )
+NOTIFY_SIG  (vnViewSync,        const TTFCursor* )
 
 #define EV_VN_VIEWSYNC          VN_DEFINE   (vnViewSync, VnViewSync, DecodeVnViewSync)
 

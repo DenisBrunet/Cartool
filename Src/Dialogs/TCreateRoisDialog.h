@@ -166,7 +166,7 @@ protected:
     TTimer              Timer;
 
 
-    void                SetupWindow                 ();
+    void                SetupWindow                 ()  final;
     void                EvTimer                     ( owl::uint timerId );
 
     void                CleanUp                     ();

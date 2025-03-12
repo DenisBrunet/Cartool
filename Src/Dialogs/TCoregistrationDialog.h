@@ -151,9 +151,9 @@ protected:
     TMatrix44*      XyzCoregToNorm;     // used to optionally return the transform to the caller
 
 
-    void            SetupWindow             ();
+    void            SetupWindow             ()              final;
     void            EvPresetsChange         ();
-    bool            PreProcessMsg           ( MSG& msg );
+    bool            PreProcessMsg           ( MSG& msg )    final;
     void            EvKeyDown               ( owl::uint key, owl::uint repeatCount, owl::uint flags );
 
     void            CmOk                    ();

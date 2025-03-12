@@ -377,7 +377,7 @@ protected:
     owl::TCheckBox      *DeletePreProcFiles;
 
 
-    void                SetupWindow             ();
+    void                SetupWindow             ()  final;
 
     void                CmOkEnable              ( owl::TCommandEnabler &tce )   { TMicroStatesFitDialog::CmOkEnable       ( tce ); }
     void                CmVariableEnable        ( owl::TCommandEnabler &tce )   { TMicroStatesFitDialog::CmVariableEnable ( tce ); }
@@ -458,7 +458,7 @@ protected:
     owl::TEdit          *RejectSize;
 
 
-    void                SetupWindow             ();
+    void                SetupWindow             ()  final;
 
     void                CmOkEnable              ( owl::TCommandEnabler &tce )   { TMicroStatesFitDialog::CmOkEnable       ( tce ); }
     void                CmVariableEnable        ( owl::TCommandEnabler &tce )   { TMicroStatesFitDialog::CmVariableEnable ( tce ); }

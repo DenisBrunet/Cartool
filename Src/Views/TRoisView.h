@@ -36,30 +36,30 @@ public:
 
 
     static const char*  StaticName          ()          { return "&ROIs Display"; }
-    const char*         GetViewName         ()          { return StaticName(); }
+    const char*         GetViewName         ()  final   { return StaticName(); }
 
-    void                CreateGadgets       ();
+    void                CreateGadgets       ()  final;
 
-    void                GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane );
+    void                GLPaint             ( int how, int renderingmode, TGLClipPlane *otherclipplane )    final;
 
 
 protected:
 
     TRoisDoc*           ROIDoc;
 
-    bool                ValidView           ()          { return true; } // ISDoc->GetNumElectrodes(); }
+    bool                ValidView           ()  final   { return true; } // ISDoc->GetNumElectrodes(); }
 
-    void                Paint               ( owl::TDC& dc, bool erase, owl::TRect& rect );
+    void                Paint               ( owl::TDC& dc, bool erase, owl::TRect& rect )  final;
 
                                     // OwlNext wants explicit message handlers from derived class
-    void                EvGetMinMaxInfo     ( MINMAXINFO& minmaxinfo )                                  {           TBaseView::EvGetMinMaxInfo    ( minmaxinfo );                 }
-    void                EvSize              ( owl::uint sizetype, const owl::TSize& size )              {           TBaseView::EvSize             ( sizetype, size );             }
-    void                EvKeyDown           ( owl::uint key, owl::uint repeatCount, owl::uint flags )   {           TBaseView::EvKeyDown          ( key, repeatCount, flags );    }
-    void                EvKeyUp             ( owl::uint key, owl::uint repeatCount, owl::uint flags )   {           TBaseView::EvKeyUp            ( key, repeatCount, flags );    }
-    bool                EvEraseBkgnd        ( HDC hdc )                                                 { return    TBaseView::EvEraseBkgnd       ( hdc );                        }
-    void                EvSetFocus          ( HWND hwnd )                                               {           TBaseView::EvSetFocus         ( hwnd );                       }
-    void                EvKillFocus         ( HWND hwnd )                                               {           TBaseView::EvKillFocus        ( hwnd );                       }
-    bool                VnViewDestroyed     ( TBaseView* view )                                         { return    TBaseView::VnViewDestroyed    ( view );                       }
+    using    TBaseView::EvGetMinMaxInfo;
+    using    TBaseView::EvSize;
+    using    TBaseView::EvKeyDown;
+    using    TBaseView::EvKeyUp;
+    using    TBaseView::EvEraseBkgnd;
+    using    TBaseView::EvSetFocus;
+    using    TBaseView::EvKillFocus;
+    using    TBaseView::VnViewDestroyed;
 
 
     DECLARE_RESPONSE_TABLE (TRoisView);

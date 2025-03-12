@@ -438,7 +438,7 @@ protected:
     bool                LockResampling;
 
 
-    void                SetupWindow ();
+    void                SetupWindow             ()  final;
 
     void                CmOkEnable              ( owl::TCommandEnabler &tce )   { TMicroStatesSegDialog::CmOkEnable ( tce ); }
 
@@ -538,7 +538,7 @@ protected:
     owl::TEdit          *RejectSize;
 
 
-    void                SetupWindow ();
+    void                SetupWindow             ()  final;
 
     void                CmOkEnable              ( owl::TCommandEnabler &tce )   { TMicroStatesSegDialog::CmOkEnable ( tce ); }
 

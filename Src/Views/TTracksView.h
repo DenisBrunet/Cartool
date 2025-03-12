@@ -290,11 +290,11 @@ public:
     TTracksViewScrollbar*   ScrollBar;
 
 
-    static const char*  StaticName              ()          { return "&Tracks Display"; }
-    const char*         GetViewName             ()  const   { return StaticName(); }
-    bool                CanClose                ();
+    static const char*  StaticName              ()              { return "&Tracks Display"; }
+    const char*         GetViewName             ()  override    { return StaticName(); }
+    bool                CanClose                ()  final;
 
-    void                CreateGadgets           ();
+    void                CreateGadgets           ()  override;
 
 
     TElectrodesDoc*     XYZDoc;
@@ -322,12 +322,12 @@ public:
     TTracksViewMontage  Montage;
 
 
-    void                AntialiasingPaint       ();
-    void                NestedPaints            ();
-    void                GLPaint                 ( int how, int renderingmode, TGLClipPlane* otherclipplane );
-    void                HintsPaint              ();
+    void                AntialiasingPaint       ()                                                              final;
+    void                NestedPaints            ()                                                              final;
+    void                GLPaint                 ( int how, int renderingmode, TGLClipPlane* otherclipplane )    override;
+    void                HintsPaint              ()                                                              override;
 
-    virtual void        UpdateCaption               ();   // with time of cursor
+    void                UpdateCaption               ();     // with time of cursor
     void                UpdateCaptionTracksValues   ( char* buff );
     virtual void        DrawTFCursor                ( bool undrawold, bool localhdc = true );
 //  void                ZoomWindow                  ( TEegWinViewPartTracks* tocw );
@@ -351,7 +351,7 @@ public:
     void                SetColoring             ( int which, int from, ColoringEnum how, TGLColor<GLfloat> cmin, TGLColor<GLfloat> cmax, double minv = 0, double maxv = 0 );
     void                Set3DMode               ( int current3dset );
 
-    const TBaseDoc*     GetGeometryDoc          ()                          const   { return XYZDoc ? XYZDoc : BaseDoc; }   // get geometrical info from XYZDoc
+    const TBaseDoc*     GetGeometryDoc          ()                      const final { return XYZDoc ? XYZDoc : BaseDoc; }   // get geometrical info from XYZDoc
     TTracksDoc*         GetEEGDoc               ()                                  { return EEGDoc; }
 
     void                TFToString              ( long   tf, char* stf, char* stime = 0, TimeDisplayEnum horizscale = NoTimeDisplay, char* sdate = 0, bool interval = false )   const;
@@ -450,15 +450,15 @@ protected:
     void                SetRoiMode              ()          { SetFlags      ( DisplayMode, DisplayRoi                          );    }
 
 
-    bool                ValidView                   ()                          const   { return EEGDoc && EEGDoc->GetNumTimeFrames() > 0 && EEGDoc->GetNumElectrodes() > 0; }
+    bool                ValidView                   ()                          override    { return EEGDoc && EEGDoc->GetNumTimeFrames() > 0 && EEGDoc->GetNumElectrodes() > 0; }
     virtual void        SetPartWindows              ( TSelection &sel, bool refresh = true );
     void                SetTextMargin               ();
     virtual void        UpdateBuffers               ( long oldtfmin, long oldtfmax, long newtfmin, long newtfmax );
     void                ReloadBuffers               ();
-    virtual bool        HasStandardDeviation        ()                          const   { return ShowSD && EEGDoc->HasStandardDeviation (); }
+    virtual bool        HasStandardDeviation        ()                          const       { return ShowSD && EEGDoc->HasStandardDeviation (); }
     virtual void        ResetScaleTracks            ( const TSelection *sel = 0 );
-    double              ScalingContrastToColorTable ( double scalingcontrast )  const   { return 0.1 + 999.9 * scalingcontrast * scalingcontrast; }
-    double              ColorTableToScalingContrast ( double contrast        )  const   { return sqrt ( ( contrast - 0.1 ) / 999.9 ); }
+    double              ScalingContrastToColorTable ( double scalingcontrast )  const       { return 0.1 + 999.9 * scalingcontrast * scalingcontrast; }
+    double              ColorTableToScalingContrast ( double contrast        )  const       { return sqrt ( ( contrast - 0.1 ) / 999.9 ); }
 
 
     void                UpdateTimeRange             ( TArray2<float> &data, TSelection &goodtf );
@@ -492,12 +492,12 @@ protected:
     int                 GetMaxTracks            ()                          { return IsRoiMode () ? Rois->GetTotalSelected () : EEGDoc->GetNumElectrodes (); }
 
 
-    void                SetupWindow             ();
-    void                Paint                   ( owl::TDC& dc, bool erase, owl::TRect& rect );
+    void                SetupWindow             ()                                              final;
+    void                Paint                   ( owl::TDC& dc, bool erase, owl::TRect& rect )  override;
     void                EvSize                  ( owl::uint, const owl::TSize & );
     void                EvSetFocus              ( HWND );
     void                EvKillFocus             ( HWND );
-    void                GLEditCopyBitmap        ();
+    void                GLEditCopyBitmap        ()                                              final;
     void                EvLButtonDblClk         ( owl::uint, const owl::TPoint &p );
     void                EvLButtonDown           ( owl::uint, const owl::TPoint &p );
     void                EvLButtonUp             ( owl::uint, const owl::TPoint &p );
@@ -510,8 +510,8 @@ protected:
     void                EvDropFiles             ( owl::TDropInfo drop );
     void                EvMouseWheel            ( owl::uint modKeys, int zDelta, const owl::TPoint& p );
 
-    void                Cm2Object               ()  { TBaseView::Cm2Object   ();                }
-    void                CmMagnifier             ()  { TBaseView::CmMagnifier ();                }
+    using    TBaseView::Cm2Object;
+    using    TBaseView::CmMagnifier;
 
                                         // Handlers used to catch up messages usually going to the MDI Client, allowing to call these processing using the current view's state
     void                CmExportTracks          ();
@@ -521,7 +521,7 @@ protected:
     void                RisToCloudVectorsUI     ();
     void                CmScanTriggers          ();
 
-    void                CmOrient                ();
+    void                CmOrient                ()  final;
     void                CmEditCopy              ();
     virtual void        CmZoomVert              ( owlwparam w );
     virtual void        CmZoomHorz              ( owlwparam w );
@@ -578,7 +578,7 @@ protected:
 
     void                CmShowSD                ();
     void                CmShowSDEnable          ( owl::TCommandEnabler &tce );
-    virtual void        CmSetRenderingMode      ();
+    void                CmSetRenderingMode      ()  override;
     void                CmPenSize               ();
     void                CmSelection             ( owlwparam w );
     void                CmTimeRef               ( owlwparam w );
@@ -617,8 +617,8 @@ protected:
     void                CmShowTime              ();
     void                CmShowDateEnable        ( owl::TCommandEnabler &tce );
     void                CmShowTimeEnable        ( owl::TCommandEnabler &tce );
-    void                CmShowColorScale        ();
-    void                CmShowAll               ( owlwparam w );
+    void                CmShowColorScale        ()              final;
+    void                CmShowAll               ( owlwparam w ) final;
     bool                HasColorScale           ();
     void                CmNextRois              ();
     void                CmAverageRois           ();

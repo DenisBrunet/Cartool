@@ -164,7 +164,7 @@ protected:
     void                ProcessCurrent          ( void* usetransfer = 0, const char* moreinfix = 0 );
 
 
-    void                SetupWindow             ();
+    void                SetupWindow             ()  final;
     void                EvDropFiles             ( owl::TDropInfo drop );
 
     void                CmBrowseXyzFileName     ( owlwparam w );
