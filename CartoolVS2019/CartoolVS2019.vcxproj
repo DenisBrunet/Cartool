@@ -366,6 +366,7 @@
     <ClCompile Include="..\Src\Volumes\Volumes.TTalairachOracle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Src\App\TCartoolApp.ProductVersion.h" />
     <ClInclude Include="..\Src\CLI\ReprocessTracksCLI.h" />
     <ClInclude Include="..\Src\res\resource.h" />
     <ClInclude Include="..\Setup\GitWCRev.h" />
