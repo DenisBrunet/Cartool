@@ -225,10 +225,12 @@ public:
     virtual const TStrings*     GetElectrodesNames  ()              const   { return &ElectrodesNames;      }
 
                                         // Recordings can store multiple blocks / sessions within the same file(!)
+    bool            HasMultipleSessions ()              const   { return NumSequences > 1; }
     int             GetNumSessions      ()              const   { return NumSequences; }
-    virtual int     GetCurrentSession   ()              const;  // 0 if only one session, otherwise 1..3 for 3 sessions
-    virtual void    GoToSession         ( int newsession = 0 );
+    int             GetCurrentSession   ()              const   { return NumSequences > 1 ? CurrSequence + 1 : 0; } // 0 if no session, otherwise in [1..NumSequences]
+    void            GoToSession         ( int newsession );                                                         // parameter in [1..NumSequences]
     virtual bool    UpdateSession       ( int newsession )      { return true; }
+
     virtual void    UpdateTitle         ();
     char*           GetBaseFileName     ( char* basefilename )  const final;    // the base name to be used for any processing ouput (removing extension, caring for mff directory...)
 

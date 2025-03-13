@@ -615,14 +615,14 @@ if ( GetDocPath () ) {
 
         } while ( (long) mrk.marker_next_offset != MARKER_TERMINATOR && ifsmrk.good() && CurrSequence < NumSequences );
 
-    ifsmrk.close();
+    ifsmrk.close ();
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // using the first sequence at opening time, or the next one if it appears to be too short
     CurrSequence        = 0;
 
-    if ( NumSequences > 1 
+    if ( HasMultipleSessions () 
       && Sequences[ 0 ].NumTimeFrames < Sequences[ 1 ].NumTimeFrames / 2 )
         CurrSequence        = 1;
 
@@ -643,10 +643,10 @@ if ( GetDocPath () ) {
                                         // again update, in case of some sequences were read
     UpdateTitle ();
 
-    if ( NumSequences > 1 && VkQuery () ) {
-        sprintf ( buff, "There are %0d sessions in this file,\nonly one can be used at a time.", NumSequences );
-        ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
-        }
+//  if ( HasMultipleSessions () ) {
+//      sprintf ( buff, "There are %0d sessions in this file,\nonly one can be used at a time.", NumSequences );
+//      ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
+//      }
 
     }
 else {                                  // can not create

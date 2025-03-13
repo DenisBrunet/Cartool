@@ -1331,7 +1331,7 @@ if ( closefile ) {
 
     verbose.NextTopic ( "Exporting:" );
     {
-    if ( EEGDoc->GetNumSessions () > 1 ) {
+    if ( EEGDoc->HasMultipleSessions () ) {
         verbose.Put ( "Session exported:",          EEGDoc->GetCurrentSession () );
         verbose.Put ( "Total number of sessions:",  EEGDoc->GetNumSessions () );
         verbose.NextLine ();

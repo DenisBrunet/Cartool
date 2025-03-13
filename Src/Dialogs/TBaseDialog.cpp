@@ -337,13 +337,12 @@ for ( BatchFileIndex = 0; BatchFileIndex < numinfiles ; BatchFileIndex++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // we have to loop through sessions, too!
-    numsessions     = EEGDoc->GetNumSessions () > 0 ? EEGDoc->GetNumSessions () : 1;
     currsession     = ! BatchProcessing ? EEGDoc->GetCurrentSession () : 0;
 
                                         // save some of the display states, if view exists & there are sessions
-    if ( numsessions > 1 && ! BatchProcessing ) {
+    if ( EEGDoc->HasMultipleSessions () && ! BatchProcessing ) {
 
-        TTracksView        *tracksview      = dynamic_cast< TTracksView * > ( EEGDoc->GetViewList () );
+        TTracksView*        tracksview      = dynamic_cast<TTracksView*> ( EEGDoc->GetViewList () );
 
         if ( tracksview )
             tracksviewstate.SaveState ( tracksview );
@@ -352,11 +351,11 @@ for ( BatchFileIndex = 0; BatchFileIndex < numinfiles ; BatchFileIndex++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // process all sessions, even if only current file open - this could be an option to just process the current process in that case
-    for ( int s = 1; s <= numsessions; s++ ) {
+    for ( int s = 1; s <= EEGDoc->GetNumSessions (); s++ ) {
 
         Gauge.Actualize ();
 
-        if ( numsessions > 1 )
+        if ( EEGDoc->HasMultipleSessions () )
             EEGDoc->GoToSession ( s );
 
         BatchProcessCurrent ();         // calls ProcessCurrent, or an overloaded function
@@ -365,13 +364,13 @@ for ( BatchFileIndex = 0; BatchFileIndex < numinfiles ; BatchFileIndex++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // restore current session
-    if ( numsessions > 1 && ! BatchProcessing ) {
+    if ( EEGDoc->HasMultipleSessions () && ! BatchProcessing ) {
 
         Gauge.Actualize ();
 
         EEGDoc->GoToSession ( currsession );
                                         // also try to restore current view to its original appearance
-        TTracksView        *tracksview      = dynamic_cast< TTracksView * > ( EEGDoc->GetViewList () );
+        TTracksView*        tracksview      = dynamic_cast<TTracksView*> ( EEGDoc->GetViewList () );
 
         if ( tracksview )               // restore some of the display states
             tracksviewstate.RestoreState ( tracksview );

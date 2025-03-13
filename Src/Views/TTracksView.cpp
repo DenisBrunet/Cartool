@@ -8245,17 +8245,21 @@ MarkerStrings.Sort ();
 //----------------------------------------------------------------------------
 void    TTracksView::CmDuplicateTriggersToMarkers ()
 {
+constexpr char*     title           = "Duplicating Triggers to Markers";
+
 if ( EEGDoc->GetNumMarkers () == 0 )
     return;
 
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+bool                allsessions     = EEGDoc->HasMultipleSessions () && GetAnswerFromUser ( "Applying to all sessions?", title, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
+int                 fromsession     = EEGDoc->HasMultipleSessions () ? ( allsessions ? 1                         : currsession ) : 0;
+int                 tosession       = EEGDoc->HasMultipleSessions () ? ( allsessions ? EEGDoc->GetNumSessions () : currsession ) : 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+for ( int sessioni = fromsession; sessioni <= tosession; sessioni++ ) {
 
     EEGDoc->GoToSession ( sessioni );
 
@@ -8303,6 +8307,8 @@ if ( allsessions )
 //----------------------------------------------------------------------------
 void    TTracksView::CmSplitMarkers ()
 {
+constexpr char*     title           = "Bitwise Splitting Markers Names";
+
 if ( EEGDoc->GetNumMarkers () == 0 ) {
     ShowMessage ( "There are no triggers or markers for you here!", "Splitting Markers", ShowMessageWarning );
     return;
@@ -8314,7 +8320,7 @@ char                buff[ 256 ];
 
 sprintf ( buff, "%u", mask );
 
-if ( ! GetInputFromUser ( "Give an integer value as a mask:", "Bitwise-splitting of marker names", buff, buff, this ) )
+if ( ! GetInputFromUser ( "Give an integer value as a mask:", title, buff, buff, this ) )
     return;
 
 
@@ -8324,13 +8330,15 @@ if ( ! mask )
     return;
 
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+bool                allsessions     = EEGDoc->HasMultipleSessions () && GetAnswerFromUser ( "Applying to all sessions?", title, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
+int                 fromsession     = EEGDoc->HasMultipleSessions () ? ( allsessions ? 1                         : currsession ) : 0;
+int                 tosession       = EEGDoc->HasMultipleSessions () ? ( allsessions ? EEGDoc->GetNumSessions () : currsession ) : 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+for ( int sessioni = fromsession; sessioni <= tosession; sessioni++ ) {
 
     EEGDoc->GoToSession ( sessioni );
 
@@ -8427,8 +8435,10 @@ if ( /* StringIsEmpty ( to ) ||*/ StringIs ( replace, search, CaseSensitive ) )
     return;
 
 
-bool                allsessions     = ! withintime && EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", title, this );
+bool                allsessions     = ! withintime && EEGDoc->HasMultipleSessions () && GetAnswerFromUser ( "Applying to all sessions?", title, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
+int                 fromsession     = EEGDoc->HasMultipleSessions () ? ( allsessions ? 1                         : currsession ) : 0;
+int                 tosession       = EEGDoc->HasMultipleSessions () ? ( allsessions ? EEGDoc->GetNumSessions () : currsession ) : 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -8441,7 +8451,7 @@ if ( ! greppy.IsValid () )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+for ( int sessioni = fromsession; sessioni <= tosession; sessioni++ ) {
 
     EEGDoc->GoToSession ( sessioni );
 
@@ -8535,13 +8545,15 @@ if ( /* StringIsEmpty ( to ) ||*/ StringIs ( to, from, CaseSensitive ) )
     return;
 
 
-bool                allsessions     = ! withintime && EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", title, this );
+bool                allsessions     = ! withintime && EEGDoc->HasMultipleSessions () && GetAnswerFromUser ( "Applying to all sessions?", title, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
+int                 fromsession     = EEGDoc->HasMultipleSessions () ? ( allsessions ? 1                         : currsession ) : 0;
+int                 tosession       = EEGDoc->HasMultipleSessions () ? ( allsessions ? EEGDoc->GetNumSessions () : currsession ) : 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+for ( int sessioni = fromsession; sessioni <= tosession; sessioni++ ) {
 
     EEGDoc->GoToSession ( sessioni );
 
@@ -8653,13 +8665,15 @@ if ( StringIsEmpty ( newname ) )
 newname[ MarkerNameMaxLength - 1 ] = 0;
 
 
-bool                allsessions     = ! withintime && EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+bool                allsessions     = ! withintime && EEGDoc->HasMultipleSessions () && GetAnswerFromUser ( "Applying to all sessions?", title, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
+int                 fromsession     = EEGDoc->HasMultipleSessions () ? ( allsessions ? 1                         : currsession ) : 0;
+int                 tosession       = EEGDoc->HasMultipleSessions () ? ( allsessions ? EEGDoc->GetNumSessions () : currsession ) : 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+for ( int sessioni = fromsession; sessioni <= tosession; sessioni++ ) {
 
     EEGDoc->GoToSession     ( sessioni );
 
@@ -8682,9 +8696,12 @@ for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <=
             continue;
 
 
-        StringCopy ( tomarker->Name, newname );
+        if ( StringIsNot ( tomarker->Name, newname, CaseSensitive ) ) {
 
-        EEGDoc->SetMarkersDirty ();
+            StringCopy ( tomarker->Name, newname );
+
+            EEGDoc->SetMarkersDirty ();
+            }
         } // for markers
 
 
@@ -8714,22 +8731,26 @@ if ( allsessions )
 //----------------------------------------------------------------------------
 void    TTracksView::CmMergeOverlappingMarkers ()
 {
+constexpr char*     title           = "Merging Overlapped Markers";
+
 if ( EEGDoc->GetNumMarkers ( MarkerTypeUserCoded ) == 0 ) {
-    ShowMessage ( "There are no markers for you here!", "Merging Overlapped Markers", ShowMessageWarning );
+    ShowMessage ( "There are no markers for you here!", title, ShowMessageWarning );
     return;
     }
 
-if ( ! GetAnswerFromUser ( "Are you sure you want to merge exactly overlapping markers (no undo) ?", "Merging Overlapped Markers" ) )
+if ( ! GetAnswerFromUser ( "Are you sure you want to merge exactly overlapping markers (no undo) ?", title ) )
     return;
 
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+bool                allsessions     = EEGDoc->HasMultipleSessions () && GetAnswerFromUser ( "Applying to all sessions?", title, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
+int                 fromsession     = EEGDoc->HasMultipleSessions () ? ( allsessions ? 1                         : currsession ) : 0;
+int                 tosession       = EEGDoc->HasMultipleSessions () ? ( allsessions ? EEGDoc->GetNumSessions () : currsession ) : 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+for ( int sessioni = fromsession; sessioni <= tosession; sessioni++ ) {
 
     EEGDoc->GoToSession ( sessioni );
 
@@ -8864,22 +8885,26 @@ if ( allsessions )
 //----------------------------------------------------------------------------
 void    TTracksView::CmMergeContiguousMarkers ()
 {
+constexpr char*     title           = "Merging Contiguous Markers";
+
 if ( EEGDoc->GetNumMarkers ( MarkerTypeUserCoded ) == 0 ) {
-    ShowMessage ( "There are no markers for you here!", "Merging Contiguous Markers", ShowMessageWarning );
+    ShowMessage ( "There are no markers for you here!", title, ShowMessageWarning );
     return;
     }
 
-if ( ! GetAnswerFromUser ( "Are you sure you want to merge identical," NewLine "contiguous markers (no undo) ?", "Merging Contiguous Markers" ) )
+if ( ! GetAnswerFromUser ( "Are you sure you want to merge identical," NewLine "contiguous markers (no undo) ?", title ) )
     return;
 
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+bool                allsessions     = EEGDoc->HasMultipleSessions () && GetAnswerFromUser ( "Applying to all sessions?", title, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
+int                 fromsession     = EEGDoc->HasMultipleSessions () ? ( allsessions ? 1                         : currsession ) : 0;
+int                 tosession       = EEGDoc->HasMultipleSessions () ? ( allsessions ? EEGDoc->GetNumSessions () : currsession ) : 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+for ( int sessioni = fromsession; sessioni <= tosession; sessioni++ ) {
 
     EEGDoc->GoToSession ( sessioni );
 
@@ -8913,6 +8938,8 @@ if ( allsessions )
 //----------------------------------------------------------------------------
 void    TTracksView::CmSearchMarker ( owlwparam w )
 {
+constexpr char*     title           = "Searching Marker";
+
 
 if ( w == CM_EEGMRKSEARCH || StringIsEmpty ( MarkerSearch ) ) {
                                         // if filtering the display, provide a hint to the user when current search is empty
@@ -8920,7 +8947,7 @@ if ( w == CM_EEGMRKSEARCH || StringIsEmpty ( MarkerSearch ) ) {
         StringCopy ( MarkerSearch, MarkerFilter );
 
     do {
-        if ( ! GetInputFromUser ( "Give a text expression to be searched (Perl regular expression):", "Searching Marker", MarkerSearch, MarkerSearch, this ) )
+        if ( ! GetInputFromUser ( "Give a text expression to be searched (Perl regular expression):", title, MarkerSearch, MarkerSearch, this ) )
             return;
 
 //        if ( StringEndsWith ( MarkerSearch, "/i" ) ) {
@@ -8967,7 +8994,7 @@ if ( w == CM_EEGMRKSEARCH || w == CM_EEGMRKSEARCHNEXT ) {
         return;
         } // for marker
 
-    ShowMessage ( (bool) GrepMarkerFilter ? "No next marker!\n\nNote that your search is restricted by the Marker filtering display" : "No next marker!", "Searching Marker" );
+    ShowMessage ( (bool) GrepMarkerFilter ? "No next marker!\n\nNote that your search is restricted by the Marker filtering display" : "No next marker!", title );
     }
 
 else if ( w == CM_EEGMRKSEARCHPREVIOUS ) {
@@ -8990,7 +9017,7 @@ else if ( w == CM_EEGMRKSEARCHPREVIOUS ) {
         return;
         } // for marker
 
-    ShowMessage ( (bool) GrepMarkerFilter ? "No previous marker!\n\nNote that your search is restricted by the Marker filtering display" : "No previous marker!", "Searching Marker" );
+    ShowMessage ( (bool) GrepMarkerFilter ? "No previous marker!\n\nNote that your search is restricted by the Marker filtering display" : "No previous marker!", title );
     }
 
 }
@@ -9082,32 +9109,36 @@ EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
 //----------------------------------------------------------------------------
 void    TTracksView::CmDeleteMarkersByName ()
 {
+constexpr char*     title           = "Deleting Markers by Name";
+
 if ( EEGDoc->GetNumMarkers ( MarkerTypeUserCoded ) == 0 ) {
-    ShowMessage ( "There are no markers for you here!", "Deleting Markers by Name", ShowMessageWarning );
+    ShowMessage ( "There are no markers for you here!", title, ShowMessageWarning );
     return;
     }
 
 
 static char         regexp[ MarkerNameMaxLength ];
 
-if ( ! GetInputFromUser ( "Give a text expression of the marker names to delete (Perl regular expression)" NewLine "(like 'marker', 'marker(1|2)', 'ma?rk(er)?'):", "Deleting Markers by Name", regexp, regexp, this ) )
+if ( ! GetInputFromUser ( "Give a text expression of the marker names to delete (Perl regular expression)" NewLine "(like 'marker', 'marker(1|2)', 'ma?rk(er)?'):", title, regexp, regexp, this ) )
     return;
 
 if ( StringIsEmpty ( regexp ) )
     return;
 
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Deleting Markers by Name", this );
+bool                allsessions     = EEGDoc->HasMultipleSessions () && GetAnswerFromUser ( "Applying to all sessions?", title, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
+int                 fromsession     = EEGDoc->HasMultipleSessions () ? ( allsessions ? 1                         : currsession ) : 0;
+int                 tosession       = EEGDoc->HasMultipleSessions () ? ( allsessions ? EEGDoc->GetNumSessions () : currsession ) : 0;
 
 
-if ( ! GetAnswerFromUser ( "Are you sure you want to delete these markers?" NewLine "(can not be undone)", "Deleting Markers by Name" ) )
+if ( ! GetAnswerFromUser ( "Are you sure you want to delete these markers?" NewLine "(can not be undone)", title ) )
     return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+for ( int sessioni = fromsession; sessioni <= tosession; sessioni++ ) {
 
     EEGDoc->GoToSession     ( sessioni );
 
@@ -9157,15 +9188,19 @@ EEGDoc->NotifyViews ( vnReloadData, EV_VN_RELOADDATA_TRG );
 //----------------------------------------------------------------------------
 void    TTracksView::CmClearMarkers ()
 {
-if ( ! GetAnswerFromUser ( "Are you sure you want to delete ALL markers?" NewLine "(can not be undone)", "Deleting Markers" ) )
+constexpr char*     title           = "Deleting All Markers";
+
+if ( ! GetAnswerFromUser ( "Are you sure you want to delete ALL markers?" NewLine "(can not be undone)", title ) )
     return;
 
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Deleting Markers by Name", this );
+bool                allsessions     = EEGDoc->HasMultipleSessions () && GetAnswerFromUser ( "Applying to all sessions?", title, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
+int                 fromsession     = EEGDoc->HasMultipleSessions () ? ( allsessions ? 1                         : currsession ) : 0;
+int                 tosession       = EEGDoc->HasMultipleSessions () ? ( allsessions ? EEGDoc->GetNumSessions () : currsession ) : 0;
 
 
-for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+for ( int sessioni = fromsession; sessioni <= tosession; sessioni++ ) {
 
     EEGDoc->GoToSession     ( sessioni );
 
@@ -9269,13 +9304,15 @@ if ( StringIsEmpty ( markerprefix ) )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+bool                allsessions     = EEGDoc->HasMultipleSessions () && GetAnswerFromUser ( "Applying to all sessions?", BadEpochsTitle, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
+int                 fromsession     = EEGDoc->HasMultipleSessions () ? ( allsessions ? 1                         : currsession ) : 0;
+int                 tosession       = EEGDoc->HasMultipleSessions () ? ( allsessions ? EEGDoc->GetNumSessions () : currsession ) : 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+for ( int sessioni = fromsession; sessioni <= tosession; sessioni++ ) {
 
     EEGDoc->GoToSession ( sessioni );
 
@@ -9346,13 +9383,15 @@ if ( ! GetInputFromUser ( "Name of the generated markers:", GenerateAutoEpochsTi
 
 
 
-bool                allsessions     = EEGDoc->GetNumSessions () > 1 && GetAnswerFromUser ( "Applying to all sessions?", "Merging Overlapped Markers", this );
+bool                allsessions     = EEGDoc->HasMultipleSessions () && GetAnswerFromUser ( "Applying to all sessions?", GenerateAutoEpochsTitle, this );
 int                 currsession     = EEGDoc->GetCurrentSession ();
+int                 fromsession     = EEGDoc->HasMultipleSessions () ? ( allsessions ? 1                         : currsession ) : 0;
+int                 tosession       = EEGDoc->HasMultipleSessions () ? ( allsessions ? EEGDoc->GetNumSessions () : currsession ) : 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-for ( int sessioni = allsessions ? 1 : EEGDoc->GetCurrentSession (); sessioni <= EEGDoc->GetNumSessions (); sessioni += allsessions ? 1 : EEGDoc->GetNumSessions () ) {
+for ( int sessioni = fromsession; sessioni <= tosession; sessioni++ ) {
 
     EEGDoc->GoToSession ( sessioni );
 
@@ -10838,13 +10877,36 @@ Filling[ which ]    = new TGLColoring ( from, how, minv, maxv, cmin, cmax );
 
 void    TTracksView::CmNextSession ()
 {
-EEGDoc->GoToSession ();
+                                        // switching sessions "live" is now possible, even with linked views
+if ( ! EEGDoc->HasMultipleSessions () )
+    return;
+
+
+int                 currentsession  = EEGDoc->GetCurrentSession ();
+static int          direction       = 1;
+int                 suggestedsession= ( ( currentsession - 1 ) + EEGDoc->GetNumSessions () + direction ) % EEGDoc->GetNumSessions () + 1;
+int                 newsession;
+char                buff[ 256 ];
+
+StringCopy ( buff, "Choose a session/sequence number, between 1 and ", IntegerToString ( EEGDoc->GetNumSessions () ), ":" );
+
+if ( ! GetValueFromUser ( buff, "Session", newsession, IntegerToString ( suggestedsession ), this ) )
+    return;
+
+
+if ( IsInsideLimits ( newsession, 1, EEGDoc->GetNumSessions () )
+  && newsession != currentsession ) {
+                                        // remember the step used for next call
+    direction   = newsession - currentsession;
+
+    EEGDoc->GoToSession ( newsession );
+    }
 }
 
 
 void    TTracksView::CmNextSessionEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( EEGDoc->GetCurrentSession () >= 1 );
+tce.Enable ( EEGDoc->HasMultipleSessions () );
 }
 
 

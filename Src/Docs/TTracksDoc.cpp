@@ -109,7 +109,7 @@ TotalElectrodes     = 0;
 
 SamplingFrequency   = 0;
 
-NumSequences        = 0;
+NumSequences        = 1;                // default is to have at least 1 sequence
 CurrSequence        = 0;
 
 OffGfp              = 0;
@@ -1110,7 +1110,7 @@ return  true;
 
 
 //----------------------------------------------------------------------------
-char   *TTracksDoc::GetBaseFileName ( char *basefilename )  const
+char*   TTracksDoc::GetBaseFileName ( char* basefilename )  const
 {
 TBaseDoc::GetBaseFileName ( basefilename );
 
@@ -1119,8 +1119,8 @@ if ( basefilename == 0 )
     return  0;
 
 
-if ( GetNumSessions () > 1 )
-    sprintf ( StringEnd ( basefilename ), ".Session %0d", GetCurrentSession () );
+if ( HasMultipleSessions () )
+    StringAppend ( basefilename, ".Session ", IntegerToString ( GetCurrentSession () ) );
 
 
 return  basefilename;
@@ -1138,44 +1138,18 @@ return  DimensionNames[ Dim2Type ];
 
 
 //----------------------------------------------------------------------------
-int     TTracksDoc::GetCurrentSession ()    const
-{
-return NumSequences <= 1 ? 0 : CurrSequence + 1;
-}
-
-
-//----------------------------------------------------------------------------
+                                        // parameter should be in [1..NumSequences]
 void    TTracksDoc::GoToSession ( int newsession )
 {
                                         // switching sessions "live" is now possible, even with linked views
-if ( NumSequences <= 1 )
+if ( ! HasMultipleSessions ()                           // no multisession?
+  || ! IsInsideLimits ( newsession, 1, NumSequences )   // not in proper range, or is 0?
+  || newsession == CurrSequence + 1 )                   // no actual session change?
+
     return;
 
-
-int                 oldcs           = CurrSequence;
-int                 newcs;
-
-
-if ( IsInsideLimits ( newsession, 1, NumSequences ) )
-
-    newcs   = newsession - 1;
-
-else {
-    char            buffdlg[ 256 ];
-
-    sprintf ( buffdlg, "Choose a session/sequence number, between %0d and %0d:", 1, NumSequences );
-
-    if ( ! GetValueFromUser ( buffdlg, "Session", newcs, IntegerToString ( oldcs + 1 ), CartoolMainWindow ) )
-        return;
-
-    if ( ! IsInsideLimits ( newcs, 1, NumSequences ) )
-        return;
-
-    newcs--;
-    }
-                                        // no change in session?
-if ( newcs == oldcs )
-    return;
+                                        // internally, we store in the range [0..NumSequences)
+newsession--;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1183,11 +1157,11 @@ if ( newcs == oldcs )
 auto                olddatetime     = DateTime;
 
                                         // apply changes, specific to each doc
-if ( ! UpdateSession ( newcs ) )        // some sessions can be fishy
+if ( ! UpdateSession ( newsession ) )   // some sessions can be fishy
     return;
 
                                         // OK, this is the new session!
-CurrSequence    = newcs;
+CurrSequence    = newsession;
 
 
 InitDateTime    ();
@@ -1218,7 +1192,8 @@ NotifyDocViews  ( vnSessionUpdated );
                                         // Default update with current sequence #, if any
 void    TTracksDoc::UpdateTitle ()
 {
-if ( NumSequences <= 1 )    return;
+if ( ! HasMultipleSessions () )
+    return;
 
 char                buff[ 4 * KiloByte ];
 char*               oldtitle        = (char *) GetTitle ();

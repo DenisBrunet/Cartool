@@ -1067,7 +1067,7 @@ if ( GetDocPath () ) {
                                         // using the first sequence at opening time, or the next one if it appears to be too short
     CurrSequence        = 0;
 
-    if ( NumSequences > 1 
+    if ( HasMultipleSessions ()
       && Sequences[ 0 ].NumTimeFrames < Sequences[ 1 ].NumTimeFrames / 2 )
         CurrSequence        = 1;
 
@@ -1220,7 +1220,7 @@ tonexttolastbackslash   = ToLastDirectory ( buff );
                                         // finally copy, skipping the leading backslash
 StringCopy ( buff, tonexttolastbackslash + 1 );
 
-if ( NumSequences > 1 )
+if ( HasMultipleSessions () )
     StringAppend ( buff, ":", IntegerToString ( GetCurrentSession () ) );
 
 SetTitle ( buff );

@@ -93,7 +93,7 @@ InputStream->read  ( (char *) Notes.GetArray (), header.Note_Area.Length );
 int                 maxnotesize     = NoMore ( ElectrodeNameSize, (int) sizeof ( Notes[ 0 ].Comment ) );
 
                                         // in case of sequence, we need to offset each TF
-long                offsettf        = NumSequences > 0 ? Sequences[ CurrSequence ].OffsetTimeFrames : 0;
+long                offsettf        = Sequences[ CurrSequence ].OffsetTimeFrames;
 
 
 for ( int i = 0; i < NumItems; i++ ) {
@@ -514,8 +514,6 @@ if ( GetDocPath () ) {
 
     for ( int i = 0; i < NumItems; i++ ) {
 
-//      DBGV3 ( NumSequences, Segment[ i ].Sample, Segment[ i ].Time, "#Session: Current TF -> Original TF" );
-
         if ( Segment[ i ].Time == 0 )   // stopping condition
             break;
 
@@ -576,11 +574,10 @@ if ( GetDocPath () ) {
             NumSequences++;
             }
 
-
                                         // using the first sequence at opening time, or the next one if it appears to be too short
         CurrSequence        = 0;
 
-        if ( NumSequences > 1 
+        if ( HasMultipleSessions ()
           && Sequences[ 0 ].NumTimeFrames < Sequences[ 1 ].NumTimeFrames / 2 )
             CurrSequence        = 1;
 
@@ -591,6 +588,19 @@ if ( GetDocPath () ) {
 
         UpdateTitle ();
         } // for NumSequences
+
+    else {  // create a default sequence for internal reasons
+
+        NumSequences        = 1;
+        CurrSequence        = 0;
+
+        Sequences.Resize ( NumSequences );
+        
+        Sequences[ 0 ].OffsetTimeFrames     = 0;
+        Sequences[ 0 ].DataOrg              = DataOrg;
+        Sequences[ 0 ].NumTimeFrames        = NumTimeFrames;
+        Sequences[ 0 ].DateTime             = DateTime;
+        }
 
     }
 else {

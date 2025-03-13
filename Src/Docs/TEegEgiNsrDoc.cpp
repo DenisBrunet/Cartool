@@ -1408,16 +1408,17 @@ if ( GetDocPath () ) {
     AtomSize            = mainheader.GetAtomSize ();
 
 
-    NumSequences        = mainheader.GetNumSessions();
+    NumSequences        = mainheader.GetNumSessions ();
+
     if ( NumSequences == 0 ) {
         StringCopy  ( buff, "There is no session in this file," NewLine "can not open file!" );
         ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
         return false;
         }
-    else if ( NumSequences > 1 && VkQuery () ) {
-        StringCopy  ( buff, "There are ", IntegerToString ( NumSequences )," sessions in this file," NewLine "only one can be used at a time." );
-        ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
-        }
+//  else if ( HasMultipleSessions () ) {
+//      StringCopy  ( buff, "There are ", IntegerToString ( NumSequences )," sessions in this file," NewLine "only one can be used at a time." );
+//      ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
+//      }
 
 
     DataBlocks.resize ( NumSequences );
@@ -1432,7 +1433,7 @@ if ( GetDocPath () ) {
                                         // using the first sequence at opening time, or the next one if it appears to be too short
     CurrSequence        = 0;
 
-    if ( NumSequences > 1 
+    if ( HasMultipleSessions ()
       && TimeFrames[ 0 ] < TimeFrames[ 1 ] / 2 )
         CurrSequence        = 1;
 

@@ -386,7 +386,7 @@ if ( MarkersFileName.IsEmpty () ) {
                                         // check for multi-session -> multi mrk files
     file    = TracksDoc->GetDocPath ();
 
-    if ( TracksDoc->GetCurrentSession () >= 1 )
+    if ( TracksDoc->HasMultipleSessions () )
         file.AddExtension ( IntegerToString ( TracksDoc->GetCurrentSession () ) );
 
     file.AddExtension ( FILEEXT_MRK );
@@ -475,8 +475,8 @@ if ( StringIsEmpty ( file ) ) {
 
     StringCopy ( mrkfile, TracksDoc->GetDocPath () );
                                         // check for multi-session -> multiple mrk files
-    if ( TracksDoc->GetCurrentSession () >= 1 )
-        StringAppend ( mrkfile, ".", IntegerToString ( TracksDoc->GetCurrentSession (), 0 ) );
+    if ( TracksDoc->HasMultipleSessions () )
+        StringAppend ( mrkfile, ".", IntegerToString ( TracksDoc->GetCurrentSession () ) );
 
     AddExtension    ( mrkfile, FILEEXT_MRK );
                                         // store any error from reading file
