@@ -243,10 +243,10 @@ public:
     int             GetValue            ()  const   { return IsOk () ?  LastSearchValue : SelectionInvalid;     }
 
                     operator bool       ()	const   { return IsOk ();		  }
-                    operator int        ()	const   { return LastSearchValue; }             // by safety, to avoid the (bool) cast to ne used for int
-                    operator UINT       ()	const   { return (UINT) LastSearchValue; }      // by safety, to avoid the (bool) cast to ne used for uint
-                    operator float      ()	const   { return (float) LastSearchValue; }     // by safety, to avoid the (bool) cast to ne used for float
-                    operator double     ()	const   { return (double) LastSearchValue; }    // by safety, to avoid the (bool) cast to ne used for double
+                    operator int        ()	const   { return          LastSearchValue; }    // by safety, to avoid the (bool) cast to be used for int
+                    operator UINT       ()	const   { return (UINT)   LastSearchValue; }    // by safety, to avoid the (bool) cast to be used for uint
+                    operator float      ()	const   { return (float)  LastSearchValue; }    // by safety, to avoid the (bool) cast to be used for float
+                    operator double     ()	const   { return (double) LastSearchValue; }    // by safety, to avoid the (bool) cast to be used for double
     int             operator ()         ()	const   { return LastSearchValue; }             // will be  SelectionInvalid  if anything failed, or browsing reached the end
 
 

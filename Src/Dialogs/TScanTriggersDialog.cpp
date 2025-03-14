@@ -20,6 +20,7 @@ limitations under the License.
 
 #include    "Strings.Utils.h"
 #include    "Files.TGoF.h"
+#include    "Files.TVerboseFile.h"
 #include    "Dialogs.Input.h"
 
 #include    "TTracksDoc.h"
@@ -418,19 +419,29 @@ void    TScanTriggersDialog::EvMethodChanged ()
 TransferData ( tdGetData );
 
                                         // update prefix string
-if      ( CheckToBool ( ScanTriggersTransfer.ScanStability ) )  StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Stab" );
-else if ( CheckToBool ( ScanTriggersTransfer.ScanThreshold ) )  StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Thresh" );
-else if ( CheckToBool ( ScanTriggersTransfer.ScanTemplate  ) )  StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Corr" );
+if      ( CheckToBool ( ScanTriggersTransfer.ScanStability ) )      StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Stab" );
 
-else if ( CheckToBool ( ScanTriggersTransfer.ScanExtrema   ) ) {
-    if      ( CheckToBool ( ScanTriggersTransfer.ScanMin ) && CheckToBool ( ScanTriggersTransfer.ScanMax ) )
-                                                                StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "MinMax" );
-    else if ( CheckToBool ( ScanTriggersTransfer.ScanMin ) )    StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Min" );
-    else if ( CheckToBool ( ScanTriggersTransfer.ScanMax ) )    StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Max" );
-    else                                                        ClearString( ScanTriggersTransfer.PrefixMarkerString );
+else if ( CheckToBool ( ScanTriggersTransfer.ScanThreshold ) ) {
+
+    if      ( CheckToBool ( ScanTriggersTransfer.ThresholdAbove ) 
+           && CheckToBool ( ScanTriggersTransfer.ThresholdBelow ) ) StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Between" );
+    else if ( CheckToBool ( ScanTriggersTransfer.ThresholdAbove ) ) StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Above" );
+    else if ( CheckToBool ( ScanTriggersTransfer.ThresholdBelow ) ) StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Below" );
+    else                                                            ClearString( ScanTriggersTransfer.PrefixMarkerString );
     }
 
-else                                                            ClearString( ScanTriggersTransfer.PrefixMarkerString );
+else if ( CheckToBool ( ScanTriggersTransfer.ScanTemplate  ) )      StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Corr" );
+
+else if ( CheckToBool ( ScanTriggersTransfer.ScanExtrema   ) ) {
+    if      ( CheckToBool ( ScanTriggersTransfer.ScanMin ) 
+           && CheckToBool ( ScanTriggersTransfer.ScanMax ) )        StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "MinMax" );
+    else if ( CheckToBool ( ScanTriggersTransfer.ScanMin ) )        StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Min" );
+    else if ( CheckToBool ( ScanTriggersTransfer.ScanMax ) )        StringCopy ( ScanTriggersTransfer.PrefixMarkerString, "Max" );
+    else                                                            ClearString( ScanTriggersTransfer.PrefixMarkerString );
+    }
+
+else                                                                ClearString( ScanTriggersTransfer.PrefixMarkerString );
+
 
                                         // no relative index in template scan
 if ( CheckToBool ( ScanTriggersTransfer.ScanTemplate  ) && CheckToBool ( ScanTriggersTransfer.TrackRelativeIndex  ) ) {
@@ -554,10 +565,16 @@ if ( ! transfer )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                 numregel            = EEGDoc->GetNumElectrodes   ();
-int                 numtotalel          = EEGDoc->GetTotalElectrodes ();
-int                 numtimeframes       = EEGDoc->GetNumTimeFrames   ();
-int                 lasttimeframe       = numtimeframes - 1;
+int                 numregel        = EEGDoc->GetNumElectrodes   ();
+int                 numtotalel      = EEGDoc->GetTotalElectrodes ();
+int                 numtimeframes   = EEGDoc->GetNumTimeFrames   ();
+int                 lasttimeframe   = numtimeframes - 1;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // select which tracks to scan
+TSelection          elsel ( numtotalel, OrderSorted );
+int                 numsel          = 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -568,12 +585,9 @@ bool                scanthreshold   = CheckToBool ( transfer->ScanThreshold );
 bool                scantemplate    = CheckToBool ( transfer->ScanTemplate  );
 
 
-bool                smartslope      = CheckToBool ( transfer->ThresholdSlope ) && scanthreshold;
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // time interval
-bool                endoffile       = CheckToBool ( transfer->EndOfFile );
+bool                endoffile       = CheckToBool     ( transfer->EndOfFile );
 int                 timemin         = StringToInteger ( transfer->TimeMin );
 int                 timemax         = endoffile ? lasttimeframe 
                                                 : StringToInteger ( transfer->TimeMax );
@@ -581,48 +595,77 @@ int                 timemax         = endoffile ? lasttimeframe
 Clipped ( timemin, timemax, 0, lasttimeframe );
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // scanstability
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // scanextrema
+bool                scanmin         = CheckToBool    ( transfer->ScanMin ) && scanextrema;
+bool                scanmax         = CheckToBool    ( transfer->ScanMax ) && scanextrema;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // scanthreshold
+bool                abovethresh     = CheckToBool    ( transfer->ThresholdAbove ) && scanthreshold;
+double              threshabove     = StringToDouble ( transfer->ThresholdAboveValue );
+bool                belowthresh     = CheckToBool    ( transfer->ThresholdBelow ) && scanthreshold;
+double              threshbelow     = StringToDouble ( transfer->ThresholdBelowValue );
+
+bool                smartslope      = CheckToBool ( transfer->ThresholdSlope ) && scanthreshold;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // scantemplate
+double              templthresh     = StringToDouble ( transfer->ScanTemplateThreshold ) / 100.0;
+
+TFileName           templatefile    = transfer->ScanTemplateFile;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // postprocessing parameters
+
+                                        // scanstability || scanthreshold
+int                 minstable       = scanstability || scanthreshold ? StringToInteger ( transfer->StabMin ) : 1;
+int                 maxstable       = scanstability || scanthreshold ? StringToInteger ( transfer->StabMax ) : 1;
+
+Clipped ( minstable, maxstable, 1, timemax - timemin + 1 );
+
+                                        // all
 int                 mingap          = StringToInteger ( transfer->Gap );
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // select which tracks to scan
-TSelection          elsel ( numtotalel, OrderSorted );
-elsel.Reset ();
-int                 numsel          = 0;
+                                        // ! scantemplate
+bool                onemarker       = CheckToBool ( transfer->OneMarkerPerTrack ) && ! scantemplate;
+bool                mergemarkers    = CheckToBool ( transfer->MergeMarkers      ) && ! scantemplate;
+int                 mergerange      = mergemarkers ? StringToInteger ( transfer->MergeMarkersRange ) : 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TTracks<float>      eegb;
-
+                                        // scantemplate
 TTracks<float>      templb;
 int                 templw;             // full width
 int                 templorg;           // offset to origin
 int                 templtail;          // remaining part from origin (included)
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 if ( scantemplate ) {
 
-    char*               templfile       = transfer->ScanTemplateFile;
     int                 numeltempl      = 0;
 
 
-    if ( ! ReadFromHeader ( templfile, ReadNumElectrodes, &numeltempl ) ) {
-        ShowMessage ( "Can not read the number of electrodes!", templfile, ShowMessageWarning );
+    if ( ! ReadFromHeader ( templatefile, ReadNumElectrodes, &numeltempl ) ) {
+        ShowMessage ( "Can not read the number of electrodes!", templatefile, ShowMessageWarning );
         return;
         }
 
     if ( numregel != numeltempl ) {
-        ShowMessage ( "Not the same number of electrodes with template file!", templfile, ShowMessageWarning );
+        ShowMessage ( "Not the same number of electrodes with template file!", templatefile, ShowMessageWarning );
         return;
         }
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    TOpenDoc< TTracksDoc >  TemplDoc ( transfer->ScanTemplateFile, OpenDocHidden );
+    TOpenDoc< TTracksDoc >  TemplDoc ( templatefile, OpenDocHidden );
 
 //    if ( ! (bool) TemplDoc->UsedBy )
 //        TemplDoc->MinimizeViews ();
@@ -646,18 +689,20 @@ if ( scantemplate ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // normalize template
-    double      sumdata = 0;
+    double      sumdata     = 0;
 
-    for ( int e = 0; e < numregel; e++ )
-        for ( int templi = 0; templi < templw; templi++ )
-            sumdata += templb[ e ][ templi ] * templb[ e ][ templi ];
+    for ( int e      = 0; e      < numregel; e++      )
+    for ( int templi = 0; templi < templw;   templi++ )
+
+        sumdata    += templb[ e ][ templi ] * templb[ e ][ templi ];
+
 
     if ( sumdata == 0 ) {
         ShowMessage ( "Template is empty!", "Scanning with Template", ShowMessageWarning );
         return;
         }
 
-    templb     /= sumdata ? sqrt ( sumdata ) : 1;
+    templb     /= NonNull ( sqrt ( sumdata ) );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -667,7 +712,9 @@ if ( scantemplate ) {
     templorg    = 0;
 
     for ( int templi = 0; templi < templw; templi++ )
+
         if ( templb[ gfpindex ][ templi ] > maxgfp ) {
+
             maxgfp   = templb[ gfpindex ][ templi ];
             templorg = templi;
             }
@@ -686,90 +733,194 @@ if ( scantemplate ) {
         ShowMessage ( "The time interval selected is too small compared to the Template!", "Scanning with Template", ShowMessageWarning );
         return;
         }
-    }
+    } // if scantemplate
 
 else { // ! scantemplate
 
     elsel.Set ( transfer->Channels, EEGDoc->GetElectrodesNames () );
 
     numsel  = elsel.NumSet();
+
     if ( numsel == 0 )
         return;
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // for the sake of speed, use a big buffer to load everyting we need at once!
-eegb.Resize ( numtotalel, ( timemax - timemin + 1 ) );
+                                        // output parameters
+bool                prefixmarker    = CheckToBool ( transfer->PrefixMarker       );
+bool                trackname       = CheckToBool ( transfer->TrackName          ) && onemarker;
+bool                trackvalue      = CheckToBool ( transfer->TrackValue         ) && onemarker;
+bool                relativeindex   = CheckToBool ( transfer->TrackRelativeIndex );
+bool                mergedcount     = CheckToBool ( transfer->MergedCount        ) && mergemarkers;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool            onemarker       = CheckToBool ( transfer->OneMarkerPerTrack );
-bool            mergemarkers    = CheckToBool ( transfer->MergeMarkers ) && ! scantemplate;
-int             mergerange      = mergemarkers ? StringToInteger ( transfer->MergeMarkersRange ) : 0;
-
-bool            prefixmarker    = CheckToBool ( transfer->PrefixMarker       );
-bool            trackname       = CheckToBool ( transfer->TrackName          ) && onemarker;
-bool            trackvalue      = CheckToBool ( transfer->TrackValue         ) && onemarker;
-bool            relativeindex   = CheckToBool ( transfer->TrackRelativeIndex );
-bool            mergedcount     = CheckToBool ( transfer->MergedCount        ) && mergemarkers;
-
-char            markertext  [ 256 ];
-char            prefix      [ 256 ];
-TFileName       templatename;
+char                markertext  [ 2 * MarkerNameMaxLength ];
+char                prefix      [ KiloByte ];
+char                buff        [ KiloByte ];
+TFileName           templatename;
 
 
 if ( scantemplate && trackname ) {
-    StringCopy  ( templatename, transfer->ScanTemplateFile );
+    StringCopy  ( templatename, templatefile );
     GetFilename ( templatename );
     }
-else
-    ClearString ( templatename );
 
 
 StringCopy ( prefix, prefixmarker ? transfer->PrefixMarkerString : "" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Done with parameters extraction
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TSuperGauge         Gauge ( ScanningTriggersTitle, timemax - timemin );
+TSuperGauge         Gauge ( ScanningTriggersTitle, timemax - timemin + 1 );
 
                                         // prevent closing the original file, and the app !!
 EEGDoc->PreventClosing ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // In case of multiple sessions, write only a single verbose file as we don't really provide per-session details
+if ( ! EEGDoc->HasMultipleSessions () || EEGDoc->GetCurrentSession () == 1 ) {
 
+    TFileName       verbosefilename ( EEGDoc->GetDocPath () );
+
+    verbosefilename.AddExtension        ( ScanningTriggersTitle );
+    verbosefilename.AddExtension        ( FILEEXT_VRB );
+    verbosefilename.CheckNoOverwrite    ();
+
+
+    TVerboseFile    verbose ( verbosefilename, VerboseFileDefaultWidth );
+
+    verbose.PutTitle ( ScanningTriggersTitle );
+
+
+    verbose.NextTopic ( "Files:" );
+    {
+    verbose.Put ( "Input   File         :", EEGDoc->GetDocPath () );
+
+    if ( scantemplate )
+        verbose.Put ( "Template file        :", templatefile );
+
+
+    TFileName       fileout     = TFileName ( EEGDoc->GetDocPath () ) + ( EEGDoc->HasMultipleSessions () ? ".*." FILEEXT_MRK : "." FILEEXT_MRK );
+
+    verbose.Put ( EEGDoc->HasMultipleSessions () ? "Output  Files        :" : "Output  File         :", fileout );
+
+    verbose.Put ( "Verbose File (this)  :", verbosefilename );
+    }
+
+
+    verbose.NextTopic ( "What to Scan:" );
+    {
+    verbose.Put ( "Tracks         :", elsel.ToText ( buff, EEGDoc->GetElectrodesNames () ) );
+    verbose.Put ( "From time frame:", timemin );
+    verbose.Put ( "To   time frame:", timemax );
+
+    if ( EEGDoc->HasMultipleSessions () )
+        verbose.Put ( "Sessions       :", "All sessions" );
+    }
+
+
+    verbose.NextTopic ( "Processing Parameters:" );
+    {
+    verbose.Put ( "Scanning method:",   scanstability   ? "Periods of Stability"
+                                      : scanextrema     ? "Local Extrema"
+                                      : scanthreshold   ? "Thresholds"
+                                      : scantemplate    ? "Template Matching"
+                                      :                   "Unknown Method"
+                );
+
+
+    if      ( scanstability ) {
+
+        verbose.Put ( "Generating markers for:", "Equal consecutive values" );
+        }
+
+    else if ( scanextrema ) {
+
+        verbose.Put ( "Generating markers for:", scanmin && scanmax ? "Local Min or Local Max"
+                                               : scanmin            ? "Local Min"
+                                               :          /*scanmax*/ "Local Max"
+                    );
+        }
+
+    else if ( scanthreshold ) {
+
+        verbose.Put ( "Generating markers for:", abovethresh && belowthresh ? "Above or below threshold values"
+                                               : abovethresh                ? "Above threshold values"
+                                               :              /*belowthresh*/ "Below threshold values"
+                    );
+        if ( abovethresh )
+            verbose.Put ( "Above threshold value:", threshabove, 2 );
+        if ( belowthresh )
+            verbose.Put ( "Below threshold value:", threshbelow, 2 );
+
+        verbose.Put ( "Setting marker position:", smartslope ? "At the highest slope around threshold" : "At the first time point past threshold" );
+        }
+
+    else if ( scantemplate ) {
+
+        verbose.Put ( "Generating markers for:", "Template correlating above threshold" );
+        verbose.Put ( "Template file:", templatefile );
+        verbose.Put ( "Min acceptable correlation:", templthresh, 2 );
+        }
+
+    if ( scanstability || scanthreshold ) {
+        verbose.NextLine ();
+        verbose.Put ( "Min Stability Duration:", minstable );
+        verbose.Put ( "Max Stability Duration:", maxstable );
+        }
+
+    verbose.NextLine ();
+
+    verbose.Put ( "Min gap between successive markers:", mingap, 0, " [TF]" );
+
+    if ( ! scantemplate ) {
+        verbose.Put ( "Handling of simultaneous markers:", onemarker ? "One marker per track" : "Merged into single marker" );
+        if ( mergemarkers )
+            verbose.Put ( "Merging within relative tolerance:", mergerange, 0, " [TF]" );
+        }
+    }
+
+
+    verbose.NextTopic ( "Naming Markers:" );
+    {
+    if ( prefixmarker )
+        verbose.Put ( "Beginning with prefix:", "'", prefix, "'" );
+    else
+        verbose.Put ( "Beginning with prefix:", "No prefix" );
+
+    if ( scantemplate )
+        verbose.Put ( "Including template name:", trackname ? templatename : "No template name" );
+    else
+        verbose.Put ( "Including track name:", trackname ? "Yes" : "No track name" );
+
+    if ( scantemplate )
+        verbose.Put ( "Ending with value:", trackvalue    ? "Correlation Value"
+                                          :                 "No value" );
+    else
+        verbose.Put ( "Ending with value:", trackvalue    ? "Track Value"
+                                          : relativeindex ? "Relative Index" 
+                                          : mergedcount   ? "Merged Count" 
+                                          :                 "No value" );
+    }
+
+    verbose.NextLine ();
+    verbose.NextLine ();
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // for the sake of speed, use a big buffer to load everyting we need at once!
+TTracks<float>      eegb ( numtotalel, ( timemax - timemin + 1 ) );
 MarkersList         newmarkers;
 
 
 if ( scanstability || scanthreshold || scanextrema ) {
-
-    bool            update;
-    int             minstable       = StringToInteger ( transfer->StabMin );
-    int             maxstable       = StringToInteger ( transfer->StabMax );
-
-    Clipped ( minstable, maxstable, 1, timemax - timemin + 1 );
-
-
-    bool            abovethresh     = CheckToBool    ( transfer->ThresholdAbove ) && scanthreshold;
-    double          threshabove     = StringToDouble ( transfer->ThresholdAboveValue );
-    bool            belowthresh     = CheckToBool    ( transfer->ThresholdBelow ) && scanthreshold;
-    double          threshbelow     = StringToDouble ( transfer->ThresholdBelowValue );
-    int             besttf;
-    bool            duration;
-    bool            timing;
-    bool            condition;
-
-
-    bool            scanmin         = CheckToBool    ( transfer->ScanMin ) && scanextrema;
-    bool            scanmax         = CheckToBool    ( transfer->ScanMax ) && scanextrema;
-    double          delta1;
-    double          delta2;
-    int             dsd;
-
-
                                         // store info for each channel
     enum            {
                     value2,             // value before -2
@@ -809,7 +960,7 @@ if ( scanstability || scanthreshold || scanextrema ) {
 
         Gauge.Next ();
 
-
+                                        // !binary indexes will only work up to 16 tracks, as it is stored in a short int!
         int         binarycode      = 1;
 
         for ( TIteratorSelectedForward eli ( elsel ); (bool) eli; ++eli, binarycode <<= 1 ) {
@@ -817,9 +968,9 @@ if ( scanstability || scanthreshold || scanextrema ) {
             int     i               = eli();
 
                                         // compute the condition
-            update      = scanstability &&                                   eegb[ i ][ tfi ] == chan[ i ][ value ]
-                       || scanthreshold && ( ! abovethresh || abovethresh && eegb[ i ][ tfi ] >= threshabove )
-                                        && ( ! belowthresh || belowthresh && eegb[ i ][ tfi ] <= threshbelow );
+            bool    update      = scanstability &&                                   eegb[ i ][ tfi ] == chan[ i ][ value ]
+                               || scanthreshold && ( ! abovethresh || abovethresh && eegb[ i ][ tfi ] >= threshabove )
+                                                && ( ! belowthresh || belowthresh && eegb[ i ][ tfi ] <= threshbelow );
 
             if ( update ) {
                                         // store duration informations, if needed
@@ -836,12 +987,17 @@ if ( scanstability || scanthreshold || scanextrema ) {
                     chan[ i ][ onset ] = scanstability && tf > timemin ? tf - 1 : tf;
                 }
 
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // condition not OK, or leaving an OK condition, or last TF (finishing the job), or not concerned by duration
             if ( ! update || tf == timemax ) {
 
                            // no duration for Min / Max
-                duration    = scanextrema || chan[ i ][ count ] >= minstable && chan[ i ][ count ] <= maxstable;
+                bool    duration    = scanextrema || chan[ i ][ count ] >= minstable && chan[ i ][ count ] <= maxstable;
 
+                //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+                bool    condition   = false;
 
                 if      ( scanstability )   condition   = (bool) chan[ i ][ value ];    // stability for non-null values
 
@@ -852,13 +1008,13 @@ if ( scanstability || scanthreshold || scanextrema ) {
                                         // actually, 1 TF too late here, but doesn't harm, except when scanning very small intervals (like 4 TF)
 
                                         // problem if there is a plateau somewhere (rare case)
-                    delta1      = chan[ i ][ value1 ] - chan[ i ][ value2 ];
-                    delta2      = chan[ i ][ value  ] - chan[ i ][ value1 ];
+                    double  delta1      = chan[ i ][ value1 ] - chan[ i ][ value2 ];
+                    double  delta2      = chan[ i ][ value  ] - chan[ i ][ value1 ];
 
-                    delta1      = delta1 > 0 ? 1 : delta1 < 0 ? -1 : 0;
-                    delta2      = delta2 > 0 ? 1 : delta2 < 0 ? -1 : 0;
+                            delta1      = delta1 > 0 ? 1 : delta1 < 0 ? -1 : 0;
+                            delta2      = delta2 > 0 ? 1 : delta2 < 0 ? -1 : 0;
                                         // "laplacian of signs"
-                    dsd         = delta2 - delta1;
+                    int     dsd         = delta2 - delta1;
 
                     condition   = scanmax && dsd == -2 || scanmin && dsd ==  2;
 
@@ -868,14 +1024,16 @@ if ( scanstability || scanthreshold || scanextrema ) {
                     }
                 else                        condition   = false;
 
+                //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-                timing      = chan[ i ][ onset ] > ( chan[ i ][ nextonset ] - ( scanextrema ? 1 : 0 ) );
+                bool    timing      = chan[ i ][ onset ] > ( chan[ i ][ nextonset ] - ( scanextrema ? 1 : 0 ) );
 
+                //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
                 if ( duration && timing && condition ) {
 
                                         // default position is the onset
-                    besttf = chan[ i ][ onset ];
+                    int     besttf  = chan[ i ][ onset ];
 
 
                     if ( smartslope ) { // adjust the tf to the highest slope, either before or after
@@ -891,12 +1049,11 @@ if ( scanstability || scanthreshold || scanextrema ) {
                                         // scan after
                         int     besttfup        = besttf;
                         double  bestdeltaup     = 0;
-
-                        delta1      = delta0;
+                        double  delta1          = delta0;
 
                         for ( int tf2i = besttfi, tf2 = timemin + tf2i; tf2 <= timemax - 1; tf2i++, tf2++ ) {
 
-                            delta2  = ( isitdown ? -1 : 1 ) * ( eegb[ i ][ tf2i + 1 ] - eegb[ i ][ tf2i - 1 ] );
+                            double  delta2      = ( isitdown ? -1 : 1 ) * ( eegb[ i ][ tf2i + 1 ] - eegb[ i ][ tf2i - 1 ] );
 
 //                            DBGV3 ( tf2, delta1, delta2, "UP: tf2, delta1, delta2" );
 
@@ -912,12 +1069,11 @@ if ( scanstability || scanthreshold || scanextrema ) {
                                         // scan before
                         int     besttfdown      = besttf;
                         double  bestdeltadown   = 0;
-
-                        delta1      = delta0;
+                                delta1          = delta0;
 
                         for ( int tf2i = besttfi, tf2 = timemin + tf2i; tf2 >= timemin + 1; tf2i--, tf2-- ) {
 
-                            delta2  = ( isitdown ? -1 : 1 ) * ( eegb[ i ][ tf2i + 1 ] - eegb[ i ][ tf2i - 1 ] );
+                            double  delta2  = ( isitdown ? -1 : 1 ) * ( eegb[ i ][ tf2i + 1 ] - eegb[ i ][ tf2i - 1 ] );
 
 //                            DBGV3 ( tf2, delta1, delta2, "DOWN: tf2, delta1, delta2" );
 
@@ -938,6 +1094,7 @@ if ( scanstability || scanthreshold || scanextrema ) {
                         } // smartslope
 
 
+                    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
                     MarkerCode  markercode = (MarkerCode) binarycode;
 
@@ -945,19 +1102,18 @@ if ( scanstability || scanthreshold || scanextrema ) {
                     ClearString ( markertext );
 
                     if ( StringIsNotEmpty ( prefix ) )
-                        StringCopy ( markertext, prefix );
+                        StringCopy   ( markertext, prefix );
 
                     if ( trackname )
-                        StringAppend ( markertext, StringIsEmpty ( markertext ) ? "" : " ", EEGDoc->GetElectrodeName ( i ) );
+                        StringAppend ( markertext, StringIsEmpty ( markertext ) ? "" : "_", EEGDoc->GetElectrodeName ( i ) );
 
                     if ( trackvalue )
-                        sprintf ( StringEnd ( markertext ), "%s%g",  StringIsEmpty ( markertext ) ? "" : " ", chan[ i ][ value ] );
+                        StringAppend ( markertext, StringIsEmpty ( markertext ) ? "" : "_", FloatToString ( buff, chan[ i ][ value ] ) );
 
                     if ( relativeindex )
-                        sprintf ( StringEnd ( markertext ), "%s%0d", StringIsEmpty ( markertext ) ? "" : " ", binarycode );
+                        StringAppend ( markertext, StringIsEmpty ( markertext ) ? "" : "_", IntegerToString ( buff, binarycode ) );
 
-                    if ( StringLength ( markertext ) > MarkerNameMaxLength - 1 )
-                        StringShrink ( markertext, markertext, MarkerNameMaxLength - 1 );
+                    StringShrink ( markertext, markertext, MarkerNameMaxLength - 1 );
 
 
                                         // everything OK, add marker
@@ -971,6 +1127,7 @@ if ( scanstability || scanthreshold || scanextrema ) {
                     } // if adding marker
 
 
+                //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // push previous values
                 chan[ i ][ value2 ] = chan[ i ][ value1 ];
                 chan[ i ][ value1 ] = chan[ i ][ value  ];
@@ -992,17 +1149,6 @@ if ( scanstability || scanthreshold || scanextrema ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 else if ( scantemplate ) {
-
-    double          sumdata;
-    double          corrdata;
-    double          thresh      = StringToDouble ( transfer->ScanTemplateThreshold ) / 100.0;
-    int             maxtf       = timemin;
-    double          maxcorr     = -DBL_MAX;
-    bool            corrabove   = false;
-    int             e;
-    int             templi;
-    int             numel       = numregel;
-
                                         // get the whole data at once, already filtered
     EEGDoc->GetTracks   (   timemin,    timemax, 
                             eegb,       0, 
@@ -1013,8 +1159,13 @@ else if ( scantemplate ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    int             maxtf       = timemin;
+    double          maxcorr     = Lowest ( maxcorr );
+    bool            corrabove   = false;
+
                                         // tfi starts at beginning of template (not templorg)
-    for ( int tf = timemin, tfi = 0; tf <= timemax - templw + 1 && ! VkEscape (); tf++, tfi++ ) {
+    for ( int tf = timemin, tfi = 0; tf <= timemax - templw + 1; tf++, tfi++ ) {
 
         Gauge.Next ();
 
@@ -1025,19 +1176,25 @@ else if ( scantemplate ) {
 //          UpdateApplication;
             }
 
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compute correlation
-        corrdata = sumdata = 0;
+        double      sumdata     = 0;
+        double      corrdata    = 0;
 
-        for ( e = 0; e < numel; e++ )
-            for ( templi = 0; templi < templw; templi++ ) {
-                corrdata += eegb[ e ][ tfi + templi ] * templb[ e ][       templi ];
-                sumdata  += eegb[ e ][ tfi + templi ] * eegb  [ e ][ tfi + templi ];
-                }
+        for ( int e      = 0; e      < numregel; e++      )
+        for ( int templi = 0; templi < templw;   templi++ ) {
 
-        corrdata   /= sumdata ? sqrt ( sumdata ) : 1;
+            corrdata += eegb[ e ][ tfi + templi ] * templb[ e ][       templi ];
+            sumdata  += eegb[ e ][ tfi + templi ] * eegb  [ e ][ tfi + templi ];
+            }
+
+        corrdata   /= NonNull ( sqrt ( sumdata ) );
 
 
-        if ( corrdata < thresh ) {
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+        if ( corrdata < templthresh ) {
 
             if ( corrabove ) {          // a previous found?
 
@@ -1047,16 +1204,15 @@ else if ( scantemplate ) {
                 ClearString ( markertext );
 
                 if ( StringIsNotEmpty ( prefix ) )
-                    StringCopy ( markertext, prefix );
+                    StringCopy   ( markertext, prefix );
 
                 if ( trackname )        // replace track name by template file name
-                    StringAppend ( markertext, StringIsEmpty ( markertext ) ? "" : " ", templatename );
+                    StringAppend ( markertext, StringIsEmpty ( markertext ) ? "" : "_", templatename );
 
                 if ( trackvalue )       // replace track value by correlation value
-                    sprintf ( StringEnd ( markertext ), "%s%0d", StringIsEmpty ( markertext ) ? "" : " ", Round ( maxcorr * 100 ) );
+                    StringAppend ( markertext, StringIsEmpty ( markertext ) ? "" : "_", IntegerToString ( buff, Round ( maxcorr * 100 ), 2 ) );
 
-                if ( StringLength ( markertext ) > MarkerNameMaxLength - 1 )
-                    StringShrink ( markertext, markertext, MarkerNameMaxLength - 1 );
+                StringShrink ( markertext, markertext, MarkerNameMaxLength - 1 );
 
 
                                         // everything OK, add marker
@@ -1067,13 +1223,15 @@ else if ( scantemplate ) {
                 tfi         = max ( maxtf - timemin + mingap - 1, tfi );
 
                 maxtf       = tf;
-                maxcorr     = -DBL_MAX;
+                maxcorr     = Lowest ( maxcorr );
                 corrabove   = false;
                 }
 
             continue;
             }
 
+
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         corrabove = true;               // ok, we found at least something
 
@@ -1106,6 +1264,8 @@ if ( mergemarkers ) {
             if ( markeri2 < numtemp && abs ( newmarkers[ markeri2 ]->From - newmarkers[ markeri ]->From ) <= mergerange )
                 continue;
 
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // scan the range of markers
             MarkerCode  markercode      = 0;
             double      position        = 0;
@@ -1114,26 +1274,24 @@ if ( mergemarkers ) {
 
                 position    += newmarkers[ markeri3 ]->From;
 
-                if ( mergedcount )
-                    markercode++;          // either count
-                else                    // or do a binary combination
-                    markercode |= newmarkers[ markeri3 ]->Code;
+                if ( mergedcount )  markercode++;                               // either a count
+                else                markercode |= newmarkers[ markeri3 ]->Code; // or a binary combination
                 }
 
             position        /= markeri2 - markeri;
 
 
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // cook marker name
             ClearString ( markertext );
 
             if ( StringIsNotEmpty ( prefix ) )
-                StringCopy ( markertext, prefix );
+                StringCopy   ( markertext, prefix );
 
             if ( relativeindex || mergedcount )
-                sprintf ( StringEnd ( markertext ), "%s%0d", StringIsEmpty ( markertext ) ? "" : " ", markercode );
+                StringAppend ( markertext, StringIsEmpty ( markertext ) ? "" : "_", IntegerToString ( buff, markercode ) );
 
-            if ( StringLength ( markertext ) > MarkerNameMaxLength - 1 )
-                StringShrink ( markertext, markertext, MarkerNameMaxLength - 1 );
+            StringShrink ( markertext, markertext, MarkerNameMaxLength - 1 );
 
                                         // OK to add
             mergedmarkers.Append ( new TMarker ( position, position, markercode, markertext, MarkerTypeMarker ) );
