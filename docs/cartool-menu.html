@@ -16,7 +16,7 @@
         <a href="requirements.html" 											class="menu-item"				>Requirements</a>
         <a href="installation.html" 											class="menu-item"				>Installation</a>
         <a href="downloads.html" 												class="menu-item"				>Data Downloads</a>
-        <a href="ReferenceGuide/index.html" 									class="menu-item"				>Reference Guide</a>
+        <a href="ReferenceGuide/reference-guide.html" 							class="menu-item"				>Reference Guide</a>
         <a href="https://www.youtube.com/@cartoolsoftwarefbmlab9452/videos"		class="menu-item external-link"	><i>YouTube Channel</i> 🔗</a>
         <a href="https://github.com/DenisBrunet/Cartool/issues"					class="menu-item external-link"	><i>Bugs Report</i> 🔗</a>
         <a href="https://github.com/DenisBrunet/Cartool/discussions"			class="menu-item external-link"	><i>Discussions</i> 🔗</a>
@@ -25,31 +25,18 @@
         <a href="https://github.com/DenisBrunet/Cartool" 						class="menu-item external-link"	><i>GitHub</i> 🔗</a>
 	</nav>
 
-	<script>
-		document.addEventListener("DOMContentLoaded", function() {
-			let currentPath = window.parent.location.pathname; // Full path like /A/B/index.html
-			let currentFile = currentPath.split("/").pop(); // Get file name (e.g., index.html)
-			let currentDir = currentPath.substring(0, currentPath.lastIndexOf("/")); // Get directory path (e.g., /A/B)
+    <script>
+	document.addEventListener("DOMContentLoaded", function() {
+		let currentPage = window.parent.location.pathname.split("/").pop(); // Extracts filename
+		let menuItems = document.querySelectorAll(".menu-item");
 
-			let menuItems = document.querySelectorAll(".menu-item");
+		menuItems.forEach(item => {
+			item.classList.remove("active"); // Remove active class from all
 
-			menuItems.forEach(item => {
-				item.classList.remove("active"); // Remove active class from all
+            let itemHref = item.getAttribute("href").split("/").pop(); // Normalize menu item links to extract only the filename
 
-				let itemHref = item.getAttribute("href"); // Get href from menu item
-				let itemFullPath = new URL(itemHref, window.location.origin).pathname; // Convert to absolute path
-
-				// Direct full path match
-				if (itemFullPath === currentPath) {
-					item.classList.add("active");
-				}
-				// If the item is a relative path (e.g., 'index.html') and matches current file
-				else if (itemHref === currentFile && currentPath.endsWith("/" + itemHref)) {
-					item.classList.add("active");
-				}
-				// Handles deeper hierarchies: match exact directory + file
-				else if (itemFullPath.endsWith(currentFile) && itemFullPath.includes(currentDir + "/")) {
-					item.classList.add("active");
+			if (itemHref === currentPage) {
+				item.classList.add("active"); // Add 'active' class to the correct menu item
 				}
 			});
 		});
