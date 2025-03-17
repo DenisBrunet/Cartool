@@ -27,23 +27,28 @@
 
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
-			let currentPath = window.parent.location.pathname; // Full relative path
-			let currentFile = currentPath.split("/").pop(); // Extract only the file name
-			let currentDir = currentPath.substring(0, currentPath.lastIndexOf("/")); // Get directory path
-			
+			let currentPath = window.parent.location.pathname; // Full path like /A/B/index.html
+			let currentFile = currentPath.split("/").pop(); // Get file name (e.g., index.html)
+			let currentDir = currentPath.substring(0, currentPath.lastIndexOf("/")); // Get directory path (e.g., /A/B)
+
 			let menuItems = document.querySelectorAll(".menu-item");
 
 			menuItems.forEach(item => {
 				item.classList.remove("active"); // Remove active class from all
 
 				let itemHref = item.getAttribute("href"); // Get href from menu item
+				let itemFullPath = new URL(itemHref, window.location.origin).pathname; // Convert to absolute path
 
-				// Check if href is an exact match with the full path
-				if (itemHref === currentPath || itemHref === currentFile) {
-					item.classList.add("active"); 
-				} 
-				// Additional check for pages in subdirectories
-				else if (currentDir !== "" && itemHref.startsWith(currentDir) && itemHref.endsWith(currentFile)) {
+				// Direct full path match
+				if (itemFullPath === currentPath) {
+					item.classList.add("active");
+				}
+				// If the item is a relative path (e.g., 'index.html') and matches current file
+				else if (itemHref === currentFile && currentPath.endsWith("/" + itemHref)) {
+					item.classList.add("active");
+				}
+				// Handles deeper hierarchies: match exact directory + file
+				else if (itemFullPath.endsWith(currentFile) && itemFullPath.includes(currentDir + "/")) {
 					item.classList.add("active");
 				}
 			});
