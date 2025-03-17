@@ -825,7 +825,25 @@ if ( ! EEGDoc->HasMultipleSessions () || EEGDoc->GetCurrentSession () == 1 ) {
     }
 
 
-    verbose.NextTopic ( "Processing Parameters:" );
+    verbose.NextTopic ( "EEG Parameters:" );
+    {
+    verbose.Put ( "Auxiliary channels:", EEGDoc->GetNumAuxElectrodes   () ? EEGDoc->GetAuxTracks   ().ToText ( buff, EEGDoc->GetElectrodesNames () ) : "None" );
+    verbose.Put ( "Bad channels:",       EEGDoc->GetNumBadElectrodes   () ? EEGDoc->GetBadTracks   ().ToText ( buff, EEGDoc->GetElectrodesNames () ) : "None" );
+    verbose.Put ( "Valid channels:",     EEGDoc->GetNumValidElectrodes () ? EEGDoc->GetValidTracks ().ToText ( buff, EEGDoc->GetElectrodesNames () ) : "None" );
+
+    verbose.NextLine ();
+    verbose.Put ( "Current filters:",   EEGDoc->GetFilters ()->ParametersToText ( buff ) );
+
+    verbose.NextLine ();
+    auto        ref         = EEGDoc->GetReferenceType ();
+    if      ( ref == ReferenceAsInFile          )       verbose.Put ( "Reference:", "No reference, as in file" );
+    else if ( ref == ReferenceAverage           )       verbose.Put ( "Reference:", "Average reference" );
+    else if ( ref == ReferenceArbitraryTracks   )       verbose.Put ( "Reference:", EEGDoc->GetReferenceTracks ().ToText ( buff, EEGDoc->GetElectrodesNames (), AuxiliaryTracksNames ) );
+    else                                                verbose.Put ( "Reference:", "Unknown" );
+    }
+
+
+    verbose.NextTopic ( "Scanning Parameters:" );
     {
     verbose.Put ( "Scanning method:",   scanstability   ? "Periods of Stability"
                                       : scanextrema     ? "Local Extrema"
@@ -889,24 +907,24 @@ if ( ! EEGDoc->HasMultipleSessions () || EEGDoc->GetCurrentSession () == 1 ) {
 
     verbose.NextTopic ( "Naming Markers:" );
     {
-    if ( prefixmarker )
-        verbose.Put ( "Beginning with prefix:", "'", prefix, "'" );
-    else
-        verbose.Put ( "Beginning with prefix:", "No prefix" );
+    verbose.Put ( "Beginning with prefix:", prefixmarker    ? StringCopy ( buff, "'", prefix, "'" ) // better wrap this string in quotes
+                                                            : "No prefix" );
 
     if ( scantemplate )
-        verbose.Put ( "Including template name:", trackname ? templatename : "No template name" );
+        verbose.Put ( "Including template name:", trackname ? templatename 
+                                                            : "No template name added" );
     else
-        verbose.Put ( "Including track name:", trackname ? "Yes" : "No track name" );
+        verbose.Put ( "Including track name:", trackname    ? "Adding track name" 
+                                                            : "No track name added" );
 
     if ( scantemplate )
-        verbose.Put ( "Ending with value:", trackvalue    ? "Correlation Value"
-                                          :                 "No value" );
+        verbose.Put ( "Ending with value:", trackvalue      ? "Adding correlation value"
+                                          :                   "No value added" );
     else
-        verbose.Put ( "Ending with value:", trackvalue    ? "Track Value"
-                                          : relativeindex ? "Relative Index" 
-                                          : mergedcount   ? "Merged Count" 
-                                          :                 "No value" );
+        verbose.Put ( "Ending with value:", trackvalue      ? "Adding track value"
+                                          : relativeindex   ? "Adding relative index" 
+                                          : mergedcount     ? "Adding merged count" 
+                                          :                   "No value added" );
     }
 
     verbose.NextLine ();
