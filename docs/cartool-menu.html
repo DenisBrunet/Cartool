@@ -25,18 +25,19 @@
         <a href="https://github.com/DenisBrunet/Cartool" 						class="menu-item external-link"	><i>GitHub</i> 🔗</a>
 	</nav>
 
-    <script>
-	document.addEventListener("DOMContentLoaded", function() {
-		let currentPage = window.parent.location.pathname.split("/").pop(); // Extracts filename
-		let menuItems = document.querySelectorAll(".menu-item");
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			let currentPath = window.parent.location.pathname; // Full path
+			let menuItems = document.querySelectorAll(".menu-item");
 
-		menuItems.forEach(item => {
-			item.classList.remove("active"); // Remove active class from all
+			menuItems.forEach(item => {
+				item.classList.remove("active"); // Remove active class from all
 
-            let itemHref = item.getAttribute("href").split("/").pop(); // Normalize menu item links to extract only the filename
+				// Convert relative menu hrefs into absolute paths
+				let itemHref = new URL(item.getAttribute("href"), window.location.origin).pathname;
 
-			if (itemHref === currentPage) {
-				item.classList.add("active"); // Add 'active' class to the correct menu item
+				if (itemHref === currentPath) {
+					item.classList.add("active"); // Add 'active' class to the correct menu item
 				}
 			});
 		});
