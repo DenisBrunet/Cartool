@@ -27,14 +27,16 @@
 
     <script>
 	document.addEventListener("DOMContentLoaded", function() {
-		let currentPage = window.parent.location.pathname.split("/").pop();
+		let currentPage = window.parent.location.pathname.split("/").pop(); // Extracts filename
 		let menuItems = document.querySelectorAll(".menu-item");
 
 		menuItems.forEach(item => {
 			item.classList.remove("active"); // Remove active class from all
 
-			if (item.getAttribute("href") === currentPage) {
-				item.classList.add("active"); // Add to the correct one
+            let itemHref = item.getAttribute("href").split("/").pop(); // Normalize menu item links to extract only the filename
+
+			if (itemHref === currentPage) {
+				item.classList.add("active"); // Add 'active' class to the correct menu item
 				}
 			});
 		});
