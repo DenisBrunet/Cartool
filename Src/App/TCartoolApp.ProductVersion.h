@@ -19,7 +19,7 @@ limitations under the License.
 										// Cartool Major / minor / patch version numbers - set manually
 #define		MajorRevisionInt     5
 #define		MajorRevisionStr    "5"
-#define		MinorRevisionInt     04
-#define		MinorRevisionStr    "04"
-#define		PatchRevisionInt     03
-#define		PatchRevisionStr    "03"
+#define		MinorRevisionInt     05
+#define		MinorRevisionStr    "05"
+#define		PatchRevisionInt     00
+#define		PatchRevisionStr    "00"

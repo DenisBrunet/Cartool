@@ -1,0 +1,1036 @@
+<HTML>
+ <HEAD>
+  <TITLE>Scanning Tracks for Markers</TITLE>
+ <LINK REL="stylesheet" HREF="../cartool.css" TYPE="text/css">
+  </HEAD>
+ <BODY>
+
+	<div class="container">
+
+	<object data="../cartool-menu.html" class="menu-iframe"></object>
+
+    <H1>
+        Scanning Tracks for Markers
+    </H1>
+         <p>
+             This is a very versatile toolbox used to <strong>generate new 
+			 markers from the content of tracks</strong>. These markers could 
+			 then be used either for <a href="eeg-display.html#menu-markers">browsing the data</a>, or to perform any sorts of 
+			 computations, like <A HREF="computing-erps.html">averaging</A>.</p>
+		<p>
+             &nbsp;</p>
+             <H5>
+                 <a href="#methods">Scanning methods</a><br>
+                 <a href="#dialog">Running from the Dialog</a><br>
+                 <a href="#results">Results</a><br>
+                 <a href="#technical-points-and-hints">Technical points and hints</a><br>
+                 <a href="#examples">Examples</a></H5>
+		<h2>
+             <a name="methods"></a>Scanning methods
+         </h2>
+         <P>
+             There are four methods to scan tracks:
+         </P>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Periods of Stability</B>: used when tracks contain kind of on/off,
+                     plateau-like encoding (like hard-wired triggers).
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Local Extrema</B>: used to search for local minima and maxima of
+                     tracks (including the GFP).
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Thresholds</B>: used to detect when tracks go beyond or fall below
+                     a given threshold.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <B>Template Matching</B>: used to detect a spatio-temporal pattern on
+                     all tracks at once.
+                 </P>
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The markers resulting from the scan are added to the EEG's associated <I><A HREF="files-formats-cartool.html#mrk"><B>.mrk</B></A></I><A HREF="files-formats-cartool.html#mrk"> file</A>,
+             which you can edit or re-process yourself for more advanced purposes.
+         </P>
+         <P>
+             There is certainly a <I>trial and error phase</I> before you find the
+             right parameters. It may be a good idea to first select a short time
+             interval and/or only a few tracks before running the scan on the full
+             file. Also <B>don't forget to </B><A HREF="eeg-display.html#clear-markers"><B>delete</B></A><B>
+                 previous markers
+             </B> before re-doing a whole scan, otherwise they
+             will simply cumulate!
+         </P>
+         <h2>
+             <a name="dialog"></a>Running from the Dialog</h2>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <IMG SRC="images/scanning-markers.dialog.png" VSPACE="0" HSPACE="0" BORDER="0" WIDTH="700">
+             </P>
+			 <P ALIGN=CENTER>
+                 &nbsp;</P>
+         </CENTER>
+         <P>
+             <TABLE WIDTH="100%" CELLPADDING="5" CELLSPACING="0" BORDER="1">
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             <B>What to Scan</B>
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Tracks:
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Actual tracks to analyse.
+                         </P>
+                         <P>
+                             <B>Each track will be scanned independently of the others</B> (except
+                             with <A HREF="#template-matching">Template Matching</A>, which
+                             operates on maps, i.e. on all tracks at once).
+                         </P>
+                         <P>
+                             Also,
+							 <A HREF="eeg-display.html#mouse-tracks-select">selecting some tracks</A> from the
+                             display <I>before</I> calling this dialog will pre-fill this field.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Time Period:</TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             The time range to scan, pre-filled with the <A HREF="eeg-display.html#mouse-time-selectio">
+                                 current
+                                 time selection</A> if it exists, or the option 
+							 End of File otherwise.
+                         </P>
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             From
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             First time frame to be scanned.
+                     </TD>
+                 </tr>
+				 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             to
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Last time frame to be scanned.
+                     </TD>
+                 </tr>
+				 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             End of File
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Automatically set the last time frame to export to the <B>
+                                 actual end
+                                 of the current file
+                             </B>. Useful in <A HREF="#call-batch-mode">Batch Mode</A>,
+                             if the files have different lengths.
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP></TD>
+                     <TD WIDTH="68%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             <B><A NAME="dialog-methods"></A>Scanning for</B>
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             <B>Periods of Stability</B>
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             A track has to <B>remain on a constant level</B> for some time. The
+                             level itself does not matter (anything non-zero), the track has just
+                             to be constant.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP></TD>
+                     <TD WIDTH="68%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             <B>Local Extrema</B>
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Finding local minima and/or maxima.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Min
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Scan for <B>local minimum</B>.
+                         </P>
+                         <P>
+                             Use some <A HREF="eeg-display.html#filters">low-pass filter</A> to reduce the
+                             sensitivity / scale of this detection.
+                         </P>
+                         <P>
+                             See <A HREF="#local-extrema">this note</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Max
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Scan for <B>local maximum</B>.
+                         </P>
+                         <P>
+                             Use some <A HREF="eeg-display.html#filters">low-pass filter</A> to reduce the
+                             sensitivity / scale of this detection.
+                         </P>
+                         <P>
+                             See <A HREF="#local-extrema">this note</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP></TD>
+                     <TD WIDTH="68%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             <B>Thresholds</B>
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             A track has to be above or below some threshold.
+                         </P>
+                         <P>
+                             Note that <I>both</I> above and below criterion can be selected
+                             simultaneously. In that case, you end up with an interval testing.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Test if Above:
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             The track has to be <B>above</B> the specifed value, positive or negative.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Test if Below:
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             The track has to be <B>below</B> the specifed value, positive or negative.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Set marker position to:
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             First TF past threshold
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             The marker is <I>strictly</I> inserted at the <B>first TF</B> where
+                             the test is found positive.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Highest slope around threshold
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             The detected position will <B>
+                                 drift to wherever side which has the
+                                 highest slope
+                             </B>, and will stop there.
+                         </P>
+                         <P>
+                             The purpose of this option is to <B>help align raising-edge events</B>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP></TD>
+                     <TD WIDTH="68%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             <B>Template Matching</B>
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             This has to be thought as trying to find a <B>sequence of maps</B> in
+                             the data. Tracks are not considered individually, but as a whole
+                             pattern (a map). Plus, the maps also evolve in time.
+                         </P>
+                         <P>
+                             See this note for more details about how <A HREF="#template-matching">
+                                 template
+                                 matching
+                             </A> is done here.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Template file:
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             The file with the template to serach for. It should have the same
+                             number of electrodes as the EEG file to scan.
+                         </P>
+                         <P>
+                             It can be any kind of <A HREF="files-formats-others.html#eeg">EEG file format</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Correlation above which to accept:
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Specifies the correlation value (in percentage) above which the test
+                             will be positive.
+                         </P>
+                         <P>
+                             Correlation <I>does</I> account for sign, that is, correlation -90 is
+                             below 50.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP></TD>
+                     <TD WIDTH="68%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             <B>Time Constraints</B>
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             &nbsp;
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             <A NAME="dialog-condition-true"></A>Condition has to be true between ... and
+                             ... [TF]
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Constraint the test chosen by defining <B>time limits</B>.
+                         </P>
+                         <P>
+                             F.ex. we can be interested in short duration plateau, at least 3 TF
+                             longs, but shorter than 30 TF. In case you don't care, set a wide
+                             range, like from 1 to 10000!
+                         </P>
+                         <P>
+                             These fields don't apply to local extrema, which by definition are
+                             only 1 TF long.
+                         </P>
+                         <P>
+                             See this note to visualize <A HREF="#time-constraints">
+                                 how the time
+                                 constraints work
+                             </A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             <A NAME="dialog-condition-false"></A>Then condition has to be false for ... [TF]
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Set the minimum amount of time after the test fails before a new
+                             marker can start again. Should be at least 1.
+                         </P>
+                         <P>
+                             See this note to visualize <A HREF="#time-constraints">
+                                 how the time
+                                 constraints work
+                             </A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Simultaneous markers:
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Each track can generate its own marker, so we can deal with this.
+                         </P>
+                         <P>
+                             These options are off when <A HREF="#template-matching">
+                                 Scanning for
+                                 a template
+                             </A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             One Marker per Track
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Let each simultaneous marker remain that way.
+                         </P>
+                         <P>
+                             Use the <A HREF="#naming-markers">Naming Markers </A>options to
+                             help sort out who is who!
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Merged into Single Marker
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Post-process markers that lie in a given range, and merge them into a
+                             single one. See <A HREF="#merging-markers">this note</A>.
+                         </P>
+                         <P>
+                             Also see the <A HREF="#naming-markers">Naming Markers&nbsp;</A>
+                             to also merge the names.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Tolerance [TF]
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Give a maximum time extent within which &quot;simultaneous&quot; is meant.
+                         </P>
+                         <P>
+                             Set to 0 to consider only perfectly aligned markers.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP></TD>
+                     <TD WIDTH="68%" VALIGN=TOP></TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             <B><A NAME="naming-markers"></A>Naming Markers</B>
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             You can tune the markers' name to your liking.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Beginning with Prefix
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Optionally start all the markers with this <B>prefix</B>.
+                         </P>
+                         <P>
+                             By default, it reflects the kind of <A HREF="#dialog-methods">Scanning method</A>
+                             you chose, like &quot;Stab&quot;, &quot;Thresh&quot;, etc...
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Including name
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Optionally include the <B>track name</B>.
+                         </P>
+                         <P>
+                             When <A HREF="#template-matching">Scanning for a template</A>, this
+                             is replaced by the <B>Template file name</B>.
+                         </P>
+                         <P>
+                             Off when <A HREF="#merging-markers">merging markers</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <P>
+                             Ending with value:
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             The following options are quite context sensitive!
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <UL>
+                             <P>
+                                 None
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             What it says.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <UL>
+                             <P>
+                                 Track Value
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             The <B>value of the track</B> that generates the marker at that position.
+                         </P>
+                         <P>
+                             Useful f.ex. to retrieve the Max value of a track. When <A HREF="#template-matching">
+                                 Scanning
+                                 for a template
+                             </A>, this is replaced with the Correlation value.
+                         </P>
+                         <P>
+                             Off when <A HREF="#merging-markers">merging markers</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <UL>
+                             <P>
+                                 Relative Index
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             Add an index corresponding to the <B>relative position of the track</B>
+                             generating the marker.
+                         </P>
+                         <P>
+                             Indexes are <I>not</I> 1, 2, 3, 4... but in <B>powers of 2</B>, like: <B>
+                                 1,
+                                 2, 4, 8
+                             </B>... So we can <B>add these values</B> when&nbsp; <A HREF="#merging-markers">
+                                 merging
+                                 markers
+                             </A> together: f.ex. tracks 3 and 4 together will produce a
+                             code of <B>4 + 8 = 12</B>. If you don't see the use of this, well,
+                             just forget it!
+                         </P>
+                         <P>
+                             Off when <A HREF="#template-matching">Scanning for a template</A>.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="32%" VALIGN=TOP>
+                         <UL>
+                             <P>
+                                 Merged Count
+                     </TD>
+                     <TD WIDTH="68%" VALIGN=TOP>
+                         <P>
+                             When (and only when) <A HREF="#merging-markers">merging markers</A>,
+                             add a count of how many markers were doomed to be merged.
+                         </P>
+                         <P>
+                             Off when <A HREF="#template-matching">Scanning for a template</A>.
+                     </TD>
+                 </TR>
+                 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP></TD>
+                     <TD WIDTH="73%" VALIGN=TOP></TD>
+                 </tr>
+				 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Process Current</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Enabled when called from an <A HREF="eeg-display.html">EEG window</A>, the
+                             scan will apply to <B>this file</B> only.
+                         </P>
+                         <P>
+                             &nbsp;
+                         </P>
+                         <P>
+                             This button remains <B>
+                                 disabled until <U>all</U> the parameter
+                                 dialogs have received enough (and consistent) informations</B>.</TD>
+                 </tr>
+				 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Batch Process</B>
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Enabled when <I>not</I> called from an EEG window:
+                         </P>
+                         <UL>
+                             <LI CLASS="mvd-P">
+                                 <P>
+                                     Clicking this button will open a dialog from which you can select a <B>
+                                         set
+                                         of files
+                                     </B>, within a single directory.
+                                 </P>
+                             <LI CLASS="mvd-P">
+                                 <P>
+                                     Using <B>Drag &amp; Drop</B>, you can drop files in the dialog and
+                                     process them directly. Plus, it allows you to pick files <B>
+                                         from
+                                         different directories
+                                     </B>, if you can select them through a handy
+                                     utility like <I><A HREF="https://www.voidtools.com/">Everything</A></I> beforehand.
+                                 </P>
+                         </UL>
+                         <P>
+                             &nbsp;
+                         </P>
+                         <P>
+                             This button remains <B>
+                                 disabled until <U>all</U> the parameter
+                                 dialogs have received enough (and consistent) informations</B>.</TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Cancel
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Quit the dialog.
+                     </TD>
+                 </TR>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Help
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Launch the Help to the right page (should be here...).
+                     </TD>
+                 </TR>
+             </TABLE>
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <h2>
+             <a name="results"></a>Results</h2>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+             The markers are added to the external <I><A HREF="files-formats-cartool.html#mrk"><B>.mrk</B></A></I><A HREF="files-formats-cartool.html#mrk"> file</A>
+             associated with the EEG file. Remember to move all files (EEG and 
+					 its associated clique, <em>plus</em> the marker file) if you move
+             the EEG to another directory.</P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>
+                     (text), showing all the parameters.</P>
+         </UL>
+         <h2>
+             <a name="technical-points-and-hints"></a>Technical points &amp; hints</h2>
+         <H4>
+             Filtering &amp; reference
+         </H4>
+         <P>
+             The scan is run on the tracks as they appear to you, that is with the
+             <strong>current </strong> <A HREF="eeg-display.html#menu-reference">
+			 <strong>reference</strong></A><strong> and </strong> <A HREF="eeg-display.html#filters">
+			 <strong>filters</strong></A>.
+             Therefor changing these settings can dramatically affect the
+             generated markers. This can actually be used for the best, for example when
+             searching for local maxima.</P>
+         <H4>
+             <A NAME="local-extrema"></A>Local Extrema
+         </H4>
+         <P>
+             The detection occurs at the <B>reversal of the signs of 2 successive derivatives</B>.<BR>
+             If there is a plateau on either side, this will make one of the
+             derivative null, therefore no sign inversion can occur (hence no detection).
+         </P>
+         <P>
+             &nbsp;The scan will output <B>every little peaks it finds</B>, which may be
+             too much details for you. In this case, <B>just apply </B><A HREF="eeg-display.html#filters">
+                 <B>
+                     some
+                     filters
+                 </B>
+             </A> (especially low pass) before running the detection.
+         </P>
+         <H4>
+             <A NAME="template-matching"></A>Template matching
+         </H4>
+         <P>
+             The vector used to compute the correlation is a <B>
+                 big vector made
+                 with all the time frames for all the tracks
+             </B> (of the template).
+             F.ex. a template of 100 time frames for 125 electrodes is a vector of
+             100 * 125 = 12500 dimensions. In this way, we will retrieve only very
+             specific patterns, both in space and in time.
+         </P>
+         <P>
+             The <A HREF="terms-definitions-formulas.html#correlation">correlation</A> values does <I>not</I>
+             take into account the <B>power</B> of the signal, but just <B>its shape</B>.
+         </P>
+         <P>
+             When the current time window first correlates above the threshold,
+             the scan continues and seeks for the <B>highest peak of correlation</B>
+             of the period before the correlation goes below the threshold. Well,
+             sounds difficult to make it in simple words, but simply gives you
+             what you actually expect! The marker position within the selected
+             time window is put where the template has its maximum GFP. In fact,
+             it is not <I>that</I> important, what matters is that the triggers be
+             put at the same offset for all the windows.
+         </P>
+         <P>
+             The marker position is set at the&nbsp;position of highest GFP. Also
+             see the <A HREF="#naming-markers">Naming Markers</A> options.
+         </P>
+         <H4>
+             <A NAME="time-constraints"></A>How the time constraints work
+         </H4>
+         <P>
+             Consider a <I><A HREF="#dialog-methods">Stability scan</A></I> on one
+             track. To create a marker, the condition (plateau) should last within
+             the given limits. Then the next marker can not start before the gap
+             is filled:
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <CENTER>
+             <P ALIGN=CENTER>
+                 <TABLE WIDTH="80%" CELLPADDING="2" CELLSPACING="0" BORDER="0">
+                     <TR>
+                         <TD WIDTH="11%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     Condition is false
+                         </TD>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     Condition is true
+                         </TD>
+                         <TD WIDTH="22%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     Condition is false
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="11%" VALIGN=TOP></TD>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     Condition should last within the <A HREF="#dialog-condition-true">time range specified</A>
+                         </TD>
+                         <TD WIDTH="22%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     Gap should be at least <A HREF="#dialog-condition-false">this long</A>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="11%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                             </P>
+                             <P>
+                                 &nbsp;
+                             </P>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <HR ALIGN=CENTER WIDTH="100%" SIZE="3" NOSHADE>
+                         </TD>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <HR ALIGN=CENTER WIDTH="100%" SIZE="3" NOSHADE>
+                                 </P>
+                             </CENTER>
+                             <P>
+                                 |
+                             </P>
+                             <P>
+                                 |
+                         </TD>
+                         <TD WIDTH="22%" VALIGN=TOP>
+                             <P>
+                                 &nbsp;
+                             </P>
+                             <P>
+                                 &nbsp;
+                             </P>
+                             <CENTER>
+                                 <P ALIGN=CENTER>
+                                     <HR ALIGN=CENTER WIDTH="100%" SIZE="3" NOSHADE>
+                         </TD>
+                     </TR>
+                     <TR>
+                         <TD WIDTH="11%" VALIGN=TOP></TD>
+                         <TD WIDTH="35%" VALIGN=TOP>
+                             <P>
+                                 | &lt;- Marker insertion
+                         </TD>
+                         <TD WIDTH="22%" VALIGN=TOP>
+                             <P ALIGN=RIGHT>
+                                 Next marker allowed from here -&gt;
+                         </TD>
+                     </TR>
+                 </TABLE>
+             </P>
+         </CENTER>
+         <H4>
+             <A NAME="merging-markers"></A>Merging (nearly) simultaneous markers
+         </H4>
+         <P>
+             Merging markers is useful to consolidate the markers resulting from
+             individual tracks into a more synthetic information. We can get the
+             information of how many tracks were successful within a short time
+             range. It can also be used to fusion trigger codes spread across
+             different tracks.
+         </P>
+         <P>
+             We ran an <I><A HREF="#dialog-methods">Above Threshold 0</A></I> scan,
+             first without merging markers (i.e. one marker per track, kind of a
+             mess), then with merging markers within 8 TF range (and showing the
+             count of merged markers in the names):
+         </P>
+         <P>
+             <IMG SRC="images/scanning-markers.one-marker-per-track.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/scanning-markers.merging-markers.png" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             Also see the <A HREF="#naming-markers">Naming Markers</A> options.
+         </P>
+         <h2>
+             <A NAME="examples"></A>Examples</h2>
+         <P>
+             Here are a few examples to get a grasp on all the possibilities from
+             the combinations of options.
+         </P>
+         <P>
+             Note however that <I>
+                 some options could be hard to figure out when
+                 combined together</I>. F.ex. scanning for Thresholds Above, plus
+             shifting to the maximum slope, plus merging simultaneous markers with
+             a wide range, plus Naming only with a Prefix... Unless you really
+             want it!
+         </P>
+         <H4>
+             Positions of maximum GFP:
+         </H4>
+         <UL>
+             <LI CLASS="mvd-P">
+                     Set <A HREF="eeg-display.html#filters">Filters</A> with some low pass filter, to
+                     smooth out small irregularities<BR>
+             <LI CLASS="mvd-P"><I>Tracks</I>: GFP<BR>
+             <LI CLASS="mvd-P">Scanning for: <I>Local Extrema</I>, <I>Max</I><BR>
+             <LI CLASS="mvd-P"><I>One Marker per Track</I>
+         </UL>
+         <H4>
+             Any track above a value:
+         </H4>
+         <UL>
+             <LI CLASS="mvd-P">
+                     <I>Tracks</I>: choose the ones you want to test, or all<BR>
+             <LI CLASS="mvd-P"><I>Threshold</I>, <I>Above</I>: set a value<BR>
+             <LI CLASS="mvd-P">
+                 <I>Condition has to be true for</I>: 1 to 100000 TF
+                 (kind of always true)<BR>
+             <LI CLASS="mvd-P"><I>One Marker per Track</I>
+         </UL>
+         <H4>
+             Triggers hard-coded into tracks:
+         </H4>
+         <UL>
+             <LI CLASS="mvd-P">
+                     <I>Tracks</I>: select the tracks that hold the trigger information<BR>
+             <LI CLASS="mvd-P"><I>Periods of Stability</I><BR>
+             <LI CLASS="mvd-P">
+                 <I>Condition has to be true for</I>: give a
+                 reasonable interval of time for &quot;good&quot; triggers (i.e. set a
+                 min duration to avoid detecting noise)<BR>
+             <LI CLASS="mvd-P">
+                 <I>Merged into Single Marker</I>, <I>Tolerance</I>
+                 set to 0 or a very small range.<BR>
+             <LI CLASS="mvd-P">Naming Markers: <I>Prefix</I> Off, <I>Relative Index</I> On
+         </UL>
+         <H4>
+             Counting frequency events from tracks:
+         </H4>
+         <UL>
+             <LI CLASS="mvd-P">
+                     Set <A HREF="eeg-display.html#filters">Filters</A> to <I>Envelope</I> (i.e. band
+                     pass), or do a <A HREF="frequency-analysis.html#analysis">Frequency analysis</A>
+                     first (like the S-transform)<BR>
+             <LI CLASS="mvd-P"><I>Tracks</I>: all<BR>
+             <LI CLASS="mvd-P">
+                 <I>Threshold</I>, <I>Above</I>: set a value for a
+                 minimum level of detection<BR>
+             <LI CLASS="mvd-P">
+                 <I>Condition has to be true for</I>: restrict the
+                 duration of the searched event<BR>
+             <LI CLASS="mvd-P">
+                 <I>Merged into Single Marker</I>, <I>Tolerance</I>
+                 depending on your data (sampling frequency, etc...)<BR>
+             <LI CLASS="mvd-P">Naming Markers: <I>Prefix</I> On, <I>Merged Count</I> On
+         </UL>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             &nbsp;
+     </div>
+ </BODY>
+</HTML>
