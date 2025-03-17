@@ -27,17 +27,24 @@
 
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
-			let currentPath = window.parent.location.pathname; // Full path
+			let currentPath = window.parent.location.pathname; // Full relative path
+			let currentFile = currentPath.split("/").pop(); // Extract only the file name
+			let currentDir = currentPath.substring(0, currentPath.lastIndexOf("/")); // Get directory path
+			
 			let menuItems = document.querySelectorAll(".menu-item");
 
 			menuItems.forEach(item => {
 				item.classList.remove("active"); // Remove active class from all
 
-				// Convert relative menu hrefs into absolute paths
-				let itemHref = new URL(item.getAttribute("href"), window.location.origin).pathname;
+				let itemHref = item.getAttribute("href"); // Get href from menu item
 
-				if (itemHref === currentPath) {
-					item.classList.add("active"); // Add 'active' class to the correct menu item
+				// Check if href is an exact match with the full path
+				if (itemHref === currentPath || itemHref === currentFile) {
+					item.classList.add("active"); 
+				} 
+				// Additional check for pages in subdirectories
+				else if (currentDir !== "" && itemHref.startsWith(currentDir) && itemHref.endsWith(currentFile)) {
+					item.classList.add("active");
 				}
 			});
 		});
