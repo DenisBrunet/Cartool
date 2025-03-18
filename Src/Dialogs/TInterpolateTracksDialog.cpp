@@ -273,9 +273,9 @@ if ( (bool) xyzfiles ) {
 
     for ( int i = 0; i < (int) xyzfiles; i++ ) {
 
-        if ( (int) xyzfiles == 1 )
+        if ( (int) xyzfiles == 1 ) {
 
-            if ( where.Y < 227 ) {  // choose according to position
+            if ( where.Y < 269 ) {  // choose according to position
                 if ( ! fromxyzlinked )
                     FromXyz->SetText ( xyzfiles[ i ] );
                 else
@@ -291,6 +291,7 @@ if ( (bool) xyzfiles ) {
                 AnotherXyz->SetCheck ( BoolToCheck ( true  ) );
                 ToXyz     ->SetText  ( xyzfiles[ i ] );
                 }
+            }
 
         else {                      // more than 1 xyz dropped
             currxyz++;

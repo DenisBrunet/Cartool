@@ -1001,8 +1001,10 @@ for ( int i = 0; i < (int) mrifiles; i++ ) {
     else if ( IsFullHead  ( guess ) )       SetMriFile      ( mrifiles[ i ], 0 );
     else if ( IsRoiMask   ( guess ) )       SetTissuesFile  ( mrifiles[ i ] );
     else if ( (int) mrifiles == 1 ) {
-        if ( where.Y >= 123 )               SetTissuesFile  ( mrifiles[ i ] );
-        else                                SetMriFile      ( mrifiles[ i ], where.Y >= 100 ? 2 : where.Y >= 76 ? 1 : 0 ); 
+        if      ( where.Y >= 169 )          SetTissuesFile  ( mrifiles[ i ] );
+        else if ( where.Y >= 137 )          SetMriFile      ( mrifiles[ i ], 2 );
+        else if ( where.Y >= 106 )          SetMriFile      ( mrifiles[ i ], 1 );
+        else                                SetMriFile      ( mrifiles[ i ], 0 );
         }
     else                                    SetMriFile      ( mrifiles[ i ], 0 );
     }
@@ -1085,7 +1087,7 @@ if ( (bool) spfiles ) {
 
         else {                          // not 2 SP files (1, 3, 4 etc...)
                                         // set according to position
-            if ( where.Y >= 431 )           SetLeadFieldSolPointsFile ( spfiles[ 0 ] );
+            if ( where.Y >= 600 )           SetLeadFieldSolPointsFile ( spfiles[ 0 ] );
             else                            SetLoadSolPointsFile      ( spfiles[ 0 ] );
             }
         } // ! HasLeadFieldFile
@@ -1108,7 +1110,7 @@ if ( (bool) lmfiles ) {
         TListIterator<char>     iterator;
 
 
-        if ( (bool) lm.lmri )
+        if ( (bool) lm.lmri ) {
 
             foreachin ( lm.lmri, iterator  ) {
 
@@ -1119,28 +1121,32 @@ if ( (bool) lmfiles ) {
                 else if ( IsFullHead  ( guess ) )       SetMriFile      ( iterator, 0 );
                 else if ( IsRoiMask   ( guess ) )       SetTissuesFile  ( iterator );
                 else if ( (int) lm.lmri == 1 ) {
-                    if ( where.Y >= 123 )               SetTissuesFile  ( mrifiles[ i ] );
-                    else                                SetMriFile      ( mrifiles[ i ], where.Y >= 100 ? 2 : where.Y >= 76 ? 1 : 0 ); 
+                    if      ( where.Y >= 169 )          SetTissuesFile  ( mrifiles[ i ] );
+                    else if ( where.Y >= 137 )          SetMriFile      ( mrifiles[ i ], 2 );
+                    else if ( where.Y >= 106 )          SetMriFile      ( mrifiles[ i ], 1 );
+                    else                                SetMriFile      ( mrifiles[ i ], 0 );
                     }
                 else                                    SetMriFile      ( iterator, 0 );
                 }
+            }
 
 
-        if ( (bool) lm.lxyz )
+        if ( (bool) lm.lxyz ) {
 
             foreachin ( lm.lxyz, iterator  )
 
                 SetXyzFile ( iterator () );
+            }
 
 
-        if ( (bool) lm.lsp )
+        if ( (bool) lm.lsp ) {
 
             foreachin ( lm.lsp, iterator  ) {
                                         // set according to position
-                if ( where.Y >= 431 )           SetLeadFieldSolPointsFile ( iterator () );
+                if ( where.Y >= 600 )           SetLeadFieldSolPointsFile ( iterator () );
                 else                            SetLoadSolPointsFile      ( iterator () );
                 }
-
+            }
         }
     } // .lm files
 

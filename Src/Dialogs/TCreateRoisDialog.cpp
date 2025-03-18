@@ -1228,7 +1228,7 @@ for ( int i = 0; i < (int) mrifiles; i++ ) {
 
 
 for ( int i = 0; i < (int) txtfiles; i++ )
-    SetTextFile ( where.Y < 115 ? IDC_BROWSEROISLABELSFILE : IDC_BROWSEGENERATEROISFILE, txtfiles[ i ] );
+    SetTextFile ( where.Y < 145 ? IDC_BROWSEROISLABELSFILE : IDC_BROWSEGENERATEROISFILE, txtfiles[ i ] );
 
 
 for ( int i = 0; i < (int) tracksfiles; i++ )

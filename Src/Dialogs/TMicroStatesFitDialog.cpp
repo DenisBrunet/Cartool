@@ -839,7 +839,7 @@ if ( (bool) tracksfiles ) {
 
                                         // D&D a single track file is ambiguous
     if ( (int) tracksfiles == 1
-      && where.Y < 88           ) {
+      && where.Y < 121          ) {
 
         int                 numtf;
         if ( ReadFromHeader ( tracksfiles[ 0 ], ReadNumTimeFrames, &numtf ) )
