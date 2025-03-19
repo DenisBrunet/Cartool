@@ -1152,21 +1152,15 @@ Gauge.Next ( gaugetemplmriglobal, SuperGaugeUpdateTitle );
 
 if ( howsp  != TemplateNoSP ) {
 
-    TMatrix44           templabstomribas;
-    TPoints             solpointstomri;
-
-
     for ( int mi = 0; mi < nummrifiles; mi++ ) {
-
-                                            // going from template to MRI
-        templabstomribas    = TMatrix44 ( gofmatrices[ mi ] );
-
                                             // applying common solution points back to particular subject's MRI
-        solpointstomri      = solpoints;
+        TPoints         solpointstomri   ( solpoints );
+
+        TMatrix44       templabstomribas ( gofmatrices[ mi ] );
 
         templabstomribas.Apply ( solpointstomri );
 
-                                            // save it!
+                                            // then save to file
         StringCopy          ( sptomrifile,  BaseFileName );
         StringAppend        ( sptomrifile,  ToFileName ( mrifiles[ mi ] ) );
         RemoveExtension     ( sptomrifile );

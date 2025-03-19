@@ -10241,8 +10241,8 @@ else if ( (bool) BadTracks ) {          // perform some checks on this selection
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( XYZDoc ) {                         // provide the coordinates for very first init
-    StringCopy ( transfer.FromXyz, XYZDoc->GetDocPath () );
 
+    StringCopy ( transfer.FromXyz, XYZDoc->GetDocPath () );
                                         // preventing switching to another XYZ
     transfer.FromXyzLinked  = true;
                                         // it is assumed user wants to just interpolate bad channels

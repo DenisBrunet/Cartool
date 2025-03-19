@@ -371,9 +371,9 @@ int                 ssi;
 
 if ( ! GetValueFromUser ( "Skull-Stripping method:" NewLine
                           NewLine
-                          Tab "1) Multiple Region Growing - Recommended"          NewLine
-                          Tab "2) Single Region Growing   - If 1) failed"         NewLine
-                          Tab "3) Multiple Masking            - If 1) and 2) failed", 
+                          Tab "1) Multiple Region Growing - Recommended"            NewLine
+                          Tab "2) Single Region Growing   - If 1) failed"           NewLine
+                          Tab "3) Multiple Masking           - If 1) and 2) failed", 
                           title, ssi, defaultanswer, that ) )
 
     return  SkullStrippingNone;

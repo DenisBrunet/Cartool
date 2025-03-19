@@ -223,15 +223,6 @@ IT.Reset ();
 }
 
 
-void    TInterpolateTracksDialog::SetupWindow ()
-{
-TDialog::SetupWindow ();
-
-                                        // don't know why the transfer buffer is not properly sent to the dialog...
-TransferData ( tdSetData );
-}
-
-
         TInterpolateTracksDialog::~TInterpolateTracksDialog ()
 {
 delete  FromXyz;        delete  FromBadElectrodes;
@@ -276,11 +267,13 @@ if ( (bool) xyzfiles ) {
         if ( (int) xyzfiles == 1 ) {
 
             if ( where.Y < 269 ) {  // choose according to position
+
                 if ( ! fromxyzlinked )
                     FromXyz->SetText ( xyzfiles[ i ] );
                 else
-                    ShowMessage ( "You can not change this coordinates file now,"  NewLine 
-                                  "as it is already provided by the current link." NewLine NewLine 
+                    ShowMessage ( "You can not change this coordinates file now,"   NewLine 
+                                  "as it is already provided by the current link."  NewLine
+                                  NewLine 
                                   "Close the link file first if you wish to use another coordinates file.", InterpolationTitle, ShowMessageWarning );
                 }
             else {
@@ -300,10 +293,6 @@ if ( (bool) xyzfiles ) {
             else if ( currxyz == 2 )                            ToXyz  ->SetText ( xyzfiles[ i ] );
             // else all ignored
             }
-
-//        ExportTracksTransfer.UseXyzDoc  = BoolToCheck ( true  );
-//        StringCopy ( ExportTracksTransfer.XyzDocFile, xyzfiles[ i ] );
-//        TransferData ( tdSetData );
         }
     }
 
@@ -356,6 +345,8 @@ tce.Enable ( ! InterpolateTracksTransfer.FromXyzLinked );
 
 void    TInterpolateTracksDialog::CmToXyzEnable ( TCommandEnabler &tce )
 {
+TransferData ( tdGetData );
+
 tce.Enable ( CheckToBool ( AnotherXyz->GetCheck() ) );
 }
 
@@ -384,6 +375,8 @@ tce.Enable ( AreParametersOk () );
 
 void    TInterpolateTracksDialog::CmToLandmarksEnable ( TCommandEnabler &tce )
 {
+TransferData ( tdGetData );
+
 tce.Enable ( CheckToBool ( AnotherXyz->GetCheck() ) );
 }
 
@@ -413,7 +406,7 @@ if ( StringIsEmpty ( InterpolateTracksTransfer.FromXyz ) )
 //    return;
 //    }
 
-if ( CheckToBool ( AnotherXyz->GetCheck() ) && StringIsEmpty ( InterpolateTracksTransfer.ToXyz ) )
+if ( CheckToBool ( InterpolateTracksTransfer.AnotherXyz ) && StringIsEmpty ( InterpolateTracksTransfer.ToXyz ) )
     return false;
 
                                         // expects all landmarks to be filled in, while allowing for all to be empty for "as is" loading(?)
@@ -427,7 +420,7 @@ if ( ! fromlandmarksok )
     return false;
 
 
-if ( CheckToBool ( AnotherXyz->GetCheck() ) ) {
+if ( CheckToBool ( InterpolateTracksTransfer.AnotherXyz ) ) {
 
     bool                tolandmarksok       =  StringIsNotEmpty ( InterpolateTracksTransfer.ToFront ) 
                                             && StringIsNotEmpty ( InterpolateTracksTransfer.ToLeft  ) 
@@ -631,7 +624,7 @@ else if (   DocFromXyz->GetElectrodeName ( "C17"  )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TInterpolateTracksStructEx*     transfer   = (TInterpolateTracksStructEx *) GetTransferBuffer ();
+TInterpolateTracksStructEx*     transfer   = (TInterpolateTracksStructEx*) GetTransferBuffer ();
                                         // ProcessCurrent may have given us some selection, so use it now that we now the XYZ
 if ( ! BatchProcessing && transfer->BadElectrodesSelection.IsAllocated () ) {
 
