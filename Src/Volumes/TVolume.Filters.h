@@ -116,6 +116,7 @@ else if ( filtertype == FilterTypeGradient
        || filtertype == FilterTypeKCurvature
        || filtertype == FilterTypeKCCurvature       )   FilterPartDeriv     ( filtertype,               params, 0, showprogress );
 
+else if ( filtertype == FilterTypeHeadCleanup       )   HeadCleanup         (                           params, showprogress );
 else if ( filtertype == FilterTypeBiasField         )   FilterBiasField     (                           params, 0, showprogress );
 else if ( filtertype == FilterTypeSegmentCSF        )   SegmentCSF          (                           params, showprogress );
 else if ( filtertype == FilterTypeSegmentGrey       )   SegmentGreyMatter   (                           params, showprogress );

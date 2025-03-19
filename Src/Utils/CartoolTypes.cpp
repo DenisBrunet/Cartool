@@ -130,6 +130,7 @@ const FilterPresetSpec  FilterPresets[ NumFilterTypes ] =
             {   FilterTypeClustersToRegions,    "Clusters To Regions",                  "ClustersToRegions"         },
             {   FilterTypeRegionGrowing,        "Region Growing",                       "RegionGrowing"             },
 
+            {   FilterTypeHeadCleanup,          "Full Head Clean-up",                   "Clean"                     },
             {   FilterTypeBiasField,            "Bias Field Correction",                InfixBiasFieldCorrection    },
             {   FilterTypeSegmentCSF,           "CSF Extraction",                       InfixCsf                    },
             {   FilterTypeSegmentGrey,          "Grey Matter Extraction",               InfixGrey                   },

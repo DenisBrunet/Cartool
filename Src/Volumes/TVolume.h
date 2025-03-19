@@ -402,6 +402,7 @@ public:
     bool            SegmentWhiteMatter      ( FctParams& params, bool showprogress = false ); // from a full brain, detailed: 0..1
     bool            SegmentTissues          ( FctParams& params, bool showprogress = false ); // from a full brain
     bool            FilterBiasField         ( FctParams& params, TVolume<float>* corr, bool showprogress = false );
+    bool            HeadCleanup             ( FctParams& params, bool showprogress = false );
 
     void            LevelsToRegions         ( TVolumeRegions& gor );
     void            LevelsClustersToRegions ( TVolumeRegions& gor, int minvoxels, int maxvoxels, NeighborhoodType neighborhood, bool showprogress = false );
@@ -466,16 +467,17 @@ public:
 
 
     TVolume<TypeD>& operator    |=      ( const TVolumeRegion&  op2 );
-    TVolume<TypeD>& operator    |=      ( const TVolume<TypeD> &op2 );          // bool in and out
-    TVolume<TypeD>& operator    &=      ( const TVolume<TypeD> &op2 );          // bool in and out
+    TVolume<TypeD>& operator    |=      ( const TVolume<TypeD>& op2 );          // bool in and out
+    TVolume<TypeD>& operator    &=      ( const TVolume<TypeD>& op2 );          // bool in and out
     TVolume<TypeD>& operator    +=      ( const TVolume<TypeD>& op2 );
     TVolume<TypeD>& operator    +=      ( double op2 );
     TVolume<TypeD>& operator    /=      ( double op2 );
     TVolume<TypeD>& operator    /=      ( const TVolume<TypeD>& op2 );
     TVolume<TypeD>& operator    *=      ( double op2 );
-    TVolume<TypeD>  operator    |       ( const TVolume<TypeD> &op2 )   const;  // bool in and out
-    TVolume<TypeD>  operator    &       ( const TVolume<TypeD> &op2 )   const;  // bool in and out
-    TVolume<TypeD>  operator    +       ( const TVolume<TypeD> &op2 )   const;
+    TVolume<TypeD>& operator    *=      ( const TVolume<TypeD>& op2 );
+    TVolume<TypeD>  operator    |       ( const TVolume<TypeD>& op2 )   const;  // bool in and out
+    TVolume<TypeD>  operator    &       ( const TVolume<TypeD>& op2 )   const;  // bool in and out
+    TVolume<TypeD>  operator    +       ( const TVolume<TypeD>& op2 )   const;
 
 
 protected:
@@ -964,6 +966,30 @@ else {
     for ( int d3 = 0, i = IndexesToLinearIndex ( d1, d2, d3 ); d3 < mindim3; d3++, i++ )
 
         Array[ i ] /= NonNull ( op2 ( d1, d2, d3 ) );
+    }
+
+return  *this;
+}
+
+
+template <class TypeD>
+TVolume<TypeD>& TVolume<TypeD>::operator*= ( const TVolume<TypeD>& op2 )
+{
+if ( LinearDim == op2.LinearDim )       // same size -> simplified loop
+
+    for ( int i = 0; i < LinearDim; i++ )
+
+        Array[ i ] *= op2.Array[ i ];
+else {
+    int     mindim1 = min ( Dim1, op2.Dim1 );
+    int     mindim2 = min ( Dim2, op2.Dim2 );
+    int     mindim3 = min ( Dim3, op2.Dim3 );
+
+    for ( int d1 = 0; d1 < mindim1; d1++ )
+    for ( int d2 = 0; d2 < mindim2; d2++ )
+    for ( int d3 = 0, i = IndexesToLinearIndex ( d1, d2, d3 ); d3 < mindim3; d3++, i++ )
+
+        Array[ i ] *= op2 ( d1, d2, d3 );
     }
 
 return  *this;

@@ -1969,6 +1969,12 @@ else if ( filtertype == FilterTypeHistoEqualBrain ) {
     StringCopy  ( NiftiIntentName, NiftiIntentNameDefault );
     }
 
+else if ( filtertype == FilterTypeHeadCleanup ) {
+                                        // no parameters
+
+    StringCopy  ( NiftiIntentName, NiftiIntentNameDefault );
+    }
+
 else if ( filtertype == FilterTypeBiasField ) {
 
     p ( FilterParamBiasFieldRepeat )     = 1;

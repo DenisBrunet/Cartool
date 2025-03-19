@@ -496,9 +496,7 @@
 #define CM_FILTERKCURVATURE             4086
 #define CM_FILTERKCCURVATURE            4087
 #define CM_FILTERBIASFIELD              4090
-#define ID_INPUT                        4090
 #define CM_FILTERSEGMENTTISSUES         4091
-#define ID_PROMPT                       4091
 #define CM_FILTERSEGMENTCSF             4092
 #define CM_FILTERSEGMENTGREY            4093
 #define CM_FILTERSEGMENTWHITE           4094
@@ -522,6 +520,7 @@
 #define CM_FILTERINTENSITYABS           4207
 #define CM_FILTERINTENSITYNORM          4208
 #define CM_FILTERKEEPVALUE              4209
+#define CM_HEADCLEANUP                  4210
 #define CM_FILTERRESIZE                 4300
 #define IDD_AVERAGE1                    5001
 #define IDD_AVERAGE2                    5002
@@ -546,11 +545,11 @@
 #define IDD_RISCOMPUTATION              5024
 #define IDD_RISTOVOLUME                 5025
 #define IDD_COREGISTRATION              5026
-#define IDD_INPUTDIALOG3                5103
-#define IDD_INPUTDIALOG6                5106
+#define IDD_INPUTDIALOG3                5090
+#define IDD_INPUTDIALOG6                5091
+#define IDD_INPUTDIALOG9                5092
 #define IDC_ADD2LIST                    5107
 #define IDC_BROWSEEEG                   5108
-#define IDD_INPUTDIALOG9                5109
 #define IDC_BROWSETVA                   5109
 #define IDC_BROWSECI                    5110
 #define IDC_CBEEG                       5112
@@ -1244,7 +1243,6 @@
 #define IDS_NODOCMANAGER                32510
 #define IDS_NOMEMORYFORVIEW             32511
 #define IDS_DUPLICATEDOC                32512
-#define IDD_INPUTDIALOG                 32514
 #define IDS_VALPXPCONFORM               32520
 #define IDS_VALINVALIDCHAR              32521
 #define IDS_VALNOTINRANGE               32522

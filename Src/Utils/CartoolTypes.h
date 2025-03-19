@@ -156,6 +156,7 @@ enum            FilterTypes
                 FilterTypeClustersToRegions,
                 FilterTypeRegionGrowing,
 
+                FilterTypeHeadCleanup,
                 FilterTypeBiasField,
                 FilterTypeSegmentCSF,
                 FilterTypeSegmentGrey,

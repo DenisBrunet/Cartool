@@ -142,6 +142,10 @@ else if ( w == CM_DOWNSAMPLEMRI ) {
     p ( 0 )     = Round ( p ( 0 ) );
     }
 
+else if ( w == CM_HEADCLEANUP ) {
+
+    }
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -185,6 +189,7 @@ for ( int i = 0; i < (int) getfiles; i++ ) {
     else if ( w == CM_FILTERSEGMENTWHITE    )   StringAppend    ( newfile, "." InfixWhite  );
     else if ( w == CM_FILTERSEGMENTTISSUES  )   StringAppend    ( newfile, "." InfixTissues );
     else if ( w == CM_DOWNSAMPLEMRI         )   StringAppend    ( newfile, "." "Down", IntegerToString ( p ( 0 ) ) );
+    else if ( w == CM_HEADCLEANUP           )   StringAppend    ( newfile, ".", FilterPresets[ FilterTypeHeadCleanup ].Ext );
 
     AddExtension        ( newfile, DefaultMriExt );
 
@@ -280,6 +285,16 @@ for ( int i = 0; i < (int) getfiles; i++ ) {
     else if ( w == CM_DOWNSAMPLEMRI ) {
                                         // use the ExportDownsampled from BaseMri
         mridoc->ExportDownsampled   ( newfile, (int) p ( 0 ) );
+        }
+
+    else if ( w == CM_HEADCLEANUP ) {
+        Volume          volumecopy ( *mridoc->GetData () );
+
+        volumecopy.Filter ( FilterTypeHeadCleanup, p, true /*! batchmode*/ );
+
+        volumecopy.WriteFile    ( newfile, &mridoc->GetOrigin (), &voxelsize, &mridoc->GetRealSize (), orientation,
+                                  AtLeast ( NiftiTransformDefault, mridoc->GetNiftiTransform () ), mridoc->GetNiftiIntentCode (), mridoc->GetNiftiIntentName ()
+                                );
         }
 
 

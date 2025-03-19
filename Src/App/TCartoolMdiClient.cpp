@@ -162,6 +162,7 @@ DEFINE_RESPONSE_TABLE1(TCartoolMdiClient, TMDIClient)
     EV_COMMAND_AND_ID   (CM_FILTERSEGMENTWHITE,         BatchProcessMrisUI ),
     EV_COMMAND_AND_ID   (CM_FILTERSEGMENTTISSUES,       BatchProcessMrisUI ),
     EV_COMMAND_AND_ID   (CM_DOWNSAMPLEMRI,              BatchProcessMrisUI ),
+    EV_COMMAND_AND_ID   (CM_HEADCLEANUP,                BatchProcessMrisUI ),
     EV_COMMAND          (CM_NORMALIZEMRI,               CmPreprocessMris ),
     EV_COMMAND          (CM_TEMPLATEMRI,                ComputingTemplateMriUI ),
     EV_COMMAND          (CM_MERGINGMRIMASKS,            MergingMriMasksUI ),

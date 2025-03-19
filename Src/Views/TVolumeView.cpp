@@ -217,6 +217,7 @@ DEFINE_RESPONSE_TABLE1 (TVolumeView, TBaseView)
 //  EV_COMMAND_AND_ID   ( CM_FILTERHISTOCOMPACT,        CmFilter ),
     EV_COMMAND_AND_ID   ( CM_FILTERRANK,                CmFilter ),
     EV_COMMAND_AND_ID   ( CM_FILTERRANKRAMP,            CmFilter ),
+    EV_COMMAND_AND_ID   ( CM_HEADCLEANUP,               CmFilter ),
 //  EV_COMMAND_AND_ID   ( CM_FILTERRESIZE,              CmFilter ),
 
     EV_COMMAND_AND_ID   ( CM_OPERATIONAND,              CmOperation ),
@@ -3566,6 +3567,7 @@ else if ( w == CM_FILTERSEGMENTTISSUES      )   MRIDoc->Filter ( FilterTypeSegme
 else if ( w == CM_FILTERMASKTOSP            )   MRIDoc->Filter ( FilterTypeMaskToSolutionPoints );
 else if ( w == CM_SKULLSTRIPPING            )   MRIDoc->Filter ( FilterTypeSkullStripping );
 else if ( w == CM_CUTBRAINSTEM              )   MRIDoc->Filter ( FilterTypeBrainstemRemoval );
+else if ( w == CM_HEADCLEANUP               )   MRIDoc->Filter ( FilterTypeHeadCleanup );
 
 //else if ( w == CM_FILTERRESIZE              )   MRIDoc->Filter ( FilterTypeResize );
 

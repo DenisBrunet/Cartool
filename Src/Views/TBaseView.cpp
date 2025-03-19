@@ -572,6 +572,7 @@ if ( GetCommandsCloning ()
            && id != CM_AVERAGEXYZ 
            && id != CM_SKULLSTRIPPING
            && id != CM_CUTBRAINSTEM
+           && id != CM_HEADCLEANUP
            && id != CM_STATISTICSTRACKS
            && id != CM_STATISTICSRIS
            && id != CM_STATISTICSFREQ

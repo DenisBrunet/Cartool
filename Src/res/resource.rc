@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "resource.h"
+#include    "owl/inputdia.rh"   // IDD_INPUTDIALOG, ID_PROMPT, ID_INPUT
+#include    "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -197,7 +198,10 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "&Coregistering MRIs",         CM_MRICOREGISTRATION
             MENUITEM "Computing &Template Brain",   CM_TEMPLATEMRI
-            MENUITEM "Merging set of masks into single tissues volume", CM_MERGINGMRIMASKS
+            MENUITEM "&Merging set of masks into single Tissues volume", CM_MERGINGMRIMASKS
+            MENUITEM SEPARATOR
+            MENUITEM "For Full Head MRIs Only:",        1
+            MENUITEM "&Automatic Full Head Clean-up", CM_HEADCLEANUP
             MENUITEM SEPARATOR
             MENUITEM "For Brain MRIs Only:",        1
             MENUITEM "S&Kull Stripping Full Head MRIs", CM_SKULLSTRIPPING
@@ -205,7 +209,7 @@ BEGIN
             MENUITEM "Extracting the C&SF",         CM_FILTERSEGMENTCSF
             MENUITEM "Extracting the &Grey Matter", CM_FILTERSEGMENTGREY
             MENUITEM "Extracting the &White Matter", CM_FILTERSEGMENTWHITE
-            MENUITEM "Extracting the Black / Grey / White Tissues", CM_FILTERSEGMENTTISSUES
+            MENUITEM "&Extracting the Black / Grey / White Tissues", CM_FILTERSEGMENTTISSUES
             MENUITEM "Computing S&olution Points from Brain && Grey Mask", CM_FILTERMASKTOSP
         END
         POPUP "Electrodes &Coordinates and Solution Points"
@@ -871,6 +875,10 @@ BEGIN
             MENUITEM "Flip X and Z axis",           IDB_FLIPXZ
         END
         MENUITEM SEPARATOR
+        POPUP "&Full Head Processing"
+        BEGIN
+            MENUITEM "Automatic Full Head &Clean-up", CM_HEADCLEANUP
+        END
         POPUP "&Brain Processing"
         BEGIN
             MENUITEM "S&kull Stripping from Full Head", CM_SKULLSTRIPPING

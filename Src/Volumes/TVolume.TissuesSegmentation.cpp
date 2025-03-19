@@ -37,6 +37,80 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
+
+bool    Volume::HeadCleanup ( FctParams& /*params*/, bool showprogress )
+{
+if ( IsNotAllocated () )
+    return  false;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TSuperGauge         Gauge ( FilterPresets[ FilterTypeHeadCleanup ].Text, showprogress ? 6 : 0 );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // 0) Get a mask of the full head
+Gauge.Next ();
+
+TVolume             headmask ( *this );
+FctParams           p;
+
+p ( FilterParamToMaskThreshold )     = GetBackgroundValue ();
+p ( FilterParamToMaskNewValue  )     = 1;
+p ( FilterParamToMaskCarveBack )     = true;
+headmask.Filter ( FilterTypeToMask, p );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Keep biggest region, i.e. the head
+Gauge.Next ();
+                                        // erode handsomely by safety
+p ( FilterParamDiameter )       = 3;
+headmask.Filter ( FilterTypeErode, p );
+
+
+Gauge.Next ();
+
+headmask.Filter ( FilterTypeKeepBiggestRegion, p );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Post-process mask:
+Gauge.Next ();
+                                        // expand back + some more room
+p ( FilterParamDiameter )       = 3 + 2;
+headmask.Filter ( FilterTypeDilate, p );
+
+
+//TFileName           _file;
+//StringCopy ( _file, "E:\\Data\\HeadMask.nii" );
+//headmask.WriteFile ( _file );
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // soften the edge of mask - set in voxel size is OK
+Gauge.Next ();
+
+p ( FilterParamDiameter )     = 3.47;
+headmask.Filter ( FilterTypeGaussian, p );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Gauge.Next ();
+                                        // apply mask to original data
+*this      *= headmask;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Gauge.Finished ();
+
+return  true;
+}
+
+
+//----------------------------------------------------------------------------
                                         // extract from the brain
 bool    Volume::SegmentWhiteMatter ( FctParams& params, bool showprogress )
 {
