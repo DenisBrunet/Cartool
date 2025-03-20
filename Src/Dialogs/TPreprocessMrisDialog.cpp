@@ -828,7 +828,7 @@ bool                transverseplane = reorienting != ReorientingNone && CheckToB
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+                                        // !This parameter can have some side-effects on the Sagittal plane detection!
 OriginFlags         origin          = ! CheckToBool ( transfer->SettingOrigin         ) ? OriginNone
                                     :   CheckToBool ( transfer->SettingOriginAlways   ) ? OriginSetAlways
                                     :   CheckToBool ( transfer->SettingOriginIfNotSet ) ? OriginSetNoDefault

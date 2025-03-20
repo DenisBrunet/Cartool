@@ -121,7 +121,7 @@ TVolumeProperties   gomri   (   mridoc,
 TEasyStats          gomriq;
 
 double              centerx         = gomri.Center          [ gomri.LeftRightIndex ];
-double              deltax          = gomri.Bound.GetRadius ( gomri.LeftRightIndex ) * 0.15;
+double              deltax          = gomri.Bound.GetRadius ( gomri.LeftRightIndex ) * 0.20;
 double              roty            = 7.5;
 double              rotz            = 7.5;
 
