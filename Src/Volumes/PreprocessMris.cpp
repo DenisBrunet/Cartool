@@ -442,7 +442,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
 
     if ( sagittalplane ) {
 
-                                        // we REALLY need a center - if no parameters have set it already, we do it right now
+                                        // we REALLY do need a center - if no parameters have set it already, we do it right now
         if ( sourceorigin.IsNull () /*! mridoc->IsValidOrigin ( sourceorigin )*/ )
             if ( mrioriginok )  sourceorigin    = mriorigin;
             else                sourceorigin    = mridoc->GetDefaultCenter ();  // in last resort!
@@ -456,7 +456,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
                                 showsubprocess ? "Sagittal Plane Search" : 0
                             );
 
-                                        // we want the other way round...
+                                        // we want it the other way round:
                                         // Translate(-LocalCenter) -> RASOrient (centered) -> Rotates(RAS)
         transform.Invert ();
 
@@ -503,7 +503,9 @@ for ( int i = 0; i < (int) gofin; i++ ) {
 
                                         // apply transform and save to file
         mridoc->GetData ()->TransformAndSave (  transform,
-                                                TransformAndSaveFlags ( TransformToTarget | TransformSourceRelative | TransformTargetRelative ),
+                                                TransformAndSaveFlags (   TransformToTarget 
+                                                                        | TransformSourceRelative 
+                                                                        | TransformTargetRelative ),
                                                 filtertype,      interpolate,    numsubsampling,
                                                 &sourceorigin,   &targetorigin, 
                                                 mridoc->GetVoxelSize (),    0,
@@ -550,6 +552,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
 
         p ( FilterParamSkullStrippingVoxelSize  )   = temprasdoc->GetVoxelSize ().Average ();
         p ( FilterParamSkullStrippingIsTemplate )   = IsTemplateFileName ( gofin[ i ] );        // for method 1 - template file has some specific tuning
+
 
         tempbrain->Filter ( FilterTypeSkullStripping, p, showsubprocess );
 

@@ -1106,11 +1106,10 @@ TVolumeRegions      gor;
 //LevelsClustersToRegions ( gor, minvoxels, maxvoxels, neighborhood, showprogress );
 ClustersToRegions       ( gor, minvoxels, maxvoxels, neighborhood, showprogress );
 
-
 gor.Sort ( sortcriterion );
 
 
-if ( (int) gor ) {
+if ( (bool) gor ) {
 
     if ( (int) gor > 1 ) {
 

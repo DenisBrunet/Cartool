@@ -44,7 +44,6 @@ public:
 
     TPointFloat     Center;
     double          Radius;
-    double          Inertia;
     double          Compactness;
 
 
@@ -55,7 +54,6 @@ public:
     bool            IsEmpty             ()                          const   { return ! NumPoints; }
 
     int             GetNumPoints        ()                          const   { return  NumPoints; }
-    int             GetCompactCount     ()                          const   { return  (int) ( sqrt ( (double) NumPoints ) * Compactness ); /*NumPoints * Compactness;*/ }  // measure of compactness used to retain interesting regions
 //  double          GetBackgroundValue  ()                          const   { return BackgroundValue; }
 
                                         // Absolute coordinates account for the Translation shift
@@ -142,7 +140,7 @@ protected:
     crtl::TList<TVolumeRegion>  Group;
 
 
-    void                    Sort  ( int l, int r, bool (*f) ( const TVolumeRegion* va, const TVolumeRegion* vb ) );
+    void                    Sort  ( int l, int r, bool (*isgreater) ( const TVolumeRegion* va, const TVolumeRegion* vb ) );
 
 };
 

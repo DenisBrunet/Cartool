@@ -55,7 +55,7 @@ NumPoints           = 0;
 UpdateStats ();
 }
 
-                                        // Sets: limits, NumPoints, Center, Radius, Inertia, Compactness, (compact volume) Translation, Array3 size
+                                        // Sets: limits, NumPoints, Center, Radius, Compactness, (compact volume) Translation, Array3 size
 void    TVolumeRegion::Set ( bool compact )
 {
 if ( compact )
@@ -75,7 +75,6 @@ Translation     = op.Translation;
 
 Center          = op.Center;
 Radius          = op.Radius;
-Inertia         = op.Inertia;
 Compactness     = op.Compactness;
 }
 
@@ -96,7 +95,6 @@ Translation     = op2.Translation;
 
 Center          = op2.Center;
 Radius          = op2.Radius;
-Inertia         = op2.Inertia;
 Compactness     = op2.Compactness;
 
 return  *this;
@@ -199,11 +197,10 @@ double      TVolumeRegion::ComparedTo ( const TVolumeRegion &region )
 {
 double              rn              = 1 - 0.5 * RelativeDifference ( NumPoints,   region.GetNumPoints () );
 double              rd              = 1 - 0.5 * RelativeDifference ( Radius,      region.Radius          );
-double              ri              = 1 - 0.5 * RelativeDifference ( Inertia,     region.Inertia         );
 double              rc              = 1 - 0.5 * RelativeDifference ( Compactness, region.Compactness     );
 
                                         // !give more weight to # of points!
-double              r               = ( 3 * rn + rd + ri + rc ) / 6;
+double              r               = ( 3 * rn + rd + rc ) / 5;
 
 
 return  r;
@@ -240,21 +237,22 @@ void    TVolumeRegion::UpdateStats ()
 {
 Center.Reset ();
 Radius              = 0;
-Inertia             = 0;
 Compactness         = 0;
 
 if ( IsEmpty () )
     return;
 
 
-TEasyStats          stat;
-TPointFloat         p;
-int                 x,  y,  z;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 for ( int i = 0; i < LinearDim; i++ ) {
 
     if ( ! GetValue ( i ) )
         continue;
+
+    int             x;
+    int             y;
+    int             z;
 
     LinearIndexToXYZ ( i, x, y, z );
     CoordinatesToAbs    ( x, y, z );
@@ -262,25 +260,33 @@ for ( int i = 0; i < LinearDim; i++ ) {
     Center     += TPointFloat ( x, y, z );
     }
 
-Center /= GetNumPoints ();
+Center /= NonNull ( GetNumPoints () );
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TEasyStats          stat;
 
 for ( int i = 0; i < LinearDim; i++ ) {
 
     if ( ! GetValue ( i ) )
         continue;
 
-    LinearIndexToXYZ ( i, x, y, z );
-    CoordinatesToAbs    ( x, y, z );
+    int             x;
+    int             y;
+    int             z;
 
-    p   = TPointFloat ( x, y, z ) - Center;
-    stat.Add ( p.Norm (), ThreadSafetyIgnore );
+    LinearIndexToXYZ ( i, x, y, z );
+    CoordinatesToAbs (    x, y, z );
+
+    double          d       = ( TPointFloat ( x, y, z ) - Center ).Norm ();
+
+    stat.Add ( d, ThreadSafetyIgnore );
     }
 
 
-Radius      = stat.Average ();
-Inertia     = stat.SD ();
-Compactness = GetNumPoints () / ( Radius ? Power ( Radius, 3 ) : 1 );
+Radius      =               stat.Average  ();
+Compactness = 1 / NonNull ( stat.Variance () );
 }
 
 
@@ -290,13 +296,19 @@ void    TVolumeRegion::Show ( char *title ) const
 {
 char                buff[ 256 ];
 
-sprintf ( buff, "Index: %0d\nNumber of Points: %0d\nCenter: %.1f, %.1f, %.1f\nRadius: %.2f\nInertia: %.2f\nCompactness: %.2f",
-                 Index,
-                 GetNumPoints (),
-                 Center.X, Center.Y, Center.Z,
-                 Radius, Inertia, Compactness );
+StringCopy      ( buff, "Index: ",              IntegerToString ( Index ) );
+StringAppend    ( buff, NewLine );
+StringAppend    ( buff, "Number of Points: ",   IntegerToString ( GetNumPoints () ) );
+StringAppend    ( buff, NewLine );
+StringAppend    ( buff, "Center: ",             FloatToString ( Center.X, 1 ), ", ", FloatToString ( Center.Y, 1 ), ", ", FloatToString ( Center.Z, 1 ) );
+StringAppend    ( buff, NewLine );
+StringAppend    ( buff, "Radius: ",             FloatToString ( Radius, 2 ) );
+StringAppend    ( buff, NewLine );
+StringAppend    ( buff, "Compactness: ",        FloatToString ( 10000 * Compactness, 2 ) );
+StringAppend    ( buff, NewLine );
+StringAppend    ( buff, "Compactness x Count: ",FloatToString ( NumPoints * Compactness, 2 ) );
 
-ShowMessage ( buff, StringIsEmpty ( title ) ? "Region" : title );
+ShowMessage     ( buff, StringIsEmpty ( title ) ? "Region" : title );
 }
 
 
@@ -370,9 +382,10 @@ for ( int i = 0; i < NumRegions (); i++ )
 
 //----------------------------------------------------------------------------
                                         // Comparison functions used for sorting in decreasing order (use some lambda later on?)
-static bool     GreaterCount        ( const TVolumeRegion* va, const TVolumeRegion* vb )    { return va->GetNumPoints () > vb->GetNumPoints ();  }
-static bool     GreaterCompact      ( const TVolumeRegion* va, const TVolumeRegion* vb )    { return va->Compactness     > vb->Compactness;      }
-static bool     GreaterCompactCount ( const TVolumeRegion* va, const TVolumeRegion* vb )    { return RoundTo ( va->GetCompactCount (), 10-3 ) > RoundTo ( vb->GetCompactCount (), 10-3 );   }
+static bool     GreaterCount                ( const TVolumeRegion* va, const TVolumeRegion* vb )    { return va->GetNumPoints ()                                > vb->GetNumPoints ();  }
+static bool     GreaterCompact              ( const TVolumeRegion* va, const TVolumeRegion* vb )    { return va->Compactness                                    > vb->Compactness;      }
+static bool     GreaterCompactCount         ( const TVolumeRegion* va, const TVolumeRegion* vb )    { return va->GetNumPoints () * va->Compactness              > vb->GetNumPoints () * vb->Compactness; }
+//static bool     GreaterCompactRadiusCount   ( const TVolumeRegion* va, const TVolumeRegion* vb )    { return va->GetNumPoints () * va->Compactness / va->Radius > vb->GetNumPoints () * vb->Compactness / vb->Radius; } // even more compactness?
 
 
 void    TVolumeRegions::Sort ( VolumeRegionsSort how )
@@ -385,7 +398,7 @@ Group.UpdateIndexes ( true );
 }
 
 
-void    TVolumeRegions::Sort  ( int l, int r, bool (*f) ( const TVolumeRegion* va, const TVolumeRegion* vb ) )
+void    TVolumeRegions::Sort  ( int l, int r, bool (*isgreater) ( const TVolumeRegion* va, const TVolumeRegion* vb ) )
 {
 if ( r <= l )   return;
 
@@ -396,13 +409,17 @@ const TVolumeRegion*    v           = Group[ ( l + r ) / 2 ];
 
 
 do {
-    while ( (*f) ( Group[ i ],  v          ) )      i++;
-    while ( (*f) ( v,           Group[ j ] ) )      j--;
+    while ( (*isgreater) ( Group[ i ],  v          ) )      i++;
+    while ( (*isgreater) ( v,           Group[ j ] ) )      j--;
 
     if ( i <= j )
         Permutate ( Group.GetAtom ( i++ )->ToData, Group.GetAtom ( j-- )->ToData );   // content remain in place, only the pointers are permutated
 
     } while ( i <= j );
+
+
+if ( l < j )    Sort ( l, j, isgreater );
+if ( i < r )    Sort ( i, r, isgreater );
 }
 
 

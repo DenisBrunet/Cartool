@@ -31,6 +31,7 @@ limitations under the License.
 #include    "GlobalOptimize.Tracks.h"
 #include    "TArray1.h"
 #include    "TArray3.h"
+//#include    "TExportTracks.h"
 
 namespace crtl {
 
@@ -351,7 +352,7 @@ for ( int i = 0; i < numlessneighbors; i++ ) {
     }
 
 
-mask.KeepRegion ( SortRegionsCompactCount, mask.GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+mask.KeepRegion ( SortRegionsCompactCount, mask.GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 };
 
 
@@ -620,7 +621,7 @@ p ( FilterParamNeighborhood )     = Neighbors26;
 seed.Filter ( FilterTypeLessNeighbors, p );
 
                                         // Can add some clean-up before the Percentage of Fullness
-seed.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+seed.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 
 
 #if defined(SkullStripping1ASaveSteps)
@@ -661,7 +662,7 @@ seed.WriteFile ( _file, 0, 0, 0, 0, NiftiTransformDefault, NiftiIntentCodeDefaul
 Gauge.Next ();
 
                                         // first with 26 neighbors, faster, to get rid of all major disconnected stuff
-seed.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+seed.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 
 
 #if defined(SkullStripping1ASaveSteps)
@@ -673,7 +674,7 @@ seed.WriteFile ( _file, 0, 0, 0, 0, NiftiTransformDefault, NiftiIntentCodeDefaul
 //Gauge.Next ();
 //
 //                                        // then with 6 neighbors, slower, to disconnect the very last possible stuff, and to clean-up small top patches too
-//seed.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors6,  0 );
+//seed.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors6,  0 );
 //
 //
 //#if defined(SkullStripping1ASaveSteps)
@@ -1091,7 +1092,7 @@ p ( FilterParamNeighborhood )     = Neighbors26;
 seed.Filter ( FilterTypeLessNeighbors, p );
 
                                         // Can add some clean-up before the Percentage of Fullness
-seed.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+seed.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 
 
 #if defined(SkullStripping1BSaveSteps)
@@ -1444,7 +1445,7 @@ brain.Filter ( FilterTypeMin, p, true );
 //return;
  
 
-if ( brain.KeepRegion ( SortRegionsCompactCount, GetLinearDim () / 100, INT_MAX, Neighbors26, 0, true ) ) {
+if ( brain.KeepRegion ( SortRegionsCompactCount, GetLinearDim () / 100, Highest<int>(), Neighbors26, 0, true ) ) {
                                         // second part of the Open
 //    p ( FilterParamDiameter )     = 2;
 //    brain.Filter ( FilterTypeDilate, p, true );
@@ -1683,7 +1684,7 @@ for ( int thini = 1; thini <= 3; thini++ ) {
     seed.Filter        ( FilterTypeLessNeighbors, p );
     numsetln    = seed.GetNumSet ();
 
-    seed.KeepRegion    ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+    seed.KeepRegion    ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
     numsetkc    = seed.GetNumSet ();
 
     double      deltakcln   = ( numsetln - numsetkc ) / (double) numsetln;
@@ -1726,7 +1727,7 @@ seed.Filter ( FilterTypeLessNeighbors, p );
 Gauge.Next ();
 
                                         // first with 26 neighbors, faster, to get rid of all major disconnected stuff
-seed.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+seed.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 
 
 #if defined(SkullStripping2SaveSteps)
@@ -2126,7 +2127,7 @@ fullbrain.WriteFile ( "E:\\Data\\SkullStrip.4.SNR.Cut.LessNeigh.PF." DefaultMriE
 Gauge.Next ();
 
                                         // first with 26 neighbors, faster, to get rid of all major disconnected stuff
-fullbrain.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+fullbrain.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 
 
 #if defined(SkullStripping2SaveSteps)
@@ -2349,7 +2350,7 @@ onemask.Filter ( FilterTypeLessNeighbors, p );
                                         // try to directly keep the biggest part (without fullness), which should be disconnected by now
 Gauge.Next ();
 
-onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 
 
 #if defined(SkullStripping3SaveSteps)
@@ -2410,7 +2411,7 @@ onemask.Filter ( FilterTypeLessNeighbors, p );
                                         // try to directly keep the biggest part (without fullness), which should be disconnected by now
 Gauge.Next ();
 
-onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 
 
 #if defined(SkullStripping3SaveSteps)
@@ -2545,7 +2546,7 @@ onemask.Filter ( FilterTypeErode, p );
                                         // first with 26 neighbors, faster, to get rid of all major disconnected stuff
 Gauge.Next ();
 
-onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 
 
 #if defined(SkullStripping3SaveSteps)
@@ -2622,7 +2623,7 @@ onemask.Filter ( FilterTypeErode, p );
                                         // first with 26 neighbors, faster, to get rid of all major disconnected stuff
 Gauge.Next ();
 
-onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 
 
 #if defined(SkullStripping3SaveSteps)
@@ -2699,7 +2700,7 @@ onemask.Filter ( FilterTypeErode, p );
                                         // first with 26 neighbors, faster, to get rid of all major disconnected stuff
 Gauge.Next ();
 
-onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 
 
 #if defined(SkullStripping3SaveSteps)
@@ -2777,7 +2778,7 @@ RemoveExtension ( _file, 3 );
                                         // first with 26 neighbors, faster, to get rid of all major disconnected stuff
 Gauge.Next ();
 
-onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, INT_MAX, Neighbors26, 0 );
+onemask.KeepRegion ( SortRegionsCompactCount, GetLinearDim () * 0.001, Highest<int>(), Neighbors26, 0 );
 
 
 #if defined(SkullStripping3SaveSteps)

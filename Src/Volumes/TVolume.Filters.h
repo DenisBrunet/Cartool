@@ -97,10 +97,10 @@ else if ( filtertype == FilterTypeWaterfallRidges
 else if ( filtertype == FilterTypeLessNeighbors
        || filtertype == FilterTypeMoreNeighbors     )   FilterNeighbors         ( filtertype,               params, showprogress );
 else if ( filtertype == FilterTypeRelax             )   FilterRelax             (                           params, showprogress );
-else if ( filtertype == FilterTypeKeepBiggestRegion )   KeepRegion              ( SortRegionsCount,         Truncate ( GetLinearDim () * 0.001 ), INT_MAX, Neighbors26, 0,    showprogress );
-else if ( filtertype == FilterTypeKeepCompactRegion )   KeepRegion              ( SortRegionsCompactCount,  Truncate ( GetLinearDim () * 0.001 ), INT_MAX, Neighbors26, 0,    showprogress );
-else if ( filtertype == FilterTypeKeepBiggest2Regions ) KeepRegion              ( SortRegionsCount,         Truncate ( GetLinearDim () * 0.001 ), INT_MAX, Neighbors26, 0.85, showprogress );
-else if ( filtertype == FilterTypeKeepCompact2Regions ) KeepRegion              ( SortRegionsCompactCount,  Truncate ( GetLinearDim () * 0.001 ), INT_MAX, Neighbors26, 0.85, showprogress );
+else if ( filtertype == FilterTypeKeepBiggestRegion )   KeepRegion              ( SortRegionsCount,         Truncate ( GetLinearDim () * 0.001 ), Highest<int>(), Neighbors26, 0,    showprogress );
+else if ( filtertype == FilterTypeKeepCompactRegion )   KeepRegion              ( SortRegionsCompactCount,  Truncate ( GetLinearDim () * 0.001 ), Highest<int>(), Neighbors26, 0,    showprogress );
+else if ( filtertype == FilterTypeKeepBiggest2Regions ) KeepRegion              ( SortRegionsCount,         Truncate ( GetLinearDim () * 0.001 ), Highest<int>(), Neighbors26, 0.85, showprogress );
+else if ( filtertype == FilterTypeKeepCompact2Regions ) KeepRegion              ( SortRegionsCompactCount,  Truncate ( GetLinearDim () * 0.001 ), Highest<int>(), Neighbors26, 0.85, showprogress );
 else if ( filtertype == FilterTypeClustersToRegions   ) ClustersToRegions       (                           params,                           Neighbors26,       showprogress );
 
 else if ( filtertype == FilterTypePercentFullness
