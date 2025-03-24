@@ -54,18 +54,20 @@ const char  RisToVolumePresetString[ NumRisToVolumePreset ][ 16 ] =
 const char  VolumeInterpolationPresetString[ NumVolumeInterpolationPreset ][ 128 ] =
             {
             "1 Nearest Neighbor    - Constant cubes, no interpolation",
-            "4 Nearest Neighbors  - Identical to inverse display",
+            "4 Nearest Neighbors  - Similar to display, not recommended",
             "Linear                      - A classic",
 //          "Trilinear smooth",
 //          "Fast Quadratic Kernels- Oooh so smooth!",
-            "Fast Cubic Kernels    - So smooth, NO maxima artifacts",
+            "Fast Cubic Kernels     - So smooth, NO maxima artifacts",
             };
 
 
-const char  VolumeFileTypeString[ NumVolumeFileTypes ][ 32 ] =
+const char  VolumeFileTypeString[ NumVolumeFileTypes ][ 64 ] =
             {
-            "Nifti 2 (nii)",
-            "Analyze 7.5 (hdr+img)",
+            "Nifti 2 (nii),                 n x 3D volumes",
+            "Nifti 2 (nii),                 1 x 4D volume",
+            "Analyze 7.5 (hdr+img), n x 3D volumes",
+            "Analyze 7.5 (hdr+img), 1 x 4D volume",
             };
 
 
@@ -211,7 +213,7 @@ switch ( preset ) {
 
     case RisToVolumeNiftiFloat:
         TypeFloat       ->SetCheck ( BoolToCheck ( true  ) );
-        FileTypes->SetSelIndex ( VolumeNifti2 );
+        FileTypes->SetSelIndex ( VolumeNifti24D );
         break;
 
 //  case RisToVolumeNiftiByte:
@@ -221,7 +223,7 @@ switch ( preset ) {
 
     case RisToVolumeAnalyzeFloat:
         TypeFloat       ->SetCheck ( BoolToCheck ( true  ) );
-        FileTypes->SetSelIndex ( VolumeAnalyze );
+        FileTypes->SetSelIndex ( VolumeAnalyze4D );
         break;
 
 //  case RisToVolumeAnalyzeByte:
@@ -784,12 +786,12 @@ CartoolApplication->SetMainTitle ( RisToVolumeTitle, EEGDoc->GetDocPath (), Gaug
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Volume parameters
-VolumeInterpolationPreset   interpol    = (VolumeInterpolationPreset) RisToVolumeTransfer.InterpolationPresets.GetSelIndex ();
+RisToVolumeInterpolationType    interpol    = (RisToVolumeInterpolationType) RisToVolumeTransfer.InterpolationPresets.GetSelIndex ();
 
                                         // Some volume interpolation needs the SP interpolation
-SPInterpolationType         spinterpol  = interpol == VolumeInterpolation1NN        ?   SPInterpolation1NN
-                                        : interpol == VolumeInterpolation4NN        ?   SPInterpolation4NN
-                                        :                                               SPInterpolationNone;
+SPInterpolationType             spinterpol  = interpol == VolumeInterpolation1NN        ?   SPInterpolation1NN
+                                            : interpol == VolumeInterpolation4NN        ?   SPInterpolation4NN
+                                            :                                               SPInterpolationNone;
 
                                         // Initialize the requested SP interpolation
 if ( ! SPDoc->BuildInterpolation ( spinterpol, GreyMaskDoc ) ) {
@@ -816,17 +818,31 @@ int                 fromtf          = timeall   ?   0               : timemin;
 int                 totf            = timeall   ?   lasttimeframes  : timemax;
                     steptf          = timeall   ?   1               : steptf;
 
-                                        // special case where step is actually bigger than interval provided
-if ( steptf > totf - fromtf + 1 )
-                                        // the adjust the step from this interval
-    steptf  = totf - fromtf + 1;
+                                        // at least writing 1 data point; also rounding the number of saved data points up
+int                 numsavedblocks  = AtLeast ( 1, RoundAbove ( ( totf - fromtf + 1 ) / (double) steptf ) );
 
-else
-                                        // step is smaller than interval - truncate the interval to have exact number of steps
-    totf    = fromtf + TruncateTo ( totf - fromtf + 1, steptf ) - 1;
+                                        // update the upper bound, using multiples of steptf
+                    totf            = fromtf + numsavedblocks * steptf - 1;
 
 
-FilterTypes         merging         = FilterTypeMedian;
+if ( totf > lasttimeframes ) {
+                                        // new upper bound does not fit in data range
+    if ( numsavedblocks > 1 ) {
+                                        // just decrease the number of blocks by 1
+        numsavedblocks--;
+        totf       -= steptf;
+        }
+    else { // numsavedblocks == 1
+                                        // nope, can not go any lower, so we adjust the limits instead
+        totf        = lasttimeframes;   // >= fromtf
+        steptf      = totf - fromtf + 1;// >= 1
+        }
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FilterTypes         merging         = steptf > 1 ? FilterTypeMedian : FilterTypeNone;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -836,15 +852,8 @@ AtomFormatType      atomformat      = CheckToBool ( RisToVolumeTransfer.TypeUnsi
                                     : CheckToBool ( RisToVolumeTransfer.TypeFloat        )  ?   AtomFormatFloat
                                     :                                                           RisToVolumeDefaultAtomFormat;
 
-VolumeFileType      filetype        = (VolumeFileType) RisToVolumeTransfer.FileTypes.GetSelIndex ();
+RisToVolumeFileType filetype        = (RisToVolumeFileType) RisToVolumeTransfer.FileTypes.GetSelIndex ();
 
-char                fileext[ 32 ];
-
-if      ( filetype == VolumeNifti2          )   StringCopy  ( fileext, FILEEXT_MRINII       );
-else if ( filetype == VolumeAnalyze         )   StringCopy  ( fileext, FILEEXT_MRIAVW_HDR   );
-//elseif( filetype == VolumeField           )   StringCopy  ( fileext, FILEEXT_MRIAVS       );
-//elseif( filetype == VolumeBrainVoyager    )   StringCopy  ( fileext, FILEEXT_MRIVMR       );
-else                                            StringCopy  ( fileext, DefaultMriExt        );
 
 bool                openauto        = CheckToBool ( RisToVolumeTransfer.OpenAuto );
 
@@ -903,7 +912,8 @@ verbose.Put ( "Saving time range:", timeall ? "All Data" : "Time Interval" );
 verbose.Put ( "From     [TF]:", fromtf );
 verbose.Put ( "To       [TF]:", totf );
 verbose.Put ( "By steps [TF]:", steptf );
-verbose.Put ( "Averaging time intervals with:", FilterPresets[ merging ].Ext /*Text*/ );
+verbose.Put ( "Number of blocks written:", numsavedblocks );
+verbose.Put ( "Averaging each block:", merging == FilterTypeNone ? "None" : FilterPresets[ merging ].Ext /*Text*/ );
 }
 
 
@@ -918,6 +928,9 @@ verbose.Put ( "Verbose file (this):", VerboseFile );
 }
 
 
+verbose.Flush ();
+
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
                                         // Changing priority
@@ -927,12 +940,12 @@ TGoF                volgof;
 
 
 RisToVolume (   EEGDoc->GetDocPath (),
-                SPDoc,                  interpol, 
+                SPDoc,              interpol, 
                 GreyMaskDoc, 
-                fromtf,                 totf,           steptf,
+                fromtf,             totf,           steptf,
                 merging,
                 atomformat,             
-                fileprefix,             fileext,
+                filetype,           fileprefix,
                 volgof,
                 &Gauge
             );

@@ -15,7 +15,7 @@ limitations under the License.
 \************************************************************************/
 
 #include    "ESI.RisToVolume.h"
-#include    "TRisToVolumeDialog.h"      // VolumeInterpolationPreset
+#include    "TRisToVolumeDialog.h"      // RisToVolumeInterpolationType, RisToVolumeFileType
 
 #include    "Strings.Utils.h"
 #include    "Files.TGoF.h"
@@ -39,12 +39,12 @@ namespace crtl {
 
 void    RisToVolume (
                     const char*             risfile,
-                    TSolutionPointsDoc*     spdoc,          VolumeInterpolationPreset   interpol,
+                    TSolutionPointsDoc*     spdoc,          RisToVolumeInterpolationType    interpol,
                     const TVolumeDoc*       mrigrey,
                     int                     fromtf,         int             totf,           int             steptf,
                     FilterTypes             merging,
                     AtomFormatType          atomformat,     
-                    const char*             fileprefix,     char*           fileext,
+                    RisToVolumeFileType     filetype,       const char*     fileprefix,
                     TGoF&                   volgof,
                     TSuperGauge*            gauge
                     )
@@ -52,19 +52,36 @@ void    RisToVolume (
 {
 volgof.Reset ();
 
-                                        // Parameters checking
+                                        // These are deal-breakers
 if ( StringIsEmpty ( risfile ) || spdoc == 0 || mrigrey == 0 )
     return;
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // These can be fixed, though
+if ( steptf < 1 )
+    steptf  = 1;
+
+
+if ( ! (    merging == FilterTypeMedian 
+         || merging == FilterTypeMean   ) )
+
+    merging     = FilterTypeNone;
+
+
 if ( ! (    atomformat == AtomFormatByte 
          || atomformat == AtomFormatFloat ) )
-    return;
+
+    atomformat  = RisToVolumeDefaultAtomFormat;
 
 
-if ( StringIsEmpty ( fileext ) )
-//  return;
-    StringCopy  ( fileext, DefaultMriExt );
+char                fileext[ 32 ];
+
+if      ( IsFileTypeNifti   ( filetype ) )      StringCopy  ( fileext, FILEEXT_MRINII       );
+else if ( IsFileTypeAnalyze ( filetype ) )      StringCopy  ( fileext, FILEEXT_MRIAVW_HDR   );
+else                                            StringCopy  ( fileext, DefaultMriExt        );
+
+bool                outputn3d       = IsFileTypeN3D ( filetype );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -100,10 +117,10 @@ else if ( spinterpol == SPInterpolation4NN  )   toip4nn = spdoc->GetInterpol4NN 
 
 TPoints             points;
 TVolume<double>     weights;
-double              radiusf;            // radius between SPs
-double              kernelradiusf;      // real Kernel radius
-int                 kerneldiameteri;    // corresponding voxel (int) size of Kernel & radius
-int                 kernelradiusi;
+double              radiusf         = 0;    // radius between SPs
+double              kernelradiusf   = 0;    // real Kernel radius
+int                 kerneldiameteri = 0;    // corresponding voxel (int) size of Kernel & radius
+int                 kernelradiusi   = 0;
 
 
 if ( IsSolutionPointsScan ( interpol ) ) {
@@ -126,6 +143,55 @@ if ( IsSolutionPointsScan ( interpol ) ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // reading ris file
+if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
+
+                                        // It could also be a TRisDoc*, and reading only the blocks needed...
+TMaps               ris;
+
+ris.ReadFile ( risfile, 0, AtomTypePositive, ReferenceNone );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Repeating the same checks as in TRisToVolumeDialog
+int                 numtf           = ris.GetNumMaps ();
+int                 lasttimeframes  = numtf - 1;
+
+Clipped ( fromtf, totf, 0, lasttimeframes );
+
+                                        // at least writing 1 data point; also rounding the number of saved data points up
+int                 numsavedblocks  = AtLeast ( 1, RoundAbove ( ( totf - fromtf + 1 ) / (double) steptf ) );
+                                        // update the upper bound, using multiples of steptf
+                    totf            = fromtf + numsavedblocks * steptf - 1;
+
+
+if ( totf > lasttimeframes ) {
+                                        // new upper bound does not fit in data range
+    if ( numsavedblocks > 1 ) {
+                                        // just decrease the number of blocks by 1
+        numsavedblocks--;
+        totf       -= steptf;
+        }
+    else { // numsavedblocks == 1
+                                        // nope, can not go any lower, so we adjust the limits instead
+        totf        = lasttimeframes;   // >= fromtf
+        numtf       = totf - fromtf + 1;// >= 1
+        steptf      = numtf;            // >= 1
+        }
+    }
+                                        // Here: fromtf and totf are in [0..lasttimeframes]; totf adjusted for steptf
+
+                                        // we can reset any filtering in that case
+if ( steptf == 1 )
+    merging     = FilterTypeNone;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( gauge )    gauge->SetRange ( -1, numsavedblocks );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 const TBoundingBox<int>*    volsize         = mrigrey->GetSize ();
 TExportVolume               expvol;
@@ -133,11 +199,11 @@ TExportVolume               expvol;
 
 expvol.VolumeFormat         = atomformat;
 
-//expvol.MaxValue             = MAXBYTE;    // after normalization
-
-expvol.Dim          [ 0 ]   = volsize->GetXExtent ();
-expvol.Dim          [ 1 ]   = volsize->GetYExtent ();
-expvol.Dim          [ 2 ]   = volsize->GetZExtent ();
+expvol.NumDimensions        = outputn3d ? 3 : 4;
+expvol.Dimension.X          = volsize->GetXExtent ();
+expvol.Dimension.Y          = volsize->GetYExtent ();
+expvol.Dimension.Z          = volsize->GetZExtent ();
+expvol.NumTimeFrames        = outputn3d ? 1 : numsavedblocks;
 
 expvol.VoxelSize            = mrigrey->GetVoxelSize ();
 
@@ -157,84 +223,75 @@ StringCopy  ( expvol.NiftiIntentName, NiftiIntentNameRis );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // reading ris file
-if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
-
-                                        // It could also be a TRisDoc*, and reading only the blocks needed...
-TMaps               ris;
-
-ris.ReadFile ( risfile, 0, AtomTypePositive, ReferenceNone );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-int                 numtf           = ris.GetNumMaps ();
-int                 maxtf           = numtf - 1;
-
-
-Clipped ( fromtf, totf, 0, maxtf );
-
-Clipped ( steptf,       1, numtf );
-
-
-if ( gauge )    gauge->SetRange ( -1, ( totf - fromtf + steptf ) / steptf + 2 );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 double              risabsmax       = ris.GetAbsMaxValue ();
-double              rescalefactor   = 1;
+double              rescalefactor;
 
 
-if      ( IsFormatFloat   ( atomformat ) )
-                                        // floating points can get all the precision they need, no need for rescaling
+if ( atomformat == AtomFormatByte ) {
+                                        // rescaling data globally to [0..255]
+    rescalefactor       = Highest<UCHAR>() / (double) risabsmax;
+
+    expvol.MaxValue     = Highest<UCHAR>();
+    }
+else { // if ( IsFormatFloat   ( atomformat ) ) {
+                                        // no rescaling needed for floating points
     rescalefactor       = 1;
-
-else if ( atomformat == AtomFormatByte ) {
-                                        // getting an simple power of 10 rescaling factor - drawback is the resulting lack of precision...
-                                        // also note that resulting final max might be lower than that due to possible time merging
-//  rescalefactor   = RescalingFactor ( risabsmax, MAXBYTE );
-                                        // rescaling to 255
-    rescalefactor   = MAXBYTE / (double) risabsmax;
+                                        // no available method will overshoot, ever
+    expvol.MaxValue     = risabsmax;
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // OK, can start the real job now
-TMap                meanrismap ( ris.GetDimension () );
+TMap                meanrismap  ( ris.GetDimension () );
 
-                      // be more strict by allowing only full blocks of steptf length
-for ( int tf = fromtf; ( tf + steptf - 1 ) <= totf; tf += steptf ) {
+
+for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
+
+                                        // current block TF range
+    int     blockfromtf     = fromtf      + blocki * steptf;
+    int     blocktotf       = blockfromtf +          steptf - 1;
+
 
     if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
 
+
+    if ( outputn3d || blocki == 0 ) {
                                         // set current volume's file name
-    StringCopy          ( expvol.Filename, risfile    );
-    PrefixFilename      ( expvol.Filename, fileprefix );
-    RemoveExtension     ( expvol.Filename );
+        StringCopy          ( expvol.Filename, risfile    );
+        PrefixFilename      ( expvol.Filename, fileprefix );
+        RemoveExtension     ( expvol.Filename );
 
-    StringAppend        ( expvol.Filename, ".TF", IntegerToString ( tf, NumIntegerDigits ( maxtf ) ) );
-    if ( steptf > 1 )
-        StringAppend    ( expvol.Filename, "-", IntegerToString ( NoMore ( totf /*maxtf*/, tf + steptf - 1 ), NumIntegerDigits ( maxtf ) ) );
+        if ( outputn3d ) {
+            StringAppend        ( expvol.Filename, ".TF", IntegerToString ( blockfromtf,    NumIntegerDigits ( lasttimeframes ) ) );
+            if ( steptf > 1 )
+                StringAppend    ( expvol.Filename, "-",   IntegerToString ( blocktotf,      NumIntegerDigits ( lasttimeframes ) ) );
+            }
+        else {
+            StringAppend        ( expvol.Filename, ".TF", IntegerToString ( fromtf,         NumIntegerDigits ( lasttimeframes ) ) );
+            if ( numsavedblocks > 1 )                                                        
+                StringAppend    ( expvol.Filename, "-",   IntegerToString ( totf,           NumIntegerDigits ( lasttimeframes ) ) );
+            }
 
-    AddExtension        ( expvol.Filename, FILEEXT_RIS );   // output files XXX.ris.hdr
-    AddExtension        ( expvol.Filename, fileext     );
+        AddExtension        ( expvol.Filename, FILEEXT_RIS );   // output files XXX.ris.hdr
+        AddExtension        ( expvol.Filename, fileext     );
 
-
-    CheckNoOverwrite    ( expvol.Filename );
+        CheckNoOverwrite    ( expvol.Filename );
 
                                         // store current volume file
-    volgof.Add          ( expvol.Filename );
+        volgof.Add          ( expvol.Filename );
 
-
-    expvol.Begin ();
+                                        // does not affect MaxValue in case of re-using expvol
+        expvol.Begin ();
+        }
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // average a block of TFs, or simply copy if 1 TF
-    if      ( merging == FilterTypeMedian   )   ris.Median ( tf, tf + steptf - 1, meanrismap );
-    else if ( merging == FilterTypeMean     )   ris.Mean   ( tf, tf + steptf - 1, meanrismap );
-    else                                        ris.Mean   ( tf, tf + steptf - 1, meanrismap );
+                                        // average a block of TFs, or simply copying a single data point
+    if      ( merging == FilterTypeMedian   )   ris.Median ( blockfromtf, blocktotf, meanrismap );
+    else if ( merging == FilterTypeMean     )   ris.Mean   ( blockfromtf, blocktotf, meanrismap );
+    else                                        meanrismap  = ris[ blockfromtf ];
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -242,7 +299,7 @@ for ( int tf = fromtf; ( tf + steptf - 1 ) <= totf; tf += steptf ) {
     vol.ResetMemory ();
 
                                         // Solution points scan is longer and for linear and kernel interpolation cases
-    if ( IsSolutionPointsScan ( interpol ) ) {
+    if      ( IsSolutionPointsScan ( interpol ) ) {
 
         weights.ResetMemory ();
 
@@ -255,7 +312,7 @@ for ( int tf = fromtf; ( tf + steptf - 1 ) <= totf; tf += steptf ) {
 
             mrigrey->ToRel ( sp );
 
-            sp += 0.5;
+            sp     += 0.5;
 
                                         // voxel is kernel shifted + truncated to voxel
             int                 xki, yki, zki;
@@ -270,18 +327,15 @@ for ( int tf = fromtf; ( tf + steptf - 1 ) <= totf; tf += steptf ) {
 //              if ( ! grey.WithinBoundary ( vox ) )                continue;   // for debugging
 
                                         // floating point, exact position used for the weight
-                TPointFloat         sp0;
-                sp0.X   = vox.X - sp.X + 0.5;
-                sp0.Y   = vox.Y - sp.Y + 0.5;
-                sp0.Z   = vox.Z - sp.Z + 0.5;
+                TPointFloat         sp0         = vox - sp + 0.5;
 
-                double              w;
+                double              w           = 0;
 
                 if      ( interpol == VolumeInterpolationLinearRect )
                                         // squared kernel, linear weight
-                    w       = CubicRoot (   ( 1 - Clip ( fabs ( sp0.X ) / kernelradiusf, 0.0, 1.0 ) )
-                                          * ( 1 - Clip ( fabs ( sp0.Y ) / kernelradiusf, 0.0, 1.0 ) )
-                                          * ( 1 - Clip ( fabs ( sp0.Z ) / kernelradiusf, 0.0, 1.0 ) ) );
+                    w       = CubicRoot (   ( 1 - Clip ( abs ( sp0.X ) / kernelradiusf, 0.0, 1.0 ) )
+                                          * ( 1 - Clip ( abs ( sp0.Y ) / kernelradiusf, 0.0, 1.0 ) )
+                                          * ( 1 - Clip ( abs ( sp0.Z ) / kernelradiusf, 0.0, 1.0 ) ) );
 
 //              else if ( interpol == VolumeInterpolationLinearSpherical )
 //                                  // radial kernel, linear weight, with exact position
@@ -306,6 +360,7 @@ for ( int tf = fromtf; ( tf + steptf - 1 ) <= totf; tf += steptf ) {
 
                 OmpAtomic
                 vol     ( vox ) += w * meanrismap[ spi ];
+
                 OmpAtomic
                 weights ( vox ) += w;
                 } // for kernel xki, yki, zki
@@ -379,10 +434,13 @@ for ( int tf = fromtf; ( tf + steptf - 1 ) <= totf; tf += steptf ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+                                        // expvol.MaxValue is already set
     expvol.Write ( vol, ExportArrayOrderZYX );
 
-    } // for tf
+
+    if ( outputn3d )
+        expvol.End ();
+    } // for blocki
 
 
 if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );

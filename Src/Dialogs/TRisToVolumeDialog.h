@@ -50,7 +50,7 @@ enum        RisToVolumePreset
 extern const char   RisToVolumePresetString[ NumRisToVolumePreset ][ 16 ];
 
                                         // Presets for interpolation
-enum        VolumeInterpolationPreset
+enum        RisToVolumeInterpolationType
             {
             VolumeInterpolation1NN,
             VolumeInterpolation4NN,
@@ -65,20 +65,28 @@ enum        VolumeInterpolationPreset
 
 extern const char   VolumeInterpolationPresetString[ NumVolumeInterpolationPreset ][ 128 ];
 
-inline  bool    IsVoxelScan             ( VolumeInterpolationPreset pi )    {   return  pi == VolumeInterpolation1NN || pi == VolumeInterpolation4NN; } 
-inline  bool    IsSolutionPointsScan    ( VolumeInterpolationPreset pi )    {   return  pi == VolumeInterpolationLinearRect /*|| pi == VolumeInterpolationLinearSpherical || pi == VolumeInterpolationQuadraticFastSplineSpherical */ || pi == VolumeInterpolationCubicFastSplineSpherical; } 
+inline  bool    IsVoxelScan             ( RisToVolumeInterpolationType pi )     {   return  pi == VolumeInterpolation1NN || pi == VolumeInterpolation4NN; } 
+inline  bool    IsSolutionPointsScan    ( RisToVolumeInterpolationType pi )     {   return  pi == VolumeInterpolationLinearRect /*|| pi == VolumeInterpolationLinearSpherical || pi == VolumeInterpolationQuadraticFastSplineSpherical */ || pi == VolumeInterpolationCubicFastSplineSpherical; } 
 
                                         // Presets for file type
-enum        VolumeFileType
+enum        RisToVolumeFileType
             {
-            VolumeNifti2,
-            VolumeAnalyze,
+            VolumeNifti2N3D,
+            VolumeNifti24D,
+
+            VolumeAnalyzeN3D,
+            VolumeAnalyze4D,
 
             NumVolumeFileTypes,
-            VolumeTypeDefault       = VolumeNifti2,
+            VolumeTypeDefault       = VolumeNifti24D,
             };
 
-extern const char   VolumeFileTypeString[ NumVolumeFileTypes ][ 32 ];
+extern const char   VolumeFileTypeString[ NumVolumeFileTypes ][ 64 ];
+
+inline  bool    IsFileTypeNifti         ( RisToVolumeFileType vt )      {   return  vt == VolumeNifti2N3D  || vt == VolumeNifti24D;  } 
+inline  bool    IsFileTypeAnalyze       ( RisToVolumeFileType vt )      {   return  vt == VolumeAnalyzeN3D || vt == VolumeAnalyze4D; } 
+inline  bool    IsFileTypeN3D           ( RisToVolumeFileType vt )      {   return  vt == VolumeNifti2N3D  || vt == VolumeAnalyzeN3D;} 
+inline  bool    IsFileType4D            ( RisToVolumeFileType vt )      {   return  vt == VolumeNifti24D   || vt == VolumeAnalyze4D; } 
 
 
 //----------------------------------------------------------------------------

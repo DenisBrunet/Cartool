@@ -21,9 +21,10 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-enum        VolumeInterpolationPreset;
+enum        RisToVolumeInterpolationType;
 enum        FilterTypes;
 enum        AtomFormatType;
+enum        RisToVolumeFileType;
 class       TSolutionPointsDoc;
 class       TVolumeDoc;
 class       TGoF;
@@ -32,12 +33,12 @@ class       TSuperGauge;
                                         // "Renders" a RIS files, which are basically tracks, as volume(s)
 void    RisToVolume (
                     const char*             risfile,
-                    TSolutionPointsDoc*     spdoc,          VolumeInterpolationPreset   interpol,
+                    TSolutionPointsDoc*     spdoc,          RisToVolumeInterpolationType    interpol,
                     const TVolumeDoc*       mrigrey,
                     int                     fromtf,         int             totf,           int             steptf,
                     FilterTypes             merging,
                     AtomFormatType          atomformat,     
-                    const char*             fileprefix,     char*           fileext,
+                    RisToVolumeFileType     filetype,       const char*     fileprefix,
                     TGoF&                   volgof,
                     TSuperGauge*            gauge
                     );
