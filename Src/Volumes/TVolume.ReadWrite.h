@@ -127,9 +127,9 @@ if      ( ( targetsize == BoundingSizeGivenNoShift || targetsize == BoundingSize
        && giventargetsize->IsNotNull () ) {
 
 
-    expvol.Dim      [ 0 ] = abs ( giventargetsize->X );
-    expvol.Dim      [ 1 ] = abs ( giventargetsize->Y );
-    expvol.Dim      [ 2 ] = abs ( giventargetsize->Z );
+    expvol.Dimension.X  = abs ( giventargetsize->X );
+    expvol.Dimension.Y  = abs ( giventargetsize->Y );
+    expvol.Dimension.Z  = abs ( giventargetsize->Z );
 
 
     if ( targetsize == BoundingSizeGiven ) {
@@ -169,9 +169,9 @@ else if ( targetsize == BoundingSizeBiggest ) {
     bounddelta      = ( boundmax - boundmin ) + 1.0;
 
                                         // get relative size from absolute boundaries
-    expvol.Dim      [ 0 ] = bounddelta.X;
-    expvol.Dim      [ 1 ] = bounddelta.Y;
-    expvol.Dim      [ 2 ] = bounddelta.Z;
+    expvol.Dimension.X  = bounddelta.X;
+    expvol.Dimension.Y  = bounddelta.Y;
+    expvol.Dimension.Z  = bounddelta.Z;
     } // BoundingSizeBiggest
 
 else { // BoundingSizeOptimal and any other fallback cases
@@ -211,21 +211,15 @@ else { // BoundingSizeOptimal and any other fallback cases
     boundmax       += boundingmargin;
 
                                         // get relative size from absolute margins
-    expvol.Dim      [ 0 ] = boundmax.X - boundmin.X + 1;
-    expvol.Dim      [ 1 ] = boundmax.Y - boundmin.Y + 1;
-    expvol.Dim      [ 2 ] = boundmax.Z - boundmin.Z + 1;
+    expvol.Dimension.X  = boundmax.X - boundmin.X + 1;
+    expvol.Dimension.Y  = boundmax.Y - boundmin.Y + 1;
+    expvol.Dimension.Z  = boundmax.Z - boundmin.Z + 1;
 
                                         // avoid odd numbers, for a clean middle
-//  expvol.Dim      [ 0 ]&= ~ ((int) 1);
-//  expvol.Dim      [ 1 ]&= ~ ((int) 1);
-//  expvol.Dim      [ 2 ]&= ~ ((int) 1);
+//  expvol.Dimension.X &= ~ ((int) 1);
+//  expvol.Dimension.Y &= ~ ((int) 1);
+//  expvol.Dimension.Z &= ~ ((int) 1);
     } // BoundingSizeOptimal
-
-
-//    boundmin.Show ( "boundmin" );
-//    boundmax.Show ( "boundmax" );
-//DBGV3 ( Dim1, Dim2, Dim3, "Original Volume: Dimension" );
-//DBGV3 ( expvol.Dim[ 0 ], expvol.Dim[ 1 ], expvol.Dim[ 2 ], "Transform Volume: Dimension" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -313,7 +307,7 @@ StringCopy  ( expvol.NiftiIntentName, niftiintentname ? niftiintentname : NiftiI
 TSuperGauge         Gauge;
 
 if ( StringIsNotEmpty ( title ) )
-    Gauge.Set       ( title, expvol.Dim[ 2 ] );
+    Gauge.Set       ( title, expvol.Dimension.Z );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -366,7 +360,7 @@ if ( filtertype == FilterTypeGaussian ) {
                                         // In case of writing to memory
 if ( savetomemory )
 
-    dataout->Resize ( expvol.Dim[ 0 ], expvol.Dim[ 1 ], expvol.Dim[ 2 ] );
+    dataout->Resize ( expvol.Dimension.X, expvol.Dimension.Y, expvol.Dimension.Z );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -387,13 +381,13 @@ double /*TypeD*/    v;
 
 //OmpFor
 
-for ( int z = 0; z < expvol.Dim[ 2 ]; z++ ) {
+for ( int z = 0; z < expvol.Dimension.Z; z++ ) {
 
     Gauge.Next ();
 
 
-    for ( int y = 0; y < expvol.Dim[ 1 ]; y++ )
-    for ( int x = 0; x < expvol.Dim[ 0 ]; x++ ) {
+    for ( int y = 0; y < expvol.Dimension.Y; y++ )
+    for ( int x = 0; x < expvol.Dimension.X; x++ ) {
 
 
         if      ( filtertype == FilterTypeAntialiasing ) {
@@ -710,11 +704,11 @@ if ( IsExtensionAmong ( file, TVolumeWriteFileExt ) ) {
     expvol.VolumeFormat = atomformattype == UnknownAtomFormat   ? GetVolumeAtomType ( this, FilterTypeNone, InterpolateUnknown, ToExtension ( expvol.Filename ) ) 
                                                                 : atomformattype;
 
-    expvol.MaxValue     = GetMaxValue ();           // we know that
+    expvol.MaxValue     = GetAbsMaxValue ();    // we know that
 
-    expvol.Dim      [ 0 ] = Dim1;
-    expvol.Dim      [ 1 ] = Dim2;
-    expvol.Dim      [ 2 ] = Dim3;
+    expvol.Dimension.X  = Dim1;
+    expvol.Dimension.Y  = Dim2;
+    expvol.Dimension.Z  = Dim3;
 
     if ( origin )
         expvol.Origin               = *origin;

@@ -90,7 +90,7 @@ if ( datain ) {
         bool            isint           = datain->IsInteger   ();
 
                                         // masks & (most of) ROIs
-        if ( IsInsideLimits ( minvalue, maxvalue, (MriType) 0, (MriType) UCHAR_MAX )
+        if ( IsInsideLimits ( minvalue, maxvalue, (MriType) 0, (MriType) Highest<UCHAR>() )
           && isint
             )
 
@@ -148,10 +148,6 @@ else { // if ( StringIs ( ext, FILEEXT_MRIAVW_HDR ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-//char            buff[ 1024 ];
-//StringCopy  ( buff, "Min Max IsInt Filt+Intrp Ext:", ext, " -> ", AtomFormatTypePresets[ atomtype ].Text );
-//DBGV5 ( datain ? datain->GetMinValue () : 0, datain ? datain->GetMaxValue () : 0, datain ? datain->IsInteger ( 9973 ) : 0, filtertype, interpolate, buff );
-
 return  atomtype;
 }
 
@@ -172,13 +168,15 @@ public:
     char            Type        [ ExportTypeSize ];
     AtomFormatType  VolumeFormat;
 
-                                        // Optional variables
-    int             Dim         [ 4 ];
+
+    int             NumDimensions;      // 3 or 4
+    TVector3Int     Dimension;          // dimensions in voxels
+    int             NumTimeFrames;      // dimension in time frames
     TVector3Double  VoxelSize;          // size of 1 voxel
     TVector3Double  RealSize;           // in [mm]
     TPointDouble    Origin;             // in voxel, Origin = -Translation
     char            Orientation [ 4 ];  // 3 optional chars that tells the axis meaning (like SAR, PIR...)
-    double          MaxValue;
+    double          MaxValue;           // Better be set before calling Begin
 
                                         // Nifti specials
     int             NiftiTransform;     // qform_code / sform_code holding the meaning of the transform
@@ -192,6 +190,11 @@ public:
     bool            IsOpen              ()      const   { return  of != 0; }
     void            CheckVolumeFormat   ();
 
+    bool            IsSequence          ()      const   { return NumDimensions > 3; }
+    int             GetTimeDimension    ()      const   { return IsSequence () ? NumTimeFrames : 1; }   // using 1 even for 3D volumes should be fine
+    size_t          GetLinearDim        ()      const   { return (size_t) Dimension.X * Dimension.Y * Dimension.Z * GetTimeDimension (); }
+    size_t          GetMemorySize       ()      const   { return GetLinearDim () * AtomSize; }
+
 
     void            Begin               ();     // checks, create stream, call write header - Called automatically
     void            WriteHeader         ();     // separate the function, in case we need to call it more than once (overwrite/update)
@@ -202,7 +205,7 @@ public:
     void            Write               ( const TVolume<UINT>&   vol, ExportArrayOrder arrayorder );
     void            Write               ( const TVolume<float>&  vol, ExportArrayOrder arrayorder );
     void            Write               ( const TVolume<double>& vol, ExportArrayOrder arrayorder );
-    
+
     void            End                 ();                 // close stream - Called automatically
 
 

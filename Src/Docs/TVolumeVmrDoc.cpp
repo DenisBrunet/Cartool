@@ -105,13 +105,13 @@ else
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-expvol.VolumeFormat     = GetVolumeAtomType ( &Data, FilterTypeNone, InterpolateUnknown, ToExtension ( expvol.Filename ) );
+expvol.VolumeFormat     = GetVolumeAtomType ( &SavingData, FilterTypeNone, InterpolateUnknown, ToExtension ( expvol.Filename ) );
 
-expvol.MaxValue         = Data.GetAbsMaxValue ();
+expvol.MaxValue         = SavingData.GetAbsMaxValue ();
 
-expvol.Dim      [ 0 ]   = SavingData.GetDim1 ();
-expvol.Dim      [ 1 ]   = SavingData.GetDim2 ();
-expvol.Dim      [ 2 ]   = SavingData.GetDim3 ();
+expvol.Dimension.X      = SavingData.GetDim1 ();
+expvol.Dimension.Y      = SavingData.GetDim2 ();
+expvol.Dimension.Z      = SavingData.GetDim3 ();
 
 expvol.VoxelSize.X      = VoxelSize[ xindex ];
 expvol.VoxelSize.Y      = VoxelSize[ yindex ];

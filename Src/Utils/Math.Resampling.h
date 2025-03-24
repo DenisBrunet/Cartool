@@ -28,9 +28,9 @@ namespace crtl {
 class   TDownsampling
 {
 public:
-                    TDownsampling ();
-                    TDownsampling ( int numdata, int numwishedata );
-                    TDownsampling ( int from, int to, int numwishedata );
+                    TDownsampling   ();
+                    TDownsampling   ( int numdata, int numwishedata );
+                    TDownsampling   ( int from, int to, int numwishedata );
 
 
     int             From;               // optional from
@@ -40,14 +40,14 @@ public:
     int             Step;               // ..and the corresponding step
 
 
-    void            Reset   ();
-    void            Set     ( int numdata, int numwishedata );
-    void            Set     ( int from, int to, int numwishedata );
+    void            Reset           ();
+    void            Set             ( int numdata, int numwishedata );
+    void            Set             ( int from, int to, int numwishedata );
 
 
 protected:
 
-    void            SetInterval ( int from, int to );
+    void            SetInterval     ( int from, int to );
 
 };
 

@@ -2867,18 +2867,14 @@ expvol.VolumeFormat     = GetVolumeAtomType ( &volume, filtertype, interpolate, 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // set target dimension
-expvol.Dim      [ 0 ] = ToVolume.GetDim ( 0 );  // volume.GetDim ( 0 );
-expvol.Dim      [ 1 ] = ToVolume.GetDim ( 1 );  // volume.GetDim ( 1 );
-expvol.Dim      [ 2 ] = ToVolume.GetDim ( 2 );  // volume.GetDim ( 2 );
-
-//DBGV3 ( expvol.Dim[ 0 ], expvol.Dim[ 1 ], expvol.Dim[ 2 ], "Transform Volume: Dimension" );
+expvol.Dimension.X  = ToVolume.GetDim ( 0 );
+expvol.Dimension.Y  = ToVolume.GetDim ( 1 );
+expvol.Dimension.Z  = ToVolume.GetDim ( 2 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // set target origin
 expvol.Origin       = ToCenter;
-
-//DBGV3 ( expvol.Origin.X, expvol.Origin.Y, expvol.Origin.Z, "Transform Volume: Origin" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2894,8 +2890,6 @@ if ( ToOrientation[ 0 ] && ToOrientation[ 1 ] && ToOrientation[ 2 ] ) {
                                         // set target voxel size
 expvol.VoxelSize    = ToVoxelSize;
 
-//expvol.VoxelSize.Show ( "Transform Volume: VoxelSize" );
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -2910,7 +2904,7 @@ StringCopy  ( expvol.NiftiIntentName, niftiintentname, NiftiIntentNameSize - 1 )
 
 bool                showprogress    = StringIsNotEmpty ( title );
 
-TSuperGauge         Gauge ( StringIsEmpty ( title ) ? "Transforming" : title, showprogress ? expvol.Dim[ 2 ] : 0 );
+TSuperGauge         Gauge ( StringIsEmpty ( title ) ? "Transforming" : title, showprogress ? expvol.Dimension.Z : 0 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2935,12 +2929,12 @@ TPointDouble        point;
 
 OmpFor
                                         // scan from target space
-for ( int z = 0; z < expvol.Dim[ 2 ]; z++ ) {
+for ( int z = 0; z < expvol.Dimension.Z; z++ ) {
 
     Gauge.Next ();
 
-    for ( int y = 0; y < expvol.Dim[ 1 ]; y++ )
-    for ( int x = 0; x < expvol.Dim[ 0 ]; x++ ) {
+    for ( int y = 0; y < expvol.Dimension.Y; y++ )
+    for ( int x = 0; x < expvol.Dimension.X; x++ ) {
 
                                         // speed up things if not sub sampling
         if ( numsubsampling == 1 ) {
@@ -3011,6 +3005,8 @@ OmpParallelEnd
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Just write at once
+expvol.MaxValue     = vol.GetAbsMaxValue ();
+
 expvol.Write ( vol, ExportArrayOrderZYX );
 }
 
@@ -3047,18 +3043,14 @@ expvol.VolumeFormat     = GetVolumeAtomType ( &volume, filtertype, interpolate, 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // set target dimension
-expvol.Dim      [ 0 ] = FromVolume.GetDim ( 0 );
-expvol.Dim      [ 1 ] = FromVolume.GetDim ( 1 );
-expvol.Dim      [ 2 ] = FromVolume.GetDim ( 2 );
-
-//DBGV3 ( expvol.Dim[ 0 ], expvol.Dim[ 1 ], expvol.Dim[ 2 ], "Transform Volume: Dimension" );
+expvol.Dimension.X  = FromVolume.GetDim ( 0 );
+expvol.Dimension.Y  = FromVolume.GetDim ( 1 );
+expvol.Dimension.Z  = FromVolume.GetDim ( 2 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // set target origin
 expvol.Origin       = FromCenter;
-
-//DBGV3 ( expvol.Origin.X, expvol.Origin.Y, expvol.Origin.Z, "Transform Volume: Origin" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3074,8 +3066,6 @@ if ( FromOrientation[ 0 ] && FromOrientation[ 1 ] && FromOrientation[ 2 ] ) {
                                         // set target voxel size
 expvol.VoxelSize    = FromVoxelSize;
 
-//expvol.VoxelSize.Show ( "Transform Volume: VoxelSize" );
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -3090,7 +3080,7 @@ StringCopy  ( expvol.NiftiIntentName, niftiintentname, NiftiIntentNameSize - 1 )
 
 bool                showprogress    = StringIsNotEmpty ( title );
 
-TSuperGauge         Gauge ( StringIsEmpty ( title ) ? "Transforming" : title, showprogress ? expvol.Dim[ 2 ] : 0 );
+TSuperGauge         Gauge ( StringIsEmpty ( title ) ? "Transforming" : title, showprogress ? expvol.Dimension.Z : 0 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3115,13 +3105,13 @@ TPointDouble        point;
 
 OmpFor
                                         // scan from target space
-for ( int z = 0; z < expvol.Dim[ 2 ]; z++ ) {
+for ( int z = 0; z < expvol.Dimension.Z; z++ ) {
 
     Gauge.Next ();
 
 
-    for ( int y = 0; y < expvol.Dim[ 1 ]; y++ )
-    for ( int x = 0; x < expvol.Dim[ 0 ]; x++ ) {
+    for ( int y = 0; y < expvol.Dimension.Y; y++ )
+    for ( int x = 0; x < expvol.Dimension.X; x++ ) {
 
                                         // speed up things if not sub sampling
         if ( numsubsampling == 1 ) {
@@ -3191,6 +3181,8 @@ OmpParallelEnd
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Just write at once
+expvol.MaxValue     = vol.GetAbsMaxValue ();
+
 expvol.Write ( vol, ExportArrayOrderZYX );
 }
 

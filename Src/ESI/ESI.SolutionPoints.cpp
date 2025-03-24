@@ -77,11 +77,11 @@ StringCopy ( expvol.Filename, greyfile );
 
 expvol.VolumeFormat     = GetVolumeAtomType ( &Grey, FilterTypeNone, InterpolateUnknown, ToExtension ( expvol.Filename ) );
 
-expvol.MaxValue         = Grey.GetMaxValue ();      // we know that
+expvol.MaxValue         = Grey.GetAbsMaxValue ();   // we know that
 
-expvol.Dim      [ 0 ]   = Size->GetXExtent ();
-expvol.Dim      [ 1 ]   = Size->GetYExtent ();
-expvol.Dim      [ 2 ]   = Size->GetZExtent ();
+expvol.Dimension.X      = Size->GetXExtent ();
+expvol.Dimension.Y      = Size->GetYExtent ();
+expvol.Dimension.Z      = Size->GetZExtent ();
 
 expvol.VoxelSize        = mridoc->GetVoxelSize ();
 

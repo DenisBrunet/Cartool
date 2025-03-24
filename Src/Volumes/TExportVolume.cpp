@@ -50,12 +50,10 @@ const AtomFormatType    ExportVolumesFormatTypes [ NumExportVolumesFormatTypes ]
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
         TExportVolume::TExportVolume ( AtomFormatType volumeformat )
+      : of ( 0 )
 {
-of                  = 0;
-
 Reset ();
-
-                                        // Fields below are set only at creation, NOT via Reset
+                                        // Fields below are set only at creation, NOT when calling Reset
 
 VolumeFormat    = volumeformat;
                                         // make sure this is a legal format
@@ -86,12 +84,12 @@ End ();
 
 Filename.Reset ();
 ClearString ( Type );
-                                        // Not resetting VolumeFormat
+                                        // NOT resetting VolumeFormat
 
-Dim      [ 0 ]      =
-Dim      [ 1 ]      = 
-Dim      [ 2 ]      = 
-Dim      [ 3 ]      = 0;
+NumDimensions       = 3;                //!set to 3 for usual cases!
+Dimension           = 0;
+NumTimeFrames       = 1;                // !set to 1 for usual cases!
+
 VoxelSize.Reset ();
 RealSize .Reset ();
 Origin   .Reset ();
@@ -132,12 +130,7 @@ if ( ! DoneBegin )
 
 of->seekp ( EndOfHeader, ios::beg );
 
-                                        // compute the correct size to be filled after the header
-size_t              sizetoreset     = (LONGLONG) Dim[ 0 ] * Dim[ 1 ] * Dim[ 2 ] /** Dim[ 3 ]*/ * AtomSize;
-
-
-AllocateFileSpace   ( of, sizetoreset, FILE_CURRENT );
-
+AllocateFileSpace   ( of, GetMemorySize (), FILE_CURRENT );
                                         // go back to data origin
 of->seekp ( EndOfHeader, ios::beg );
 }
@@ -146,9 +139,9 @@ of->seekp ( EndOfHeader, ios::beg );
 //----------------------------------------------------------------------------
 void    TExportVolume::End ()
 {
-if ( IsOpen () ) {
+                                        // CloseStream
+if ( of != 0 ) {
 
-//  of->flush ();
     of->close ();
     delete  of;
     of  = 0;
@@ -205,45 +198,33 @@ AtomSize    = AtomFormatTypePresets[ VolumeFormat ].NumBytes;
 
 if ( ! ( RealSize.X && RealSize.Y && RealSize.Z ) ) {
 
-    if ( VoxelSize.X && VoxelSize.Y && VoxelSize.Z ) {
-        RealSize.X      = VoxelSize.X * Dim[ 0 ];
-        RealSize.Y      = VoxelSize.Y * Dim[ 1 ];
-        RealSize.Z      = VoxelSize.Z * Dim[ 2 ];
-        }
-    else {
-        RealSize.X      = Dim[ 0 ];
-        RealSize.Y      = Dim[ 1 ];
-        RealSize.Z      = Dim[ 2 ];
-        }
+    if ( VoxelSize.X && VoxelSize.Y && VoxelSize.Z )
+
+        RealSize        = VoxelSize * Dimension;
+    else 
+        RealSize        =             Dimension;
     }
 
 
 if ( ! ( VoxelSize.X && VoxelSize.Y && VoxelSize.Z ) ) {
 
-    if ( RealSize.X && RealSize.Y && RealSize.Z ) {
-        VoxelSize.X     = RealSize.X / Dim[ 0 ];
-        VoxelSize.Y     = RealSize.Y / Dim[ 1 ];
-        VoxelSize.Z     = RealSize.Z / Dim[ 2 ];
-        }
+    if ( RealSize.X && RealSize.Y && RealSize.Z )
+
+        VoxelSize       = RealSize    / Dimension;
     else
-        VoxelSize       = 1.0;
+        VoxelSize       =               1.0;
     }
-
-
-//DBGV3 ( Dim[ 0 ], Dim[ 1 ], Dim[ 2 ], "Export Volume: new Dimension" );
-//DBGV3 ( RealSize[ 0 ], RealSize[ 1 ], RealSize[ 2 ], "Export Volume: new Real Size" );
-//DBGV3 ( VoxelSize[ 0 ], VoxelSize[ 1 ], VoxelSize[ 2 ], "Export Volume: new Voxel Size" );
-//DBGV3 ( Origin.X, Origin.Y, Origin.Z, "Export Volume: new Origin" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // create the correct type of file
 of      = new ofstream ( Filename, ios::binary );
-//of      = new ofstream ( std::filesystem::u8path ( Filename.FileName ), ios::binary );
 
 
 if ( ! of->good () ) {
-    ShowMessage ( "There seems to be a problem while trying to write this file." NewLine "Maybe it is write-protected, could you check that for me, as I have no hands...", ToFileName ( Filename ), ShowMessageWarning );
+    ShowMessage     (   "There seems to be a problem while trying to write this file." NewLine 
+                        "Maybe it is write-protected, could you check that for me, as I have no hands...", 
+                        ToFileName ( Filename ), ShowMessageWarning );
     Reset ();
     return;
     }
@@ -292,17 +273,17 @@ if      ( StringIs ( Type, FILEEXT_MRIAVW_HDR  ) ) {
         StringAppend ( hout.hist.descrip, "; " ExportOrientation, Orientation );
 
                                         // output either a 3 or a 4 dimensional volume
-    hout.dime.dim[ 0 ]      = (short) ( Dim[ 3 ] ? 4 : 3 );
-    hout.dime.dim[ 1 ]      = (short)   Dim[ 0 ];
-    hout.dime.dim[ 2 ]      = (short)   Dim[ 1 ];
-    hout.dime.dim[ 3 ]      = (short)   Dim[ 2 ];
-    hout.dime.dim[ 4 ]      = (short) ( Dim[ 3 ] ? 1 : 0 );     // for now, only 1 time point
+    hout.dime.dim[ 0 ]      = NumDimensions;
+    hout.dime.dim[ 1 ]      = Dimension.X;
+    hout.dime.dim[ 2 ]      = Dimension.Y;
+    hout.dime.dim[ 3 ]      = Dimension.Z;
+    hout.dime.dim[ 4 ]      = GetTimeDimension ();
 
                                         // pixdim is parallel to dim, but pixdim[ 0 ] does not mean anything
     hout.dime.pixdim[ 1 ]   = VoxelSize.X;
     hout.dime.pixdim[ 2 ]   = VoxelSize.Y;
     hout.dime.pixdim[ 3 ]   = VoxelSize.Z;
-    hout.dime.pixdim[ 4 ]   = Dim[ 3 ] ? 1 : 0;
+    hout.dime.pixdim[ 4 ]   = IsSequence () ? 1 : 0;
 
 
     hout.dime.vox_offset    = 0;        // offset of voxels inside .img
@@ -356,11 +337,11 @@ else if ( StringIs ( Type, FILEEXT_MRINII  ) ) {
     StringCopy  ( headernii.magic, "n+2" );
 
                                     // output either a 3 or a 4 dimensional volume
-    headernii.dim[ 0 ]      = ( Dim[ 3 ] ? 4 : 3 );
-    headernii.dim[ 1 ]      =   Dim[ 0 ];
-    headernii.dim[ 2 ]      =   Dim[ 1 ];
-    headernii.dim[ 3 ]      =   Dim[ 2 ];
-    headernii.dim[ 4 ]      = ( Dim[ 3 ] ? 1 : 0 );     // for now, only 1 time point
+    headernii.dim[ 0 ]      = NumDimensions;
+    headernii.dim[ 1 ]      = Dimension.X;
+    headernii.dim[ 2 ]      = Dimension.Y;
+    headernii.dim[ 3 ]      = Dimension.Z;
+    headernii.dim[ 4 ]      = GetTimeDimension ();
 
                                         // Can be set by the caller - default values otherwise
     headernii.intent_code   = NiftiIntentCode;
@@ -403,7 +384,7 @@ else if ( StringIs ( Type, FILEEXT_MRINII  ) ) {
     headernii.pixdim[ 1 ]   = VoxelSize.X;
     headernii.pixdim[ 2 ]   = VoxelSize.Y;
     headernii.pixdim[ 3 ]   = VoxelSize.Z;
-    headernii.pixdim[ 4 ]   = Dim[ 3 ] ? 1 : 0;
+    headernii.pixdim[ 4 ]   = IsSequence () ? 1 : 0;
 
                                         // a priori, we work in [mm]
     headernii.xyzt_units    = SPACE_TIME_TO_XYZT ( ExportVolumeSpaceUnits, ExportVolumeTimeUnits );
@@ -461,9 +442,9 @@ else if ( StringIs ( Type, FILEEXT_MRIAVS ) ) {
     *of << "#" << fastendl;
 
     *of << "ndim=3"                 << fastendl;
-    *of << "dim1=" << Dim[ 0 ]      << fastendl;
-    *of << "dim2=" << Dim[ 1 ]      << fastendl;
-    *of << "dim3=" << Dim[ 2 ]      << fastendl;
+    *of << "dim1=" << Dimension.X   << fastendl;
+    *of << "dim2=" << Dimension.Y   << fastendl;
+    *of << "dim3=" << Dimension.Z   << fastendl;
     *of << "nspace=3"               << fastendl;    // 3D data
     *of << "veclen=1"               << fastendl;    // 1 value per point
 
@@ -499,12 +480,9 @@ else if ( StringIs ( Type, FILEEXT_MRIVMR ) ) {
     of->write ( (char *) &i16, sizeof ( i16 ) );
 
                                         // dimensions X, Y, Z
-    i16         = (short) Dim[ 0 ];
-    of->write ( (char *) &i16, sizeof ( i16 ) );
-    i16         = (short) Dim[ 1 ];
-    of->write ( (char *) &i16, sizeof ( i16 ) );
-    i16         = (short) Dim[ 2 ];
-    of->write ( (char *) &i16, sizeof ( i16 ) );
+    i16         = Dimension.X;      of->write ( (char *) &i16, sizeof ( i16 ) );
+    i16         = Dimension.Y;      of->write ( (char *) &i16, sizeof ( i16 ) );
+    i16         = Dimension.Z;      of->write ( (char *) &i16, sizeof ( i16 ) );
 
     } // FILEEXT_MRIVMR
 
@@ -543,9 +521,8 @@ else if ( VolumeFormat == AtomFormatFloat ) {
 
 
 CurrentPosition++;
-
                                         // this should be the end!
-if ( CurrentPosition >= Dim[ 0 ] * Dim[ 1 ] * Dim[ 2 ] )
+if ( CurrentPosition >= GetLinearDim () )
     End ();
 }
 */
@@ -559,7 +536,7 @@ if ( ! DoneBegin )                      // remove the hassle from the caller
 
 if      ( VolumeFormat == AtomFormatByte ) {
 
-    UCHAR               ucv             = (UCHAR) Clip ( value, (double) 0, (double) UCHAR_MAX );
+    UCHAR               ucv             = (UCHAR) Clip ( value, (double) 0, (double) Highest<UCHAR>() );
 
     of->put ( ucv );
     }
@@ -578,9 +555,8 @@ else if ( VolumeFormat == AtomFormatFloat ) {
 
 
 CurrentPosition++;
-
                                         // this should be the end!
-if ( CurrentPosition >= Dim[ 0 ] * Dim[ 1 ] * Dim[ 2 ] )
+if ( CurrentPosition >= GetLinearDim () )
     End ();
 }
 
@@ -588,184 +564,140 @@ if ( CurrentPosition >= Dim[ 0 ] * Dim[ 1 ] * Dim[ 2 ] )
 //----------------------------------------------------------------------------
 void    TExportVolume::Write ( const TVolume<UCHAR>& vol, ExportArrayOrder arrayorder )
 {
-                                        // get from volume
-Dim[ 0 ]    = vol.GetDim1 ();
-Dim[ 1 ]    = vol.GetDim2 ();
-Dim[ 2 ]    = vol.GetDim3 ();
-Dim[ 3 ]    = 1;                        // set for a 4 dimension volume
-
-
-MaxValue    = vol.GetMaxValue ();
-
-
-//TSuperGauge         Gauge ( "Writing Volume", arrayorder == ExportArrayOrderZYX ? Dim[ 2 ] : Dim[ 0 ] );
+                                        // should have been done before by the caller, this will save the day only for a first call
+Maxed ( MaxValue, (double) vol.GetMaxValue () );
 
                                         // output content
 if ( arrayorder == ExportArrayOrderZYX )
 
-    for ( int z = 0; z < Dim[ 2 ]; z++ ) {
+    for ( int z = 0; z < vol.GetDim3 (); z++ ) {
 
         UpdateApplication;
-//      Gauge.Next ();
 
-        for ( int y = 0; y < Dim[ 1 ]; y++ )
-        for ( int x = 0; x < Dim[ 0 ]; x++ )
+        for ( int y = 0; y < vol.GetDim2 (); y++ )
+        for ( int x = 0; x < vol.GetDim1 (); x++ )
             Write ( vol ( x, y, z ) );
         }
 else
-    for ( int x = 0; x < Dim[ 0 ]; x++ ) {
+    for ( int x = 0; x < vol.GetDim1 (); x++ ) {
 
         UpdateApplication;
-//      Gauge.Next ();
 
-        for ( int y = 0; y < Dim[ 1 ]; y++ )
-        for ( int z = 0; z < Dim[ 2 ]; z++ )
+        for ( int y = 0; y < vol.GetDim2 (); y++ )
+        for ( int z = 0; z < vol.GetDim3 (); z++ )
             Write ( vol ( x, y, z ) );
         }
 
 
-End ();
-
-
-//Gauge.HappyEnd ();
+CurrentPosition    += vol.GetLinearDim ();
+                                        // this should be the end!
+if ( CurrentPosition >= GetLinearDim () )
+    End ();
 }
 
 
 //----------------------------------------------------------------------------
 void    TExportVolume::Write ( const TVolume<UINT>& vol, ExportArrayOrder arrayorder )
 {
-                                        // get from volume
-Dim[ 0 ]    = vol.GetDim1 ();
-Dim[ 1 ]    = vol.GetDim2 ();
-Dim[ 2 ]    = vol.GetDim3 ();
-Dim[ 3 ]    = 1;                        // set for a 4 dimension volume
-
-
-MaxValue    = vol.GetMaxValue ();
-
-
-//TSuperGauge         Gauge ( "Writing Volume", arrayorder == ExportArrayOrderZYX ? Dim[ 2 ] : Dim[ 0 ] );
+                                        // should have been done before by the caller, this will save the day only for a first call
+Maxed ( MaxValue, (double) vol.GetMaxValue () );
 
                                         // output content
 if ( arrayorder == ExportArrayOrderZYX )
 
-    for ( int z = 0; z < Dim[ 2 ]; z++ ) {
+    for ( int z = 0; z < vol.GetDim3 (); z++ ) {
 
         UpdateApplication;
-//      Gauge.Next ();
 
-        for ( int y = 0; y < Dim[ 1 ]; y++ )
-        for ( int x = 0; x < Dim[ 0 ]; x++ )
+        for ( int y = 0; y < vol.GetDim2 (); y++ )
+        for ( int x = 0; x < vol.GetDim1 (); x++ )
             Write ( vol ( x, y, z ) );
         }
 else
-    for ( int x = 0; x < Dim[ 0 ]; x++ ) {
+    for ( int x = 0; x < vol.GetDim1 (); x++ ) {
 
         UpdateApplication;
-//      Gauge.Next ();
 
-        for ( int y = 0; y < Dim[ 1 ]; y++ )
-        for ( int z = 0; z < Dim[ 2 ]; z++ )
+        for ( int y = 0; y < vol.GetDim2 (); y++ )
+        for ( int z = 0; z < vol.GetDim3 (); z++ )
             Write ( vol ( x, y, z ) );
         }
 
 
-End ();
-
-
-//Gauge.HappyEnd ();
+CurrentPosition    += vol.GetLinearDim ();
+                                        // this should be the end!
+if ( CurrentPosition >= GetLinearDim () )
+    End ();
 }
 
 
 //----------------------------------------------------------------------------
 void    TExportVolume::Write ( const TVolume<float>& vol, ExportArrayOrder arrayorder )
 {
-                                        // get from volume
-Dim[ 0 ]    = vol.GetDim1 ();
-Dim[ 1 ]    = vol.GetDim2 ();
-Dim[ 2 ]    = vol.GetDim3 ();
-Dim[ 3 ]    = 1;                        // set for a 4 dimension volume
-
-
-MaxValue    = vol.GetMaxValue ();
-
-
-//TSuperGauge         Gauge ( "Writing Volume", arrayorder == ExportArrayOrderZYX ? Dim[ 2 ] : Dim[ 0 ] );
+                                        // should have been done before by the caller, this will save the day only for a first call
+Maxed ( MaxValue, (double) vol.GetMaxValue () );
 
                                         // output content
 if ( arrayorder == ExportArrayOrderZYX )
 
-    for ( int z = 0; z < Dim[ 2 ]; z++ ) {
+    for ( int z = 0; z < vol.GetDim3 (); z++ ) {
 
         UpdateApplication;
-//      Gauge.Next ();
 
-        for ( int y = 0; y < Dim[ 1 ]; y++ )
-        for ( int x = 0; x < Dim[ 0 ]; x++ )
+        for ( int y = 0; y < vol.GetDim2 (); y++ )
+        for ( int x = 0; x < vol.GetDim1 (); x++ )
             Write ( vol ( x, y, z ) );
         }
 else
-    for ( int x = 0; x < Dim[ 0 ]; x++ ) {
+    for ( int x = 0; x < vol.GetDim1 (); x++ ) {
 
         UpdateApplication;
-//      Gauge.Next ();
 
-        for ( int y = 0; y < Dim[ 1 ]; y++ )
-        for ( int z = 0; z < Dim[ 2 ]; z++ )
+        for ( int y = 0; y < vol.GetDim2 (); y++ )
+        for ( int z = 0; z < vol.GetDim3 (); z++ )
             Write ( vol ( x, y, z ) );
         }
 
 
-End ();
-
-
-//Gauge.HappyEnd ();
+CurrentPosition    += vol.GetLinearDim ();
+                                        // this should be the end!
+if ( CurrentPosition >= GetLinearDim () )
+    End ();
 }
 
 
 //----------------------------------------------------------------------------
 void    TExportVolume::Write ( const TVolume<double>& vol, ExportArrayOrder arrayorder )
 {
-                                        // get from volume
-Dim[ 0 ]    = vol.GetDim1 ();
-Dim[ 1 ]    = vol.GetDim2 ();
-Dim[ 2 ]    = vol.GetDim3 ();
-Dim[ 3 ]    = 1;                        // set for a 4 dimension volume
-
-
-MaxValue    = vol.GetMaxValue ();
-
-
-//TSuperGauge         Gauge ( "Writing Volume", arrayorder == ExportArrayOrderZYX ? Dim[ 2 ] : Dim[ 0 ] );
+                                        // should have been done before by the caller, this will save the day only for a first call
+Maxed ( MaxValue, vol.GetMaxValue () );
 
                                         // output content
 if ( arrayorder == ExportArrayOrderZYX )
 
-    for ( int z = 0; z < Dim[ 2 ]; z++ ) {
+    for ( int z = 0; z < vol.GetDim3 (); z++ ) {
 
         UpdateApplication;
-//      Gauge.Next ();
 
-        for ( int y = 0; y < Dim[ 1 ]; y++ )
-        for ( int x = 0; x < Dim[ 0 ]; x++ )
+        for ( int y = 0; y < vol.GetDim2 (); y++ )
+        for ( int x = 0; x < vol.GetDim1 (); x++ )
             Write ( vol ( x, y, z ) );
         }
 else
-    for ( int x = 0; x < Dim[ 0 ]; x++ ) {
+    for ( int x = 0; x < vol.GetDim1 (); x++ ) {
 
         UpdateApplication;
-//      Gauge.Next ();
 
-        for ( int y = 0; y < Dim[ 1 ]; y++ )
-        for ( int z = 0; z < Dim[ 2 ]; z++ )
+        for ( int y = 0; y < vol.GetDim2 (); y++ )
+        for ( int z = 0; z < vol.GetDim3 (); z++ )
             Write ( vol ( x, y, z ) );
         }
 
 
-End ();
-
-
-//Gauge.HappyEnd ();
+CurrentPosition    += vol.GetLinearDim ();
+                                        // this should be the end!
+if ( CurrentPosition >= GetLinearDim () )
+    End ();
 }
 
 

@@ -827,6 +827,10 @@ if ( MRIDoc && VolRoiIndex != 0 ) {
 
     expvol.MaxValue         = VolOut.GetAbsMaxValue ();
 
+    expvol.Dimension.X      = VolOut.GetDim1 ();
+    expvol.Dimension.Y      = VolOut.GetDim2 ();
+    expvol.Dimension.Z      = VolOut.GetDim3 ();
+
     expvol.VoxelSize        = MRIDoc->GetVoxelSize ();
 
     expvol.RealSize         = MRIDoc->GetRealSize ();

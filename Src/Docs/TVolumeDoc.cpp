@@ -919,14 +919,16 @@ CheckMriExtension   ( expvol.Filename );
 
 expvol.VolumeFormat     = GetVolumeAtomType ( &Data, FilterTypeNone, InterpolateUnknown, ToExtension ( expvol.Filename ) );
 
-expvol.MaxValue         = Data.GetAbsMaxValue ();
+expvol.MaxValue         = slice.GetAbsMaxValue ();  // we know that
 
-expvol.MaxValue         = slice.GetMaxValue ();     // we know that
+expvol.Dimension.X      = slice.GetDim1 ();
+expvol.Dimension.Y      = slice.GetDim2 ();
+expvol.Dimension.Z      = slice.GetDim3 ();
 
 expvol.VoxelSize        = VoxelSize;
 
 expvol.Origin           = Origin;
-expvol.Origin.X         = midthickness;
+expvol.Origin.X         = midthickness;             // override this dimension
 
 expvol.NiftiTransform   = AtLeast ( NiftiTransformDefault, NiftiTransform );
 

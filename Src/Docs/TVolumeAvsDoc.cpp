@@ -70,6 +70,10 @@ expvol.VolumeFormat     = GetVolumeAtomType ( &Data, FilterTypeNone, Interpolate
 
 expvol.MaxValue         = Data.GetAbsMaxValue ();
 
+expvol.Dimension.X      = Data.GetDim1 ();
+expvol.Dimension.Y      = Data.GetDim2 ();
+expvol.Dimension.Z      = Data.GetDim3 ();
+
 expvol.VoxelSize        = VoxelSize;
 
 expvol.Origin           = Origin;

@@ -426,16 +426,12 @@ return  isok;
                                         // Actually closing the file
 void    TExportTracks::CloseStream ()
 {
-if ( ! IsOpen () )
+if ( of == 0 )
     return;
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 of->close ();
-
 delete  of;
-
 of  = 0;
 }
 

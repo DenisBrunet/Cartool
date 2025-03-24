@@ -73,6 +73,10 @@ expvol.VolumeFormat     = GetVolumeAtomType ( &Data, FilterTypeNone, Interpolate
 
 expvol.MaxValue         = Data.GetAbsMaxValue ();
 
+expvol.Dimension.X      = Data.GetDim1 ();
+expvol.Dimension.Y      = Data.GetDim2 ();
+expvol.Dimension.Z      = Data.GetDim3 ();
+
 expvol.VoxelSize        = VoxelSize;
 
 expvol.Origin           = Origin;
@@ -93,13 +97,13 @@ expvol.Write ( Data, ExportArrayOrderZYX );
 
 
                                         // in case one wants to mingle with the saved dimensions
-//expvol.Dim      [ 0 ]   = Data.GetDim ( 0 );
-//expvol.Dim      [ 1 ]   = Data.GetDim ( 1 );
-//expvol.Dim      [ 2 ]   = Data.GetDim ( 2 );
+//expvol.Dimension.X     = Data.GetDim ( 0 );
+//expvol.Dimension.Y     = Data.GetDim ( 1 );
+//expvol.Dimension.Z     = Data.GetDim ( 2 );
 //
-//for ( int z = 0; z < expvol.Dim[ 2 ]; z++ )
-//for ( int y = 0; y < expvol.Dim[ 1 ]; y++ )
-//for ( int x = 0; x < expvol.Dim[ 0 ]; x++ )
+//for ( int z = 0; z < expvol.Dimension.Z; z++ )
+//for ( int y = 0; y < expvol.Dimension.Y; y++ )
+//for ( int x = 0; x < expvol.Dimension.X; x++ )
 //    expvol.Write ( Data ( x, y, z ) );
 
 

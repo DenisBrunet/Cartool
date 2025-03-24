@@ -585,9 +585,9 @@ if ( writevolumes && HasEsiFiles ) {
 
     expvol.VolumeFormat     = /*IsInsideLimits ( Data.GetMinValue (), Data.GetMaxValue (), (MriType) 0, (MriType) Highest<UCHAR> () ) ? AtomFormatByte : */ AtomFormatFloat;
 
-    expvol.Dim[ 0 ]         = volsize->GetXExtent ();
-    expvol.Dim[ 1 ]         = volsize->GetYExtent ();
-    expvol.Dim[ 2 ]         = volsize->GetZExtent ();
+    expvol.Dimension.X      = volsize->GetXExtent ();
+    expvol.Dimension.Y      = volsize->GetYExtent ();
+    expvol.Dimension.Z      = volsize->GetZExtent ();
 
     expvol.VoxelSize        = MRIDocBackg->GetVoxelSize ();
 
@@ -2728,6 +2728,8 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
 
 //      p ( FilterParamDiameter )     = SPDoc->GetMedianDistance ();
 //      templvol.Filter ( FilterTypeMedian, p );
+        
+        expvol.MaxValue     = templvol.GetAbsMaxValue ();
 
         expvol.Begin ();
 
@@ -2783,6 +2785,8 @@ for ( nclusters = minclusters; nclusters <= maxclusters; nclusters++ ) {
                                         // or use GetInterpol4NN instead...
             p ( FilterParamDiameter )     = SPDoc->GetMedianDistance () * 0.75;
             templvol.Filter ( FilterTypeFastGaussian, p );
+
+            expvol.MaxValue     = templvol.GetAbsMaxValue ();
 
             expvol.Begin ();
 

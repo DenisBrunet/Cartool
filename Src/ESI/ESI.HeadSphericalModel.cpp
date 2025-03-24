@@ -230,15 +230,17 @@ TExportVolume     expvol;
 
 StringCopy ( expvol.Filename, file );
 
-expvol.Dim      [ 0 ]   =
-expvol.Dim      [ 1 ]   =
-expvol.Dim      [ 2 ]   = Power2Above ( 2 * gosurf.GetMaxRadius () + 1 + 4 );
+expvol.MaxValue         = something;
+
+expvol.Dimension.X      =
+expvol.Dimension.Y      =
+expvol.Dimension.Z      = Power2Above ( 2 * gosurf.GetMaxRadius () + 1 + 4 );
 
 expvol.VoxelSize        = mridoc->GetVoxelSize();   // just to relay the real voxel size up to the unspherization
 
-expvol.Origin.X         = expvol.Dim[ 0 ] / 2.0;
-expvol.Origin.Y         = expvol.Dim[ 1 ] / 2.0;
-expvol.Origin.Z         = expvol.Dim[ 2 ] / 2.0;
+expvol.Origin.X         = expvol.DimX / 2.0;
+expvol.Origin.Y         = expvol.DimY / 2.0;
+expvol.Origin.Z         = expvol.DimZ / 2.0;
 
 expvol.NiftiTransform   = AtLeast ( NiftiTransformDefault, NiftiTransform );
 
@@ -251,18 +253,18 @@ StringCopy  ( expvol.Orientation, NiftiOrientation, 3 );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TSuperGauge         Gauge ( "MRI Spherization", expvol.Dim[ 2 ] );
+TSuperGauge         Gauge ( "MRI Spherization", expvol.Dimension.Z );
 
 
 SetOvershootingOption ( interpolate, volume->Array, LinearDim );
 
 
-for ( int z = 0; z < expvol.Dim[ 2 ]; z++ ) {
+for ( int z = 0; z < expvol.Dimension.Z; z++ ) {
 
     Gauge.Next ();
 
-    for ( int y = 0; y < expvol.Dim[ 1 ]; y++ )
-    for ( int x = 0; x < expvol.Dim[ 0 ]; x++ ) {
+    for ( int y = 0; y < expvol.Dimension.Y; y++ )
+    for ( int x = 0; x < expvol.Dimension.X; x++ ) {
 
         median.Reset ();
 
@@ -327,9 +329,11 @@ TExportVolume     expvol;
 
 StringCopy ( expvol.Filename, file );
 
-expvol.Dim      [ 0 ]   = mribrain->GetSize()->GetXExtent ();
-expvol.Dim      [ 1 ]   = mribrain->GetSize()->GetYExtent ();
-expvol.Dim      [ 2 ]   = mribrain->GetSize()->GetZExtent ();
+expvol.MaxValue         = something;
+
+expvol.Dimension.X      = mribrain->GetSize()->GetXExtent ();
+expvol.Dimension.Y      = mribrain->GetSize()->GetYExtent ();
+expvol.Dimension.Z      = mribrain->GetSize()->GetZExtent ();
 
 expvol.VoxelSize        = mribrain->GetVoxelSize();
 
@@ -346,18 +350,18 @@ StringCopy  ( expvol.Orientation, NiftiOrientation, 3 );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TSuperGauge         Gauge ( "MRI Un-Spherization", expvol.Dim[ 2 ] );
+TSuperGauge         Gauge ( "MRI Un-Spherization", expvol.Dimension.Z );
 
 
 SetOvershootingOption ( interpolate, volume->Array, LinearDim );
 
 
-for ( int z = 0; z < expvol.Dim[ 2 ]; z++ ) {
+for ( int z = 0; z < expvol.Dimension.Z; z++ ) {
 
     Gauge.Next ();
 
-    for ( int y = 0; y < expvol.Dim[ 1 ]; y++ )
-    for ( int x = 0; x < expvol.Dim[ 0 ]; x++ ) {
+    for ( int y = 0; y < expvol.Dimension.Y; y++ )
+    for ( int x = 0; x < expvol.Dimension.X; x++ ) {
 
         median.Reset ();
 
