@@ -218,6 +218,7 @@ protected:
     LONGLONG        EndOfHeader;
     LONGLONG        CurrentPosition;
     size_t          AtomSize;
+    double          RescalingToInteger;     // Scaling factor applied before writing integers to file
 
 
     void            PreFillFile         ();

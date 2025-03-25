@@ -188,7 +188,7 @@ if ( steptf == 1 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( gauge )    gauge->SetRange ( -1, numsavedblocks );
+if ( gauge )    gauge->SetRange ( -1, numsavedblocks + 1 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -213,6 +213,8 @@ expvol.Origin               = mrigrey->GetOrigin ();
 
 //if ( MRIDoc->HasKnownOrientation () ) // always saving orientation?
     mrigrey->OrientationToString ( expvol.Orientation );
+                                        // no method will overshoot, ever
+expvol.MaxValue             = ris.GetAbsMaxValue ();
 
                                         // output volumes have the same space meaning as input volume
 expvol.NiftiTransform       = mrigrey->GetNiftiTransform ();
@@ -220,26 +222,6 @@ expvol.NiftiTransform       = mrigrey->GetNiftiTransform ();
 expvol.NiftiIntentCode      = GuessNiftiIntentFromFilename ( risfile );
                                         // put some short info here
 StringCopy  ( expvol.NiftiIntentName, NiftiIntentNameRis );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-double              risabsmax       = ris.GetAbsMaxValue ();
-double              rescalefactor;
-
-
-if ( atomformat == AtomFormatByte ) {
-                                        // rescaling data globally to [0..255]
-    rescalefactor       = Highest<UCHAR>() / (double) risabsmax;
-
-    expvol.MaxValue     = Highest<UCHAR>();
-    }
-else { // if ( IsFormatFloat   ( atomformat ) ) {
-                                        // no rescaling needed for floating points
-    rescalefactor       = 1;
-                                        // no available method will overshoot, ever
-    expvol.MaxValue     = risabsmax;
-    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -281,9 +263,6 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
 
                                         // store current volume file
         volgof.Add          ( expvol.Filename );
-
-                                        // does not affect MaxValue in case of re-using expvol
-        expvol.Begin ();
         }
 
 
@@ -369,7 +348,6 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
 
 
         vol    /= weights;              // cumulated weights applied for each voxel
-        vol    *= rescalefactor;
         } // IsSolutionPointsScan
 
 
@@ -428,8 +406,6 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
             vol[ li ]   = v;
             } // for z, y, x
 
-
-        vol    *= rescalefactor;
         } // IsVoxelScan
 
 
@@ -437,9 +413,6 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
                                         // expvol.MaxValue is already set
     expvol.Write ( vol, ExportArrayOrderZYX );
 
-
-    if ( outputn3d )
-        expvol.End ();
     } // for blocki
 
 

@@ -28,6 +28,7 @@ limitations under the License.
 
 #include    "CartoolTypes.h"            // EpochsType SkippingEpochsType ResamplingType GfpPeaksDetectType ZScoreType CentroidType
 #include    "TExportTracks.h"
+#include    "TExportVolume.h"
 #include    "TMaps.h"
 #include    "Volumes.TTalairachOracle.h"
 

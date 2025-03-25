@@ -17,6 +17,8 @@ limitations under the License.
 #pragma     hdrstop
 //-=-=-=-=-=-=-=-=-
 
+#include    "TVolumeDoc.h"
+
 #include    "TVector.h"
 #include    "Strings.Utils.h"
 #include    "Strings.Grep.h"
@@ -29,9 +31,8 @@ limitations under the License.
 #include    "TVolume.h"
 #include    "Volumes.AnalyzeNifti.h"
 #include    "TExportTracks.h"
+#include    "TExportVolume.h"
 #include    "BrainToSolutionPointsUI.h"
-
-#include    "TVolumeDoc.h"
 
 #include    "TCartoolMdiClient.h"
 

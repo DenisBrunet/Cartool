@@ -95,7 +95,9 @@ public:
 
 
     bool            IsNull    ()                                                        const   { return ! ( X || Y || Z ); }
-    bool            IsNotNull ()                                                        const   { return     X || Y || Z; }
+    bool            IsNotNull ()                                                        const   { return     X || Y || Z;   }
+    bool            IsNoneNull()                                                        const   { return     X && Y && Z;   }
+    bool            IsSomeNull()                                                        const   { return ! ( X && Y && Z ); }
     bool            IsOppositeDirection ( const TPointT<TypeD> &op2 )                   const   { return    ScalarProduct ( op2 ) < 0; }    // !strict comparison - a null vector should not return true!
     bool            IsSameDirection     ( const TPointT<TypeD> &op2 )                   const   { return    ScalarProduct ( op2 ) > 0; }    //    "        "
     bool            IsAxisAligned       ( double epsilon )                              const;

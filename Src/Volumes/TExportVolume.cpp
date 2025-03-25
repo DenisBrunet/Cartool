@@ -97,6 +97,7 @@ Origin   .Reset ();
 ClearString ( Orientation, 4 );
 
 MaxValue            = 0;
+RescalingToInteger  = 1;                // default is no rescaling factor
                                         // Not resetting these Nifti options:  NiftiTransform, NiftiIntentCode, NiftiIntentParameters, NiftiIntentName
 
                                         // internal variables
@@ -182,38 +183,32 @@ if ( ! IsStringAmong ( Type, ExportVolumeTypes ) )
     StringCopy ( Type, ExportVolumeDefaultType );
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // check data type
 CheckVolumeFormat ();
 
                                         // retrieve atom memory size
-AtomSize    = AtomFormatTypePresets[ VolumeFormat ].NumBytes;
+AtomSize        = AtomFormatTypePresets[ VolumeFormat ].NumBytes;
+
+                                        // factor applied BEFORE writing to file (before integer conversion)
+RescalingToInteger  = VolumeFormat == AtomFormatByte  ? ( IsInteger ( MaxValue )                                            // integer test would better be ran on the whole data to be 100% correct
+                                                       && IsInsideLimits ( (int) MaxValue, 1, (int) Highest<UCHAR>() ) ? 1  // data is integer and fits in 1 byte already
+                                                                                                                       : Highest<UCHAR>() / NonNull ( MaxValue ) 
+                                                    )
+                    : VolumeFormat == AtomFormatFloat ? 1   // floating point values need no rescaling
+                    :                                   1;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // do some checking
+                                        // check size
+if ( RealSize.IsSomeNull () )
 
-                                        // don't force max if it is not known
-//if ( MaxValue == 0 )
-//    MaxValue    = VolumeFormat == AtomFormatByte ? UCHAR_MAX : 0;
-
-
-if ( ! ( RealSize.X && RealSize.Y && RealSize.Z ) ) {
-
-    if ( VoxelSize.X && VoxelSize.Y && VoxelSize.Z )
-
-        RealSize        = VoxelSize * Dimension;
-    else 
-        RealSize        =             Dimension;
-    }
+    RealSize    = VoxelSize.IsSomeNull () ? Dimension : VoxelSize * Dimension;
 
 
-if ( ! ( VoxelSize.X && VoxelSize.Y && VoxelSize.Z ) ) {
+if ( VoxelSize.IsSomeNull () )
 
-    if ( RealSize.X && RealSize.Y && RealSize.Z )
-
-        VoxelSize       = RealSize    / Dimension;
-    else
-        VoxelSize       =               1.0;
-    }
+    VoxelSize   = RealSize .IsSomeNull () ? 1.0       : RealSize  / Dimension;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -288,10 +283,10 @@ if      ( StringIs ( Type, FILEEXT_MRIAVW_HDR  ) ) {
 
     hout.dime.vox_offset    = 0;        // offset of voxels inside .img
     hout.dime.glmin         = 0;
-    hout.dime.glmax         = (int) ( VolumeFormat == AtomFormatFloat ? 0 : MaxValue );   // glmax is int, so it does not work as a max for float!
+    hout.dime.glmax         = 0;        // skip global file min / max (not rescaled)
     hout.dime.cal_min       = 0;
     hout.dime.cal_max       = 0;        // no calibration (used to be MaxValue)
-    hout.dime.funused1      = 1;        // SPM scale factor
+    hout.dime.funused1      = RescalingToInteger == 0 || RescalingToInteger == 1 ? 0 : 1 / RescalingToInteger;    // SPM scale factor == Nifti scl_slope
     hout.dime.funused2      = 0;        // SPM offset factor
     hout.dime.datatype      = (short) ( VolumeFormat == AtomFormatByte ? DT_UNSIGNED_CHAR : DT_FLOAT );
     hout.dime.bitpix        = (short) AtomFormatTypePresets[ VolumeFormat ].NumBits ();
@@ -362,19 +357,6 @@ else if ( StringIs ( Type, FILEEXT_MRINII  ) ) {
         StringAppend ( headernii.descrip, "; " ExportOrientation, Orientation );
 
 
-//    StringCopy  ( headernii.descrip, NiftiDescripLabels, "1Scalp" "4CSF" "5Blood" "6Eye" "7Air" "9SkullC" "10SkullS" "13Grey" "14White" );
-    //TSelection          seltissues ( NumTissuesIndex, OrderSorted );
-    //seltissues.Set ( ScalpIndex         );
-    //seltissues.Set ( CsfIndex           );
-    //seltissues.Set ( BloodIndex         );
-    //seltissues.Set ( EyeIndex           );
-    //seltissues.Set ( AirIndex           );
-    //seltissues.Set ( SkullCompactIndex  );
-    //seltissues.Set ( SkullSpongyIndex   );
-    //seltissues.Set ( GreyIndex          );
-    //seltissues.Set ( WhiteIndex         );
-
-
     headernii.datatype      = (short) ( VolumeFormat == AtomFormatByte ? NIFTI_TYPE_UINT8 : NIFTI_TYPE_FLOAT32 );
                                         // this is silly, just some duplicated info from above
     headernii.bitpix        = (short) AtomFormatTypePresets[ VolumeFormat ].NumBits ();
@@ -390,7 +372,7 @@ else if ( StringIs ( Type, FILEEXT_MRINII  ) ) {
     headernii.xyzt_units    = SPACE_TIME_TO_XYZT ( ExportVolumeSpaceUnits, ExportVolumeTimeUnits );
 
                                         // y = scl_slope * x + scl_inter
-    headernii.scl_slope     = 1;
+    headernii.scl_slope     = RescalingToInteger == 0 || RescalingToInteger == 1 ? 0 : 1 / RescalingToInteger;    // reverting the scaling factor used when writing data to file
     headernii.scl_inter     = 0;
                                         // prefered display calibration, if non-zero
     headernii.cal_min       = 0;
@@ -461,6 +443,9 @@ else if ( StringIs ( Type, FILEEXT_MRIAVS ) ) {
     *of << "min_val=0"              << fastendl;
     *of << "max_val=" << MaxValue   << fastendl;
 
+                                        // there does not seem to be any scaling factors in AVS -> force reset rescaling
+    RescalingToInteger  = 1;
+     
 
     of->put ( (char) 0x0C );            // 2 FF
     of->put ( (char) 0x0C );
@@ -484,6 +469,9 @@ else if ( StringIs ( Type, FILEEXT_MRIVMR ) ) {
     i16         = Dimension.Y;      of->write ( (char *) &i16, sizeof ( i16 ) );
     i16         = Dimension.Z;      of->write ( (char *) &i16, sizeof ( i16 ) );
 
+                                        // format is loosely implemented
+    RescalingToInteger  = 1;
+     
     } // FILEEXT_MRIVMR
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -502,7 +490,7 @@ if ( ! DoneBegin )                      // remove the hassle from the caller
 
 if      ( VolumeFormat == AtomFormatByte ) {
 
-    UCHAR               ucv             = (UCHAR) Clip ( value, 0, UCHAR_MAX );
+    UCHAR               ucv             = Clip ( Round ( RescalingToInteger * value ), 0, (int) Highest<UCHAR>() );
 
     of->put ( ucv );
     }
@@ -510,7 +498,7 @@ if      ( VolumeFormat == AtomFormatByte ) {
 
 else if ( VolumeFormat == AtomFormatFloat ) {
 
-    float               f               = (float) value;
+    float               f               = RescalingToInteger * value;
 
                                         // AVS files come from UNIX world
     if ( StringIs ( Type, FILEEXT_MRIAVS ) )
@@ -536,7 +524,7 @@ if ( ! DoneBegin )                      // remove the hassle from the caller
 
 if      ( VolumeFormat == AtomFormatByte ) {
 
-    UCHAR               ucv             = (UCHAR) Clip ( value, (double) 0, (double) Highest<UCHAR>() );
+    UCHAR               ucv             = Clip ( Round ( RescalingToInteger * value ), 0, (int) Highest<UCHAR>() );
 
     of->put ( ucv );
     }
@@ -544,7 +532,7 @@ if      ( VolumeFormat == AtomFormatByte ) {
 
 else if ( VolumeFormat == AtomFormatFloat ) {
 
-    float               f               = (float) value;
+    float               f               = RescalingToInteger * value;
 
                                         // AVS files come from UNIX world
     if ( StringIs ( Type, FILEEXT_MRIAVS ) )
@@ -587,12 +575,6 @@ else
         for ( int z = 0; z < vol.GetDim3 (); z++ )
             Write ( vol ( x, y, z ) );
         }
-
-
-CurrentPosition    += vol.GetLinearDim ();
-                                        // this should be the end!
-if ( CurrentPosition >= GetLinearDim () )
-    End ();
 }
 
 
@@ -622,12 +604,6 @@ else
         for ( int z = 0; z < vol.GetDim3 (); z++ )
             Write ( vol ( x, y, z ) );
         }
-
-
-CurrentPosition    += vol.GetLinearDim ();
-                                        // this should be the end!
-if ( CurrentPosition >= GetLinearDim () )
-    End ();
 }
 
 
@@ -657,12 +633,6 @@ else
         for ( int z = 0; z < vol.GetDim3 (); z++ )
             Write ( vol ( x, y, z ) );
         }
-
-
-CurrentPosition    += vol.GetLinearDim ();
-                                        // this should be the end!
-if ( CurrentPosition >= GetLinearDim () )
-    End ();
 }
 
 
@@ -692,12 +662,6 @@ else
         for ( int z = 0; z < vol.GetDim3 (); z++ )
             Write ( vol ( x, y, z ) );
         }
-
-
-CurrentPosition    += vol.GetLinearDim ();
-                                        // this should be the end!
-if ( CurrentPosition >= GetLinearDim () )
-    End ();
 }
 
 

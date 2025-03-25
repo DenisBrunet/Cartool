@@ -881,6 +881,7 @@ if ( StringIsNotEmpty ( fileprefix ) )
 StringCopy      ( BaseFileName,             BaseDir,                "\\",               fileprefix );
 
 StringCopy      ( VerboseFile,              BaseFileName,           "RIS To Volume",    "." FILEEXT_VRB );
+CheckNoOverwrite( VerboseFile );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -920,8 +921,8 @@ verbose.Put ( "Averaging each block:", merging == FilterTypeNone ? "None" : Filt
 verbose.NextTopic ( "Output Files:" );
 {
 verbose.Put ( "Output data type:", AtomFormatTypePresets[ atomformat ].Text );
-verbose.Put ( "Rescaling output data:", atomformat == AtomFormatByte ? "Global max data to 255" : "None, writing original values" );
 verbose.Put ( "Output format:", VolumeFileTypeString[ filetype ] );
+verbose.Put ( "Output dimensions:", IsFileTypeN3D ( filetype ) ? 3 : 4 );
 
 verbose.NextLine ();
 verbose.Put ( "Verbose file (this):", VerboseFile );

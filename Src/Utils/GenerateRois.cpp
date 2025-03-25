@@ -23,6 +23,7 @@ limitations under the License.
 #include    "Files.TVerboseFile.h"
 #include    "Dialogs.TSuperGauge.h"
 #include    "TRois.h"
+#include    "TExportVolume.h"
 
 #include    "Volumes.AAL.h"
 #include    "Volumes.TTalairachOracle.h"

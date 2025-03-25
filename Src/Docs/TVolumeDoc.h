@@ -21,8 +21,6 @@ limitations under the License.
 #include    "Math.Histo.h"
 #include    "Math.Stats.h"
 #include    "Geometry.TPoint.h"
-
-#include    "TExportVolume.h"
 #include    "Geometry.TTriangleSurface.h"
 
 #include    "TBaseDoc.h"

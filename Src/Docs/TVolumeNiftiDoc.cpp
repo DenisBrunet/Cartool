@@ -307,15 +307,6 @@ if ( GetDocPath () ) {
     fih.close ();
 
 
-//    DBGM  ( NiftiDataTypeToString ( datatype ), "data type" );
-//    DBGV2 ( qform_code, sform_code, "qform_code, sform_code" );
-//    DBGV  ( intent_code, intent_name );
-//    DBGV5 ( dim[ 0 ], dim[ 1 ], dim[ 2 ], dim[ 3 ], dim[ 4 ], "Dimensions" );
-//    DBGV4 ( qfac, pixdim[ 1 ], pixdim[ 2 ], pixdim[ 3 ], "Voxel size" );
-//    DBGM2 ( NiftiSpatialUnitsToString ( xyzt_units ), NiftiTemporalUnitsToString ( xyzt_units ), "Units" );
-//    DBGV2 ( scl_slope, scl_inter, "scl_slope, scl_inter" );
-
-
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Check header
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -336,8 +327,18 @@ if ( GetDocPath () ) {
         }
 
 
-    if ( ! ( dim[ 0 ] == 3 || dim[ 0 ] == 4 && dim[ 4 ] <= 1 ) ) {
-        ShowMessage ( "Data dimension appears to be different from 3,\nare your sure this is correct?", NiftiTitle, ShowMessageWarning );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if      ( dim[ 0 ] == 4 ) {
+        if ( dim[ 4 ] > 1 ) {
+            ShowMessage ( "Data is a sequence of volumes,\nonly the first one can be read for the moment...", NiftiTitle, ShowMessageWarning );
+            dim[ 0 ]    = 3;
+            dim[ 4 ]    = 1;
+            }
+        // else OK;
+        }
+    else if ( dim[ 0 ] != 3  ) {
+        ShowMessage ( "Can not read file with dimensions different from 3 or 4...", NiftiTitle, ShowMessageWarning );
         return false;
         }
 
@@ -491,10 +492,6 @@ if ( GetDocPath () ) {
         RealSize.Z      = filedim3;
         }
 
-//    DBGV3 ( dim[ 1 ], dim[ 2 ], dim[ 3 ], "MRI Dimension in Voxels" );
-//    DBGV3 ( VoxelSize[0], VoxelSize[1], VoxelSize[2], "MRI Voxel Size" );
-//    DBGV3 ( RealSize[0], RealSize[1], RealSize[2], "MRI Real Size" );
-
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -646,7 +643,6 @@ if ( GetDocPath () ) {
 
     fii.close ();
 
-//    DBGV2 ( Data.GetMinValue (), Data.GetMaxValue (), "Nifti read: Min & Max values" );
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Optional values linear transform
@@ -655,9 +651,6 @@ if ( GetDocPath () ) {
         Data   *= scl_slope;
 
         Data   += scl_inter;
-
-//        DBGV2 ( scl_slope, scl_inter, "Nifti rescaling: scl_slope scl_inter" );
-//        DBGV2 ( Data.GetMinValue (), Data.GetMaxValue (), "Nifti rescaled: Min & Max values" );
 
                                         // integer rescaling might lead to unwanted artifacts
         if ( IsNiftiTypeInteger ( datatype ) && scl_slope != 1.0 ) {
@@ -676,8 +669,6 @@ if ( GetDocPath () ) {
                                         // round it below
             double              precision       = 1 / Power ( 10, RoundBelow ( Log10 ( maxpossiblevalue ) ) - 1 );
 
-//            DBGM  ( NiftiDataTypeToString ( datatype ), "data type" );
-//            DBGV ( precision, "precision" );
 
             double              minval          = Data.GetMinValue ();
             double              maxval          = Data.GetMaxValue ();
@@ -688,8 +679,6 @@ if ( GetDocPath () ) {
 
                 if      ( minval / maxval < precision )  {   minval = 0;  Data.UnaryOp ( OperandData, OperationThresholdAbove, &minval ); }
                 else if ( maxval / minval < precision )  {   maxval = 0;  Data.UnaryOp ( OperandData, OperationThresholdBelow, &maxval ); }
-
-//                DBGV2 ( Data.GetMinValue (), Data.GetMaxValue (), "Nifti clipped: Min & Max values" );
                 }
             }
 
@@ -714,15 +703,8 @@ if ( GetDocPath () ) {
                                         // then relative to current max - we are rounding after the rescaling
             double              roundto         = absmax / precision;
 
-//            DBGM  ( NiftiDataTypeToString ( datatype ), "data type" );
-//            DBGV2 ( scl_slope, scl_inter, "scl_slope, scl_inter" );
-//            DBGV3 ( absmax, precision, roundto, "absmax precision roundto" );
-//            DBGV2 ( Data.GetMinValue (), Data.GetMaxValue (), "Raw Data: Min Max" );
-
             for ( int i = 0; i < Data.GetLinearDim (); i++ )
                 Data[ i ]   = RoundTo ( Data[ i ], roundto );
-
-//          DBGV2 ( Data.GetMinValue (), Data.GetMaxValue (), "Nifti rounded: Min & Max values" );
             }
 */
         }
@@ -799,11 +781,6 @@ if ( GetDocPath () ) {
 
                                         // rescale voxels, then rotate, then translate
         transform   = translation * rotation * scaling;
-
-
-//        scaling     .Show ( "Scaling" );
-//        rotation    .Show ( "Rotation" );
-//        translation .Show ( "Translation" );
         } // NiftiMethod2
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

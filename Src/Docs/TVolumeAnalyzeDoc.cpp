@@ -163,8 +163,8 @@ if ( GetDocPath () ) {
                         dim[ 3 ]        = SwapBytes ( hin.dime.dim[ 3 ],      swap );
                         dim[ 4 ]        = SwapBytes ( hin.dime.dim[ 4 ],      swap );
     int                 datatype	    = SwapBytes ( hin.dime.datatype,      swap );
-    int                 minval          = SwapBytes ( hin.dime.glmin,         swap );
-    int                 maxval          = SwapBytes ( hin.dime.glmax,         swap );
+    int                 glmin           = SwapBytes ( hin.dime.glmin,         swap );
+    int                 glmax           = SwapBytes ( hin.dime.glmax,         swap );
     double              pixdim[ 8 ];
                         pixdim[ 1 ]     = SwapBytes ( hin.dime.pixdim[ 1 ],   swap );
                         pixdim[ 2 ]     = SwapBytes ( hin.dime.pixdim[ 2 ],   swap );
@@ -207,20 +207,28 @@ if ( GetDocPath () ) {
         return false;
         }
 
-
-    if ( ! ( dim[ 0 ] == 3 || dim[ 0 ] == 4 && dim[ 4 ] <= 1 ) ) {
-        ShowMessage ( "Data dimension appears to be different from 3,\nare your sure this is correct?", AnalyzeTitle, ShowMessageWarning );
-        return false;
-        }
-
                                         // refining the SHORT type by guessing
     if ( datatype == DT_SIGNED_SHORT ) {
-        if      ( maxval == 65535 )                 datatype    = DT_UNSIGNED_SHORT;
-        else if ( minval == 0 && maxval == 32767 )  datatype    = DT_SIGNED_SHORT_POS;
+        if      (               glmax == 0xFFFF )   datatype    = DT_UNSIGNED_SHORT;
+        else if ( glmin == 0 && glmax == 0x7FFF )   datatype    = DT_SIGNED_SHORT_POS;
         else                                        datatype    = DT_SIGNED_SHORT;
         }
 
-//    DBGV3 ( datatype, minval, maxval, "datatype minval maxval" );
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if      ( dim[ 0 ] == 4 ) {
+        if ( dim[ 4 ] > 1 ) {
+            ShowMessage ( "Data is a sequence of volumes,\nonly the first one can be read for the moment...", AnalyzeTitle, ShowMessageWarning );
+            dim[ 0 ]    = 3;
+            dim[ 4 ]    = 1;
+            }
+        // else OK;
+        }
+    else if ( dim[ 0 ] != 3  ) {
+        ShowMessage ( "Can not read file with dimensions different from 3 or 4...", AnalyzeTitle, ShowMessageWarning );
+        return false;
+        }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -264,19 +272,10 @@ if ( GetDocPath () ) {
         RealSize.Z      = filedim3;
         }
 
-//    DBGV3 ( dim[ 1 ], dim[ 2 ], dim[ 3 ], "MRI Dimension in Voxels" );
-//    DBGV3 ( VoxelSize[0], VoxelSize[1], VoxelSize[2], "MRI Voxel Size" );
-//    DBGV3 ( RealSize[0], RealSize[1], RealSize[2], "MRI Real Size" );
-
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // allow origin to be anywhere
     Origin      = TPointDouble ( org1, org2, org3 );
-
-//    DBGV6 ( org1, org2, org3, Size.XMax (), Size.YMax (), Size.ZMax (), "MRI Voxel Origin  vs  MRI Size" );
-
-
-//    DBGV ( hin.hist.orient, "orient flag" );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -389,7 +388,6 @@ if ( GetDocPath () ) {
 
     fii.close ();
 
-//    DBGV2 ( Data.GetMinValue (), Data.GetMaxValue (), "Analyze read: Min & Max values" );
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Optional values linear transform - Non-standard
@@ -398,9 +396,6 @@ if ( GetDocPath () ) {
         Data   *= spmslope;
 
         Data   += spminter;
-
-//        DBGV2 ( spmslope, spminter, "Analyze rescaling: spmslope spminter" );
-//        DBGV2 ( Data.GetMinValue (), Data.GetMaxValue (), "Analyze rescaled: Min & Max values" );
 
                                         // integer rescaling might lead to unwanted artifacts
         if ( IsAnalyzeTypeInteger ( datatype ) && spmslope != 1.0 ) {
@@ -418,8 +413,6 @@ if ( GetDocPath () ) {
                                         // round it below
             double              precision       = 1 / Power ( 10, RoundBelow ( Log10 ( maxpossiblevalue ) ) - 1 );
 
-//            DBGM  ( AnalyzeDataTypeToString ( datatype ), "data type" );
-//            DBGV ( precision, "precision" );
 
             double              minval          = Data.GetMinValue ();
             double              maxval          = Data.GetMaxValue ();
@@ -430,8 +423,6 @@ if ( GetDocPath () ) {
 
                 if      ( minval / maxval < precision )  {   minval = 0;  Data.UnaryOp ( OperandData, OperationThresholdAbove, &minval ); }
                 else if ( maxval / minval < precision )  {   maxval = 0;  Data.UnaryOp ( OperandData, OperationThresholdBelow, &maxval ); }
-
-//                DBGV2 ( Data.GetMinValue (), Data.GetMaxValue (), "Analyze clipped: Min & Max values" );
                 }
             }
 
@@ -454,10 +445,6 @@ if ( GetDocPath () ) {
                                 precision       = Power ( 10, RoundBelow ( Log10 ( precision ) ) );
                                         // then relative to current max - we are rounding after the rescaling
             double              roundto         = absmax / precision;
-
-//            DBGM  ( AnalyzeDataTypeToString ( datatype ), "data type" );
-//            DBGV2 ( spmslope, spminter, "spmslope, spminter" );
-//            DBGV3 ( absmax, precision, roundto, "absmax precision roundto" );
 
             for ( int i = 0; i < Data.GetLinearDim (); i++ )
                 Data[ i ]   = RoundTo ( Data[ i ], roundto );
