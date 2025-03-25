@@ -210,6 +210,7 @@ if ( GetDocPath () ) {
         pixdim[ 1 ] = SwapBytes ( headernii.pixdim[ 1 ],     swap );
         pixdim[ 2 ] = SwapBytes ( headernii.pixdim[ 2 ],     swap );
         pixdim[ 3 ] = SwapBytes ( headernii.pixdim[ 3 ],     swap );
+        pixdim[ 4 ] = SwapBytes ( headernii.pixdim[ 4 ],     swap );
 
 //      xyzt_units  = SwapBytes ( headernii.xyzt_units,      swap );
 
@@ -268,6 +269,7 @@ if ( GetDocPath () ) {
         pixdim[ 1 ] = SwapBytes ( headernii.pixdim[ 1 ],     swap );
         pixdim[ 2 ] = SwapBytes ( headernii.pixdim[ 2 ],     swap );
         pixdim[ 3 ] = SwapBytes ( headernii.pixdim[ 3 ],     swap );
+        pixdim[ 4 ] = SwapBytes ( headernii.pixdim[ 4 ],     swap );
 
 //      xyzt_units  = SwapBytes ( headernii.xyzt_units,      swap );
 
@@ -491,6 +493,9 @@ if ( GetDocPath () ) {
         RealSize.Y      = filedim2;
         RealSize.Z      = filedim3;
         }
+
+                                        // for later:
+    //double          SamplingFrequency   = pixdim[ 4 ] > 0 ? 1 / pixdim[ 4 ] : 0;
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

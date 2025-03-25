@@ -172,6 +172,7 @@ public:
     int             NumDimensions;      // 3 or 4
     TVector3Int     Dimension;          // dimensions in voxels
     int             NumTimeFrames;      // dimension in time frames
+    double          SamplingFrequency;  // for the 4th dimension
     TVector3Double  VoxelSize;          // size of 1 voxel
     TVector3Double  RealSize;           // in [mm]
     TPointDouble    Origin;             // in voxel, Origin = -Translation

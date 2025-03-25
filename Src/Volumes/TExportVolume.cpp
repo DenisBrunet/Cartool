@@ -89,6 +89,7 @@ ClearString ( Type );
 NumDimensions       = 3;                //!set to 3 for usual cases!
 Dimension           = 0;
 NumTimeFrames       = 1;                // !set to 1 for usual cases!
+SamplingFrequency   = 0;
 
 VoxelSize.Reset ();
 RealSize .Reset ();
@@ -278,7 +279,7 @@ if      ( StringIs ( Type, FILEEXT_MRIAVW_HDR  ) ) {
     hout.dime.pixdim[ 1 ]   = VoxelSize.X;
     hout.dime.pixdim[ 2 ]   = VoxelSize.Y;
     hout.dime.pixdim[ 3 ]   = VoxelSize.Z;
-    hout.dime.pixdim[ 4 ]   = IsSequence () ? 1 : 0;
+    hout.dime.pixdim[ 4 ]   = IsSequence () && SamplingFrequency > 0 ? 1 / SamplingFrequency : 0;
 
 
     hout.dime.vox_offset    = 0;        // offset of voxels inside .img
@@ -366,7 +367,8 @@ else if ( StringIs ( Type, FILEEXT_MRINII  ) ) {
     headernii.pixdim[ 1 ]   = VoxelSize.X;
     headernii.pixdim[ 2 ]   = VoxelSize.Y;
     headernii.pixdim[ 3 ]   = VoxelSize.Z;
-    headernii.pixdim[ 4 ]   = IsSequence () ? 1 : 0;
+    headernii.pixdim[ 4 ]   = IsSequence () && SamplingFrequency > 0 ? 1 / SamplingFrequency : 0;
+    headernii.toffset       = 0;        // starting from 0 for the moment
 
                                         // a priori, we work in [mm]
     headernii.xyzt_units    = SPACE_TIME_TO_XYZT ( ExportVolumeSpaceUnits, ExportVolumeTimeUnits );
@@ -414,8 +416,7 @@ else if ( StringIs ( Type, FILEEXT_MRINII  ) ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 else if ( StringIs ( Type, FILEEXT_MRIAVS ) ) {
-                                        // write header
-                                        // see: http://help.avs.com/Express/doc/help/books/dv/dvfdtype.html
+                                        // write header for AVS Express
     *of << "# AVS field file"        << fastendl;
     *of << "# " << ExportedByCartool << fastendl;
                                         // has some orientation info to sneak in?

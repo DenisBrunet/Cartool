@@ -169,8 +169,9 @@ if ( GetDocPath () ) {
                         pixdim[ 1 ]     = SwapBytes ( hin.dime.pixdim[ 1 ],   swap );
                         pixdim[ 2 ]     = SwapBytes ( hin.dime.pixdim[ 2 ],   swap );
                         pixdim[ 3 ]     = SwapBytes ( hin.dime.pixdim[ 3 ],   swap );
-    double              spmslope        = SwapBytes ( hin.dime.funused1,      swap );    // non-standard, SPM extension
-    double              spminter        = SwapBytes ( hin.dime.funused2,      swap );    // non-standard, SPM extension
+                        pixdim[ 4 ]     = SwapBytes ( hin.dime.pixdim[ 4 ],   swap );   // non-standard, but reasonable
+    double              spmslope        = SwapBytes ( hin.dime.funused1,      swap );   // non-standard, SPM extension
+    double              spminter        = SwapBytes ( hin.dime.funused2,      swap );   // non-standard, SPM extension
                                         // this seems to be short int
     double              org1            = SwapBytes ( (short int) ( (uchar) hin.hist.originator[ 0 ] | ( (uchar) hin.hist.originator[ 1 ] << 8 ) ), swap );
     double              org2            = SwapBytes ( (short int) ( (uchar) hin.hist.originator[ 2 ] | ( (uchar) hin.hist.originator[ 3 ] << 8 ) ), swap );
@@ -271,6 +272,9 @@ if ( GetDocPath () ) {
         RealSize.Y      = filedim2;
         RealSize.Z      = filedim3;
         }
+
+                                        // for later:
+    //double          SamplingFrequency   = pixdim[ 4 ] > 0 ? 1 / pixdim[ 4 ] : 0;
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -204,6 +204,7 @@ expvol.Dimension.X          = volsize->GetXExtent ();
 expvol.Dimension.Y          = volsize->GetYExtent ();
 expvol.Dimension.Z          = volsize->GetZExtent ();
 expvol.NumTimeFrames        = outputn3d ? 1 : numsavedblocks;
+expvol.SamplingFrequency    = outputn3d ? 0 : ris.GetSamplingFrequency () / NonNull ( steptf ); // adjust the resulting sampling frequency
 
 expvol.VoxelSize            = mrigrey->GetVoxelSize ();
 
