@@ -166,6 +166,7 @@ if ( GetDocPath () ) {
     char*               descrip;
     int                 datatype        = NIFTI_TYPE_UNKNOWN;
     double              pixdim  [ 8 ];
+    double              toffset;
 //  int                 xyzt_units;
     double              scl_slope;      // y = scl_slope * x + scl_inter
     double              scl_inter;
@@ -211,6 +212,7 @@ if ( GetDocPath () ) {
         pixdim[ 2 ] = SwapBytes ( headernii.pixdim[ 2 ],     swap );
         pixdim[ 3 ] = SwapBytes ( headernii.pixdim[ 3 ],     swap );
         pixdim[ 4 ] = SwapBytes ( headernii.pixdim[ 4 ],     swap );
+        toffset     = SwapBytes ( headernii.toffset,         swap );
 
 //      xyzt_units  = SwapBytes ( headernii.xyzt_units,      swap );
 
@@ -270,6 +272,7 @@ if ( GetDocPath () ) {
         pixdim[ 2 ] = SwapBytes ( headernii.pixdim[ 2 ],     swap );
         pixdim[ 3 ] = SwapBytes ( headernii.pixdim[ 3 ],     swap );
         pixdim[ 4 ] = SwapBytes ( headernii.pixdim[ 4 ],     swap );
+        toffset     = SwapBytes ( headernii.toffset,         swap );
 
 //      xyzt_units  = SwapBytes ( headernii.xyzt_units,      swap );
 
@@ -496,6 +499,7 @@ if ( GetDocPath () ) {
 
                                         // for later:
     //double          SamplingFrequency   = pixdim[ 4 ] > 0 ? 1 / pixdim[ 4 ] : 0;
+    //double          TimeOrigin          = toffset;
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

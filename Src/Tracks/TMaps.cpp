@@ -1434,6 +1434,23 @@ return  maxvalue;
 }
 
 
+TMapAtomType    TMaps::GetAbsMaxValue ( int from, int to ) const
+{
+if ( IsNotAllocated () || ! IsInsideLimits ( from, to, 0, NumMaps - 1 ) )
+    return  0;
+
+
+TMapAtomType    maxvalue        = Maps[ from ].GetAbsMaxValue ();
+
+for ( int nc = from + 1; nc <= to; nc++ )
+
+    crtl::Maxed ( maxvalue, Maps[ nc ].GetAbsMaxValue () );
+
+
+return  maxvalue;
+}
+
+
 TMapAtomType    TGoMaps::GetAbsMaxValue () const
 {
 TMapAtomType    maxvalue        = 0;

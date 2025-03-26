@@ -79,33 +79,35 @@ End ();
                                         // Some fields are not resetted to allow multiple calls with the same TExportVolume object - These fields are reset in the creator, though
 void    TExportVolume::Reset ()
 {
-End ();
+End ();                                 // will take care of stream 'of'
 
 
 Filename.Reset ();
 ClearString ( Type );
-                                        // NOT resetting VolumeFormat
+                                        // !NOT resetting VolumeFormat!
 
-NumDimensions       = 3;                //!set to 3 for usual cases!
+NumDimensions       = 3;                // !set to 3 for most usual cases!
 Dimension           = 0;
-NumTimeFrames       = 1;                // !set to 1 for usual cases!
+NumTimeFrames       = 1;                // !set to 1 for most usual cases!
 SamplingFrequency   = 0;
 
 VoxelSize.Reset ();
 RealSize .Reset ();
+
 Origin   .Reset ();
+TimeOrigin          = 0;
 
 ClearString ( Orientation, 4 );
-
 MaxValue            = 0;
-RescalingToInteger  = 1;                // default is no rescaling factor
-                                        // Not resetting these Nifti options:  NiftiTransform, NiftiIntentCode, NiftiIntentParameters, NiftiIntentName
 
-                                        // internal variables
+                                        // !NOT resetting these Nifti options:  NiftiTransform, NiftiIntentCode, NiftiIntentParameters, NiftiIntentName!
+
+                                        // private fields
 DoneBegin           = false;
 EndOfHeader         = 0;
 CurrentPosition     = 0;
 AtomSize            = 1;
+RescalingToInteger  = 1;
 }
 
 
@@ -259,7 +261,7 @@ if      ( StringIs ( Type, FILEEXT_MRIAVW_HDR  ) ) {
     hout.hk.regular         = 'r';
 
 
-    StringCopy ( hout.hk.db_name, "Cartool" );
+    StringCopy ( hout.hk.db_name,   CartoolTitle );
     StringCopy ( hout.hist.descrip, ExportedByCartool );
 
                                         // has some orientation info to sneak in (& enough space)?
@@ -279,7 +281,7 @@ if      ( StringIs ( Type, FILEEXT_MRIAVW_HDR  ) ) {
     hout.dime.pixdim[ 1 ]   = VoxelSize.X;
     hout.dime.pixdim[ 2 ]   = VoxelSize.Y;
     hout.dime.pixdim[ 3 ]   = VoxelSize.Z;
-    hout.dime.pixdim[ 4 ]   = IsSequence () && SamplingFrequency > 0 ? 1 / SamplingFrequency : 0;
+    hout.dime.pixdim[ 4 ]   = SamplingFrequency > 0 ? 1 / SamplingFrequency : 0;    // write even if single time point
 
 
     hout.dime.vox_offset    = 0;        // offset of voxels inside .img
@@ -304,7 +306,7 @@ if      ( StringIs ( Type, FILEEXT_MRIAVW_HDR  ) ) {
     of->write ( (char *) &hout, sizeof ( hout ) );
 
 
-                                        // finished with header
+                                        // done writing header
     of->close ();
     delete  of;
     of  = 0;
@@ -367,8 +369,8 @@ else if ( StringIs ( Type, FILEEXT_MRINII  ) ) {
     headernii.pixdim[ 1 ]   = VoxelSize.X;
     headernii.pixdim[ 2 ]   = VoxelSize.Y;
     headernii.pixdim[ 3 ]   = VoxelSize.Z;
-    headernii.pixdim[ 4 ]   = IsSequence () && SamplingFrequency > 0 ? 1 / SamplingFrequency : 0;
-    headernii.toffset       = 0;        // starting from 0 for the moment
+    headernii.pixdim[ 4 ]   = SamplingFrequency > 0 ? 1 / SamplingFrequency : 0;    // write even if single time point
+    headernii.toffset       = TimeOrigin;                                           // same
 
                                         // a priori, we work in [mm]
     headernii.xyzt_units    = SPACE_TIME_TO_XYZT ( ExportVolumeSpaceUnits, ExportVolumeTimeUnits );

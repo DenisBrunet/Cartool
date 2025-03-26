@@ -168,14 +168,17 @@ public:
     char            Type        [ ExportTypeSize ];
     AtomFormatType  VolumeFormat;
 
-
     int             NumDimensions;      // 3 or 4
     TVector3Int     Dimension;          // dimensions in voxels
     int             NumTimeFrames;      // dimension in time frames
     double          SamplingFrequency;  // for the 4th dimension
+
     TVector3Double  VoxelSize;          // size of 1 voxel
     TVector3Double  RealSize;           // in [mm]
+
     TPointDouble    Origin;             // in voxel, Origin = -Translation
+    double          TimeOrigin;         // Relative time of first volume in case of sequences (used only in Nifti)
+
     char            Orientation [ 4 ];  // 3 optional chars that tells the axis meaning (like SAR, PIR...)
     double          MaxValue;           // Better be set before calling Begin
 

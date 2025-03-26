@@ -209,6 +209,7 @@ public:
     TMapAtomType    GetMinValue                 ()                                                  const;
     TMapAtomType    GetMaxValue                 ()                                                  const;
     TMapAtomType    GetAbsMaxValue              ()                                                  const;
+    TMapAtomType    GetAbsMaxValue              ( int from, int to )                                const;
     void            GetNullElectrodes           ( TSelection& sel )                                 const;
     bool            IsZScorePositiveShifted     ()                                                  const;
     void            Mean                        ( int frommap, int tomap, TMap& avgmap )            const;

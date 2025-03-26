@@ -82,6 +82,10 @@ else if ( IsFileTypeAnalyze ( filetype ) )      StringCopy  ( fileext, FILEEXT_M
 else                                            StringCopy  ( fileext, DefaultMriExt        );
 
 bool                outputn3d       = IsFileTypeN3D ( filetype );
+bool                outputn4d       = IsFileType4D  ( filetype );
+
+if ( ! ( outputn3d || outputn4d ) )
+    return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -126,6 +130,7 @@ int                 kernelradiusi   = 0;
 if ( IsSolutionPointsScan ( interpol ) ) {
 
     weights.Resize ( grey.GetDim1 (), grey.GetDim2 (), grey.GetDim3 () );
+
     points  = spdoc->GetPoints ( DisplaySpace3D );
 
 
@@ -199,12 +204,12 @@ TExportVolume               expvol;
 
 expvol.VolumeFormat         = atomformat;
 
-expvol.NumDimensions        = outputn3d ? 3 : 4;
+expvol.NumDimensions        = outputn4d ? 4              : 3;
 expvol.Dimension.X          = volsize->GetXExtent ();
 expvol.Dimension.Y          = volsize->GetYExtent ();
 expvol.Dimension.Z          = volsize->GetZExtent ();
-expvol.NumTimeFrames        = outputn3d ? 1 : numsavedblocks;
-expvol.SamplingFrequency    = outputn3d ? 0 : ris.GetSamplingFrequency () / NonNull ( steptf ); // adjust the resulting sampling frequency
+expvol.NumTimeFrames        = outputn4d ? numsavedblocks : 1;
+expvol.SamplingFrequency    = ris.GetSamplingFrequency () / NonNull ( steptf ); // adjust the resulting sampling frequency
 
 expvol.VoxelSize            = mrigrey->GetVoxelSize ();
 
@@ -214,8 +219,6 @@ expvol.Origin               = mrigrey->GetOrigin ();
 
 //if ( MRIDoc->HasKnownOrientation () ) // always saving orientation?
     mrigrey->OrientationToString ( expvol.Orientation );
-                                        // no method will overshoot, ever
-expvol.MaxValue             = ris.GetAbsMaxValue ();
 
                                         // output volumes have the same space meaning as input volume
 expvol.NiftiTransform       = mrigrey->GetNiftiTransform ();
@@ -235,12 +238,16 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
                                         // current block TF range
     int     blockfromtf     = fromtf      + blocki * steptf;
     int     blocktotf       = blockfromtf +          steptf - 1;
+    bool    firstblock      = blocki == 0;
 
 
     if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
 
 
-    if ( outputn3d || blocki == 0 ) {
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // generate file name
+    if ( outputn3d 
+      || outputn4d && firstblock ) {
                                         // set current volume's file name
         StringCopy          ( expvol.Filename, risfile    );
         PrefixFilename      ( expvol.Filename, fileprefix );
@@ -264,6 +271,9 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
 
                                         // store current volume file
         volgof.Add          ( expvol.Filename );
+
+                                        // for each written volume, either 3D or 4D
+        expvol.TimeOrigin   = TimeFrameToSeconds ( blockfromtf, ris.GetSamplingFrequency () );  // current TF relative time
         }
 
 
@@ -275,20 +285,18 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+                                        // compute output volume according to the type of interpolation
     vol.ResetMemory ();
 
                                         // Solution points scan is longer and for linear and kernel interpolation cases
     if      ( IsSolutionPointsScan ( interpol ) ) {
 
-        weights.ResetMemory ();
-
-
         OmpParallelFor
 
         for ( int spi = 0; spi < points.GetNumPoints (); spi++ ) {
 
-            TPointFloat         sp          = points[ spi ];
+            TPointFloat         sp          = points    [ spi ];
+            double              spv         = meanrismap[ spi ];
 
             mrigrey->ToRel ( sp );
 
@@ -338,17 +346,23 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
                     }
 
 
+                //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // atomic because different solution points could write simultaneously on vol
                 OmpAtomic
-                vol     ( vox ) += w * meanrismap[ spi ];
+                vol     ( vox )     += w * spv; // spread current solution point value to neighbors
 
-                OmpAtomic
-                weights ( vox ) += w;
+                if ( firstblock ) {             // storing weights is needed only once
+                    OmpAtomic
+                    weights ( vox ) += w;       // keep count of all weights used at each voxel
+                    }
+
                 } // for kernel xki, yki, zki
 
             } // for solution point
 
 
-        vol    /= weights;              // cumulated weights applied for each voxel
+        vol    /= weights;              // rescale by each cumulated weights at each voxel
+
         } // IsSolutionPointsScan
 
 
@@ -367,7 +381,7 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
 
             TPointFloat     pvol;
 
-            vol.LinearIndexToXYZ ( li, pvol );
+            vol.LinearIndexToXYZ   ( li, pvol );
 
             mrigrey ->ToAbs            ( pvol );
 
@@ -411,7 +425,11 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // expvol.MaxValue is already set
+                                        // set optimal MaxValue - note that no method will overshoot, ever
+    if      ( outputn3d )               expvol.MaxValue     = vol.GetAbsMaxValue ();
+    else if ( outputn4d && firstblock ) expvol.MaxValue     = ris.GetAbsMaxValue ( fromtf, totf );  // not optimal when writing integers + IsSolutionPointsScan
+
+
     expvol.Write ( vol, ExportArrayOrderZYX );
 
     } // for blocki
