@@ -19,6 +19,7 @@ limitations under the License.
 
 #include    "Strings.Utils.h"
 #include    "Files.TGoF.h"
+#include    "Files.TVerboseFile.h"
 #include    "Dialogs.TSuperGauge.h"
 #include    "TVolume.h"
 #include    "TWeightedPoints.h"
@@ -46,7 +47,7 @@ void    RisToVolume (
                     AtomFormatType          atomformat,     
                     RisToVolumeFileType     filetype,       const char*     fileprefix,
                     TGoF&                   volgof,
-                    TSuperGauge*            gauge
+                    bool                    silent
                     )
 
 {
@@ -86,6 +87,25 @@ bool                outputn4d       = IsFileType4D  ( filetype );
 
 if ( ! ( outputn3d || outputn4d ) )
     return;
+
+
+                                        // force silent if not in interactive mode
+if ( ! silent && CartoolObjects.CartoolApplication->IsNotInteractive () )
+    silent  = true;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TSuperGauge         Gauge;
+
+if ( ! silent ) {
+
+    Gauge.Set           ( RisToVolumeTitle, SuperGaugeLevelInter );
+                                            // we don't know how many TF to actually save - but we give it 100% of progress bar
+    Gauge.AddPart       ( 0, 100 );
+
+    CartoolObjects.CartoolApplication->SetMainTitle ( RisToVolumeTitle, risfile, Gauge );
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -149,7 +169,7 @@ if ( IsSolutionPointsScan ( interpol ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // reading ris file
-if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
+Gauge.Next ( 0, SuperGaugeUpdateTitle );
 
                                         // It could also be a TRisDoc*, and reading only the blocks needed...
 TMaps               ris;
@@ -193,7 +213,8 @@ if ( steptf == 1 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( gauge )    gauge->SetRange ( -1, numsavedblocks + 1 );
+if ( ! silent )
+    Gauge.SetRange ( 0, numsavedblocks + 1 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -229,6 +250,75 @@ StringCopy  ( expvol.NiftiIntentName, NiftiIntentNameRis );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TFileName           BaseDir;
+TFileName           BaseFileName;
+TFileName           prefix;
+TFileName           VerboseFile;
+
+                                        // use first file directory as the base directory
+StringCopy      ( BaseDir,                  risfile );
+RemoveFilename  ( BaseDir );
+
+
+if ( StringIsNotEmpty ( fileprefix ) )
+    StringCopy  ( prefix, fileprefix, "." );
+
+
+StringCopy      ( BaseFileName,             BaseDir,                "\\",               prefix );
+
+StringCopy      ( VerboseFile,              BaseFileName,           "RIS To Volume",    "." FILEEXT_VRB );
+CheckNoOverwrite( VerboseFile );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TVerboseFile    verbose ( VerboseFile, VerboseFileDefaultWidth );
+
+verbose.PutTitle ( "Results of Inverse Solution To Volumes" );
+
+
+
+verbose.NextTopic ( "Input Files:" );
+{
+verbose.Put ( "Solution Points file:",  spdoc->GetDocPath () );
+verbose.Put ( "MRI Grey Mask file:",    mrigrey->GetDocPath () );
+verbose.Put ( "RIS file:",              risfile );
+}
+
+
+verbose.NextTopic ( "Volume Parameters:" );
+{
+verbose.Put ( "Using interpolation:", VolumeInterpolationPresetString[ interpol ] );
+//verbose.Put ( "Using interpolation:", SPInterpolationTypeNames[ spinterpol ] );
+}
+
+
+verbose.NextTopic ( "Time Parameters:" );
+{
+verbose.Put ( "From     [TF]:", fromtf );
+verbose.Put ( "To       [TF]:", totf );
+verbose.Put ( "By steps [TF]:", steptf );
+verbose.Put ( "Number of blocks written:", numsavedblocks );
+verbose.Put ( "Averaging each block:", merging == FilterTypeNone ? "None" : FilterPresets[ merging ].Ext /*Text*/ );
+}
+
+
+verbose.NextTopic ( "Output Files:" );
+{
+verbose.Put ( "Output data type:", AtomFormatTypePresets[ atomformat ].Text );
+verbose.Put ( "Output format:", VolumeFileTypeString[ filetype ] );
+verbose.Put ( "Output dimensions:", IsFileTypeN3D ( filetype ) ? 3 : 4 );
+
+verbose.NextLine ();
+verbose.Put ( "Verbose file (this):", VerboseFile );
+}
+
+
+verbose.Flush ();
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // OK, can start the real job now
 TMap                meanrismap  ( ris.GetDimension () );
 
@@ -241,7 +331,7 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
     bool    firstblock      = blocki == 0;
 
 
-    if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
+    Gauge.Next ( 0, SuperGaugeUpdateTitle );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -250,7 +340,7 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
       || outputn4d && firstblock ) {
                                         // set current volume's file name
         StringCopy          ( expvol.Filename, risfile    );
-        PrefixFilename      ( expvol.Filename, fileprefix );
+        PrefixFilename      ( expvol.Filename, prefix );
         RemoveExtension     ( expvol.Filename );
 
         if ( outputn3d ) {
@@ -435,7 +525,33 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
     } // for blocki
 
 
-if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // final verbose output files
+{
+verbose.NextLine ();
+
+
+verbose.Put ( "Number of volumes files:", volgof.NumFiles () );
+
+for ( int fi = 0; fi < volgof.NumFiles (); fi++ )
+    verbose.Put ( "", volgof[ fi ] );
+
+
+verbose.NextLine ();
+}
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( ! silent ) {
+
+    Gauge.FinishParts ();
+
+    //CartoolObjects.CartoolApplication->SetMainTitle ( RisToVolumeTitle, volgof[ 0 ], Gauge );
+
+    UpdateApplication;
+    }
+
 }
 
 

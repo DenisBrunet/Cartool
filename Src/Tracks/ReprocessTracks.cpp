@@ -879,6 +879,7 @@ TSuperGauge         Gauge;
 if ( ! silent ) {
 
     Gauge.Set           ( ExportTracksTitle );
+
     Gauge.AddPart       ( 0, outtimenum );
 
     CartoolObjects.CartoolApplication->SetMainTitle ( "Exporting", EEGDoc->GetDocPath (), Gauge );

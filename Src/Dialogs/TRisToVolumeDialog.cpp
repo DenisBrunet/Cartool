@@ -21,7 +21,6 @@ limitations under the License.
 
 #include    "Strings.Grep.h"
 #include    "Files.Utils.h"
-#include    "Files.TVerboseFile.h"
 #include    "Dialogs.Input.h"
 #include    "Dialogs.TSuperGauge.h"
 
@@ -766,22 +765,10 @@ if ( ! ( EEGDoc && SPDoc.IsOpen () && GreyMaskDoc.IsOpen () ) )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Create gauge before the interpolation, so that we can see all progress bars opening in the right sequence
-TSuperGauge         Gauge;
-
-Gauge.Set           ( RisToVolumeTitle, SuperGaugeLevelInter );
-                                        // we don't know how many TF to actually save - but we give it 100% of progress bar
-Gauge.AddPart       ( 0, 100 );
-
-Gauge.CurrentPart   = 0;
-
 
 if ( IsBatchFirstCall () && (int) BatchFileNames > 10 )
                                         // batch can be long, hide Cartool until we are done
     WindowMinimize ( CartoolMainWindow );
-
-
-CartoolApplication->SetMainTitle ( RisToVolumeTitle, EEGDoc->GetDocPath (), Gauge );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -860,76 +847,14 @@ bool                openauto        = CheckToBool ( RisToVolumeTransfer.OpenAuto
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           BaseDir;
-TFileName           BaseFileName;
 TFileName           fileprefix;
-TFileName           VerboseFile;
-TFileName           CentroidsFile;
-//char                buff[ 256 ];
-
-                                        // use first file directory as the base directory
-StringCopy      ( BaseDir,                  EEGDoc->GetDocPath () );
-RemoveFilename  ( BaseDir );
-
 
 StringCopy      ( fileprefix, RisToVolumeTransfer.BaseFileName );
 
-if ( StringIsNotEmpty ( fileprefix ) )
-    StringAppend ( fileprefix, "." );
-
-
-StringCopy      ( BaseFileName,             BaseDir,                "\\",               fileprefix );
-
-StringCopy      ( VerboseFile,              BaseFileName,           "RIS To Volume",    "." FILEEXT_VRB );
-CheckNoOverwrite( VerboseFile );
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TVerboseFile    verbose ( VerboseFile, VerboseFileDefaultWidth );
-
-verbose.PutTitle ( "Results of Inverse Solution To Volumes" );
-
-
-
-verbose.NextTopic ( "Input Files:" );
-{
-verbose.Put ( "Solution Points file:", SPDoc->GetDocPath () );
-verbose.Put ( "MRI Grey Mask file:", GreyMaskDoc->GetDocPath () );
-verbose.Put ( "RIS file:", EEGDoc->GetDocPath () );
-}
-
-
-verbose.NextTopic ( "Volume Parameters:" );
-{
-verbose.Put ( "Using interpolation:", VolumeInterpolationPresetString[ interpol ] );
-//verbose.Put ( "Using interpolation:", SPInterpolationTypeNames[ spinterpol ] );
-}
-
-
-verbose.NextTopic ( "Time Parameters:" );
-{
-verbose.Put ( "Saving time range:", timeall ? "All Data" : "Time Interval" );
-verbose.Put ( "From     [TF]:", fromtf );
-verbose.Put ( "To       [TF]:", totf );
-verbose.Put ( "By steps [TF]:", steptf );
-verbose.Put ( "Number of blocks written:", numsavedblocks );
-verbose.Put ( "Averaging each block:", merging == FilterTypeNone ? "None" : FilterPresets[ merging ].Ext /*Text*/ );
-}
-
-
-verbose.NextTopic ( "Output Files:" );
-{
-verbose.Put ( "Output data type:", AtomFormatTypePresets[ atomformat ].Text );
-verbose.Put ( "Output format:", VolumeFileTypeString[ filetype ] );
-verbose.Put ( "Output dimensions:", IsFileTypeN3D ( filetype ) ? 3 : 4 );
-
-verbose.NextLine ();
-verbose.Put ( "Verbose file (this):", VerboseFile );
-}
-
-
-verbose.Flush ();
+                                        // silencing in these cases
+bool                silent              = false; // NumBatchFiles () > 1;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -948,7 +873,7 @@ RisToVolume (   EEGDoc->GetDocPath (),
                 atomformat,             
                 filetype,           fileprefix,
                 volgof,
-                &Gauge
+                silent
             );
 
 
@@ -956,20 +881,6 @@ RisToVolume (   EEGDoc->GetDocPath (),
                                         // complimentary opening the file for the user
 if ( openauto && ( ! BatchProcessing || (int) BatchFileNames <= 10 ) )
     volgof.OpenFiles ();
-
-                                        // final verbose output files
-{
-verbose.NextLine ();
-
-
-verbose.Put ( "Number of volumes files:", volgof.NumFiles () );
-
-for ( int fi = 0; fi < volgof.NumFiles (); fi++ )
-    verbose.Put ( "", volgof[ fi ] );
-
-
-verbose.NextLine ();
-}
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -981,19 +892,10 @@ UpdateApplication;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( IsBatchLastCall () ) {
+if ( IsBatchLastCall () )
 
     WindowMaximize ( CartoolMainWindow );
 
-    Gauge.FinishParts ();
-    CartoolApplication->SetMainTitle ( RisToVolumeTitle, fileprefix, Gauge );
-
-    Gauge.HappyEnd ();
-    }
-
-
-//if ( ! BatchProcessing )
-//    Gauge.HappyEnd ();
 }
 
 

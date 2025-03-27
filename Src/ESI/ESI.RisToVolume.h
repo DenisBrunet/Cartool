@@ -40,7 +40,7 @@ void    RisToVolume (
                     AtomFormatType          atomformat,     
                     RisToVolumeFileType     filetype,       const char*     fileprefix,
                     TGoF&                   volgof,
-                    TSuperGauge*            gauge
+                    bool                    silent
                     );
 
 
