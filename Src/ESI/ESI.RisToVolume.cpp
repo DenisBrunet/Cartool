@@ -251,23 +251,18 @@ StringCopy  ( expvol.NiftiIntentName, NiftiIntentNameRis );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           BaseDir;
 TFileName           BaseFileName;
-TFileName           prefix;
 TFileName           VerboseFile;
-
-                                        // use first file directory as the base directory
-StringCopy      ( BaseDir,                  risfile );
-RemoveFilename  ( BaseDir );
+char                buff[ 256 ];
 
 
+StringCopy      ( BaseFileName, risfile );
+RemoveExtension ( BaseFileName );
 if ( StringIsNotEmpty ( fileprefix ) )
-    StringCopy  ( prefix, fileprefix, "." );
+    PrefixFilename  ( BaseFileName, StringCopy ( buff, fileprefix, "." ) );
 
 
-StringCopy      ( BaseFileName,             BaseDir,                "\\",               prefix );
-
-StringCopy      ( VerboseFile,              BaseFileName,           "RIS To Volume",    "." FILEEXT_VRB );
+StringCopy      ( VerboseFile,              BaseFileName,           "." "RIS To Volume",    "." FILEEXT_VRB );
 CheckNoOverwrite( VerboseFile );
 
 
@@ -339,9 +334,7 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
     if ( outputn3d 
       || outputn4d && firstblock ) {
                                         // set current volume's file name
-        StringCopy          ( expvol.Filename, risfile    );
-        PrefixFilename      ( expvol.Filename, prefix );
-        RemoveExtension     ( expvol.Filename );
+        StringCopy          ( expvol.Filename,      BaseFileName );
 
         if ( outputn3d ) {
             StringAppend        ( expvol.Filename, ".TF", IntegerToString ( blockfromtf,    NumIntegerDigits ( lasttimeframes ) ) );

@@ -89,8 +89,8 @@ if ( reprocsub == 0 )
                                         // Parameters appearance follow the dialog's visual design
 DefineCLIOptionString   ( reprocsub,        "",     __tracks,               "Tracks to export" Tab Tab Tab Tab "Special values: * gfp dis avg" );
 
-DefineCLIOptionString   ( reprocsub,        "",     __xyzfile,              "Using electrodes names from a XYZ electrodes coordinates file" );
-DefineCLIOptionString   ( reprocsub,        "",     __roisfile,             "Computing ROIs & using ROIs names from a ROIs file" );
+DefineCLIOptionFile     ( reprocsub,        "",     __xyzfile,              "Using electrodes names from a XYZ electrodes coordinates file" );
+DefineCLIOptionFile     ( reprocsub,        "",     __roisfile,             "Computing ROIs & using ROIs names from a ROIs file" );
 
 ExcludeCLIOptions       ( reprocsub,        __xyzfile,      __roisfile );
 
@@ -173,10 +173,9 @@ DefineCLIFlag           ( reprocsub,        "",     __harmonics,            "Add
 NeedsCLIOption          ( reprocsub,        __harmonics,    __notches );
 
 
-DefineCLIOptionString   ( reprocsub,        "",     __spatialfilter,        "Spatial filter" );
+DefineCLIOptionEnum     ( reprocsub,        "",     __spatialfilter,        "Spatial filter" );
 NeedsCLIOption          ( reprocsub,        __spatialfilter,    __xyzfile )
                                             // Case sensitive, but allows a nice listing when requesting Help
-->TypeOfOption          ( "ENUM" )
 ->DefaultString         ( SpatialFilterShortName[ SpatialFilterDefault ] )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( SpatialFilterShortName + SpatialFilterOutlier, SpatialFilterShortName + NumSpatialFilterTypes ) ) )
                                             // Allowing for case insensitive (and even the long names, although not advertized), but Help is not helping
@@ -190,8 +189,7 @@ NeedsCLIOption          ( reprocsub,        __spatialfilter,    __xyzfile )
 
 DefineCLIFlag           ( reprocsub,        "",     __ranking,              "Ranking data at each time point to [0..1] range" );
 
-DefineCLIOptionString   ( reprocsub,        "",     __rectification,        "Rectification, i.e. making data all positive" )
-->TypeOfOption          ( "ENUM" )
+DefineCLIOptionEnum     ( reprocsub,        "",     __rectification,        "Rectification, i.e. making data all positive" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { "abs", "absolute", "power", "squared" } ) ) );
 
 DefineCLIOptionDouble   ( reprocsub,        "",     __envelope,             "Sliding-window smoothing after rectification (positive-only data), value in [ms]" );
@@ -231,8 +229,7 @@ DefineCLIOptionInt      ( reprocsub,        "",     __downsampling,         "Dow
 
 DefineCLIOptionString   ( reprocsub,        "",     __infix,                "Infix appended to the file name" );
 
-DefineCLIOptionString   ( reprocsub,        __ext,  __extension,            "Output file extension" )
-->TypeOfOption          ( "ENUM" )
+DefineCLIOptionEnum     ( reprocsub,        __ext,  __extension,            "Output file extension" )
 ->DefaultString         ( SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
 
@@ -260,16 +257,17 @@ if ( ! IsSubCommandUsed ( reprocsub )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Tracks parameters
-string              roisfile        = GetCLIOptionString ( reprocsub, __roisfile );
-string              xyzfile         = GetCLIOptionString ( reprocsub, __xyzfile  );
 
-TracksOptions       tracksoptions   = ! roisfile.empty () ? ProcessRois 
-                                    :                       ProcessTracks;
+TFileName           roisfile        = GetCLIOptionFile ( reprocsub, __roisfile );
+TFileName           xyzfile         = GetCLIOptionFile ( reprocsub, __xyzfile  );
+
+TracksOptions       tracksoptions   = roisfile.IsNotEmpty () ? ProcessRois 
+                                    :                          ProcessTracks;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Wraps everything for us: existing file name & opening doc
-TOpenDoc<TElectrodesDoc>    XYZDoc  ( xyzfile .c_str (), OpenDocHidden );
-TOpenDoc<TRoisDoc>          RoisDoc ( roisfile.c_str (), OpenDocHidden );
+TOpenDoc<TElectrodesDoc>    XYZDoc  ( xyzfile,  OpenDocHidden );
+TOpenDoc<TRoisDoc>          RoisDoc ( roisfile, OpenDocHidden );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -429,7 +427,7 @@ if ( HasCLIOption ( reprocsub, __notches ) ) {
 if ( HasCLIOption ( reprocsub, __spatialfilter )
   && HasCLIOption ( reprocsub, __xyzfile       ) ) {
 
-    altfilters.SpatialFilter    = TextToSpatialFilterType ( GetCLIOptionString ( reprocsub, __spatialfilter ).c_str () );
+    altfilters.SpatialFilter    = TextToSpatialFilterType ( GetCLIOptionEnum ( reprocsub, __spatialfilter ).c_str () );
 
     fp.SetSpatialFiltering ( XYZDoc->GetDocPath () );
     }
@@ -441,7 +439,7 @@ if ( HasCLIFlag ( reprocsub, __ranking ) )
 
 if ( HasCLIOption ( reprocsub, __rectification ) )
 
-    fp.SetRectification ( GetCLIOptionString ( reprocsub, __rectification ).c_str () );
+    fp.SetRectification ( GetCLIOptionEnum ( reprocsub, __rectification ).c_str () );
 
 if ( HasCLIOption ( reprocsub, __envelope ) ) {
 
@@ -520,7 +518,7 @@ int                 downsampleratio = timeoptions     == ExportTimeInterval
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              extension       = GetCLIOptionString ( reprocsub, __extension );
+string              extension       = GetCLIOptionEnum ( reprocsub, __extension );
 
 SavingEegFileTypes  filetype        = ExtensionToSavingEegFileTypes ( extension.c_str () );
 

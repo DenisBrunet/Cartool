@@ -18,6 +18,7 @@ limitations under the License.
 
 #include    "CLI/CLI.hpp"
 #include    "Strings.Utils.h"
+#include    "Files.TGoF.h"
 
 using namespace std;
 
@@ -88,15 +89,16 @@ return  name;
 
                                         // Special check for a given option
 #define                 CheckOption             check
+                                        // Side-effect is that the --help will also require any argument listed
+#define                 Required                required
 
 
 //----------------------------------------------------------------------------
                                         // None of these definition allocate nor make use of any variable
 inline CLI::Option*     DefineCLIFlag           ( CLI::App* app, const string name1, const string name2, const string& description )
 {
-return  app->add_flag ( CLIBuildOptionName ( name1, name2 ), description );
+return  app->add_flag   ( CLIBuildOptionName ( name1, name2 ), description );
 }
-
 
                                         // Defining options from scalar type
 inline CLI::Option*     DefineCLIOptionString   ( CLI::App* app, const string name1, const string name2, const string& description )
@@ -105,11 +107,27 @@ return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
         ->TypeOfOption          ( "TEXT" );
 }
 
+
+inline CLI::Option*     DefineCLIOptionEnum     ( CLI::App* app, const string name1, const string name2, const string& description )
+{
+return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
+        ->TypeOfOption          ( "ENUM" );
+}
+
+
+inline CLI::Option*     DefineCLIOptionFile     ( CLI::App* app, const string name1, const string name2, const string& description )
+{
+return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
+        ->TypeOfOption          ( "FILE" );
+}
+
+
 inline CLI::Option*     DefineCLIOptionInt      ( CLI::App* app, const string name1, const string name2, const string& description )
 {
 return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
         ->TypeOfOption          ( "INTEGER" );
 }
+
 
 inline CLI::Option*     DefineCLIOptionDouble   ( CLI::App* app, const string name1, const string name2, const string& description )
 {
@@ -118,6 +136,7 @@ return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
 }
 
 
+//----------------------------------------------------------------------------
                                         // Defining options from vectors type
 inline string                   AsManyString ( int howmany )  { return howmany == -1 ? "..." : ""; }
 inline  CLI::MultiOptionPolicy  AsManyPolicy ( int howmany )  { return howmany == -1 ? CLI::MultiOptionPolicy::TakeAll : CLI::MultiOptionPolicy::Throw; }
@@ -132,6 +151,27 @@ return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
         ->multi_option_policy   ( AsManyPolicy ( howmany ) );
 }
 
+
+inline CLI::Option*     DefineCLIOptionEnums    ( CLI::App* app, int howmany, const string name1, const string name2, const string& description )
+{
+return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
+        ->TypeOfOption          ( "ENUMS" + AsManyString ( howmany ) )
+        ->delimiter             ( ',' )
+        ->expected              ( howmany )
+        ->multi_option_policy   ( AsManyPolicy ( howmany ) );
+}
+
+
+inline CLI::Option*     DefineCLIOptionFiles    ( CLI::App* app, int howmany, const string name1, const string name2, const string& description )
+{
+return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
+        ->TypeOfOption          ( "FILES" + AsManyString ( howmany ) )
+        ->delimiter             ( ',' )
+        ->expected              ( howmany )
+        ->multi_option_policy   ( AsManyPolicy ( howmany ) );
+}
+
+
 inline CLI::Option*     DefineCLIOptionInts     ( CLI::App* app, int howmany, const string name1, const string name2, const string& description )
 {
 return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
@@ -140,6 +180,7 @@ return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
         ->expected              ( howmany )
         ->multi_option_policy   ( AsManyPolicy ( howmany ) );
 }
+
 
 inline CLI::Option*     DefineCLIOptionDoubles  ( CLI::App* app, int howmany, const string name1, const string name2, const string& description )
 {
@@ -155,31 +196,14 @@ return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
                                         // Retrieving options
 //----------------------------------------------------------------------------
 
-inline bool             HasCLIFlag              ( CLI::App* app, const string option )
-{
-return  (bool) GetCLIOption ( app, option )->count ();
-}
-
-inline bool             HasCLIOption            ( CLI::App* app, const string option )
-{
-return  (bool) GetCLIOption ( app, option )->count ();
-}
-
-inline string           GetCLIDefault           ( CLI::App* app, const string option )
-{
-return  GetCLIOption ( app, option )->get_default_str ();
-}
-
-inline bool             HasCLIDefault           ( CLI::App* app, const string option )
-{
-return  ! GetCLIDefault ( app, option ).empty ();   // this is how CLI11 knows if a default has been provided
-}
+inline bool             HasCLIFlag              ( CLI::App* app, const string option )  { return  (bool) GetCLIOption ( app, option )->count ();    }
+inline bool             HasCLIOption            ( CLI::App* app, const string option )  { return  (bool) GetCLIOption ( app, option )->count ();    }
+inline string           GetCLIDefault           ( CLI::App* app, const string option )  { return         GetCLIOption ( app, option )->get_default_str (); }
+inline bool             HasCLIDefault           ( CLI::App* app, const string option )  { return  ! GetCLIDefault ( app, option ).empty ();         }   // this is how CLI11 knows if a default has been provided
 
 
 //----------------------------------------------------------------------------
-
-                                        // not anymore // All missing options will return a default value according to their types: "" or 0
-                                        // If an option is mising, it will try to return the default value if it exists, otherwise it returns "" or 0 according to its type
+                                        // If an option is missing, it will try to return the default value if it exists, otherwise it returns "" or 0 according to its type
 inline string           GetCLIOptionString      ( CLI::App* app, const string option )
 {
 return  HasCLIOption  ( app, option )   ? GetCLIOption  ( app, option )->results ()[ 0 ]    // what user specified
@@ -206,34 +230,20 @@ else
 */
 }
 
-inline int              GetCLIOptionInt         ( CLI::App* app, const string option )
-{
-return  StringToInteger ( GetCLIOptionString ( app, option ).c_str () );    // empty string / option will convert to 0
-}
-
-inline double           GetCLIOptionDouble      ( CLI::App* app, const string option )
-{
-return  StringToDouble  ( GetCLIOptionString ( app, option ).c_str () );    // empty string / option will convert to 0
-}
+inline string           GetCLIOptionEnum        ( CLI::App* app, const string option )  { return                    GetCLIOptionString ( app, option );             }
+inline TFileName        GetCLIOptionFile        ( CLI::App* app, const string option )  { return  TFileName (       GetCLIOptionString ( app, option ).c_str (), TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) ); }  // nicely resolving any relative path
+inline int              GetCLIOptionInt         ( CLI::App* app, const string option )  { return  StringToInteger ( GetCLIOptionString ( app, option ).c_str () );  }   // empty string / option will convert to 0
+inline double           GetCLIOptionDouble      ( CLI::App* app, const string option )  { return  StringToDouble  ( GetCLIOptionString ( app, option ).c_str () );  }   // empty string / option will convert to 0
 
 
 //----------------------------------------------------------------------------
                                         // Vectors versions
                                         // Default values are not currently allowed
-inline vector<string>   GetCLIOptionStrings     ( CLI::App* app, const string option )
-{
-return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->results () : vector<string>();
-}
-
-inline vector<int>      GetCLIOptionInts        ( CLI::App* app, const string option )
-{
-return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->as<vector<int>> () : vector<int>();
-}
-
-inline vector<double>   GetCLIOptionDoubles     ( CLI::App* app, const string option )
-{
-return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->as<vector<double>> () : vector<double>();
-}
+inline vector<string>   GetCLIOptionStrings     ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->results ()            : vector<string>(); }
+inline vector<string>   GetCLIOptionEnums       ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->results ()            : vector<string>(); }
+inline TGoF             GetCLIOptionFiles       ( CLI::App* app, const string option )  { return  TGoF ( GetCLIOptionStrings ( app, option ), TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) ); } // nicely resolving all relative paths
+inline vector<int>      GetCLIOptionInts        ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->as<vector<int>> ()    : vector<int>();    }
+inline vector<double>   GetCLIOptionDoubles     ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->as<vector<double>> () : vector<double>(); }
 
 
 //----------------------------------------------------------------------------
@@ -250,22 +260,11 @@ for ( const auto* opt : group->get_options () )
 return  false;
 }
 
-inline bool             IsSubCommandUsed        ( const CLI::App* subcommand )
-{
-return  subcommand && *subcommand;  // true if sub-command has been invoked - to be more thorough, we could count options has in IsGroupUsed
-}
+inline bool             IsSubCommandUsed        ( const CLI::App* subcommand )          { return  subcommand && *subcommand; }  // true if sub-command has been invoked - to be more thorough, we could count options has in IsGroupUsed
 
 
-                                        // Retrieving group description
-inline string           GetCLIGroupDescription  ( const CLI::Option_group* group )
-{
-return  group /*IsGroupUsed ( group )*/ ? group->get_description () : string();
-}
-                                        // Retrieving option description
-inline string           GetCLIOptionDescription ( CLI::App* app, const string option )
-{
-return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->get_description () : string();
-}
+inline string           GetCLIGroupDescription  ( const CLI::Option_group* group )      { return  group /*IsGroupUsed ( group )*/ ? group->get_description () : string(); }
+inline string           GetCLIOptionDescription ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->get_description () : string(); }
 
 
 }

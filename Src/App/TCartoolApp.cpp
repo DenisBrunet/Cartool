@@ -41,6 +41,8 @@ limitations under the License.
 
 #include    "System.CLI11.h"
 #include    "ReprocessTracksCLI.h"
+#include    "RisToVolumeCLI.h"
+
 #include    "Volumes.AnalyzeNifti.h"
 #include    "Volumes.TTalairachOracle.h"
 #include    "Dialogs.Input.h"
@@ -675,6 +677,8 @@ constexpr char*     __reset             = "--reset";
 
 constexpr char*     __reprocesstracks   = "reprocesstracks";
 
+constexpr char*     __ristovolume       = "ristovolume";
+
 
 //----------------------------------------------------------------------------
                                         // Process command-line and init windows
@@ -705,8 +709,7 @@ DefineCLIFlag           ( toapp,                    "",     __version,          
 DefineCLIFlag           ( toapp,                    "",     __nosplash,             "No splash-screen" );
 
 
-DefineCLIOptionString   ( toapp,                    "",     __mainwindow,           "Main window initial state" )
-->TypeOfOption          ( "ENUM" )
+DefineCLIOptionEnum     ( toapp,                    "",     __mainwindow,           "Main window initial state" )
 ->DefaultString         ( DefaultWindowState == SW_SHOWMAXIMIZED ? __maximized : DefaultWindowState == SW_SHOWMINIMIZED ? __minimized : __normal )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __minimized, __maximized, __normal } ) ) );
 
@@ -714,8 +717,7 @@ DefineCLIOptionInts     ( toapp,            2,      "",     __mainwindowsize,   
 DefineCLIOptionInts     ( toapp,            2,      "",     __mainwindowpos,        "Main window position X,Y" );
 
 
-DefineCLIOptionStrings  ( toapp,           -1,      "",     __childwindow,          "Next child window state(s) "    Tab Tab "(could be repeated for each file)" )
-->TypeOfOption          ( "ENUMS" )
+DefineCLIOptionEnums    ( toapp,           -1,      "",     __childwindow,          "Next child window state(s) "    Tab Tab "(could be repeated for each file)" )
 ->DefaultString         ( __normal )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __minimized, __maximized, __normal } ) ) );
 
@@ -751,11 +753,18 @@ ReprocessTracksCLIDefine ( reprocsub );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Reprocess Tracks sub-command
+CLI::App*           ristovolsub     = app.add_subcommand ( __ristovolume, "Ris-To-Volume command" );
+
+RisToVolumeCLIDefine ( ristovolsub );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Positional options (not starting with '-')
                                         // Note that files list usually need to separated from other parameters with " -- ", like in "--<option>=<something> -- <file1> <file2> <file3>"
                                         // Absolute paths are recommended, though local path to current exe file will be resolved
-DefineCLIOptionStrings  ( toapp,           -1,      "",     __files,                "List of files" )
-->TypeOfOption          ( "" /*"FILENAMES"*/ );
+DefineCLIOptionFiles    ( toapp,           -1,      "",     __files,                "List of files" )
+->TypeOfOption          ( "" );         // bypassing default message, which is kind of ugly
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -778,7 +787,7 @@ catch ( const CLI::ParseError &e ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // For our own convenience, convert vector<string> files to TGoF, while also converting any relative path to absolute
-TGoF                gof ( GetCLIOptionStrings ( toapp, "files" ), TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) );
+TGoF                gof             = GetCLIOptionFiles ( toapp, __files );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -787,17 +796,19 @@ TGoF                gof ( GetCLIOptionStrings ( toapp, "files" ), TFilenameFlags
                                         // Options that will cause some EARLY EXIT of the program
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( HasCLIOption ( toapp,     __help ) // redefined NOT as a flag
-  || HasCLIFlag   ( regsub,    __help )
-  || HasCLIFlag   ( reprocsub, __help )
+if ( HasCLIOption ( toapp,       __help )   // redefined NOT as a flag
+  || HasCLIFlag   ( regsub,      __help )
+  || HasCLIFlag   ( reprocsub,   __help )
+  || HasCLIFlag   ( ristovolsub, __help )
    ) {
 
     string              showhelp        = GetCLIOptionString ( toapp, __help );
     string              helpmessage;
 
-    if      ( HasCLIFlag ( regsub,    __help ) )    helpmessage     = regsub   ->help ();   // register --help
-    else if ( HasCLIFlag ( reprocsub, __help ) )    helpmessage     = reprocsub->help ();   // reprocess --help
-    else if ( showhelp.empty ()                )    helpmessage     = app       .help ();   // General, top-level help message
+    if      ( HasCLIFlag ( regsub,      __help ) )  helpmessage     = regsub     ->help ();     // register    --help
+    else if ( HasCLIFlag ( reprocsub,   __help ) )  helpmessage     = reprocsub  ->help ();     // reprocess   --help
+    else if ( HasCLIFlag ( ristovolsub, __help ) )  helpmessage     = ristovolsub->help ();     // ristovolume --help
+    else if ( showhelp.empty ()                  )  helpmessage     = app         .help ();     // General, top-level help message
 
     else try {                          // try some specialized help message
                                         // there is no public method to test if a subcommand exists, so we need to try to access it and check for an exception...
@@ -850,6 +861,16 @@ if ( IsSubCommandUsed ( reprocsub ) ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( IsSubCommandUsed ( ristovolsub ) ) {
+
+    RisToVolumeCLI ( ristovolsub, gof );
+
+    exit ( 0 );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Options that will PROCEED with the program execution
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Splash screen does not seem to need the main window created, so put it early on for advertisement
@@ -869,9 +890,9 @@ if ( HasCLIOption ( toapp, __mainwindow     )
   || HasCLIOption ( toapp, __mainwindowpos  )
   || HasCLIOption ( toapp, __monitor        ) ) {
 
-    string              mw              = GetCLIOptionString    ( toapp, __mainwindow     );
-    bool                hasmwsize       = HasCLIOption          ( toapp, __mainwindowsize );
-    bool                hasmwpos        = HasCLIOption          ( toapp, __mainwindowpos  );
+    string              mw              = GetCLIOptionEnum  ( toapp, __mainwindow     );
+    bool                hasmwsize       = HasCLIOption      ( toapp, __mainwindowsize );
+    bool                hasmwpos        = HasCLIOption      ( toapp, __mainwindowpos  );
 
     if      ( mw == __maximized )       nCmdShow    = SW_SHOWMAXIMIZED;     // overriding main window state before creation
     else if ( mw == __minimized )       nCmdShow    = SW_SHOWMINIMIZED;
@@ -964,7 +985,7 @@ MDIClientRect   = CartoolMdiClient->GetClientRect ().Normalized ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Finally we can loop through the optional files
-if ( HasCLIOption ( toapp, "files" ) ) {
+if ( HasCLIOption ( toapp, __files ) ) {
 
     for ( int filei = 0; filei < (int) gof; filei++ ) {
                                         // Caller should quote file names that contains spaces
@@ -978,7 +999,7 @@ if ( HasCLIOption ( toapp, "files" ) ) {
                                         // If the number of options is less than the number of files, then the last values will be repeated
 
         bool                haschw          = HasCLIOption          ( toapp, __childwindow     );
-        vector<string>      chw             = GetCLIOptionStrings   ( toapp, __childwindow     );
+        vector<string>      chw             = GetCLIOptionEnums     ( toapp, __childwindow     );
         bool                haschwsize      = HasCLIOption          ( toapp, __childwindowsize );
         vector<int>         chwsize         = GetCLIOptionInts      ( toapp, __childwindowsize );
         bool                haschwpos       = HasCLIOption          ( toapp, __childwindowpos  );
