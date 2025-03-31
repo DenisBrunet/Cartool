@@ -256,6 +256,8 @@ enum            FilterParams
                 FilterParamBrainstemMethod          = 0,
                 FilterParamBrainstemVoxelSize       = 1,
 
+                FilterParamHeadCleanupVoxelSize     = 1,
+
                 FilterParamEnvelopeWidth    = 0,
                 };
 

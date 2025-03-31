@@ -290,6 +290,8 @@ for ( int i = 0; i < (int) getfiles; i++ ) {
     else if ( w == CM_HEADCLEANUP ) {
         Volume          volumecopy ( *mridoc->GetData () );
 
+        p ( FilterParamHeadCleanupVoxelSize  )  = voxelsize.Average ();
+
         volumecopy.Filter ( FilterTypeHeadCleanup, p, true /*! batchmode*/ );
 
         volumecopy.WriteFile    ( newfile, &mridoc->GetOrigin (), &voxelsize, &mridoc->GetRealSize (), orientation,

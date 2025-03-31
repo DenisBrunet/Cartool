@@ -38,7 +38,7 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-bool    Volume::HeadCleanup ( FctParams& /*params*/, bool showprogress )
+bool    Volume::HeadCleanup ( FctParams& params, bool showprogress )
 {
 if ( IsNotAllocated () )
     return  false;
@@ -50,11 +50,23 @@ TSuperGauge         Gauge ( FilterPresets[ FilterTypeHeadCleanup ].Text, showpro
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Algorithm control panel
+double              VoxelSize       = EstimateVoxelSize ( params ( FilterParamHeadCleanupVoxelSize ) );
+
+int                 ErodeDiameter   = AtLeast ( 1, Round ( 3 / VoxelSize ) );
+
+double              ExpandDiameter  = ErodeDiameter + AtLeast ( 1, Round ( 2 / VoxelSize ) );
+
+double              SoftenDiameter  = AtLeast ( 2.83, 4.0 / VoxelSize );
+
+FctParams           p;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 0) Get a mask of the full head
 Gauge.Next ();
 
 TVolume             headmask ( *this );
-FctParams           p;
 
 p ( FilterParamToMaskThreshold )     = GetBackgroundValue ();
 p ( FilterParamToMaskNewValue  )     = 1;
@@ -66,7 +78,7 @@ headmask.Filter ( FilterTypeToMask, p );
                                         // Keep biggest region, i.e. the head
 Gauge.Next ();
                                         // erode handsomely by safety
-p ( FilterParamDiameter )       = 3;
+p ( FilterParamDiameter )       = ErodeDiameter;
 headmask.Filter ( FilterTypeErode, p );
 
 
@@ -79,7 +91,7 @@ headmask.Filter ( FilterTypeKeepBiggestRegion, p );
                                         // Post-process mask:
 Gauge.Next ();
                                         // expand back + some more room
-p ( FilterParamDiameter )       = 3 + 2;
+p ( FilterParamDiameter )       = ExpandDiameter;
 headmask.Filter ( FilterTypeDilate, p );
 
 
@@ -91,7 +103,7 @@ headmask.Filter ( FilterTypeDilate, p );
                                         // soften the edge of mask - set in voxel size is OK
 Gauge.Next ();
 
-p ( FilterParamDiameter )     = 3.47;
+p ( FilterParamDiameter )       = SoftenDiameter;
 headmask.Filter ( FilterTypeGaussian, p );
 
 

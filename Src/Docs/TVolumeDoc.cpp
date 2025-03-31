@@ -1972,12 +1972,6 @@ else if ( filtertype == FilterTypeHistoEqualBrain ) {
     StringCopy  ( NiftiIntentName, NiftiIntentNameDefault );
     }
 
-else if ( filtertype == FilterTypeHeadCleanup ) {
-                                        // no parameters
-
-    StringCopy  ( NiftiIntentName, NiftiIntentNameDefault );
-    }
-
 else if ( filtertype == FilterTypeBiasField ) {
 
     p ( FilterParamBiasFieldRepeat )     = 1;
@@ -2149,16 +2143,23 @@ else if ( filtertype == FilterTypeSegmentWhite
         }
     }
 
-    else if ( filtertype == FilterTypeMaskToSolutionPoints ) {
+else if ( filtertype == FilterTypeMaskToSolutionPoints ) {
 
-                                        // init with 'this' - otherwise let BrainToSolutionPointsUI handle all other cases
-        TVolumeDoc*         braindoc        = IsBrain () ? this : 0;
-        TVolumeDoc*         greydoc         = IsMask  () ? this : 0;
+                                    // init with 'this' - otherwise let BrainToSolutionPointsUI handle all other cases
+    TVolumeDoc*         braindoc        = IsBrain () ? this : 0;
+    TVolumeDoc*         greydoc         = IsMask  () ? this : 0;
 
-        BrainToSolutionPointsUI ( braindoc, greydoc );
-                                        // volume has not been changed - leave now
-        return;
-        }
+    BrainToSolutionPointsUI ( braindoc, greydoc );
+                                    // volume has not been changed - leave now
+    return;
+    }
+
+else if ( filtertype == FilterTypeHeadCleanup ) {
+
+    p ( FilterParamHeadCleanupVoxelSize )   = VoxelSize.Mean ();
+
+    StringCopy  ( NiftiIntentName, NiftiIntentNameDefault );
+    }
 
 /*
 else if ( filtertype == FilterTypeResize ) {
