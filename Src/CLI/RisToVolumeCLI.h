@@ -81,9 +81,9 @@ NeedsCLIOption          ( ristovol,         __greyfile,     __spfile   );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionInt      ( ristovol,         "",     __timemin,              "Converting from Time Frame" );
-DefineCLIOptionInt      ( ristovol,         "",     __timemax,              "Converting to Time Frame" );
-DefineCLIOptionInt      ( ristovol,         "",     __timestep,             "Converting by Step Time Frames" );
+DefineCLIOptionInt      ( ristovol,         "",     __timemin,              "Converting from Time Frame (default 0)" );
+DefineCLIOptionInt      ( ristovol,         "",     __timemax,              "Converting to Time Frame (default End-Of-File)" );
+DefineCLIOptionInt      ( ristovol,         "",     __timestep,             "Converting by Step Time Frames (default 1)" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

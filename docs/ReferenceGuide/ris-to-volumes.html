@@ -1,7 +1,7 @@
 ﻿<HTML>
 
  <HEAD>
-  <TITLE>Results of Inverse Solutions to Volumes</TITLE>
+  <TITLE>Results of Inverse Solutions to Volume</TITLE>
 
   <meta content="en-us" http-equiv="Content-Language">
 
@@ -44,8 +44,7 @@
 	<object data="../cartool-menu.html" class="menu-iframe"></object>
 
          <H1>
-             Results of Inverse Solutions to Volumes
-         </H1>
+             Results of Inverse Solutions to Volume</H1>
          <P>
              &nbsp;
          </P>
@@ -69,7 +68,8 @@
              &nbsp;
          </P>
          <h5>
-             <a href="#dialog">RIS to Volumes Dialog</a><br>
+             <a href="#dialog"><em>RIS to Volume</em>, from the dialog</a><br>
+             <a href="#command-line"><em>RIS to Volume</em>, from the Command-Line Interface(CLI)</a><br>
              <A HREF="#technical-points-and-hints">Technical points &amp; hints</A>
          </h5>
          <h6>
@@ -85,8 +85,7 @@
              <a href="#results">Results</a>
          </h5>
          <H2>
-             <a name="dialog"></a>RIS to Volumes Dialog
-         </H2>
+             <a name="dialog"></a><em>RIS to Volume</em>, from the Dialog</H2>
          <p>
              Called from the&nbsp; <FONT FACE="Arial Black,Arial,Helvetica">
                  <A HREF="all-processings.html#tools">
@@ -138,7 +137,7 @@
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
                          <A NAME="dialog-grey-mask"></A>
-                         <a href="#grey-mask" name="dialog grey mask">Grey Mask File:</a>
+                         <a href="#grey-mask">Grey Mask File:</a>
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
@@ -428,6 +427,57 @@
              </tr>
          </TABLE>
          <H2>
+             <a name="command-line"></a><em>RIS to Volume</em>, from the Command-Line Interface 
+			 (CLI)</H2>
+         <P>
+             You can get the <em>RIS to Volume</em> subcommand full syntax with:</P>
+         <pre>cartool64.exe ristovolume --help</pre>
+         <P>
+             Which gives:
+         </P>
+         <pre>Ris-To-Volume command
+Usage: ristovolume [OPTIONS]
+
+Options:
+--spfile FILE Needs: --greyfile
+				Solution Points file (Required)
+--greyfile FILE Needs: --spfile
+				Grey Mask file (Required)
+--timemin INTEGER 		Converting from Time Frame (default 0)
+--timemax INTEGER 		Converting to Time Frame (default End-Of-File)
+--timestep INTEGER 		Converting by Step Time Frames (default 1)
+--interpolation ENUM:{1NN,4NN,linear,cubickernel}
+				Type of interpolation
+--prefix TEXT 			Output files optional prefix
+--file ENUM:{nifti,analyze} [nifti]
+				File format
+--type ENUM:{byte,float} [float]
+				Internal file type
+--dim ENUM:{3,4} [4] 		File dimensions
+-h,--help 			This message&nbsp;</pre>
+         <h4>
+             Examples:</h4>
+         <P>
+             Converting all time positions to a single 4D Nifti file:</P>
+         <pre>cartool64.exe ristovolume --spfile=MNI152.NlinAsym20.6926.6mm.spi --greyfile=MNI152.NlinAsym20.Grey.nii -- &lt;files1.ris&gt;</pre>
+         <P>
+             Converting a given time range only, to a single 4D Nifti file:
+         </P>
+         <pre>cartool64.exe ristovolume --spfile=MNI152.NlinAsym20.6926.6mm.spi --greyfile=MNI152.NlinAsym20.Grey.nii --timemin=10 --timemax=20 -- &lt;files1.ris&gt;</pre>
+         <P>
+             Converting the full time range, but only by steps of 200 time 
+			 frames:          </P>
+         <pre>ccartool64.exe ristovolume --spfile=MNI152.NlinAsym20.6926.6mm.spi --greyfile=MNI152.NlinAsym20.Grey.nii --timestep=200 -- &lt;files1.ris&gt;</pre>
+         <P>
+             Converting the full time range, but only by steps of 200 time 
+			 frames, to Nifti 3D &amp; byte storage files, and a file prefix:         </P>
+         <pre>cacartool64.exe ristovolume --spfile=MNI152.NlinAsym20.6926.6mm.spi --greyfile=MNI152.NlinAsym20.Grey.nii --timestep=200 --file=nifti --type=byte --dim=3 --prefix=MyPrefix -- &lt;files1.ris&gt;</pre>
+         <P>
+             Converting the full time range, but only by steps of 200 time 
+			 frames, to Analyze 3D &amp; byte storage files, and a file prefix:
+         </P>
+         <pre>cartool64.exe ristovolume --spfile=MNI152.NlinAsym20.6926.6mm.spi --greyfile=MNI152.NlinAsym20.Grey.nii --timestep=200 --file=analyze --type=byte --dim=3 --prefix=MyPrefix -- &lt;files1.ris&gt;&nbsp;</pre>
+		<H2>
              <A NAME="technical-points-and-hints"></A>RIS to Volumes - Technical points &amp; hints
          </H2>
          <P class="mvd-h4">

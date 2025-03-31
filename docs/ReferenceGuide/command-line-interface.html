@@ -1,4 +1,4 @@
-<HTML>
+﻿<HTML>
  <HEAD>
   <TITLE>Command-Line Interface</TITLE>
  <LINK REL="stylesheet" HREF="../cartool.css" TYPE="text/css">
@@ -6,7 +6,10 @@
 .auto-style1 {
 	font-family: Verdana;
 }
-</style>
+  .auto-style2 {
+	  color: #1155E0;
+  }
+  </style>
  </HEAD>
  <BODY>
 
@@ -46,9 +49,9 @@
              <a href="#subcommandsoption">Sub-Commands Options</a>
          </h5>
          <h6 ALIGN=LEFT>
-             <a href="#registration">Registration</a><br><a href="#reprocesstracks">
-                 Reprocess / Export Tracks
-             </a>
+             <a href="#registration">Registration</a><br>
+			 <a href="#reprocesstracks">Reprocess / Export Tracks</a><br>
+             <a href="#ris-to-volume">Ris to Volume</a>
          </h6>
          <h2>
              <a name="syntax"></a>CLI Syntax
@@ -240,218 +243,20 @@ cartool64.exe --childwindow=normal minimized -- &lt;file1&gt; &lt;file2&gt;</pre
              most of the time, you need not.
          </P>
          <H3>
-             <a name="reprocesstracks"></a>Reprocess / Export Tracks
-         </H3>
+             <a name="reprocesstracks"></a>
+			 <a href="reprocess-tracks.html" name="reprocesstracks">Reprocess / Export Tracks</a></H3>
          <P>
-             This sub-command corresponds to the <a href="reprocess-tracks.html">
-                 <strong>
-                     Reprocess / Export Tracks Dialog
-                 </strong>
-             </a>.
+             See the the <a href="reprocess-tracks.html#command-line"><strong>
+			 <em>Reprocess Tracks</em>, from the C</strong><span class="auto-style2"><strong>ommand-Line 
+			 Interface</strong></span></a> syntax.&nbsp;
          </P>
+         <H3>
+             <a href="ris-to-volumes.html" name="ris-to-volume">Results of 
+			 Inverse Solutions to Volume</a></H3>
          <P>
-             Getting the Reprocess / Export Tracks subcommand full syntax with:
-         </P>
-         <pre>cartool64.exe reprocesstracks --help</pre>
-         <P>
-             Which gives:
-         </P>
-         <pre>Re-process / Export tracks command
-Usage: reprocesstracks [OPTIONS]
-
-Options:
---tracks TEXT 			Tracks to export 		Special values: * gfp dis avg
---xyzfile TEXT Excludes: --roisfile
-				Using electrodes names from a XYZ electrodes coordinates file
---roisfile TEXT Excludes: --nulltracks --xyzfile
-				Computing ROIs &amp; using ROIs names from a ROIs file
---timemin INTEGER Excludes: --keeptriggers --excludetriggers
-				Exporting from Time Frame
---timemax INTEGER Excludes: --keeptriggers --excludetriggers
-				Exporting to Time Frame
---keeptriggers TEXT Excludes: --timemin --timemax --excludetriggers
-				Exporting only the data from a triggers / markers list
---excludetriggers TEXT Excludes: --timemin --keeptriggers --timemax
-				Exporting all data but from a triggers / markers list
---nulltracks TEXT Excludes: --roisfile
-				List of null tracks to append
---filters TEXT 			A whole string of filtering options, in double quote, as coming from a verbose file
---dc,--baseline 		Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)
---highpass FLOAT Excludes: --bandpass
-				High-Pass Butterworth filter
---lowpass FLOAT Excludes: --bandpass
-				Low-Pass Butterworth filter
---bandpass FLOATS x 2 Excludes: --lowpass --highpass
-				Band-Pass Butterworth filter
---order INTEGER [8 or 16] Butterworth filter order
---causal 			Causal filters, using only forward filtering
---notches FLOATS... 		Notches filter
---harmonics Needs: --notches
-				Adding Notches harmonics
---spatialfilter ENUM:{SpatialOutliers,SpatialOutGauss,SpatialOutWeight,SpatialIGM,SpatialIWM,SpatialMedian,SpatialIQM,SpatialMinMax} [SpatialIWM] Needs: --xyzfile
-				Spatial filter
---ranking 			Ranking data at each time point to [0..1] range
---rectification ENUM:{abs,absolute,power,squared}
-				Rectification, i.e. making data all positive
---envelope FLOAT Needs: --rectification
-				Sliding-window smoothing after rectification (positive-only data), value in [ms]
---keepabove FLOAT 		Thresholding data, keeping data above value
---keepbelow FLOAT 		Thresholding data, keeping data below value
---samplingfrequency FLOAT 	Default Sampling Frequency, only in case a file has none
---reference TEXT 		List of new reference tracks 	Special values: 'none' (default) or 'average'
---baselinecorr INTEGERS x 2 	Baseline correction interval, in time frames since beginning of file
---rescaling TEXT 		Scaling factor 			Special value: 'meangfp'
---sequential Excludes: --average
-				Sequential output 		Default option
---average Excludes: --sequential
-				Averaging the time dimension
---downsampling INTEGER 		Downsampling ratio
---infix TEXT 			Infix appended to the file name
---ext,--extension ENUM:{txt,ep,eph,sef,eeg,edf,ris} [eeg]
-				Output file extension
---nomarkers 			Not saving the markers to file
---concatenate 			Concatenate all output into a single file
--h,--help 			This message</pre>
-         <h4>
-             Notes:
-         </h4>
-         <ul>
-             <li>
-                 &nbsp;<strong>You can combine most of these options</strong>, as long
-                 as they make sense to you!
-             </li>
-             <li>
-                 Options will be applied sequentially according to <strong>
-                     their
-                     relative appearance in the help message above
-                 </strong>. Which also
-                 corresponds to their <strong>top-down appearance</strong> within the
-                 <a href="reprocess-tracks.html"><strong>Reprocess / Export Tracks Dialog</strong></a>.<br>
-                 This means f.ex. that filters will be applied first, followed by the new
-                 reference, then the baseline correction, etc...
-             </li>
-             <li>
-                 Likewise, filters are applied following their <strong>
-                     top-down
-                     appearance within the
-                 </strong><a href="eeg-display.html#filters">
-                     <strong>
-                         EEG
-                         Filters dialog
-                     </strong>
-                 </a>.
-             </li>
-             <li>
-                 Be careful <strong>not to overwrite existing files</strong>. Usually,
-                 you are on the safe side if you provide a relevant <em>--infix</em>
-                 option.
-             </li>
-         </ul>
-         <h4>
-             Butterworth filters
-         </h4>
-         <p>
-             Band-Pass option excludes both High-Pass and Low-Pass options. However, it is
-             currently allowed to specify both High-Pass <strong><em>and </em></strong>
-             Low-Pass options, which will be internally combined into a proper High-Pass.
-         </p>
-         <p>
-             For a <strong>single High-Pass or Low-Pass filter</strong>, the <strong>order</strong>,
-             if overridden, must be an <strong>even value</strong>. Current default value
-             is 8.
-         </p>
-         <p>
-             For a <strong>Band-Pass filter</strong>, the order must be a <strong>
-                 multiple
-                 of 4
-             </strong>, as it basically sums up the high and low pass orders together.
-             Which means the default is 8+8=16. Note that this does <em>not </em>follow
-             the <em>Matlab</em> convention, which would erroneously show 8 instead...
-         </p>
-         <h4>
-             Examples:
-         </h4>
-         <P>
-             Saving files to another format, f.ex. to BrainVision <strong><em>.eeg</em></strong>:
-         </P>
-         <pre>cartool64.exe reprocesstracks --infix=NewExt --ext=eeg -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             Renaming the electrodes, &quot;borrowing&quot; actual names from a <em><strong>.xyz</strong></em>
-             file:
-         </P>
-         <pre>cartool64.exe reprocesstracks --xyzfile=electrodesfile.xyz --infix=Renamed --ext=eeg -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             Cropping the time range, from time frame 100 to 499; cropping from time frame
-             200 up to end-of-file (note the missing <em>--timemax</em> option in the
-             latter case):
-         </P>
-         <pre>cartool64.exe reprocesstracks --timemin=100 --timemax=499 --infix=Cropped -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;
-cartool64.exe reprocesstracks --timemin=200 --infix=Cropped -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             Keeping only some epochs, labelled as &quot;Good&quot; markers, from the time line:
-         </P>
-         <pre>cartool64.exe reprocesstracks --keeptriggers=Good --infix=OnlyGoodies -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             Deleting some epochs, labelled as &quot;Bad&quot; or &quot;Blink&quot; markers, from the time
-             line:
-         </P>
-         <pre>cartool64.exe reprocesstracks --excludetriggers=Bad,Blink --infix=NoBaddies -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             Appending a null track called &quot;MyRef&quot;:
-         </P>
-         <pre>cartool64.exe reprocesstracks --nulltracks=MyRef --infix=Nullos -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             <A HREF="eeg-display.html#menu-reference">Changing the reference to Cz</A>, using a
-             <strong><em>.xyz</em></strong> file to get the names right; setting an
-             <A HREF="terms-definitions-formulas.html#average-reference">Average Reference</A>:
-         </P>
-         <pre>cartool64.exe reprocesstracks --xyzfile=electrodesfile.xyz --reference=Cz --Infix=RefCz -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;
-cartool64.exe reprocesstracks --reference=average --Infix=RefAvg -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             Downsampling files by a factor of 4, f.ex. from a sampling frequency of 1000
-             Hz down to 250 Hz:
-         </P>
-         <pre>cartool64.exe reprocesstracks --downsampling=4 --infix=Down -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             Concatenating files into a single file:
-         </P>
-         <pre>cartool64.exe reprocesstracks --concatenate --infix=Concat -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             You have access to <a href="eeg-display.html#filters">
-                 all the filters from the <strong>
-                     EEG Filters Dialog
-                 </strong>
-             </a>.
-         </P>
-         <P>
-             For example, a typical band-pass for EEG (note the DC removal, for safety
-             reasons):
-         </P>
-         <pre>cartool64.exe reprocesstracks --dc --bandpass=1,40 --notch=50 --harmonics --order=16 --infix=BandPass -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             Applying the default <A HREF="eeg-display.html#spatial-filter"><strong>Spatial Filter</strong></A>
-             of Cartool. Attention to the EEG and XYZ dimensions, which sould match
-             exactly, especially if you added some null tracks:
-         </P>
-         <pre>cartool64.exe reprocesstracks --xyzfile=electrodesfile.xyz --spatialfilter --infix=Spatial -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             Applying some rectification + envelope, with a time window of 100ms:
-         </P>
-         <pre>cartool64.exe reprocesstracks --rectification=power --envelope=100 --infix=Envelope -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             Thresholding the data, ranking and keeping data above 0.95; keeping data
-             either below -1 <strong>or</strong> above 1; keeping data above -1 <strong>
-                 and
-             </strong> below 1:
-         </P>
-         <pre>cartool64.exe reprocesstracks --ranking --keepabove=0.95 --infix=Significant5 -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;
-cartool64.exe reprocesstracks --keepbelow=-1 --keepabove=1 --infix=OutsideInterval -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;
-cartool64.exe reprocesstracks --keepabove=-1 --keepbelow=1 --infix=InsideInterval -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
-         <P>
-             &nbsp;
-         </P>
-         <P>
-             &nbsp;
+             See the the <a href="ris-to-volumes.html#command-line"><strong>
+			 <em>RIS to Volume</em>, from the C</strong><span class="auto-style2"><strong>ommand-Line 
+			 Interface</strong></span></a> syntax.
          </P>
          <P>
              &nbsp;
