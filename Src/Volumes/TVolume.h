@@ -49,20 +49,25 @@ enum            GreyMatterFlags
                                         // Preprocessing
                 GreyMatterGaussian          = 0x0001,
                 GreyMatterBiasField         = 0x0002,
+                GreyMatterPreProcMask       = GreyMatterGaussian | GreyMatterBiasField,
                                         // Processing
                 GreyMatterSlim              = 0x0010,
                 GreyMatterRegular           = 0x0020,
                 GreyMatterFat               = 0x0040,
                 GreyMatterWhole             = 0x0080,
+                GreyMatterProcMask          = GreyMatterSlim | GreyMatterRegular | GreyMatterFat | GreyMatterWhole,
                                         // Postprocessing
                 GreyMatterPostprocessing    = 0x0100,
                 GreyMatterAsymmetric        = 0x0200,
                 GreyMatterSymmetric         = 0x0400,
+                GreyMatterPostProcMask      = GreyMatterPostprocessing | GreyMatterAsymmetric | GreyMatterSymmetric,
                                         // Solution Points Check
                 GreyMatterLauraCheck        = 0x1000,
                 GreyMatterLoretaCheck       = 0x2000,
                 GreyMatterSinglePointCheck  = 0x4000,
-                GreyMatterAllSPCheck        = GreyMatterLauraCheck | GreyMatterLoretaCheck | GreyMatterSinglePointCheck,
+                GreyMatterCheckMask         = GreyMatterLauraCheck | GreyMatterLoretaCheck | GreyMatterSinglePointCheck,
+                
+                GreyMatterMask              = GreyMatterPreProcMask | GreyMatterProcMask | GreyMatterPostProcMask | GreyMatterCheckMask,
                 };
 
 

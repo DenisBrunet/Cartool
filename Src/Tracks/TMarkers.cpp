@@ -395,7 +395,7 @@ else
     file    = MarkersFileName;
 
 
-if ( verbose == Verbose )
+if ( verbose == Interactive )
     if ( ! GetAnswerFromUser ( "Markers have been modified, do you want to save them to file now?", ToFileName ( file ) ) )
         return;
 

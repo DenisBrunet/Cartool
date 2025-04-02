@@ -267,7 +267,7 @@ volume.ApplyMaskToData ( BrainMask );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // setup for flags
-//bool                spfilter        = spflags & GreyMatterAllSPCheck;
+//bool                spfilter        = spflags & GreyMatterCheckMask;
 Volume              spvol;
 TPointDouble        origin;
 int                 numsp;

@@ -487,7 +487,7 @@ bool                GetPolarityFromUser     ( const char* title, PolarityType& p
 enum        VerboseType
             {
             Silent,
-            Verbose,
+            Interactive,
 
             NumVerboseTypes
             };

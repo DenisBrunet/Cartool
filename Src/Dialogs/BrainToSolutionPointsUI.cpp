@@ -85,7 +85,7 @@ if ( mribraindoc == 0 ) {
     if ( ! filemri.Execute () )
         return  false;
 
-    mribraindoc = dynamic_cast< TVolumeDoc* > ( CartoolObjects.CartoolDocManager->OpenDoc ( filemri[ 0 ], dtOpenOptions ) );
+    mribraindoc = dynamic_cast<TVolumeDoc*> ( CartoolObjects.CartoolDocManager->OpenDoc ( filemri[ 0 ], dtOpenOptions ) );
 
     if ( mribraindoc && ! mribraindoc->IsBrain () ) {
 

@@ -9170,7 +9170,7 @@ if ( ! getfile.Execute () )
     return;
 
 
-EEGDoc->CommitMarkers   ( false, Verbose );
+EEGDoc->CommitMarkers   ( false, Interactive );
 
 EEGDoc->InitMarkers     ( getfile );
 

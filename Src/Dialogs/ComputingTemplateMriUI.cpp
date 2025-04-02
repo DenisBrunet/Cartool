@@ -159,16 +159,16 @@ greyflagspostproc   = answer == 'S' ? GreyMatterSymmetric
                     : answer == 'A' ? GreyMatterAsymmetric
                                     : GreyMatterSymmetric;
 
-greyflagspostproc   = (GreyMatterFlags) ( greyflagspostproc | GreyMatterPostprocessing );
+greyflagspostproc   = GreyMatterFlags ( greyflagspostproc | GreyMatterPostprocessing );
 
-greyflags           = (GreyMatterFlags) ( greyflagspreproc | greyflagsproc | greyflagspostproc );
+greyflags           = GreyMatterFlags ( greyflagspreproc | greyflagsproc | greyflagspostproc );
 
 
 GreyMatterFlags     spflagspostproc     = greyflagspostproc;    // same as grey - doen't care about GreyMatterPostprocessing
 
-GreyMatterFlags     spflagscheck        = (GreyMatterFlags) ( GreyMatterLauraCheck | GreyMatterSinglePointCheck );
+GreyMatterFlags     spflagscheck        = GreyMatterFlags ( GreyMatterLauraCheck | GreyMatterSinglePointCheck );
 
-GreyMatterFlags     spflags             = (GreyMatterFlags) ( spflagspostproc | spflagscheck );
+GreyMatterFlags     spflags             = GreyMatterFlags ( spflagspostproc | spflagscheck );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

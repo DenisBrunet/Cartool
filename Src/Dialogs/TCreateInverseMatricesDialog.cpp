@@ -1632,12 +1632,12 @@ NeighborhoodReduction   neighbors26to18     = InverseNeighborhood26to18;    // h
                                         // Now can set spflags
 GreyMatterFlags     spflagspostproc         = GreyMatterAsymmetric;
 
-GreyMatterFlags     spflagscheck            = (GreyMatterFlags) (
-                                              loretaneighborhood == lauraneighborhood       ? GreyMatterLauraCheck                       | GreyMatterSinglePointCheck
+GreyMatterFlags     spflagscheck            = GreyMatterFlags   (
+                                              loretaneighborhood == lauraneighborhood       ? GreyMatterLauraCheck                         | GreyMatterSinglePointCheck
                                             :                                                 GreyMatterLauraCheck | GreyMatterLoretaCheck | GreyMatterSinglePointCheck
-                                                            );
+                                                                );
 
-GreyMatterFlags     spflags                 = (GreyMatterFlags) ( spflagspostproc | spflagscheck );
+GreyMatterFlags     spflags                 = GreyMatterFlags ( spflagspostproc | spflagscheck );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

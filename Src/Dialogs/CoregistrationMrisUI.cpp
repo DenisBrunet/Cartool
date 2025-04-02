@@ -414,8 +414,9 @@ if ( IsInsideLimits ( coregtype.Code, CoregistrationBrainMin, CoregistrationBrai
                         precision,
                         filestransfmris,    filestransfspis,
                         fileprefix,
-                        outputmats,         outputmris,     outputpoints,
-                        coregquality,       coregqualityopinion
+                        outputmats,         outputmris,         outputpoints,
+                        coregquality,       coregqualityopinion,
+                        Interactive
                     );
 else
 
@@ -427,8 +428,9 @@ else
                         precision,
                         filestransfmris,    filestransfspis,
                         fileprefix,
-                        outputmats,         outputmris,     outputpoints,
-                        coregquality,       coregqualityopinion
+                        outputmats,         outputmris,         outputpoints,
+                        coregquality,       coregqualityopinion,
+                        Interactive
                     );
 
 

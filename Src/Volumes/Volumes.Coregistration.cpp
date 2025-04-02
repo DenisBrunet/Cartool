@@ -57,7 +57,8 @@ void    CoregisterMris      (   const TVolumeDoc*   SourceMri,  RemapIntensityTy
                                 const TGoF&         buddymris,  const TGoF&         buddypoints,
                                 const char*         fileprefix,
                                 TGoF&               outputmats, TGoF&               outputmris, TGoF&               outputpoints,
-                                double&             quality,    char*               qualityopinion
+                                double&             quality,    char*               qualityopinion,
+                                VerboseType         verbose
                             )
 {
                                         // Coregistration can take quite some time - forbid closing these docs
@@ -357,7 +358,7 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
                                         // special case for the source MRI
     tofile              = issource ? SourceMri->GetDocPath () : buddymris[ i ];
 
-    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, OpenDocVisible );
+    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, verbose == Silent ?  OpenDocHidden : OpenDocVisible );
 
     if ( ! TransfMri.IsOpen () )
         continue;
@@ -402,10 +403,10 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.CartoolApplication->IsInteractive () ) {
+    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbose == Interactive ) {
 
         TOpenDoc< TVolumeDoc >      SourceTransfMri ( sourcecoregfile, OpenDocVisible );
-        TVolumeView*                sourcetransfview    =  dynamic_cast< TVolumeView * > ( SourceTransfMri->GetViewList () );
+        TVolumeView*                sourcetransfview    =  dynamic_cast<TVolumeView*> ( SourceTransfMri->GetViewList () );
 
 
         if ( targetview && sourcetransfview ) {
@@ -461,12 +462,12 @@ for ( int i = 0; i < (int) buddypoints; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.CartoolApplication->IsInteractive () ) {
+    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbose == Interactive ) {
 
         if ( isspfile ) {
 
             TOpenDoc< TSolutionPointsDoc >  SpiDoc ( sourcecoregfile, OpenDocVisible );
-            TSolutionPointsView*            sourcetransfview    =  dynamic_cast< TSolutionPointsView* > ( SpiDoc->GetViewList () );
+            TSolutionPointsView*            sourcetransfview    =  dynamic_cast<TSolutionPointsView*> ( SpiDoc->GetViewList () );
 
 
             if ( targetview && sourcetransfview ) {
@@ -484,7 +485,7 @@ for ( int i = 0; i < (int) buddypoints; i++ ) {
         else {
 
             TOpenDoc< TElectrodesDoc >  XyzDoc ( sourcecoregfile, OpenDocVisible );
-            TElectrodesView*            sourcetransfview    =  dynamic_cast< TElectrodesView* > ( XyzDoc->GetViewList () );
+            TElectrodesView*            sourcetransfview    =  dynamic_cast<TElectrodesView*> ( XyzDoc->GetViewList () );
 
 
             if ( targetview && sourcetransfview ) {
@@ -627,7 +628,8 @@ void    CoregisterBrains    (   const TVolumeDoc*   SourceMri,  RemapIntensityTy
                                 const TGoF&         buddymris,  const TGoF&         buddypoints,
                                 const char*         fileprefix,
                                 TGoF&               outputmats, TGoF&               outputmris, TGoF&               outputpoints,
-                                double&             quality,    char*               qualityopinion
+                                double&             quality,    char*               qualityopinion,
+                                VerboseType         verbose
                             )
 {
                                         // Coregistration can take quite some time - forbid closing these docs
@@ -903,7 +905,7 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
                                         // special case for the source MRI
     tofile              = i == -1 ? SourceMri->GetDocPath () : buddymris[ i ];
 
-    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, OpenDocVisible );
+    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, verbose == Silent ?  OpenDocHidden : OpenDocVisible );
 
     if ( ! TransfMri.IsOpen () )
         continue;
@@ -955,21 +957,24 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    TOpenDoc< TVolumeDoc >      SourceTransfMri ( sourcecoregfile, OpenDocVisible );
-    TVolumeView*                sourcetransfview    =  dynamic_cast< TVolumeView * > ( SourceTransfMri->GetViewList () );
+    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbose == Interactive ) {
+
+        TOpenDoc< TVolumeDoc >      SourceTransfMri ( sourcecoregfile, verbose == Silent ?  OpenDocHidden : OpenDocVisible );
+        TVolumeView*                sourcetransfview    =  dynamic_cast< TVolumeView * > ( SourceTransfMri->GetViewList () );
 
 
-    if ( targetview && sourcetransfview ) {
-                                        // modify position
-        sourcetransfview->WindowRestore();
+        if ( targetview && sourcetransfview ) {
+                                            // modify position
+            sourcetransfview->WindowRestore();
 
-        sourcetransfview->WindowSetPosition ( targetleft, targettop, targetwidth, targetheight );
-                                        // tiling all MRIs to the right
-        targetleft     += targetwidth;
+            sourcetransfview->WindowSetPosition ( targetleft, targettop, targetwidth, targetheight );
+                                            // tiling all MRIs to the right
+            targetleft     += targetwidth;
+            }
+
+
+        SourceTransfMri.Close ( CloseDocLetOpen );
         }
-
-
-    SourceTransfMri.Close ( CloseDocLetOpen );
 
     } // for buddymris
 
@@ -1012,13 +1017,16 @@ for ( int i = 0; i < (int) buddypoints; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( isspfile ) {
-        TOpenDoc< TSolutionPointsDoc >  SpiDoc ( sourcecoregfile, OpenDocVisible );
-        SpiDoc.Close ( CloseDocLetOpen );
-        }
-    else {
-        TOpenDoc< TElectrodesDoc >      XyzDoc ( sourcecoregfile, OpenDocVisible );
-        XyzDoc.Close ( CloseDocLetOpen );
+    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbose == Interactive ) {
+
+        if ( isspfile ) {
+            TOpenDoc< TSolutionPointsDoc >  SpiDoc ( sourcecoregfile, OpenDocVisible );
+            SpiDoc.Close ( CloseDocLetOpen );
+            }
+        else {
+            TOpenDoc< TElectrodesDoc >      XyzDoc ( sourcecoregfile, OpenDocVisible );
+            XyzDoc.Close ( CloseDocLetOpen );
+            }
         }
 
     } // for buddypoints
