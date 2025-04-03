@@ -193,7 +193,7 @@ BEGIN
         END
         POPUP "&MRIs and Volumes"
         BEGIN
-            MENUITEM "MRIs &Preprocessing",         CM_NORMALIZEMRI
+            MENUITEM "&Reprocessing MRIs",          CM_NORMALIZEMRI
             MENUITEM "Results of Inverse Solutions To &Volumes", CM_RISTOVOLUME
             MENUITEM SEPARATOR
             MENUITEM "&Coregistering MRIs",         CM_MRICOREGISTRATION

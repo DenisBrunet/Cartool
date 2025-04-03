@@ -24,8 +24,8 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-constexpr char*     NormalizeTitleOne       = "Preprocessing MRI";
-constexpr char*     NormalizeTitleMany      = "Preprocessing MRIs";
+constexpr char*     NormalizeTitleOne       = "Reprocessing MRI";
+constexpr char*     NormalizeTitleMany      = "Reprocessing MRIs";
 
 
 enum        PreprocessMrisPresetsEnum

@@ -1,7 +1,7 @@
 <HTML>
 
  <HEAD>
-  <TITLE>MRIs Preprocessing Toolbox</TITLE>
+  <TITLE>Reprocess MRIs Toolbox</TITLE>
 
   <link rel="stylesheet" href="../cartool.css" type="text/css">
 
@@ -12,7 +12,20 @@
 .auto-style2 {
 	margin-left: 40px;
 }
-</style>
+  .auto-style6 {
+	  line-height: 150%;
+	  margin-left: 30px;
+  }
+  .auto-style7 {
+	  border-width: 1px;
+	  background-color: #F9F9F9;
+  }
+  .auto-style8 {
+	  font-weight: bold;
+	  border-width: 1px;
+	  background-color: #F9F9F9;
+  }
+  </style>
 
  </HEAD>
 
@@ -23,29 +36,25 @@
 	<object data="../cartool-menu.html" class="menu-iframe"></object>
 
          <H1>
-             MRIs Preprocessing Toolbox
+         Reprocess MRIs Toolbox
          </H1>
          <P>
          </P>
          <P>
-             This toolbox basically aims to <strong>rescale,</strong> <strong>
+             This versatile toolbox is used to <strong>reprocess MRIs</strong>, 
+			 usually full heads coming from the scanner, to make them fit for 
+			 per-subject <a href="computing-inverse-solution-matrices.html">
+			 <strong>inverse matrices computation</strong></a>. User can <strong>rescale,</strong> <strong>
                  reorient and
                  convert
-                 raw MRIs
-             </strong>, plus optionally <strong>
-                 extracting the brain (skull
-                 stripping)
-             </strong>. These are mandatory steps before <strong>
-                 <a href="computing-inverse-solution-matrices.html">creating Inverse Matrices</a>
-             </strong>
-             for specific subjects. Also, the resulting MRIs are more consistent and have nicer
-             <strong><a href="mri-display.html">display</a></strong>.
-         </P>
+                 original MRIs</strong>, and optionally <strong>
+                 extract the brain, compute the Grey Matter mask and port 
+			 standard solution points</strong>.</P>
          <P>
              &nbsp;
          </P>
          <h5>
-             <a href="#dialog">Computing RIS Dialog</a><br>
+             <a href="#dialog">Running from the Dialog</a><br>
              <A HREF="#technical-points-and-hints">Technical points &amp; hints</A>
          </h5>
          <h6>
@@ -70,19 +79,19 @@
              <A HREF="#skull-stripping">Skull stripping</A>
          </h6>
          <h6>
-             <A HREF="#bias-field-correction">Bias Field Correction</A>
-         </h6>
+             <A HREF="#bias-field-correction">Bias Field Correction</A> <br>
+			 <a href="#porting-solution-points">Porting Solution Points</a></h6>
          <h5>
              <a href="#results">Results</a>
          </h5>
          <H2>
-             <a name="dialog"></a>MRIs Preprocessing Dialog
+             <a name="dialog"></a>Running from the Dialog
          </H2>
          <p>
              Called from the&nbsp; <FONT FACE="Arial Black,Arial,Helvetica">
                  <A HREF="all-processings.html#tools">
                      Tools
-                     | MRIs and Volumes | MRIs Preprocessing
+                     | MRIs and Volumes | Reprocess MRIs
                  </A>
              </FONT>&nbsp; menu, the following dialog
              appears:
@@ -91,40 +100,73 @@
              &nbsp;
          </p>
          <p class="auto-style1">
-             <img alt="MRIs Preprocessing Dialog" src="images/mrispreproc.dialog.png">
+             <img alt="MRIs Preprocessing Dialog" src="images/mrispreproc.dialog.png" width="640">
          </p>
          <p>
-             &nbsp;
+             &nbsp;&nbsp;
          </p>
-         <P>
-             &nbsp;
-         </P>
          <TABLE WIDTH="100%" CELLPADDING="2" CELLSPACING="0" BORDER="1">
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         <strong>Presets</strong>
-                 </TD>
+                         <strong>Presets:</strong></TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         You can quickly set the most important parameters according to some
-                         predefined scenarios. Then check and adjust the parameters to your
-                         liking.
+                         A few predefined scenarios you can then 
+						 subsequently refine.
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <strong>MRI Type:</strong></TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         The type of modality: either <strong>T1</strong> or
+						 <strong>T1+Gadolinium</strong>.<P>
+                         This can affect which method can be internally used 
+						 f.ex. for the sagittal plane detection, or the skull 
+						 stripping.</TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="74%" VALIGN=TOP></TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style8">
+                     <P>
+                         <strong>(1) Pre-Processing</strong></TD>
+                 <TD WIDTH="74%" VALIGN=TOP class="auto-style7">
+                     <P>
+                         &nbsp;
+                 </TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
+                     <P>
+                         Full Head Clean-Up</TD>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
+                     <P>
+                         Applies a big mask to <strong>clip out everything 
+						 outside the main head</strong>, removing any &quot;floating&quot; 
+						 artefacts like cables.</TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="74%" VALIGN=TOP></TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <B>(2) Processing</B></TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         &nbsp;
                  </TD>
              </tr>
              <TR>
                  <TD VALIGN=TOP style="width: 32%"></TD>
                  <TD WIDTH="74%" VALIGN=TOP></TD>
-             </TR>
-             <TR>
-                 <TD VALIGN=TOP style="width: 32%">
-                     <P>
-                         <B>(1) Resolution</B>
-                 </TD>
-                 <TD WIDTH="74%" VALIGN=TOP>
-                     <P>
-                         &nbsp;
-                 </TD>
              </TR>
              <TR>
                  <TD VALIGN=TOP style="width: 32%">
@@ -189,31 +231,21 @@
                  <TD WIDTH="74%" VALIGN=TOP></TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
-                     <P>
-                         <B>(2) Orientation</B>
-                 </TD>
-                 <TD WIDTH="74%" VALIGN=TOP>
-                     <P>
-                         &nbsp;
-                 </TD>
-             </tr>
-             <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          <a href="#orientations">Axis Reorientation:</a>
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
                      <P>
                          Change <strong><a href="#orientations">&quot;how the axis are organized&quot;</a></strong>, for the sake of consistency.
                  </TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          MNI Style
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
                      <P>
                          Data is reordered so as to have:<ul>
                              <li>the <strong>X axis</strong> pointing left to <strong>right</strong>,</li>
@@ -228,11 +260,11 @@
                  </TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          Axis Pointing Towards:
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
                      <P>
                          You can specify <strong>any other orientation you like</strong>, by
                          specifying which direction each of the 3 axis are pointing to.
@@ -256,11 +288,11 @@
                  </TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          Then Adjusting:
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
                      <P>
                          After the main axis have been reassigned, <strong>
                              some fine-tuning can be
@@ -269,11 +301,11 @@
                  </TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          <A HREF="#sagittal-plane">Mid-Sagittal Plane</A>
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
                      <P>
                          This option will search for the <strong>
                              optimal mid-sagittal cutting
@@ -290,11 +322,11 @@
                  </TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          <A HREF="#transverse-plane">MNI Transverse Plane</A>
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
                      <P>
                          This option will adjust the <strong>transverse cutting plane</strong> to
                          resemble as much as possible the <strong>MNI one</strong>.
@@ -313,16 +345,6 @@
              <tr>
                  <TD VALIGN=TOP style="width: 32%"></TD>
                  <TD WIDTH="74%" VALIGN=TOP></TD>
-             </tr>
-             <tr>
-                 <TD VALIGN=TOP style="width: 32%">
-                     <P>
-                         <B>(3) Origin</B>
-                 </TD>
-                 <TD WIDTH="74%" VALIGN=TOP>
-                     <P>
-                         &nbsp;
-                 </TD>
              </tr>
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
@@ -415,32 +437,22 @@
                  <TD WIDTH="74%" VALIGN=TOP></TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
-                     <P>
-                         <B>(4) Volume Size</B>
-                 </TD>
-                 <TD WIDTH="74%" VALIGN=TOP>
-                     <P>
-                         &nbsp;
-                 </TD>
-             </tr>
-             <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          Transformed Volume Size is:
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
                      <P>
                          You can have some controls on the final volume size, which can come in
                          handy in some cases.
                  </TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          Proportional to Original Size
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
                      <P>
                          The output size will <strong>
                              follow the transform you applied on the
@@ -459,11 +471,11 @@
                  </TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          Optimally Re-Cut
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
                      <P>
                          The output volume will be <strong>
                              cropped to the closest as possible to
@@ -489,11 +501,11 @@
                  </TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          this Specified Size:
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
                      <P>
                          You want some specific size? Here is your chance, provide the <strong>
                              X,
@@ -516,62 +528,32 @@
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         <B>(5) Options</B>
-                 </TD>
+                         <B>(3) Post-Processing</B></TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         &nbsp;
-                 </TD>
+                         &nbsp;These options are relevant while reprocessing 
+						 full head MRIs only.</TD>
              </tr>
-             <tr>
+			 <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         Post-processing Full Head:
+                         <A HREF="#skull-stripping">Skull Stripping</A>:
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         If the input files are full head MRIs, you can choose some more handy
-                         post-processing.
-                 </TD>
+                         Extract the <strong>full brain</strong> from the head, and save it to another file.<P>
+                         There are currently 3 methods available, ranked by 
+						 their reliability. If one method fails, just try the 
+						 next one, there should be at least one that gives an 
+						 acceptable results!</TD>
              </tr>
-             <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%; height: 99px;">
                      <P>
-                         <A HREF="#skull-stripping">Skull Stripping</A>
-                 </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
-                     <P>
-                         Extract the full brain from the head, and save it to another file.
-                 </TD>
-             </tr>
-             <tr>
-                 <TD VALIGN=TOP style="width: 32%">
-                     <P>
-                         Method 1 - Fast
-                 </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
-                     <P>
-                         Earliest and fastest method. You might use it if the default method 2
-                         fails.
-                 </TD>
-             </tr>
-             <tr>
-                 <TD VALIGN=TOP style="width: 32%">
-                     <P>
-                         Method 2 - Best
-                 </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
-                     <P>
-                         Latest method, the recommended one, which is a bit slower than method 1.
-                         It rarely fails, but if it does, you can then use method 1 as a fallback.
-                 </TD>
-             </tr>
-             <tr>
-                 <TD VALIGN=TOP style="width: 32%">
-                     <P>
+                         +
                          <A HREF="#bias-field-correction">Bias Field Correction</A>
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP style="height: 99px">
                      <P>
                          It is usually a very good idea to also correct for the Bias Field of the
                          extracted brain.
@@ -580,16 +562,134 @@
                          head MRI.
                  </TD>
              </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
+                     <P>
+                         <strong>Grey Mask:</strong></TD>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
+                     <P>
+                         &nbsp;If the brain has been extracted, you can opt to 
+						 compute a
+						 <a href="computing-inverse-solution-matrices.html#grey-mask">
+						 <strong>grey mask</strong></a>.<P>
+                         There are currently 4 levels of &quot;thicknesses&quot; 
+						 available:<ul>
+						 <li><em>Thin</em>: the closest to the actual grey 
+						 matter.<br><strong>Avoid this option for inverse 
+						 matrices, as it can lead to areas without solution 
+						 points</strong>, because, well, it is too thin!</li>
+						 <li><em>Regular</em>: somehow filling the gaps</li>
+						 <li><em>Thick</em>: giving a band-like area around the 
+						 grey matter.<strong><br>This is the default for inverse 
+						 matrices computation</strong>, and it is also good for 
+						 display.</li>
+						 <li><em>Whole Brain</em>: the grey + white matters is 
+						 used.<strong><br>Use this option for newborns, or 
+						 animals, or if the usual grey matter detection fails</strong>.</li>
+					 </ul>
+                 </TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Solution Points:</TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         &nbsp;If the grey mask has been computed, you can also 
+						 compute the
+						 <a href="computing-inverse-solution-matrices.html#solution-space">
+						 <strong>solution space for the inverse matrices</strong></a>.<P>
+                         There are currently 2 options available:<ul>
+						 <li>Computing Solution Points (from the subject)</li>
+						 <li>Porting Template Solution Points</li>
+					 </ul>
+                 </TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P class="auto-style6">
+                         <strong>Computing Solution Points:</strong></TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         (first option)<P>
+                         Pick this option if you want to <strong>optimally 
+						 compute the solution points for each subjects</strong>. 
+						 But be warned that there is <strong><em>no way to 
+						 enforce any sort of compatibility between the various 
+						 subjects' solution spaces</em></strong>.</TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P class="auto-style6">
+                         # of Points:</TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         &nbsp;Either you set the number of points you wish 
+						 (results can differ slightly)..</TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P class="auto-style6">
+                         Resolution:</TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         &nbsp;..or the resolution, in [mm], between the points.</TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P class="auto-style6">
+                         <strong><a href="#porting-solution-points">Porting Template Solution Points:</a></strong></TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         (second option)<P>
+                         This option allows a <strong>pool of subjects to share 
+						 a compatible solution space</strong>, i.e. with the 
+						 same amount of points, and the same distribution.<P>
+                         <strong><em>Use this option if you plan to run any 
+						 sorts of statistics in the inverse space</em></strong>.</TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P class="auto-style6">
+                         <a href="#porting-solution-points">Porting from Brain File:</a></TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Provide a <strong>template brain</strong> which 
+						 will be automatically <strong>coregistered onto the current subject's 
+						 brain</strong>.</TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P class="auto-style6">
+                         <a href="#porting-solution-points">Porting from Solution Points File:</a></TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Provide the <strong>solution space that correspond to 
+						 the template brain above</strong>. Once the coregistration has been 
+						 done, 
+						 these points will be ported back to the subjects' space.</TD>
+             </tr>
+
              <tr>
-                 <TD WIDTH="30%" VALIGN=TOP></TD>
-                 <TD WIDTH="70%" VALIGN=TOP></TD>
+                 <TD VALIGN=TOP style="width: 32%"></TD>
+                 <TD WIDTH="74%" VALIGN=TOP></TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
+                     <P>
+                         <B>(4) Options</B>
+                 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP class="auto-style7">
+                     <P>
+                         &nbsp;
+                 </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          Optional Filename Postfix:
                  </TD>
-                 <TD WIDTH="74%" VALIGN=TOP>
+                 <TD WIDTH="74%" VALIGN=TOP class="auto-style7">
                      <P>
                          You can give a meaningful file name postfix for all the resulting files.
                      <P>
@@ -598,11 +698,11 @@
                  </TD>
              </tr>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%">
+                 <TD VALIGN=TOP style="width: 32%" class="auto-style7">
                      <P>
                          Opening Results
                  </TD>
-                 <TD WIDTH="73%" VALIGN=TOP>
+                 <TD WIDTH="73%" VALIGN=TOP class="auto-style7">
                      <P>
                          What is says. However, this could be reset for big batches of files.
                  </TD>
@@ -677,6 +777,8 @@
                          Launch the Help to the right page (should be here...).
                  </TD>
              </tr>
+
+
          </TABLE>
          <H2>
              <A NAME="technical-points-and-hints"></A>MRIs Preprocessing - Technical points &amp; hints
@@ -983,40 +1085,115 @@
              not mandatory to have the full head BFC, because the algorithm for the
              skull-stripping is actually insensitive to the Bias Field (yes, take that).
          </P>
+		<h4>
+             <a name="porting-solution-points"></a>Porting Template Solution 
+			 Points</h4>
+		<P>
+             <em>Porting a template solution space</em> aims at having the
+			 <strong>same standardized set of solution points across a whole 
+			 pool of subjects</strong>. It can be seen as creating an <em>
+			 isomorphic solution space</em>, so to speak. This will allow to
+			 <a href="computing-statistics.html"><strong>compute statistics</strong></a> 
+			 across subjects and conditions in the <strong>inverse space</strong>, 
+			 which will not be possible otherwise.</P>
+		<P>
+             The steps are the following:</P>
+		<ol>
+			<li>Coregister the template brain to the subject's brain, using an 
+			elastic affine transformation (15 parameters)</li>
+			<li>Apply the transform matrix on the template solution points</li>
+		</ol>
+		<P>
+             &nbsp;</P>
+		<P>
+             Here is an example. On the left is 
+			 the subject's brain, and on the right the MNI 2020 Template Brain from 
+			 which we wish to port the solution points from:</P>
+		<P>
+             <img class="auto-style2" src="images/mrispreproc.porting.1.png" height="330" width="351">&nbsp;
+			 <img class="auto-style2" src="images/mrispreproc.porting.2.png" height="330" width="353">
+		</P>
+		<P>
+         Here 
+		 we see the MNI Template 
+		 Brain once coregistered on the subject's brain, superimposed on the 
+		 subjects' brain, shown in 
+		 yellow:</P>
+		<P>
+             <img class="auto-style2" src="images/mrispreproc.porting.3.png" height="330" width="351">
+        </P>
+		<P>
+         If we 
+		 now superimpose the <strong>original MNI Template Solution Points 
+		 (right)</strong> and the <strong>ported points (left)</strong>, 
+		 we can see they both match their &quot;own&quot; brain:</P>
+		<P>
+             <img class="auto-style2" src="images/mrispreproc.porting.5.png" height="330" width="351">&nbsp;
+			 <img class="auto-style2" src="images/mrispreproc.porting.4.png" height="330" width="353">
+		</P>
+		<P>
+         Finally, this is the results we wanted, the <strong>subject's brain 
+		 with a standardized solution space</strong>:</P>
+		<P>
+             <img class="auto-style2" src="images/mrispreproc.porting.6.png" height="330" width="351">
+        </P>
+		<P>
+         &nbsp;</P>
+		<h5>
+         Notes</h5>
+		<ul>
+			<li>The affine coregistration by definition does <em>not</em> 
+			include any local, non-linear transformations. The purpose here is 
+			to use the <em>global shape</em> of the brain for the 
+			coregistration. Also see the next point below.</li>
+			<li>Because we use an <em>
+			<a href="https://www.google.ch/search?q=affine+transformation">
+			affine transformation</a></em>, any <strong>solution points 
+			structured as a grid will also be transformed into a grid</strong>. 
+			This point is very important to compute some inverse matrices like
+			<a href="computing-inverse-solution-matrices.html#IS-LORETA">LORETA</a> 
+			or <a href="computing-inverse-solution-matrices.html#IS-LAURA">LAURA</a>, 
+			as they make use of
+			<a href="computing-inverse-solution-matrices.html#IS-neighborhood">
+			neighborhood information</a>!</li>
+		</ul>
          <H2>
              <a name="results"></a>MRIs Preprocessing - Results
          </H2>
          <UL>
              <LI CLASS="mvd-P">
                  <P>
-                     Preprocessed files are written in the <B>same directories as their sources</B>.
-                     <br>Output file names will either have the user's <strong>infix</strong>
-                     added, or have a generic infix name composed from all the preprocessing
-                     steps:
-                 </P>
-                 <UL>
-                     <LI CLASS="mvd-P">
-                         <P><strong>&lt;input file&gt;.&lt;infix&gt;.hdr</strong><br>or</P>
-                     <LI CLASS="mvd-P">
-                         <P>&nbsp; <strong>&lt;input file&gt;.&lt;preprocessing string&gt;.hdr</strong></P>
-                 </UL>
-                 <P>
-                     Current output file type is always Analyze (<a href="files-formats-others.html#mri">
-                         <strong><em>.hdr</em></strong>
-                         / <strong><em>.img</em></strong> pairs
-                     </a>).
-                 </P>
+                     Preprocessed files are written in the <B>same directories as their sources</B>.<br>
+					 File type is always <strong>Nifti 2</strong>.</P>
+
              <LI CLASS="mvd-P">
                  <P>
-                     Optionally, a file <strong>&lt;input file&gt;.Brain.hdr</strong> can be output
-                     if the skull-stripping option has been selected.
-                 </P>
+					 Main file is saved as:</P>
+					 <UL>
+					 <LI CLASS="mvd-P">
+						 <P><strong>&lt;input file&gt;.&lt;postfix&gt;.Head.nii</strong> 
+					 for the head</P>
+					 </UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     You can have these optionally:</P>
+				 <UL>
+					 <LI CLASS="mvd-P">
+					 <P><strong>&lt;input file&gt;.&lt;postfix&gt;.Brain.nii</strong> 
+					 for the brain</P>
+					 <LI CLASS="mvd-P">
+					 <P><strong>&lt;input file&gt;.&lt;postfix&gt;.Grey.nii</strong> 
+					 for the grey mask</P>
+					 <LI CLASS="mvd-P">
+					 <P><strong>&lt;input file&gt;.&lt;postfix&gt;.spi</strong> for 
+					 the solution points</P>
+				 </UL>
              <LI CLASS="mvd-P">
                  <P>
                      Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>
                      (text), showing all the parameters.
                  </P>
-         </UL>
+			 </UL>
          <P>
              &nbsp;
          </P>

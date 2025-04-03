@@ -151,14 +151,14 @@ for ( int i = 0; i < (int) gofin; i++ ) {
     StringAppend        ( verbosefile,              "." );
     if ( userinfix )
         StringAppend    ( verbosefile,              infixfilename,  " " );
-    StringAppend        ( verbosefile,              "Preprocessing" );
+    StringAppend        ( verbosefile,              "Reprocessing" );
     AddExtension        ( verbosefile,              FILEEXT_VRB );
 
     CheckNoOverwrite    ( verbosefile );
 
     TVerboseFile    verbose ( verbosefile, VerboseFileDefaultWidth );
 
-    verbose.PutTitle ( "MRI Preprocessing" );
+    verbose.PutTitle ( "Reprocessing MRI" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
