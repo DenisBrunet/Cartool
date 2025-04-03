@@ -32,10 +32,12 @@ enum        PreprocessMrisPresetsEnum
             {
             MriPreprocPresetOff,
             MriPreprocPresetSep1,
+            MriPreprocPresetCleaning,
             MriPreprocPresetResampling,
             MriPreprocPresetReorienting,
             MriPreprocPresetReorigin,
             MriPreprocPresetSkullStripping,
+            MriPreprocPresetSkullStrippingGreySP,
             MriPreprocPresetSep2,
             MriPreprocPresetAll,
             MriPreprocPresetInverse,
@@ -122,6 +124,38 @@ enum        MriSkullStrippingPresetsEnum
 extern const char   MriSkullStrippingPresetsNames[ NumMriSkullStrippingPresets ][ 64 ];
 
 
+enum        GreyMaskPresetsEnum
+            {
+            GreyMaskPresetOff,
+            GreyMaskPresetThin,
+            GreyMaskPresetReg,
+            GreyMaskPresetFat,
+            GreyMaskPresetWhole,
+
+            NumGreyMaskPresets,
+
+            GreyMaskPresetDefault       = GreyMaskPresetFat,
+            };
+
+
+extern const char   GreyMaskPresetsNames[ NumGreyMaskPresets ][ 32 ];
+
+
+enum        SPPresetsEnum
+            {
+            SPPresetOff,
+            SPPresetCompute,
+            SPPresetPorting,
+
+            NumSPPresets,
+
+            SPPresetDefault     = SPPresetPorting,
+            };
+
+
+extern const char   SPPresetsNames[ NumSPPresets ][ 64 ];
+
+
 //----------------------------------------------------------------------------
                                         // These structs / classes need to be byte-aligned for proper read/write to file
 BeginBytePacking
@@ -135,6 +169,8 @@ public:
         
     TComboBoxData       Presets;
     TComboBoxData       PresetsMriType;
+
+    TCheckBoxData       FullHeadCleanUp;
 
     TCheckBoxData       Isotropic;
 
@@ -172,6 +208,17 @@ public:
 
     TComboBoxData       PresetsSkullStripping;
     TCheckBoxData       BFC;
+
+    TComboBoxData       PresetsGrey;
+
+    TComboBoxData       PresetsSP;
+    TRadioButtonData    SPNumber;
+    TEditData           SPNumberEdit        [ EditSizeValue ];
+    TRadioButtonData    SPResolution;
+    TEditData           SPResolutionEdit    [ EditSizeValue ];
+    TEditData           SPFromBrain         [ EditSizeText ];
+    TEditData           SPFromSP            [ EditSizeText ];
+
     TEditData           InfixFilename       [ EditSizeText ];
     TCheckBoxData       OpenAuto;
 
@@ -195,6 +242,8 @@ public:
 protected:
     owl::TComboBox      *Presets;
     owl::TComboBox      *PresetsMriType;
+
+    owl::TCheckBox      *FullHeadCleanUp;
 
     owl::TCheckBox      *Isotropic;
 
@@ -232,6 +281,17 @@ protected:
 
     owl::TComboBox      *PresetsSkullStripping;
     owl::TCheckBox      *BFC;
+
+    owl::TComboBox      *PresetsGrey;
+
+    owl::TComboBox      *PresetsSP;
+    owl::TRadioButton   *SPNumber;
+    owl::TEdit          *SPNumberEdit;
+    owl::TRadioButton   *SPResolution;
+    owl::TEdit          *SPResolutionEdit;
+    owl::TEdit          *SPFromBrain;
+    owl::TEdit          *SPFromSP;
+
     owl::TEdit          *InfixFilename;
     owl::TCheckBox      *OpenAuto;
 
@@ -266,7 +326,18 @@ protected:
     void                CmOriginEnable          ( owl::TCommandEnabler &tce );
     void                CmOriginOtherEnable     ( owl::TCommandEnabler &tce );
     void                CmSizeUserEnable        ( owl::TCommandEnabler &tce );
+
     void                CmSkullStrippingEnable  ( owl::TCommandEnabler &tce );
+
+    void                CmBrowseSpFile          ();
+    void                SetSpFile               ( char *file );
+    void                CmBrowseBrainFile       ();
+    void                SetBrainFile            ( char *file );
+    void                CmSPPresetsEnable       ( owl::TCommandEnabler &tce );
+    void                CmSPButtonEnable        ( owl::TCommandEnabler &tce );
+    void                CmSPComputeNumEnable    ( owl::TCommandEnabler &tce );
+    void                CmSPComputeRezEnable    ( owl::TCommandEnabler &tce );
+    void                CmSPPortEnable          ( owl::TCommandEnabler &tce );
 
 
     DECLARE_RESPONSE_TABLE ( TPreprocessMrisDialog );

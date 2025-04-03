@@ -27,6 +27,7 @@ limitations under the License.
 #include    "Geometry.TOrientation.h"
 
 #include    "TVolumeDoc.h"
+#include    "TCreateInverseMatricesDialog.h"    // DefaultNumSolutionPoints, DefaultResSolutionPoints
 
 #pragma     hdrstop
 //-=-=-=-=-=-=-=-=-
@@ -48,13 +49,15 @@ const char  PreprocessMrisPresetsNames[ NumMriPreprocPresets ][ 64 ] =
             {
             "No Pre-Processing",
             "",
+            "Full Head Clean-Up",
             "Resampling",
             "Axis Reorienting",
             "Setting New Origin",
             "Skull-Stripping",
+            "Skull-Stripping, Grey Mask & Computing Solution Points",
             "",
-            "Resampling + Reorienting + Setting New Origin",
-            "Inverse Matrices Full Head Pre-Processing",
+            "Cleaning, Resampling, Reorienting & Setting New Origin",
+            "Inverse Matrices Full Head Pipe-Line",
             };
 
 
@@ -72,7 +75,23 @@ const char  MriSkullStrippingPresetsNames[ NumMriSkullStrippingPresets ][ 64 ] =
             "No Skull-Stripping",
             "Skull-Stripping Method 1 - Best",
             "Skull-Stripping Method 2 - Good",
-            "Skull-Stripping Method 3 - Can save your day",
+            "Skull-Stripping Method 3 - OK-ish",
+            };
+
+const char  GreyMaskPresetsNames[ NumGreyMaskPresets ][ 32 ] =
+            {
+            "No Grey Mask",
+            "Thin Grey Mask",
+            "Regular Grey Mask",
+            "Thick Grey Mask",
+            "Whole Brain Mask",
+            };
+
+const char  SPPresetsNames[ NumSPPresets ][ 64 ] =
+            {
+            "No Solution Points",
+            "Computing Solution Points",
+            "Porting Template Solution Points",
             };
 
 
@@ -89,6 +108,8 @@ for ( int i = 0; i < NumMRISequenceTypes; i++ )
     PresetsMriType.AddString ( MRISequenceNames[ i ], i == MRISequenceDefault );
 
 Isotropic               = BoolToCheck ( true  );
+
+FullHeadCleanUp         = BoolToCheck ( true  );
 
 Resizing                = BoolToCheck ( true  );
 ResizingVoxel           = BoolToCheck ( true  );
@@ -125,8 +146,23 @@ StringCopy              ( SizeUserZ, "256" );
 PresetsSkullStripping.Clear ();
 for ( int i = 0; i < NumMriSkullStrippingPresets; i++ )
     PresetsSkullStripping.AddString ( MriSkullStrippingPresetsNames[ i ], i == MriSkullStrippingPresetDefault );
-
 BFC                     = BoolToCheck ( true  );
+
+PresetsGrey.Clear ();
+for ( int i = 0; i < NumGreyMaskPresets; i++ )
+    PresetsGrey.AddString ( GreyMaskPresetsNames[ i ], i == GreyMaskPresetDefault );
+
+PresetsSP.Clear ();
+for ( int i = 0; i < NumSPPresets; i++ )
+    PresetsSP.AddString ( SPPresetsNames[ i ], i == SPPresetDefault );
+
+SPNumber                = BoolToCheck ( false );
+IntegerToString         ( SPNumberEdit,     DefaultNumSolutionPoints );
+SPResolution            = BoolToCheck ( true  );
+FloatToString           ( SPResolutionEdit, DefaultResSolutionPoints );
+ClearString             ( SPFromBrain );
+ClearString             ( SPFromSP );
+
 ClearString             ( InfixFilename );
 OpenAuto                = BoolToCheck ( true  );
 }
@@ -174,6 +210,21 @@ DEFINE_RESPONSE_TABLE1 ( TPreprocessMrisDialog, TBaseDialog )
 
     EV_COMMAND_ENABLE           ( IDC_BFC,                      CmSkullStrippingEnable ),
 
+    EV_COMMAND_ENABLE           ( IDC_GREYMASKTYPEPRESETS,      CmSkullStrippingEnable ),
+
+    EV_COMMAND                  ( IDC_BROWSESPFILE,             CmBrowseSpFile ),
+    EV_COMMAND                  ( IDC_BROWSEMRIFILE,            CmBrowseBrainFile ),
+
+    EV_COMMAND_ENABLE           ( IDC_SPTYPEPRESETS,            CmSPPresetsEnable ),
+    EV_COMMAND_ENABLE           ( IDC_SPNUMBER,                 CmSPButtonEnable ),
+    EV_COMMAND_ENABLE           ( IDC_SPNUMBEREDIT,             CmSPComputeNumEnable ),
+    EV_COMMAND_ENABLE           ( IDC_SPRESOLUTION,             CmSPButtonEnable ),
+    EV_COMMAND_ENABLE           ( IDC_SPRESOLUTIONEDIT,         CmSPComputeRezEnable ),
+    EV_COMMAND_ENABLE           ( IDC_SPFROMBRAIN,              CmSPPortEnable ),
+    EV_COMMAND_ENABLE           ( IDC_SPFROMSP,                 CmSPPortEnable ),
+    EV_COMMAND_ENABLE           ( IDC_BROWSEMRIFILE,            CmSPPortEnable ),
+    EV_COMMAND_ENABLE           ( IDC_BROWSESPFILE,             CmSPPortEnable ),
+
     EV_COMMAND_ENABLE           ( IDC_PROCESSCURRENT,           CmProcessCurrentEnable ),
     EV_COMMAND_ENABLE           ( IDC_PROCESSBATCH,             CmProcessBatchEnable ),
 
@@ -189,6 +240,8 @@ StringCopy ( BatchFilesExt, AllMriFilesExt );
 
 Presets                 = new TComboBox ( this, IDC_MRIPREPROCPRESETS );
 PresetsMriType          = new TComboBox ( this, IDC_MRITYPEPRESETS );
+
+FullHeadCleanUp         = new TCheckBox ( this, IDC_FULLHEADCLEANUP );
 
 Isotropic               = new TCheckBox ( this, IDC_ISOTROPIC );
 
@@ -237,6 +290,17 @@ SizeUserZ->SetValidator ( new TFilterValidator ( ValidatorPositiveInteger ) );
 
 PresetsSkullStripping   = new TComboBox ( this, IDC_MRISKULLSTRIPPINGPRESETS );
 BFC                     = new TCheckBox ( this, IDC_BFC );
+
+PresetsGrey             = new TComboBox ( this, IDC_GREYMASKTYPEPRESETS );
+
+PresetsSP               = new TComboBox ( this, IDC_SPTYPEPRESETS );
+SPNumber                = new TRadioButton ( this, IDC_SPNUMBER );
+SPNumberEdit            = new TEdit ( this, IDC_SPNUMBEREDIT, EditSizeValue );
+SPResolution            = new TRadioButton ( this, IDC_SPRESOLUTION );
+SPResolutionEdit        = new TEdit ( this, IDC_SPRESOLUTIONEDIT, EditSizeValue );
+SPFromBrain             = new TEdit ( this, IDC_SPFROMBRAIN, EditSizeText );
+SPFromSP                = new TEdit ( this, IDC_SPFROMSP, EditSizeText );
+
 InfixFilename           = new TEdit ( this, IDC_INFIXFILENAME, EditSizeText );
 OpenAuto                = new TCheckBox ( this, IDC_OPENAUTO );
 
@@ -255,6 +319,7 @@ SetTransferBuffer ( &MriPreprocTransfer );
         TPreprocessMrisDialog::~TPreprocessMrisDialog ()
 {
 delete  Presets;                delete  PresetsMriType;
+delete  FullHeadCleanUp;
 delete  Isotropic;
 delete  Resizing;               delete  ResizingVoxel;          delete  ResizingRatio;
 delete  ResizingVoxelValue;     delete  ResizingRatioValue;
@@ -266,8 +331,12 @@ delete  OriginMni;              delete  OriginCenter;           delete  OriginFi
 delete  OriginX;                delete  OriginY;                delete  OriginZ;
 delete  SizeTransformed;        delete  SizeOptimal;            delete  SizeUser;
 delete  SizeUserX;              delete  SizeUserY;              delete  SizeUserZ;
-delete  PresetsSkullStripping;
-delete  BFC;
+delete  PresetsSkullStripping;  delete  BFC;
+delete  PresetsGrey;
+delete  PresetsSP;
+delete  SPNumber;               delete  SPNumberEdit;
+delete  SPResolution;           delete  SPResolutionEdit;
+delete  SPFromBrain;            delete  SPFromSP;
 delete  InfixFilename;          delete  OpenAuto;
 }
 
@@ -321,15 +390,57 @@ tce.Enable ( CheckToBool ( SettingOrigin->GetCheck() ) && CheckToBool ( OriginFi
 }
 
 
+void    TPreprocessMrisDialog::CmSizeUserEnable ( TCommandEnabler &tce )
+{
+tce.Enable ( CheckToBool ( SizeUser->GetCheck() ) );
+}
+
+
 void    TPreprocessMrisDialog::CmSkullStrippingEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( PresetsSkullStripping->GetSelIndex () != MriSkullStrippingPresetOff ); 
 }
 
 
-void    TPreprocessMrisDialog::CmSizeUserEnable ( TCommandEnabler &tce )
+void    TPreprocessMrisDialog::CmSPPresetsEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( CheckToBool ( SizeUser->GetCheck() ) );
+tce.Enable ( PresetsSkullStripping->GetSelIndex () != MriSkullStrippingPresetOff
+          && PresetsGrey          ->GetSelIndex () != GreyMaskPresetOff         ); 
+}
+
+
+void    TPreprocessMrisDialog::CmSPButtonEnable ( TCommandEnabler &tce )
+{
+tce.Enable ( PresetsSkullStripping->GetSelIndex () != MriSkullStrippingPresetOff
+          && PresetsGrey          ->GetSelIndex () != GreyMaskPresetOff
+          && PresetsSP            ->GetSelIndex () == SPPresetCompute           ); 
+}
+
+
+void    TPreprocessMrisDialog::CmSPComputeNumEnable ( TCommandEnabler &tce )
+{
+tce.Enable ( PresetsSkullStripping->GetSelIndex () != MriSkullStrippingPresetOff
+          && PresetsGrey          ->GetSelIndex () != GreyMaskPresetOff
+          && PresetsSP            ->GetSelIndex () == SPPresetCompute
+          && CheckToBool ( SPNumber->GetCheck() )                               ); 
+}
+
+
+void    TPreprocessMrisDialog::CmSPComputeRezEnable ( TCommandEnabler &tce )
+{
+tce.Enable ( PresetsSkullStripping->GetSelIndex () != MriSkullStrippingPresetOff
+          && PresetsGrey          ->GetSelIndex () != GreyMaskPresetOff
+          && PresetsSP            ->GetSelIndex () == SPPresetCompute
+          && CheckToBool ( SPResolution->GetCheck() )                           ); 
+}
+
+
+void    TPreprocessMrisDialog::CmSPPortEnable ( TCommandEnabler &tce )
+{
+tce.Enable ( PresetsSkullStripping->GetSelIndex () != MriSkullStrippingPresetOff
+          && PresetsGrey          ->GetSelIndex () != GreyMaskPresetOff
+          && PresetsSP            ->GetSelIndex () == SPPresetPorting
+          && CheckToBool ( SPResolution->GetCheck() )                           ); 
 }
 
 
@@ -378,10 +489,11 @@ if ( CheckToBool ( MriPreprocTransfer.SettingOrigin )
     return  false;
 
 
-if ( CheckToBool ( MriPreprocTransfer.SizeUser ) 
-  && ( StringIsEmpty ( MriPreprocTransfer.SizeUserX ) 
-    || StringIsEmpty ( MriPreprocTransfer.SizeUserY ) 
-    || StringIsEmpty ( MriPreprocTransfer.SizeUserZ ) ) )
+if ( MriPreprocTransfer.PresetsSkullStripping.GetSelIndex () != MriSkullStrippingPresetOff
+  && MriPreprocTransfer.PresetsGrey          .GetSelIndex () != GreyMaskPresetOff
+  && MriPreprocTransfer.PresetsSP            .GetSelIndex () == SPPresetPorting
+  && ( StringIsEmpty ( MriPreprocTransfer.SPFromBrain ) 
+    || StringIsEmpty ( MriPreprocTransfer.SPFromSP    ) ) )
 
     return  false;
 
@@ -398,7 +510,7 @@ tce.Enable ( ! BatchProcessing && CmProcessEnable () );
 
 void    TPreprocessMrisDialog::CmProcessBatchEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( BatchProcessing && CmProcessEnable () );
+tce.Enable (   BatchProcessing && CmProcessEnable () );
 }
 
 
@@ -478,6 +590,7 @@ if ( StringIsEmpty ( PreprocessMrisPresetsNames[ mripreset ] ) )
     return;
 
 
+FullHeadCleanUp ->SetCheck ( BoolToCheck ( false ) );
 Isotropic       ->SetCheck ( BoolToCheck ( true  ) );   // by safety, this is alywas on
 Resizing        ->SetCheck ( BoolToCheck ( false ) );
 Reorienting     ->SetCheck ( BoolToCheck ( false ) );
@@ -489,6 +602,8 @@ SettingOrigin   ->SetCheck ( BoolToCheck ( false ) );
 
 PresetsSkullStripping   ->SetSelIndex ( MriSkullStrippingPresetOff );
 BFC             ->SetCheck ( BoolToCheck ( false ) );
+PresetsGrey     ->SetSelIndex ( GreyMaskPresetOff );
+PresetsSP       ->SetSelIndex ( SPPresetOff );
 
 
 switch ( mripreset ) {
@@ -496,35 +611,50 @@ switch ( mripreset ) {
     case MriPreprocPresetOff:
         break;
 
+    case MriPreprocPresetCleaning:
+        FullHeadCleanUp         ->SetCheck ( BoolToCheck ( true  ) );
+        break;
+
     case MriPreprocPresetResampling:
-        Resizing        ->SetCheck ( BoolToCheck ( true  ) );
+        Resizing                ->SetCheck ( BoolToCheck ( true  ) );
         break;
 
     case MriPreprocPresetReorienting:
-        Reorienting     ->SetCheck ( BoolToCheck ( true  ) );
+        Reorienting             ->SetCheck ( BoolToCheck ( true  ) );
         break;
 
     case MriPreprocPresetReorigin:
-        SettingOrigin   ->SetCheck ( BoolToCheck ( true  ) );
-        OriginMni       ->SetCheck ( BoolToCheck ( false ) );           // reorientation is off, we can't find the MNI Center
-        OriginCenter    ->SetCheck ( BoolToCheck ( true  ) );
-        OriginFixed     ->SetCheck ( BoolToCheck ( false ) );
+        SettingOrigin           ->SetCheck ( BoolToCheck ( true  ) );
+        OriginMni               ->SetCheck ( BoolToCheck ( false ) );           // reorientation is off, we can't find the MNI Center
+        OriginCenter            ->SetCheck ( BoolToCheck ( true  ) );
+        OriginFixed             ->SetCheck ( BoolToCheck ( false ) );
         break;
 
     case MriPreprocPresetSkullStripping:
         PresetsSkullStripping   ->SetSelIndex ( MriSkullStrippingPresetDefault );
-        BFC             ->SetCheck ( BoolToCheck ( true  ) );
+        BFC                     ->SetCheck ( BoolToCheck ( true  ) );
+        PresetsGrey             ->SetSelIndex ( GreyMaskPresetOff );
+        PresetsSP               ->SetSelIndex ( SPPresetOff );
+        break;
+
+    case MriPreprocPresetSkullStrippingGreySP:
+        PresetsSkullStripping   ->SetSelIndex ( MriSkullStrippingPresetDefault );
+        BFC                     ->SetCheck ( BoolToCheck ( true  ) );
+        PresetsGrey             ->SetSelIndex ( GreyMaskPresetDefault );
+        PresetsSP               ->SetSelIndex ( SPPresetCompute );
         break;
 
     case MriPreprocPresetAll:
-        Resizing        ->SetCheck ( BoolToCheck ( true  ) );
-        ResizingVoxel   ->SetCheck ( BoolToCheck ( true  ) );
-        ResizingRatio   ->SetCheck ( BoolToCheck ( false ) );
-        ResizingVoxelValue->SetText ( "1" );
+        FullHeadCleanUp         ->SetCheck ( BoolToCheck ( true  ) );
 
-        Reorienting     ->SetCheck ( BoolToCheck ( true  ) );
-        AlignSagittal   ->SetCheck ( BoolToCheck ( true  ) );           // for MNI Center
-        AlignTransverse ->SetCheck ( BoolToCheck ( true  ) );
+        Resizing                ->SetCheck ( BoolToCheck ( true  ) );
+        ResizingVoxel           ->SetCheck ( BoolToCheck ( true  ) );
+        ResizingRatio           ->SetCheck ( BoolToCheck ( false ) );
+        ResizingVoxelValue      ->SetText  ( "1" );
+
+        Reorienting             ->SetCheck ( BoolToCheck ( true  ) );
+        AlignSagittal           ->SetCheck ( BoolToCheck ( true  ) );           // for MNI Center
+        AlignTransverse         ->SetCheck ( BoolToCheck ( true  ) );
 
         SettingOrigin           ->SetCheck ( BoolToCheck ( true  ) );
         SettingOriginIfNotSet   ->SetCheck ( BoolToCheck ( false ) );
@@ -535,16 +665,18 @@ switch ( mripreset ) {
         break;
 
     case MriPreprocPresetInverse:
-        Resizing        ->SetCheck ( BoolToCheck ( true  ) );
-        ResizingVoxel   ->SetCheck ( BoolToCheck ( true  ) );
-        ResizingRatio   ->SetCheck ( BoolToCheck ( false ) );
-        ResizingVoxelValue->SetText ( "1" );
+        FullHeadCleanUp         ->SetCheck ( BoolToCheck ( true  ) );
 
-        Reorienting     ->SetCheck ( BoolToCheck ( true  ) );
-        ReorientingRas  ->SetCheck ( BoolToCheck ( true  ) );
-        ReorientingOther->SetCheck ( BoolToCheck ( false ) );
-        AlignSagittal   ->SetCheck ( BoolToCheck ( true  ) );           // for MNI Center
-        AlignTransverse ->SetCheck ( BoolToCheck ( true  ) );
+        Resizing                ->SetCheck ( BoolToCheck ( true  ) );
+        ResizingVoxel           ->SetCheck ( BoolToCheck ( true  ) );
+        ResizingRatio           ->SetCheck ( BoolToCheck ( false ) );
+        ResizingVoxelValue      ->SetText ( "1" );
+
+        Reorienting             ->SetCheck ( BoolToCheck ( true  ) );
+        ReorientingRas          ->SetCheck ( BoolToCheck ( true  ) );
+        ReorientingOther        ->SetCheck ( BoolToCheck ( false ) );
+        AlignSagittal           ->SetCheck ( BoolToCheck ( true  ) );           // for MNI Center
+        AlignTransverse         ->SetCheck ( BoolToCheck ( true  ) );
 
         SettingOrigin           ->SetCheck ( BoolToCheck ( true  ) );
         SettingOriginIfNotSet   ->SetCheck ( BoolToCheck ( false ) );
@@ -554,7 +686,9 @@ switch ( mripreset ) {
         OriginFixed             ->SetCheck ( BoolToCheck ( false ) );
 
         PresetsSkullStripping   ->SetSelIndex ( MriSkullStrippingPresetDefault );
-        BFC             ->SetCheck ( BoolToCheck ( true  ) );
+        BFC                     ->SetCheck    ( BoolToCheck ( true  ) );
+        PresetsGrey             ->SetSelIndex ( GreyMaskPresetDefault );
+        PresetsSP               ->SetSelIndex ( SPPresetPorting );
         break;
 
     }
@@ -618,13 +752,14 @@ TransferData ( tdGetData );
 //----------------------------------------------------------------------------
 void    TPreprocessMrisDialog::EvDropFiles ( TDropInfo drop )
 {
-TGoF                mrifiles        ( drop, AllMriFilesExt          );
-
-char                buff[ 256 ];
-StringCopy ( buff, AllMriFilesExt );
-TGoF                remainingfiles  ( drop, buff, 0, true );
+TPointInt           where;
+TGoF                mrifiles        ( drop, AllMriFilesExt, &where );
+TGoF                spfiles         ( drop, AllSolPointsFilesExt    );
+TGoF                remainingfiles  ( drop, AllSolPointsFilesExt " " AllMriFilesExt, 0, true );
 
 drop.DragFinish ();
+
+//where.Show ( "Dropped @" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -634,18 +769,125 @@ if ( (bool) remainingfiles )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // trying to resolve brain & sp parameters first
+if ( (int) mrifiles == 1 && (int) spfiles == 1 ) {
+    
+    SetBrainFile    ( mrifiles[ 0 ] );
+    SetSpFile       ( spfiles [ 0 ] );
 
+    PresetsSP->SetSelIndex ( SPPresetPorting );
+
+    return;
+    }
+
+if ( (int) mrifiles == 1 && (int) spfiles == 0
+   && IsInsideLimits ( where.Y, 700, 930 )     ) {
+    
+    SetBrainFile    ( mrifiles[ 0 ] );
+
+    PresetsSP->SetSelIndex ( SPPresetPorting );
+
+    return;
+    }
+
+if ( (int) mrifiles == 0 && (int) spfiles == 1
+   && IsInsideLimits ( where.Y, 700, 930 )     ) {
+    
+    SetSpFile       ( spfiles [ 0 ] );
+
+    PresetsSP->SetSelIndex ( SPPresetPorting );
+
+    return;
+    }
+
+                                        // at that point, it should be MRIs to process here...
 if ( (bool) mrifiles && ! BatchProcessing )
     ShowMessage ( BatchNotAvailMessage, NormalizeTitleMany, ShowMessageWarning );
 
 
-if ( (bool) mrifiles && BatchProcessing ) {
+if ( (bool) mrifiles &&   BatchProcessing ) {
 
     if ( CmProcessEnable () )
         BatchProcessDropped ( mrifiles );
     else
         ShowMessage ( BatchErrorMessage, NormalizeTitleMany, ShowMessageWarning );
     }
+}
+
+
+//----------------------------------------------------------------------------
+void    TPreprocessMrisDialog::CmBrowseSpFile ()
+{
+SetSpFile ( 0 );
+}
+
+
+void    TPreprocessMrisDialog::SetSpFile ( char *file )
+{
+static GetFileFromUser  getfile ( "Solution Points File:", AllSolPointsFilesFilter, 1, GetFileRead );
+
+TransferData ( tdGetData );
+
+
+if ( StringIsEmpty ( file ) ) {
+
+    if ( ! getfile.Execute ( MriPreprocTransfer.SPFromSP ) )
+        return;
+
+    TransferData ( tdSetData );
+    }
+else {
+    StringCopy ( MriPreprocTransfer.SPFromSP, file );
+
+    getfile.SetOnly ( file );
+    }
+
+
+TransferData ( tdSetData );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SPFromBrain->ResetCaret;
+SPFromSP   ->ResetCaret;
+}
+
+
+//----------------------------------------------------------------------------
+void    TPreprocessMrisDialog::CmBrowseBrainFile ()
+{
+SetBrainFile ( 0 );
+}
+
+
+void    TPreprocessMrisDialog::SetBrainFile ( char *file )
+{
+static GetFileFromUser  getfile ( "Brain MRI File:", AllMriFilesFilter, 1, GetFileRead );
+
+TransferData ( tdGetData );
+
+
+if ( StringIsEmpty ( file ) ) {
+
+    if ( ! getfile.Execute ( MriPreprocTransfer.SPFromBrain ) )
+        return;
+
+    TransferData ( tdSetData );
+    }
+else {
+    StringCopy ( MriPreprocTransfer.SPFromBrain, file );
+
+    getfile.SetOnly ( file );
+    }
+
+
+TransferData ( tdSetData );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SPFromBrain->ResetCaret;
+SPFromSP   ->ResetCaret;
 }
 
 
@@ -712,7 +954,7 @@ for ( BatchFileIndex = 0; BatchFileIndex < numinfiles ; BatchFileIndex++ ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     if ( BatchProcessing ) {            // open the doc myself
 
-        MRIDoc      = dynamic_cast< TVolumeDoc* > ( CartoolDocManager->OpenDoc ( BatchFileNames[ BatchFileIndex ], dtOpenOptionsNoView ) );
+        MRIDoc      = dynamic_cast<TVolumeDoc*> ( CartoolDocManager->OpenDoc ( BatchFileNames[ BatchFileIndex ], dtOpenOptionsNoView ) );
 
         if ( ! MRIDoc )                 // oops, not gonna like it
             continue;
@@ -758,6 +1000,11 @@ if ( ! transfer )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 MRISequenceType     mrisequence     = (MRISequenceType) transfer->PresetsMriType.GetSelIndex ();
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool                cleanup         = CheckToBool ( transfer->FullHeadCleanUp );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -852,7 +1099,9 @@ arbitraryorigin.Z   = StringToDouble ( transfer->OriginZ );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-MriSkullStrippingPresetsEnum  skullstrippingpreset  = (MriSkullStrippingPresetsEnum) PresetsSkullStripping->GetSelIndex ();
+MriSkullStrippingPresetsEnum  skullstrippingpreset  = (MriSkullStrippingPresetsEnum) transfer->PresetsSkullStripping.GetSelIndex ();
+
+bool                doskullstripping= skullstrippingpreset != MriSkullStrippingPresetOff;
 
 SkullStrippingType  skullstripping  = skullstrippingpreset == MriSkullStrippingPresetOff    ?   SkullStrippingNone
                                     : skullstrippingpreset == MriSkullStrippingPreset1      ?   SkullStripping1B
@@ -860,7 +1109,48 @@ SkullStrippingType  skullstripping  = skullstrippingpreset == MriSkullStrippingP
                                     : skullstrippingpreset == MriSkullStrippingPreset3      ?   SkullStripping3
                                     :                                                           SkullStrippingNone;
 
-bool                bfc             = skullstripping != SkullStrippingNone && CheckToBool ( transfer->BFC );
+bool                bfc             = doskullstripping && CheckToBool ( transfer->BFC );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+GreyMaskPresetsEnum greypreset          = (GreyMaskPresetsEnum) transfer->PresetsGrey.GetSelIndex ();
+
+bool                computegrey         = doskullstripping && greypreset != GreyMaskPresetOff;
+
+GreyMatterFlags     greyflagsproc       = greypreset == GreyMaskPresetOff   ?   GreyMatterNothing
+                                        : greypreset == GreyMaskPresetThin  ?   GreyMatterSlim
+                                        : greypreset == GreyMaskPresetReg   ?   GreyMatterRegular
+                                        : greypreset == GreyMaskPresetFat   ?   GreyMatterFat
+                                        : greypreset == GreyMaskPresetWhole ?   GreyMatterWhole
+                                        :                                       GreyMatterNothing;
+
+GreyMatterFlags     greyflagspostproc   = GreyMatterFlags ( GreyMatterPostprocessing | GreyMatterAsymmetric );
+
+GreyMatterFlags     greyflags           = GreyMatterFlags ( greyflagsproc | greyflagspostproc );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SPPresetsEnum       sppreset            = (SPPresetsEnum) transfer->PresetsSP.GetSelIndex ();
+
+bool                dosps               = computegrey && sppreset != SPPresetOff;
+
+int                 numsps              = dosps && sppreset == SPPresetCompute && CheckToBool ( transfer->SPNumber     ) ? StringToInteger ( transfer->SPNumberEdit     ) : 0;
+double              ressps              = dosps && sppreset == SPPresetCompute && CheckToBool ( transfer->SPResolution ) ? StringToDouble  ( transfer->SPResolutionEdit ) : 0;
+
+TFileName           spfrombrainfile     = dosps && sppreset == SPPresetPorting && CanOpenFile ( transfer->SPFromBrain ) ? transfer->SPFromBrain : "";
+TFileName           spfromspfile        = dosps && sppreset == SPPresetPorting && CanOpenFile ( transfer->SPFromSP    ) ? transfer->SPFromSP    : "";
+
+
+GreyMatterFlags     spflagspostproc     = greyflagspostproc;    // get GreyMatterAsymmetric / GreyMatterSymmetric from grey
+
+GreyMatterFlags     spflagscheck        = GreyMatterFlags ( GreyMatterLauraCheck | GreyMatterSinglePointCheck );
+
+GreyMatterFlags     spflags             = GreyMatterFlags ( spflagspostproc | spflagscheck );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 bool                openauto        = CheckToBool ( transfer->OpenAuto ) 
                                    && ( ! BatchProcessing || (int) BatchFileNames <= 5 );
@@ -873,8 +1163,9 @@ StringCleanup   ( infixfilename );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool                showstepgauge       = true; // global step for current file
-bool                showprocessgauge    = true; // ! BatchProcessing || (int) BatchFileNames == 1;   // each sub-processing can also show-up
+bool                showstepgauge       = CartoolObjects.CartoolApplication->IsInteractive ();      // global step for current file
+bool                showprocessgauge    = showstepgauge; // && ( ! BatchProcessing || (int) BatchFileNames == 1 );  // each sub-processing can also show-up
+
 TSuperGauge         Gauge;
 
                                         // second level of 
@@ -908,13 +1199,18 @@ CartoolApplication->SetMainTitle ( NormalizeTitleOne, gofin[ 0 ], Gauge );
 
 PreprocessMris (    gofin,
                     mrisequence,
+                    cleanup,
                     isotropic, 
-                    resizing,       resizingvalue,
-                    anyresizing,    targetsize,         sizeuser,
-                    reorienting,    reorientingstring,
-                    sagittalplane,  transverseplane,
-                    origin,         arbitraryorigin,
-                    skullstripping, bfc,
+                    resizing,           resizingvalue,
+                    anyresizing,        targetsize,         sizeuser,
+                    reorienting,        reorientingstring,
+                    sagittalplane,      transverseplane,
+                    origin,             arbitraryorigin,
+                    skullstripping,     bfc,
+                    computegrey,        greyflags,
+                    sppreset,           spflags,
+                    numsps,             ressps,
+                    spfrombrainfile,    spfromspfile,
                     infixfilename,
                     gofout,
                     showstepgauge ? &Gauge : 0, showprocessgauge );

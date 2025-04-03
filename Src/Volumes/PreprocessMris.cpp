@@ -31,6 +31,11 @@ limitations under the License.
 #include    "Geometry.TOrientation.h"
 
 #include    "TVolumeDoc.h"
+#include    "ESI.SolutionPoints.h"                  // ComputeSolutionPoints
+#include    "ESI.InverseModels.h"                   // InverseNeighborhood
+#include    "GlobalOptimize.Volumes.h"              // RemapIntensityType, FitVolumeType
+#include    "CoregistrationMrisUI.h"                // CoregistrationSpecsType, CoregistrationSpecs
+#include    "Volumes.Coregistration.h"              // CoregisterMris
 
 #include    "GlobalOptimize.Tracks.h"               // FunctionCenter
 #include    "Volumes.SagittalTransversePlanes.h"    // SetSagittalPlaneMri, SetTransversePlaneMri
@@ -58,6 +63,7 @@ OptimizeOff
                                         //   - ResizingRatios:      value = downsampling ratio
 void        PreprocessMris  (   const TGoF&         gofin,
                                 MRISequenceType     mrisequence,
+                                bool                cleanup,
                                 bool                isotropic,
                                 ResizingType        resizing,           double              resizingvalue,
                                 bool                anyresizing,        BoundingSizeType    targetsize,         const TPointInt&    sizeuser,
@@ -65,6 +71,10 @@ void        PreprocessMris  (   const TGoF&         gofin,
                                 bool                sagittalplane,      bool                transverseplane,
                                 OriginFlags         origin,             const TPointDouble& arbitraryorigin,
                                 SkullStrippingType  skullstripping,     bool                bfc,
+                                bool                computegrey,        GreyMatterFlags     greyflags,
+                                SPPresetsEnum       sppreset,           GreyMatterFlags     spflags,
+                                int                 numsps,             double              ressps,
+                                const char*         spfrombrainfile,    const char*         spfromspfile,
                                 const char*         infixfilename,
                                 TGoF&               gofout,
                                 TSuperGauge*        gauge,              bool                showsubprocess
@@ -74,6 +84,26 @@ gofout.Reset ();
 
 if ( gofin.IsEmpty () )
     return;
+
+
+if ( sppreset == SPPresetCompute && numsps <= 0 && ressps <= 0 )
+    sppreset    = SPPresetOff;
+
+if ( sppreset == SPPresetPorting && StringIsEmpty ( spfrombrainfile ) && StringIsEmpty ( spfromspfile ) )
+    sppreset    = SPPresetOff;
+
+
+bool                doresizing      = resizing       != ResizingNone;
+bool                doreorient      = reorienting    != ReorientingNone;
+bool                doskullstripping= skullstripping != SkullStrippingNone;
+bool                dogrey          = doskullstripping && computegrey && IsFlag ( greyflags, GreyMatterProcMask );
+bool                dosps           = dogrey           && sppreset != SPPresetOff;
+
+                                        // force silent if not in interactive mode
+if ( ( gauge || showsubprocess ) && CartoolObjects.CartoolApplication->IsNotInteractive () ) {
+    gauge           = 0;
+    showsubprocess  = false;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -116,14 +146,15 @@ for ( int i = 0; i < (int) gofin; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     
-    StringCopy      ( verbosefile,              gofin[ i ] );
-    RemoveExtension ( verbosefile );
-    StringAppend    ( verbosefile,              "." );
+    StringCopy          ( verbosefile,              gofin[ i ] );
+    RemoveExtension     ( verbosefile );
+    StringAppend        ( verbosefile,              "." );
     if ( userinfix )
-        StringAppend    ( verbosefile,          infixfilename,  " " );
-    StringAppend    ( verbosefile,              "Preprocessing" );
-    AddExtension    ( verbosefile,              FILEEXT_VRB );
+        StringAppend    ( verbosefile,              infixfilename,  " " );
+    StringAppend        ( verbosefile,              "Preprocessing" );
+    AddExtension        ( verbosefile,              FILEEXT_VRB );
 
+    CheckNoOverwrite    ( verbosefile );
 
     TVerboseFile    verbose ( verbosefile, VerboseFileDefaultWidth );
 
@@ -131,7 +162,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // 1) For now, non-byte data types (short, float...) will be forcibly converted to unsigned byte at opening time
+                                        // 1) Opening volume
     if ( ! mridoc.Open ( gofin[ i ], OpenDocHidden ) )
         continue;
 
@@ -151,6 +182,27 @@ for ( int i = 0; i < (int) gofin; i++ ) {
     mridoc->GetSize     ( sourcemrisize );
     mriorigin           =  mridoc->GetOrigin     ();
     sourcevoxelsize     =  mridoc->GetVoxelSize  ();
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // 2) Full Head clean-up?
+    if ( cleanup ) {
+
+        p ( FilterParamHeadCleanupVoxelSize  )  = mridoc->GetVoxelSize ().Average ();
+                                        // filtering directly on the doc?
+        mridoc->GetData ()->Filter ( FilterTypeHeadCleanup, p, true /*! batchmode*/ );
+        } // cleanup
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    verbose.NextTopic ( "Pre-Processing:" );
+    {
+    verbose.Put ( "Full Head Clean-up:", cleanup );
+    }
+
+
+    verbose.Flush ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -188,7 +240,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
     double              scalingfactor   = 1;
 
                                         // Here we assume that voxels are isotropic
-    if ( resizing != ResizingNone ) {
+    if ( doresizing ) {
 
         if      ( resizing == ResizingDimensions ) {
                                         // getting the current dimension reference
@@ -248,9 +300,9 @@ for ( int i = 0; i < (int) gofin; i++ ) {
     verbose.Put ( "Isotropic voxels:", isotropic );
 
     verbose.NextLine ();
-    verbose.Put ( "Resampling:", resizing != ResizingNone );
+    verbose.Put ( "Resampling:", doresizing );
 
-    if ( resizing != ResizingNone ) {
+    if ( doresizing ) {
 
         verbose.Put ( "Resampling method:", resizing == ResizingDimensions  ? "By dimension" 
                                           : resizing == ResizingVoxels      ? "By voxel size" 
@@ -265,7 +317,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
 
         else if ( resizing == ResizingVoxels )
 
-            verbose.Put ( "Resampling to voxel size:", resizingvalue, 3, " [mm]" );
+            verbose.Put ( "Resampling to voxel size:", resizingvalue, 2, " [mm]" );
 
         else if ( resizing == ResizingRatios ) {
 
@@ -281,6 +333,9 @@ for ( int i = 0; i < (int) gofin; i++ ) {
         } // resizing
 
     }
+
+
+    verbose.Flush ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -352,7 +407,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
         }
 
                                         // No forced reorientation
-    else if ( reorienting == ReorientingNone ) {
+    else if ( ! doreorient ) {
 
                                         // Transform back to original: RAS -> Local
         reorientaftersag      = mridoc->GetStandardOrientation ( RASToLocal );
@@ -367,7 +422,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
 
     verbose.NextTopic ( "Orientation:" );
     {
-    verbose.Put ( "Axis reorientation:", reorienting != ReorientingNone );
+    verbose.Put ( "Axis reorientation:", doreorient );
 
     if      ( reorienting == ReorientingRAS ) {
 
@@ -386,7 +441,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
         }
 
 
-    if ( reorienting != ReorientingNone ) {
+    if ( doreorient ) {
         verbose.NextLine ();
         verbose.Put ( "Mid-Sagittal plane adjustment:", sagittalplane );
         verbose.Put ( "MNI Transverse Plane adjustment:", transverseplane );
@@ -396,17 +451,17 @@ for ( int i = 0; i < (int) gofin; i++ ) {
 
     verbose.NextTopic ( "Origin:" );
     {
-    verbose.Put ( "Setting new origin:",    IsOriginSetAlways ( origin )    ?   "Always" 
-                                          : IsOriginSetNoDefault ( origin ) ?   "Only by default" 
-                                          : IsOriginReset ( origin )        ?   "Resetting" 
-                                          :                                     "No" );
+    verbose.Put ( "Setting new origin:",    IsOriginSetAlways     ( origin )    ?   "Always" 
+                                          : IsOriginSetNoDefault  ( origin )    ?   "Only by default" 
+                                          : IsOriginReset         ( origin )    ?   "Resetting" 
+                                          :                                         "No" );
 
     if ( IsOrigin ( origin ) )
-        verbose.Put ( "New origin position:",   IsOriginMni ( origin )      ?   "MNI origin" 
-                                              : IsOriginCenter ( origin )   ?   "Brain geometrical center" 
-                                              : IsOriginArbitrary ( origin )?   "Specified position" 
-                                              : IsOriginReset ( origin )    ?   "(0,0,0) [voxel]" 
-                                              :                                 "Somewhere" );
+        verbose.Put ( "New origin position:",   IsOriginMni       ( origin )    ?   "MNI origin" 
+                                              : IsOriginCenter    ( origin )    ?   "Brain geometrical center" 
+                                              : IsOriginArbitrary ( origin )    ?   "Specified position" 
+                                              : IsOriginReset     ( origin )    ?   "(0,0,0) [voxel]" 
+                                              :                                     "Somewhere" );
 
     if ( IsOriginArbitrary ( origin ) ) {
         sprintf ( buff, "(%g,%g,%g) [voxel]", arbitraryorigin.X, arbitraryorigin.Y, arbitraryorigin.Z );
@@ -415,13 +470,35 @@ for ( int i = 0; i < (int) gofin; i++ ) {
     }
 
 
-    verbose.NextTopic ( "Options:" );
+    verbose.NextTopic ( "Post-Processing:" );
     {
-    verbose.Put ( "Skull-Stripping full head:", skullstripping != SkullStrippingNone );
-
-    if ( skullstripping != SkullStrippingNone ) {
+    verbose.Put ( "Skull-Stripping / Brain extraction:", doskullstripping );
+    if ( doskullstripping ) {
         verbose.Put ( "Skull-Stripping method:", SkullStrippingNames[ skullstripping ] );
-        verbose.Put ( "Brain Bias Field Correction (BFC):",   bfc );
+        verbose.Put ( "Bias Field Correction (BFC) on Brain:",   bfc );
+        }
+
+    verbose.NextLine ();
+    verbose.Put ( "Extracting Grey Mask:", dogrey );
+    if ( dogrey ) {
+        verbose.Put ( "Grey Matter Mask thickness:",    GreyMatterProcessingToString ( greyflags ) );
+        verbose.Put ( "Grey Matter Mask symmetry:",     GreyMatterSymmetryToString   ( greyflags ) );
+        }
+
+    verbose.NextLine ();
+    verbose.Put ( "Computing Solution Points:", dosps );
+    if ( dosps ) {
+        verbose.Put ( "Solution Points method:", SPPresetsNames[ sppreset ] );
+
+        if      ( sppreset == SPPresetCompute ) {
+            verbose.Put ( "Solution Points symmetry:",      GreyMatterSymmetryToString ( spflags ) );
+            if      ( numsps > 0 )  verbose.Put ( "Number of Solution Points targetted:",  numsps );
+            else if ( ressps > 0 )  verbose.Put ( "Solution Points resolution:",           ressps, 2, "[mm]" );
+            }
+        else if ( sppreset == SPPresetPorting ) {
+            verbose.Put ( "Porting from Brain:",           spfrombrainfile );
+            verbose.Put ( "Porting from Solution Points:", spfromspfile );
+            }
         }
     }
 
@@ -710,7 +787,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
     else if ( StringIsNotEmpty ( infixfile ) )  StringAppend    ( preprocfile, infixfile            );
     else                                        StringAppend    ( preprocfile, ".Preproc"           );
                                         // we know for sure it is a full head if we run some skull-stripping
-    if ( skullstripping != SkullStrippingNone && isfullhead && ! StringContains ( (const char*) preprocfile, "." InfixHead ) )
+    if ( doskullstripping && isfullhead && ! StringContains ( (const char*) preprocfile, "." InfixHead ) )
         StringAppend    ( preprocfile, "." InfixHead );
 
     AddExtension        ( preprocfile, DefaultMriExt );
@@ -758,7 +835,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
     Volume                  brain;
 
                         // skip step if the MRI does not appear to be a full head
-    if ( skullstripping != SkullStrippingNone && isfullhead ) {
+    if ( doskullstripping && isfullhead ) {
 
 
         postprocdoc.Open ( preprocfile, OpenDocHidden );
@@ -776,12 +853,11 @@ for ( int i = 0; i < (int) gofin; i++ ) {
         brain.Filter    ( FilterTypeSkullStripping, p, showsubprocess );
 
 
-        StringCopy      ( brainfile, preprocfile );
-
+        brainfile   = preprocfile;
                                         // try to be smart, and avoid having something like .Head.Brain
         if ( StringContains ( (const char*) brainfile, "." InfixHead ) )    StringReplace   ( brainfile, "." InfixHead, "." InfixBrain );
         else                                                                PostfixFilename ( brainfile, "." InfixBrain );
-        }
+        } // Brain
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -789,7 +865,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
     if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
 
                                         // applies BFC only if brain has been extracted (possibly loaded?)
-    if ( skullstripping != SkullStrippingNone && brain.IsAllocated () && bfc ) {
+    if ( brain.IsAllocated () && bfc ) {
 
         p ( FilterParamBiasFieldRepeat )     = 1;
                                         // if we really needed, we could save / retrieve the correction volume and apply it to the whole head MRI(?)
@@ -815,11 +891,11 @@ for ( int i = 0; i < (int) gofin; i++ ) {
 */
                                         // avoid spoiling brain file name
         if ( ! userinfix )      PostfixFilename ( brainfile, "." InfixBiasFieldCorrection );
-        }
+        } // BFC
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // 16) Time to save da brain in RAS
+                                        // 16) Time to save the brain in proper RAS orientation
     if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
 
 
@@ -837,6 +913,132 @@ for ( int i = 0; i < (int) gofin; i++ ) {
         }
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // 17) Extracting Grey
+    if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
+
+
+    TFileName               greyfile;
+    Volume                  grey;
+
+    if ( dogrey && brain.IsAllocated () ) {
+
+        grey    = brain;
+
+        p ( FilterParamGreyType )     = greyflags;
+
+        grey.Filter ( FilterTypeSegmentGrey, p, true /*! batchmode*/ );
+
+
+        greyfile    = brainfile;
+                                        // try to be smart, and avoid having something like .Brain.Grey
+        if ( StringContains ( (const char*) greyfile, "." InfixBrain ) )    StringReplace   ( greyfile, "." InfixBrain, "." InfixGrey );
+        else                                                                PostfixFilename ( greyfile, "." InfixGrey );
+        } // Grey
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // 18) Saving grey mask to file
+    if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
+
+
+    if ( grey.IsAllocated () ) {
+                                        // !in case if loading a brain, set sourcevoxelsize & brainfile!
+                                        // Exact same space as temp Sagittal RAS head
+        grey.WriteFile  ( greyfile, &postprocdoc->GetOrigin (), &sourcevoxelsize, &postprocdoc->GetRealSize (), orientationstring,
+                          AtLeast ( NiftiTransformDefault, mridoc->GetNiftiTransform () ),    mridoc->GetNiftiIntentCode (),  NiftiIntentNameGreyMask
+                        );
+
+        gofout.Add ( greyfile );
+        }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // 19) Solution Points
+    if ( gauge )    gauge->Next ( -1, SuperGaugeUpdateTitle );
+
+
+    TFileName               spfile;
+
+    if ( dosps && grey.IsAllocated () ) {
+
+        spfile      = greyfile;
+
+        if ( StringContains ( (const char*) spfile, "." InfixGrey ) )       StringDelete    ( spfile, "." InfixGrey );
+
+        spfile.ReplaceExtension ( FILEEXT_SPIRR );
+
+
+        if      ( sppreset == SPPresetCompute ) {
+                                        // Open our computed brain and grey
+            TOpenDoc<TVolumeDoc>    mribraindoc ( brainfile, OpenDocHidden );
+            TOpenDoc<TVolumeDoc>    mrigreydoc  ( greyfile,  OpenDocHidden );
+
+            NeighborhoodType        lolauneighborhood   = InverseNeighborhood;
+            TPoints                 solpoints;
+            TStrings                spnames;
+
+
+            ComputeSolutionPoints   (
+                                    mribraindoc,        mrigreydoc, 
+                                    numsps,             ressps,
+                                    spflags,                                // trusting caller on that one
+                                    lolauneighborhood,  lolauneighborhood,
+                                    solpoints,          spnames,
+                                    spfile
+                                    );
+
+            gofout.Add ( spfile );
+            } // SPPresetCompute
+
+        else if ( sppreset == SPPresetPorting ) {
+                                        // Open provided brain and grey
+            TOpenDoc<TVolumeDoc>    tobraindoc   ( brainfile,       OpenDocHidden );
+            TOpenDoc<TVolumeDoc>    frombraindoc ( spfrombrainfile, OpenDocHidden );
+
+            RemapIntensityType      fromremap       = frombraindoc->IsMask () || tobraindoc->IsMask () ? RemapIntensityMask : RemapIntensityRank;
+            RemapIntensityType      toremap         = fromremap;
+            FitVolumeType           inclusionflags  = FitVolumeEqualSizes;
+
+            TGoF                    filestransfmris;
+            TGoF                    filestransfspis ( spfromspfile );
+
+            TGoF                    outputmats;
+            TGoF                    outputmris;
+            TGoF                    outputpoints;
+            double                  coregquality;
+            char                    coregqualityopinion[ 256 ];
+
+
+            CoregisterMris  (   frombraindoc,       fromremap,
+                                tobraindoc,         toremap,
+                                inclusionflags,
+                                CoregistrationSpecs[ CoregistrationRotTransScale3Shear6 ],
+                                GlobalNelderMead,
+                                1e-6,
+                                filestransfmris,    filestransfspis,
+                                0,
+                                outputmats,         outputmris,         outputpoints,
+                                coregquality,       coregqualityopinion,
+                                Silent
+                            );
+
+                                        // copy our solution points
+            if ( outputpoints.IsNotEmpty () ) {
+                CopyFileExtended    ( outputpoints[ 0 ], spfile );
+                gofout.Add ( spfile );
+                }
+
+                                        // delete all the rest
+            outputmats  .DeleteFiles ();
+            outputmris  .DeleteFiles ();
+            outputpoints.DeleteFiles ();
+            } // SPPresetCompute
+
+        } // Solution Points
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     verbose.NextTopic ( "Output Files:" );
     {

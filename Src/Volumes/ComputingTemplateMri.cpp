@@ -960,7 +960,7 @@ if ( howsp  == TemplateExtractSPFromTemplate ) {
     verbose.NextLine ();
     verbose.Put ( "Grey Matter Mask is:",           "Extracted from template" );
     verbose.Put ( "Grey Matter Mask thickness:",    GreyMatterProcessingToString ( greyflags ) );
-    verbose.Put ( "Grey Matter Mask shape:",        GreyMatterSymmetryToString ( greyflags ) );
+    verbose.Put ( "Grey Matter Mask symmetry:",     GreyMatterSymmetryToString   ( greyflags ) );
     }
 }
 
@@ -1139,7 +1139,7 @@ if ( howsp  != TemplateNoSP ) {
     verbose.Put ( "Number of solution points:", (int) solpoints );  // actual number
 
     if ( howsp  == TemplateExtractSPFromTemplate )
-        verbose.Put ( "Solution points shape:",         GreyMatterSymmetryToString ( spflags ) );
+        verbose.Put ( "Solution Points symmetry:",      GreyMatterSymmetryToString ( spflags ) );
 
     verbose.Flush ();
     }

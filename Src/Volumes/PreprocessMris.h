@@ -23,7 +23,7 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-constexpr int       PreProcessMrisNumGauge  = 10;
+constexpr int       PreProcessMrisNumGauge  = 13;
 
 enum        MRISequenceType;
 enum        ResizingType;
@@ -31,12 +31,15 @@ enum        BoundingSizeType;
 enum        ReorientingType;
 enum        OriginFlags;
 enum        SkullStrippingType;
+enum        GreyMatterFlags;
+enum        SPPresetsEnum;
 class       TGoF;
 class       TSuperGauge;
 
 
 void        PreprocessMris  (   const TGoF&         gofin,
                                 MRISequenceType     mrisequence,
+                                bool                cleanup,
                                 bool                isotropic,
                                 ResizingType        resizing,           double              resizingvalue,
                                 bool                anyresizing,        BoundingSizeType    targetsize,         const TPointInt&    sizeuser,
@@ -44,6 +47,10 @@ void        PreprocessMris  (   const TGoF&         gofin,
                                 bool                sagittalplane,      bool                transverseplane,
                                 OriginFlags         origin,             const TPointDouble& arbitraryorigin,
                                 SkullStrippingType  skullstripping,     bool                bfc,
+                                bool                computegrey,        GreyMatterFlags     greyflags,
+                                SPPresetsEnum       sppreset,           GreyMatterFlags     spflags,
+                                int                 numsps,             double              ressps,
+                                const char*         spfrombrainfile,    const char*         spfromspfile,
                                 const char*         infixfilename,
                                 TGoF&               gofout,
                                 TSuperGauge*        gauge,              bool                showsubprocess

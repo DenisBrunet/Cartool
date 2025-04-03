@@ -71,14 +71,14 @@ enum            GreyMatterFlags
                 };
 
 
-inline  char*   GreyMatterProcessingToString  ( GreyMatterFlags gf )  {   return  ( gf & GreyMatterSlim         ) ? "Thin" 
-                                                                                : ( gf & GreyMatterRegular      ) ? "Regular" 
-                                                                                : ( gf & GreyMatterFat          ) ? "Fat" 
-                                                                                : ( gf & GreyMatterWhole        ) ? "Whole brain" 
-                                                                                :                                   "Unknown" ; }
+inline  char*   GreyMatterProcessingToString  ( GreyMatterFlags gf )  {   return  ( gf & GreyMatterSlim         ) ? "Thin grey mask" 
+                                                                                : ( gf & GreyMatterRegular      ) ? "Regular grey mask" 
+                                                                                : ( gf & GreyMatterFat          ) ? "Thick grey mask" 
+                                                                                : ( gf & GreyMatterWhole        ) ? "Whole brain mask" 
+                                                                                :                                   "Unspecified" ; }
 inline  char*   GreyMatterSymmetryToString    ( GreyMatterFlags gf )  {   return  ( gf & GreyMatterAsymmetric   ) ? "Asymmetrical" 
                                                                                 : ( gf & GreyMatterSymmetric    ) ? "Symmetrical" 
-                                                                                :                                   "Unknown" ; }
+                                                                                :                                   "Unspecified" ; }
 
 //----------------------------------------------------------------------------
                                         // Neighborhood: used for volumes and inverse solution matrices creation

@@ -2212,7 +2212,7 @@ if ( hasgrey ) {
 
     if ( computegrey ) {
         Verbose.Put ( "Grey Matter Mask thickness:",    GreyMatterProcessingToString ( greyflags ) );
-        Verbose.Put ( "Grey Matter Mask shape:",        GreyMatterSymmetryToString   ( greyflags ) );
+        Verbose.Put ( "Grey Matter Mask symmetry:",     GreyMatterSymmetryToString   ( greyflags ) );
         }
     else
         Verbose.Put ( "Grey Matter Mask file:", FileInputMriGrey );

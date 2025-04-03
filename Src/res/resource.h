@@ -1120,7 +1120,16 @@
 #define IDC_SIZEUSERX                   7337
 #define IDC_SIZEUSERY                   7338
 #define IDC_SIZEUSERZ                   7339
+#define IDC_FULLHEADCLEANUP             7340
 #define IDC_MRITYPEPRESETS              7350
+#define IDC_GREYMASKTYPEPRESETS         7351
+#define IDC_SPNUMBER                    7352
+#define IDC_SPNUMBEREDIT                7353
+#define IDC_SPRESOLUTION                7354
+#define IDC_SPRESOLUTIONEDIT            7355
+#define IDC_SPFROMBRAIN                 7356
+#define IDC_SPFROMSP                    7357
+#define IDC_SPTYPEPRESETS               7358
 #define IDC_RISTOVOLPRESETS             7400
 #define IDC_TIMEALL                     7401
 #define IDC_UNSIGNEDBYTE                7402
