@@ -284,10 +284,10 @@ BEGIN
         MENUITEM "&Help - Reference Guide",     CM_HELPCONTENTS
 //      MENUITEM "Help - User's Guide",         CM_HELPWEBUSERSGUIDE
         MENUITEM SEPARATOR
-        MENUITEM "Cartool &GitHub",             CM_HELPCARTOOLGITHUB
-        MENUITEM "Cartool Co&mmunity",          CM_HELPCARTOOLCOMMUNITY
+        MENUITEM "Cartool &Website",            CM_HELPCARTOOLCOMMUNITY
+        MENUITEM "Cartool &GitHub Source Code", CM_HELPCARTOOLGITHUB
 //      MENUITEM "Check for &Updates",          CM_HELPAUTOUPDATE
-        MENUITEM "Latest &Release",             CM_HELPWEBRELEASES
+        MENUITEM "Latest Official &Release",    CM_HELPWEBRELEASES
         MENUITEM SEPARATOR
         MENUITEM "&Center for Biomedical Imaging (CIBM)", CM_HELPWEBCIBM
         MENUITEM SEPARATOR
@@ -1393,8 +1393,8 @@ BEGIN
     LTEXT           "<ogl prop2>",IDC_OGLPROP2,64,263,188,8,SS_NOPREFIX
     CONTROL         "",109,"Static",SS_ETCHEDFRAME,3,282,250,1
     LTEXT           "Websites:",113,4,292,60,8,SS_NOPREFIX
-    CONTROL         "github.com/DenisBrunet/Cartool",140,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,292,188,8
-    CONTROL         "cartoolcommunity.unige.ch",103,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,303,188,8
+    CONTROL         "DenisBrunet.github.io/Cartool",140,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,292,188,8
+    CONTROL         "github.com/DenisBrunet/Cartool",103,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,303,188,8
     CONTROL         "CIBM.ch",115,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,64,314,188,8
     DEFPUSHBUTTON   "&OK",IDOK,97,333,60,14
 END

@@ -46,9 +46,9 @@ namespace crtl {
 constexpr char* CartoolTitle            = "Cartool";
 
                                         // Web addresses
-constexpr char* GiHubCartool            = "https://github.com/DenisBrunet/Cartool";
-constexpr char* GiHubCartoolIO          = "https://DenisBrunet.github.io/Cartool";
-constexpr char* GiHubCartoolRefGuide    = "https://DenisBrunet.github.io/Cartool/ReferenceGuide";
+constexpr char* WebPageCartoolGitHub    = "https://github.com/DenisBrunet/Cartool";
+constexpr char* WebPageCartool          = "https://DenisBrunet.github.io/Cartool";
+constexpr char* WebPageCartoolHelp      = "https://DenisBrunet.github.io/Cartool/ReferenceGuide";
 
 
 constexpr int   ShortStringLength       = 64;

@@ -467,7 +467,7 @@ void    TBaseDialog::CmHelp ()
 uint                ResId           = PtrToUint ( Attr.Name );
 
 
-TFileName           helpaddress     = GiHubCartoolRefGuide;
+TFileName           helpaddress     = WebPageCartoolHelp;
 
 if      ( ResId == IDD_STATISTICS1              )   helpaddress    += "/computing-statistics.html"               "#dialog-files";
 else if ( ResId == IDD_STATISTICS2              )   helpaddress    += "/computing-statistics.html"               "#dialog-parameters";
