@@ -21,5 +21,5 @@ limitations under the License.
 #define		MajorRevisionStr    "5"
 #define		MinorRevisionInt     05
 #define		MinorRevisionStr    "05"
-#define		PatchRevisionInt     03
-#define		PatchRevisionStr    "03"
+#define		PatchRevisionInt     04
+#define		PatchRevisionStr    "04"
