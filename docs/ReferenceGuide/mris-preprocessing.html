@@ -76,11 +76,14 @@
              <A HREF="#MNI-center">MNI and geometrical centers</A>
          </h6>
          <h6>
-             <A HREF="#skull-stripping">Skull stripping</A>
+             <A HREF="#skull-stripping">Skull Stripping / Brain Extraction</A>
          </h6>
          <h6>
-             <A HREF="#bias-field-correction">Bias Field Correction</A> <br>
-			 <a href="#porting-solution-points">Porting Solution Points</a></h6>
+             <A HREF="#bias-field-correction">Bias Field Correction (BFC) </A>
+         </h6>
+         <h6>
+			 <a href="#porting-solution-points">Porting Solution Points</a>
+         </h6>
          <h5>
              <a href="#results">Results</a>
          </h5>
@@ -1024,36 +1027,42 @@
              </strong><A HREF="#transverse-plane"><strong>the MNI transverse plane</strong></A>.
          </P>
          <P class="mvd-h4">
-             <A NAME="skull-stripping"></A>Skull stripping
+             <A NAME="skull-stripping"></A>Skull Stripping / Brain Extraction
          </P>
          <P>
-             Skull stripping is the process of extracting the whole brain (grey + white
+             Skull stripping is the process of <strong>extracting the whole brain</strong> (grey + white
              matter, CSF, cerebellum etc...) out of a full head. Cartool needs this whole
              brain to be able to <A HREF="computing-inverse-solution-matrices.html#grey-mask">
                  extract
-                 a grey mask during the Inverse Matrices creation
-             </A>.
+                 a grey mask during the Inverse Matrices creation</A>.
          </P>
          <P>
-             Here you can see the extracted brain (colored) superimposed on top of its
-             corresponding full head:
-         </P>
+             Here you can see the extracted brain (colored), superimposed on top of 
+			 the full head it was extracted from:</P>
          <P>
              <img class="auto-style2" height="280" src="images/mrispreproc.skullstripping.png" width="293">
          </P>
+		<P>
+             &nbsp;</P>
          <P>
-             <br>
-         </P>
-         <P>
-             There are currently <strong>2 skull stripping methods implemented</strong>,
-             the default being the second one, which produces the best results. However,
-             in case the outcomes of method 2 appear to be really poor, you can try your
-             chance at method 1. The latter method being usually more robust, at the
-             expense of a slight loss of resolution.
-         </P>
+             There are currently (2025) <strong>3 Skull Stripping methods 
+			 available</strong> to the user. Use them in this order if you ever 
+			 encounter any erroneous results:</P>
+		<ul>
+			<li>Method 1, the default, gives the most reliable results, but 
+			takes longer to run. It is based on a region growing method and <em>
+			lots </em>of post-processing.</li>
+			<li>Method 2 is the second best, and <em>might</em> run a little 
+			faster. It is also based on a region growing method, but with 
+			different tweaks.</li>
+			<li>Method 3 is still a work in progress, so it currently gives 
+			OK-ish results, but, in some cases, it might save the day! It is a 
+			totally differnt approach with brute force use of masks.</li>
+		</ul>
+		<P>
+             &nbsp;</P>
          <P class="mvd-h4">
-             <A NAME="bias-field-correction"></A>Bias Field Correction
-         </P>
+             <A NAME="bias-field-correction"></A>Bias Field Correction (BFC)</P>
          <P>
              MRI scans usually have
              <a href="https://www.google.com/search?q=bias+field+mri+example">
@@ -1070,16 +1079,20 @@
                  Correction (BFC)
              </strong> is usually applied on the extracted brain.
          </P>
+		<P>
+             &nbsp;</P>
          <P>
-             <br>Here you can see the extracted brain before the BFC (left), where the
+             Here you can see the extracted brain before the BFC (left), where the
              central part of the brain appears &quot;brighter&quot;. Then the same brain with
              BFC (right), giving a uniform range of values for each tissues:
          </P>
          <P>
              <img class="auto-style2" height="336" src="images/mrispreproc.biasfield1.png" width="413"><img height="336" src="images/mrispreproc.biasfield2.png" width="413">
          </P>
+		<P>
+             &nbsp;</P>
          <P>
-             <br>Note that the BFC correction is best applied on an
+             Note that the BFC correction is best applied on an
              <A HREF="#skull-stripping">already extracted brain</A>. It could still be
              computed and applied on a full head, but with various success. It is however
              not mandatory to have the full head BFC, because the algorithm for the
