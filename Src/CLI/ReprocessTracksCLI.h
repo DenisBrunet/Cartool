@@ -20,6 +20,7 @@ limitations under the License.
 //-=-=-=-=-=-=-=-=-
 
 #include    "System.CLI11.h"
+#include    "CLIDefines.h"
 #include    "Files.TOpenDoc.h"
 #include    "TExportTracks.h"
 #include    "ReprocessTracks.h"
@@ -32,51 +33,6 @@ using namespace std;
 namespace crtl {
 
 //----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-                                        // Options names
-constexpr char*     __tracks            = "--tracks";
-constexpr char*     __xyzfile           = "--xyzfile";
-constexpr char*     __roisfile          = "--roisfile";
-
-constexpr char*     __timemin           = "--timemin";
-constexpr char*     __timemax           = "--timemax";
-constexpr char*     __keeptriggers      = "--keeptriggers";
-constexpr char*     __excludetriggers   = "--excludetriggers";
-constexpr char*     __nulltracks        = "--nulltracks";
-
-constexpr char*     __filters           = "--filters";
-constexpr char*     __baseline          = "--baseline";
-constexpr char*     __dc                = "--dc";
-constexpr char*     __highpass          = "--highpass";
-constexpr char*     __lowpass           = "--lowpass";
-constexpr char*     __bandpass          = "--bandpass";
-constexpr char*     __order             = "--order";
-constexpr char*     __causal            = "--causal";
-constexpr char*     __notches           = "--notches";
-constexpr char*     __harmonics         = "--harmonics";
-constexpr char*     __spatialfilter     = "--spatialfilter";
-constexpr char*     __ranking           = "--ranking";
-constexpr char*     __rectification     = "--rectification";
-constexpr char*     __envelope          = "--envelope";
-constexpr char*     __keepabove         = "--keepabove";
-constexpr char*     __keepbelow         = "--keepbelow";
-constexpr char*     __samplingfrequency = "--samplingfrequency";
-
-constexpr char*     __reference         = "--reference";
-constexpr char*     __baselinecorr      = "--baselinecorr";
-constexpr char*     __rescaling         = "--rescaling";
-constexpr char*     __sequential        = "--sequential";
-constexpr char*     __average           = "--average";
-constexpr char*     __downsampling      = "--downsampling";
-
-constexpr char*     __infix             = "--infix";
-constexpr char*     __extension         = "--extension";
-constexpr char*     __ext               = "--ext";
-
-constexpr char*     __nomarkers         = "--nomarkers";
-constexpr char*     __concatenate       = "--concatenate";
-
-
 //----------------------------------------------------------------------------
                                         // Defining the interface
 inline void     ReprocessTracksCLIDefine ( CLI::App* reprocsub )
@@ -187,7 +143,7 @@ NeedsCLIOption          ( reprocsub,        __spatialfilter,    __xyzfile )
 ->ZeroOrOneArgument;
 
 
-DefineCLIFlag           ( reprocsub,        "",     __ranking,              "Ranking data at each time point to [0..1] range" );
+DefineCLIFlag           ( reprocsub,        "",     __ranking,              "Ranking data at each time point" );
 
 DefineCLIOptionEnum     ( reprocsub,        "",     __rectification,        "Rectification, i.e. making data all positive" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { "abs", "absolute", "power", "squared" } ) ) );
@@ -241,7 +197,7 @@ DefineCLIFlag           ( reprocsub,        "",     __concatenate,          "Con
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIFlag           ( reprocsub,        "-h",   "--help",               "This message" );
+DefineCLIFlag           ( reprocsub,        __h,    __help,                 "This message" );
 }
 
 

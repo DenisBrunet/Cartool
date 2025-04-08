@@ -367,8 +367,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\App\TCartoolApp.ProductVersion.h" />
+    <ClInclude Include="..\Src\CLI\CLIDefines.h" />
+    <ClInclude Include="..\Src\CLI\ESI.ComputingRisCLI.h" />
     <ClInclude Include="..\Src\CLI\ReprocessTracksCLI.h" />
-    <ClInclude Include="..\Src\CLI\RisToVolumeCLI.h" />
+    <ClInclude Include="..\Src\CLI\ESI.RisToVolumeCLI.h" />
     <ClInclude Include="..\Src\res\resource.h" />
     <ClInclude Include="..\Setup\GitWCRev.h" />
     <ClInclude Include="..\Src\App\App.DocView.h" />

@@ -40,8 +40,10 @@ limitations under the License.
 #include    "TCartoolAboutDialog.h"
 
 #include    "System.CLI11.h"
+#include    "CLIDefines.h"
 #include    "ReprocessTracksCLI.h"
-#include    "RisToVolumeCLI.h"
+#include    "ESI.ComputingRisCLI.h"
+#include    "ESI.RisToVolumeCLI.h"
 
 #include    "Volumes.AnalyzeNifti.h"
 #include    "Volumes.TTalairachOracle.h"
@@ -642,45 +644,6 @@ EnableMultiThreading ( true );
 
 
 //----------------------------------------------------------------------------
-                                        // Command-line for main application + register sub-command
-constexpr char*     __h                 = "-h";
-constexpr char*     __help              = "--help";
-
-constexpr char*     __version           = "--version";
-
-constexpr char*     __nosplash          = "--nosplash";
-
-constexpr char*     __mainwindow        = "--mainwindow";
-constexpr char*     __mainwindowsize    = "--mainwindowsize";
-constexpr char*     __mainwindowpos     = "--mainwindowpos";
-constexpr char*     __childwindow       = "--childwindow";
-constexpr char*     __childwindowsize   = "--childwindowsize";
-constexpr char*     __childwindowpos    = "--childwindowpos";
-constexpr char*     __minimized         = "minimized";
-constexpr char*     __maximized         = "maximized";
-constexpr char*     __normal            = "normal";
-
-constexpr char*     __monitor           = "--monitor";
-
-constexpr char*     __files             = "files";
-
-                                        // Sub-commands
-constexpr char*     __register          = "register";
-constexpr char*     __y                 = "-y";
-constexpr char*     __yes               = "--yes";
-constexpr char*     __n                 = "-n";
-constexpr char*     __no                = "--no";
-constexpr char*     __r                 = "-r";
-constexpr char*     __reset             = "--reset";
-//constexpr char*   __o                 = "-o";
-//constexpr char*   __none              = "--none";
-
-constexpr char*     __reprocesstracks   = "reprocesstracks";
-
-constexpr char*     __ristovolume       = "ristovolume";
-
-
-//----------------------------------------------------------------------------
                                         // Process command-line and init windows
 void    TCartoolApp::InitInstance ()
 {
@@ -753,7 +716,14 @@ ReprocessTracksCLIDefine ( reprocsub );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Reprocess Tracks sub-command
+                                        // Computing RIS files sub-command
+CLI::App*           computingrissub = app.add_subcommand ( __computingris, "Computing Ris command" );
+
+ComputingRisCLIDefine ( computingrissub );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // RIS files to Volumes sub-command
 CLI::App*           ristovolsub     = app.add_subcommand ( __ristovolume, "Ris-To-Volume command" );
 
 RisToVolumeCLIDefine ( ristovolsub );
@@ -796,19 +766,21 @@ TGoF                gof             = GetCLIOptionFiles ( toapp, __files );
                                         // Options that will cause some EARLY EXIT of the program
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( HasCLIOption ( toapp,       __help )   // redefined NOT as a flag
-  || HasCLIFlag   ( regsub,      __help )
-  || HasCLIFlag   ( reprocsub,   __help )
-  || HasCLIFlag   ( ristovolsub, __help )
+if ( HasCLIOption ( toapp,              __help )   // redefined NOT as a flag
+  || HasCLIFlag   ( regsub,             __help )
+  || HasCLIFlag   ( reprocsub,          __help )
+  || HasCLIFlag   ( computingrissub,    __help )
+  || HasCLIFlag   ( ristovolsub,        __help )
    ) {
 
     string              showhelp        = GetCLIOptionString ( toapp, __help );
     string              helpmessage;
 
-    if      ( HasCLIFlag ( regsub,      __help ) )  helpmessage     = regsub     ->help ();     // register    --help
-    else if ( HasCLIFlag ( reprocsub,   __help ) )  helpmessage     = reprocsub  ->help ();     // reprocess   --help
-    else if ( HasCLIFlag ( ristovolsub, __help ) )  helpmessage     = ristovolsub->help ();     // ristovolume --help
-    else if ( showhelp.empty ()                  )  helpmessage     = app         .help ();     // General, top-level help message
+    if      ( HasCLIFlag ( regsub,          __help ) )  helpmessage     = regsub         ->help (); // <subcommand>  --help
+    else if ( HasCLIFlag ( reprocsub,       __help ) )  helpmessage     = reprocsub      ->help ();
+    else if ( HasCLIFlag ( computingrissub, __help ) )  helpmessage     = computingrissub->help ();
+    else if ( HasCLIFlag ( ristovolsub,     __help ) )  helpmessage     = ristovolsub    ->help ();
+    else if ( showhelp.empty ()                      )  helpmessage     = app             .help (); // <application> --help
 
     else try {                          // try some specialized help message
                                         // there is no public method to test if a subcommand exists, so we need to try to access it and check for an exception...
@@ -829,17 +801,14 @@ if ( HasCLIOption ( toapp,       __help )   // redefined NOT as a flag
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( HasCLIFlag ( toapp, __version ) ) {
+if      ( HasCLIFlag ( toapp, __version ) ) {
 
     PrintConsole    ( string ( ProdVersion ) + " (" + ProdRevision + ")" + NewLine );
 
     exit ( 0 );
     }
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-if ( IsSubCommandUsed ( regsub ) ) {
+else if ( IsSubCommandUsed ( regsub ) ) {
 
     if      ( HasCLIFlag ( regsub, __yes   ) ) /* PrintConsole    ( GetCLIOptionDescription ( regsub, "--yes"   ) ); */   RegisterInfo      ();
     else if ( HasCLIFlag ( regsub, __no    ) ) /* PrintConsole    ( GetCLIOptionDescription ( regsub, "--no"    ) ); */   UnRegisterInfo    ();
@@ -849,20 +818,21 @@ if ( IsSubCommandUsed ( regsub ) ) {
     exit ( 0 );
     }
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-if ( IsSubCommandUsed ( reprocsub ) ) {
+else if ( IsSubCommandUsed ( reprocsub ) ) {
 
     ReprocessTracksCLI ( reprocsub, gof );
 
     exit ( 0 );
     }
 
+else if ( IsSubCommandUsed ( computingrissub ) ) {
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    ComputingRisCLI ( computingrissub, gof );
 
-if ( IsSubCommandUsed ( ristovolsub ) ) {
+    exit ( 0 );
+    }
+
+else if ( IsSubCommandUsed ( ristovolsub ) ) {
 
     RisToVolumeCLI ( ristovolsub, gof );
 

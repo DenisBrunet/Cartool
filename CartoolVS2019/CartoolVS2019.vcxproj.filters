@@ -1313,7 +1313,13 @@
     <ClInclude Include="..\Src\App\TCartoolApp.ProductVersion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\CLI\RisToVolumeCLI.h">
+    <ClInclude Include="..\Src\CLI\ESI.RisToVolumeCLI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\CLI\ESI.ComputingRisCLI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\CLI\CLIDefines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

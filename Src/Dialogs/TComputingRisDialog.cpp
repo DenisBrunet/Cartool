@@ -1173,7 +1173,7 @@ void    TComputingRisDialog::AddEegGroup ( const TGoF& gofeeg )
                                         // Checked are done before CheckEeg, which otherwise will find subgroups by itself
 if ( (bool) GoGoF ) {
 
-    GroupsLayoutEnum        grouplayout     = (GroupsLayoutEnum)        GroupPresets->GetSelIndex ();
+    GroupsLayoutEnum        grouplayout     = (GroupsLayoutEnum) GroupPresets->GetSelIndex ();
 
 //                                      // the only preset that can have different number of conditions - might turn this feature off, though
 //  if      ( grouplayout == ComputingRisPresetErpGroupMeans )
@@ -2162,27 +2162,18 @@ if ( ! CanOpenFile ( inversefile ) )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Data types - we need some extra care here
 
-                                        // Intermediate Epochs data type: ERP always using Vectors; Induced always using Norm; there are currently no other epochs cases
-AtomType            datatypeepochs  = CRISPresets[ esicase ].IsErp          ()              ?   AtomTypeVector      // unrelated vectors should cancel each others
-                                    : CRISPresets[ esicase ].IsInduced      ()              ?   AtomTypePositive    // targetting power
-                                    : CRISPresets[ esicase ].IsFrequency    ()              ?   AtomTypePositive    // if epochs case existed, should be power already
-                                    :                                                           AtomTypeVector;
+                                        // INTERMEDIATE Epochs data type: ERP always using Vectors; Induced always using Norm; there are currently no other epochs cases
+AtomType            datatypeepochs  = CRISPresets[ esicase ].GetAtomTypeEpochs ();
 
-                                    // FINAL data type
+                                        // FINAL requested data type
 AtomType            datatypefinal   = CheckToBool ( ComputingRisTransfer.PositiveData   )   ?   AtomTypePositive
                                     : CheckToBool ( ComputingRisTransfer.VectorData     )   ?   AtomTypeVector
                                     :                                                           AtomTypePositive;
+                                        // ACTUAL processing data type + Z-Score + Envelope
+AtomType            datatypeproc    = CRISPresets[ esicase ].GetAtomTypeProcessing ( datatypeepochs, datatypefinal );
 
-                                        // don't output vectorial results for frequencies (complex case)
-if ( IsVector ( datatypefinal ) && esicase == ComputingRisPresetFreq )
-    datatypefinal   = AtomTypePositive;
-
-                                        // Actual processing data type + Z-Score + Envelope
-AtomType            datatypeproc    = CRISPresets[ esicase ].IsEpochs () ?  datatypeepochs  : datatypefinal;
-
-                                        // Can not save to Vector if processing is Norm
-if ( ! IsVector ( datatypeproc ) && IsVector ( datatypefinal ) )
-    datatypefinal   = datatypeproc;
+                                        // check compatiblity betweeen these 2
+                    datatypefinal   = CRISPresets[ esicase ].GetAtomTypeFinal ( datatypeproc, datatypefinal );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2192,15 +2183,6 @@ bool                ranking         = CheckToBool ( ComputingRisTransfer.Rank   
 bool                thresholding    = false;    // note that only the combo ranking + thresholding is currently allowed
                                         // Using a fixed threshold at each step
 double              keepingtopdata  = 0.10;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Centroids parameters
-
-                                        // Null maps within the cluster of files (f.ex. coming from the Fitting) will be ignored
-//CentroidType      centroidsmethod     = MedianCentroid;       // Median gives sharper shapes/contours, counterpart is it basically forces to store all the data, and is more time-consuming to compute
-CentroidType        centroidsmethod     = MeanCentroid;         // maps can be quite empty after optional thresholding, a Median might be too radical while a Mean will still output something
-//CentroidType      centroidsmethod     = WeightedMeanCentroid;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2225,7 +2207,7 @@ double              envelopeduration;
 
 
 if ( envelope && envelopelowfreq > 0 ) {
-    envelopetype        = FilterTypeEnvelopeGapBridging;    // results close to analytic, but can work with positive-only data
+    envelopetype        = RisEnvelopeMethod;
     envelopeduration    = FrequencyToMilliseconds ( envelopelowfreq );
     }
 else {
@@ -2241,7 +2223,6 @@ else {
 bool                roiing          = CheckToBool ( ComputingRisTransfer.ApplyRois ) 
                                     && ! IsVector ( datatypeproc );     // we have to do something to forbid ROIing on non-scalar data
 TFileName           roifile;
-FilterTypes         roimethod       = FilterTypeMean;   // for the same reason as for centroids: merging clipped data with a Median can produce too much null results
 
 
 if ( roiing ) {
@@ -2280,17 +2261,18 @@ if ( ! ComputingRis (   esicase,
 
                         inversefile,            regularization,         backnorm,
                         datatypeepochs,         datatypefinal,
-                        centroidsmethod,
+                        RisCentroidMethod,
                         
                         spatialfilter,          xyzfile,
                         ranking,
                         thresholding,           keepingtopdata,
                         envelope,               envelopetype,           envelopelowfreq,    envelopeduration,
-                        roiing,                 roifile,                roimethod,
+                        roiing,                 roifile,                RisRoiMethod,
 
                         savingindividualfiles,  savingepochfiles,       savingzscorefactors,
                         computegroupsaverages,  computegroupscentroids,
-                        basedir,                basefilename
+                        basedir,                basefilename,
+                        Interactive
                     ) )
 
     ShowMessage ( "Something went wrong during the RIS processing!" NewLine 

@@ -16,7 +16,6 @@ limitations under the License.
 
 #include    "ESI.ComputingRis.h"
 
-#include    "CartoolTypes.h"            // BackgroundNormalization ZScoreType CentroidType
 #include    "Dialogs.TSuperGauge.h"
 #include    "Strings.Utils.h"
 #include    "Strings.Grep.h"
@@ -82,7 +81,8 @@ bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
 
                             bool                savingindividualfiles,  bool                savingepochfiles,   bool            savingzscorefactors,
                             bool                computegroupsaverages,  bool                computegroupscentroids,
-                            const char*         basedir,                const char*         basefilename
+                            const char*         basedir,                const char*         fileprefix,
+                            VerboseType         verbosey
                         )
 {
                                         // well, we do need some data...
@@ -97,6 +97,10 @@ if ( spatialfilter != SpatialFilterNone )
 
 if ( StringIsEmpty ( InverseFile ) || StringIsEmpty ( basedir ) )
     return false;
+
+                                        // force silent if not in interactive mode
+if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
+    verbosey = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -310,18 +314,18 @@ if ( ! ispreprocessing )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TFileName           BaseFileName;
-TFileName           fileprefix;
+TFileName           localfileprefix;
 TFileName           VerboseFile;
 TFileName           CentroidsFile;
 
 
-StringCopy      ( fileprefix, basefilename );
+StringCopy      ( localfileprefix, fileprefix );
 
-if ( StringIsNotEmpty ( fileprefix ) )
-    StringAppend ( fileprefix, "." );
+if ( StringIsNotEmpty ( localfileprefix ) )
+    StringAppend ( localfileprefix, "." );
 
 
-StringCopy      ( BaseFileName,             basedir,                "\\",               fileprefix );
+StringCopy      ( BaseFileName,             basedir,                "\\",               localfileprefix );
 
 StringCopy      ( VerboseFile,              BaseFileName,           "Computing RIS",    "." FILEEXT_VRB );
 
@@ -489,17 +493,21 @@ enum                GaugeRisEnum
 
 TSuperGauge         Gauge;
 
-Gauge.Set           ( ComputingRisTitle, SuperGaugeLevelInter );
+if ( verbosey == Interactive ) {
 
-Gauge.AddPart       ( gaugeriscompglobal,   1,                                          esicase == ComputingRisPresetFreq ?  1 :  1 );
-Gauge.AddPart       ( gaugerisfreqgroups,   3 * numsubjects,                            esicase == ComputingRisPresetFreq ? 20 :  0 );
-                   // number of subjects will be repeated for all freqs
-Gauge.AddPart       ( gaugeriscomppreproc,  AtLeast ( 1, numfreqs ) * numsubjects,      esicase == ComputingRisPresetFreq ? 69 : 89 );
-Gauge.AddPart       ( gaugeriscompavg,      numgroups,                                  esicase == ComputingRisPresetFreq ? 10 : 10 );
+    Gauge.Set           ( ComputingRisTitle, SuperGaugeLevelInter );
 
-if ( /*numgroups > 1 ||*/ numfiles > 10 )
-                                        // batch can be long, hide Cartool until we are done
-    WindowMinimize ( CartoolObjects.CartoolMainWindow );
+    Gauge.AddPart       ( gaugeriscompglobal,   1,                                          esicase == ComputingRisPresetFreq ?  1 :  1 );
+    Gauge.AddPart       ( gaugerisfreqgroups,   3 * numsubjects,                            esicase == ComputingRisPresetFreq ? 20 :  0 );
+                       // number of subjects will be repeated for all freqs
+    Gauge.AddPart       ( gaugeriscomppreproc,  AtLeast ( 1, numfreqs ) * numsubjects,      esicase == ComputingRisPresetFreq ? 69 : 89 );
+    Gauge.AddPart       ( gaugeriscompavg,      numgroups,                                  esicase == ComputingRisPresetFreq ? 10 : 10 );
+
+
+    if ( /*numgroups > 1 ||*/ numfiles > 10 )
+                                            // batch can be long, hide Cartool until we are done
+        WindowMinimize ( CartoolObjects.CartoolMainWindow );
+    }
 
                                         // Changing priority
 SetProcessPriority ( BatchProcessingPriority );
@@ -749,7 +757,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                                         // !The returned epochs can be any size, as specified by the markers themselves!
                                         // !The Batch Averaging below also seems to not really care, taking the first file size for all epochs!
                                         // ?We could add a fall-back option to split into blocks of known size?
-        gogofpersubject[ absg ].SplitByEpochs ( InfixEpochConcatGrep, -1, fileprefix, gofsplitepochs );
+        gogofpersubject[ absg ].SplitByEpochs ( InfixEpochConcatGrep, -1, localfileprefix, gofsplitepochs );
 
                                         // here we can actually test all epochs are equally long - a bit late in the game, though
 //      TracksCompatibleClass       CompatEpochs;
@@ -786,7 +794,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                         EpochWholeTime,             0,                  0,
                         NoGfpPeaksDetection,        0,
                         NoSkippingBadEpochs,        0,                  0,
-                        basedir,                    fileprefix,             // base file name / directory, optional file prefix
+                        basedir,                    localfileprefix,        // base file name / directory, optional file prefix
                         -1,                        -1,                      // no filename clipping
                         false,                      0,                      // no temp dir
                         computingindividualfiles,   risgogof,           0,          baselistpreproc,    newfiles,
@@ -1384,7 +1392,7 @@ WindowMaximize ( CartoolObjects.CartoolMainWindow );
 Gauge.FinishParts ();
 
 //CartoolObjects.CartoolApplication->ResetMainTitle ();
-CartoolObjects.CartoolApplication->SetMainTitle ( ComputingRisTitle, fileprefix, Gauge );
+CartoolObjects.CartoolApplication->SetMainTitle ( ComputingRisTitle, localfileprefix, Gauge );
 
 Gauge.HappyEnd ();
 

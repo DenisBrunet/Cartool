@@ -149,8 +149,8 @@ public:
     FormatWish      PrefGraphicAccel;
     FormatWish      PrefGraphic3DTextures;
 
-
-    bool            IsInteractive       ()                                          const   { return  owl::TModule::IsLoaded (); /*CartoolMainWindow != 0;*/ }
+                                                                                                   // console / unit tests cases,  CLI / command-line case
+    bool            IsInteractive       ()                                          const   { return  owl::TModule::IsLoaded () && CartoolMainWindow != 0; }
     bool            IsNotInteractive    ()                                          const   { return  ! IsInteractive (); }
 
     void            CreateBaseGadgets   ( bool server = false );

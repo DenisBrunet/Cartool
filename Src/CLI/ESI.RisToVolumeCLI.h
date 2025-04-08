@@ -1,5 +1,5 @@
 /************************************************************************\
-© 2024-2025 Denis Brunet, University of Geneva, Switzerland.
+© 2025 Denis Brunet, University of Geneva, Switzerland.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ limitations under the License.
 //-=-=-=-=-=-=-=-=-
 
 #include    "System.CLI11.h"
+#include    "CLIDefines.h"
 #include    "Files.TOpenDoc.h"
 
 #include    "TSolutionPointsDoc.h"
@@ -32,34 +33,6 @@ using namespace std;
 namespace crtl {
 
 //----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-                                        // Options names
-constexpr char*     __spfile            = "--spfile";
-constexpr char*     __greyfile          = "--greyfile";
-
-constexpr char*     __timestep          = "--timestep";
-
-constexpr char*     __interpolation     = "--interpolation";
-constexpr char*     __1NN               = "1NN";
-constexpr char*     __4NN               = "4NN";
-constexpr char*     __linear            = "linear";
-constexpr char*     __cubickernel       = "cubickernel";
-
-constexpr char*     __prefix            = "--prefix";
-
-constexpr char*     __fileformat        = "--file";
-constexpr char*     __nifti             = "nifti";
-constexpr char*     __analyze           = "analyze";
-
-constexpr char*     __typeformat        = "--type";
-constexpr char*     __byte              = "byte";
-constexpr char*     __float             = "float";
-
-constexpr char*     __dimensions        = "--dim";
-constexpr char*     __3D                = "3";
-constexpr char*     __4D                = "4";
-
-
 //----------------------------------------------------------------------------
                                         // Defining the interface
 inline void     RisToVolumeCLIDefine ( CLI::App* ristovol )
@@ -74,7 +47,7 @@ DefineCLIOptionFile     ( ristovol,         "",     __spfile,               "Sol
 //->Required ();    // interferes with --help
 
 DefineCLIOptionFile     ( ristovol,         "",     __greyfile,             "Grey Mask file (Required)" );
-//->Required ();
+//->Required ();    // interferes with --help
 
 NeedsCLIOption          ( ristovol,         __spfile,       __greyfile );
 NeedsCLIOption          ( ristovol,         __greyfile,     __spfile   );
@@ -112,7 +85,7 @@ DefineCLIOptionEnum     ( ristovol,         "",     __dimensions,           "Fil
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIFlag           ( ristovol,         "-h",   "--help",               "This message" );
+DefineCLIFlag           ( ristovol,         __h,    __help,                 "This message" );
 }
 
 

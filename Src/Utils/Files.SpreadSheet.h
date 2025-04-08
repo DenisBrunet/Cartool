@@ -597,7 +597,7 @@ if ( ! IsExtensionAmong ( filecsv, SpreadSheetFilesExt ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Retrieve actual delimiter
-#define             bufflinesize        (1 * MegaByte)
+constexpr int       bufflinesize    = MegaByte;
 TArray1<char>       buffline ( bufflinesize );
 
 const char*         toext           = ToExtension ( filecsv );
@@ -687,10 +687,6 @@ do {
     NumRecords++;
 
     } while ( ! is.eof() );
-
-
-//DBGV2 ( NumRecords, NumAttributes, "#NumRecords  #NumAttributes" );
-//Header.Show ( "header" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -16,6 +16,8 @@ limitations under the License.
 
 #pragma once
 
+#include    "CartoolTypes.h"            // RegularizationType BackgroundNormalization AtomType ZScoreType CentroidType FilterTypes
+
 namespace crtl {
 
 //----------------------------------------------------------------------------
@@ -23,13 +25,18 @@ namespace crtl {
 
 enum    ComputingRisPresetsEnum;
 enum    GroupsLayoutEnum;
-enum    RegularizationType;
-enum    BackgroundNormalization;
-enum    AtomType;
-enum    CentroidType;
 enum    SpatialFilterType;
-enum    FilterTypes;
 class   TGoGoF;
+
+
+//constexpr CentroidType  RisCentroidMethod = MedianCentroid;                   // Median gives sharper shapes/contours, counterpart is it basically forces to store all the data, and is more time-consuming to compute
+constexpr CentroidType  RisCentroidMethod   = MeanCentroid;                     // maps can be quite empty after optional thresholding, a Median might be too radical while a Mean will still output something
+//constexpr CentroidType  RisCentroidMethod = WeightedMeanCentroid;
+
+constexpr FilterTypes   RisRoiMethod        = FilterTypeMean;                   // for the same reason as for centroids: merging clipped data with a Median can produce too much null results
+
+constexpr FilterTypes   RisEnvelopeMethod   = FilterTypeEnvelopeGapBridging;    // results close to analytic, but can work with positive-only data
+
 
 bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
                             const TGoGoF&       gogof,                  
@@ -47,7 +54,8 @@ bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
 
                             bool                savingindividualfiles,  bool                savingepochfiles,   bool            savingzscorefactors,
                             bool                computegroupsaverages,  bool                computegroupscentroids,
-                            const char*         basedir,                const char*         basefilename
+                            const char*         basedir,                const char*         fileprefix,
+                            VerboseType         verbose
                         );
 
 

@@ -110,6 +110,27 @@ public:
     bool                CmDataTypeEnable        ()  const   {   return  IsFlag ( Flags,     CRISPresetDataTypeMask, CRISPresetDataTypeMask );   }   // enabled if more than 1 data type is available
     bool                IsNorm                  ()  const   {   return  IsFlag ( Current,   CRISPresetNorm      ); }
     bool                IsVect                  ()  const   {   return  IsFlag ( Current,   CRISPresetVect      ); }
+
+    AtomType            GetAtomTypeEpochs       ()  const   {   return  IsErp       ()  ?   AtomTypeVector              // unrelated vectors should cancel each others
+                                                                      : IsInduced   ()  ?   AtomTypePositive            // targetting power
+                                                                      : IsFrequency ()  ?   AtomTypePositive            // if epochs case existed, should be power already
+                                                                      :                     AtomTypeVector;         }
+    AtomType            GetAtomTypeProcessing   ( AtomType datatypeepochs, AtomType  datatypefinal )  const   {   
+                                                                                                    // Actual processing data type + Z-Score + Envelope
+                                                            return  IsEpochs    ()  ?   datatypeepochs  : datatypefinal;  
+                                                            }
+
+    AtomType            GetAtomTypeFinal        ( AtomType datatypeproc, AtomType datatypefinal )   const   {   
+                                                                                                    // don't output vectorial results for frequencies (complex case)
+                                                            if (   IsVector ( datatypefinal ) && Code == ComputingRisPresetFreq )
+                                                                datatypefinal   = AtomTypePositive;
+                                                                                                    // Can not save to Vector if processing is Norm
+                                                            if ( ! IsVector ( datatypeproc  ) && IsVector ( datatypefinal ) )
+                                                                datatypefinal   = datatypeproc;
+
+                                                            return  datatypefinal;
+                                                            }
+
                                                     const   
     bool                CmGroupsAveragingEnable ()  const   {   return  Code == ComputingRisPresetErpIndivMeans
                                                                      || IsEpochs ();                                }   // still needs to check all groups of files are compatibles somewhere

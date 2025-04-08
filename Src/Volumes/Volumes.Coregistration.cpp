@@ -58,7 +58,7 @@ void    CoregisterMris      (   const TVolumeDoc*   SourceMri,  RemapIntensityTy
                                 const char*         fileprefix,
                                 TGoF&               outputmats, TGoF&               outputmris, TGoF&               outputpoints,
                                 double&             quality,    char*               qualityopinion,
-                                VerboseType         verbose
+                                VerboseType         verbosey
                             )
 {
                                         // Coregistration can take quite some time - forbid closing these docs
@@ -358,7 +358,7 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
                                         // special case for the source MRI
     tofile              = issource ? SourceMri->GetDocPath () : buddymris[ i ];
 
-    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, verbose == Silent ?  OpenDocHidden : OpenDocVisible );
+    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, verbosey == Silent ?  OpenDocHidden : OpenDocVisible );
 
     if ( ! TransfMri.IsOpen () )
         continue;
@@ -403,7 +403,7 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbose == Interactive ) {
+    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbosey == Interactive ) {
 
         TOpenDoc< TVolumeDoc >      SourceTransfMri ( sourcecoregfile, OpenDocVisible );
         TVolumeView*                sourcetransfview    =  dynamic_cast<TVolumeView*> ( SourceTransfMri->GetViewList () );
@@ -462,7 +462,7 @@ for ( int i = 0; i < (int) buddypoints; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbose == Interactive ) {
+    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbosey == Interactive ) {
 
         if ( isspfile ) {
 
@@ -629,7 +629,7 @@ void    CoregisterBrains    (   const TVolumeDoc*   SourceMri,  RemapIntensityTy
                                 const char*         fileprefix,
                                 TGoF&               outputmats, TGoF&               outputmris, TGoF&               outputpoints,
                                 double&             quality,    char*               qualityopinion,
-                                VerboseType         verbose
+                                VerboseType         verbosey
                             )
 {
                                         // Coregistration can take quite some time - forbid closing these docs
@@ -905,7 +905,7 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
                                         // special case for the source MRI
     tofile              = i == -1 ? SourceMri->GetDocPath () : buddymris[ i ];
 
-    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, verbose == Silent ?  OpenDocHidden : OpenDocVisible );
+    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, verbosey == Silent ?  OpenDocHidden : OpenDocVisible );
 
     if ( ! TransfMri.IsOpen () )
         continue;
@@ -957,9 +957,9 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbose == Interactive ) {
+    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbosey == Interactive ) {
 
-        TOpenDoc< TVolumeDoc >      SourceTransfMri ( sourcecoregfile, verbose == Silent ?  OpenDocHidden : OpenDocVisible );
+        TOpenDoc< TVolumeDoc >      SourceTransfMri ( sourcecoregfile, verbosey == Silent ?  OpenDocHidden : OpenDocVisible );
         TVolumeView*                sourcetransfview    =  dynamic_cast< TVolumeView * > ( SourceTransfMri->GetViewList () );
 
 
@@ -1017,7 +1017,7 @@ for ( int i = 0; i < (int) buddypoints; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbose == Interactive ) {
+    if ( CartoolObjects.CartoolApplication->IsInteractive () && verbosey == Interactive ) {
 
         if ( isspfile ) {
             TOpenDoc< TSolutionPointsDoc >  SpiDoc ( sourcecoregfile, OpenDocVisible );
