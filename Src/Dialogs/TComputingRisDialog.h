@@ -84,6 +84,9 @@ enum        GroupsLayoutEnum
 
 extern const char   GroupsLayoutString[ NumGroupsLayout ][ 64 ];
 
+inline bool Is1Group1Subject    ( GroupsLayoutEnum gl )     { return gl != GroupsLayoutAllSubj1Cond; }
+inline bool Is1Group1Condition  ( GroupsLayoutEnum gl )     { return gl == GroupsLayoutAllSubj1Cond; }
+
 
 class       CRISPresetSpec
 {
@@ -235,6 +238,7 @@ public:
                        
 
     static TGoGoF       GoGoF;          // persistent groups-of-groups-of-EEG files
+    static TGoF         GoFInverses;    // persistent groups-of-Inverse files
 
 
 protected:
@@ -281,6 +285,9 @@ protected:
 
     int             NumSubjects;            // Associated to the GoGoF field - should remain within the same structure
     int             NumConditions;
+
+    bool            Is1Group1Subject        ()  const   { return crtl::Is1Group1Subject   ( (GroupsLayoutEnum) GroupPresets->GetSelIndex () ); }
+    bool            Is1Group1Condition      ()  const   { return crtl::Is1Group1Condition ( (GroupsLayoutEnum) GroupPresets->GetSelIndex () ); }
 
 
     void            SetupWindow             ()  final;

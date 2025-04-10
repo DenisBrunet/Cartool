@@ -163,9 +163,9 @@ if ( grouplayout == GroupsLayoutUnknown )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           isfile          = GetCLIOptionFile ( computingris, __inversefile );
+TGoF                inversefiles ( GetCLIOptionFile ( computingris, __inversefile ) );
 
-if ( ! CanOpenFile ( isfile ) )
+if ( ! inversefiles.CanOpenFiles () )
     return;
 
 
@@ -280,9 +280,9 @@ cout << "Number conds.  :"          << numconditions << NewLine;
 cout << NewLine;
 
 cout << "XYZ file:       "          << xyzfile << NewLine;
-cout << "IS file:        "          << isfile << NewLine;
+cout << "IS file:        "          << inversefiles[ 0 ] << NewLine;
 cout << "Spatial Filter: "          << SpatialFilterLongName[ spatialfilter ] << NewLine;
-cout << "Regularization :"          << reg << NewLine;
+cout << "Regularization: "          << reg << NewLine;
 cout << "Normalization:  "          << BackgroundNormalizationNames[ backnorm ] << NewLine;
 cout << NewLine;
 
@@ -303,7 +303,7 @@ ComputingRis    (   esicase,
                     gogof,                  
                     grouplayout,            numsubjects,            numconditions,
                     
-                    isfile,                 regularization,         backnorm,
+                    inversefiles,           regularization,         backnorm,
                     datatypeepochs,         datatypefinal,
                     RisCentroidMethod,
 

@@ -41,6 +41,7 @@ namespace crtl {
 TComputingRisStructEx   ComputingRisTransfer;
 
 TGoGoF                  TComputingRisDialog::GoGoF;
+TGoF                    TComputingRisDialog::GoFInverses;
 
 
 const char  GroupsLayoutString[ NumGroupsLayout ][ 64 ] =
@@ -602,13 +603,6 @@ drop.DragFinish ();
 // Sequence matters here: give priority to the inverse matrix, then EEG, then XYZ, then ROIs
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-for ( int i = 0; i < (int) isfiles; i++ )
-
-    SetISFile ( isfiles[ i ] );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 if ( (bool) eegfiles && (bool) freqfiles )
 
     ShowMessage ( "You can not process EEG and Frequency files together!" NewLine 
@@ -635,6 +629,39 @@ else {
 for ( int i = 0; i < (int) spreadsheetfiles; i++ )
 
     ReadParams ( spreadsheetfiles[ i ] );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Wait for all EEGs to be read
+if ( (bool) isfiles ) {
+
+    //GroupsLayoutEnum        grouplayout     = (GroupsLayoutEnum) GroupPresets->GetSelIndex ();
+
+    if      ( Is1Group1Subject () && (int) eegfiles == NumConditions && (int) isfiles == 1 ) {
+                                        // dropped 1 subject + All conditions + 1 inverse
+        GoFInverses.Add ( isfiles[ 0 ] );
+                                        // !no checks for the moment!
+        ComputingRisTransfer.IsInverseOK    = true;
+        }
+
+    else if ( /*Is1Group1Condition () && */ (int) isfiles == NumSubjects ) {
+                                        // dropped as many inverses as subjects
+        GoFInverses = isfiles;
+                                        // !no checks for the moment!
+        ComputingRisTransfer.IsInverseOK    = true;
+        }
+
+    else if ( (int) isfiles == 1 )  // or test where is the drop?
+
+        SetISFile ( isfiles[ 0 ] );
+
+    else 
+
+        ShowMessage ( "The number of Inverse Matrices does not correspond to the number of subjects!", ComputingRisTitle, ShowMessageWarning );
+
+
+    UpdateGroupSummary ();
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1278,6 +1305,20 @@ if ( ! GoGoF.RemoveLastGroup () )
     return;
 
 
+if  ( (bool) GoFInverses ) {
+
+    if      ( Is1Group1Subject   () )
+                                        // removed last conditions (and therefor subjects, too) -> remove last inverse
+        GoFInverses.RemoveLast ();
+
+    else if ( Is1Group1Condition () && GoGoF.IsEmpty () )
+                                        // removed last conditions (and therefor subjects, too) -> remove all inverses
+        GoFInverses.Reset ();
+
+    ComputingRisTransfer.IsInverseOK    = false;
+    }
+
+
 //SetBaseFilename ();
 
 UpdateSubjectsConditions ();
@@ -1288,7 +1329,8 @@ UpdateGroupSummary ();
 
 void    TComputingRisDialog::CmClearEegGroups ()
 {
-GoGoF.Reset ();
+GoGoF      .Reset ();
+GoFInverses.Reset ();
 
 
 //SetBaseFilename ();
@@ -1923,6 +1965,7 @@ for ( int gofi = 0; gofi < (int) GoGoF; gofi++ ) {
     StringAppend    ( buff, " ",  IntegerToString ( gofi + 1, NumIntegerDigits ( (int) GoGoF ) ), ":" );
 
     StringAppend    ( buff, "  ", IntegerToString ( gof.NumFiles () ), " " );
+
     if      ( grouplayout == GroupsLayoutAllSubj1Cond          )    StringAppend    ( buff, "Subject"    );
     else if ( grouplayout == GroupsLayout1SubjAllCond          )    StringAppend    ( buff, CRISPresets[ esicase ].IsClusters ()                            ? "Cluster" : "Condition" ); // although equivalent, we can be more specific
     else if ( grouplayout == GroupsLayout1SubjAllCondAllEpochs )    StringAppend    ( buff, "Epoch File" );
@@ -1932,6 +1975,13 @@ for ( int gofi = 0; gofi < (int) GoGoF; gofi++ ) {
     if ( gof.NumFiles () == 1 )     StringAppend    ( buff, "  ( ", ToFileName ( gof.GetFirst () ),                                        " )" );
     else                            StringAppend    ( buff, "  ( ", ToFileName ( gof.GetFirst () ), " .. ", ToFileName ( gof.GetLast () ), " )" );
 
+
+    if ( (int) GoFInverses == NumSubjects )
+
+        if      ( Is1Group1Condition () )
+            StringAppend    ( buff, " + Inverses" );    // put generic name
+        else if ( Is1Group1Subject () )
+            StringAppend    ( buff, " + ", ToFileName ( GoFInverses[ gofi ] ) );    // we can be more precise
 
     GroupsSummary->InsertString ( buff, 0 );
     }
@@ -2002,7 +2052,8 @@ void    TComputingRisDialog::CmOkEnable ( TCommandEnabler &tce )
 TransferData ( tdGetData );
 
 
-if ( StringIsEmpty ( ComputingRisTransfer.InverseFile ) 
+if ( (    StringIsEmpty ( ComputingRisTransfer.InverseFile )
+       && (int) GoFInverses != NumSubjects )
   || ! ComputingRisTransfer.IsInverseOK ) {
     tce.Enable ( false );
     return;
@@ -2152,10 +2203,12 @@ if ( spatialfilter != SpatialFilterNone ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Opening the inverse matrix
-TFileName           inversefile     = ComputingRisTransfer.InverseFile;
+                                        // We can have either 1 inverse matrix per subject, or 1 matrix for all subjects
+bool                individualinverses  = (int) GoFInverses == NumSubjects;
 
-if ( ! CanOpenFile ( inversefile ) )
+TGoF                inversefiles    = individualinverses ? GoFInverses : ComputingRisTransfer.InverseFile;
+                                        // Opening the inverse matrix
+if ( ! inversefiles.CanOpenFiles () )
     return;
 
 
@@ -2259,7 +2312,7 @@ if ( ! ComputingRis (   esicase,
                         GoGoF,              
                         grouplayout,            NumSubjects,            NumConditions,
 
-                        inversefile,            regularization,         backnorm,
+                        inversefiles,           regularization,         backnorm,
                         datatypeepochs,         datatypefinal,
                         RisCentroidMethod,
                         

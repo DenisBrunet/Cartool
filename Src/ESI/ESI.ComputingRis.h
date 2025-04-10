@@ -27,6 +27,7 @@ enum    ComputingRisPresetsEnum;
 enum    GroupsLayoutEnum;
 enum    SpatialFilterType;
 class   TGoGoF;
+class   TGoF;
 
 
 //constexpr CentroidType  RisCentroidMethod = MedianCentroid;                   // Median gives sharper shapes/contours, counterpart is it basically forces to store all the data, and is more time-consuming to compute
@@ -42,7 +43,7 @@ bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
                             const TGoGoF&       gogof,                  
                             GroupsLayoutEnum    grouplayout,            int                 numsubjects,        int             numconditions,
                             
-                            const char*         InverseFile,            RegularizationType  regularization,     BackgroundNormalization     backnorm,
+                            const TGoF&         inversefiles,           RegularizationType  regularization,     BackgroundNormalization     backnorm,
                             AtomType            datatypeepochs,         AtomType            datatypefinal,
                             CentroidType        centroidsmethod,
 

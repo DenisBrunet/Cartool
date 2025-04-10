@@ -69,7 +69,7 @@ bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
                             const TGoGoF&       gogof,                  
                             GroupsLayoutEnum    grouplayout,            int                 numsubjects,        int             numconditions,
                             
-                            const char*         InverseFile,            RegularizationType  regularization,     BackgroundNormalization     backnorm,
+                            const TGoF&         inversefiles,           RegularizationType  regularization,     BackgroundNormalization     backnorm,
                             AtomType            datatypeepochs,         AtomType            datatypefinal,
                             CentroidType        centroidsmethod,
 
@@ -95,7 +95,7 @@ if ( spatialfilter != SpatialFilterNone )
         spatialfilter = SpatialFilterNone;
 
 
-if ( StringIsEmpty ( InverseFile ) || StringIsEmpty ( basedir ) )
+if ( inversefiles.IsEmpty ()  || StringIsEmpty ( basedir ) )
     return false;
 
                                         // force silent if not in interactive mode
@@ -148,8 +148,13 @@ if ( freqgroups ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Opening the inverse matrix
-TOpenDoc<TInverseMatrixDoc> isdoc ( InverseFile, OpenDocHidden );
+                                        // Testing if we the rigth amount of inverse files
+bool                individualinverses  = (int) inversefiles > 1 
+                                       && (int) inversefiles == ( Is1Group1Subject ( grouplayout ) ? gogof.NumGroups   () 
+                                                                                                   : gogof.GetMaxFiles ( 0, numgroups - 1 ) );
+
+                                        // Opening the (first) inverse matrix, which is good enough here
+TOpenDoc<TInverseMatrixDoc> isdoc ( inversefiles[ 0 ], OpenDocHidden );
 char                        ispostfilename[ 256 ];
 
 if ( ! isdoc.IsOpen () )
@@ -353,7 +358,12 @@ verbose.NextTopic ( "Inverse Processing:" );
 verbose.Put ( "Preset:", CRISPresets[ esicase ].Text );
 
 verbose.NextLine ();
-verbose.Put ( "Inverse Matrix:", isdoc->GetDocPath () );
+
+if ( individualinverses )
+    verbose.Put ( "Inverse Matrices:", "Per subject" );
+else
+    verbose.Put ( "Inverse Matrix:", isdoc->GetDocPath () );
+
 verbose.Put ( "Regularization level:", RegularizationToString ( regularization, buff, false ) );
 
 verbose.NextLine ();
@@ -458,6 +468,13 @@ for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
             verbose.Put ( "", gogof[ gogofi ][ fi ] );
     }
 
+
+if ( individualinverses ) {
+
+    verbose.NextLine ();
+    for ( int fi = 0; fi < (int) inversefiles; fi++ )
+        verbose.Put ( fi ? "" : "Per subject matrix:", inversefiles[ fi ] );
+    }
 }
 
 
@@ -549,12 +566,12 @@ gogof.Show ( gofi1, gofi2, "0) Original Groups" );
 #endif // ShowGroupsShuffling
 
 
-if ( grouplayout == GroupsLayoutAllSubj1Cond )
+if ( Is1Group1Condition ( grouplayout ) )
                                         // Re-order the group of files so that we have 1 TGoF for 1 subject
                                         // 1 gof = 1 subject, all conditions
     gogof.ConditionsToSubjects ( gofi1, gofi2, gogofpersubject );
 
-else
+else // if ( Is1Group1Subject ( grouplayout ) )
                                         // well, the input is already in the right orientation...
                                         // also, there doesn't seem to be any need to reorder the gogof results, as files, they are already at the right place
     gogofpersubject = gogof;            // ?clipping the input gogof, like gogof ( gofi1, gofi2 )?
@@ -778,6 +795,13 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
         } // if splitepochs
 
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Switching inverse matrix?    
+    if ( individualinverses )
+
+        isdoc.Open ( inversefiles[ absg ], OpenDocHidden );
+    
+    
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                                     // datatypeepochs or datatypefinal
     PreProcessFiles (   gogofpersubject[ absg ],    datatypeproc,
@@ -1371,8 +1395,6 @@ if ( esicase == ComputingRisPresetFreq )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-isdoc.Close ();
 
 UpdateApplication;
 

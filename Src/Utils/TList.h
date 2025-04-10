@@ -230,8 +230,8 @@ void    TList<TypeD>::Reset ( DeallocateType deallocate )
 {
 if ( IsEmpty () )
     return;
-
-
+                                        // ?maybe remove this critical section?
+                                        // we can end up in a locked state when TList::Reset recursively calls TList::Reset, as in a TList of TList (TGoGoF f.ex.)
 OmpCriticalBegin (TListReset)
 
 TListAtom<TypeD>*   p;
@@ -589,14 +589,14 @@ if ( IsEmpty () || num < 1 )
     return;
 
                                         // remove all?
-if ( num >= NumInside ) {
-    Reset ( deallocate );
-    return;
-    }
+//if ( num >= NumInside ) {             // !currently off to avoid calling Reset! see TList::Reset comment
+//    Reset ( deallocate );
+//    return;
+//    }
 
 
 for ( ; num > 0; num-- )
-    RemoveAtom ( Last, deallocate );
+    RemoveAtom ( Last, deallocate );    // because this one has its own critical section, we are all good
 }
 
 
