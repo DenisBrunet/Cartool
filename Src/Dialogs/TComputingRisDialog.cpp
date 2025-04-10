@@ -2015,6 +2015,8 @@ GroupsSummary->ClearList ();
 ComputingRisPresetsEnum esicase         = (ComputingRisPresetsEnum) EegPresets  ->GetSelIndex ();
 GroupsLayoutEnum        grouplayout     = (GroupsLayoutEnum)        GroupPresets->GetSelIndex ();
 TFileName               buff;
+int                     maxlength       = 0;
+
 
 for ( int gofi = 0; gofi < (int) GoGoF; gofi++ ) {
 
@@ -2041,14 +2043,23 @@ for ( int gofi = 0; gofi < (int) GoGoF; gofi++ ) {
 
     if ( (int) GoFInverses == NumSubjects )
 
-        if      ( Is1Group1Condition () )
-            StringAppend    ( buff, " + Inverses" );    // put generic name
+        if      ( Is1Group1Condition () ) {
+            StringAppend    ( buff, " + Inverses" );
+            //StringAppend    ( buff, " + ", ToFileName ( GoFInverses.GetFirst () ) );
+            //if ( (int) GoFInverses > 1 )
+            //    StringAppend    ( buff, " .. ", ToFileName ( GoFInverses.GetLast () ) );
+            }
         else if ( Is1Group1Subject () )
             StringAppend    ( buff, " + ", ToFileName ( GoFInverses[ gofi ] ) );    // we can be more precise
 
+
     GroupsSummary->InsertString ( buff, 0 );
+
+    Maxed ( maxlength, (int) StringLength ( buff ) );
     }
 
+
+UpdateHorizontalScroller ( GroupsSummary, maxlength );
 
 //SetBaseFilename ();
 }

@@ -77,6 +77,20 @@ return  PresetFileTypeDefaultEEG;
 
 
 //----------------------------------------------------------------------------
+                                        // Dialog font width approximate formula
+int     DialogStringLengthToPixels  ( int stringlength )
+{
+return  Round ( CartoolObjects.CartoolApplication->PointsToPixels ( stringlength * DialogFontHeight ) * 0.575 );
+}
+
+                                        // It seems well known that listboxes don't update their horizontal scroller "spontaneously", they need an extra kick to do so
+void    UpdateHorizontalScroller ( const TListBox* listbox, int stringlength )
+{
+listbox->SendMessage ( LB_SETHORIZONTALEXTENT, DialogStringLengthToPixels ( stringlength ) );
+}
+
+
+//----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 DEFINE_RESPONSE_TABLE1 ( TBaseDialog, TDialog )
 
