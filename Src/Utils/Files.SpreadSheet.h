@@ -107,7 +107,7 @@ public:
 
     inline bool         ReadFile        ( const char* file );
 
-    inline bool         WriteFile       ( char* file = 0, char* forcedelimiter = 0 );
+    inline bool         InitFile        ( char* file = 0, char* forcedelimiter = 0 );
     inline void         WriteAttribute  ( const char* sattr, int iattr = -1 );
     inline void         WriteAttribute  ( int         iattr );
     inline void         WriteAttribute  ( float       fattr );
@@ -466,7 +466,7 @@ numfitvars  = numvarspergroup / NonNull ( (int) mapsel );
 
 
 //----------------------------------------------------------------------------
-bool    TSpreadSheet::WriteFile ( char* file, char* forcedelimiter )
+bool    TSpreadSheet::InitFile ( char* file, char* forcedelimiter )
 {
 if ( OutStream ) {
     ShowMessage ( "Already in write mode!", "Writing list file", ShowMessageWarning );

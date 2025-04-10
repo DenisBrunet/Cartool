@@ -1426,7 +1426,7 @@ TStatGoF           *gof;
 TSpreadSheet        sf;
 
 
-if ( ! sf.WriteFile () )
+if ( ! sf.InitFile () )
     return;
 
                                         // header line describes the attributes / fields

@@ -1228,7 +1228,7 @@ int                 i;
 TSpreadSheet        sf;
 
 
-if ( ! sf.WriteFile () )
+if ( ! sf.InitFile () )
     return;
 
                                         // header line describes the attributes / fields
