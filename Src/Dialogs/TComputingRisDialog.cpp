@@ -480,26 +480,33 @@ if ( GoGoF.IsEmpty () )
 
 TSpreadSheet        sf;
 
-
-if ( ! sf.WriteFile () )
+if ( ! sf.InitFile () )
     return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+int                 numgroups           = GoGoF.NumGroups   ();
+int                 maxfiles            = GoGoF.GetMaxFiles ();
+bool                individualinverses  = (int) GoFInverses == NumSubjects;
 
                                         // header line describes the attributes / fields
 sf.WriteAttribute ( "numfiles" );
 
-
-int                 maxfiles        = GoGoF.GetMaxFiles ();
-
-
 for ( int fi = 0; fi < maxfiles; fi++ )
     sf.WriteAttribute ( "file", fi + 1 );
 
+if ( individualinverses && Is1Group1Subject () )
+    sf.WriteAttribute ( "inverse" );
+
 sf.WriteNextRecord ();
 
-                                        // now write each line
-for ( int gogofi = 0; gogofi < (int) GoGoF; gogofi++ ) {
 
-                                        // write parameters
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // now write each row
+for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
+
+                                        // write number of files
     sf.WriteAttribute ( GoGoF[ gogofi ].NumFiles () );
 
                                         // write all files
@@ -510,9 +517,36 @@ for ( int gogofi = 0; gogofi < (int) GoGoF; gogofi++ ) {
     for ( int fi = GoGoF[ gogofi ].NumFiles (); fi < maxfiles; fi++ )
         sf.WriteAttribute ( "" );
 
+                                        // add a column to the subject?
+    if ( individualinverses && Is1Group1Subject () )
+        sf.WriteAttribute ( GoFInverses[ gogofi ] );
+
+
     sf.WriteNextRecord ();
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Add a single row, for all subjects?
+if ( individualinverses && Is1Group1Condition () ) {
+
+                                        // write number of inverses
+    sf.WriteAttribute ( GoFInverses.NumFiles () );
+
+                                        // write all files
+    for ( int fi = 0; fi < GoFInverses.NumFiles (); fi++ )
+        sf.WriteAttribute ( GoFInverses[ fi ] );
+
+                                        // complete line with empty attributes
+    for ( int fi = GoFInverses.NumFiles (); fi < maxfiles; fi++ )
+        sf.WriteAttribute ( "" );
+
+
+    sf.WriteNextRecord ();
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 sf.WriteFinished ();
 }
@@ -537,7 +571,8 @@ if ( ! sf.ReadFile ( filename ) )
 CsvType             csvtype         = sf.GetType ();
 
                                         // We can deal with statistics type, too...
-if ( ! ( IsCsvComputingRis ( csvtype ) || IsCsvStatFiles ( csvtype ) ) ) {
+if ( ! (    IsCsvComputingRis ( csvtype ) 
+         || IsCsvStatFiles    ( csvtype ) ) ) {
     ShowMessage ( SpreadSheetErrorMessage, "Read list file", ShowMessageWarning );
     return;
     }
@@ -549,28 +584,58 @@ TFileName           attr;
 TFileName           buff;
 TGoF                gof;
 int                 numfiles;
+bool                hascolinverse   = sf.HasAttribute ( "inverse" );
+bool                hasrowinverse   = false;
 
 
-for ( int file = 0; file < sf.GetNumRecords (); file++ ) {
+for ( int row = 0; row < sf.GetNumRecords (); row++ ) {
 
     gof.Reset ();
 
-    sf.GetRecord ( file, "numfiles",    attr );
 
+    sf.GetRecord ( row, "numfiles",    attr );
     numfiles    = StringToInteger ( attr );
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // transfer the filenames...
     for ( int fi = 0; fi < numfiles; fi++ ) {
 
         sprintf ( buff, "file%0d", fi + 1 );
 
-        sf.GetRecord ( file, buff, attr );
+        sf.GetRecord ( row, buff, attr );
 
         gof.Add ( attr );
         } // for file
 
-                                        // checks & updates
-    AddEegGroup ( gof );
+                                        // inverses: last row
+    if ( row == sf.GetNumRecords () - 1
+      && ! hascolinverse && gof.AllExtensionsAre ( AllInverseFilesExt ) ) {
+
+        hasrowinverse   = true;
+
+        GoFInverses.Add ( gof );
+        }
+
+    else
+                                        // checks & updates EEGs
+        AddEegGroup ( gof );
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // inverses: last column
+    if ( hascolinverse ) {
+        sf.GetRecord ( row, "inverse",     attr );
+        GoFInverses.Add ( attr );
+        }
+    }
+
+                                        // force update
+if ( GoFInverses.IsNotEmpty () ) {
+                                        // !no checks for the moment!
+    ComputingRisTransfer.IsInverseOK    = true;
+    
+    UpdateGroupSummary ();
     }
 
 
@@ -634,8 +699,6 @@ for ( int i = 0; i < (int) spreadsheetfiles; i++ )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Wait for all EEGs to be read
 if ( (bool) isfiles ) {
-
-    //GroupsLayoutEnum        grouplayout     = (GroupsLayoutEnum) GroupPresets->GetSelIndex ();
 
     if      ( Is1Group1Subject () && (int) eegfiles == NumConditions && (int) isfiles == 1 ) {
                                         // dropped 1 subject + All conditions + 1 inverse
@@ -2164,16 +2227,38 @@ int                 numconditions       = NumConditions;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // We can have either 1 inverse matrix per subject, or 1 matrix for all subjects
+bool                individualinverses  = (int) GoFInverses == NumSubjects;
+
+TGoF                inversefiles    = individualinverses ? GoFInverses : ComputingRisTransfer.InverseFile;
+                                        // Opening the inverse matrix
+if ( ! inversefiles.CanOpenFiles () )
+    return;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // It might be a good idea to confirm the data layout has been well understood
 char                buff[ 256 ];
 
-StringCopy      ( buff, "Do you confirm your data layout is:" NewLine NewLine "    " );
+StringCopy      ( buff, "Do you confirm your data layout is:" NewLine 
+                        NewLine 
+                        "    " );
 
 StringAppend    ( buff, IntegerToString ( numsubjects ),   " ",    esicase == ComputingRisPresetErpGroupMeans 
                                                                 || esicase == ComputingRisPresetErpSegClusters  ? "Group"   : "Subject",   StringPlural ( numsubjects ) );
 StringAppend    ( buff, "  x  " );
 
 StringAppend    ( buff, IntegerToString ( numconditions ), " ", CRISPresets[ esicase ].IsClusters ()            ? "Cluster" : "Condition", StringPlural ( numconditions ) );
+
+StringAppend    ( buff, NewLine
+                        NewLine
+                        "    " );
+
+if ( individualinverses )
+    StringAppend    ( buff, IntegerToString ( numsubjects ), " Individual Inverse Matrices" );
+else
+    StringAppend    ( buff, "1 Template Inverse Matrix" );
+
 
 if ( ( numsubjects > 1 || numconditions > 1 ) &&    // no need to t ask for single file processing
    ! GetAnswerFromUser   ( buff, ComputingRisTitle, this ) ) {
@@ -2200,16 +2285,6 @@ if ( spatialfilter != SpatialFilterNone ) {
         xyzfile.Reset ();
         }
     }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // We can have either 1 inverse matrix per subject, or 1 matrix for all subjects
-bool                individualinverses  = (int) GoFInverses == NumSubjects;
-
-TGoF                inversefiles    = individualinverses ? GoFInverses : ComputingRisTransfer.InverseFile;
-                                        // Opening the inverse matrix
-if ( ! inversefiles.CanOpenFiles () )
-    return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
