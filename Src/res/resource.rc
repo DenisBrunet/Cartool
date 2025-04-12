@@ -2519,6 +2519,8 @@ BEGIN
     LTEXT           "x",-1,106,158,12,10,NOT WS_GROUP
     LTEXT           "Number of Conditions:",-1,120,158,75,10,NOT WS_GROUP
     EDITTEXT        IDC_NUMCONDITIONS,197,158,20,10,ES_CENTER | ES_READONLY | ES_NUMBER | NOT WS_BORDER | NOT WS_TABSTOP
+    LTEXT           "Number of Inverses:",-1,240,158,70,10,NOT WS_GROUP
+    EDITTEXT        IDC_NUMINVERSES,310,158,20,10,ES_CENTER | ES_READONLY | ES_NUMBER | NOT WS_BORDER | NOT WS_TABSTOP
     GROUPBOX        "(2) EEG Preprocessing   (Use Drag && Drop in this area)",157,4,178,376,35,WS_GROUP
     CONTROL         "EEG Spatial Filter, using &XYZ file:",IDC_SPATIALFILTER,
                     "Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,12,191,120,14

@@ -159,6 +159,7 @@ public:
     TListBoxData        GroupsSummary;
     TEditData           NumSubjectsEdit     [ EditSizeValue ];
     TEditData           NumConditionsEdit   [ EditSizeValue ];
+    TEditData           NumInversesEdit     [ EditSizeValue ];
 
     TCheckBoxData       SpatialFilter;
     TEditData           XyzFile             [ EditSizeText ];
@@ -214,7 +215,7 @@ public:
     bool            IsXyzAndEegOK;
 
 
-    void            CheckInverse        ();
+    void            CheckInverses       ();
     void            CheckInverseAndEeg  ();
     void            CheckInverseAndXyz  ();
     void            CheckInverseAndRois ();
@@ -236,11 +237,6 @@ public:
                         TComputingRisDialog ( owl::TWindow* parent, owl::TResId resId );
                        ~TComputingRisDialog ();
                        
-
-    static TGoGoF       GoGoF;          // persistent groups-of-groups-of-EEG files
-    static TGoF         GoFInverses;    // persistent groups-of-Inverse files
-
-
 protected:
     owl::TComboBox      *EegPresets;
 
@@ -248,6 +244,7 @@ protected:
     owl::TListBox       *GroupsSummary;
     owl::TEdit          *NumSubjectsEdit;
     owl::TEdit          *NumConditionsEdit;
+    owl::TEdit          *NumInversesEdit;
 
     owl::TCheckBox      *SpatialFilter;
     owl::TEdit          *XyzFile;
@@ -283,9 +280,6 @@ protected:
                                         // Use to test files consistencies, with all the asynchronous D&D
     void            CheckEeg                (); // for the moment, method remains in the dialog instead of transfer buffer struct, as it does update the dialog a lot
 
-    int             NumSubjects;            // Associated to the GoGoF field - should remain within the same structure
-    int             NumConditions;
-
     bool            Is1Group1Subject        ()  const   { return crtl::Is1Group1Subject   ( (GroupsLayoutEnum) GroupPresets->GetSelIndex () ); }
     bool            Is1Group1Condition      ()  const   { return crtl::Is1Group1Condition ( (GroupsLayoutEnum) GroupPresets->GetSelIndex () ); }
 
@@ -301,7 +295,7 @@ protected:
     void            CmDataTypeEnable        ( owl::TCommandEnabler &tce );
 
     void            CmBrowseISFile          ();
-    void            SetISFile               ( const char* file );
+    void            AddISGroup              ( const TGoF& gofis );
     void            CmNotFrequencyEnable    ( owl::TCommandEnabler &tce );
     void            CmRoisChange            ();
 

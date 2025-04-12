@@ -37,12 +37,18 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-                                        // declare this global variable
-TComputingRisStructEx   ComputingRisTransfer;
+                                            // Global, persistent variables that will remain between calls
+TGoGoF          GoGoF;                      // Groups of Groups of EEG files
+TGoF            Inverses;                   // Groups of Inverse files
+int             NumSubjects         = 0;    // Computed from GoGoF
+int             NumConditions       = 0;
 
-TGoGoF                  TComputingRisDialog::GoGoF;
-TGoF                    TComputingRisDialog::GoFInverses;
+int             NumInverses             ()  { return  (int)  Inverses; }
+bool            AreIndividualInverses   ()  { return  (bool) Inverses && NumInverses () == NumSubjects; }   // !these 2 tests are not mutually exclusive!
+bool            IsTemplateInverse       ()  { return  NumInverses () == 1; }
 
+
+//----------------------------------------------------------------------------
 
 const char  GroupsLayoutString[ NumGroupsLayout ][ 64 ] =
             {
@@ -78,6 +84,9 @@ CRISPresetSpec  CRISPresets[ NumComputingRisPresets ] =
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
+                                        // declare this global variable
+TComputingRisStructEx   ComputingRisTransfer;
+
 
         TComputingRisStruct::TComputingRisStruct ()
 {
@@ -91,8 +100,9 @@ for ( int i = 0; i < NumGroupsLayout; i++ )
 
 GroupsSummary.Clear ();
 
-StringCopy      ( NumSubjectsEdit,      "0" );
-StringCopy      ( NumConditionsEdit,    "0" );
+IntegerToString ( NumSubjectsEdit,      0 );
+IntegerToString ( NumConditionsEdit,    0 );
+IntegerToString ( NumInversesEdit,      0 );
 
 SpatialFilter   = BoolToCheck ( ComputingRisPresetDefault == ComputingRisPresetErpIndivMeans 
                              || ComputingRisPresetDefault == ComputingRisPresetErpIndivEpochs 
@@ -141,13 +151,13 @@ CompatElectrodes.Reset ();
 CompatSp        .Reset ();
 CompatRois      .Reset ();
 
-IsInverseOK             =
-IsEegOK                 =
-IsXyzOK                 =
-IsRoisOK                =
-IsInverseAndEegOK       =
-IsInverseAndXyzOK       =
-IsInverseAndRoisOK      =
+IsInverseOK             = false;
+IsEegOK                 = false;
+IsXyzOK                 = false;
+IsRoisOK                = false;
+IsInverseAndEegOK       = false;
+IsInverseAndXyzOK       = false;
+IsInverseAndRoisOK      = false;
 IsXyzAndEegOK           = false;
 }
 
@@ -211,43 +221,44 @@ END_RESPONSE_TABLE;
       : TBaseDialog ( parent, resId )
 {
 
-EegPresets              = new TComboBox ( this, IDC_RISPRESETS );
+EegPresets              = new TComboBox     ( this, IDC_RISPRESETS );
 
-GroupPresets            = new TComboBox ( this, IDC_GROUPPRESETS );
-GroupsSummary           = new TListBox ( this, IDC_GROUPSSUMMARY );
-NumSubjectsEdit         = new TEdit ( this, IDC_NUMSUBJECTS, EditSizeValue );
-NumConditionsEdit       = new TEdit ( this, IDC_NUMCONDITIONS, EditSizeValue );
+GroupPresets            = new TComboBox     ( this, IDC_GROUPPRESETS );
+GroupsSummary           = new TListBox      ( this, IDC_GROUPSSUMMARY );
+NumSubjectsEdit         = new TEdit         ( this, IDC_NUMSUBJECTS,    EditSizeValue );
+NumConditionsEdit       = new TEdit         ( this, IDC_NUMCONDITIONS,  EditSizeValue );
+NumInversesEdit         = new TEdit         ( this, IDC_NUMINVERSES,    EditSizeValue );
 
-SpatialFilter           = new TCheckBox ( this, IDC_SPATIALFILTER );
-XyzFile                 = new TEdit ( this, IDC_XYZFILE, EditSizeText );
+SpatialFilter           = new TCheckBox     ( this, IDC_SPATIALFILTER );
+XyzFile                 = new TEdit         ( this, IDC_XYZFILE,        EditSizeText );
 
-InverseFile             = new TEdit ( this, IDC_ISFILE, EditSizeText );
-PositiveData            = new TRadioButton ( this, IDC_POSITIVEDATA );
-VectorData              = new TRadioButton ( this, IDC_VECTORDATA );
-RegAuto                 = new TRadioButton ( this, IDC_REGAUTO );
-RegFixed                = new TRadioButton ( this, IDC_REGFIXED );
-RegFixedEdit            = new TEdit ( this, IDC_REGFIXEDEDIT, EditSizeValue );
+InverseFile             = new TEdit         ( this, IDC_ISFILE,         EditSizeText );
+PositiveData            = new TRadioButton  ( this, IDC_POSITIVEDATA );
+VectorData              = new TRadioButton  ( this, IDC_VECTORDATA );
+RegAuto                 = new TRadioButton  ( this, IDC_REGAUTO );
+RegFixed                = new TRadioButton  ( this, IDC_REGFIXED );
+RegFixedEdit            = new TEdit         ( this, IDC_REGFIXEDEDIT,   EditSizeValue );
 
-TimeZScore              = new TCheckBox ( this, IDC_TIMEZSCORE );
-ComputeZScore           = new TRadioButton ( this, IDC_COMPUTEZSCORE );
-LoadZScoreFile          = new TRadioButton ( this, IDC_LOADZSCOREFILE );
+TimeZScore              = new TCheckBox     ( this, IDC_TIMEZSCORE );
+ComputeZScore           = new TRadioButton  ( this, IDC_COMPUTEZSCORE );
+LoadZScoreFile          = new TRadioButton  ( this, IDC_LOADZSCOREFILE );
 
-Rank                    = new TCheckBox ( this, IDC_RANKRIS );
+Rank                    = new TCheckBox     ( this, IDC_RANKRIS );
 
-Envelope                = new TRadioButton ( this, IDC_ENVELOPE );
-EnvelopeLowFreq         = new TEdit ( this, IDC_ENVELOPELOWFREQ, EditSizeValue );
+Envelope                = new TRadioButton  ( this, IDC_ENVELOPE );
+EnvelopeLowFreq         = new TEdit         ( this, IDC_ENVELOPELOWFREQ,EditSizeValue );
 EnvelopeLowFreq->SetValidator ( new TFilterValidator ( ValidatorPositiveFloat ) );
 
-ApplyRois               = new TRadioButton ( this, IDC_ROIS );
-RoisFile                = new TEdit ( this, IDC_ROISFILE, EditSizeText );
+ApplyRois               = new TRadioButton  ( this, IDC_ROIS );
+RoisFile                = new TEdit         ( this, IDC_ROISFILE,       EditSizeText );
 
-BaseFileName            = new TEdit ( this, IDC_BASEFILENAME, EditSizeText );
+BaseFileName            = new TEdit         ( this, IDC_BASEFILENAME,   EditSizeText );
 
-SavingIndividualFiles   = new TCheckBox ( this, IDC_SAVEINDIVIDUALFILES );
-SavingEpochFiles        = new TCheckBox ( this, IDC_SAVEEPOCHFILES );
-ComputeGroupsAverages   = new TCheckBox ( this, IDC_COMPUTEGROUPSAVERAGES );
-ComputeGroupsCentroids  = new TCheckBox ( this, IDC_COMPUTEGROUPSCENTROIDS );
-SavingZScoreFactors     = new TCheckBox ( this, IDC_SAVEZSCOREFACTORS );
+SavingIndividualFiles   = new TCheckBox     ( this, IDC_SAVEINDIVIDUALFILES );
+SavingEpochFiles        = new TCheckBox     ( this, IDC_SAVEEPOCHFILES );
+ComputeGroupsAverages   = new TCheckBox     ( this, IDC_COMPUTEGROUPSAVERAGES );
+ComputeGroupsCentroids  = new TCheckBox     ( this, IDC_COMPUTEGROUPSCENTROIDS );
+SavingZScoreFactors     = new TCheckBox     ( this, IDC_SAVEZSCOREFACTORS );
 
 
 SetTransferBuffer ( dynamic_cast <TComputingRisStruct *> ( &ComputingRisTransfer ) );
@@ -269,7 +280,7 @@ if ( init ) {
 delete  EegPresets;
 delete  GroupPresets;
 delete  GroupsSummary;
-delete  NumSubjectsEdit;        delete  NumConditionsEdit;
+delete  NumSubjectsEdit;        delete  NumConditionsEdit;      delete  NumInversesEdit;
 delete  SpatialFilter;          delete  XyzFile;
 delete  InverseFile;
 delete  PositiveData;           delete  VectorData;
@@ -488,7 +499,7 @@ if ( ! sf.InitFile () )
 
 int                 numgroups           = GoGoF.NumGroups   ();
 int                 maxfiles            = GoGoF.GetMaxFiles ();
-bool                individualinverses  = (int) GoFInverses == NumSubjects;
+bool                individualinverses  = AreIndividualInverses ();
 
                                         // header line describes the attributes / fields
 sf.WriteAttribute ( "numfiles" );
@@ -519,7 +530,7 @@ for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
 
                                         // add a column to the subject?
     if ( individualinverses && Is1Group1Subject () )
-        sf.WriteAttribute ( GoFInverses[ gogofi ] );
+        sf.WriteAttribute ( Inverses[ gogofi ] );
 
 
     sf.WriteNextRecord ();
@@ -531,14 +542,14 @@ for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
 if ( individualinverses && Is1Group1Condition () ) {
 
                                         // write number of inverses
-    sf.WriteAttribute ( GoFInverses.NumFiles () );
+    sf.WriteAttribute ( NumInverses () );
 
                                         // write all files
-    for ( int fi = 0; fi < GoFInverses.NumFiles (); fi++ )
-        sf.WriteAttribute ( GoFInverses[ fi ] );
+    for ( int fi = 0; fi < NumInverses (); fi++ )
+        sf.WriteAttribute ( Inverses[ fi ] );
 
                                         // complete line with empty attributes
-    for ( int fi = GoFInverses.NumFiles (); fi < maxfiles; fi++ )
+    for ( int fi = NumInverses (); fi < maxfiles; fi++ )
         sf.WriteAttribute ( "" );
 
 
@@ -614,7 +625,7 @@ for ( int row = 0; row < sf.GetNumRecords (); row++ ) {
 
         hasrowinverse   = true;
 
-        GoFInverses.Add ( gof );
+        Inverses.Add ( gof );
         }
 
     else
@@ -626,27 +637,41 @@ for ( int row = 0; row < sf.GetNumRecords (); row++ ) {
                                         // inverses: last column
     if ( hascolinverse ) {
         sf.GetRecord ( row, "inverse",     attr );
-        GoFInverses.Add ( attr );
+        Inverses.Add ( attr );
         }
     }
 
-                                        // force update
-if ( GoFInverses.IsNotEmpty () ) {
-                                        // !no checks for the moment!
-    ComputingRisTransfer.IsInverseOK    = true;
-    
-    UpdateGroupSummary ();
-    }
+
+                                        // Full checks
+CheckEeg ();
+//TransferData ( tdSetData );
+
+ComputingRisTransfer.CheckInverses       ();
+TransferData ( tdSetData );
+
+ComputingRisTransfer.CheckInverseAndEeg  ();
+TransferData ( tdSetData );
+
+ComputingRisTransfer.CheckInverseAndXyz  ();
+TransferData ( tdSetData );
+
+ComputingRisTransfer.CheckInverseAndRois ();
+TransferData ( tdSetData );
+
+ComputingRisTransfer.CheckXyzAndEeg      ();
+TransferData ( tdSetData );
+
+UpdateGroupSummary ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // update spatial filter flag live
-if ( ! (    EegPresets->GetSelIndex () == ComputingRisPresetErpGroupMeans
-         || EegPresets->GetSelIndex () == ComputingRisPresetErpSegClusters
-         || EegPresets->GetSelIndex () == ComputingRisPresetErpFitClusters
-         || EegPresets->GetSelIndex () == ComputingRisPresetFreq            ) )
-                                        // reset Spatial Filter if file names already contain .SpatialFilter
-    SpatialFilter   ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
+//if ( ! (    EegPresets->GetSelIndex () == ComputingRisPresetErpGroupMeans
+//         || EegPresets->GetSelIndex () == ComputingRisPresetErpSegClusters
+//         || EegPresets->GetSelIndex () == ComputingRisPresetErpFitClusters
+//         || EegPresets->GetSelIndex () == ComputingRisPresetFreq            ) )
+//                                        // reset Spatial Filter if file names already contain .SpatialFilter
+//    SpatialFilter   ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
 }
 
 
@@ -697,34 +722,10 @@ for ( int i = 0; i < (int) spreadsheetfiles; i++ )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Wait for all EEGs to be read
-if ( (bool) isfiles ) {
+                                        // Just appending inverse files
+if ( (bool) isfiles )
 
-    if      ( Is1Group1Subject () && (int) eegfiles == NumConditions && (int) isfiles == 1 ) {
-                                        // dropped 1 subject + All conditions + 1 inverse
-        GoFInverses.Add ( isfiles[ 0 ] );
-                                        // !no checks for the moment!
-        ComputingRisTransfer.IsInverseOK    = true;
-        }
-
-    else if ( /*Is1Group1Condition () && */ (int) isfiles == NumSubjects ) {
-                                        // dropped as many inverses as subjects
-        GoFInverses = isfiles;
-                                        // !no checks for the moment!
-        ComputingRisTransfer.IsInverseOK    = true;
-        }
-
-    else if ( (int) isfiles == 1 )  // or test where is the drop?
-
-        SetISFile ( isfiles[ 0 ] );
-
-    else 
-
-        ShowMessage ( "The number of Inverse Matrices does not correspond to the number of subjects!", ComputingRisTitle, ShowMessageWarning );
-
-
-    UpdateGroupSummary ();
-    }
+    AddISGroup ( isfiles );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -772,56 +773,49 @@ for ( int i = 0; i < (int) remainingfiles; i++ ) {
 
 if ( (bool) remainingfiles )
     remainingfiles.Show ( IrrelevantErrorMessage );
+
+
+InverseFile->ResetCaret;
 }
 
 
 //----------------------------------------------------------------------------
 void    TComputingRisDialog::CmBrowseISFile ()
 {
-SetISFile ( 0 );
+AddISGroup ( TGoF () );
 }
 
 
-void    TComputingRisDialog::SetISFile ( const char* file )
+void    TComputingRisDialog::AddISGroup ( const TGoF& gofis )
 {
-static GetFileFromUser  getfile ( "Inverse Solution Matrix File:", AllInverseFilesFilter, 1, GetFileRead );
+static GetFileFromUser  getfile ( "Inverse Solution Matrix Files:", AllInverseFilesFilter, 1, GetFileMulti );
 
 TransferData ( tdGetData );
 
 
-if ( StringIsEmpty ( file ) ) {
+if ( gofis.IsEmpty () ) {
 
-    if ( ! getfile.Execute ( ComputingRisTransfer.InverseFile ) )
+    if ( ! getfile.Execute () || getfile.GetNumFiles () == 0 )
         return;
 
-    TransferData ( tdSetData );
+    Inverses.Add ( (const TGoF&) getfile );
     }
-else {
-    StringCopy ( ComputingRisTransfer.InverseFile, file );
-
-    getfile.SetOnly ( file );
-    }
-
-
-TransferData ( tdSetData );
+else
+    Inverses.Add ( gofis );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-ComputingRisTransfer.CheckInverse        ();
-
+ComputingRisTransfer.CheckInverses       ();
 TransferData ( tdSetData );
 
 ComputingRisTransfer.CheckInverseAndEeg  ();
-
 TransferData ( tdSetData );
 
 ComputingRisTransfer.CheckInverseAndXyz  ();
-
 TransferData ( tdSetData );
 
 ComputingRisTransfer.CheckInverseAndRois ();
-
 TransferData ( tdSetData );
 
 
@@ -863,11 +857,15 @@ if ( ComputingRisTransfer.IsInverseOK && ComputingRisTransfer.IsRoisOK && ! Comp
     }
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+UpdateGroupSummary ();
 
 InverseFile->ResetCaret;
 }
 
 
+//----------------------------------------------------------------------------
 void    TComputingRisDialog::CmNotFrequencyEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( EegPresets->GetSelIndex () != ComputingRisPresetFreq );
@@ -1253,6 +1251,9 @@ else if ( areepochs ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 else                            // all group at once
     AddEegGroup ( gofeeg );
+
+
+InverseFile->ResetCaret;
 }
 
 
@@ -1310,15 +1311,12 @@ GoGoF.Add ( &gofeeg, true, MaxPathShort );
 
                                         // then checking all the groups together
 CheckEeg ();
-
-//TransferData ( tdSetData );
+//TransferData ( tdSetData );           // not part of transfer buffer - maybe later
 
 ComputingRisTransfer.CheckInverseAndEeg  ();
-
 TransferData ( tdSetData );
 
 ComputingRisTransfer.CheckXyzAndEeg      ();
-
 TransferData ( tdSetData );
 
 
@@ -1328,8 +1326,8 @@ if ( ComputingRisTransfer.IsEegOK && ComputingRisTransfer.IsInverseOK && ! Compu
                                         // or asking? or silent?
 //  ShowMessage ( "Clearing-up the existing Inverse Matrix...", ComputingRisTitle, ShowMessageWarning );
 
+    Inverses.Reset ();
     InverseFile->SetText ( "" );
-
     ComputingRisTransfer.IsInverseOK = false;
     }
 
@@ -1358,27 +1356,33 @@ else {
 
     UpdateSubjectsConditions ();
     }
+
+
+InverseFile->ResetCaret;
 }
 
 
 //----------------------------------------------------------------------------
+                                        // Until better solution, we kind of sync the EEG list with the Inverse one
 void    TComputingRisDialog::CmRemoveEegGroup ()
 {
 if ( ! GoGoF.RemoveLastGroup () )
     return;
 
 
-if  ( (bool) GoFInverses ) {
+if  ( (bool) Inverses ) {
 
-    if      ( Is1Group1Subject   () )
-                                        // removed last conditions (and therefor subjects, too) -> remove last inverse
-        GoFInverses.RemoveLast ();
+    if      ( AreIndividualInverses () && Is1Group1Subject   () )
+                                        // removed a subject -> remove last inverse
+        Inverses.RemoveLast ();
 
     else if ( Is1Group1Condition () && GoGoF.IsEmpty () )
                                         // removed last conditions (and therefor subjects, too) -> remove all inverses
-        GoFInverses.Reset ();
+        Inverses.Reset ();
 
-    ComputingRisTransfer.IsInverseOK    = false;
+
+    if ( NumInverses () == 0 )
+        ComputingRisTransfer.IsInverseOK = false;
     }
 
 
@@ -1392,8 +1396,8 @@ UpdateGroupSummary ();
 
 void    TComputingRisDialog::CmClearEegGroups ()
 {
-GoGoF      .Reset ();
-GoFInverses.Reset ();
+GoGoF   .Reset ();
+Inverses.Reset ();
 
 
 //SetBaseFilename ();
@@ -1403,44 +1407,39 @@ UpdateSubjectsConditions ();
 UpdateGroupSummary ();
 
 ComputingRisTransfer.IsEegOK     = false;
+ComputingRisTransfer.IsInverseOK = false;
 }
 
 
 //----------------------------------------------------------------------------
                                         // Testing IS file(s) by itself/themselves
-void    TComputingRisStructEx::CheckInverse ()
+void    TComputingRisStructEx::CheckInverses ()
 {
 CompatInverse.Reset ();
 IsInverseOK         = false;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Make a local copy of the file name, and preemptively clearing up the dialog's one
-TFileName           isfile;
-
-StringCopy ( isfile, InverseFile );
-
-if ( StringIsEmpty ( isfile ) )
-    return;
-
+                                        // Clearing up field
 ClearString ( InverseFile );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // getting number of tracks is also possible with IS file
-TGoF                isgof;
 
-isgof.Add ( isfile );
+                                        // no files? try again
+if ( Inverses.IsEmpty () )
+    return;
 
 
-if ( ! isgof.AllExtensionsAre ( AllInverseFilesExt ) ) {
+if ( ! Inverses.AllExtensionsAre ( AllInverseFilesExt ) ) {
     ShowMessage ( "Please provide legal Inverse matrices!" NewLine 
-                   "Check again your input files...", ComputingRisTitle, ShowMessageWarning );
+                  "Check again your input files...", ComputingRisTitle, ShowMessageWarning );
     return;
     }
 
-                                        // testing a single inverse is a bit silly, but it stores the data about the inverse - it can also straightforward upgrade to a group of inverse
-isgof.AllInverseAreCompatible ( CompatInverse );
+
+Inverses.AllInverseAreCompatible ( CompatInverse );
 
 
 if      ( CompatInverse.NumElectrodes == CompatibilityNotConsistent ) {
@@ -1470,8 +1469,13 @@ else if ( CompatInverse.NumSolPoints == CompatibilityIrrelevant ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Here matrices are OK by themselves
 IsInverseOK         = true;
-                                        // restore file name, now it that it has been checked
-StringCopy  ( InverseFile, isfile );
+
+
+if      ( NumInverses () == 0       )                       ClearString ( InverseFile );
+else if ( ! IsInverseOK             )                       StringCopy  ( InverseFile, "<Inverses Not OK!>" );
+//else if ( IsEegOK && IsInverseOK && ! IsInverseAndEegOK )   ClearString ( InverseFile );
+else if ( IsTemplateInverse ()      )                       StringCopy  ( InverseFile, Inverses[ 0 ] );
+else if ( AreIndividualInverses ()  )                       StringCopy  ( InverseFile, "<Subjects Inverses>" );
 }
 
 
@@ -2041,16 +2045,17 @@ for ( int gofi = 0; gofi < (int) GoGoF; gofi++ ) {
     else                            StringAppend    ( buff, "  ( ", ToFileName ( gof.GetFirst () ), " .. ", ToFileName ( gof.GetLast () ), " )" );
 
 
-    if ( (int) GoFInverses == NumSubjects )
+    if ( AreIndividualInverses () ) {
 
         if      ( Is1Group1Condition () ) {
-            StringAppend    ( buff, " + Inverses" );
-            //StringAppend    ( buff, " + ", ToFileName ( GoFInverses.GetFirst () ) );
-            //if ( (int) GoFInverses > 1 )
-            //    StringAppend    ( buff, " .. ", ToFileName ( GoFInverses.GetLast () ) );
+            StringAppend    ( buff, " + <Subjects Inverses>" );
+            //StringAppend    ( buff, " + ", ToFileName ( Inverses.GetFirst () ) );
+            //if ( NumInverses () > 1 )
+            //    StringAppend    ( buff, " .. ", ToFileName ( Inverses.GetLast () ) );
             }
         else if ( Is1Group1Subject () )
-            StringAppend    ( buff, " + ", ToFileName ( GoFInverses[ gofi ] ) );    // we can be more precise
+            StringAppend    ( buff, " + ", ToFileName ( Inverses[ gofi ] ) );    // we can be more precise
+        }
 
 
     GroupsSummary->InsertString ( buff, 0 );
@@ -2060,6 +2065,11 @@ for ( int gofi = 0; gofi < (int) GoGoF; gofi++ ) {
 
 
 UpdateHorizontalScroller ( GroupsSummary, maxlength );
+
+
+NumSubjectsEdit  ->SetIntValue ( NumSubjects    );
+NumConditionsEdit->SetIntValue ( NumConditions  );
+NumInversesEdit  ->SetIntValue ( NumInverses () );
 
 //SetBaseFilename ();
 }
@@ -2105,8 +2115,17 @@ else {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Updating dialog
-NumSubjectsEdit  ->SetIntValue ( NumSubjects   );
-NumConditionsEdit->SetIntValue ( NumConditions );
+NumSubjectsEdit  ->SetIntValue ( NumSubjects    );
+NumConditionsEdit->SetIntValue ( NumConditions  );
+NumInversesEdit  ->SetIntValue ( NumInverses () );
+
+
+if      ( NumInverses () == 0 )                 InverseFile->SetText ( "" );
+else if ( ! ComputingRisTransfer.IsInverseOK )  InverseFile->SetText ( "<Inverses Not OK!>" );
+else if ( IsTemplateInverse () )                InverseFile->SetText ( Inverses[ 0 ] );
+else if ( AreIndividualInverses () )            InverseFile->SetText ( "<Subjects Inverses>" );
+
+InverseFile->ResetCaret;
 
 
 if ( updategroups )
@@ -2115,8 +2134,6 @@ if ( updategroups )
                                                       || esicase == ComputingRisPresetErpIndivEpochs
                                                       || esicase == ComputingRisPresetIndIndivEpochs )
                                                     && NumSubjects > 1                                 ) );
-
-//DBGV2 ( NumSubjects, NumConditions, "NumSubjects, NumConditions" );
 }
 
 
@@ -2126,8 +2143,7 @@ void    TComputingRisDialog::CmOkEnable ( TCommandEnabler &tce )
 TransferData ( tdGetData );
 
 
-if ( (    StringIsEmpty ( ComputingRisTransfer.InverseFile )
-       && (int) GoFInverses != NumSubjects )
+if ( ! ( IsTemplateInverse () || AreIndividualInverses () )
   || ! ComputingRisTransfer.IsInverseOK ) {
     tce.Enable ( false );
     return;
@@ -2239,12 +2255,10 @@ int                 numconditions       = NumConditions;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // We can have either 1 inverse matrix per subject, or 1 matrix for all subjects
-bool                individualinverses  = (int) GoFInverses == NumSubjects;
-
-TGoF                inversefiles    = individualinverses ? GoFInverses : ComputingRisTransfer.InverseFile;
-                                        // Opening the inverse matrix
-if ( ! inversefiles.CanOpenFiles () )
-    return;
+bool                individualinverses  = AreIndividualInverses ();
+                                        // Already tested(?)
+//if ( ! Inverses.CanOpenFiles () )
+//    return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2279,6 +2293,7 @@ if ( ( numsubjects > 1 || numconditions > 1 ) &&    // no need to t ask for sing
     return;
     }
 
+// Offer to review the subjects / inverses pairing?
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // No Spatial Filter if frequency input
@@ -2398,7 +2413,7 @@ if ( ! ComputingRis (   esicase,
                         GoGoF,              
                         grouplayout,            NumSubjects,            NumConditions,
 
-                        inversefiles,           regularization,         backnorm,
+                        Inverses,               regularization,         backnorm,
                         datatypeepochs,         datatypefinal,
                         RisCentroidMethod,
                         
