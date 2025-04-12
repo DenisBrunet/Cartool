@@ -2251,6 +2251,7 @@ GroupsLayoutEnum    grouplayout         = (GroupsLayoutEnum) GroupPresets->GetSe
 
 int                 numsubjects         = NumSubjects;
 int                 numconditions       = NumConditions;
+int                 numinverses         = NumInverses ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2263,7 +2264,7 @@ bool                individualinverses  = AreIndividualInverses ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // It might be a good idea to confirm the data layout has been well understood
-char                buff[ 256 ];
+char                buff[ KiloByte ];
 
 StringCopy      ( buff, "Do you confirm your data layout is:" NewLine 
                         NewLine 
@@ -2293,7 +2294,35 @@ if ( ( numsubjects > 1 || numconditions > 1 ) &&    // no need to t ask for sing
     return;
     }
 
-// Offer to review the subjects / inverses pairing?
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Offer to review the subjects / inverses pairing?
+if ( individualinverses && numinverses > 1 
+  && GetAnswerFromUser   ( "Do you wish to review all subjects' EEGs and Inverse pairing?", ComputingRisTitle, this ) ) {
+
+    char        title[ 64 ];
+
+    for ( int subji = 0; subji < numsubjects; subji++ ) {
+
+        ClearString ( buff );
+
+        StringAppend ( buff, "EEG:", NewLine );
+        for ( int fi = 0; fi < numconditions; fi++ )
+            StringAppend ( buff, Tab, ToFileName ( Is1Group1Subject () ? GoGoF[ subji ][ fi ] : GoGoF[ fi ][ subji ] ), NewLine );
+
+        StringAppend ( buff, NewLine );
+        StringAppend ( buff, "Inverse Matrix:", NewLine );
+        StringAppend ( buff, Tab, ToFileName ( Inverses[ subji ] ) );
+
+        StringCopy  ( title, "Confirm for Subject #", IntegerToString ( subji + 1, NumIntegerDigits ( numsubjects ) ) );
+        
+        if ( ! GetAnswerFromUser ( buff, title, this ) ) {
+            ShowMessage ( "Please check again your input files and come back again...", ComputingRisTitle, ShowMessageWarning, this );
+            return;
+            }
+        }
+    }
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // No Spatial Filter if frequency input

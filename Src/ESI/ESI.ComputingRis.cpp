@@ -359,11 +359,8 @@ verbose.Put ( "Preset:", CRISPresets[ esicase ].Text );
 
 verbose.NextLine ();
 
-if ( individualinverses )
-    verbose.Put ( "Inverse Matrices:", "Per subject" );
-else
-    verbose.Put ( "Inverse Matrix:", isdoc->GetDocPath () );
-
+verbose.Put ( "Inverse Matrix case:", individualinverses ? "Per subject's inverse matrix" : "Single template inverse matrix" );
+verbose.Put ( "Inverse Matrix file:", individualinverses ? "See Input File section" : isdoc->GetDocPath () );
 verbose.Put ( "Regularization level:", RegularizationToString ( regularization, buff, false ) );
 
 verbose.NextLine ();
@@ -473,7 +470,7 @@ if ( individualinverses ) {
 
     verbose.NextLine ();
     for ( int fi = 0; fi < (int) inversefiles; fi++ )
-        verbose.Put ( fi ? "" : "Per subject matrix:", inversefiles[ fi ] );
+        verbose.Put ( fi ? "" : "Per subjects' matrices:", inversefiles[ fi ] );
     }
 }
 
