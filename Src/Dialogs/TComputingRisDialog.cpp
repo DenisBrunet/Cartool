@@ -595,21 +595,21 @@ TFileName           attr;
 TFileName           buff;
 TGoF                gof;
 int                 numfiles;
+
+                                        // sort out now if we have either 1 row or 1 column of inverse files
 bool                hascolinverse   = sf.HasAttribute ( "inverse" );
 bool                hasrowinverse   = false;
 
+if ( ! hascolinverse ) {
 
-for ( int row = 0; row < sf.GetNumRecords (); row++ ) {
-
-    gof.Reset ();
-
+    int             row             = sf.GetNumRecords () - 1;
 
     sf.GetRecord ( row, "numfiles",    attr );
     numfiles    = StringToInteger ( attr );
 
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // transfer the filenames...
+    gof.Reset ();
+
     for ( int fi = 0; fi < numfiles; fi++ ) {
 
         sprintf ( buff, "file%0d", fi + 1 );
@@ -620,27 +620,77 @@ for ( int row = 0; row < sf.GetNumRecords (); row++ ) {
         } // for file
 
                                         // inverses: last row
-    if ( row == sf.GetNumRecords () - 1
-      && ! hascolinverse && gof.AllExtensionsAre ( AllInverseFilesExt ) ) {
+    hasrowinverse   = gof.AllExtensionsAre ( AllInverseFilesExt );
+    }
 
-        hasrowinverse   = true;
 
-        Inverses.Add ( gof );
-        }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Ask how to add the new data in case we already have some loaded
+bool                appendrows          = true;             // Natural option, we just append rows to rows. Otherwise we have to do some sorts of permutations
+bool                firstread           = GoGoF.IsEmpty ();
+//int                 numinputconditions  = sf.GetNumRecords    ()     - hasrowinverse;   // remove optional row of inverses
+//int                 numinputsubjects    = sf.GetNumAttributes () - 1 - hascolinverse;   // remove optional col of inverses
 
-    else
-                                        // checks & updates EEGs
-        AddEegGroup ( gof );
+                                        // we could somehow skip this tests once 2 groups have been dropped, as the option has been chosen already
+if ( ! firstread ) {
+
+    char            answer      = GetOptionFromUser ( "Do you want to append the new data as (S)ubjects, or as (C)onditions?",
+                                                      "Appending Data", "S C", "" );
+                                        // appending rows is the natural way
+    appendrows  =                          answer == EOS
+               || Is1Group1Subject   () && answer == 'S'
+               || Is1Group1Condition () && answer == 'C';
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+for ( int row = 0; row < sf.GetNumRecords (); row++ ) {
+
+    bool        islastrow       = row == sf.GetNumRecords () - 1;
+    bool        isrowinverse    = hasrowinverse && islastrow;   // current input is the row of subjects
+
+
+    sf.GetRecord ( row, "numfiles",    attr );
+    numfiles    = StringToInteger ( attr );
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // transfer the filenames...
+    gof.Reset ();
+
+    for ( int fi = 0; fi < numfiles; fi++ ) {
+
+        sprintf ( buff, "file%0d", fi + 1 );
+
+        sf.GetRecord ( row, buff, attr );
+
+
+        if      ( isrowinverse ) {
+            if ( firstread || ! appendrows )    Inverses    .Add ( attr );  // skip if user requested it
+            }
+        else if (   appendrows )                gof         .Add ( attr );  // usual case
+
+        else /*if ( ! appendrows )*/            GoGoF[ row ].Add ( attr );  // permutating case - this needs some more tests
+        } // for file
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if ( appendrows && ! isrowinverse ) 
+
+        AddEegGroup ( gof );            // checks & updates EEGs
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // inverses: last column
-    if ( hascolinverse ) {
+    if ( hascolinverse )
+        if ( firstread || appendrows ) {
+
         sf.GetRecord ( row, "inverse",     attr );
         Inverses.Add ( attr );
         }
     }
-
 
                                         // Full checks
 CheckEeg ();
@@ -660,6 +710,8 @@ TransferData ( tdSetData );
 
 ComputingRisTransfer.CheckXyzAndEeg      ();
 TransferData ( tdSetData );
+
+UpdateSubjectsConditions ();
 
 UpdateGroupSummary ();
 
@@ -692,6 +744,13 @@ drop.DragFinish ();
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Sequence matters here: give priority to the inverse matrix, then EEG, then XYZ, then ROIs
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Just appending inverse files
+if ( (bool) isfiles )
+
+    AddISGroup ( isfiles );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( (bool) eegfiles && (bool) freqfiles )
 
@@ -719,13 +778,6 @@ else {
 for ( int i = 0; i < (int) spreadsheetfiles; i++ )
 
     ReadParams ( spreadsheetfiles[ i ] );
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Just appending inverse files
-if ( (bool) isfiles )
-
-    AddISGroup ( isfiles );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
