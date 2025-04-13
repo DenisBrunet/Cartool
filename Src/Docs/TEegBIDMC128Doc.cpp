@@ -164,7 +164,7 @@ bool	TEegBIDMC128Doc::ReadFromHeader ( const char* file, ReadFromHeaderType what
 ifstream        ifs ( TFileName ( file, TFilenameExtendedPath ) );
 if ( ifs.fail() ) return false;
 
-char            buff[ 256 ];
+char            buff[ KiloByte ];
 
 switch ( what ) {
 
@@ -178,25 +178,25 @@ switch ( what ) {
         int         NumElectrodes;
         int         NumAuxElectrodes;
 
-        ifs.getline ( buff, 256 );
+        ifs.getline ( buff, KiloByte );
         sscanf ( buff, "%*s %*s %s", ver );
 
         if ( StringIsNot ( ver, EEG128DOC_FILEVERSION ) ) {
             return false;
             }
 
-        ifs.getline ( buff, 256 );
-        ifs.getline ( buff, 256 );
-        ifs.getline ( buff, 256 );
+        ifs.getline ( buff, KiloByte );
+        ifs.getline ( buff, KiloByte );
+        ifs.getline ( buff, KiloByte );
         sscanf ( buff, "%*s %*s %*[A-Za-z0-9].%d", &NumElectrodes );
 
         ValidElectrodes = new TSelection ( NumElectrodes, OrderSorted );
         ValidElectrodes->Set ();
 
                                             // skip lines until the electrodes description
-        ifs.getline ( buff, 256 );
+        ifs.getline ( buff, KiloByte );
         do {
-            ifs.getline ( buff, 256 );
+            ifs.getline ( buff, KiloByte );
             sscanf ( buff, "%s %*s %s", channelline, elname );
             }
         while ( StringIsNot ( channelline, "Channel" ) );
@@ -220,7 +220,7 @@ switch ( what ) {
 
                 NumAuxElectrodes++;
 
-            ifs.getline ( buff, 256 );
+            ifs.getline ( buff, KiloByte );
             sscanf ( buff, "%s %*s %s", channelline, elname );
             e++;
             }
@@ -262,14 +262,14 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    char        buff       [ 256 ];
+    char        buff       [ KiloByte ];
     char        ver        [  16 ];
     char        channelline[  33 ];
     char        elname     [  16 ];
 
     SamplingFrequency   = EEG128DOC_SAMPLFREQUENCY;
 
-    InputStream->getline ( buff, 256 );
+    InputStream->getline ( buff, KiloByte );
     sscanf ( buff, "%*s %*s %s %lld", ver, &DataOrg );
 
     if ( StringIsNot ( ver, EEG128DOC_FILEVERSION ) ) {
@@ -282,9 +282,9 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    InputStream->getline ( buff, 256 );
-    InputStream->getline ( buff, 256 );
-    InputStream->getline ( buff, 256 );
+    InputStream->getline ( buff, KiloByte );
+    InputStream->getline ( buff, KiloByte );
+    InputStream->getline ( buff, KiloByte );
 
     sscanf ( buff, "%*s %*s %*[A-Za-z0-9].%d", &NumElectrodes );
     TotalElectrodes     = NumElectrodes + NumPseudoTracks;
@@ -298,9 +298,9 @@ if ( GetDocPath () ) {
     ValidElectrodes.Set ();
 
                                         // skip lines until the electrodes description
-    InputStream->getline ( buff, 256 );
+    InputStream->getline ( buff, KiloByte );
     do {
-        InputStream->getline ( buff, 256 );
+        InputStream->getline ( buff, KiloByte );
         sscanf ( buff, "%s %*s %s", channelline, elname );
         }
     while ( StringIsNot ( channelline, "Channel" ) );
@@ -325,7 +325,7 @@ if ( GetDocPath () ) {
             MarkerIndex     = e;
             }
 
-        InputStream->getline ( buff, 256 );
+        InputStream->getline ( buff, KiloByte );
         sscanf ( buff, "%s %*s %s", channelline, elname );
         e++;
         }

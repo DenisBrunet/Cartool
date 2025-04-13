@@ -1631,14 +1631,14 @@ if ( ifs.fail () )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 1) Get / count the number of points
-char                buff[ 256 ];
+char                buff[ KiloByte ];
 int                 numpoints;
 int                 numclusters     = 1;
 
 
 if      ( xyzformat ) {
                                         // get first number of first line
-    ifs.getline ( buff, 256 );
+    ifs.getline ( buff, KiloByte );
     sscanf ( buff, "%d", &numpoints );
     if ( numpoints <= 0 )
         return  false;
@@ -1646,18 +1646,18 @@ if      ( xyzformat ) {
 
 else if ( elsformat ) {
 
-    ifs.getline ( buff, 256 );
+    ifs.getline ( buff, KiloByte );
     if ( ! StringStartsWith ( buff, ELSTXT_MAGICNUMBER1 ) )
         return  false;
 
 
-    ifs.getline ( buff, 256 );
+    ifs.getline ( buff, KiloByte );
     numpoints   = StringToInteger ( buff );
     if ( numpoints <= 0 )
         return  false;
 
                                         // get first number of first line
-    ifs.getline ( buff, 256 );
+    ifs.getline ( buff, KiloByte );
     numclusters = StringToInteger ( buff );
     if ( numclusters <= 0 )
         return  false;
@@ -1694,7 +1694,7 @@ else                                    // max # of points: just scan all lines
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 2) Read the points
-char                name[ 256 ];
+char                name[ KiloByte ];
 TPointFloat         pf;
 TPointDouble        pd;
 
@@ -1704,14 +1704,14 @@ for ( int ci = 0; ci < numclusters; ci++ ) {
                                         // currently, all points are put read, whatever the cluster and the cluster type, and put into the same single structure
     if ( elsformat ) {
                                         // cluster name
-        ifs.getline ( buff, 256 );
+        ifs.getline ( buff, KiloByte );
 
                                         // number of points within current cluster
-        ifs.getline ( buff, 256 );
+        ifs.getline ( buff, KiloByte );
         numpoints   = StringToInteger ( buff );
 
                                         // cluster type - not used for the moment
-        ifs.getline ( buff, 256 );
+        ifs.getline ( buff, KiloByte );
         } // if elsformat
 
 
@@ -1743,7 +1743,7 @@ for ( int ci = 0; ci < numclusters; ci++ ) {
 
         else { // text file
                                             // get the whole line
-            ifs.getline ( buff, 256 );      // for LF only use '\r' separators
+            ifs.getline ( buff, KiloByte );      // for LF only use '\r' separators
                                             // skip empty lines
             if ( StringIsEmpty ( buff ) )
                 continue;

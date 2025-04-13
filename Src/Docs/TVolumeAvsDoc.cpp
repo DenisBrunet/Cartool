@@ -118,7 +118,7 @@ if ( GetDocPath () ) {
         return false;
 
 
-    char                buff    [ 256 ];
+    char                buff    [ KiloByte ];
     char                datatype[ 32 ];
     int                 dim1;
     int                 dim2;
@@ -133,7 +133,7 @@ if ( GetDocPath () ) {
 
 
     do {
-        InputStream->getline ( buff, 256 );
+        InputStream->getline ( buff, KiloByte );
 
                                         // some orientation info in the comments?
         if ( StringContains ( (const char*) buff, (const char*) ExportOrientation ) ) {

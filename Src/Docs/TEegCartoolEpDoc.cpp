@@ -62,7 +62,7 @@ bool	TEegCartoolEpDoc::ReadFromHeader ( const char* file, ReadFromHeaderType wha
 ifstream        ifs ( TFileName ( file, TFilenameExtendedPath ) );
 if ( ifs.fail() ) return false;
 
-char            buff[ 256 ];
+char            buff[ KiloByte ];
 
 
 if ( crtl::IsExtension  ( file, FILEEXT_EEGEP ) ) {
@@ -87,7 +87,7 @@ if ( crtl::IsExtension  ( file, FILEEXT_EEGEP ) ) {
         }
     }
 else {
-    ifs.getline ( buff, 256 );
+    ifs.getline ( buff, KiloByte );
 
     switch ( what ) {
 

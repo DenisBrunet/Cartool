@@ -217,7 +217,7 @@ char                bintype   [ 32 ]    = { "" };
 
 
 do {
-    ifhdr.getline ( buff, 256 );
+    ifhdr.getline ( buff, TFilenameSize );
 
     if ( StringIsEmpty ( buff ) )
         continue;
@@ -334,14 +334,14 @@ if ( GetDocPath () ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // open descriptor file
     TFileName           filehdr;
-    TFileName           buff;
+    char                buff[ KiloByte ];
 
 
     StringCopy          ( filehdr, GetDocPath () );
     ReplaceExtension    ( filehdr, FILEEXT_BVHDR );
 
     if ( ! CanOpenFile ( filehdr ) ) {
-        StringCopy  ( buff, "Can not find header file\n", filehdr );
+        StringCopy  ( buff, "Can not find header file" NewLine, filehdr );
         ShowMessage ( buff, "Opening error", ShowMessageWarning );
         return  false;
         }
@@ -349,7 +349,7 @@ if ( GetDocPath () ) {
 
     ifstream            ifhdr ( TFileName ( filehdr, TFilenameExtendedPath ) );
 
-    ifhdr.getline ( buff, TFilenameSize );
+    ifhdr.getline ( buff, KiloByte );
 
                                         // some files have a bug and no space between Brain and Vision...
     if ( ! StringGrep ( buff, BrainVisionGrepHeaderVhdr, GrepOptionDefaultFiles ) ) {
@@ -387,7 +387,7 @@ if ( GetDocPath () ) {
 
 
     do {
-        ifhdr.getline ( buff, 256 );
+        ifhdr.getline ( buff, KiloByte );
 
                                         // skip empty lines
         if ( StringIsEmpty ( buff ) )

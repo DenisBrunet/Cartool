@@ -619,11 +619,11 @@ else if ( freqformat ) {
 
 else if ( segformat ) {
 
-    char                buff[ 256 ];
-    buff[255]   = 0;
+    char                buff[ KiloByte ];
+    ClearString ( buff );
 
 
-    ifs.getline ( buff, 256 );
+    ifs.getline ( buff, KiloByte );
 
     int                 NumClusters;
                             // NumClusters, NumFiles, NumTimeFrames
@@ -632,7 +632,7 @@ else if ( segformat ) {
                                         // get number of variables
     ifs >> dim3;
                                         // skip names
-    ifs.getline ( buff, 256 );
+    ifs.getline ( buff, KiloByte );
     }
 
                                         // allocate

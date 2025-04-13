@@ -138,8 +138,8 @@ ifstream            ifs ( TFileName ( file, TFilenameExtendedPath ) );
 
 if ( ifs.fail() ) return false;
 
-char                buff[ 256 ];
-ifs.getline (buff, 256);
+char                buff[ KiloByte ];
+ifs.getline ( buff, KiloByte );
 
 switch ( what ) {
     case ReadNumElectrodes :
@@ -170,9 +170,9 @@ if ( GetDocPath () ) {
         return false;
 
 
-    char                buff[ 1024 ];
+    char                buff[ KiloByte ];
 
-    is.getline ( buff, 256 );
+    is.getline ( buff, KiloByte );
 
     NumElectrodes   = StringToInteger ( buff );
 
@@ -191,7 +191,7 @@ if ( GetDocPath () ) {
                                         // read file
     for ( int i = 0; i < NumElectrodes; i++ ) {
 
-    	is.getline      ( buff, 256 );
+    	is.getline      ( buff, KiloByte );
 
         StringAppend    ( buff, " ", ElectrodeDefaultName );
                                                 // extract data

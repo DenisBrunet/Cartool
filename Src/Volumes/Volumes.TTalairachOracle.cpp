@@ -351,12 +351,12 @@ for ( int x = scanxmin; x <= scanxmax; x++ ) {
 //
 //    ifstream    mis ( TFileName ( file, TFilenameExtendedPath ) );
 //
-//    mis.getline ( buff, 256 );
+//    mis.getline ( buff, KiloByte );
 //
 //    for ( int x = xmin; x <= xmax; x++ )
 //    for ( int y = ymin; y <= ymax; y++ ) {
 //
-//        mis.getline ( buff, 256 );
+//        mis.getline ( buff, KiloByte );
 //
 //        if ( StringContains ( buff, (const char*) "No data" ) )
 //            continue;

@@ -82,9 +82,9 @@ if ( GetDocPath () ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                             // testing if names exist: test first line
     ifstream            ifs ( TFileName ( GetDocPath (), TFilenameExtendedPath ) );
-    char                buff  [ 256 ];
+    char                buff  [ KiloByte ];
 
-    ifs.getline ( buff, 256 );
+    ifs.getline ( buff, KiloByte );
 
     HasNames            = sscanf ( buff, "%*f %*f %*f %s", buff ) == 1;
 

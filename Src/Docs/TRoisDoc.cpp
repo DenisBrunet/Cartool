@@ -89,10 +89,10 @@ bool	TRoisDoc::ReadFromHeader ( const char* file, ReadFromHeaderType what, void*
 ifstream        ifs ( TFileName ( file, TFilenameExtendedPath ) );
 if ( ifs.fail() ) return false;
 
-char        buff[ 256 ];
+char        buff[ KiloByte ];
 
                                         // read magic number
-ifs.getline ( buff, 256 );
+ifs.getline ( buff, KiloByte );
 if ( ! StringStartsWith ( buff, ROITXT_MAGICNUMBER1 ) )
     return false;
                                         // ROITXT_MAGICNUMBER1 is a list of indexes
@@ -103,14 +103,14 @@ switch ( what ) {
     case ReadNumElectrodes :
     case ReadNumSolPoints  :
 
-        ifs.getline ( buff, 256 );
+        ifs.getline ( buff, KiloByte );
         sscanf ( buff, "%d", (int *) answer );
         return  true;
 
     case ReadNumRois :
 
-        ifs.getline ( buff, 256 );
-        ifs.getline ( buff, 256 );
+        ifs.getline ( buff, KiloByte );
+        ifs.getline ( buff, KiloByte );
         sscanf ( buff, "%d", (int *) answer );
         return  true;
     }

@@ -244,16 +244,16 @@ ifstream        ifs ( TFileName ( file, TFilenameExtendedPath ) );
 
 if ( ifs.fail() ) return false;
 
-char        buff[ 256 ];
+char        buff[ KiloByte ];
 
-ifs.getline (buff, 256);
+ifs.getline ( buff, KiloByte );
 if ( ! StringStartsWith ( buff, ELSTXT_MAGICNUMBER1, 4 ) )
     return  false;
 
 
 switch ( what ) {
     case ReadNumElectrodes :
-        ifs.getline ( buff, 256 );
+        ifs.getline ( buff, KiloByte );
         sscanf ( buff, "%d", (int *) answer );
         return  true;
     }

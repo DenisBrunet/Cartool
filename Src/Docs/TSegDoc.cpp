@@ -62,12 +62,12 @@ ifstream        ifs ( TFileName ( file, TFilenameExtendedPath ) );
 if ( ifs.fail() ) return false;
 
 
-char            buff[ 256 ];
+char            buff[ KiloByte ];
 int             numfiles;
 int             numvars;
 
 
-ifs.getline ( buff, 256 );
+ifs.getline ( buff, KiloByte );
 
 switch ( what ) {
 
@@ -78,7 +78,7 @@ switch ( what ) {
         else
             sscanf ( buff, "%d", &numfiles );
 
-        ifs.getline ( buff, 256 );
+        ifs.getline ( buff, KiloByte );
         sscanf ( buff, "%d", &numvars );
 
         *((int *)answer) = numvars * numfiles;
@@ -132,10 +132,10 @@ if ( GetDocPath() ) {
     if ( ifs.fail() ) return false;
 
 
-    char                buff[ 256 ];
+    char                buff[ KiloByte ];
     buff[255]   = 0;
 
-    ifs.getline ( buff, 256 );
+    ifs.getline ( buff, KiloByte );
 
     if ( IsExtension ( FILEEXT_SEG ) )
         sscanf ( buff, "%d %d %d", &NumClusters, &NumFiles, &NumTimeFrames );
