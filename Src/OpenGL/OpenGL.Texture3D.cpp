@@ -50,8 +50,8 @@ ColorTableHash          = 0;
 ZeroMemory ( ColorTablePos,  GLTextureColorTableSize * GLTextureNumRGBA * sizeof ( GLubyte ) );
 ZeroMemory ( ColorTableNeg,  GLTextureColorTableSize * GLTextureNumRGBA * sizeof ( GLubyte ) );
 
-Texture3DEnable         = -1;
-PalettedTextureEnable   = -1;
+Texture3DEnable         = GLTextureError;
+PalettedTextureEnable   = GLTextureError;
 
 Busy                    = false;
 }
@@ -102,8 +102,8 @@ Name                    = 0;
 ColorTable              = 0;
 ColorTableHash          = 0;
                                         // subtle point: allow re-testing in case we changed context
-Texture3DEnable         = -1;
-PalettedTextureEnable   = -1;
+Texture3DEnable         = GLTextureError;
+PalettedTextureEnable   = GLTextureError;
 }
 
 
@@ -252,7 +252,7 @@ for ( int i = 0; i < GLTextureMaxNames; i++ )
     if ( Texture[ i ].IsTextureLoaded () )
         return  i;
 
-return  -1;
+return  GLTextureIndexError;
 }
 
 
@@ -263,7 +263,7 @@ int     TGLVolume::GetTextureIndex ()
                                         // find a loaded texture - volume can be only loaded once in a OpenGL context
 int                 texi            = GetLoadedTexture ();
 
-if ( texi >= 0 )
+if ( texi != GLTextureIndexError )
     return  texi;
 
                                         // not loaded, get the first available slot
@@ -753,42 +753,44 @@ if ( x < 0 || x >= Dim1 )
 int                 texi            = GetLoadedTexture ();
 
                                         // use texture?
-if ( texi >= 0 && Texture[ texi ].IsTexture3DEnable () && quality == QuadFastestQuality ) {
+if ( texi != GLTextureIndexError && Texture[ texi ].IsTexture3DEnable () && quality == QuadFastestQuality ) {
 
     GLfloat     mb  = moreborder ? PM : 0;
 
 
-    GLLoad3DTexture     ( Texture[ texi ].Name );
-    GL3DTextureOn       ();
+    GLLoad3DTexture ( Texture[ texi ].Name );
+    GL3DTextureOn   ();
 
     Texture[ texi ].Matrix.GLize ( ReplaceTexture );
 
 //    if ( Texture[ texi ].IsPalettedTextureEnable () ) // not compatible with more than 1 clipping plane
 //        Texture[ texi ].glColorTableEXT () ( GL_TEXTURE_3D, GL_RGBA8, GLTextureColorTableSize, GL_RGBA, GL_UNSIGNED_BYTE, Texture[ texi ].ColorTableByte );
                                         // global color of the texture
-    glColor4f ( 1.00, 1.00, 1.00, 1.00 );
+    glColor4f       ( 1.00, 1.00, 1.00, 1.00 );
 
 
-    glBegin ( GL_QUADS );
+    glBegin         ( GL_QUADS );
 
-    glTexCoord3f ( x, -mb, -mb );
-    glVertex3f   ( x - Origin[ 0 ], -mb - Origin[ 1 ], -mb - Origin[ 2 ] );
+    glTexCoord3f    ( x, -mb, -mb );
+    glVertex3f      ( x - Origin[ 0 ], -mb - Origin[ 1 ], -mb - Origin[ 2 ] );
 
-    glTexCoord3f ( x, Dim2 - 1 + mb, -mb );
-    glVertex3f   ( x - Origin[ 0 ],  Dim2 - 1 + mb - Origin[ 1 ], -mb - Origin[ 2 ] );
+    glTexCoord3f    ( x, Dim2 - 1 + mb, -mb );
+    glVertex3f      ( x - Origin[ 0 ],  Dim2 - 1 + mb - Origin[ 1 ], -mb - Origin[ 2 ] );
 
-    glTexCoord3f ( x, Dim2 - 1 + mb, Dim3 - 1 + mb );
-    glVertex3f   ( x - Origin[ 0 ],  Dim2 - 1 + mb - Origin[ 1 ], Dim3 - 1 + mb - Origin[ 2 ] );
+    glTexCoord3f    ( x, Dim2 - 1 + mb, Dim3 - 1 + mb );
+    glVertex3f      ( x - Origin[ 0 ],  Dim2 - 1 + mb - Origin[ 1 ], Dim3 - 1 + mb - Origin[ 2 ] );
 
-    glTexCoord3f ( x, -mb, Dim3 - 1 + mb );
-    glVertex3f   ( x - Origin[ 0 ], -mb - Origin[ 1 ], Dim3 - 1 + mb - Origin[ 2 ] );
+    glTexCoord3f    ( x, -mb, Dim3 - 1 + mb );
+    glVertex3f      ( x - Origin[ 0 ], -mb - Origin[ 1 ], Dim3 - 1 + mb - Origin[ 2 ] );
 
-    glEnd();
+    glEnd           ();
 
 
-    GL3DTextureOff      ();
+    GL3DTextureOff  ();
     }
 else {                                  // use Quads
+
+    texi    = GetTextureIndex ();
 
     QuadMesh.Begin ( Dim3, quality, *Texture[ texi ].ColorTable );
 
@@ -842,41 +844,43 @@ if ( y < 0 || y >= Dim2 )
 int                 texi            = GetLoadedTexture ();
 
                                         // use texture?
-if ( texi >= 0 && Texture[ texi ].IsTexture3DEnable () && quality == QuadFastestQuality ) {
+if ( texi != GLTextureIndexError && Texture[ texi ].IsTexture3DEnable () && quality == QuadFastestQuality ) {
 
     GLfloat     mb  = moreborder ? PM : 0;
 
 
-    GLLoad3DTexture     ( Texture[ texi ].Name );
-    GL3DTextureOn       ();
+    GLLoad3DTexture ( Texture[ texi ].Name );
+    GL3DTextureOn   ();
 
     Texture[ texi ].Matrix.GLize ( ReplaceTexture );
 
 //    if ( Texture[ texi ].IsPalettedTextureEnable () )
 //        Texture[ texi ].glColorTableEXT () ( GL_TEXTURE_3D, GL_RGBA8, GLTextureColorTableSize, GL_RGBA, GL_UNSIGNED_BYTE, Texture[ texi ].ColorTableByte );
                                         // global color of the texture
-    glColor4f ( 1.00, 1.00, 1.00, 1.00 );
+    glColor4f       ( 1.00, 1.00, 1.00, 1.00 );
 
 
-    glBegin ( GL_QUADS );
+    glBegin         ( GL_QUADS );
 
-    glTexCoord3f ( -mb, y, -mb );
-    glVertex3f   ( -mb - Origin[ 0 ], y - Origin[ 1 ], -mb - Origin[ 2 ] );
+    glTexCoord3f    ( -mb, y, -mb );
+    glVertex3f      ( -mb - Origin[ 0 ], y - Origin[ 1 ], -mb - Origin[ 2 ] );
 
-    glTexCoord3f ( Dim1 - 1 + mb, y, -mb );
-    glVertex3f   ( Dim1 - 1 + mb - Origin[ 0 ], y - Origin[ 1 ], -mb - Origin[ 2 ] );
+    glTexCoord3f    ( Dim1 - 1 + mb, y, -mb );
+    glVertex3f      ( Dim1 - 1 + mb - Origin[ 0 ], y - Origin[ 1 ], -mb - Origin[ 2 ] );
 
-    glTexCoord3f ( Dim1 - 1 + mb, y, Dim3 - 1 + mb );
-    glVertex3f   ( Dim1 - 1 + mb - Origin[ 0 ], y - Origin[ 1 ], Dim3 - 1 + mb - Origin[ 2 ] );
+    glTexCoord3f    ( Dim1 - 1 + mb, y, Dim3 - 1 + mb );
+    glVertex3f      ( Dim1 - 1 + mb - Origin[ 0 ], y - Origin[ 1 ], Dim3 - 1 + mb - Origin[ 2 ] );
 
-    glTexCoord3f ( -mb, y, Dim3 - 1 + mb );
-    glVertex3f   ( -mb - Origin[ 0 ], y - Origin[ 1 ], Dim3 - 1 + mb - Origin[ 2 ] );
+    glTexCoord3f    ( -mb, y, Dim3 - 1 + mb );
+    glVertex3f      ( -mb - Origin[ 0 ], y - Origin[ 1 ], Dim3 - 1 + mb - Origin[ 2 ] );
 
-    glEnd();
+    glEnd           ();
 
-    GL3DTextureOff      ();
+    GL3DTextureOff  ();
     }
 else {                                  // use Quads
+
+    texi    = GetTextureIndex ();
 
     QuadMesh.Begin ( Dim3, quality, *Texture[ texi ].ColorTable );
 
@@ -926,44 +930,47 @@ z       += Origin[ 2 ];
 if ( z < 0 || z >= Dim3 )
     return;
 
+
 int                 texi            = GetLoadedTexture ();
 
                                         // use texture?
-if ( texi >= 0 && Texture[ texi ].IsTexture3DEnable () && quality == QuadFastestQuality ) {
+if ( texi != GLTextureIndexError && Texture[ texi ].IsTexture3DEnable () && quality == QuadFastestQuality ) {
 
     GLfloat     mb  = moreborder ? PM : 0;
 
 
-    GLLoad3DTexture     ( Texture[ texi ].Name );
-    GL3DTextureOn       ();
+    GLLoad3DTexture ( Texture[ texi ].Name );
+    GL3DTextureOn   ();
 
     Texture[ texi ].Matrix.GLize ( ReplaceTexture );
 
 //    if ( Texture[ texi ].IsPalettedTextureEnable () )
 //        Texture[ texi ].glColorTableEXT () ( GL_TEXTURE_3D, GL_RGBA8, GLTextureColorTableSize, GL_RGBA, GL_UNSIGNED_BYTE, Texture[ texi ].ColorTableByte );
                                         // global color of the texture
-    glColor4f ( 1.00, 1.00, 1.00, 1.00 );
+    glColor4f       ( 1.00, 1.00, 1.00, 1.00 );
 
 
-    glBegin ( GL_QUADS );
+    glBegin         ( GL_QUADS );
 
-    glTexCoord3f ( -mb, -mb, z );
-    glVertex3f   ( -mb - Origin[ 0 ], -mb - Origin[ 1 ], z - Origin[ 2 ] );
+    glTexCoord3f    ( -mb, -mb, z );
+    glVertex3f      ( -mb - Origin[ 0 ], -mb - Origin[ 1 ], z - Origin[ 2 ] );
 
-    glTexCoord3f ( Dim1 - 1 + mb, -mb, z );
-    glVertex3f   ( Dim1 - 1 + mb - Origin[ 0 ], -mb - Origin[ 1 ], z - Origin[ 2 ] );
+    glTexCoord3f    ( Dim1 - 1 + mb, -mb, z );
+    glVertex3f      ( Dim1 - 1 + mb - Origin[ 0 ], -mb - Origin[ 1 ], z - Origin[ 2 ] );
 
-    glTexCoord3f ( Dim1 - 1 + mb, Dim2 - 1 + mb, z );
-    glVertex3f   ( Dim1 - 1 + mb - Origin[ 0 ], Dim2 - 1 + mb - Origin[ 1 ], z - Origin[ 2 ] );
+    glTexCoord3f    ( Dim1 - 1 + mb, Dim2 - 1 + mb, z );
+    glVertex3f      ( Dim1 - 1 + mb - Origin[ 0 ], Dim2 - 1 + mb - Origin[ 1 ], z - Origin[ 2 ] );
 
-    glTexCoord3f ( -mb, Dim2 - 1 + mb, z );
-    glVertex3f   ( -mb - Origin[ 0 ], Dim2 - 1 + mb - Origin[ 1 ], z - Origin[ 2 ] );
+    glTexCoord3f    ( -mb, Dim2 - 1 + mb, z );
+    glVertex3f      ( -mb - Origin[ 0 ], Dim2 - 1 + mb - Origin[ 1 ], z - Origin[ 2 ] );
 
-    glEnd();
+    glEnd           ();
 
-    GL3DTextureOff      ();
+    GL3DTextureOff  ();
     }
 else {                                  // use Quads
+
+    texi    = GetTextureIndex ();
 
     QuadMesh.Begin ( Dim2, quality, *Texture[ texi ].ColorTable );
 

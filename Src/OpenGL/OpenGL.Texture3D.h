@@ -35,6 +35,8 @@ constexpr int   GLTextureOpenGLMaxTextureSize   = 512;
 //constexpr int GLTextureMaxTextureSize         = 384;  // give it a little more chance for 256 MRIs that get tilted
 constexpr int   GLTextureMaxTextureSize         = 512;  // highest resolution limit - requires more memory, which might be a problem for some graphic cards
 
+constexpr int   GLTextureError                  = -1;
+
 
 class   TGLTexture3D :  public TGLObject
 {
@@ -79,6 +81,7 @@ public:
 
 
 protected:
+
     int             Texture3DEnable;
     int             PalettedTextureEnable;
 
@@ -92,6 +95,7 @@ template <class TypeD> class        TVolume;
 
                                         // A single volume can be loaded in different context, so we need to keep track to a few "instances" of TGLTexture3D
 constexpr int   GLTextureMaxNames       = 10;
+constexpr int   GLTextureIndexError     = -1;
 
 
 class   TGLVolume :     public TGLObject
@@ -117,6 +121,7 @@ public:
 
 
 protected:
+
     const Volume*   Data;
     int             Dim1;
     int             Dim2;
@@ -125,6 +130,7 @@ protected:
 
 
 private:
+
     TGLPrimitives           Prim;
     TGLQuadMesh             QuadMesh;
     TGLCoordinates<GLfloat> pos;
