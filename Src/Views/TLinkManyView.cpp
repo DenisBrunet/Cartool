@@ -132,26 +132,26 @@ GLfloat             width           = 0;
 GLfloat             height;
 
 
-for ( int i=0; i < GODoc->GetNumEegDoc(); i++ )
-    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetEegDoc( i )->GetTitle() ) );
+for ( int i=0; i < GODoc->GetNumEegDoc (); i++ )
+    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetEegDoc  ( i )->GetTitle() ) );
 
-for ( int i=0; i < GODoc->GetNumRoiDoc(); i++ )
-    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetRoisDoc( i )->GetTitle() ) );
+for ( int i=0; i < GODoc->GetNumRoiDoc (); i++ )
+    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetRoisDoc ( i )->GetTitle() ) );
 
-for ( int i=0; i < GODoc->GetNumXyzDoc(); i++ )
-    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetXyzDoc( i )->GetTitle() ) );
+for ( int i=0; i < GODoc->GetNumXyzDoc (); i++ )
+    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetXyzDoc  ( i )->GetTitle() ) );
 
-for ( int i=0; i < GODoc->GetNumIsDoc(); i++ )
-    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetIsDoc ( i )->GetTitle() ) );
-
-for ( int i=0; i < GODoc->GetNumRisDoc(); i++ )
-    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetRisDoc( i )->GetTitle() ) );
-
-for ( int i=0; i < GODoc->GetNumSpDoc(); i++ )
-    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetSpDoc ( i )->GetTitle() ) );
-
-for ( int i=0; i < GODoc->GetNumMriDoc(); i++ )
-    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetMriDoc( i )->GetTitle() ) );
+for ( int i=0; i < GODoc->GetNumIsDoc (); i++ )
+    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetIsDoc   ( i )->GetTitle() ) );
+                                                                      
+for ( int i=0; i < GODoc->GetNumRisDoc (); i++ )                       
+    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetRisDoc  ( i )->GetTitle() ) );
+                                                                      
+for ( int i=0; i < GODoc->GetNumSpDoc (); i++ )                        
+    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetSpDoc   ( i )->GetTitle() ) );
+                                                                      
+for ( int i=0; i < GODoc->GetNumMriDoc (); i++ )                       
+    Maxed ( width, BFont->GetStringWidth ( (char *) GODoc->GetMriDoc  ( i )->GetTitle() ) );
 
 
 width  += 4 * BFont->GetAvgWidth ();

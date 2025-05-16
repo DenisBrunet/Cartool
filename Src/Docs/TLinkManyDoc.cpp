@@ -70,10 +70,7 @@ Close ();
 
 bool	TLinkManyDoc::InitDoc ()
 {
-if ( ! IsOpen () )
-    return  Open ( ofRead, 0 );
-
-return  true;
+return  Open ( ofRead, 0 );
 }
 
 
@@ -148,7 +145,7 @@ if ( path )
     SetDocPath ( path );
 
 
-if ( GetDocPath() ) {
+if ( GetDocPath () ) {
 
     SetDirty ( false );
                                         // read lm and organize it into lists
@@ -232,13 +229,13 @@ UnspecifiedDocPath  = StringIs ( GetTitle (), EmptyLmFilename );    // or String
 int                 numspirr        = 0;
 
                                         // can we find or ask for all the requested files ?
-if ( lm.leeg    .IsNotEmpty () && ! lm.leeg .CanOpenFiles ( CanOpenFileReadAndAsk ) )    goto AbortOpen;
-if ( lm.lris    .IsNotEmpty () && ! lm.lris .CanOpenFiles ( CanOpenFileReadAndAsk ) )    goto AbortOpen;
-if ( lm.lxyz    .IsNotEmpty () && ! lm.lxyz .CanOpenFiles ( CanOpenFileReadAndAsk ) )    goto AbortOpen;
-if ( lm.lsp     .IsNotEmpty () && ! lm.lsp  .CanOpenFiles ( CanOpenFileReadAndAsk ) )    goto AbortOpen;
-if ( lm.lis     .IsNotEmpty () && ! lm.lis  .CanOpenFiles ( CanOpenFileReadAndAsk ) )    goto AbortOpen;
-if ( lm.lrois   .IsNotEmpty () && ! lm.lrois.CanOpenFiles ( CanOpenFileReadAndAsk ) )    goto AbortOpen;
-if ( lm.lmri    .IsNotEmpty () && ! lm.lmri .CanOpenFiles ( CanOpenFileReadAndAsk ) )    goto AbortOpen;
+if ( lm.leeg .IsNotEmpty () && ! lm.leeg .CanOpenFiles ( CanOpenFileReadAndAsk ) )      goto AbortOpen;
+if ( lm.lris .IsNotEmpty () && ! lm.lris .CanOpenFiles ( CanOpenFileReadAndAsk ) )      goto AbortOpen;
+if ( lm.lxyz .IsNotEmpty () && ! lm.lxyz .CanOpenFiles ( CanOpenFileReadAndAsk ) )      goto AbortOpen;
+if ( lm.lsp  .IsNotEmpty () && ! lm.lsp  .CanOpenFiles ( CanOpenFileReadAndAsk ) )      goto AbortOpen;
+if ( lm.lis  .IsNotEmpty () && ! lm.lis  .CanOpenFiles ( CanOpenFileReadAndAsk ) )      goto AbortOpen;
+if ( lm.lrois.IsNotEmpty () && ! lm.lrois.CanOpenFiles ( CanOpenFileReadAndAsk ) )      goto AbortOpen;
+if ( lm.lmri .IsNotEmpty () && ! lm.lmri .CanOpenFiles ( CanOpenFileReadAndAsk ) )      goto AbortOpen;
 
 
 //if ( ! (bool) leeg && ! (bool) lris )     goto AbortOpen;
@@ -376,7 +373,7 @@ for ( /*int*/ i = 0; i < (int) ListRoisDoc; i++ )   ListRoisDoc[ i ]->AddLink ( 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // count spr and spi
-numspirr = GetNumSpDoc();
+numspirr = GetNumSpDoc ();
 
                                         // if a SpIrr, compute the interpolation with the MRI mask
                                         // the SpIrr will test if it has already made the interpolation.
@@ -534,8 +531,8 @@ return TBaseDoc::CanClose ();
 //----------------------------------------------------------------------------
 bool    TLinkManyDoc::Close ()
 {
-if ( ! IsOpen () )
-    return true;
+if ( ! HasDocs () )
+    return  true;
 
                                         // application might already have forced-close some documents, it is not safe for testing anymore
 if ( ! CartoolApplication->Closing ) {
@@ -613,6 +610,13 @@ return  TFileDocument::Close ();
 //----------------------------------------------------------------------------
 bool    TLinkManyDoc::IsOpen ()
 {
+                                        // pretending to be open for proper buttons initialization - see TBaseView::EvSetFocus
+return  true;
+}
+
+
+bool    TLinkManyDoc::HasDocs ()    const
+{
 return  (bool) ListEegDoc 
      || (bool) ListXyzDoc 
      || (bool) ListSpDoc
@@ -620,6 +624,18 @@ return  (bool) ListEegDoc
      || (bool) ListRisDoc 
      || (bool) ListMriDoc 
      || (bool) ListRoisDoc;
+}
+
+
+int     TLinkManyDoc::GetNumDocs () const
+{
+return  (int) ListEegDoc 
+      + (int) ListXyzDoc 
+      + (int) ListSpDoc
+      + (int) ListIsDoc  
+      + (int) ListRisDoc 
+      + (int) ListMriDoc 
+      + (int) ListRoisDoc;
 }
 
 
@@ -2275,7 +2291,8 @@ Close ();
 
 bool    TDynamicLinkManyDoc::Close ()
 {
-if ( ! IsOpen() )   return true;
+if ( ! HasDocs () )
+    return  true;
 
                                         // just removing references, NOT actually closing these docs
 for ( int i = 0; i < (int) ListEegDoc; i++ )

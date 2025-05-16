@@ -2036,8 +2036,7 @@ Invalidate ( false );
 //----------------------------------------------------------------------------
 void    TBaseView::EvSetFocus ( HWND hwnd )
 {
-                                        // in case of doc closing with multiple views, prevent all the other views from inheriting the focus, too
-if ( ! BaseDoc->IsOpen () )
+if ( ! BaseDoc->IsOpen () )             // in case a doc with multiple views is closing, prevent the other views from getting the focus, which will crash the app as the doc is already closed
     return;
 
 

@@ -78,13 +78,15 @@ public:
     bool                NotifyDocViews  ( int event, owl::TParam2 item = 0, owl::TView *vexclude = 0, owl::TDocument *dexclude = 0 )    final;
 
 
-    int                 GetNumEegDoc   ()       const   { return (int) ListEegDoc;  }
-    int                 GetNumXyzDoc   ()       const   { return (int) ListXyzDoc;  }
-    int                 GetNumSpDoc    ()       const   { return (int) ListSpDoc;   }
-    int                 GetNumIsDoc    ()       const   { return (int) ListIsDoc;   }
-    int                 GetNumRisDoc   ()       const   { return (int) ListRisDoc;  }
-    int                 GetNumMriDoc   ()       const   { return (int) ListMriDoc;  }
-    int                 GetNumRoiDoc   ()       const   { return (int) ListRoisDoc; }
+    bool                HasDocs         ()      const;
+    int                 GetNumDocs      ()      const;
+    int                 GetNumEegDoc    ()      const   { return (int) ListEegDoc;  }
+    int                 GetNumXyzDoc    ()      const   { return (int) ListXyzDoc;  }
+    int                 GetNumSpDoc     ()      const   { return (int) ListSpDoc;   }
+    int                 GetNumIsDoc     ()      const   { return (int) ListIsDoc;   }
+    int                 GetNumRisDoc    ()      const   { return (int) ListRisDoc;  }
+    int                 GetNumMriDoc    ()      const   { return (int) ListMriDoc;  }
+    int                 GetNumRoiDoc    ()      const   { return (int) ListRoisDoc; }
 
 
     TTracksDoc*         GetEegDoc ( int index )         { return ListEegDoc [ index ]; }
