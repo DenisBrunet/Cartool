@@ -56,6 +56,13 @@ return  ! StringIs ( s1, s2, flags );
 }
 
 
+int     StringCompare ( const char* s1, const char* s2, StringFlags flags )
+{
+return  IsFlag ( flags, CaseSensitive ) ?  strcmp  ( s1, s2 ) 
+                                        : _stricmp ( s1, s2 );
+}
+
+
 //----------------------------------------------------------------------------
 bool    StringIsEmpty ( const char* s )
 {
@@ -503,8 +510,16 @@ return  s;
 //----------------------------------------------------------------------------
 char*   StringCopy ( char* to, const char* from, long maxlength )
 {
-if ( ! to || ! from )
-    return  to ? to : "";
+if ( ! to )
+    return  "";
+
+
+if ( ! from ) {
+
+    ClearString ( to );
+
+    return  to;
+    }
 
 
 if ( to == from ) {
@@ -515,35 +530,45 @@ if ( to == from ) {
     return  to;
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // either from is empty, or maxlength is 0?
-if ( ! *from || maxlength == 0 )
+if ( ! *from || maxlength == 0 ) {
 
     ClearString ( to );
+    }
 
-else                                    // actually something to copy
+else {                                  // actually something to copy
 
-    if ( maxlength == -1 )              // full copy
+    if ( maxlength == -1 ) {            // full copy
 
         strcpy  ( to, from );
+        }
 
     else {                              // cropped copy
         strncpy ( to, from, maxlength );
                                         // make sure we are null-terminated!
         to[ maxlength ]     = EOS;
         }
+    }
 
 
 return  to;
 }
 
 
+//----------------------------------------------------------------------------
 char*   StringCopy ( char* to, const char* from, const char* tail1, const char* tail2, const char* tail3, const char* tail4, const char* tail5, const char* tail6, const char* tail7, const char* tail8 )
 {
-if ( ! to || ! from )
-    return  to ? to : "";
+if ( ! to )
+    return  "";
 
 
-StringCopy   ( to, from );
+if ( from )
+    StringCopy  ( to, from );
+else
+    ClearString ( to );
+
 
 StringAppend ( to, tail1, tail2, tail3, tail4, tail5, tail6, tail7, tail8 );
 

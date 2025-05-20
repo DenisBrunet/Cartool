@@ -540,6 +540,7 @@
     <ClInclude Include="..\Src\Utils\Math.TMatrix44.h" />
     <ClInclude Include="..\Src\Utils\Math.Utils.h" />
     <ClInclude Include="..\Src\Utils\Strings.Grep.h" />
+    <ClInclude Include="..\Src\Utils\Strings.TFixedString.h" />
     <ClInclude Include="..\Src\Utils\Strings.TSplitStrings.h" />
     <ClInclude Include="..\Src\Utils\Strings.TStrings.h" />
     <ClInclude Include="..\Src\Utils\Strings.TStringsMap.h" />

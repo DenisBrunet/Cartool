@@ -49,6 +49,7 @@ enum                StringFlags
 #define             EOS                     '\0'
 
 
+int                 StringCompare    ( const char* s1, const char* s2, StringFlags flags = CaseInsensitive );
 bool                StringIs         ( const char* s1, const char* s2, StringFlags flags = CaseInsensitive );
 bool                StringIsNot      ( const char* s1, const char* s2, StringFlags flags = CaseInsensitive );
 bool                StringIsEmpty    ( const char* s );
