@@ -50,8 +50,6 @@ THistogram          H   (   *this,
                             (HistogramOptions) ( HistogramPDF | HistogramRaw | HistogramNormNone | HistogramLinear | HistogramIgnoreNulls )
                         );
 
-//DBGV2 ( percentile, H.GetPercentilePosition ( percentile ), "Volume: percentile -> value" );
-
 return  H.GetPercentilePosition ( RealUnit, percentile );
 }
 
@@ -108,8 +106,6 @@ if ( neighborhood == Neighbors26 )  num  += (bool) Array[ index + Dim3 - 1 ];
 if ( neighborhood != Neighbors6  )  num  += (bool) Array[ index + Dim3     ];
 if ( neighborhood == Neighbors26 )  num  += (bool) Array[ index + Dim3 + 1 ];
 
-//if ( num  )
-//    DBGV4 ( x, y, z, num, "x, y, z,  numneighbors" );
 
 return  num;
 }
@@ -294,11 +290,6 @@ for ( int zk = 0; zk < K.GetDim3 (); zk++ ) {
                                         // clip Kernel outside Euclidian norm!
     K ( xk, yk, zk )    = kp.Norm2 () <= r2;
     } // for xk, yk, zk
-
-
-//TFileName           _file;
-//sprintf ( _file, "E:\\Data\\Kernel.Morpho %.2f." DefaultMriExt, diameter );
-//K.WriteFile ( _file, Ko );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -616,8 +616,6 @@ double              v;
 
 SetOvershootingOption ( interpolate, Array, LinearDim );
 
-//DBGV3 ( downsampling, numsubsampling, mediansize, "downsampling  numsubsampling  mediansize" );
-
 
 for ( int x = 0; x < Dim1; x++ )
 for ( int y = 0; y < Dim2; y++ )
@@ -676,8 +674,6 @@ double              getvalue;
 double              v;
 
 //SetOvershootingOption ( interpolate, Array, LinearDim );
-
-//DBGV3 ( downsampling, substep, mediansize, "downsampling  substep  mediansize" );
 
 
 for ( int x = 0; x < Dim1; x++ )
@@ -773,13 +769,6 @@ for ( int z = 1; z < MriSize.Z; z++ ) {
         } // if thresholds
 
     } // for z
-
-
-//DBGV2 ( thresholdf, thresholdi, "thresholdf thresholdi" );
-//if ( binary )
-//    DBGV2 ( bfratio.GetNumItems (), (double) bfratio.GetNumItems () / ( incl.GetNumSet () + 1 ) * 100, "#binary diff: abs %?" )
-//else
-//    DBGV4 ( bfratio.Average (), bfratio.SD (), bfratio.CoefficientOfVariation (), fabs ( bfratio.CoefficientOfVariation () ) < 5.00, "ratio: Avg SD Coeff -> Included?" );
 
                                             // less than 5% outside (good: 1%, bad: 33%)
 bool                included        = binary ? (double) bfratio.GetNumItems () / ( incl.GetNumSet () + 1 ) < 0.05
@@ -1209,8 +1198,6 @@ for ( int numgaussi = 0, numgauss = mingauss; numgaussi < rangegauss; numgauss++
                                         // give a penalty for a higher # of gaussians
     criterion ( numgaussi, criterionloglikelihood   )   = loglikelyhood;
     criterion ( numgaussi, criterionloglikelihoodW  )   = numgauss * loglikelyhood;
-
-//    DBGV3 ( numgauss, criterion ( numgaussi, criterionloglikelihood ), criterion ( numgaussi, criterionloglikelihoodW ), "#gauss  criterion: logl logl*#" );
     } // for numgauss
 
 
@@ -1233,7 +1220,6 @@ for ( int numgaussi = 1; numgaussi < rangegauss; numgaussi++ ) {
 
 bestnumgauss    = mingauss + bestnumgaussi;
 
-//DBGV ( bestnumgauss, "Best number of Gaussians" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // sort the gaussians according to a criterion
@@ -1251,7 +1237,6 @@ for ( int i = 0; i < bestnumgauss; i++ ) {
     else
         bestgauss ( i, 0 )  = bestgauss ( i, 1 )  = -1; // reset values
 
-//    DBGV2 ( i, bestgauss ( i, 1 ), "Gauss#  criterion" );
     }
 
                                         // take the last 2 good gaussians, the bad ones will also land at the end
@@ -1297,9 +1282,6 @@ if ( gaussgreylowi  == -1
 //    Permutate ( gausswhitei, gaussgreyi );
 
 
-//DBGV4 ( gaussblacki, gaussgreylowi, gaussgreyhighi, gausswhitei, "black / grey low / grey high / white  indexes" );
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // here, the 2 or 3 gaussians are center-ordered
                                         // retrieve gaussians parameters
@@ -1331,12 +1313,6 @@ double              whiteheight     = gaussians ( bestnumgaussi, gausswhitei, ga
 double              whitesdl        = GaussianWidthToSigma ( gaussians ( bestnumgaussi, gausswhitei, gausswidthl ) );
 
 
-//DBGV3 ( blackcenter, blackheight, blacksdr, "black: center height SDr" );
-//DBGV4 ( greylowcenter, greylowheight, greylowsdl, greylowsdr, "greylow: center height SDl SDr" );
-//DBGV4 ( greyhighcenter, greyhighheight, greyhighsdl, greyhighsdr, "greyhigh: center height SDl SDr" );
-//DBGV3 ( whitecenter, whiteheight, whitesdl, "white: center height SDr" );
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Intersections between Gaussians
 double              xblackgrey1;
@@ -1365,10 +1341,6 @@ GaussiansIntersections  (   greylowcenter,
                             1, // whiteheight,
                             xgreywhite1, xgreywhite2
                         );
-
-
-//DBGV3 ( numsolblackgrey, xblackgrey1, xblackgrey2, "Black-Grey intersection" );
-//DBGV3 ( numsolgreywhite, xgreywhite1, xgreywhite2, "Grey-White intersection" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1403,9 +1375,6 @@ statsbg.Add ( blackgreysummits );
 values[ GreyMin ]   = statsbg.Mean ();
 
 
-//DBGV5 ( greyminus, blackplus, gaussianintersectbg, blackgreysummits, values[ GreyMin ], "greyminus, blackplus, gaussianintersect, blackgreysummits -> grey min" );
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Estimates for the grey-white intersection
 
@@ -1437,9 +1406,6 @@ statsgw.Add ( greywhitesummits );
 values[ GreyMax ]   = statsgw.Mean ();
 
 
-//DBGV5 ( whiteminus, greyplus, gaussianintersectgw, greywhitesummits, values[ GreyMax ], "whiteminus, greyplus, gaussianintersectgw, greywhitesummits -> grey max" );
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Copying spreading
 values[ BlackW   ]  = gaussians ( bestnumgaussi, gaussblacki,   gausswidthr );
@@ -1458,8 +1424,6 @@ values[ WhiteMax ]  = GetMaxValue ();
 values[ BlackMode ] = blackcenter;
 values[ GreyMode  ] = greycenter;
 values[ WhiteMode ] = whitecenter;
-
-//DBGV4  ( values[ BlackMin ], values[ GreyMin ], values[ GreyMax ], values[ WhiteMax ], "GetGreyWhiteValues" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1634,8 +1598,6 @@ if ( somenegative ) { // or maxvalue <= 0?
     Hmaxvalue       = - Hmaxvalue;
     maxvalue        = minvalue;     // !overwriting!
     }
-
-//DBGV4 ( backlowreal, backhighreal, Hmaxvalue, maxvalue, "backlow backhigh,  backhigh high hmax maxvalue" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1844,8 +1806,6 @@ double              ratiothick1     = statthickness   .Average ()       / ( stat
 double              ratiothick2     = ratiothick1 * statthickness.SD () / ( statthicknesslow.SD ()      ? statthicknesslow.SD ()      : 1e-10 );
 double              backlowratio    = backlowreal                       / NonNull ( backhighreal ) * 100;
 
-//DBGV5 ( lowthick, ratiothick1, ratiothick2, backlowreal, backlowratio, "lowAvg  ratiothick1  ratiothick2  backlow  backlowratio" );
-
                                         // !NOTE! some package can segment the full head, ie, remove the background noise, but the content is still a full head
 
                                         // 1) Look at the average thickness, from the lowest background
@@ -1927,11 +1887,6 @@ i31        += inward * d3;
 i32        -= inward * d3;
 */
 
-//DBGV3 ( i11, i21, i31, "min box to scan" );
-//DBGV3 ( i12, i22, i32, "max box to scan" );
-//DBGV ( backgroundvalue, "backgroundvalue" );
-
-
 double              bv              = Clip ( fabs ( Hmaxvalue ) - 1, 0.0, 2 * backgroundvalue );
 THistogram          H ( bv / 2 + 2 );
 int                 x, y, z;
@@ -1974,21 +1929,14 @@ for ( z = i31; z < i32; z += step ) {
 //    if ( GetValue ( x, y, z ) <= bv && GetValue ( x, y, z + 1 ) <= bv )
 //        stats.Add ( fabs ( GetValue ( x, y, z ) - GetValue ( x, y, z + 1 ) ) / 2 + 0.5 );
     }
-//DBGV2 ( stats.Average (), stats.SD (), "Avg SD" );
 
                                         // erode harder
 H.Erode ( 0.01 );
-
-//TFileName           buff;
-//sprintf ( buff, "E:\\Data\\ContentType.Histo Background.sef" );
-//H.WriteFile ( buff );
 
 
 bool                segment;
 
 segment     = H.GetExtent ( BinUnit ) == 1 || ( H.GetExtent ( BinUnit ) == 2 && H[ 1 ] / NonNull ( H[ 0 ] ) < 0.01 );
-
-//DBGV2 ( H.GetExtent ( BinUnit ), segment, "GetExtent  Segmented" );
 
 
 if ( IsUnknownMriType ( extracontenttype ) )    // no previous detection?
@@ -2095,10 +2043,8 @@ if ( Bounding.MinSize() >= 4 ) {
 
                                         // if counting is not enough, use stats on the difference f.ex.
     ratio       = numchanges / ( numneighbors ? numneighbors : 1 );
-//    DBGV3 ( numchanges, numneighbors, ratio, "#changes  #tests  mask ratio" );
 
     binarymask  = ( ! nnc1 && ! nnc2 ) || nnc1 && ! nnc2;
-//    DBGV5 ( nn1, nnc1, nn2, nnc2, binarymask, "nn1, nnc1, nn2, nnc2, binarymask" );
 
                                             // lowest seg:                          0.868
                                             // lowest full: (import-iso-stdsag.hdr) 0.4313, (amim.hdr) 0.22947
@@ -2138,9 +2084,6 @@ for ( int i = HV.GetFirstPosition (); i <= HV.GetLastPosition () - 1; i++ ) {
                                         // Blob has a long and continuous decreasing tail
                                         // Non-blob have more or less an equal amount of inc/dec, or have more inc then dec
 double              did             = (double) ( numdec - numinc ) / HV.GetExtent ();
-
-//DBGV2 ( HV.NumModes (), HV.MaximumPosition (), "#modes  MaxPos" );
-//DBGV4 ( numdec, numinc, HV.GetExtent (), did * 100, "numdec, numinc, HV.GetExtent -> did" );
 
                                         // Min blob: 84, max non-blob: 21
                                         // Min IS blob: 58

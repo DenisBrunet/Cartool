@@ -1469,9 +1469,6 @@ double              relsd           = SD ()    / sqrt ( Square ( TwoPi ) / 12 );
 //double              skew            = SkewnessPearson ();           // expected: 0 -  not sure if data are stored
 //double              allrels         = relrange * relmean * relsd;   // compound measure
 
-
-//DBGV3 ( relrange, relmean, relsd, "IsAngular: relrange, relmean, relsd" );
-
                                         
 return  ( IsInsideLimits ( relmean,  0.90, 1.15 )   //   0..pi case
        || IsInsideLimits ( relmean, -0.10, 0.10 ) ) // -pi..pi case
@@ -1527,8 +1524,6 @@ if ( skewness2 && fabs ( skewness2 ) > 0.36
   || skewness6 && fabs ( skewness6 ) > 0.47 )
 
     isskewed    = TrueToPlus ( skewness6 > 0 );
-
-//DBGV3 ( skewness2, skewness6, isskewed, "Skewed?" );
 
 
 return  isskewed;
@@ -1647,15 +1642,6 @@ do {
 
                                         // getting closer...
     step   /= 2;
-
-
-//    DBGV5 ( lb, sdleft * 1000, sdright * 1000, diff * 1000, logbase, "lb: sdleft / sdright, Diff -> BestLogBase" );
-
-//    TFileName           _file;
-//    StringCopy ( _file, "E:\\Data\\Data.LogBase " );
-//    FloatToString ( StringEnd ( _file ), lb, 2 );
-//    AddExtension ( _file, FILEEXT_EEGSEF );
-//    logdata.WriteFileData ( _file );
 
     } while ( step > convergence );
 
@@ -1925,8 +1911,6 @@ if      ( kdetype == KernelDensityDiscrete ) {
 
 
     density     = unique [ 0 ];         // will NOT be 0, as we took off repeating values
-
-//    DBGV4 ( NumItems, GaussianKernelDensity ( kdetype ), numunique, density, "#items KernelDensity -> #uniquevalues KernelDensity" );
     }
 
 
@@ -1946,8 +1930,6 @@ else if ( kdetype == KernelDensitySilverman
     if ( IsInteger () )
                                         // also make the kernel integer, otherwise, there will be some aliasing effect across bins
         density = Round ( density );
-
-//  DBGV6 ( NumItems, IsInteger (), SD (), InterQuartileRange (), sigma, density, "NumItems, IsInteger (), SD (), InterQuartileRange (), sigma, density" );
     }
 
 
@@ -1996,8 +1978,6 @@ else if ( kdetype == KernelDensityMultipleGaussians ) {
                                         // also make the kernel integer, otherwise, there will be some aliasing effect across bins
         density = Round ( density );
 
-    
-//  DBGV4 ( mindata, maxdata, numgaussians, density, "KDMultiGauss: mindata maxdata #Gauss -> KD" );
     }
 
 
@@ -2132,8 +2112,6 @@ while ( N > 3 ) {
 
         } // for all intervals
 
-//    DBGV4 ( N, w, imin, Data[ imin + N / 2 ], "N, w -> imin Data" );
-
                                         // reduce search interval - note that with this formula, N will always be >= 2
     N       = RoundAbove ( N / 2.0 );
     istart  = imin;
@@ -2151,8 +2129,6 @@ if        ( N == 1 )    maxmodeposition     =   Data[ imin ];
 else   if ( N == 2 )    maxmodeposition     = ( Data[ imin ] + Data[ imin + 1 ] ) / 2;
 else /*if ( N == 3 )*/  maxmodeposition     = fabs ( Data[ imin ] - Data[ imin + 1 ] )     < fabs ( Data[ imin + 1 ] - Data[ imin + 2 ] )
                                             ?      ( Data[ imin ] + Data[ imin + 1 ] ) / 2 :      ( Data[ imin + 1 ] + Data[ imin + 2 ] ) / 2;
-
-//DBGV ( maxmodeposition, "MaxModeHSM" );
 
 return  maxmodeposition;
 }
@@ -2239,12 +2215,6 @@ do {
         } // for all intervals
 
 
-//    if ( VkQuery () ) {
-//    densityarray.WriteFile ( "E:\\Data\\Density.sef" );
-//    DBGV5 ( W, imin, imax, ( imin + imax ) / 2, Data[ ( imin + imax ) / 2 ], "W -> imin..imax icentral -> Data" );
-//    }
-
-
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // reduce new search interval
     istart  = imin;
@@ -2262,8 +2232,6 @@ double              maxmodeposition;
 
 if        ( density == 1 )    maxmodeposition     =   Data[ imin ];
 else /*if ( density == 2 )*/  maxmodeposition     = ( Data[ imin ] + Data[ imax ] ) / 2;
-
-//DBGV ( maxmodeposition, "MaxModeHRM" );
 
 return  maxmodeposition;
 }
@@ -2577,10 +2545,6 @@ double              sigmak;
 
 for ( int iter = 1; iter <= MaxGaussiantMixtureIter; iter++ ) {
 
-//    for ( int k = 0; k < numgaussian; k++ )
-//        DBGV5 ( iter, k+1, mean [ k ], sigma [ k ], alpha [ k ], "#iter k -> mean width alpha" );
-
-
 //    experror.TimeMax++;  // used as a counter here
 //    experror.Write ( sumlogsump );
 
@@ -2785,8 +2749,6 @@ for ( int k = 0; k < numgaussian; k++ ) {
     mixg ( k, FunctionCenter    )   = mean  [ k ];
     mixg ( k, FunctionWidth     )   = GaussianSigmaToWidth ( sigma [ k ] );
     mixg ( k, FunctionHeight    )   = alpha [ k ];
-
-//    DBGV4 ( k+1, mean [ k ], sigma [ k ], alpha [ k ], "results: k -> mean width alpha" );
     } // for k
 
 
@@ -2917,10 +2879,6 @@ double              sigmakr;
 
 
 for ( int iter = 1; iter <= MaxGaussiantMixtureIter; iter++ ) {
-
-//    for ( int k = 0; k < numgaussian; k++ )
-//        DBGV6 ( iter, k+1, mean [ k ], sigmal[ k ], sigmar[ k ], alpha [ k ], "#iter k -> mean width alpha" );
-
 
 //    experror.TimeMax++;  // used as a counter here
 //    experror.Write ( sumlogsump );
@@ -3145,8 +3103,6 @@ for ( int k = 0; k < numgaussian; k++ ) {
     mixg ( k, FunctionWidthLeft )   = GaussianSigmaToWidth ( sigmal [ k ] );
     mixg ( k, FunctionWidthRight)   = GaussianSigmaToWidth ( sigmar [ k ] );
     mixg ( k, FunctionHeight    )   = alpha [ k ];
-
-//    DBGV5 ( k+1, mean [ k ], sigmal[ k ], sigmar[ k ], alpha [ k ], "results: k -> mean width alpha" );
     } // for k
 
 

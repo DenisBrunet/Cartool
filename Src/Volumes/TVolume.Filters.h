@@ -451,13 +451,6 @@ for ( int i = 0; i < Kf.GetLinearDim (); i++ )
 Kf         /= sumk;
 
 
-//DBGV3 ( diameter, Kf.GetDim1 (), Ko.X, "diameter  Kernel: Dim1 Origin" );
-//for ( int xk = 0; xk < Kf.GetDim1 (); xk++ )
-//for ( int yk = 0; yk < Kf.GetDim2 (); yk++ )
-//for ( int zk = 0; zk < Kf.GetDim3 (); zk++ )
-//    DBGV4 ( xk, yk, zk, Kf ( xk, yk, zk ) * 1000, "x,y,z  K" );
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // we need a cloned temp array, which includes a safety border
 TVolume<TypeD>      temp ( Dim1 + Ko.X * 2, Dim2 + Ko.Y * 2, Dim3 + Ko.Z * 2 );
@@ -556,11 +549,6 @@ for ( int zk = 0; zk < K.GetDim3 (); zk++ ) {
     K ( xk, yk, zk )    = kp.Norm2 () <= r2;
 //  K ( xk, yk, zk )    = sqrt ( kp.X * kp.X * 1.00 + kp.Y * kp.Y * 1.15 + kp.Z * kp.Z * 1.30 ) <= r2;  // trial for an elliptic Kernel
     } // for xk, yk, zk
-
-
-//TFileName           _file;
-//sprintf ( _file, "E:\\Data\\Kernel.Stat %.2f." DefaultMriExt, diameter );
-//K.WriteFile ( _file, TPointDouble ( Ko ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -959,11 +947,6 @@ TArray1<double>     values;
 GetGreyWhiteValues ( values, false );
 
 
-//DBGV4 ( values[ BlackMin ], values[ BlackMax ], values[ BlackMode ], values[ BlackW ], "Black: Min Max Mode SD" );
-//DBGV4 ( values[ GreyMin  ], values[ GreyMax  ], values[ GreyMode  ], values[ GreyW  ], "Grey : Min Max Mode SD" );
-//DBGV4 ( values[ WhiteMin ], values[ WhiteMax ], values[ WhiteMode ], values[ WhiteW ], "White: Min Max Mode SD" );
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // limit the white on the right side, as there can be a long tail
 
@@ -1107,8 +1090,6 @@ TBoundingBox<int>   bounding ( *this, false, 0 );
                                         // estimated size of deepest sulcus * 2, to have thick enough histogram with enough white inside
 int                 halfthick       = Round ( bounding.GetMeanExtent () * 0.15 );
 //int                 halfthick       = ::GetValue ( "Half thickness:", FilterPresets[ FilterTypeBiasField ].Text );
-
-//DBGV3 ( bounding.GetMeanExtent (), halfthick, boundarymargin, "MeanExtent -> halfthick boundarymargin" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1340,8 +1321,6 @@ for ( int axis = 0; axis < numaxis; axis++ ) {
 
     boundary ( axis, BoundaryInferiorMargin )   = boundary ( axis, BoundaryInferior ) + boundarymargin;
     boundary ( axis, BoundarySuperiorMargin )   = boundary ( axis, BoundarySuperior ) - boundarymargin;
-
-//    DBGV5 ( axis + 1, boundary ( axis, BoundaryInferior ), boundary ( axis, BoundarySuperior ), boundary ( axis, BoundaryInferiorMargin ), boundary ( axis, BoundarySuperiorMargin ), "Axis -> boundaries" );
     }
 
 
@@ -1451,12 +1430,6 @@ for ( int c = 0, axis; c < numcorrections * numaxis; c++ ) {
         Hperp.Filter ( FilterTypeGaussian, p );                 // we might have empty bins, so the Fast Gaussian will not perform that well
 
 
-//        TFileName               _file;
-//        sprintf ( _file, "E:\\Data\\Histogram.%0d.%03d.PDF.sef", axis, si );
-//        if ( ( c + si ) % 37 == 0 )
-//            Hperp.WriteFile ( _file, "Axis" );
-
-
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // looking at the tail of the CDF
         Hperp.ToCDF ();
@@ -1470,13 +1443,6 @@ for ( int c = 0, axis; c < numcorrections * numaxis; c++ ) {
 
                                         // Or convert to CDF and scan range myself
         axiscorr[ centeri + si ]   = stat.Mean ();
-
-
-//        if ( VkQuery () ) DBGV3 ( axis, si, axiscorr[ centeri + si ], "Axis, Perp -> Corr" );
-//        TFileName               _file;
-//        sprintf ( _file, "E:\\Data\\Histogram.%0d.%03d.CDF.sef", axis, si );
-//        if ( ( c + si ) % 37 == 0 )
-//            Hperp.WriteFile ( _file, "Axis" );
         } // for sliding histogram
 
 
@@ -1508,16 +1474,8 @@ for ( int c = 0, axis; c < numcorrections * numaxis; c++ ) {
     bool                badstats            = stat.SD () > ( hperpmax / 17 ) * 1.5 
                                            || stat.SD () == 0;
 
-                                        // save axis curves to file
-//    TFileName           _file;
-//    sprintf ( _file, "E:\\Data\\Axis Correction.%02d.sef", c + 1 );
-//    axiscorr.WriteFile ( _file );
-//
-//    if ( VkQuery () ) DBGV4 ( axis, stat.Average (), stat.SD (), badstats, "axis  avg SD -> badstats" );
-
                                         // don't buy that guy, there is obviously a problem; and BTW, SD == 0 means no correction
     if ( badstats ) {
-//        if ( stat.SD () )   DBGV2 ( axis, stat.SD (), "Axis correction pb: SD" );
         continue;
         }
 
@@ -1559,11 +1517,6 @@ for ( int c = 0, axis; c < numcorrections * numaxis; c++ ) {
     for ( int i = 0; i < LinearDim; i++ )
         if ( mask ( i ) )   correction  ( i )   /= avgrescale;
         else                correction  ( i )    = 1;
-
-
-//    TFileName           _file;
-//    sprintf ( _file, "E:\\Data\\Axis Correction.%02d.nii", c + 1 );
-//    correction.WriteFile ( _file, 0, 0, 0, 0, NiftiTransformDefault, NiftiIntentCodeDefault, NiftiIntentNameDefault, AtomFormatFloat );
     } // for c numcorrections
 
 
@@ -1579,9 +1532,6 @@ for ( int c = 0, axis; c < numcorrections * numaxis; c++ ) {
                                         // * 1.5 with correct range of boundary
 bool                transfok        = globalquality.Average () < ( hperpmax / 64 ) * 1.5
                                    && globalquality.SD ()      < ( hperpmax / 51 ) * 1.5;
-
-//globalquality.Show ( "Bias Field global quality" );
-//DBGV4 ( globalquality.Average (), globalquality.SD (), globalquality.CoV (), transfok, "globalquality of SDs: avg, SD, CoV -> transfok" );
 
                                         // don't apply if transformation seem wrong
 if ( ! transfok ) {

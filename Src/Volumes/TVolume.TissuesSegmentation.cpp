@@ -95,10 +95,6 @@ p ( FilterParamDiameter )       = ExpandDiameter;
 headmask.Filter ( FilterTypeDilate, p );
 
 
-//TFileName           _file;
-//StringCopy ( _file, "E:\\Data\\HeadMask.nii" );
-//headmask.WriteFile ( _file );
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // soften the edge of mask - set in voxel size is OK
 Gauge.Next ();
@@ -195,11 +191,6 @@ THistogram          H   (   madsd,
 
 
 double              hcut            = H.GetPercentilePosition ( RealUnit, MADSDcut );
-
-//H.ToCDF ();                             // for display!
-//H.WriteFile ( "E:\\Data\\Histo.MADSD.txt", false );
-//DBGV ( hcut, "highcut" );
-
 
                                         // threshold to high MADSD values
 p ( FilterParamThresholdMin )   = hcut;
@@ -586,10 +577,6 @@ for ( int x = bounding.XMin (); x <= bounding.XMax (); x++ ) {
 //expvolgrey.Write ( Grey );
 //StringCopy ( expvolgrey.Filename, file );
 
-//TFileName           _file;
-//StringCopy ( _file, "E:\\Data\\BrainToGrey.1.nii" );
-//Grey.WriteFile ( _file );
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 4) Postprocessings
@@ -681,7 +668,6 @@ else {
 Gauge.Next ();
 
 if ( IsFlag ( flags, GreyMatterSymmetric ) && lrorigin != 0 ) {
-//    DBGV2 ( lraxis, lrorigin, "lraxis, lrorigin" );
 
     if ( lraxis == 0 ) {
 
@@ -735,7 +721,6 @@ bool                emptygrey       = Grey.GetNumSet () == 0;
                                         // copy result
 *this       = Grey;
 
-//DBGV3 ( greywhiteok, emptygrey, includingok, "greywhiteok, emptygrey, includingok" );
                                         // fool-proof test
 return  greywhiteok && ! emptygrey /*&& includingok*/;
 }
@@ -1027,8 +1012,6 @@ perful.Filter ( FilterTypePercentFullness, p );
                                                                         // ignore background!
 double              pfcut           = perful.GetPercentilePosition ( 0.90, true, &brainmask );
 
-//DBGV ( pfcut, "pfcut" );
-
 //if ( pfcut < 41 )
 //    pfcut   = 41;                       // min limit
 
@@ -1048,8 +1031,6 @@ for ( int i = 0; i < LinearDim; i++ )
 Gauge.Next ();
 
 //ShowMessage ( "before region", "" );
-
-//DBGV2 ( brainmask.GetNumSet (), brainmask.GetNumSet () * 0.09, "#Mask  Limit" );
                                         // set a max limit to the size of cerebellum (6% of brain), for the MNI case has big remaining cortices (13% of brain) that have to be ignored
 KeepRegion ( SortRegionsCompactCount, brainmask.GetNumSet () * 0.005, brainmask.GetNumSet () * 0.09, Neighbors26, probregion2 );
 
@@ -1100,12 +1081,11 @@ boxcereb.GetMiddle ( bcc );
 
                                         // ratio of the distance from each centers to the mean max distance
 //double              eccentricity    = Clip ( ( bbc - bcc ).Norm () / ( bbr - bcr ? bbr - bcr : 1 ), 0, 1 );
-//DBGV ( eccentricity * 100, "eccentricity" );
+
                                         // a per axis ratio of distance center / border
 double              eccentricityx   = Clip ( fabs ( bbc.X - bcc.X ) / ( boxbrain.GetXExtent () - boxcereb.GetXExtent () ) * 2, 0, 1 );
 double              eccentricityy   = Clip ( fabs ( bbc.Y - bcc.Y ) / ( boxbrain.GetYExtent () - boxcereb.GetYExtent () ) * 2, 0, 1 );
 double              eccentricityz   = Clip ( fabs ( bbc.Z - bcc.Z ) / ( boxbrain.GetZExtent () - boxcereb.GetZExtent () ) * 2, 0, 1 );
-//DBGV3 ( eccentricityx * 100, eccentricityy * 100, eccentricityz * 100, "eccentricity x y z" );
 
                                         // good cerebs are centered -> low minecc
 double              minecc          = min ( eccentricityx, eccentricityy, eccentricityz );
@@ -1115,9 +1095,6 @@ double              maxecc          = max ( eccentricityx, eccentricityy, eccent
 double              voldiff         = Clip ( fabs ( bcr / ( bbr ? bbr : 1 ) - 0.50 ) * 2, 0, 1 );
                                         // build a confidence factor on these 3 measures
 double              cerebellity     = ( 1 - minecc ) * maxecc * ( 1 - voldiff );
-
-//DBGV3 ( bcr, bbr, bcr / ( bbr ? bbr : 1 ) * 100, "cerebr brainr -> volratio" );
-//DBGV4 ( ( 1 - minecc ) * 100, maxecc * 100, ( 1 - voldiff ) * 100, cerebellity * 100, "minecc maxecc voldiff -> cerebellity" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

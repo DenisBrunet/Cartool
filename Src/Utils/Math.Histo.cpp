@@ -193,9 +193,6 @@ crtl::Maxed ( curvesize, HistoMinSize );
 curveratio      = ( curvesize - 1 ) / NonNull ( curvemax - curvemin );
                                         // if ignoring the Truncate part, formula simplifies to:
 //curveratio    = kernelsubsampling / kerneldensity;
-
-
-//DBGV6 ( kerneldensity, marginfactor, kernelsubsampling, curvesize, curveratio, kernelsubsampling / kerneldensity, "kerneldensity, marginfactor, kernelsubsampling, curvesize, curveratio" );
 }
 
 
@@ -373,13 +370,6 @@ if ( IsFlag ( options, HistogramCDF ) )
 if      ( IsFlag ( options, HistogramNormMax  ) )   NormalizeMax  ();   // setting the max to 1 is easier for visual exploration
 else if ( IsFlag ( options, HistogramNormArea ) )   NormalizeArea ();   // the real mathematical formula, total area / probability == 1
 //elseif( IsFlag ( options, HistogramCount    ) )   ;                   // nothing to do, we already have a count
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-//TFileName           _file ( "E:\\Data\\Histogram.sef" );
-//CheckNoOverwrite ( _file );
-//WriteFile   ( _file, "Histo" );
 }
 
 
@@ -1005,8 +995,6 @@ for ( ; pos > 2 && pos < Dim1 - 3; pos += inc ) {
     }
 
 
-//DBGV ( pos, "new inflexion" );
-
 return  pos;
 }
 */
@@ -1058,8 +1046,6 @@ for ( ; pos >= 4 * inc && pos < Dim1 - 4 * inc; pos += inc ) {
     }
 
 
-//DBGV ( pos, "new inflexion" );
-
 return  pos;
 }
 */
@@ -1103,8 +1089,6 @@ for ( ; pos >= posmin && pos <= posmax; pos += inc ) {
                              ( Array[ pos + 2 * inc ] - Array[ pos               ] ) / 2.0,
                              ( Array[ pos + 4 * inc ] - Array[ pos               ] ) / 4.0 );
 
-//  DBGV3 ( pos, d1, d2, "Inflexion Acc: position d1 d2" );
-
                                         // reached enough acceleration to get out?
     if ( d1 < mindelta 
       && d2 < mindelta 
@@ -1143,8 +1127,6 @@ for ( ; pos >= posmin && pos <= posmax; pos += inc ) {
     d12    /= NonNull ( ( 2 * Array[ pos ] + Array[ pos + inc ] + Array[ pos - inc ] ) / 4 );
 
 
-//  DBGV7 ( pos, d1, d2, d12, Array[ pos - inc ], Array[ pos ], Array[ pos + inc ], "Inflexion Dec: position d1 d2 d12  v-1v0v+1" );
-
                                         // enough deceleration?
     if ( d1 < mindelta 
       && d2 < mindelta 
@@ -1157,8 +1139,6 @@ for ( ; pos >= posmin && pos <= posmax; pos += inc ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-//DBGV ( pos, "new inflexion" );
 
 return  pos;
 }
@@ -1217,9 +1197,6 @@ for ( ; pos >= posmin && pos <= posmax; pos += inc ) {
 
     maxd    = max ( maxd, d12 );
 
-//    DBGV5 ( pos, d1, d2, d12old * 1000, d12 * 1000, "@pos  d1 d2  d12old d12" );
-//    DBGV4 ( pos, maxd * 1000, d12 * 1000, RelativeDifference ( d12, maxd ), "@pos  maxd d12 Reldiff" );
-
 
 //    if ( d1 >= 0 || d2 >= 0 || d12 > 0.005 && d12 < d12old * 0.90 ) // works ~ for max d2
 
@@ -1233,8 +1210,6 @@ for ( ; pos >= posmin && pos <= posmax; pos += inc ) {
 //    d12old  = d12;
     }
 
-
-//DBGV2 ( from, pos, "from -> LCorner" );
 
 return  pos;
 }
@@ -1331,8 +1306,6 @@ double              wholebackground     = somepos && someneg ?  ( wholebackgroun
                                         : someneg            ?  wholebackgroundneg
                                         :                       0;
 
-//DBGV3 ( wholebackgroundneg, wholebackgroundpos, wholebackground, "Background: neg pos final" );
-
 return  wholebackground;
 
 
@@ -1357,19 +1330,11 @@ for ( int i = 0; i < numresampling; i++ ) {
                                 );
 
     statres.Add ( Hresamp.ComputeBackground ( RealUnit ), ThreadSafetyIgnore );
-
-
-//    DBGV2 ( i, statres[ i ], "Background resampled" );
-//    TFileName           _file;
-//    sprintf ( _file, "E:\\Data\\Volume.Resampled.Histogram.%02d.sef", i + 1 );
-//    Hresamp.WriteFile ( _file );
     }
 
 //statres.Show ( "Stats Resampled Background" );
 
 double              resampbackground    = statres.Median ();
-
-//DBGV ( resampbackground, "Background resampled" );
 
 return  resampbackground;
 */
@@ -1415,8 +1380,6 @@ stat.Add ( H8.ComputeBackground ( RealUnit ), ThreadSafetyIgnore );
                                         // for a more robust estimation, use the average of all histograms
 double              octantbackground    = stat.Median ( false );
 
-//stat.Show ( "Stats Background" );
-//DBGV ( octantbackground, "Background: median octants" );
 
 return  octantbackground;
 */
@@ -1432,22 +1395,11 @@ THistogram          h ( *this );
 double              maxstat         = h.GetMaxStat ();
 
 
-//TFileName           _file;
-//StringCopy      ( _file, "E:\\Data\\ComputeBackground." );
-//GetTempFileName ( StringEnd ( _file ) );
-//RemoveExtension ( _file );
-//AddExtension    ( _file, FILEEXT_EEGSEF );
-//h.WriteFile     ( _file );
-//_file.Open      ();
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Special case 1: binarized / discretized mask
 int                 numneb          = GetNumNonEmptyBins ( RealUnit ) - 1;  // estimate of non-null, non-background different bins
 bool                fewintbins      = numneb < 50 && IsStepInteger ();      // integer ratio means integer data
 
-
-//DBGV5 ( numneb, Dim1, Step (), KernelSubsampling, fewintbins, "numneb, Dim1, Step, KernelSubsampling, fewintbins" );
                                         // few discrete bins? this can miss ROIs masks, like the AAL with 116 values
 if ( fewintbins )
 
@@ -1518,8 +1470,6 @@ if ( Dim1 > 7                           // there needs to be a few buckets for p
     double              delta2          = RelativeDifference ( ( h50 - minh ) / deltah, ( x50 - minx ) / (double) deltax );
     double              delta3          = RelativeDifference ( ( h75 - minh ) / deltah, ( x75 - minx ) / (double) deltax );
 
-//    DBGV3 ( delta1, delta2, delta3, "delta1, delta2, delta3" );
-    
     bool                isramp          = delta1 < 0.12 && delta2 < 0.10 && delta3 < 0.10;
 
 //                                      // somehow equivalent, but testing relative differences between successive buckets
@@ -1536,9 +1486,6 @@ if ( Dim1 > 7                           // there needs to be a few buckets for p
     double              avgfirstbuckets = ( ( h[ 1 ] + h[ 2 ] + h[ 3 ] + h[ 4 ] + h[ 5 ] ) / 5 ) / area;
                                         // using a quite loose threshold here
     bool                isequalized     = RelativeDifference ( avgfirstbuckets, 1.0 / ( Dim1 - 1 ) ) < 0.10;
-
-
-//    DBGV4 ( maxis1, isranked, isramp, isequalized, "maxis1, isranked, isramp, isequalized" );
 
 
     if ( isranked || isramp || isequalized )
@@ -1579,8 +1526,6 @@ for ( int i = 0; i <= minpos; i++ )
 
 int                 maxpos          = h.GetPercentilePosition ( BinUnit, 0.99 ); // for segmented brain?
 
-//DBGV2 ( minpos, maxpos, "cropping histogram" );
-
                                         // crop tail
 for ( int i = maxpos; i < Dim1; i++ )
 
@@ -1615,22 +1560,10 @@ for ( int loop = 0; loop < NumHistoDegrade; loop++ ) {
         if ( h.GetModePosition ( BinUnit, i ) <= secondhalf )
             nummodesfirsthalf++;
 
-
-//  TFileName           _file;
-//  sprintf ( _file, "E:\\Data\\Background Histogram.%02d.sef", loop );
-//  h.WriteFile ( _file );
-//  DBGV ( loop, "loop" );
-
                                         // we aim for 2 or 3 modes - usually 1 or 2
     if ( nummodesfirsthalf <= 2 /*3*/ )
         break;
     }
-
-
-//TFileName           _file;
-//StringCopy  ( _file, "E:\\Data\\Background Histogram.99.sef" );
-//h.WriteFile ( _file );
-//DBGV2 ( nummodesfirsthalf, secondhalf, "nummodesfirsthalf  secondhalf" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1651,8 +1584,6 @@ int                 whichmode;
 if      ( nummodesfirsthalf == 1 ) {
 
     whichmode   = 1;
-
-//    DBGV2 ( h.GetModePosition ( BinUnit, 1 ), h.GetModeValue ( 1 ), "1 Mode position, value" );
     }
 
 else if ( nummodesfirsthalf == 2 ) {
@@ -1662,8 +1593,6 @@ else if ( nummodesfirsthalf == 2 ) {
     double              mode2           = h.GetModeValue     ( 2 );
 //  double              modepos1        = h.GetModePosition  ( BinUnit, 1 );
     double              modepos2        = h.GetModePosition  ( BinUnit, 2 );
-
-//    DBGV4 ( modepos1, modepos2, mode1, mode2, "2 Modes positions, values" );
 
 /*
                                         // relative height of the mode 2 is high (2 backgrounds) -> mode 2
@@ -1683,10 +1612,6 @@ else if ( nummodesfirsthalf == 2 ) {
                                         // compose criterion
     TVector< double >   mode12 ( relheight * relpos );
     mode12.Normalize1 ();
-
-//    DBGV2 ( relheight[ 0 ], relheight[ 1 ], "relheight" );
-//    DBGV2 ( relpos[ 0 ], relpos[ 1 ], "relpos" );
-//    DBGV2 ( mode12[ 0 ], mode12[ 1 ], "mode 1 or 2 / 3" );
 
 
     whichmode   = mode12[ 0 ] > mode12[ 1 ] ? 1 : 2;
@@ -1708,9 +1633,6 @@ else if ( nummodesfirsthalf >= 3 ) {    // could be more than 3, if the loop abo
     double              diff12          = RelativeDifference ( mode1, mode2 );
     double              diff13          = RelativeDifference ( mode1, mode3 );
     double              diff23          = RelativeDifference ( mode2, mode3 );
-
-//    DBGV6 ( modepos1, modepos2, modepos3, mode1, mode2, mode3, "3 Modes positions, values" );
-//    DBGV3 ( diff12, diff13, diff23, "RelDiff 12 13 23" );
 
                                         // diff23 is min (small bumps 2 & 3) -> mode 1
     TVector<double>     mindiff23 ( 2 );
@@ -1735,11 +1657,6 @@ else if ( nummodesfirsthalf >= 3 ) {    // could be more than 3, if the loop abo
     TVector<double>     mode12 ( mindiff23 * relheight * relpos );
     mode12.Normalize1 ();
 
-//    DBGV2 ( mindiff23[ 0 ], mindiff23[ 1 ], "mindiff23" );
-//    DBGV2 ( relheight[ 0 ], relheight[ 1 ], "relheight" );
-//    DBGV2 ( relpos[ 0 ], relpos[ 1 ], "relpos" );
-//    DBGV2 ( mode12[ 0 ], mode12[ 1 ], "mode 1 or 2 / 3" );
-
 
     whichmode   = mode12[ 0 ] > mode12[ 1 ] ? 1 : 2;
     }
@@ -1760,13 +1677,6 @@ int                 minmodes        = whichmode < nummodes ? h.GetModesMiddlePos
 h.Erode ( 0.001 );
 int                 lastpos         = h.GetLastPosition ( BinUnit );
 
-
-//DBGV3 ( nummodesfirsthalf, whichmode, whichmodepos, "#ofmodes  back mode # & position" );
-//DBGV4 ( whichmode, whichmodepos, nextinfl, nextlcorner, "mode#, searching from -> next inflexion, next LCorner" );
-//DBGV2 ( whichmode, minmodes, "which mode -> next min" );
-//DBGV2 ( nextmodepos, previnfl, "next mode -> previous inflexion" );
-//DBGV2 ( whichmodepos, lastpos, "searchfrom & lastpos" );
-
                                         // compute background estimators from our variables
 //double              est1a           = ToReal ( unit, 6.00 * nextinfl    - 5.00 * whichmodepos ); // further from inflexion, from max position
 //double              est1b           = ToReal ( unit, 1.75 * nextlcorner - 0.33 * whichmodepos ); // further from L corner, from max position
@@ -1777,9 +1687,6 @@ double              est2            = ToReal ( unit, 0.05 * whichmodepos + 0.95 
 
 double              est3            = ToReal ( unit, 0.85 * whichmodepos + 0.15 * lastpos );     // reasonable position, as a percentage of spreading
 
-
-//DBGV5 ( est1a, est1b, est1c, est2, est3, "estimators" );
-//DBGV2 ( est2, est3, "estimators" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // combine estimators into the final cut
@@ -1804,17 +1711,11 @@ back    = Clip ( stat.Average () * 1.10, 0.0, maxstat );
 //back    = crtl::AtLeast ( 0.0, wavg * stat.Average () + wmin * stat.Min () );
 
 
-//stat.Show ( "Estimators" );
-//DBGV4 ( stat.Average (), stat.Min (), wavg, back, "Avg  Min  CoV -> wAvg -> back" );
-//DBGV2 ( nummodesfirsthalf, ToReal ( RealUnit, back ), "#modes -> background" );
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // A little bit of rounding, the amount of which is estimated from the max data
 double              precision       = Power10 ( RoundAbove ( Log10 ( maxstat ) ) ) / RoundBackgroundValue;
 
 back    = RoundTo ( back, precision );
-
-//DBGV2 ( back, precision, "background, precision" );
 
 return  back;
 }
@@ -2390,8 +2291,6 @@ for ( int esti = 0; esti < numgaussianestim; esti++ )
                                         // Getting some robust estimates
 spreadleft  = sdleft .Median ();
 spreadright = sdright.Median ();
-
-//DBGV6 ( center, spreadleft, spreadright, Dim1, sdleft.GetNumItems (), sdright.GetNumItems (), "center, spreadleft, spreadright, Dim1, sdleft.GetNumItems (), sdright.GetNumItems ()" );
 }
 */
 
@@ -2459,9 +2358,6 @@ stats.MADAsym                ( center, madleft, madright );
 
 spreadleft      = ( madleft  + sdleft  ) / 2;
 spreadright     = ( madright + sdright ) / 2;
-
-//DBGV4 ( sdright, madright, iqrright, spreadright, "sdright, madright, iqrright -> spreadright" );
-//DBGV3 ( center, spreadleft, spreadright, "center, sdleft, sdright" );
 }
 
 
