@@ -493,7 +493,7 @@ if ( ! IsExtensionAmong ( (char *) getfile, SpreadSheetFilesExt ) ) {
     }
 
                                         // get delimiter
-if ( StringIsNotEmpty ( forcedelimiter ) )                  StringCopy ( OutListSeparator, forcedelimiter, SpreadSheetSeparatorListSize - 1 );
+if ( StringIsNotEmpty ( forcedelimiter ) )                      StringCopy ( OutListSeparator, forcedelimiter,      SpreadSheetSeparatorListSize - 1 );
 else {
     if      ( IsExtension ( (char *) getfile, FILEEXT_CSV ) )   StringCopy ( OutListSeparator, LocaleListSeparator, SpreadSheetSeparatorListSize - 1 );
     else if ( IsExtension ( (char *) getfile, FILEEXT_TXT ) )   StringCopy ( OutListSeparator, Tab,                 SpreadSheetSeparatorListSize - 1 );

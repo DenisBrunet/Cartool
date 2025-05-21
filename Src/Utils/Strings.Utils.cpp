@@ -472,7 +472,7 @@ char*   StringClip ( char* s, long length )
 {
 if ( StringLength ( s ) > length )
 
-    s[ length ] = EOS;
+    s[ AtLeast ( (long) 0, length ) ]  = EOS;
 
 return  s;
 }
@@ -508,49 +508,68 @@ return  s;
 
 
 //----------------------------------------------------------------------------
-char*   StringCopy ( char* to, const char* from, long maxlength )
+char*   StringCopy ( char* to, const char* from )
 {
 if ( ! to )
     return  "";
 
 
-if ( ! from ) {
+long                fromlength      = StringLength ( from );
 
+if ( fromlength == 0 ) {
+                                        // nothing to copy from
     ClearString ( to );
 
     return  to;
     }
 
 
-if ( to == from ) {
-    
-    if ( maxlength > 0 )                // optional maxlength?
-        StringClip ( to, maxlength );
+if ( to == from )                       // copying onto itself is useless
+
+    return  to;
+
+
+int                 numtocopy       = fromlength;
+                                        // !this will nicely handle a copy with overlap!
+CopyVirtualMemory ( to, from, numtocopy );
+
+to[ numtocopy ]     = EOS;
+
+
+return  to;
+}
+
+
+//----------------------------------------------------------------------------
+char*   StringCopy ( char* to, const char* from, long totallength )
+{
+if ( ! to )
+    return  "";
+
+
+long                fromlength      = StringLength ( from );
+
+if ( fromlength == 0 || totallength <= 0 ) {
+                                        // nothing to copy from
+    ClearString ( to );
 
     return  to;
     }
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // either from is empty, or maxlength is 0?
-if ( ! *from || maxlength == 0 ) {
+if ( to == from ) {                     // copying onto itself is useless
 
-    ClearString ( to );
+    StringClip ( to, totallength );     // clipping by safety
+
+    return  to;
     }
 
-else {                                  // actually something to copy
 
-    if ( maxlength == -1 ) {            // full copy
-
-        strcpy  ( to, from );
-        }
-
-    else {                              // cropped copy
-        strncpy ( to, from, maxlength );
+int                 numtocopy       = NoMore ( totallength, fromlength );
+                                        // !this will nicely handle a copy with overlap!
+CopyVirtualMemory ( to, from, numtocopy );
                                         // make sure we are null-terminated!
-        to[ maxlength ]     = EOS;
-        }
-    }
+to[ numtocopy ]     = EOS;
 
 
 return  to;
@@ -571,6 +590,45 @@ else
 
 
 StringAppend ( to, tail1, tail2, tail3, tail4, tail5, tail6, tail7, tail8 );
+
+
+return  to;
+}
+
+
+//----------------------------------------------------------------------------
+                                        // totallength is the max FINAL string length / buffer size
+char*   StringAppend ( char* to, const char* from, long totallength )
+{
+if ( ! to )
+    return  "";
+
+
+long                fromlength      = StringLength ( from );
+
+if ( fromlength == 0 || totallength <= 0 ) {
+                                        // clipping by safety
+    StringClip ( to, totallength );
+
+    return  to;
+    }
+
+
+long                tolen           = StringLength ( to );
+
+if ( tolen >= totallength ) {
+                                        // nope, no room left - make sure we are null-terminated, though
+    to[ totallength ]   = EOS;
+    
+    return  to;
+    }
+
+                                            // here > 0
+int                 numtocopy       = NoMore ( totallength - tolen, fromlength );
+                                        // !this will nicely handle a copy with overlap!
+CopyVirtualMemory ( to + tolen, from, numtocopy );
+                                        // make sure we are null-terminated!
+to[ tolen + numtocopy ]     = EOS;
 
 
 return  to;

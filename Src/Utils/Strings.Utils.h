@@ -92,9 +92,11 @@ char*               StringEnd        ( char* s );
 const char*         StringEnd        ( const char* s );
 char*               StringClip       ( char* s, long length );                  // clip by length
 char*               StringClip       ( char* s, long from, long to );           // clip by range of indexes (starting from 0)
-char*               StringCopy       ( char* to, const char* from, long maxlength = -1 );
+char*               StringCopy       ( char* to, const char* from );
+char*               StringCopy       ( char* to, const char* from, long totallength );  // totallength is the final max length
 char*               StringCopy       ( char* to, const char* from, const char* tail1, const char* tail2 = 0, const char* tail3 = 0, const char* tail4 = 0, const char* tail5 = 0, const char* tail6 = 0, const char* tail7 = 0, const char* tail8 = 0 );   // at least 1 tail, otherwise use StringCopy above
 char*               StringAppend     ( char* to,                   const char* tail1, const char* tail2 = 0, const char* tail3 = 0, const char* tail4 = 0, const char* tail5 = 0, const char* tail6 = 0, const char* tail7 = 0, const char* tail8 = 0 );
+char*               StringAppend     ( char* to, const char* from, long totallength );  // totallength is the final max length, AFTER concatenation
 char*               StringAppend     ( char* to, long   tail );
 char*               StringAppend     ( char* to, double tail );
 char*               StringPrepend    ( char* to, const char* head );
