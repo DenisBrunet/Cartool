@@ -24,15 +24,16 @@ namespace crtl {
 //----------------------------------------------------------------------------
                                         // Wrapping a fixed, C-style string which can therefor be stacked, like returned objects
                                         // Parameter N is the SIZE of the array, hence max string length will be (N-1)
+                                        // String is always null-terminated
                                         // When testing with other strings, do not forget to account for any possible clipping
 template <long N>
 class   TFixedString
 {
 public:
 
-    inline                  TFixedString            ()                                          { Clear ();                                     }
-    inline                  TFixedString            ( const TFixedString& str )                 { ::StringCopy ( String, str.String, N - 1 );   }
-    inline                  TFixedString            ( const char*         str )                 { ::StringCopy ( String, str,        N - 1 );   }
+    inline                  TFixedString            ()                                          { Clear ();                         }
+    inline                  TFixedString            ( const TFixedString& str )                 { Copy ( str );                     }
+    inline                  TFixedString            ( const char*         str )                 { Copy ( str );                     }
 
 
     inline bool             IsEmpty                 ()                          const           { return *String == EOS;            }
@@ -40,21 +41,21 @@ public:
     inline bool             IsFull                  ()                          const           { return Length () == N - 1;        }
     inline bool             IsNotFull               ()                          const           { return Length () <  N - 1;        }
 
-
-    inline TFixedString&    Append                  ( const TFixedString& str )                 { return Append ( str.String );     }
-    inline TFixedString&    Append                  ( const char*         str );
+                                        // Wrapping calls and enforcing fixed size limit + null terminated
     inline void             Clear                   ()                                          { ::ClearString  ( String, N );     }   // reset the whole array
-    inline TFixedString&    Copy                    ( const TFixedString& str )                 { ::StringCopy   ( String, str.String, N - 1 ); return  *this; }
-    inline TFixedString&    Copy                    ( const char*         str )                 { ::StringCopy   ( String, str,        N - 1 ); return  *this; }
-    inline long             Length                  ()                          const           { return std::strlen ( String );    }
+    inline long             Length                  ()                          const           { return ::StringLength ( String ); }
     inline long             Size                    ()                          const           { return N;                         }
+    inline TFixedString&    Append                  ( const TFixedString& str )                 { ::StringAppend ( String, str.String, N - 1 ); return *this;   }
+    inline TFixedString&    Append                  ( const char*         str )                 { ::StringAppend ( String, str,        N - 1 ); return *this;   }
+    inline TFixedString&    Copy                    ( const TFixedString& str )                 { ::StringCopy   ( String, str.String, N - 1 ); return *this;   }
+    inline TFixedString&    Copy                    ( const char*         str )                 { ::StringCopy   ( String, str,        N - 1 ); return *this;   }
 
 
     inline TFixedString&    operator    =          ( const TFixedString& op2 )                  { return &op2 != this ? Copy ( op2 ) : *this;   }
     inline TFixedString&    operator    =          ( const char*         op2 )                  { return                Copy ( op2 );           }
 
 
-          char&             operator    []          ( long i )                                  { return String[ i                           ]; }   // !no boundary checks!
+          char&             operator    []          ( long i )                                  { return String[ i                           ]; }   // !without boundary checks!
     const char&             operator    []          ( long i )                  const           { return String[ i                           ]; }
           char&             operator    ()          ( long i )                                  { return String[ Clip ( i, (long) 0, N - 1 ) ]; }   // !with boundary checks!
     const char&             operator    ()          ( long i )                  const           { return String[ Clip ( i, (long) 0, N - 1 ) ]; }
@@ -106,18 +107,6 @@ protected:
     char                    String[ N ];            // array size, INCLUDING null char terminator
 
 };
-
-
-template <long N>
-TFixedString<N>&    TFixedString<N>::Append ( const char* str )           
-{
-long            currlen     = Length ();
-
-if ( currlen < N - 1 )
-    ::StringCopy   ( String + currlen, str, N - 1 - currlen );
-
-return *this;
-}
 
 
 //----------------------------------------------------------------------------
