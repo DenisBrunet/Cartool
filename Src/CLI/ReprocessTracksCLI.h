@@ -21,6 +21,8 @@ limitations under the License.
 
 #include    "System.CLI11.h"
 #include    "CLIDefines.h"
+
+#include    "Strings.TFixedString.h"
 #include    "Files.TOpenDoc.h"
 #include    "TExportTracks.h"
 #include    "ReprocessTracks.h"

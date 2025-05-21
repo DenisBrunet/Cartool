@@ -31,36 +31,37 @@ class   TFixedString
 {
 public:
 
-    inline                  TFixedString            ()                                          { Clear ();                         }
-    inline                  TFixedString            ( const TFixedString& str )                 { Copy ( str );                     }
-    inline                  TFixedString            ( TFixedString&&      str ) noexcept        { Copy ( str ); str.Clear ();       }
-    inline                  TFixedString            ( const char*         str )                 { Copy ( str );                     }
+                            TFixedString            ()                                          { Clear ();                         }
+                            TFixedString            ( const TFixedString& str )                 { Copy ( str );                     }
+                            TFixedString            ( TFixedString&&      str ) noexcept        { Copy ( str ); str.Clear ();       }
+                            TFixedString            ( const char*         str )                 { Copy ( str );                     }
 
 
-    inline bool             IsEmpty                 ()                          const           { return *String == EOS;            }
-    inline bool             IsNotEmpty              ()                          const           { return *String != EOS;            }
-    inline bool             IsFull                  ()                          const           { return Length () == N - 1;        }
-    inline bool             IsNotFull               ()                          const           { return Length () <  N - 1;        }
+    bool                    IsEmpty                 ()                          const           { return *String == EOS;            }
+    bool                    IsNotEmpty              ()                          const           { return *String != EOS;            }
+    bool                    IsFull                  ()                          const           { return Length () == MaxLength (); }
+    bool                    IsNotFull               ()                          const           { return Length () <  MaxLength (); }
 
                                         // Wrapping calls and enforcing fixed size limit + null terminated
-    inline void             Clear                   ()                                          { ::ClearString  ( String, N );     }   // reset the whole array
-    inline long             Length                  ()                          const           { return ::StringLength ( String ); }
-    inline long             Size                    ()                          const           { return N;                         }
-    inline TFixedString&    Append                  ( const TFixedString& str )                 { ::StringAppend ( String, str.String, N - 1 ); return *this;   }
-    inline TFixedString&    Append                  ( const char*         str )                 { ::StringAppend ( String, str,        N - 1 ); return *this;   }
-    inline TFixedString&    Copy                    ( const TFixedString& str )                 { ::StringCopy   ( String, str.String, N - 1 ); return *this;   }
-    inline TFixedString&    Copy                    ( const char*         str )                 { ::StringCopy   ( String, str,        N - 1 ); return *this;   }
+    void                    Clear                   ()                                          { ClearString  ( String, N );       }   // reset the whole array
+    long                    Length                  ()                          const           { return ::StringLength ( String ); }
+    constexpr long          Size                    ()                          const           { return N;                         }
+    constexpr long          MaxLength               ()                          const           { return N - 1;                     }
+    TFixedString&           Append                  ( const TFixedString& str )                 { StringAppend ( String, str.String, MaxLength () ); return *this; }
+    TFixedString&           Append                  ( const char*         str )                 { StringAppend ( String, str,        MaxLength () ); return *this; }
+    TFixedString&           Copy                    ( const TFixedString& str )                 { StringCopy   ( String, str.String, MaxLength () ); return *this; }
+    TFixedString&           Copy                    ( const char*         str )                 { StringCopy   ( String, str,        MaxLength () ); return *this; }
 
 
-    inline TFixedString&    operator    =           ( const TFixedString& op2 )                 { return &op2 != this ? Copy ( op2 ) : *this;   }
-    inline TFixedString&    operator    =           ( TFixedString&&      op2 ) noexcept        { if ( &op2 != this ) { Copy ( op2 ); op2.Clear(); }    return *this;   }
-    inline TFixedString&    operator    =           ( const char*         op2 )                 { return                Copy ( op2 );           }
+    TFixedString&           operator    =           ( const TFixedString& op2 )                 { return &op2 != this ? Copy ( op2 ) : *this;   }
+    TFixedString&           operator    =           ( TFixedString&&      op2 ) noexcept        { if ( &op2 != this ) { Copy ( op2 ); op2.Clear(); }    return *this;   }
+    TFixedString&           operator    =           ( const char*         op2 )                 { return                Copy ( op2 );           }
 
 
-          char&             operator    []          ( long i )                                  { return String[ i                           ]; }   // !without boundary checks!
-    const char&             operator    []          ( long i )                  const           { return String[ i                           ]; }
-          char&             operator    ()          ( long i )                                  { return String[ Clip ( i, (long) 0, N - 1 ) ]; }   // !with boundary checks!
-    const char&             operator    ()          ( long i )                  const           { return String[ Clip ( i, (long) 0, N - 1 ) ]; }
+          char&             operator    []          ( long i )                                  { return String[ i                                  ]; } // !without boundary checks!
+    const char&             operator    []          ( long i )                  const           { return String[ i                                  ]; }
+          char&             operator    ()          ( long i )                                  { return String[ Clip ( i, (long) 0, MaxLength () ) ]; } // !with boundary checks!
+    const char&             operator    ()          ( long i )                  const           { return String[ Clip ( i, (long) 0, MaxLength () ) ]; }
 
                                                     // !default is case sensitive!
     int                     Compare                 ( const TFixedString& op, StringFlags flags = CaseSensitive )   const   { return ::StringCompare ( String, op.String, flags );  }
@@ -98,8 +99,8 @@ public:
     friend std::ostream&    operator    <<          ( std::ostream& os, const TFixedString& str )   { os << str.String; return os; }
 
 
-    explicit                operator          char* ()                                          { return String;    }
-    explicit                operator    const char* ()                          const           { return String;    }
+                            operator          char* ()                                          { return String;    }
+                            operator    const char* ()                          const           { return String;    }
     explicit                operator    long        ()                          const           { return Length (); }
     explicit                operator    int         ()                          const           { return Length (); }
 

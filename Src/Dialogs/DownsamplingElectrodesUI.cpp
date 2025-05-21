@@ -20,6 +20,7 @@ limitations under the License.
 #include    <assert.h>
 #endif
 
+#include    "Strings.TFixedString.h"
 #include    "Files.TGoF.h"
 #include    "Dialogs.Input.h"
 #include    "Dialogs.TSuperGauge.h"

@@ -20,6 +20,7 @@ limitations under the License.
 #include    "ReprocessTracks.h"
 
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Files.SpreadSheet.h"
 #include    "Files.Conversions.h"       // MergeTracksToFreqFiles
 #include    "Files.ReadFromHeader.h"

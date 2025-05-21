@@ -19,6 +19,7 @@ limitations under the License.
 #include    "Math.TMatrix44.h"
 #include    "Math.Stats.h"
 #include    "Math.Resampling.h"
+#include    "Strings.TFixedString.h"
 #include    "Files.Utils.h"
 #include    "Files.TVerboseFile.h"
 #include    "Files.TGoF.h"

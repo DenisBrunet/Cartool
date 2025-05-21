@@ -19,8 +19,9 @@ limitations under the License.
 #include    "TEegEgiNsrDoc.h"
 
 #include    "MemUtil.h"
-#include    "Dialogs.Input.h"
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
+#include    "Dialogs.Input.h"
 #include    "TArray1.h"
 
 #pragma     hdrstop
@@ -1450,7 +1451,7 @@ if ( GetDocPath () ) {
                                         // length of current session, only
     NumTimeFrames       = TimeFrames[ CurrSequence ];
     if ( NumTimeFrames <= 0 ) {
-        StringCopy  ( buff, "An error occured while reading session length," NewLine "found ", IntegerToString ( NumTimeFrames ), "%0d TF." );
+        StringCopy  ( buff, "An error occured while reading session length," NewLine "found ", IntegerToString ( NumTimeFrames ), " TF." );
         ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
         return false;
         }
@@ -1685,7 +1686,7 @@ NumTimeFrames       = TimeFrames[ newsession ];
 
 if ( NumTimeFrames <= 0 ) {
     char                buff[256];
-    StringCopy  ( buff, "An error occured while reading session length," NewLine "found ", IntegerToString ( NumTimeFrames ), "%0d TF." );
+    StringCopy  ( buff, "An error occured while reading session length," NewLine "found ", IntegerToString ( NumTimeFrames ), " TF." );
     ShowMessage ( buff, GetDocPath(), ShowMessageWarning );
 
     NumTimeFrames   = TimeFrames[ CurrSequence ];

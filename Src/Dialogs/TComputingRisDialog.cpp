@@ -20,6 +20,7 @@ limitations under the License.
 
 #include    "CartoolTypes.h"            // BackgroundNormalization ZScoreType CentroidType
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Files.SpreadSheet.h"
 
 #include    "TInverseResults.h"

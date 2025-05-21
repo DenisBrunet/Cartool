@@ -18,6 +18,7 @@ limitations under the License.
 #include    <fstream>
 
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Strings.Grep.h"
 #include    "Dialogs.TSuperGauge.h"
 #include    "Math.Resampling.h"

@@ -24,9 +24,9 @@ limitations under the License.
 #include    <Shlwapi.h>                 // StrStrI
 
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Strings.TSplitStrings.h"
 #include    "MemUtil.h"
-#include    "Files.Utils.h"
 #include    "Math.Random.h"
 #include    "Time.Utils.h"
 
@@ -184,9 +184,9 @@ return  s;
 }
 
 
-TFileName   BoolToString ( bool b )
+TFixedString32  BoolToString ( bool b )
 {
-TFileName           s;
+TFixedString32      s;
 
 StringCopy  ( s, b ? "Yes" : "No" );
 
@@ -1053,11 +1053,11 @@ return  s;
 }
 
 
-TFileName   IntegerToString ( int i, int width )
+TFixedString32  IntegerToString ( int i, int width )
 {
-TFileName           s;
+TFixedString32      s;
 
-IntegerToString ( s, i, width );
+IntegerToString ( s, i, NoMore ( (int) s.MaxLength (), width ) );
 
 return  s;
 }
@@ -1080,9 +1080,9 @@ return  s;
 }
 
 
-TFileName   TimeFrameToString ( int tf )
+TFixedString32  TimeFrameToString ( int tf )
 {
-TFileName           s;
+TFixedString32      s;
 
 TimeFrameToString ( s, tf );
 
@@ -1133,19 +1133,19 @@ return  s;
 }
 
 
-TFileName   FloatToString ( double f, int width, int precision )
+TFixedString32  FloatToString ( double f, int width, int precision )
 {
-TFileName           s;
+TFixedString32      s;
 
-FloatToString ( s, f, width, precision );
+FloatToString ( s, f, NoMore ( (int) s.MaxLength (), width ), precision );
 
 return  s;
 }
 
 
-TFileName   FloatToString ( double f, int precision )
+TFixedString32  FloatToString ( double f, int precision )
 {
-TFileName           s;
+TFixedString32      s;
 
 FloatToString ( s, f, precision );
 
@@ -1153,9 +1153,9 @@ return  s;
 }
 
 
-TFileName   FloatToString ( double f )
+TFixedString32  FloatToString ( double f )
 {
-TFileName           s;
+TFixedString32      s;
 
 FloatToString ( s, f );
 

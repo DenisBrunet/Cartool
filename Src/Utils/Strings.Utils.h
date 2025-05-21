@@ -24,7 +24,9 @@ namespace crtl {
 //----------------------------------------------------------------------------
                                         // Strings utilities
 
-class               TFileName;
+                                        // Define standard fixed strings for text conversion
+template <long N>   class   TFixedString;
+using               TFixedString32      = TFixedString<32>;
 
 
 enum                StringFlags
@@ -115,15 +117,15 @@ long                StringToLong     ( const char* string );
 float               StringToFloat    ( const char* string );
 double              StringToDouble   ( const char* string );
 char*               IntegerToString  ( char* s, int i, int width = 0 );
-TFileName           IntegerToString  (          int i, int width = 0 );
+TFixedString32      IntegerToString  (          int i, int width = 0 );
 char*               TimeFrameToString( char* s, int tf );
-TFileName           TimeFrameToString(          int tf );
+TFixedString32      TimeFrameToString(          int tf );
 char*               FloatToString    ( char* s, double f, int width, int precision );   // width AND size parameter
-TFileName           FloatToString    (          double f, int width, int precision );
+TFixedString32      FloatToString    (          double f, int width, int precision );
 char*               FloatToString    ( char* s, double f, int precision );              // precision: 7 for float, 16 for double
-TFileName           FloatToString    (          double f, int precision );
+TFixedString32      FloatToString    (          double f, int precision );
 char*               FloatToString    ( char* s, double f );                             // automatic formatting, when one does not care about size formatting
-TFileName           FloatToString    (          double f );
+TFixedString32      FloatToString    (          double f );
 double              GetFirstNumber   ( const char* string );
 bool                IsInteger        ( const char* string );
 bool                IsFloat          ( const char* string );
@@ -152,7 +154,7 @@ bool                StringToBool    ( char* s );
 TCheckBoxData       StringToCheck   ( char* s );
 const char*         BoolToString    ( bool b );
 //char*             BoolToString    ( char* s, bool b );
-//TFileName         BoolToString    (          bool b );
+//TFixedString32    BoolToString    (          bool b );
 
 const char*         SignToString    ( double v );
 

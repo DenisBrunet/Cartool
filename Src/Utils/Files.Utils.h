@@ -262,8 +262,8 @@ public:
 
 
 //                  operator    bool        ()  const               { return IsNotEmpty (); }
-                    operator    char*       ()                      { return FileName; }
-                    operator    const char* ()  const               { return (const char*) FileName; }
+                    operator          char* ()                      { return FileName; }
+                    operator    const char* ()  const               { return FileName; }
 };
 
 

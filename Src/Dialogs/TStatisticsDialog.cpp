@@ -22,6 +22,7 @@ limitations under the License.
 #include    "Math.Stats.h"
 #include    "CartoolTypes.h"            // PolarityType
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Strings.Grep.h"
 #include    "Files.Extensions.h"
 #include    "Files.TVerboseFile.h"

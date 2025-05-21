@@ -18,6 +18,7 @@ limitations under the License.
 
 #include    "Strings.Utils.h"
 #include    "Files.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Dialogs.Input.h"
 #include    "Math.Utils.h"
 #include    "OpenGL.Font.h"

@@ -20,6 +20,7 @@ limitations under the License.
 #include    "GenerateRois.h"
 
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "TRois.h"
 
 #include    "Volumes.TTalairachOracle.h"

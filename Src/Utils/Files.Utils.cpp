@@ -23,6 +23,7 @@ limitations under the License.
 #include    <corecrt_io.h>
 #include    <fstream>
 
+#include    "Strings.TFixedString.h"
 #include    "Dialogs.Input.h"
 #include    "Strings.Grep.h"
 #include    "Files.Utils.h"

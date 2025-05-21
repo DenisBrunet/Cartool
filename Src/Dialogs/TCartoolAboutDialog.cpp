@@ -32,6 +32,7 @@ limitations under the License.
 #include    "..\..\Setup\GitWCRev.h"
 
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "TGlobalOpenGL.h"
 #include    "TBaseView.h"
 

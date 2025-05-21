@@ -17,6 +17,7 @@ limitations under the License.
 #include    <owl/pch.h>
 
 #include    "MemUtil.h"
+#include    "Strings.TFixedString.h"
 #include    "Dialogs.Input.h"
 
 #include    "TArray1.h"

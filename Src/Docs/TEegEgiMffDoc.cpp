@@ -20,6 +20,7 @@ limitations under the License.
 #include    "TEegEgiNsrDoc.h"           // EgiEventCodes
 
 #include    "MemUtil.h"
+#include    "Strings.TFixedString.h"
 #include    "Dialogs.Input.h"
 #include    "Strings.Utils.h"
 #include    "TArray1.h"

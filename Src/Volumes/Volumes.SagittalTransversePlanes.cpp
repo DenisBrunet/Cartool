@@ -17,6 +17,7 @@ limitations under the License.
 #include    "Volumes.SagittalTransversePlanes.h"
 
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Math.TMatrix44.h"
 
 #include    "GlobalOptimize.h"

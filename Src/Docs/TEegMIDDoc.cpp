@@ -19,6 +19,7 @@ limitations under the License.
 #include    <time.h>
 
 #include    "MemUtil.h"
+#include    "Strings.TFixedString.h"
 
 #include    "TArray1.h"
 

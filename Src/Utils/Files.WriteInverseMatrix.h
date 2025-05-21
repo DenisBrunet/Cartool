@@ -18,6 +18,7 @@ limitations under the License.
 
 #include    "Math.Armadillo.h"          // AMatrix
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 
 #include    "TInverseResults.h"         // InverseMaxElectrodeName
 

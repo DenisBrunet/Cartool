@@ -17,6 +17,7 @@ limitations under the License.
 #include    "Electrodes.TransformElectrodes.h"
 
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Geometry.TPoints.h"
 #include    "Math.TMatrix44.h"
 #include    "Files.TVerboseFile.h"

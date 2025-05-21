@@ -21,6 +21,7 @@ limitations under the License.
 
 #include    "Strings.Grep.h"
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Files.Utils.h"
 #include    "TList.h"
 

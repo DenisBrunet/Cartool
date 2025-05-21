@@ -21,6 +21,7 @@ limitations under the License.
 #include    "CartoolTypes.h"            // SkippingEpochsType
 #include    "TArray2.h"
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Files.TGoF.h"
 #include    "Files.TVerboseFile.h"
 #include    "Files.SpreadSheet.h"
@@ -5361,7 +5362,7 @@ if ( dosplittriggers ) {
             }
         if ( SaveSum ) {
             if ( IsFreqLoop () )    file    = TriggerFileName + "." + InfixSum                                                + "." + fileoutext;
-            else                    file    = TriggerFileName + "." + InfixSum + " (" + IntegerToString ( numsplittrg ) + ")" + "." + fileoutext;
+            else                    file    = TriggerFileName + "." + InfixSum + " (" + (const char*) IntegerToString ( numsplittrg ) + ")" + "." + fileoutext;
 
             verbose.Put ( "Split  file    - Sum:",                  file );
             }
@@ -5432,7 +5433,7 @@ if ( dosplittriggers ) {
             expsum      = new TExportTracks;
 
             if ( IsFreqLoop () )    expsum->Filename    = TriggerFileName + "." + InfixSum                                                + "." + fileoutext;
-            else                    expsum->Filename    = TriggerFileName + "." + InfixSum + " (" + IntegerToString ( numsplittrg ) + ")" + "." + fileoutext;
+            else                    expsum->Filename    = TriggerFileName + "." + InfixSum + " (" + (const char*) IntegerToString ( numsplittrg ) + ")" + "." + fileoutext;
 
             expsum->SetAtomType ( AtomTypeScalar );
             expsum->NumTracks           = NumElectrodes;

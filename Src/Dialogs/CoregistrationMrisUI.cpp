@@ -19,6 +19,7 @@ limitations under the License.
 #include    "CoregistrationMrisUI.h"
 
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Strings.Grep.h"
 #include    "Files.TVerboseFile.h"
 #include    "Files.TGoF.h"

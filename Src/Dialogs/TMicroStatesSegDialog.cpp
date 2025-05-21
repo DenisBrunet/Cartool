@@ -21,6 +21,7 @@ limitations under the License.
 #include    "Math.Utils.h"
 #include    "Math.Resampling.h"
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Strings.Grep.h"
 #include    "Files.SpreadSheet.h"
 #include    "Files.TSplitLinkManyFile.h"

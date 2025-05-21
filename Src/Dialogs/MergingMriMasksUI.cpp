@@ -17,6 +17,7 @@ limitations under the License.
 #include    <owl/pch.h>
 
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Dialogs.Input.h"
 
 #include    "ESI.TissuesThicknesses.h"

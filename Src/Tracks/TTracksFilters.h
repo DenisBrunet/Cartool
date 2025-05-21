@@ -22,6 +22,7 @@ limitations under the License.
 #include    "TArray2.h"
 #include    "TArray3.h"
 #include    "TFilters.h"
+#include    "Strings.TFixedString.h"
 #include    "Strings.TSplitStrings.h"
 
 #include    "TTracksFiltersDialog.h"    // TTracksFiltersStruct

@@ -18,6 +18,7 @@ limitations under the License.
 
 #include    "TTracksFiltersDialog.h"
 
+#include    "Strings.TFixedString.h"
 #include    "Files.Extensions.h"
 
 #include    "Math.Utils.h"

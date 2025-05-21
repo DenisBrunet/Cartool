@@ -19,6 +19,7 @@ limitations under the License.
 #include    <owl/file.h>
 
 #include    "MemUtil.h"
+#include    "Strings.TFixedString.h"
 
 #include    "TArray1.h"
 

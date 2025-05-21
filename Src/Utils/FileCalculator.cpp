@@ -17,6 +17,7 @@ limitations under the License.
 #include    "FileCalculator.h"
 
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Files.Utils.h"
 #include    "Files.TVerboseFile.h"
 #include    "Files.TGoF.h"

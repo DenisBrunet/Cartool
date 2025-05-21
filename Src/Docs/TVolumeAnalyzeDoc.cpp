@@ -18,7 +18,9 @@ limitations under the License.
 #include    <fstream>
 
 #include    "MemUtil.h"
+#include    "Strings.TFixedString.h"
 #include    "Math.Stats.h"
+
 #include    "CartoolTypes.h"
 #include    "Dialogs.TSuperGauge.h"
 #include    "Math.Resampling.h"

@@ -18,6 +18,7 @@ limitations under the License.
 #include    "TRisToVolumeDialog.h"      // RisToVolumeInterpolationType, RisToVolumeFileType
 
 #include    "Strings.Utils.h"
+#include    "Strings.TFixedString.h"
 #include    "Files.TGoF.h"
 #include    "Files.TVerboseFile.h"
 #include    "Dialogs.TSuperGauge.h"

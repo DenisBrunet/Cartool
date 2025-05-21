@@ -17,6 +17,7 @@ limitations under the License.
 #pragma once
 
 #include    "Math.Stats.h"
+#include    "Strings.TFixedString.h"
 #include    "Dialogs.Input.h"
 #include    "Geometry.TBoundingBox.h"
 #include    "TVolumeRegions.h"
