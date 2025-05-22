@@ -26,14 +26,14 @@ namespace crtl {
                                         // Parameter N is the SIZE of the array, hence max string length will be (N-1)
                                         // String is always null-terminated
                                         // When testing with other strings, do not forget to account for any possible clipping
+                                        // There are no copy / move constructors, assign / move assign operators, as bit-wise copy works fine
+                                        // There is also no need for destructor
 template <long N>
 class   TFixedString
 {
 public:
 
                             TFixedString            ()                                          { Clear ();                         }
-                            TFixedString            ( const TFixedString& str )                 { Copy ( str );                     }
-                            TFixedString            ( TFixedString&&      str ) noexcept        { Copy ( str ); str.Clear ();       }
                             TFixedString            ( const char*         str )                 { Copy ( str );                     }
 
 
@@ -44,17 +44,15 @@ public:
 
                                         // Wrapping calls and enforcing fixed size limit + null terminated
     void                    Clear                   ()                                          { ClearString  ( String, N );       }   // reset the whole array
-    long                    Length                  ()                          const           { return ::StringLength ( String ); }
+    long                    Length                  ()                          const           { return StringLength ( String );   }
     constexpr long          Size                    ()                          const           { return N;                         }
     constexpr long          MaxLength               ()                          const           { return N - 1;                     }
-    TFixedString&           Append                  ( const TFixedString& str )                 { StringAppend ( String, str.String, MaxLength () ); return *this; }
-    TFixedString&           Append                  ( const char*         str )                 { StringAppend ( String, str,        MaxLength () ); return *this; }
-    TFixedString&           Copy                    ( const TFixedString& str )                 { StringCopy   ( String, str.String, MaxLength () ); return *this; }
-    TFixedString&           Copy                    ( const char*         str )                 { StringCopy   ( String, str,        MaxLength () ); return *this; }
+    TFixedString&           Append                  ( const TFixedString& str )                 { StringAppend ( String, str.String, MaxLength () ); return *this;  }
+    TFixedString&           Append                  ( const char*         str )                 { StringAppend ( String, str,        MaxLength () ); return *this;  }
+    TFixedString&           Copy                    ( const TFixedString& str )                 { StringCopy   ( String, str.String, MaxLength () ); return *this;  }
+    TFixedString&           Copy                    ( const char*         str )                 { StringCopy   ( String, str,        MaxLength () ); return *this;  }
 
 
-    TFixedString&           operator    =           ( const TFixedString& op2 )                 { return &op2 != this ? Copy ( op2 ) : *this;   }
-    TFixedString&           operator    =           ( TFixedString&&      op2 ) noexcept        { if ( &op2 != this ) { Copy ( op2 ); op2.Clear(); }    return *this;   }
     TFixedString&           operator    =           ( const char*         op2 )                 { return                Copy ( op2 );           }
 
 

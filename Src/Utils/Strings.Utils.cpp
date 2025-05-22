@@ -669,17 +669,13 @@ return  to;
 
 char*   StringAppend ( char* to, long tail )
 {
-char                tailstring[ 256 ];
-
-return  StringAppend ( to, IntegerToString ( tailstring, tail ) );
+return  StringAppend ( to, IntegerToString ( tail ) );
 }
 
 
 char*   StringAppend ( char* to, double tail )
 {
-char                tailstring[ 256 ];
-
-return  StringAppend ( to, IntegerToString ( tailstring, tail ) );
+return  StringAppend ( to, IntegerToString ( tail ) );
 }
 
 

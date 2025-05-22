@@ -1514,12 +1514,6 @@ CheckFileName ( flags );
 }
 
 
-void   TFileName::Set ( char* filename, TFilenameFlags flags )
-{
-Set ( (const char*) filename, flags );
-}
-
-
 void   TFileName::SetTempFileName ( const char* ext )
 {
 GetTempFilePath     ( FileName );

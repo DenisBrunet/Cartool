@@ -194,7 +194,6 @@ class   TFileName
 public:
                     TFileName ();
                     TFileName ( const char* filename, TFilenameFlags flags = TFilenameNoPreprocessing )     { Set ( filename, flags ); }
-                    TFileName ( char*       filename, TFilenameFlags flags = TFilenameNoPreprocessing )     { Set ( filename, flags ); }
 
 
     char            FileName[ TFilenameSize ];
@@ -203,7 +202,6 @@ public:
     void            Reset                   ();
 
     void            Set                     ( const char* filename, TFilenameFlags flags = TFilenameNoPreprocessing );
-    void            Set                     ( char*       filename, TFilenameFlags flags = TFilenameNoPreprocessing );
     void            SetTempFileName         ( const char* ext );
 
 
