@@ -26,14 +26,15 @@ namespace crtl {
                                         // Parameter N is the SIZE of the array, hence max string length will be (N-1)
                                         // String is always null-terminated
                                         // When testing with other strings, do not forget to account for any possible clipping
-                                        // There are no copy / move constructors, assign / move assign operators, as bit-wise copy works fine
-                                        // There is also no need for destructor
+                                        // There is no need for destructor
 template <long N>
 class   TFixedString
 {
 public:
 
                             TFixedString            ()                                          { Clear ();                         }
+                            TFixedString            ( const TFixedString& str )                 { Copy ( str );                     }
+                            TFixedString            ( TFixedString&&      str ) noexcept        { Copy ( str ); str.Clear ();       }
                             TFixedString            ( const char*         str )                 { Copy ( str );                     }
 
 
@@ -53,7 +54,9 @@ public:
     TFixedString&           Copy                    ( const char*         str )                 { StringCopy   ( String, str,        MaxLength () ); return *this;  }
 
 
-    TFixedString&           operator    =           ( const char*         op2 )                 { return                Copy ( op2 );           }
+    TFixedString&           operator    =           ( const TFixedString& op2 )                 { if ( &op2 != this )   Copy ( op2 );                   return *this;   }
+    TFixedString&           operator    =           ( TFixedString&&      op2 ) noexcept        { if ( &op2 != this ) { Copy ( op2 ); op2.Clear(); }    return *this;   }
+    TFixedString&           operator    =           ( const char*         op2 )                 { return                Copy ( op2 );                                   }
 
 
           char&             operator    []          ( long i )                                  { return String[ i                                  ]; } // !without boundary checks!
@@ -62,8 +65,8 @@ public:
     const char&             operator    ()          ( long i )                  const           { return String[ Clip ( i, (long) 0, MaxLength () ) ]; }
 
                                                     // !default is case sensitive!
-    int                     Compare                 ( const TFixedString& op, StringFlags flags = CaseSensitive )   const   { return ::StringCompare ( String, op.String, flags );  }
-    int                     Compare                 ( const char*         op, StringFlags flags = CaseSensitive )   const   { return Compare ( TFixedString ( op ), flags );        }   // !op will be truncated to N-1 for consistency!
+    virtual int             Compare                 ( const TFixedString& op, StringFlags flags = CaseSensitive )   const   { return StringCompare ( String, op.String,   flags );  }
+    virtual int             Compare                 ( const char*         op, StringFlags flags = CaseSensitive )   const   { return       Compare ( TFixedString ( op ), flags );  }   // !op will be truncated to N-1 for consistency!
 
     bool                    operator    ==          ( const TFixedString& op  ) const           { return Compare ( op ) == 0;       }   // !default is case sensitive!
     bool                    operator    !=          ( const TFixedString& op  ) const           { return Compare ( op ) != 0;       }
@@ -97,8 +100,8 @@ public:
     friend std::ostream&    operator    <<          ( std::ostream& os, const TFixedString& str )   { os << str.String; return os; }
 
 
-                            operator          char* ()                                          { return String;    }
-                            operator    const char* ()                          const           { return String;    }
+  /*explicit*/              operator          char* ()                                          { return String;    }
+  /*explicit*/              operator    const char* ()                          const           { return String;    }
     explicit                operator    long        ()                          const           { return Length (); }
     explicit                operator    int         ()                          const           { return Length (); }
 
