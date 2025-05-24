@@ -3346,7 +3346,7 @@ for ( int l = minlength; l >= 1 && !found ; l-- ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compounds the match with all bits of common stuff
-match.Reset (); // whole content
+match.Clear (); // whole content
 
 
 do {

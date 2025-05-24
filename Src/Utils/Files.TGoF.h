@@ -18,8 +18,8 @@ limitations under the License.
 
 #include    <owl\wsyscls.h>
 
+#include    "CartoolTypes.h"            // TFilenameFlags
 #include    "Files.Utils.h"
-#include    "Strings.Utils.h"
 #include    "Strings.TStrings.h"
 
 namespace crtl {

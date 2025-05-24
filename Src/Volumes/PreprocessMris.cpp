@@ -603,7 +603,7 @@ for ( int i = 0; i < (int) gofin; i++ ) {
         } // if istempras
 
     else
-        temprasfile.Reset ();
+        temprasfile.Clear ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

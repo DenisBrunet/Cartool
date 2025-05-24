@@ -24,6 +24,7 @@ limitations under the License.
 
 #include    "Strings.Utils.h"
 #include    "Strings.TFixedString.h"
+#include    "Files.TFileName.h"
 #include    "Files.Extensions.h"
 #include    "Files.TSplitLinkManyFile.h"
 #include    "Dialogs.Input.h"

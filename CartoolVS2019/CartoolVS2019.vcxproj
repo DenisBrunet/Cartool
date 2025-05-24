@@ -510,6 +510,7 @@
     <ClInclude Include="..\Src\Utils\Files.ReadFromHeader.h" />
     <ClInclude Include="..\Src\Utils\Files.SpreadSheet.h" />
     <ClInclude Include="..\Src\Utils\Files.Stream.h" />
+    <ClInclude Include="..\Src\Utils\Files.TFileName.h" />
     <ClInclude Include="..\Src\Utils\Files.TFindFile.h" />
     <ClInclude Include="..\Src\Utils\Files.TGoF.h" />
     <ClInclude Include="..\Src\Utils\Files.TOpenDoc.h" />

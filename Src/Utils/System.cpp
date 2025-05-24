@@ -73,7 +73,7 @@ switch ( how ) {
 
 bool    GetEnvironmentVariableEx ( const char* variable, TFileName& result )
 {
-result.Reset ();
+result.Clear ();
 
 if ( StringIsEmpty ( variable ) )
     return  false;

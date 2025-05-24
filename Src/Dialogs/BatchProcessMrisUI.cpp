@@ -18,6 +18,7 @@ limitations under the License.
 
 #include    "Strings.Utils.h"
 #include    "Strings.TFixedString.h"
+#include    "Files.TFileName.h"
 #include    "Dialogs.Input.h"
 #include    "Dialogs.TSuperGauge.h"
 

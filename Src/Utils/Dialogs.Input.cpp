@@ -585,10 +585,10 @@ if ( Flags == GetFileDirectory )  {
         else {
             StringCopy      ( tempdir, files );
             RemoveFilename  ( tempdir );
-            bi.lParam       = (LPARAM) tempdir.FileName; // extract directory from file
+            bi.lParam       = (LPARAM) (char*) tempdir; // extract directory from file
             }
     else
-        bi.lParam       = (LPARAM) lastdirpath.FileName; // favor the last directory
+        bi.lParam       = (LPARAM) (char*) lastdirpath; // favor the last directory
 
                                         // run the special dialog for directory (thanks Microsoft)
     if ( ( pidl = SHBrowseForFolder ( &bi ) ) == 0 )
@@ -596,7 +596,7 @@ if ( Flags == GetFileDirectory )  {
 
                                         // extract the path from the answer (thanks again Microsoft)
     if ( ! SHGetPathFromIDList ( pidl, dirpath ) )
-        dirpath.Reset ();
+        dirpath.Clear ();
 
 //    GoF.Add ( dirpath );
 

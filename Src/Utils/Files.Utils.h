@@ -116,7 +116,7 @@ char*               ToLastDirectory         ( char* filename );            // re
 char*               RemoveDir               ( char* filename );            // remove directory part from the string, not from the disk!
 char*               RemoveLastDir           ( char* filename );
 char*               GetLastDir              ( char* filename, char* dir );
-//char*             ReplaceDir              ( char* filename, const char* newdir );
+char*               ReplaceDir              ( char* filename, const char* newdir );
 char*               GetTempDir              ( char* tempdir );
 char*               AppendDir               ( char* path, bool endswithfilename, const char* addeddir );
 
@@ -135,7 +135,7 @@ const char*         ToExtension             ( const char* filename );
 void                GetExtension            ( char* ext, char*         filename );
 void                GetExtension            ( char* ext, const char*   filename );
 char*               RemoveExtension         ( char* filename, int num = 1 );
-//char*             ReplaceExtension        ( char* filename, const char* newext );
+char*               ReplaceExtension        ( char* filename, const char* newext );
 char*               AddExtension            ( char* filename, const char* ext );
 char*               AddExtensionFromFile    ( char* filename, char* filewithext );
 bool                IsExtension             ( const char* filename, const char* ext );
@@ -162,107 +162,6 @@ enum                CanOpenFlags
 bool                CanOpenFile      ( char*              file,   CanOpenFlags flags = CanOpenFileDefault );  // !can update path parameter!
 bool                CanOpenFile      ( const char*        file,   CanOpenFlags flags = CanOpenFileDefault );
 bool                CanOpenFile      ( const std::string& file,   CanOpenFlags flags = CanOpenFileDefault );
-
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-                                        // Encapsulate a long enough (for a path) string
-                                        // which allows some modification, like Extended path for Windows
-                                        // We need a specific class, as some file names could be const / fixed size
-
-char*               ReplaceDir       ( char* filename, const char* newdir );
-char*               ReplaceExtension ( char* filename, const char* newext );
-
-
-constexpr int       TFilenameSize           = CartoolMaxExtendedPath;
-
-
-enum                TFilenameFlags
-                    {
-                    TFilenameNoPreprocessing    = 0x000,
-                    TFilenameMsDosToWindows     = 0x001,
-                    TFilenameAbsolutePath       = 0x002,
-                    TFilenameExtendedPath       = 0x004,
-                    TFilenameSibling            = 0x008,
-                    TFilenameDirectory          = 0x010,
-                    TFilenameNoOverwrite        = 0x020,
-                    };
-
-
-class   TFileName
-{
-public:
-                    TFileName ();
-                    TFileName ( const char* filename, TFilenameFlags flags = TFilenameNoPreprocessing )     { Set ( filename, flags ); }
-
-
-    char            FileName[ TFilenameSize ];
-
-
-    void            Reset                   ();
-
-    void            Set                     ( const char* filename, TFilenameFlags flags = TFilenameNoPreprocessing );
-    void            SetTempFileName         ( const char* ext );
-
-
-    bool            IsEmpty                 ()      const                   { return  StringIsEmpty    ( FileName ); }
-    bool            IsNotEmpty              ()      const                   { return  StringIsNotEmpty ( FileName ); }
-
-    bool            IsRelativePath          ()      const;
-    bool            IsAbsolutePath          ()      const;
-
-    bool            IsExtendedPath          ();
-    void            ResetExtendedPath       ();
-    bool            IsExtension             ( const char* ext )     const;
-
-
-    bool            CanOpenFile             ()  const;
-    void            CheckFileName           ( TFilenameFlags flags );
-    void            CheckExtendedPath       ();
-    void            MsDosPathToWindowsPath  ();
-    void            CheckAbsolutePath       ();
-    void            CheckSiblingFile        ();
-    void            CheckNoOverwrite        ();
-    void            GetCurrentDir           ()                      { ::GetCurrentDirectory ( Size (), FileName ); }
-
-
-    void            ClipFileName            ( int from, int to );   // only the (last) file name part
-    char*           AddExtension            ( const char* ext    )  { return  crtl::AddExtension     ( FileName, ext    );  }
-    char*           ReplaceExtension        ( const char* newext )  { return  crtl::ReplaceExtension ( FileName, newext );  }
-    char*           ReplaceDir              ( const char* newdir )  { return  crtl::ReplaceDir       ( FileName, newdir );  }
-    char*           GetFilename             ()                      { return  crtl::GetFilename      ( FileName );          }
-
-    long            Length                  ()      const           { return  StringLength ( FileName ); }
-    long            Size                    ()      const           { return  TFilenameSize; }
-
-
-    void            Show                    ( const char* title = 0 )   const;
-    void            Open                    ();
-
-
-    TFileName                               ( const TFileName &op  );
-    TFileName&      operator    =           ( const TFileName &op2 );
-    TFileName&      operator    =           ( const char*      op2 );
-
-
-    char&           operator    []          ( int    i )            { return FileName[ i ]; }
-    char            operator    []          ( int    i ) const      { return FileName[ i ]; }
-    char&           operator    ()          ( int    i )            { return FileName[ i ]; }
-    char            operator    ()          ( int    i ) const      { return FileName[ i ]; }
-
-    bool            operator    ==          ( const TFileName &op  )    const   { return  StringIs    ( FileName, op.FileName ); }
-    bool            operator    ==          ( const char*      op  )    const   { return  StringIs    ( FileName, op          ); }
-    bool            operator    !=          ( const TFileName &op  )    const   { return  StringIsNot ( FileName, op.FileName ); }
-    bool            operator    !=          ( const char*      op  )    const   { return  StringIsNot ( FileName, op          ); }
-
-    TFileName       operator    +=          ( const char*      op2 )            { StringAppend ( FileName, op2 );                               return *this; }
-    TFileName       operator    +           ( const char*      op2 )    const   { TFileName temp; StringCopy ( temp.FileName, FileName, op2 );  return temp; }
-
-
-//                  operator    bool        ()  const               { return IsNotEmpty (); }
-                    operator          char* ()                      { return FileName; }
-                    operator    const char* ()  const               { return FileName; }
-};
 
 
 //----------------------------------------------------------------------------

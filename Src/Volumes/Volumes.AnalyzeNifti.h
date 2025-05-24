@@ -21,7 +21,7 @@ limitations under the License.
 #include    "Files.Format.nifti2.h"
 
 #include    "Strings.Utils.h"
-#include    "Files.Utils.h"
+#include    "Files.TFileName.h"
 #include    "Dialogs.Input.h"
 #include    "Math.Utils.h"
                                         

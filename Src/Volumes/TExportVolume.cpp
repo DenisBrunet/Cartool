@@ -82,7 +82,7 @@ void    TExportVolume::Reset ()
 End ();                                 // will take care of stream 'of'
 
 
-Filename.Reset ();
+Filename.Clear ();
 ClearString ( Type );
                                         // !NOT resetting VolumeFormat!
 

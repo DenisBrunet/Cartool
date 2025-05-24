@@ -427,15 +427,15 @@ InterpolationType       = UnknownInterpolation;
 SplineDegree            = DefaultInterpolationDegree;   // !we force the polynomial degree to 1 (spline degree 2) to absolutely avoid creating new extrema!
 TargetSpace             = BackToOriginalElectrodes;
 
-FromOrigXyzFile         .Reset ();
-FromXyzFile             .Reset ();
-FromXyzExclFile         .Reset ();
-FromXyz_To_FidFile      .Reset ();
-FromXyz_To_DestXyzFile  .Reset ();
+FromOrigXyzFile         .Clear ();
+FromXyzFile             .Clear ();
+FromXyzExclFile         .Clear ();
+FromXyz_To_FidFile      .Clear ();
+FromXyz_To_DestXyzFile  .Clear ();
 
-DestXyzFile             .Reset ();
-DestXyz_To_FidFile      .Reset ();
-DestXyz_To_FromXyzFile  .Reset ();
+DestXyzFile             .Clear ();
+DestXyz_To_FidFile      .Clear ();
+DestXyz_To_FromXyzFile  .Clear ();
 
 FromOrigPoints          .Reset ();
 FromOrigPointsNames     .Reset ();
@@ -621,7 +621,7 @@ if ( ! StringIsSpace ( FromBadElectrodes.c_str () ) ) {
     StringCopy      ( FromXyzFile, FromXyzExclFile );
     }
 else {                                  // regular case
-    FromXyzExclFile.Reset ();
+    FromXyzExclFile.Clear ();
     StringCopy      ( FromXyzFile, FromOrigXyzFile );
     }
 
@@ -716,8 +716,8 @@ if ( TargetSpace == ToOtherElectrodes ) {
 
 else { // BackToOriginalElectrodes
 
-    DestXyz_To_FromXyzFile.Reset ();
-    FromXyz_To_DestXyzFile.Reset ();
+    DestXyz_To_FromXyzFile.Clear ();
+    FromXyz_To_DestXyzFile.Clear ();
     }
 
 

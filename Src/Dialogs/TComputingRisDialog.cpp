@@ -2390,7 +2390,7 @@ if ( spatialfilter != SpatialFilterNone ) {
 
     if ( ! CanOpenFile ( xyzfile ) ) {
         spatialfilter   = SpatialFilterNone;
-        xyzfile.Reset ();
+        xyzfile.Clear ();
         }
     }
 
@@ -2467,7 +2467,7 @@ if ( roiing ) {
 
     if ( ! CanOpenFile ( roifile ) ) {
         roiing      = false;
-        roifile.Reset ();
+        roifile.Clear ();
         }
     }
 

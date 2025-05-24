@@ -16,6 +16,7 @@ limitations under the License.
 
 #include    <owl/pch.h>
 
+#include    "Files.TFileName.h"
 #include    "Files.TGoF.h"
 #include    "TVolume.h"                 // NeighborhoodType
 #include    "Dialogs.Input.h"

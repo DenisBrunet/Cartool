@@ -81,7 +81,7 @@ End ();
 TDataFormat::Reset ();
 
 
-Filename.Reset ();
+Filename.Clear ();
 Type                = ExportTracksUnknown;
 
 NumTracks           = 0;

@@ -21,6 +21,7 @@ limitations under the License.
 #include    "System.h"
 
 #include    "Strings.Utils.h"
+#include    "Files.TFileName.h"
 
 namespace crtl {
 

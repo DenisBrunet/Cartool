@@ -28,7 +28,7 @@ limitations under the License.
 #include    <owl/wsyscls.h>             // TDropInfo
 #include    <owl/splashwi.h>
 
-#include    "Files.Utils.h"
+#include    "Files.TFileName.h"
 #include    "System.h"
 #include    "OpenGL.h"
 #include    "WindowingUtils.h"

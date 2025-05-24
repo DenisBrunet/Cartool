@@ -217,7 +217,7 @@ How                 = SpatialFilterNone;
 MaxNumNeigh         = 0;
 MaxDistNeigh        = 0;
 NeighDist.DeallocateMemory ();
-File.Reset ();
+File.Clear ();
 }
 
 

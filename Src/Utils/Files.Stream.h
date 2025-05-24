@@ -24,7 +24,7 @@ limitations under the License.
 #include    "System.h"                  // LONGLONG_to_LARGE_INTEGER, LARGE_INTEGER_to_LONGLONG
 
 #include    "Strings.Utils.h"
-#include    "Files.Utils.h"             // TFilenameFlags
+#include    "Files.TFileName.h"         // TFilenameFlags
 //#include    "Dialogs.Input.h"
 
 namespace crtl {

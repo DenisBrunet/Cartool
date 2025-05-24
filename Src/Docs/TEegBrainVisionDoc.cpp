@@ -81,7 +81,7 @@ ifstream            ifmrk ( TFileName ( filemrk, TFilenameExtendedPath ) );
 TFileName           buff;
 
 
-ifmrk.getline ( buff, TFilenameSize );
+ifmrk.getline ( buff, buff.Size () );
 
 if ( ! StringGrep ( buff, BrainVisionGrepHeaderVmrk, GrepOptionDefaultFiles ) ) {
     StringCopy  ( buff, "Marker file seems of improper type." );
@@ -218,7 +218,7 @@ char                bintype   [ 32 ]    = { "" };
 
 
 do {
-    ifhdr.getline ( buff, TFilenameSize );
+    ifhdr.getline ( buff, buff.Size () );
 
     if ( StringIsEmpty ( buff ) )
         continue;

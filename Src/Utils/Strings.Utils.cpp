@@ -23,10 +23,10 @@ limitations under the License.
 
 #include    <Shlwapi.h>                 // StrStrI
 
+#include    "MemUtil.h"
 #include    "Strings.Utils.h"
 #include    "Strings.TFixedString.h"
 #include    "Strings.TSplitStrings.h"
-#include    "MemUtil.h"
 #include    "Math.Random.h"
 #include    "Time.Utils.h"
 

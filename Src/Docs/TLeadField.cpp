@@ -60,7 +60,7 @@ void    TLeadField::Reset ()
 {
 TDataFormat::Reset ();
 
-FilePath.Reset ();
+FilePath.Clear ();
 
 Dim1                = 0;
 Dim2                = 0;

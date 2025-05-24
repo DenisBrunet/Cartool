@@ -424,7 +424,7 @@ TStrings            matched;
 
 
 freqindex.ResetMemory ();
-OutFileName.Reset ();
+OutFileName.Clear ();
 
 
                                         // try to extract a (frequency) value from each file

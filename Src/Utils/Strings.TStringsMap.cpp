@@ -24,7 +24,7 @@ limitations under the License.
 #include    "Strings.TStringsMap.h"
 #include    "Strings.TSplitStrings.h"
 #include    "Strings.Utils.h"
-#include    "Files.Utils.h"
+#include    "Files.TFileName.h"
 
 #include    "Volumes.AAL.h"
 

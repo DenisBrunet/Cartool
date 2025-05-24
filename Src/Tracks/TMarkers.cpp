@@ -292,7 +292,7 @@ TriggerColors.GLize ( hn );
         TMarkers::TMarkers ()
 {
 TracksDoc           = 0;
-MarkersFileName.Reset ();
+MarkersFileName.Clear ();
 MarkersDirty        = false;
 }
 
@@ -300,7 +300,7 @@ MarkersDirty        = false;
         TMarkers::TMarkers ( const MarkersList& markerslist )
 {
 TracksDoc           = 0;
-MarkersFileName.Reset ();
+MarkersFileName.Clear ();
 //MarkersDirty        = IsFlag ( SetMarkers ( markerslist ), MarkersInsertErrors );   // update current state if any insertion error
 MarkersDirty        = SetMarkers ( markerslist ) != NoMarkersError;     // update current state
 }
@@ -309,7 +309,7 @@ MarkersDirty        = SetMarkers ( markerslist ) != NoMarkersError;     // updat
         TMarkers::TMarkers ( const TTracksDoc* tracksdoc )
       : TracksDoc ( tracksdoc )
 {
-MarkersFileName.Reset ();
+MarkersFileName.Clear ();
 MarkersDirty        = false;
 }
 
