@@ -450,9 +450,9 @@ if ( fflags & SegPresetResampling ) {
                                         // lock to prevent NumResamplingEpochs / ResamplingEpochsSize to update Coverage
     LockResampling  = true;
 
-    NumResamplingEpochs ->SetIntValue    ( presetf.NumResampling );
+    SetInteger  ( NumResamplingEpochs, presetf.NumResampling );
 
-    ResamplingCoverage  ->SetDoubleValue ( RoundTo ( presetf.ResamplingCoverage * 100, 0.1 ) );
+    SetDouble   ( ResamplingCoverage, RoundTo ( presetf.ResamplingCoverage * 100, 0.1 ) );
 
     LockResampling  = false;
 
@@ -674,9 +674,9 @@ if ( resampling.NumData         < SegmentMinNumData
   || resampling.NumResampling   < SegmentMinNumResampling
    )
 
-    NumResamplingEpochs ->SetIntValue ( /*SegmentMinNumResampling*/ 0 );
+    SetInteger  ( NumResamplingEpochs, /*SegmentMinNumResampling*/ 0 );
 else
-    NumResamplingEpochs ->SetIntValue ( resampling.NumResampling );
+    SetInteger  ( NumResamplingEpochs, resampling.NumResampling );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -713,7 +713,7 @@ resampling.SetNumResampling ( NumResamplingEpochs );
 resampling.GetCoverage ();
 
 
-ResamplingCoverage  ->SetDoubleValue ( RoundTo ( resampling.Coverage * 100, 0.1 ) );
+SetDouble   ( ResamplingCoverage, RoundTo ( resampling.Coverage * 100, 0.1 ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -770,7 +770,7 @@ resampling.SetSampleSize    ( ResamplingEpochsSize );
 resampling.GetNumResampling ( coverage, /*SegmentMinNumResampling*/ 0, SegmentMaxNumResampling );
 
 
-NumResamplingEpochs ->SetIntValue ( resampling.NumResampling );
+SetInteger  ( NumResamplingEpochs, resampling.NumResampling );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -781,7 +781,7 @@ NumResamplingEpochs ->SetIntValue ( resampling.NumResampling );
 //
 //    coverage    = resampling.GetCoverage ();
 //                                        // !glitch: will force update itself again, and resulting display is all wrong!
-//    ResamplingCoverage  ->SetDoubleValue ( RoundTo ( coverage * 100, 0.1 ) );
+//    SetDouble   ( ResamplingCoverage, RoundTo ( coverage * 100, 0.1 ) );
 //    }
 
 
@@ -824,12 +824,12 @@ else if ( presetf.SampleSizeSeconds ) {
 
     SetSamplingFrequency ();
 
-    ResamplingEpochsSize->SetIntValue ( SecondsToTimeFrame ( presetf.SampleSizeSeconds, SamplingFrequency ) );
+    SetInteger  ( ResamplingEpochsSize, SecondsToTimeFrame ( presetf.SampleSizeSeconds, SamplingFrequency ) );
     }
 
 else if ( presetf.SampleRatio       )   
 
-    ResamplingEpochsSize->SetIntValue ( Round ( presetf.SampleRatio * GetNumData () ) );
+    SetInteger  ( ResamplingEpochsSize, Round ( presetf.SampleRatio * GetNumData () ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -927,7 +927,7 @@ GroupsAllRis        = GoGoF.AllExtensionsAre ( FILEEXT_RIS );
 
 SetSamplingFrequency ();
 
-NumGroups->SetIntValue ( GoGoF.NumGroups () );
+SetInteger  ( NumGroups, GoGoF.NumGroups () );
 
 GroupsSummary->DeleteString ( 0 );
 
@@ -945,7 +945,7 @@ GroupsAllRis        = GoGoF.AllExtensionsAre ( FILEEXT_RIS );
 
 SetSamplingFrequency ();
 
-NumGroups->SetIntValue ( GoGoF.NumGroups () );
+SetInteger  ( NumGroups, GoGoF.NumGroups () );
 
 GroupsSummary->ClearList ();
 
@@ -1496,7 +1496,7 @@ if ( preset.RandomTrials > 0 ) {
                                         // reduce the number of random trials in case of resampling
     double          resamplingratio     = IsSegResamplingFilePreset ( (SegPresetFilesEnum) SegTransfer.PresetsFiles.GetSelIndex () ) ? SegmentResamplingRandomTrialsRatio : 1;
 
-    RandomTrials->SetIntValue ( Round ( preset.RandomTrials * resamplingratio ) );
+    SetInteger  ( RandomTrials, Round ( preset.RandomTrials * resamplingratio ) );
     }
 
 
@@ -1584,22 +1584,22 @@ if ( preset.RandomTrials > 0 ) {
                                         // reduce the number of random trials in case of resampling
     double          resamplingratio     = IsSegResamplingFilePreset ( (SegPresetFilesEnum) SegTransfer.PresetsFiles.GetSelIndex () ) ? SegmentResamplingRandomTrialsRatio : 1;
 
-    RandomTrials->SetIntValue ( Round ( preset.RandomTrials * resamplingratio ) );
+    SetInteger  ( RandomTrials, Round ( preset.RandomTrials * resamplingratio ) );
     }
 
-MinClusters ->SetIntValue ( preset.MinClusters );
-MaxClusters ->SetIntValue ( preset.MaxClusters );
+SetInteger  ( MinClusters, preset.MinClusters );
+SetInteger  ( MaxClusters, preset.MaxClusters );
 
 
 if ( preset.SmoothingSize > 0 ) {
-    WindowSize->SetIntValue ( preset.SmoothingSize );
-    RejectSize->SetIntValue ( preset.SmoothingSize );
+    SetInteger  ( WindowSize, preset.SmoothingSize );
+    SetInteger  ( RejectSize, preset.SmoothingSize );
     }
 
 
 if ( preset.CorrelationThreshold > -100 ) {
     ClipCorrelation ->SetCheck ( BoolToCheck ( true ) );
-    MinCorrelation  ->SetIntValue ( Clip ( preset.CorrelationThreshold, -100, 100 ) );
+    SetInteger  ( MinCorrelation, Clip ( preset.CorrelationThreshold, -100, 100 ) );
     }
 else
     ClipCorrelation ->SetCheck ( BoolToCheck ( false ) );

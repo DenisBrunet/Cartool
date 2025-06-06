@@ -832,7 +832,7 @@ Selection->SetText ( CreateRoisTransfer.Selection );
 Rois->RemoveRoi ();
 
                                         // update summary
-NumRois->SetIntValue ( Rois->GetNumRois () );
+SetInteger  ( NumRois, Rois->GetNumRois () );
 RoisSummary->DeleteString ( 0 );
 }
 
@@ -873,7 +873,7 @@ StringCopy  (   buff,
 RoisSummary->InsertString ( buff, 0 );
 
 
-NumRois->SetIntValue ( Rois->GetNumRois () );
+SetInteger  ( NumRois, Rois->GetNumRois () );
 }
 
 

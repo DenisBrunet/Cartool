@@ -765,7 +765,7 @@ if ( ! GoGoF.RemoveLastGroup () )
 GroupsAllRis    = GoGoF.AllExtensionsAre ( FILEEXT_RIS );
 
 
-NumGroups->SetIntValue ( GoGoF.NumGroups () );
+SetInteger  ( NumGroups, GoGoF.NumGroups () );
 
 
 GroupsSummary->DeleteString ( 0 );
@@ -784,7 +784,7 @@ GoGoF.Reset ();
 GroupsAllRis    = GoGoF.AllExtensionsAre ( FILEEXT_RIS );
 
 
-NumGroups->SetIntValue ( GoGoF.NumGroups () );
+SetInteger  ( NumGroups, GoGoF.NumGroups () );
 
 
 GroupsSummary->ClearList ();
@@ -1432,14 +1432,14 @@ if ( ! ( ppflags & SegPresetRejectSmallDontCare ) )
 
 
 if ( preset.SmoothingSize > 0 ) {
-    WindowSize->SetIntValue ( preset.SmoothingSize );
-    RejectSize->SetIntValue ( preset.SmoothingSize );
+    SetInteger  ( WindowSize, preset.SmoothingSize );
+    SetInteger  ( RejectSize, preset.SmoothingSize );
     }
 
 
 if ( preset.CorrelationThreshold > -100 ) {
     ClipCorrelation ->SetCheck ( BoolToCheck ( true ) );
-    MinCorrelation  ->SetIntValue ( Clip ( preset.CorrelationThreshold, -100, 100 ) );
+    SetInteger  ( MinCorrelation, Clip ( preset.CorrelationThreshold, -100, 100 ) );
     }
 else
     ClipCorrelation ->SetCheck ( BoolToCheck ( false ) );
@@ -1798,11 +1798,11 @@ TMicroStatesFitFilesDialog* dlgfiles    = dynamic_cast< TMicroStatesFitFilesDial
 if ( dlgfiles ) {
                                         // update dialog
                                         // set limit
-    (dlgfiles->MaxWithinSubjects)->SetIntValue ( MaxGroupsWithinSubjects );
+    SetInteger  ( dlgfiles->MaxWithinSubjects, MaxGroupsWithinSubjects );
 
                                         // suggest to user the biggest one
     if ( updateNumWithinSubjects )
-        (dlgfiles->NumWithinSubjects)->SetIntValue ( MaxGroupsWithinSubjects );
+        SetInteger  ( dlgfiles->NumWithinSubjects, MaxGroupsWithinSubjects );
     }
 }
 

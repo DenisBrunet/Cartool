@@ -1779,14 +1779,14 @@ int                 total           = val1 + val2;
 
 //if ( CheckToBool ( BaselineCorr->GetCheck() ) ) {
 
-    BaselineCorrPre ->SetIntValue ( -val1 );
-//  BaselineCorrPost->SetIntValue (  val2 );
+    SetInteger  ( BaselineCorrPre,  -val1 );
+//  SetInteger  ( BaselineCorrPost,  val2 );
 
     BaselineCorrPreMs ->SetText ( TFtoms ( -val1 ) );
 //  BaselineCorrPostMs->SetText ( TFtoms (  val2 ) );
 //  }
 
-DurationTotal  ->SetIntValue ( total );
+SetInteger  ( DurationTotal, total );
 DurationTotalMs->SetText ( TFtoms ( total ) );
 
 EvTFChanged ();

@@ -473,7 +473,7 @@ switch ( preset ) {
                                         // All the other presets that need the radii to be estimated, by whatever means
 //      ThicknessFromMri    ->SetCheck ( BoolToCheck (  true ) );
 
-//      NumSolPoints        ->SetIntValue ( DefaultNumSolutionPoints );
+//      SetInteger  ( NumSolPoints, DefaultNumSolutionPoints );
 
                                         // Update processing flag if some inconsistency has been spotted
         char                    buff[ EditSizeText ];

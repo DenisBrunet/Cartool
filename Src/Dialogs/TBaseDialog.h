@@ -61,12 +61,7 @@ constexpr int       MaxFilesToOpen              = 10;
                                         // usually after et Set..., to forcefully restore the cursor to the rightmost position
 #define             ResetCaret                  SetSelection ( 10000, 10000 )
 
-                                        // functions-like macros to retrieve/set values from/to a owl::TEdit
-#define             SetIntValue(V)              SetText ( IntegerToString ( V ) )
-#define             SetDoubleValue(V)           SetText ( FloatToString ( V ) )
-
-                                        // New utilities to be favored, instead of poking around the transfer buffers!
-                                        // Used to access TEdit, TCheckBox and TRadioButton controls
+                                        // Utilities for easier access to dialog controls, without going through a transfer buffer
 inline  bool        IsEmpty     ( const owl::TEdit*         edit                )   { return edit->GetLineLength ( 0 ) == 0;    }
 inline  bool        IsNotEmpty  ( const owl::TEdit*         edit                )   { return ! IsEmpty ( edit );                }
 inline  bool        IsSpace     ( const owl::TEdit*         edit                )   { TFixedString<256> s; ; edit->GetText ( s, s.Size () ); return s.IsSpace (); }
@@ -124,12 +119,12 @@ constexpr char*     ValidatorOrientation        = "APLRIS";
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
                                         // Handy aliases for transfer buffer:
-using   TCheckBoxData       = UINT16;
-using   TRadioButtonData    = UINT16;
-using   TEditData           = char;
-using   TStaticData         = char;
-using   TListBoxData        = owl::TListBoxData;
-using   TComboBoxData       = owl::TComboBoxData;
+using               TCheckBoxData               = UINT16;
+using               TRadioButtonData            = UINT16;
+using               TEditData                   = char;
+using               TStaticData                 = char;
+using               TListBoxData                = owl::TListBoxData;
+using               TComboBoxData               = owl::TComboBoxData;
 
 
 /*                                      // For the record, this is the recommended initialization sequence for transfer buffers:
@@ -144,20 +139,20 @@ SetTransferBuffer ( &DerivedDialogTransfer );
 
 //----------------------------------------------------------------------------
                                         // List of available file types for saving EEG in Dialogs
-enum        SavingEegFileTypes
-            {
-            PresetFileTypeTxt,
-            PresetFileTypeEp,
-            PresetFileTypeEph,
-            PresetFileTypeSef,
-            PresetFileTypeBV,
-            PresetFileTypeEdf,
-            PresetFileTypeRis,
+enum                SavingEegFileTypes
+                    {
+                    PresetFileTypeTxt,
+                    PresetFileTypeEp,
+                    PresetFileTypeEph,
+                    PresetFileTypeSef,
+                    PresetFileTypeBV,
+                    PresetFileTypeEdf,
+                    PresetFileTypeRis,
 
-            NumSavingEegFileTypes,
-            PresetFileTypeDefaultEEG    = PresetFileTypeBV,
-            PresetFileTypeDefaultRIS    = PresetFileTypeRis,
-            };
+                    NumSavingEegFileTypes,
+                    PresetFileTypeDefaultEEG    = PresetFileTypeBV,
+                    PresetFileTypeDefaultRIS    = PresetFileTypeRis,
+                    };
 
 extern const char   SavingEegFileTypePreset[ NumSavingEegFileTypes ][ 64 ];
 extern const char   SavingEegFileExtPreset [ NumSavingEegFileTypes ][  8 ];
