@@ -210,11 +210,11 @@ NumFiles    = gogof.NumFiles ( gofi1, gofi2, filei1, filei2 );
                                         // now set default file indice if needed
 if ( filei1 == -1 || filei2 == -1 ) {
     filei1  = 0;
-    filei2  = gogof.GetMaxFiles ( gofi1, gofi2 ) - 1;
+    filei2  = gogof.GetMaxFilesPerGroup ( gofi1, gofi2 ) - 1;
     }
 
                                         // some more checking
-Clipped ( filei1, filei2, 0, gogof.GetMaxFiles ( gofi1, gofi2 ) - 1 );
+Clipped ( filei1, filei2, 0, gogof.GetMaxFilesPerGroup ( gofi1, gofi2 ) - 1 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -338,11 +338,11 @@ void    TMicroStates::ReadData  (   const TGoGoF&   gogof,          int         
                                         // now set default file indice if needed
 if ( filei1 == -1 || filei2 == -1 ) {
     filei1  = 0;
-    filei2  = gogof.GetMaxFiles ( gofi1, gofi2 ) - 1;
+    filei2  = gogof.GetMaxFilesPerGroup ( gofi1, gofi2 ) - 1;
     }
 
                                         // some more checking
-Clipped ( filei1, filei2, 0, gogof.GetMaxFiles ( gofi1, gofi2 ) - 1 );
+Clipped ( filei1, filei2, 0, gogof.GetMaxFilesPerGroup ( gofi1, gofi2 ) - 1 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

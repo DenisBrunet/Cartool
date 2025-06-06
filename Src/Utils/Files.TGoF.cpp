@@ -1934,7 +1934,7 @@ if ( ! AreGroupsEqual ( gofi1, gofi2 ) )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 int                 numgroups           = gofi2- gofi1 + 1;
-int                 maxfilespergroup    = GetMaxFiles ( gofi1, gofi2 );
+int                 maxfilespergroup    = GetMaxFilesPerGroup ( gofi1, gofi2 );
 TFileName           buff;
 
 
@@ -2789,7 +2789,7 @@ filenameonly.RemoveDir ();
 char*               tocut;
 
 for ( int gofi = 0; gofi < (int) filenameonly; gofi++ ) {
-
+           // you saw nothing...
     tocut   = const_cast<char*> ( StringContains  ( filenameonly[ gofi ], splitwith ) );
                                         // hopefully always the case...
     if ( tocut )
@@ -3773,7 +3773,7 @@ foreachin ( Group, iterator )
 }
 
                                         // max number of files in a range of group
-int     TGoGoF::GetMaxFiles ( int gofi1, int gofi2 )    const
+int     TGoGoF::GetMaxFilesPerGroup ( int gofi1, int gofi2 )    const
 {
 if ( NumGroups () == 0 )
     return  0;
@@ -3940,6 +3940,23 @@ return  maxgroupswithinsubjects;
 
 
 //----------------------------------------------------------------------------
+bool    TGoGoF::ContainsAny ( const TGoGoF& gogof ) const
+{
+if ( IsEmpty () || gogof.IsEmpty () )
+    return  false;
+
+
+TGoF                flatgogof       = gogof;
+
+for ( int gofi = 0; gofi < NumGroups (); gofi++ )
+    if ( Group[ gofi ]->ContainsAny ( flatgogof ) )
+        return  true;
+
+return  false;
+}
+
+
+//----------------------------------------------------------------------------
                                         // Converts <c> GoF's containing the <c> conditions for <n> subjects
                                         // into     <n> GoF's containing 1 subject <c> files
 void    TGoGoF::ConditionsToSubjects ( int gofi1, int gofi2, TGoGoF& outgogof )     const
@@ -3955,7 +3972,7 @@ CheckOrder ( gofi1, gofi2 );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                 maxfiles        = GetMaxFiles ( gofi1, gofi2 );
+int                 maxfiles        = GetMaxFilesPerGroup ( gofi1, gofi2 );
 
 
 for ( int fi = 0; fi < maxfiles; fi++ ) {
@@ -3984,7 +4001,7 @@ if ( IsEmpty () )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                 maxgroups       = GetMaxFiles ();   // max number of files in GoFs == max number of groups
+int                 maxgroups       = GetMaxFilesPerGroup ();   // max number of files in GoFs == max number of groups
 
 
 for ( int gi = 0; gi < maxgroups; gi++ )

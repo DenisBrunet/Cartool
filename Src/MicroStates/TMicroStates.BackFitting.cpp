@@ -1136,7 +1136,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
     groupsel.Set   ( gofi1, gofi2 );
 
                                         // needed for max allocations
-    int         maxfilespergroup    = gogof.GetMaxFiles ( gofi1, gofi2 );
+    int         maxfilespergroup    = gogof.GetMaxFilesPerGroup ( gofi1, gofi2 );
 
                                         // number of TF for the current group
     int         groupnumtf          = gogof.GetMaxNumTF ( gofi1, gofi2 );

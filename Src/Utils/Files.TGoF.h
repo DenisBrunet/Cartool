@@ -172,15 +172,15 @@ public:
                     TGoF ( const TGoGoF& gogof, const TGoF& gof );                                                                                                      // Same as above + another group
 
 
-    int             NumFiles        ()                          const;   
-    int             NumFiles        ( int filei1, int filei2 )  const;          // optional range that will be tested against current range
+    int             NumFiles                    ()                          const;   
+    int             NumFiles                    ( int filei1, int filei2 )  const;          // optional range that will be tested against current range
 
-                                        // virtual functions
-    void            Add             ( const char* file )                final;
-    void            Add             ( const char* file, long length )   final;
-    void            Add             ( const TGoF& gof );
+                                                    // virtual functions
+    void            Add                         ( const char* file )                final;
+    void            Add                         ( const char* file, long length )   final;
+    void            Add                         ( const TGoF& gof );
 
-    void            CheckFileNames  ( TFilenameFlags flags );
+    void            CheckFileNames              ( TFilenameFlags flags );
 
 
     bool            AllExtensionsAre            ( const char* exts, int atomtype = 0 /*UnknownAtomType*/ )    const;  // all files have extensions belonging to the list provided
@@ -201,38 +201,38 @@ public:
     int             GetMeanFileSize             ()                          const;
 
 
-    bool            CanOpenFiles    ( CanOpenFlags flags = CanOpenFileDefault )                 const;  // test all files can open
-    void            CopyFilesTo     ( const char*  newdir,  CopyToFlags flags, const char* buddyexts = 0 ); // copy the files
-    void            CopyFilesTo     ( const TGoF&  newlist, CopyToFlags flags, const char* buddyexts = 0 )  const;
-    void            DeleteFiles     ( const char* buddyexts = 0 )                               const;
-    void            NukeDirectories ( bool confirm = false )                                    const;
-    void            OpenFiles       ()                                                          const;
+    bool            CanOpenFiles                ( CanOpenFlags flags = CanOpenFileDefault )                 const;  // test all files can open
+    void            CopyFilesTo                 ( const char*  newdir,  CopyToFlags flags, const char* buddyexts = 0 ); // copy the files
+    void            CopyFilesTo                 ( const TGoF&  newlist, CopyToFlags flags, const char* buddyexts = 0 )  const;
+    void            DeleteFiles                 ( const char* buddyexts = 0 )                               const;
+    void            NukeDirectories             ( bool confirm = false )                                    const;
+    void            OpenFiles                   ()                                                          const;
 
 
-    void            RemoveDir       ();
-    void            RemoveFilename  ();
-    void            RemoveExtension ();
-    TGoF            GetPaths        ()  const;
+    void            RemoveDir                   ();
+    void            RemoveFilename              ();
+    void            RemoveExtension             ();
+    TGoF            GetPaths                    ()  const;
 
 
-    void            SetTempFileNames( int numfiles, const char* ext );  // generates only the file names
+    void            SetTempFileNames            ( int numfiles, const char* ext );  // generates only the file names
 
-    int             FindFiles       ( const char* templ, bool searchfiles = true );
-    int             GrepFiles       ( const char* path, const char* regexp, GrepOption options, bool searchfiles = true );
-    void            GrepGoF         ( const TGoF& gof, const char* prefilename, const char* postfilename, const char* newexts, bool allresults );
-    void            RevertGrepGoF   ( const TGoF& gof, const char* prefilename, const char* postfilename, const char* newexts );
-    void            KeepLatestFile  ();
-    void            ReplaceExtension( const char* newext );
-    void            GetCommonParts  ( char* commondir, char* commonstart, char* commonend, TStrings*    diffs ) const;
-    bool            GetCommonString ( char* base, bool includedir = true, bool includedifference = false )      const;
-    void            GetFilenamesSubRange    ( int& fromchars, int& tochars )                                    const;
+    int             FindFiles                   ( const char* templ, bool searchfiles = true );
+    int             GrepFiles                   ( const char* path, const char* regexp, GrepOption options, bool searchfiles = true );
+    void            GrepGoF                     ( const TGoF& gof, const char* prefilename, const char* postfilename, const char* newexts, bool allresults );
+    void            RevertGrepGoF               ( const TGoF& gof, const char* prefilename, const char* postfilename, const char* newexts );
+    void            KeepLatestFile              ();
+    void            ReplaceExtension            ( const char* newext );
+    void            GetCommonParts              ( char* commondir, char* commonstart, char* commonend, TStrings*    diffs ) const;
+    bool            GetCommonString             ( char* base, bool includedir = true, bool includedifference = false )      const;
+    void            GetFilenamesSubRange        ( int& fromchars, int& tochars )                                    const;
 
-    void            Sort            ()  final;
+    void            Sort                        ()  final;
 
-    void            SplitFreqFiles  ( SplitFreqFlags how, TGoGoF *gogofout = 0, bool showgauge = true );
-    void            Resample        ( ResamplingType resampling, int numresamples, int resamplingsize, const TGoF* gofalt, TGoGoF& resgogof, TGoGoF* resgogofalt );  // resampling into anoth group of files
-    int             SplitByNames    ( const char* splitwith, TGoGoF& gogofout, TStrings*    groupnames = 0 )        const;
-    void            SplitByEpochs   ( const char* greppedwith, int maxepochs, const char* dirprefix, TGoF& gofout ) const;
+    void            SplitFreqFiles              ( SplitFreqFlags how, TGoGoF *gogofout = 0, bool showgauge = true );
+    void            Resample                    ( ResamplingType resampling, int numresamples, int resamplingsize, const TGoF* gofalt, TGoGoF& resgogof, TGoGoF* resgogofalt );  // resampling into anoth group of files
+    int             SplitByNames                ( const char* splitwith, TGoGoF& gogofout, TStrings*    groupnames = 0 )        const;
+    void            SplitByEpochs               ( const char* greppedwith, int maxepochs, const char* dirprefix, TGoF& gofout ) const;
 
 
 //  char*           operator    []              ( int index )           { return TStrings::operator[] ( index ); }
@@ -252,75 +252,76 @@ void                CheckParameterCompatibility ( const TGoF& gof, TypeD& value,
 class   TGoGoF
 {
 public:
-                    TGoGoF ();
-                    TGoGoF ( int numgofs );
-                    TGoGoF ( const TGoF& gof );
-    virtual        ~TGoGoF ();          // class is derived
+                    TGoGoF                      ();
+                    TGoGoF                      ( int numgofs );
+                    TGoGoF                      ( const TGoF& gof );
+    virtual        ~TGoGoF                      ();          // class is derived
 
 
-    int             NumGroups       ()      const       { return    Group.Num (); }
-    int             NumFiles        ()      const;   
-    int             NumFiles        ( int gofi1, int gofi2, int filei1 = -1, int filei2 = -1 )  const;     // optional range that will be tested against the range of each group
-    bool            IsEmpty         ()      const       { return    Group.IsEmpty    (); }
-    bool            IsNotEmpty      ()      const       { return    Group.IsNotEmpty (); }
+    int             NumGroups                   ()      const       { return    Group.Num (); }
+    int             NumFiles                    ()      const;   
+    int             NumFiles                    ( int gofi1, int gofi2, int filei1 = -1, int filei2 = -1 )  const;     // optional range that will be tested against the range of each group
+    bool            IsEmpty                     ()      const       { return    Group.IsEmpty    (); }
+    bool            IsNotEmpty                  ()      const       { return    Group.IsNotEmpty (); }
 
 
-    bool            CheckGroupIndexes   ( int& gofi1, int& gofi2 )          const;  // test the range of indexes, used anywhere we have range parameters
-    int             GetMaxFiles         ( int gofi1 = -1, int gofi2 = -1 )  const;
-    bool            AreGroupsEqual      ( int gofi1 = -1, int gofi2 = -1 )  const;
-    bool            HasNoDuplicates     ()                                  const   { return TGoF ( *this ).HasNoDuplicates (); }
-    int             GetMaxGroupsWithinSubjects  ()                          const;
+    bool            CheckGroupIndexes           ( int& gofi1, int& gofi2 )          const;  // test the range of indexes, used anywhere we have range parameters
+    int             GetMaxFilesPerGroup         ( int gofi1 = -1, int gofi2 = -1 )  const;
+    bool            AreGroupsEqual              ( int gofi1 = -1, int gofi2 = -1 )  const;
+    bool            HasNoDuplicates             ()                                  const   { return TGoF ( *this ).HasNoDuplicates (); }
+    int             GetMaxGroupsWithinSubjects  ()                                  const;
+    bool            ContainsAny                 ( const TGoGoF& gogof )             const;
 
 
-    bool            AllExtensionsAre        ( const char* exts, int atomtype = 0 /*UnknownAtomType*/, int gofi1 = -1, int gofi2 = -1 )    const;
-    bool            SomeExtensionsAre       ( const char* exts /*, int atomtype = 0*/, int gofi1 = -1, int gofi2 = -1 )                   const;
-    bool            AnyTracksGroup          ( TracksGroupClass& tg, int gofi1 = -1, int gofi2 = -1 )                                const;
-    bool            AllFreqsGroup           ( int gofi1 = -1, int gofi2 = -1 )                                                      const;
-    void            AllTracksAreCompatible  ( TracksCompatibleClass& tc, int gofi1 = -1, int gofi2 = -1 )                           const;  // aims at testing Tracks files compatibility
-    void            AllFreqsAreCompatible   ( FreqsCompatibleClass&  fc, int gofi1 = -1, int gofi2 = -1 )                           const;  // aims at testing Frequency files compatibility
-    bool            AllSplitGroupsAreCompatible ()                                                                                  const;  // test that splitting into sub-groups is consistent
+    bool            AllExtensionsAre            ( const char* exts, int atomtype = 0 /*UnknownAtomType*/, int gofi1 = -1, int gofi2 = -1 )    const;
+    bool            SomeExtensionsAre           ( const char* exts /*, int atomtype = 0*/, int gofi1 = -1, int gofi2 = -1 )                   const;
+    bool            AnyTracksGroup              ( TracksGroupClass& tg, int gofi1 = -1, int gofi2 = -1 )                                const;
+    bool            AllFreqsGroup               ( int gofi1 = -1, int gofi2 = -1 )                                                      const;
+    void            AllTracksAreCompatible      ( TracksCompatibleClass& tc, int gofi1 = -1, int gofi2 = -1 )                           const;  // aims at testing Tracks files compatibility
+    void            AllFreqsAreCompatible       ( FreqsCompatibleClass&  fc, int gofi1 = -1, int gofi2 = -1 )                           const;  // aims at testing Frequency files compatibility
+    bool            AllSplitGroupsAreCompatible ()                                                                                      const;  // test that splitting into sub-groups is consistent
 
-    int             GetSumNumTF             ( int gofi1 = -1, int gofi2 = -1, bool verbose = false )    const;
-    int             GetMaxNumTF             ( int gofi1 = -1, int gofi2 = -1, bool verbose = false )    const;
-    double          GetSamplingFrequency    ()                                                          const;
-
-
-    bool            AllStringsGrep          ( const char* regexp, GrepOption options, int gofi1 = -1, int gofi2 = -1 )  const;  // true if all files of all groups Grep to true
-    bool            SimplifyFilenames       ( int gofi1, int gofi2, TGoF& gof )         const;
-    void            GetFilenamesSubRange    ( int& fromchars, int& tochars )            const;
+    int             GetSumNumTF                 ( int gofi1 = -1, int gofi2 = -1, bool verbose = false )    const;
+    int             GetMaxNumTF                 ( int gofi1 = -1, int gofi2 = -1, bool verbose = false )    const;
+    double          GetSamplingFrequency        ()                                                          const;
 
 
-    void            Reset           ();
-    void            Set             ( int numgofs );
-    void            Set             ( const TGoF& gof );
-
-    void            Add             ( const TGoF   *gof,   bool copy = false, long length = MaxPathShort );
-    void            Add             ( const TGoGoF& gogof, long length = MaxPathShort );
-
-    bool            RemoveLastGroup ();
-
-    void            RevertOrder             ();
-    void            ConditionsToSubjects    ( int gofi1, int gofi2, TGoGoF& outgogof )  const;
-    void            SubjectsToConditions    ( TGoGoF& outgogof )                        const;
+    bool            AllStringsGrep              ( const char* regexp, GrepOption options, int gofi1 = -1, int gofi2 = -1 )  const;  // true if all files of all groups Grep to true
+    bool            SimplifyFilenames           ( int gofi1, int gofi2, TGoF& gof )         const;
+    void            GetFilenamesSubRange        ( int& fromchars, int& tochars )            const;
 
 
-    void            Show            ( int gofi1, int gofi2, const char* title = 0 )     const;
-    void            Show            ( const char* title = 0 )                           const   { Show ( 0, NumGroups () - 1, title ); }
+    void            Reset                       ();
+    void            Set                         ( int numgofs );
+    void            Set                         ( const TGoF& gof );
+
+    void            Add                         ( const TGoF   *gof,   bool copy = false, long length = MaxPathShort );
+    void            Add                         ( const TGoGoF& gogof, long length = MaxPathShort );
+
+    bool            RemoveLastGroup             ();
+
+    void            RevertOrder                 ();
+    void            ConditionsToSubjects        ( int gofi1, int gofi2, TGoGoF& outgogof )  const;
+    void            SubjectsToConditions        ( TGoGoF& outgogof )                        const;
 
 
-    const TGoF&     GetFirst        ()  const                           { return   *Group.GetFirst (); }    // !Check group is not empty before calling!
-          TGoF&     GetFirst        ()                                  { return   *Group.GetFirst (); }
-    const TGoF&     GetLast         ()  const                           { return   *Group.GetLast  (); }    // !Check group is not empty before calling!
-          TGoF&     GetLast         ()                                  { return   *Group.GetLast  (); }
+    void            Show                        ( int gofi1, int gofi2, const char* title = 0 )     const;
+    void            Show                        ( const char* title = 0 )                           const   { Show ( 0, NumGroups () - 1, title ); }
 
 
-    void            CopyFilesTo     ( const char* newdir, CopyToFlags flags, const char* buddyexts = 0 ); // copy the files
-    void            DeleteFiles     ( const char* buddyexts = 0 )                       const;
-    void            NukeDirectories ( bool confirm = false )                            const;
+    const TGoF&     GetFirst                    ()  const                           { return   *Group.GetFirst (); }    // !Check group is not empty before calling!
+          TGoF&     GetFirst                    ()                                  { return   *Group.GetFirst (); }
+    const TGoF&     GetLast                     ()  const                           { return   *Group.GetLast  (); }    // !Check group is not empty before calling!
+          TGoF&     GetLast                     ()                                  { return   *Group.GetLast  (); }
 
 
-    void            GrepGoF         ( const TGoGoF& gogof, const char* prefilename, const char* postfilename, const char* newexts, bool allresults );
-    void            RevertGrepGoF   ( const TGoGoF& gogof, const char* prefilename, const char* postfilename, const char* newexts );
+    void            CopyFilesTo                 ( const char* newdir, CopyToFlags flags, const char* buddyexts = 0 ); // copy the files
+    void            DeleteFiles                 ( const char* buddyexts = 0 )                       const;
+    void            NukeDirectories             ( bool confirm = false )                            const;
+
+
+    void            GrepGoF                     ( const TGoGoF& gogof, const char* prefilename, const char* postfilename, const char* newexts, bool allresults );
+    void            RevertGrepGoF               ( const TGoGoF& gogof, const char* prefilename, const char* postfilename, const char* newexts );
 
 
     TGoGoF                                      ( const TGoGoF& op  );
@@ -331,8 +332,8 @@ public:
     const TGoF&     operator    []              ( int index )   const   { return *Group[ index ]; }
           TGoF&     operator    []              ( int index )           { return *Group[ index ]; }
 
-                    operator    int             ()              const   { return (int)  Group; }
-                    operator    bool            ()              const   { return (bool) Group; }
+    explicit        operator    int             ()              const   { return (int)  Group; }
+    explicit        operator    bool            ()              const   { return (bool) Group; }
                     operator    TList<TGoF>&    ()                      { return Group; }
 
 protected:

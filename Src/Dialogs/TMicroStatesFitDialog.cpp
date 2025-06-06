@@ -1095,7 +1095,7 @@ if ( ! sf.InitFile () )
 sf.WriteAttribute ( "numfiles" );
 
 
-int                 maxfiles        = GoGoF.GetMaxFiles ();
+int                 maxfiles        = GoGoF.GetMaxFilesPerGroup ();
 
 
 for ( int fi = 0; fi < maxfiles; fi++ )
@@ -1779,7 +1779,7 @@ if ( GoGoF.IsEmpty () )
     return;
                                         // retrieve the max # of files across specifed groups (used for matrix output)
                                         // OK for gofi1 == -1 / gofi2 == -1
-MaxFilesPerGroup    = GoGoF.GetMaxFiles    ( gofi1, gofi2 );
+MaxFilesPerGroup    = GoGoF.GetMaxFilesPerGroup ( gofi1, gofi2 );
 }
 
 
