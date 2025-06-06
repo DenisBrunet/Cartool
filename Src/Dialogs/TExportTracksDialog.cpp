@@ -776,17 +776,11 @@ StringShrink    ( roiname, match, min ( (int) ( 4 + StringLength ( roiname ) / 2
 
 /*
 TFileName           basename;
-char                buff     [ EditSizeValue ];
-int                 intimemin;
-int                 intimemax;
-
 
 StringCopy ( basename, "Export" );
 
-
-TimeMin->GetIntValue ( intimemin );
-TimeMax->GetIntValue ( intimemax );
-
+int                 intimemin       = GetInteger  ( TimeMin );
+int                 intimemax       = GetInteger  ( TimeMax );
 
 if ( CheckToBool ( TimeInterval->GetCheck() ) ) {
     if ( ! CheckToBool ( EndOfFile->GetCheck() ) )

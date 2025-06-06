@@ -1369,12 +1369,12 @@ switch ( Presets->GetSelIndex () ) {
 }
 
 
-char   *TTracksAveragingParamsDialog::TfToMs ( int tf, char *buff )
+TStringValue    TTracksAveragingParamsDialog::TFtoms ( int tf )
 {
-if ( TAvgTransfer.SamplingFrequency < 1 )
-    ClearString ( buff );
-else
-    sprintf ( buff, "%0d ms", Round ( TimeFrameToMilliseconds ( tf, TAvgTransfer.SamplingFrequency ) ) );
+TStringValue    buff;
+
+if ( TAvgTransfer.SamplingFrequency >= 1 )
+    buff    = IntegerToString ( Round ( TimeFrameToMilliseconds ( tf, TAvgTransfer.SamplingFrequency ) ) ) + " ms";
 
 return buff;
 }
@@ -1389,16 +1389,14 @@ char        buff[EditSizeValue];
 
 
 if ( CheckToBool ( BaselineCorr->GetCheck() ) ) {
-    int     pre, post;
-    BaselineCorrPre ->GetIntValue ( pre );
-    BaselineCorrPost->GetIntValue ( post );
+    int     pre     = GetInteger  ( BaselineCorrPre  );
+    int     post    = GetInteger  ( BaselineCorrPost );
 
     if ( pre > post  )   { tce.Enable ( false ); return; }
     }
 
 
-int     durtot;
-DurationTotal->GetIntValue ( durtot );
+int     durtot  = GetInteger  ( DurationTotal );
 
 tce.Enable ( durtot != 0 );
 }
@@ -1775,26 +1773,21 @@ tce.Enable ( CheckToBool ( SkipBadEpochs->GetCheck() ) );
 
 void    TTracksAveragingParamsDialog::EvEditPrePostChanged ()
 {
-char                buff [ EditSizeText ];
-int                 val1;
-int                 val2;
-
-DurationPre ->GetIntValue ( val1 );
-DurationPost->GetIntValue ( val2 );
-
-int         total   = val1 + val2;
+int                 val1            = GetInteger  ( DurationPre  );
+int                 val2            = GetInteger  ( DurationPost );
+int                 total           = val1 + val2;
 
 //if ( CheckToBool ( BaselineCorr->GetCheck() ) ) {
 
     BaselineCorrPre ->SetIntValue ( -val1 );
 //  BaselineCorrPost->SetIntValue (  val2 );
 
-    BaselineCorrPreMs ->SetText ( TfToMs ( -val1, buff ) );
-//  BaselineCorrPostMs->SetText ( TfToMs (  val2, buff ) );
+    BaselineCorrPreMs ->SetText ( TFtoms ( -val1 ) );
+//  BaselineCorrPostMs->SetText ( TFtoms (  val2 ) );
 //  }
 
 DurationTotal  ->SetIntValue ( total );
-DurationTotalMs->SetText ( TfToMs ( total, buff ) );
+DurationTotalMs->SetText ( TFtoms ( total ) );
 
 EvTFChanged ();
 }
@@ -1802,25 +1795,14 @@ EvTFChanged ();
 
 void    TTracksAveragingParamsDialog::EvTFChanged ()
 {
-char        buff [ EditSizeText ];
-int         val;
-
-TriggerFixedTFValue     ->GetIntValue ( val );
-TriggerFixedTFValueMs   ->SetText ( TfToMs (  val, buff ) );
-TriggerOffsetValue      ->GetIntValue ( val );
-TriggerOffsetValueMs    ->SetText ( TfToMs (  val, buff ) );
-DurationPre             ->GetIntValue ( val );
-DurationPreMs           ->SetText ( TfToMs (  val, buff ) );
-DurationPost            ->GetIntValue ( val );
-DurationPostMs          ->SetText ( TfToMs (  val, buff ) );
-DurationTotal           ->GetIntValue ( val );
-DurationTotalMs         ->SetText ( TfToMs (  val, buff ) );
-BaselineCorrPre         ->GetIntValue ( val );
-BaselineCorrPreMs       ->SetText ( TfToMs (  val, buff ) );
-BaselineCorrPost        ->GetIntValue ( val );
-BaselineCorrPostMs      ->SetText ( TfToMs (  val, buff ) );
-BaselineCorrPost        ->GetIntValue ( val );
-BaselineCorrPostMs      ->SetText ( TfToMs (  val, buff ) );
+TriggerFixedTFValueMs->SetText ( TFtoms ( GetInteger ( TriggerFixedTFValue ) ) );
+TriggerOffsetValueMs ->SetText ( TFtoms ( GetInteger ( TriggerOffsetValue  ) ) );
+DurationPreMs        ->SetText ( TFtoms ( GetInteger ( DurationPre         ) ) );
+DurationPostMs       ->SetText ( TFtoms ( GetInteger ( DurationPost        ) ) );
+DurationTotalMs      ->SetText ( TFtoms ( GetInteger ( DurationTotal       ) ) );
+BaselineCorrPreMs    ->SetText ( TFtoms ( GetInteger ( BaselineCorrPre     ) ) );
+BaselineCorrPostMs   ->SetText ( TFtoms ( GetInteger ( BaselineCorrPost    ) ) );
+BaselineCorrPostMs   ->SetText ( TFtoms ( GetInteger ( BaselineCorrPost    ) ) );
 }
 
 

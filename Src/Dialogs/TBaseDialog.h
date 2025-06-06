@@ -62,10 +62,6 @@ constexpr int       MaxFilesToOpen              = 10;
 #define             ResetCaret                  SetSelection ( 10000, 10000 )
 
                                         // functions-like macros to retrieve/set values from/to a owl::TEdit
-                                        // use it like:  TimeMin->GetIntValue ( timemin )
-                                        // !GetIntValue and GetDoubleValue assume a  char buff[..]  variable exists in the current scope - yes, not a good design!
-#define             GetIntValue(V)              GetText ( buff, EditSizeText ); V = atoi ( buff )
-#define             GetDoubleValue(V)           GetText ( buff, EditSizeText ); V = atof ( buff )
 #define             SetIntValue(V)              SetText ( IntegerToString ( V ) )
 #define             SetDoubleValue(V)           SetText ( FloatToString ( V ) )
 

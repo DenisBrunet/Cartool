@@ -348,7 +348,7 @@ protected:
 
 
     void                SetupWindow                     ()  final;
-    char*               TfToMs                          ( int tf, char *buff );
+    TStringValue        TFtoms                          ( int tf );
 
     void                EvPresetsChange                 ();
     void                EvFiltersChanged                ();

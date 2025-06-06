@@ -654,10 +654,9 @@ LockResampling  = true;
 
 TResampling         resampling;
 double              coverage;
-char                buff[ 256 ];
 
 
-ResamplingCoverage  ->GetDoubleValue ( coverage );
+coverage    = GetDouble ( ResamplingCoverage );
 
 coverage    = Clip ( coverage / 100, 0.0, 1.0 );
 
@@ -757,10 +756,9 @@ LockResampling  = true;
 
 TResampling         resampling;
 double              coverage;
-char                buff[ 256 ];
 
 
-ResamplingCoverage  ->GetDoubleValue ( coverage );
+coverage    = GetDouble ( ResamplingCoverage );
 
 coverage    = Clip ( coverage / 100, 0.0, 1.0 );
 

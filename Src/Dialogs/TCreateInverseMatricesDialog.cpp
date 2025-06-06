@@ -1393,9 +1393,8 @@ tce.Enable (    CrisTransfer.IsComputeLeadField ()
 void    TCreateInverseMatricesDialog::EvAgeChange ()
 {
 char                buff[ 256 ];
-double              age;
 
-LeadFieldTargetAge->GetDoubleValue ( age );
+LeadFieldTargetAge->GetText ( buff, 256 );
 
                                         // empty input? reset everything and get out
 if ( StringIsEmpty ( buff ) ) {
@@ -1409,6 +1408,8 @@ if ( ! IsInsideLimits ( StringToDouble ( CrisTransfer.LeadFieldTargetAge ), Skul
     return;
     }
 
+
+double              age             = GetDouble ( LeadFieldTargetAge );
                                         // age is OK, update conductivity and thickness from (human) curves
 double              skullcond       = AgeToSkullConductivity ( age );
 double              skullthickness  = AgeToSkullThickness    ( age );
