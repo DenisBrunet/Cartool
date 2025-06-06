@@ -33,6 +33,7 @@ limitations under the License.
 
 #include    "resource.h"
 
+#include    "Strings.TFixedString.h"
 #include    "Files.TGoF.h"
 #include    "WindowingUtils.h"
 
@@ -44,7 +45,7 @@ namespace crtl {
 //----------------------------------------------------------------------------
 
                                         // edit field for values (int and float)
-constexpr int       EditSizeValue               = 32;
+constexpr int       EditSizeValue               = StringValueLength;
                                         // edit field for strings, including file names
 constexpr int       EditSizeText                =  4 * KiloByte;
                                         // edit field for very long strings, especially enumeration of entities
@@ -72,32 +73,32 @@ constexpr int       MaxFilesToOpen              = 10;
                                         // Used to access TEdit, TCheckBox and TRadioButton controls
 inline  bool        IsEmpty     ( const owl::TEdit*         edit                )   { return edit->GetLineLength ( 0 ) == 0;    }
 inline  bool        IsNotEmpty  ( const owl::TEdit*         edit                )   { return ! IsEmpty ( edit );                }
-inline  bool        IsSpace     ( const owl::TEdit*         edit                )   { char buff[ 256 ]; edit->GetText ( buff, 256 ); return StringIsSpace ( buff ); }
+inline  bool        IsSpace     ( const owl::TEdit*         edit                )   { TFixedString<256> s; ; edit->GetText ( s, s.Size () ); return s.IsSpace (); }
 inline  bool        IsNotSpace  ( const owl::TEdit*         edit                )   { return ! IsSpace ( edit );                }
+inline  void        ClearText   (       owl::TEdit*         edit                )   { edit->Clear ();                           }
+inline  void        SetText     (       owl::TEdit*         edit,   const char* s ) { edit->SetText ( s );                      }
+inline  void        CopyText    ( owl::TEdit*   to,     const owl::TEdit*  from )   { TFixedString<EditSizeText> s; from->GetText ( s, s.Size () ); to->SetText ( s ); }
+inline  int         GetInteger  ( const owl::TEdit*         edit                )   { TStringValue  s; edit->GetText ( s, s.Size () ); return StringToInteger ( s ); }
+inline  double      GetDouble   ( const owl::TEdit*         edit                )   { TStringValue  s; edit->GetText ( s, s.Size () ); return StringToDouble  ( s ); }
+inline  void        SetInteger  (       owl::TEdit*         edit,   int    v    )   { edit->SetText ( IntegerToString ( v ) ); }
+inline  void        SetDouble   (       owl::TEdit*         edit,   double v    )   { edit->SetText ( FloatToString   ( v ) ); }
+
 
 inline  bool        IsChecked   ( const owl::TCheckBox*     chk                 )   { return CheckToBool ( chk->GetCheck () );  }
 inline  bool        IsNotChecked( const owl::TCheckBox*     chk                 )   { return ! IsChecked ( chk );               }
-inline  bool        IsChecked   ( const owl::TRadioButton*  rdb                 )   { return CheckToBool ( rdb->GetCheck () );  }
-inline  bool        IsNotChecked( const owl::TRadioButton*  rdb                 )   { return ! IsChecked ( rdb );               }
-
-inline  int         GetInteger  ( const owl::TEdit*         edit                )   { char buff[ EditSizeValue ]; edit->GetText ( buff, EditSizeValue ); return StringToInteger ( buff ); }
-inline  double      GetDouble   ( const owl::TEdit*         edit                )   { char buff[ EditSizeValue ]; edit->GetText ( buff, EditSizeValue ); return StringToDouble  ( buff ); }
-
-inline  void        Reset       (       owl::TEdit*         edit                )   { edit->Clear (); /*edit->SetText ( "" );*/ }
-inline  void        Copy        ( owl::TEdit*   to,     const owl::TEdit*  from )   { char buff[ EditSizeText ]; from->GetText ( buff, EditSizeText ); to->SetText ( buff ); }
-
 inline  void        SetCheck    (       owl::TCheckBox*     chk,    bool   s    )   { chk->SetCheck ( BoolToCheck ( s ) );      }
 inline  void        SetCheck    (       owl::TCheckBox*     chk                 )   { SetCheck ( chk, true  );                  }
 inline  void        ResetCheck  (       owl::TCheckBox*     chk                 )   { SetCheck ( chk, false );                  }
 inline  void        ToggleCheck (       owl::TCheckBox*     chk                 )   { SetCheck ( chk, ! IsChecked ( chk ) );    }
+
                                             // !be careful when forcing states of a radio button to also update all the other radio buttons that are parts of the same group!
+inline  bool        IsChecked   ( const owl::TRadioButton*  rdb                 )   { return CheckToBool ( rdb->GetCheck () );  }
+inline  bool        IsNotChecked( const owl::TRadioButton*  rdb                 )   { return ! IsChecked ( rdb );               }
 inline  void        SetCheck    (       owl::TRadioButton*  rdb,    bool   s    )   { rdb->SetCheck ( BoolToCheck ( s ) );      }
 inline  void        SetCheck    (       owl::TRadioButton*  rdb                 )   { SetCheck ( rdb, true  );                  }
 inline  void        ResetCheck  (       owl::TRadioButton*  rdb                 )   { SetCheck ( rdb, false );                  }
 inline  void        ToggleCheck (       owl::TRadioButton*  rdb                 )   { SetCheck ( rdb, ! IsChecked ( rdb ) );    }
 
-inline  void        SetInteger  (       owl::TEdit*         edit,   int    v    )   { char buff[ EditSizeValue ]; edit->SetText ( IntegerToString ( buff, v ) ); }
-inline  void        SetDouble   (       owl::TEdit*         edit,   double v    )   { char buff[ EditSizeValue ]; edit->SetText ( FloatToString   ( buff, v ) ); }
 
 inline  void        SetIndex    (       owl::TComboBox*     cmbb,   int    i    )   { cmbb->SetSelIndex ( i );                  }
 inline  void        SetIndex    (       owl::TComboBoxData& cmbbd,  int    i    )   { cmbbd.Select      ( i );                  }   // yes, this one has a different syntax

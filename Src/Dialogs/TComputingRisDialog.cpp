@@ -380,110 +380,110 @@ if ( CRISPresets[ esicase ].Flags == CRISPresetNone )
     return;
 
 
-//SpatialFilter           ->SetCheck ( BoolToCheck ( false ) );
+//ResetCheck  ( SpatialFilter );
 
-Rank                    ->SetCheck ( BoolToCheck ( false ) );
+ResetCheck  ( Rank );
 
-PositiveData            ->SetCheck ( BoolToCheck ( CRISPresets[ esicase ].IsNorm () ) );
-VectorData              ->SetCheck ( BoolToCheck ( CRISPresets[ esicase ].IsVect () ) );
+SetCheck    ( PositiveData, CRISPresets[ esicase ].IsNorm () );
+SetCheck    ( VectorData,   CRISPresets[ esicase ].IsVect () );
 
-RegAuto                 ->SetCheck ( BoolToCheck ( false ) );
-RegFixed                ->SetCheck ( BoolToCheck ( false ) );
-RegFixedEdit            ->SetText  ( DefaultRegularization );           // force the recommended mean value in case user switches to fixed
+ResetCheck  ( RegAuto   );
+ResetCheck  ( RegFixed  );
+SetText     ( RegFixedEdit, DefaultRegularization );   // force the recommended mean value in case user switches to fixed
 
-Envelope                ->SetCheck ( BoolToCheck ( false ) );           // force it off each time, for the moment
+ResetCheck  ( Envelope                  );                      // force it off each time, for the moment
 
-SavingIndividualFiles   ->SetCheck ( BoolToCheck ( false ) );
-if ( ! CRISPresets[ esicase ].IsEpochs () )                             // in case of Epochs preset, not resetting this button which is user's preference
-    SavingEpochFiles    ->SetCheck ( BoolToCheck ( false ) );
-ComputeGroupsAverages   ->SetCheck ( BoolToCheck ( false ) );
-ComputeGroupsCentroids  ->SetCheck ( BoolToCheck ( false ) );
-SavingZScoreFactors     ->SetCheck ( BoolToCheck ( true  ) );
+ResetCheck  ( SavingIndividualFiles     );
+if ( ! CRISPresets[ esicase ].IsEpochs () )                     // in case of Epochs preset, not resetting this button which is user's preference
+    ResetCheck  ( SavingEpochFiles );
+ResetCheck  ( ComputeGroupsAverages     );
+ResetCheck  ( ComputeGroupsCentroids    );
+SetCheck    ( SavingZScoreFactors       );
 
 
 switch ( esicase ) {
 
     case ComputingRisPresetErpGroupMeans:
 
-        RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
+        SetCheck    ( RegAuto );
 
-        SavingIndividualFiles   ->SetCheck ( BoolToCheck ( true ) );
+        SetCheck    ( SavingIndividualFiles );
         break;
 
     case ComputingRisPresetErpIndivMeans:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
-        RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
+      //SetCheck    ( SpatialFilter, ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
+        SetCheck    ( RegAuto );
                                         // only well structured data can have a global averaging
-        ComputeGroupsAverages   ->SetCheck ( BoolToCheck ( NumSubjects ( GoGoF ) > 1 ) );
-        SavingIndividualFiles   ->SetCheck ( BoolToCheck ( true ) );
+        SetCheck    ( ComputeGroupsAverages, NumSubjects ( GoGoF ) > 1 );
+        SetCheck    ( SavingIndividualFiles );
         break;
 
     case ComputingRisPresetErpIndivEpochs:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
-        RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
+      //SetCheck    ( SpatialFilter, ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
+        SetCheck    ( RegAuto );
                                         // only well structured data can have a global averaging
-        ComputeGroupsAverages   ->SetCheck ( BoolToCheck ( NumSubjects ( GoGoF ) > 1 ) );
-        SavingIndividualFiles   ->SetCheck ( BoolToCheck ( true ) );
+        SetCheck    ( ComputeGroupsAverages, NumSubjects ( GoGoF ) > 1 );
+        SetCheck    ( SavingIndividualFiles );
         break;
 
     case ComputingRisPresetErpSegClusters:
 
-        RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
-        Rank                    ->SetCheck ( BoolToCheck ( true  ) );
+        SetCheck    ( RegAuto );
+        SetCheck    ( Rank    );
                                         // only well structured data can have a global averaging
-        ComputeGroupsCentroids  ->SetCheck ( BoolToCheck ( true ) );
+        SetCheck    ( ComputeGroupsCentroids );
         break;
 
     case ComputingRisPresetErpFitClusters:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
-        RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
-        Rank                    ->SetCheck ( BoolToCheck ( true  ) );
+      //SetCheck    ( SpatialFilter, ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
+        SetCheck    ( RegAuto );
+        SetCheck    ( Rank    );
                                         // only well structured data can have a global averaging
-        ComputeGroupsCentroids  ->SetCheck ( BoolToCheck ( true ) );
+        SetCheck    ( ComputeGroupsCentroids );
         break;
 
 
     case ComputingRisPresetIndIndivEpochs:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
-        RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
+      //SetCheck    ( SpatialFilter, ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
+        SetCheck    ( RegAuto );
                                         // force it on each time
-        Envelope                ->SetCheck ( BoolToCheck ( true  ) );
+        SetCheck    ( Envelope );
                                         // only well structured data can have a global averaging
-        ComputeGroupsAverages   ->SetCheck ( BoolToCheck ( NumSubjects ( GoGoF ) > 1 ) );
-        SavingIndividualFiles   ->SetCheck ( BoolToCheck ( true ) );
-//      ComputeGroupsCentroids  ->SetCheck ( BoolToCheck ( true ) );
+        SetCheck    ( ComputeGroupsAverages, NumSubjects ( GoGoF ) > 1 );
+        SetCheck    ( SavingIndividualFiles  );
+//      SetCheck    ( ComputeGroupsCentroids );
         break;
 
 
     case ComputingRisPresetSpont:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
-        RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
+      //SetCheck    ( SpatialFilter, ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
+        SetCheck    ( RegAuto );
 
-        SavingIndividualFiles   ->SetCheck ( BoolToCheck ( true  ) );
-        ComputeGroupsCentroids  ->SetCheck ( BoolToCheck ( false ) );
+        SetCheck    ( SavingIndividualFiles  );
+        ResetCheck  ( ComputeGroupsCentroids );
         break;
 
     case ComputingRisPresetSpontClusters:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
-        RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
-        Rank                    ->SetCheck ( BoolToCheck ( true  ) );
+      //SetCheck    ( SpatialFilter, ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
+        SetCheck    ( RegAuto );
+        SetCheck    ( Rank    );
 
-        SavingIndividualFiles   ->SetCheck ( BoolToCheck ( false ) );
-        ComputeGroupsCentroids  ->SetCheck ( BoolToCheck ( true  ) );
+        ResetCheck  ( SavingIndividualFiles  );
+        SetCheck    ( ComputeGroupsCentroids );
         break;
 
 
     case ComputingRisPresetFreq:
 
-        RegFixed                ->SetCheck ( BoolToCheck ( true  ) );
+        SetCheck    ( RegFixed );
 
-        SavingIndividualFiles   ->SetCheck ( BoolToCheck ( true ) );
+        SetCheck    ( SavingIndividualFiles );
         break;
 
     }
@@ -759,7 +759,7 @@ UpdateGroupSummary ();
 //         || EegPresets->GetSelIndex () == ComputingRisPresetErpFitClusters
 //         || EegPresets->GetSelIndex () == ComputingRisPresetFreq            ) )
 //                                        // reset Spatial Filter if file names already contain .SpatialFilter
-//    SpatialFilter   ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
+//    SetCheck    ( SpatialFilter, ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles );
 }
 
 
@@ -805,7 +805,7 @@ else {
 //          || EegPresets->GetSelIndex () == ComputingRisPresetErpFitClusters
 //          || EegPresets->GetSelIndex () == ComputingRisPresetFreq          ) )
 //                                      // reset Spatial Filter if file names already contain .SpatialFilter
-//      SpatialFilter   ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
+//      SetCheck    ( SpatialFilter, ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles );
     }
 
 
@@ -924,8 +924,8 @@ if ( ComputingRisTransfer.IsInverseOK && ComputingRisTransfer.IsXyzOK && ! Compu
                                         // give priority to existing matrix
 //  ShowMessage ( "Clearing-up the existing Electrodes Coordinates...", ComputingRisTitle, ShowMessageWarning );
 
-    XyzFile         ->SetText ( "" );
-    SpatialFilter   ->SetCheck ( BoolToCheck ( false ) );
+    ClearText   ( XyzFile );
+    ResetCheck  ( SpatialFilter );
 
     ComputingRisTransfer.IsXyzOK             = false;
     ComputingRisTransfer.IsInverseAndXyzOK   = false;
@@ -937,8 +937,8 @@ if ( ComputingRisTransfer.IsInverseOK && ComputingRisTransfer.IsRoisOK && ! Comp
                                         // give priority to existing matrix
 //  ShowMessage ( "Clearing-up the existing ROIs...", ComputingRisTitle, ShowMessageWarning );
 
-    RoisFile    ->SetText ( "" );
-    ApplyRois   ->SetCheck ( BoolToCheck ( false ) );
+    ClearText   ( RoisFile );
+    ResetCheck  ( ApplyRois );
 
     ComputingRisTransfer.IsRoisOK            = false;
     ComputingRisTransfer.IsInverseAndRoisOK  = false;
@@ -1015,8 +1015,8 @@ if ( ComputingRisTransfer.IsXyzOK && ComputingRisTransfer.IsEegOK && ! Computing
                                         // give priority to existing EEG, which should be compatible with the matrix
 //  ShowMessage ( "Clearing-up the existing Electrodes Coordinates...", ComputingRisTitle, ShowMessageWarning );
 
-    XyzFile         ->SetText ( "" );
-    SpatialFilter   ->SetCheck ( BoolToCheck ( false ) );
+    ClearText   ( XyzFile );
+    ResetCheck  ( SpatialFilter );
 
     ComputingRisTransfer.IsXyzOK         = false;
     ComputingRisTransfer.IsXyzAndEegOK   = false;
@@ -1028,8 +1028,8 @@ if ( ComputingRisTransfer.IsXyzOK && ComputingRisTransfer.IsInverseOK && ! Compu
                                         // give priority to existing matrix
 //  ShowMessage ( "Clearing-up the existing Electrodes Coordinates...", ComputingRisTitle, ShowMessageWarning );
 
-    XyzFile         ->SetText ( "" );
-    SpatialFilter   ->SetCheck ( BoolToCheck ( false ) );
+    ClearText   ( XyzFile );
+    ResetCheck  ( SpatialFilter );
 
     ComputingRisTransfer.IsXyzOK             = false;
     ComputingRisTransfer.IsInverseAndXyzOK   = false;
@@ -1042,7 +1042,7 @@ XyzFile->ResetCaret;
 
 void    TComputingRisDialog::CmXyzEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( CheckToBool ( SpatialFilter->GetCheck () )
+tce.Enable ( IsChecked ( SpatialFilter )
           && EegPresets->GetSelIndex () != ComputingRisPresetFreq );
 }
 
@@ -1050,7 +1050,7 @@ tce.Enable ( CheckToBool ( SpatialFilter->GetCheck () )
 //----------------------------------------------------------------------------
 void    TComputingRisDialog::CmRegularizationEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( CheckToBool ( RegFixed->GetCheck () ) );
+tce.Enable ( IsChecked ( RegFixed ) );
 }
 
 
@@ -1101,8 +1101,8 @@ if ( ComputingRisTransfer.IsRoisOK && ComputingRisTransfer.IsInverseOK && ! Comp
                                         // give priority to existing matrix
 //  ShowMessage ( "Clearing-up the existing Electrodes Coordinates...", ComputingRisTitle, ShowMessageWarning );
 
-    RoisFile    ->SetText ( "" );
-    ApplyRois   ->SetCheck ( BoolToCheck ( false ) );
+    ClearText   ( RoisFile );
+    ResetCheck  ( ApplyRois );
 
     ComputingRisTransfer.IsRoisOK            = false;
     ComputingRisTransfer.IsInverseAndRoisOK  = false;
@@ -1134,20 +1134,20 @@ if ( CheckToBool ( ComputingRisTransfer.ApplyRois ) ) {
 
 void    TComputingRisDialog::CmRoisEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( CheckToBool ( ApplyRois->GetCheck() ) );
+tce.Enable ( IsChecked ( ApplyRois ) );
 }
 
 
 //----------------------------------------------------------------------------
 void    TComputingRisDialog::CmEnvelopeEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( ! CheckToBool ( VectorData->GetCheck () ) );
+tce.Enable ( IsNotChecked ( VectorData ) );
 }
 
 
 void    TComputingRisDialog::CmEnvelopeLowFreqEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( ! CheckToBool ( VectorData->GetCheck () ) && CheckToBool ( Envelope->GetCheck () ) );
+tce.Enable ( IsNotChecked ( VectorData ) && IsChecked ( Envelope ) );
 }
 
 
@@ -1171,26 +1171,26 @@ tce.Enable ( CRISPresets[ EegPresets->GetSelIndex () ].IsEpochs () );
 
 void    TComputingRisDialog::CmZScoreFactorsEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( CheckToBool ( TimeZScore->GetCheck () ) );
+tce.Enable ( IsChecked ( TimeZScore ) );
 }
 
 
 void    TComputingRisDialog::CmZScoreChange ()
 {
-if ( ! CheckToBool ( TimeZScore->GetCheck() ) )
+if ( IsNotChecked ( TimeZScore ) )
     return;
 
-if ( CheckToBool ( ComputeZScore->GetCheck() ) )
-    SavingZScoreFactors->SetCheck ( BoolToCheck ( true  ) );
+if ( IsChecked ( ComputeZScore ) )
+    SetCheck    ( SavingZScoreFactors );
 
-if ( CheckToBool ( LoadZScoreFile->GetCheck() ) )
-    SavingZScoreFactors->SetCheck ( BoolToCheck ( false ) );
+if ( IsChecked ( LoadZScoreFile ) )
+    ResetCheck  ( SavingZScoreFactors );
 }
 
 
 void    TComputingRisDialog::CmThresholdEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( CheckToBool ( Rank->GetCheck () ) );
+tce.Enable ( IsChecked ( Rank ) );
 }
 
 
@@ -1343,8 +1343,11 @@ else if ( areepochs ) {
     } // areepochs
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-else                            // all group at once
+
+else { // ERPs
+                                        // all group at once
     AddEegGroup ( gofeeg );
+    }
 
 
 InverseFile->ResetCaret;
@@ -1423,7 +1426,7 @@ if ( ComputingRisTransfer.IsEegOK && ComputingRisTransfer.IsInverseOK && ! Compu
 //  ShowMessage ( "Clearing-up the existing Inverse Matrix...", ComputingRisTitle, ShowMessageWarning );
 
     Inverses.Reset ();
-    InverseFile->SetText ( "" );
+    ClearText   ( InverseFile );
     ComputingRisTransfer.IsInverseOK = false;
     }
 
@@ -1432,8 +1435,8 @@ if ( ComputingRisTransfer.IsEegOK && ComputingRisTransfer.IsXyzOK && ! Computing
                                         // or asking? or silent?
 //  ShowMessage ( "Clearing-up the existing Electrodes Coordinates...", ComputingRisTitle, ShowMessageWarning );
 
-    XyzFile         ->SetText ( "" );
-    SpatialFilter   ->SetCheck ( BoolToCheck ( false ) );
+    ClearText   ( XyzFile );
+    ResetCheck  ( SpatialFilter );
 
     ComputingRisTransfer.IsXyzOK     = false;
     }
@@ -2206,9 +2209,9 @@ if ( IsChecked ( GroupSubj ) ) {
 UpdateHorizontalScroller ( GroupsSummary, maxlength );
 
 
-NumSubjectsEdit  ->SetIntValue ( numsubjects   );
-NumConditionsEdit->SetIntValue ( numconditions );
-NumInversesEdit  ->SetIntValue ( NumInverses   ( Inverses ) );
+SetInteger  ( NumSubjectsEdit,   numsubjects                );
+SetInteger  ( NumConditionsEdit, numconditions              );
+SetInteger  ( NumInversesEdit,   NumInverses ( Inverses )   );
 
 //SetBaseFilename ();
 }
@@ -2223,26 +2226,26 @@ ComputingRisPresetsEnum esicase         = (ComputingRisPresetsEnum) EegPresets  
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Updating dialog
-NumSubjectsEdit  ->SetIntValue ( NumSubjects   ( GoGoF    ) );
-NumConditionsEdit->SetIntValue ( NumConditions ( GoGoF    ) );
-NumInversesEdit  ->SetIntValue ( NumInverses   ( Inverses ) );
+SetInteger  ( NumSubjectsEdit  , NumSubjects   ( GoGoF    ) );
+SetInteger  ( NumConditionsEdit, NumConditions ( GoGoF    ) );
+SetInteger  ( NumInversesEdit  , NumInverses   ( Inverses ) );
 
 
-if      ( ! HasInverses ( Inverses )                    )   InverseFile->SetText ( InverseFileNone  );
-else if ( ! ComputingRisTransfer.IsInverseOK            )   InverseFile->SetText ( InverseFileNotOK );
-else if ( IsSingleTemplateInverse ( Inverses         )  )   InverseFile->SetText ( Inverses[ 0 ]    );
-else if ( AreIndividualInverses   ( Inverses, GoGoF  )  )   InverseFile->SetText ( InverseFileIndiv );
-else                                                        InverseFile->SetText ( NumInverses ( Inverses ) < NumSubjects ( GoGoF ) ? InverseFileTooFew : InverseFileTooMany );
+if      ( ! HasInverses ( Inverses )                    )   SetText ( InverseFile, InverseFileNone  );
+else if ( ! ComputingRisTransfer.IsInverseOK            )   SetText ( InverseFile, InverseFileNotOK );
+else if ( IsSingleTemplateInverse ( Inverses         )  )   SetText ( InverseFile, Inverses[ 0 ]    );
+else if ( AreIndividualInverses   ( Inverses, GoGoF  )  )   SetText ( InverseFile, InverseFileIndiv );
+else                                                        SetText ( InverseFile, NumInverses ( Inverses ) < NumSubjects ( GoGoF ) ? InverseFileTooFew : InverseFileTooMany );
 
 InverseFile->ResetCaret;
 
 
 if ( updategroups )
                                         // Setting Group Averages if more than 1 subject for a few presets
-    ComputeGroupsAverages->SetCheck ( BoolToCheck ( (    esicase == ComputingRisPresetErpIndivMeans 
-                                                      || esicase == ComputingRisPresetErpIndivEpochs
-                                                      || esicase == ComputingRisPresetIndIndivEpochs )
-                                                    && NumSubjects ( GoGoF ) > 1                       ) );
+    SetCheck    ( ComputeGroupsAverages, (    esicase == ComputingRisPresetErpIndivMeans 
+                                           || esicase == ComputingRisPresetErpIndivEpochs
+                                           || esicase == ComputingRisPresetIndIndivEpochs )
+                                         && NumSubjects ( GoGoF ) > 1                       );
 }
 
 

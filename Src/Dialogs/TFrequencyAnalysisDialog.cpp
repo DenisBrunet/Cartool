@@ -350,7 +350,7 @@ if ( ! BatchProcessing && sf ) {
         blocksize   = GetDefaultBlocksize ();
 
         if ( blocksize )    SetInteger  ( BlockSize, blocksize );
-        else                Reset       ( BlockSize );
+        else                ClearText   ( BlockSize );
         }
     else
         blocksize   = StringToInteger ( FrequencyAnalysisTransfer.BlockSize );
@@ -371,18 +371,18 @@ if ( ! BatchProcessing && sf && blocksize ) {
         SetDouble ( SaveFreqMin, 0 /*1*/ );
 
     if ( StringIsEmpty ( FrequencyAnalysisTransfer.SaveFreqMax ) )  // only reading existing transfer buffer
-        Copy    ( SaveFreqMax, FreqMax );
+        CopyText    ( SaveFreqMax, FreqMax );
 
     if ( ! IsSTransform ( CurrentPreset ) )
-        Copy    ( SaveFreqStep, FreqStep );
+        CopyText    ( SaveFreqStep, FreqStep );
     }
 //else {
-//    Reset ( SamplingFrequency );
-//    Reset ( FreqMin );
-//    Reset ( FreqMax );
-//    Reset ( FreqStep );
-//    Reset ( SaveFreqMin );
-//    Reset ( SaveFreqMax );
+//    ClearText ( SamplingFrequency );
+//    ClearText ( FreqMin );
+//    ClearText ( FreqMax );
+//    ClearText ( FreqStep );
+//    ClearText ( SaveFreqMin );
+//    ClearText ( SaveFreqMax );
 //    }
 
                                         // update everything, especially in batch mode
@@ -467,7 +467,7 @@ else
         ResetCheck  ( OpenAuto );
 
 //      SetInteger  ( TimeMin, 0 );
-//      Reset       ( TimeMax );
+//      ClearText   ( TimeMax );
 //      SetCheck    ( EndOfFile, EEGDoc == 0 );
 
     //  blocksize   = MaxInitBlockSize;
@@ -1257,15 +1257,15 @@ double              sf              = GetDouble ( SamplingFrequency );
 double              winint          = ComputeWindowsInterval ( sf, blocksize, overlap );
 
 if ( winint )
-    SetDouble ( WindowsInterval, winint );
+    SetDouble   ( WindowsInterval, winint );
 else
-    Reset ( WindowsInterval );
+    ClearText   ( WindowsInterval );
 
 
                                         // params uncheckables?
 if ( timenum <= 0 || blocksize < MinBlockSize /*|| !IsPower2 ( blocksize )*/ || IsChecked ( EndOfFile ) ) {
 
-    Reset ( NumBlocks );
+    ClearText   ( NumBlocks );
     UpdateFreqMinMaxStep ();
     return;
     }
@@ -1305,12 +1305,12 @@ double              sf              = GetDouble ( SamplingFrequency );
 
                                         // params uncheckables?
 if ( sf <= 0 || blocksize <= 0 ) {
-    Reset ( FreqMin );
-    Reset ( FreqMax );
-    Reset ( FreqStep );
-//  Reset ( SaveFreqMin );
-//  Reset ( SaveFreqMax );
-    Reset ( WindowsInterval );
+    ClearText   ( FreqMin );
+    ClearText   ( FreqMax );
+    ClearText   ( FreqStep );
+//  ClearText   ( SaveFreqMin );
+//  ClearText   ( SaveFreqMax );
+    ClearText   ( WindowsInterval );
     return;
     }
 
@@ -1318,9 +1318,9 @@ if ( sf <= 0 || blocksize <= 0 ) {
 double              winint          = ComputeWindowsInterval ( sf, blocksize, overlap );
 
 if ( winint )
-    SetDouble ( WindowsInterval, winint );
+    SetDouble   ( WindowsInterval, winint );
 else
-    Reset ( WindowsInterval );
+    ClearText   ( WindowsInterval );
 
 UpdateFreqMinMaxStep ();
 }
@@ -1363,11 +1363,11 @@ double              sf              = GetDouble ( SamplingFrequency );
                                         // do some checking
 if ( sf <= 0 || blocksize < MinBlockSize /*|| !IsPower2 ( blocksize )*/ ) {
 //if ( ! IsValidTime () ) {
-    Reset ( FreqMin );
-    Reset ( FreqMax );
-    Reset ( FreqStep );
-//  Reset ( SaveFreqMin );
-//  Reset ( SaveFreqMax );
+    ClearText   ( FreqMin );
+    ClearText   ( FreqMax );
+    ClearText   ( FreqStep );
+//  ClearText   ( SaveFreqMin );
+//  ClearText   ( SaveFreqMax );
     return;
     }
 
@@ -1440,9 +1440,9 @@ double              sf              = GetDouble ( SamplingFrequency );
 double              winint          = ComputeWindowsInterval ( sf, blocksize, overlap );
 
 if ( winint )
-    SetDouble ( WindowsInterval, winint );
+    SetDouble   ( WindowsInterval, winint );
 else
-    Reset ( WindowsInterval );
+    ClearText   ( WindowsInterval );
 
                                         // update window calculations
 CmTimeLimitsChange ();

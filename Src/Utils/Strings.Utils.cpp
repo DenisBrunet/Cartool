@@ -184,9 +184,9 @@ return  s;
 }
 
 
-TFixedString32  BoolToString ( bool b )
+TStringValue    BoolToString ( bool b )
 {
-TFixedString32      s;
+TStringValue        s;
 
 StringCopy  ( s, b ? "Yes" : "No" );
 
@@ -1049,9 +1049,9 @@ return  s;
 }
 
 
-TFixedString32  IntegerToString ( int i, int width )
+TStringValue    IntegerToString ( int i, int width )
 {
-TFixedString32      s;
+TStringValue        s;
 
 IntegerToString ( s, i, NoMore ( (int) s.MaxLength (), width ) );
 
@@ -1076,9 +1076,9 @@ return  s;
 }
 
 
-TFixedString32  TimeFrameToString ( int tf )
+TStringValue    TimeFrameToString ( int tf )
 {
-TFixedString32      s;
+TStringValue        s;
 
 TimeFrameToString ( s, tf );
 
@@ -1129,9 +1129,9 @@ return  s;
 }
 
 
-TFixedString32  FloatToString ( double f, int width, int precision )
+TStringValue    FloatToString ( double f, int width, int precision )
 {
-TFixedString32      s;
+TStringValue        s;
 
 FloatToString ( s, f, NoMore ( (int) s.MaxLength (), width ), precision );
 
@@ -1139,9 +1139,9 @@ return  s;
 }
 
 
-TFixedString32  FloatToString ( double f, int precision )
+TStringValue    FloatToString ( double f, int precision )
 {
-TFixedString32      s;
+TStringValue        s;
 
 FloatToString ( s, f, precision );
 
@@ -1149,9 +1149,9 @@ return  s;
 }
 
 
-TFixedString32  FloatToString ( double f )
+TStringValue    FloatToString ( double f )
 {
-TFixedString32      s;
+TStringValue        s;
 
 FloatToString ( s, f );
 

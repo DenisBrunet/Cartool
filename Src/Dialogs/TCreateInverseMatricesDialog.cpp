@@ -1399,8 +1399,8 @@ LeadFieldTargetAge->GetDoubleValue ( age );
 
                                         // empty input? reset everything and get out
 if ( StringIsEmpty ( buff ) ) {
-    Reset ( SkullConductivity  );
-    Reset ( SkullMeanThickness );
+    ClearText ( SkullConductivity  );
+    ClearText ( SkullMeanThickness );
     return;
     }
 

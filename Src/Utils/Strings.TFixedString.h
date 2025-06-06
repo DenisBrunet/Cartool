@@ -42,6 +42,7 @@ public:
     bool                    IsNotEmpty              ()                          const           { return *String != EOS;            }
     bool                    IsFull                  ()                          const           { return Length () == MaxLength (); }
     bool                    IsNotFull               ()                          const           { return Length () <  MaxLength (); }
+    bool                    IsSpace                 ()                          const           { return StringIsSpace ( String );  }
 
                                         // Wrapping calls and enforcing fixed size limit + null terminated
     void                    Clear                   ()                                          { ClearString  ( String, N );       }   // reset the whole array
