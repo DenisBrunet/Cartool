@@ -140,7 +140,6 @@ if ( CRISPresets[ esicase ].Flags == CRISPresetNone )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-GroupsLayoutEnum        grouplayout     = GroupsLayoutUnknown;
 int                     numsubjects     = 0;
 int                     numconditions   = 0;
 TGoGoF                  gogof;
@@ -148,7 +147,6 @@ TGoGoF                  gogof;
 if ( /*listfiles.IsEmpty () &&*/ gof.IsNotEmpty () ) {
                                         // files in the command-line are assumed to be from the same subject
                                         // we just have to differentiate between epochs and averages/spontaneous
-    grouplayout     = CRISPresets[ esicase ].IsEpochs () ? GroupsLayout1SubjAllCondAllEpochs : GroupsLayout1SubjAllCond;
     numsubjects     = 1;
     numconditions   = gof.NumFiles ();
     gogof           = gof;
@@ -156,9 +154,6 @@ if ( /*listfiles.IsEmpty () &&*/ gof.IsNotEmpty () ) {
 
 //else { // listfiles
 //    }
-
-if ( grouplayout == GroupsLayoutUnknown )
-    return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -274,7 +269,6 @@ string              prefix          = GetCLIOptionEnum ( computingris, __prefix 
 CreateConsole ();
 
 cout << "Preset:         "          << CRISPresets[ esicase ].Text << NewLine;
-cout << "Group Layout:   "          << GroupsLayoutString[ grouplayout ] << NewLine;
 cout << "Number subjects:"          << numsubjects << NewLine;
 cout << "Number conds.  :"          << numconditions << NewLine;
 cout << NewLine;
@@ -301,7 +295,7 @@ cout << NewLine;
 
 ComputingRis    (   esicase,
                     gogof,                  
-                    grouplayout,            numsubjects,            numconditions,
+                    numsubjects,            numconditions,
                     
                     inversefiles,           regularization,         backnorm,
                     datatypeepochs,         datatypefinal,

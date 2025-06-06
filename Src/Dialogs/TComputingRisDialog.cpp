@@ -38,49 +38,120 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-                                            // Global, persistent variables that will remain between calls
-TGoGoF          GoGoF;                      // Groups of Groups of EEG files
-TGoF            Inverses;                   // Groups of Inverse files
-int             NumSubjects         = 0;    // Computed from GoGoF
-int             NumConditions       = 0;
+                                        // Global, persistent variables that will remain between calls
+TGoGoF          GoGoF;                  // Groups of Groups of EEG files
+TGoF            Inverses;               // Groups of Inverse files
 
-int             NumInverses             ()  { return  (int)  Inverses; }
-bool            AreIndividualInverses   ()  { return  (bool) Inverses && NumInverses () == NumSubjects; }   // !these 2 tests are not mutually exclusive!
-bool            IsTemplateInverse       ()  { return  NumInverses () == 1; }
+                                        // Functions to be converted to methods at some points, hence the systematic parameters
+int             NumSubjects             ( const TGoGoF& gogof )                     { return  gogof.NumGroups ();       }   // 1 Group == 1 Subject
+int             NumConditions           ( const TGoF&   gof   );                                                            // !Accounts for epoch case!
+int             NumConditions           ( const TGoGoF& gogof );                                                            // !Accounts for epoch case!
+int             NumClusters             ( const TGoGoF& gogof )                     { return NumConditions ( gogof );   }   // Clusters == Conditions
+int             NumEpochs               ( const TGoF&   gof,   const char* fileprefix );
+int             NumEpochs               ( const TGoGoF& gogof, int subji, const char* fileprefix );
+
+
+bool            HasInverses             ( const TGoF&   gofi  )                     { return  (bool) gofi; }
+int             NumInverses             ( const TGoF&   gofi  )                     { return  gofi.NumFiles (); }
+bool            IsSingleTemplateInverse ( const TGoF&   gofi  )                     { return  HasInverses ( gofi ) && NumInverses ( gofi ) == 1;                        }   // !these 2 tests are not mutually exclusive!
+bool            AreIndividualInverses   ( const TGoF&   gofi, const TGoGoF& gogof ) { return  HasInverses ( gofi ) && NumInverses ( gofi ) == NumSubjects ( gogof );    }   // !these 2 tests are not mutually exclusive!
+
+
+//----------------------------------------------------------------------------
+int             NumConditions ( const TGoF& gof )
+{
+if ( gof.IsEmpty () )
+    return  0;
+
+bool                areepochs       = gof.AllStringsGrep ( InfixEpochConcatGrep, GrepOptionDefaultFiles );
+
+if ( areepochs ) {
+
+    TGoGoF          splitgogof;
+                                        // Default to split by our epoch name
+                                        // !Missing: splitting by "Concat" / "Concatenate" strings!
+    gof.SplitByNames ( "." InfixEpoch, splitgogof );
+
+    return  (int) splitgogof;
+    }
+else
+    return  gof.NumFiles  ();
+}
+
+
+int             NumConditions ( const TGoGoF& gogof )
+{
+if ( gogof.IsEmpty () )
+    return  0;
+
+//bool                areepochs       = gogof.AllStringsGrep ( InfixEpochConcatGrep, GrepOptionDefaultFiles );
+
+return  NumConditions ( gogof[ 0 ] );   // looking at first group should be good enough
+}
+
+
+int             NumEpochs ( const TGoF& gof, const char* fileprefix )
+{
+TGoGoF              splitgogof;
+                                        // Default to split by our epoch name
+                                        // !Missing: splitting by "Concat" / "Concatenate" strings!
+gof.SplitByNames ( "." InfixEpoch, splitgogof );
+
+return  splitgogof.NumFiles ();
+
+/*
+TGoF                gofsplitepochs;
+                                        // !The returned epochs can be any size, as specified by the markers themselves!
+                                        // !The Batch Averaging below also seems to not really care, taking the first file size for all epochs!
+                                        // ?We could add a fall-back option to split into blocks of known size?
+gof.SplitByEpochs ( InfixEpochConcatGrep, -1, fileprefix /*localfileprefix* /, gofsplitepochs );
+
+if ( gofsplitepochs.IsEmpty () )
+    return  0;
+*/
+}
+
+
+int             NumEpochs ( const TGoGoF& gogof, int subji, const char* fileprefix )
+{
+if ( ! IsInsideLimits ( subji, 0, NumSubjects ( gogof ) - 1 ) )
+    return  0;
+
+return  NumEpochs ( gogof[ subji ], fileprefix );
+}
 
 
 //----------------------------------------------------------------------------
 
-const char  GroupsLayoutString[ NumGroupsLayout ][ 64 ] =
-            {
-            "All Subjects, 1 Condition",
-            "1 Subject, All Conditions",
-            "1 Subject, All Epochs  AND  All Conditions",
-            };
-
-
 CRISPresetSpec  CRISPresets[ NumComputingRisPresets ] =
             {
-            {   ComputingRisPresetErpGroupMeans,    "ERP Data               - Grand Averages",                      (CRISPresetFlags) ( CRISPresetERP   | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetNorm,     GroupsLayout1SubjAllCond            },  // norm or vector doesn't matter
-            {   ComputingRisPresetErpIndivMeans,    "ERP Data               - Subjects' Averages",                  (CRISPresetFlags) ( CRISPresetERP   | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetVect,     GroupsLayoutAllSubj1Cond            },  // norm only, subjects dipoles vary too much even after ERP
-            {   ComputingRisPresetErpIndivEpochs,   "ERP Data               - Subjects' Epochs",                    (CRISPresetFlags) ( CRISPresetERP   | CRISPresetNorm | CRISPresetVect                                            | CRISPresetEpochs ),    CRISPresetVect,     GroupsLayout1SubjAllCondAllEpochs   },  // vector only, we need vectors from same SP to cancel each others
-            {   ComputingRisPresetErpSegClusters,   "ERP Data               - Clusters from Segmentation output",   (CRISPresetFlags) ( CRISPresetERP   | CRISPresetNorm | CRISPresetVect | CRISPresetClusters | CRISPresetCentroids                    ),    CRISPresetVect,     GroupsLayoutAllSubj1Cond            },  // norm or vector doesn't matter
-            {   ComputingRisPresetErpFitClusters,   "ERP Data               - Clusters from Fitting output",        (CRISPresetFlags) ( CRISPresetERP   | CRISPresetNorm | CRISPresetVect | CRISPresetClusters | CRISPresetCentroids                    ),    CRISPresetVect,     GroupsLayoutAllSubj1Cond            },  // norm only, vectors vary too much already within a subject, and worse across subjects
+            {   ComputingRisPresetErpGroupMeans,    "ERP Data               - Grand Averages",                      (CRISPresetFlags) ( CRISPresetERP   | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetNorm,     false     },  // norm or vector doesn't matter
+            {   ComputingRisPresetErpIndivMeans,    "ERP Data               - Subjects' Averages",                  (CRISPresetFlags) ( CRISPresetERP   | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetVect,     true      },  // norm only, subjects dipoles vary too much even after ERP
+            {   ComputingRisPresetErpIndivEpochs,   "ERP Data               - Subjects' Epochs",                    (CRISPresetFlags) ( CRISPresetERP   | CRISPresetNorm | CRISPresetVect                                            | CRISPresetEpochs ),    CRISPresetVect,     false     },  // vector only, we need vectors from same SP to cancel each others
+            {   ComputingRisPresetErpSegClusters,   "ERP Data               - Clusters from Segmentation output",   (CRISPresetFlags) ( CRISPresetERP   | CRISPresetNorm | CRISPresetVect | CRISPresetClusters | CRISPresetCentroids                    ),    CRISPresetVect,     false     },  // norm or vector doesn't matter
+            {   ComputingRisPresetErpFitClusters,   "ERP Data               - Clusters from Fitting output",        (CRISPresetFlags) ( CRISPresetERP   | CRISPresetNorm | CRISPresetVect | CRISPresetClusters | CRISPresetCentroids                    ),    CRISPresetVect,     false     },  // norm only, vectors vary too much already within a subject, and worse across subjects
 
-            {   ComputingRisPresetSeparator1,       "",                                                             CRISPresetNone,                                                                                                                           CRISPresetNone,     GroupsLayoutUnknown                 },
+            {   ComputingRisPresetSeparator1,       "",                                                             CRISPresetNone,                                                                                                                           CRISPresetNone,     false     },
                                                                                                                                                                                                               // Not sure about centroids here
-            {   ComputingRisPresetIndIndivEpochs,   "Induced Responses - Subjects' Epochs",                         (CRISPresetFlags) ( CRISPresetInd   | CRISPresetNorm                                       | CRISPresetCentroids | CRISPresetEpochs ),    CRISPresetNorm,     GroupsLayout1SubjAllCondAllEpochs   },  // norm only, we need to ditch out phase and keep only the power contribution
+            {   ComputingRisPresetIndIndivEpochs,   "Induced Responses - Subjects' Epochs",                         (CRISPresetFlags) ( CRISPresetInd   | CRISPresetNorm                                       | CRISPresetCentroids | CRISPresetEpochs ),    CRISPresetNorm,     false     },  // norm only, we need to ditch out phase and keep only the power contribution
 
-            {   ComputingRisPresetSeparator2,       "",                                                             CRISPresetNone,                                                                                                                           CRISPresetNone,     GroupsLayoutUnknown                 },
+            {   ComputingRisPresetSeparator2,       "",                                                             CRISPresetNone,                                                                                                                           CRISPresetNone,     false     },
                                                                                                                                                                         // vectorial spontaneous not really needed, but let's give the option
-            {   ComputingRisPresetSpont,            "Resting States        - Spontaneous Data",                     (CRISPresetFlags) ( CRISPresetSpont | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetNorm,     GroupsLayoutAllSubj1Cond            },
+            {   ComputingRisPresetSpont,            "Resting States        - Spontaneous Data",                     (CRISPresetFlags) ( CRISPresetSpont | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetNorm,     true      },
                                                                                                                                                                         // vectorial spontaneous centroids has not been tested - it checks polarity per solution point
-            {   ComputingRisPresetSpontClusters,    "Resting States        - Clusters from Fitting output",         (CRISPresetFlags) ( CRISPresetSpont | CRISPresetNorm | CRISPresetVect | CRISPresetClusters | CRISPresetCentroids                    ),    CRISPresetNorm,     GroupsLayoutAllSubj1Cond            },
+            {   ComputingRisPresetSpontClusters,    "Resting States        - Clusters from Fitting output",         (CRISPresetFlags) ( CRISPresetSpont | CRISPresetNorm | CRISPresetVect | CRISPresetClusters | CRISPresetCentroids                    ),    CRISPresetNorm,     false     },
 
-            {   ComputingRisPresetSeparator3,       "",                                                             CRISPresetNone,                                                                                                                           CRISPresetNone,     GroupsLayoutUnknown                 },
+            {   ComputingRisPresetSeparator3,       "",                                                             CRISPresetNone,                                                                                                                           CRISPresetNone,     false     },
 
-            {   ComputingRisPresetFreq,             "Frequency Data      - Complex results",                        (CRISPresetFlags) ( CRISPresetFreq  | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetNorm,     GroupsLayoutAllSubj1Cond            },
+            {   ComputingRisPresetFreq,             "Frequency Data      - Complex results",                        (CRISPresetFlags) ( CRISPresetFreq  | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetNorm,     true      },
             };
+
+                                        // Various messages for the InverseFile edit field
+constexpr char*     InverseFileNone         = ""; // "<No Inverse>";
+constexpr char*     InverseFileNotOK        = "<Inverse(s) Not OK!>";
+constexpr char*     InverseFileIndiv        = "<1 Inverse per Subject>";
+constexpr char*     InverseFileTooFew       = "<Too few Inverses..>";
+constexpr char*     InverseFileTooMany      = "<Too many Inverses..>";
 
 
 //----------------------------------------------------------------------------
@@ -95,9 +166,8 @@ EegPresets.Clear ();
 for ( int i = 0; i < NumComputingRisPresets; i++ )
     EegPresets.AddString ( CRISPresets[ i ].Text, i == ComputingRisPresetDefault );
 
-GroupPresets.Clear ();
-for ( int i = 0; i < NumGroupsLayout; i++ )
-    GroupPresets.AddString ( GroupsLayoutString[ i ], i == CRISPresets[ ComputingRisPresetDefault ].GroupsLayout );
+GroupCond       = BoolToCheck (   CRISPresets[ ComputingRisPresetDefault ].GroupCond );
+GroupSubj       = BoolToCheck ( ! CRISPresets[ ComputingRisPresetDefault ].GroupCond );
 
 GroupsSummary.Clear ();
 
@@ -113,7 +183,7 @@ SpatialFilter   = BoolToCheck ( ComputingRisPresetDefault == ComputingRisPresetE
                              || ComputingRisPresetDefault == ComputingRisPresetSpontClusters );
 ClearString     ( XyzFile );
 
-ClearString     ( InverseFile );
+StringCopy      ( InverseFile, InverseFileNone );
 PositiveData    = BoolToCheck ( CRISPresets[ ComputingRisPresetDefault ].IsNorm () );
 VectorData      = BoolToCheck ( CRISPresets[ ComputingRisPresetDefault ].IsVect () );
 RegAuto         = BoolToCheck ( true  );
@@ -171,8 +241,10 @@ DEFINE_RESPONSE_TABLE1 ( TComputingRisDialog, TBaseDialog )
 
     EV_CBN_SELCHANGE            ( IDC_RISPRESETS,               EvEegPresetsChange ),
 
-    EV_CBN_SELCHANGE            ( IDC_GROUPPRESETS,             EvGroupPresetsChange ),
-    EV_COMMAND_ENABLE           ( IDC_GROUPPRESETS,             CmGroupPresetsEnable ),
+    EV_COMMAND                  ( IDC_GROUPCOND,                EvGroupPresetsChange ),
+    EV_COMMAND                  ( IDC_GROUPSUBJ,                EvGroupPresetsChange ),
+    EV_COMMAND_ENABLE           ( IDC_GROUPCOND,                CmGroupPresetsEnable ),
+    EV_COMMAND_ENABLE           ( IDC_GROUPSUBJ,                CmGroupPresetsEnable ),
     EV_COMMAND_ENABLE           ( IDC_POSITIVEDATA,             CmDataTypeEnable ),
     EV_COMMAND_ENABLE           ( IDC_VECTORDATA,               CmDataTypeEnable ),
 
@@ -224,7 +296,8 @@ END_RESPONSE_TABLE;
 
 EegPresets              = new TComboBox     ( this, IDC_RISPRESETS );
 
-GroupPresets            = new TComboBox     ( this, IDC_GROUPPRESETS );
+GroupCond               = new TRadioButton  ( this, IDC_GROUPCOND );
+GroupSubj               = new TRadioButton  ( this, IDC_GROUPSUBJ );
 GroupsSummary           = new TListBox      ( this, IDC_GROUPSSUMMARY );
 NumSubjectsEdit         = new TEdit         ( this, IDC_NUMSUBJECTS,    EditSizeValue );
 NumConditionsEdit       = new TEdit         ( this, IDC_NUMCONDITIONS,  EditSizeValue );
@@ -263,23 +336,13 @@ SavingZScoreFactors     = new TCheckBox     ( this, IDC_SAVEZSCOREFACTORS );
 
 
 SetTransferBuffer ( dynamic_cast <TComputingRisStruct *> ( &ComputingRisTransfer ) );
-
-
-static bool     init    = true;
-
-if ( init ) {
-    init    = false;
-                                        // Internal variables
-    NumSubjects         = 0;
-    NumConditions       = 0;
-    }
 }
 
 
         TComputingRisDialog::~TComputingRisDialog ()
 {
 delete  EegPresets;
-delete  GroupPresets;
+delete  GroupCond;              delete  GroupSubj;
 delete  GroupsSummary;
 delete  NumSubjectsEdit;        delete  NumConditionsEdit;      delete  NumInversesEdit;
 delete  SpatialFilter;          delete  XyzFile;
@@ -302,8 +365,6 @@ void    TComputingRisDialog::SetupWindow ()
 TBaseDialog::SetupWindow ();
                                         // update controls with restored transfer buffer
 TransferData ( tdSetData );
-                                        // setting these 2 guys
-UpdateSubjectsConditions ( false );
                                         // ?
 //CheckEeg ();
 }
@@ -351,19 +412,19 @@ switch ( esicase ) {
 
     case ComputingRisPresetErpIndivMeans:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep ) );
+//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
         RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
                                         // only well structured data can have a global averaging
-        ComputeGroupsAverages   ->SetCheck ( BoolToCheck ( NumSubjects > 1 ) );
+        ComputeGroupsAverages   ->SetCheck ( BoolToCheck ( NumSubjects ( GoGoF ) > 1 ) );
         SavingIndividualFiles   ->SetCheck ( BoolToCheck ( true ) );
         break;
 
     case ComputingRisPresetErpIndivEpochs:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep ) );
+//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
         RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
                                         // only well structured data can have a global averaging
-        ComputeGroupsAverages   ->SetCheck ( BoolToCheck ( NumSubjects > 1 ) );
+        ComputeGroupsAverages   ->SetCheck ( BoolToCheck ( NumSubjects ( GoGoF ) > 1 ) );
         SavingIndividualFiles   ->SetCheck ( BoolToCheck ( true ) );
         break;
 
@@ -377,7 +438,7 @@ switch ( esicase ) {
 
     case ComputingRisPresetErpFitClusters:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep ) );
+//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
         RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
         Rank                    ->SetCheck ( BoolToCheck ( true  ) );
                                         // only well structured data can have a global averaging
@@ -387,12 +448,12 @@ switch ( esicase ) {
 
     case ComputingRisPresetIndIndivEpochs:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep ) );
+//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
         RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
                                         // force it on each time
         Envelope                ->SetCheck ( BoolToCheck ( true  ) );
                                         // only well structured data can have a global averaging
-        ComputeGroupsAverages   ->SetCheck ( BoolToCheck ( NumSubjects > 1 ) );
+        ComputeGroupsAverages   ->SetCheck ( BoolToCheck ( NumSubjects ( GoGoF ) > 1 ) );
         SavingIndividualFiles   ->SetCheck ( BoolToCheck ( true ) );
 //      ComputeGroupsCentroids  ->SetCheck ( BoolToCheck ( true ) );
         break;
@@ -400,7 +461,7 @@ switch ( esicase ) {
 
     case ComputingRisPresetSpont:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep ) );
+//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
         RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
 
         SavingIndividualFiles   ->SetCheck ( BoolToCheck ( true  ) );
@@ -409,7 +470,7 @@ switch ( esicase ) {
 
     case ComputingRisPresetSpontClusters:
                                         // check file names if it seems Spatial Filter was already applied?
-//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep ) );
+//      SpatialFilter           ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
         RegAuto                 ->SetCheck ( BoolToCheck ( true  ) );
         Rank                    ->SetCheck ( BoolToCheck ( true  ) );
 
@@ -434,19 +495,14 @@ switch ( esicase ) {
 static  ComputingRisPresetsEnum oldesicase  = ComputingRisPresetDefault;
 
                                         // quitting state -> save group layout, which user might have changed to his/her liking
-CRISPresets[ oldesicase ].GroupsLayout  = (GroupsLayoutEnum) GroupPresets->GetSelIndex ();
+CRISPresets[ oldesicase ].GroupCond     = IsChecked ( GroupCond );
 
-                                        // avoid storing weird case of Epochs if preset is not for epochs(?)
-//if ( ! CRISPresets[ oldesicase ].IsEpochs ()
-//  && CRISPresets[ oldesicase ].GroupsLayout == GroupsLayout1SubjAllCondAllEpochs )
-//
-//    CRISPresets[ oldesicase ].GroupsLayout  = GroupsLayoutDefault;
-
-                                        // getting ready for the next call
+                                        // storing for next call
 oldesicase  = esicase;
 
                                         // restore previous state
-GroupPresets->SetSelIndex ( CRISPresets[ esicase ].GroupsLayout );
+SetCheck    ( GroupCond,   CRISPresets[ esicase ].GroupCond );
+SetCheck    ( GroupSubj, ! CRISPresets[ esicase ].GroupCond );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -471,8 +527,7 @@ UpdateGroupSummary ();
 
 void    TComputingRisDialog::CmGroupPresetsEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( ! (   CRISPresets[ EegPresets->GetSelIndex () ].IsEpochs   ()
-                || CRISPresets[ EegPresets->GetSelIndex () ].IsClusters () ) );
+tce.Enable ( ! CRISPresets[ EegPresets->GetSelIndex () ].IsEpochs () );
 }
 
 
@@ -498,9 +553,9 @@ if ( ! sf.InitFile () )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                 numgroups           = GoGoF.NumGroups   ();
-int                 maxfiles            = GoGoF.GetMaxFiles ();
-bool                individualinverses  = AreIndividualInverses ();
+int                 numgroups           = GoGoF.NumGroups           ();
+int                 maxfiles            = GoGoF.GetMaxFilesPerGroup ();
+bool                individualinverses  = AreIndividualInverses ( Inverses, GoGoF );
 
                                         // header line describes the attributes / fields
 sf.WriteAttribute ( "numfiles" );
@@ -508,7 +563,7 @@ sf.WriteAttribute ( "numfiles" );
 for ( int fi = 0; fi < maxfiles; fi++ )
     sf.WriteAttribute ( "file", fi + 1 );
 
-if ( individualinverses && Is1Group1Subject () )
+if ( individualinverses )
     sf.WriteAttribute ( "inverse" );
 
 sf.WriteNextRecord ();
@@ -530,28 +585,8 @@ for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
         sf.WriteAttribute ( "" );
 
                                         // add a column to the subject?
-    if ( individualinverses && Is1Group1Subject () )
+    if ( individualinverses )
         sf.WriteAttribute ( Inverses[ gogofi ] );
-
-
-    sf.WriteNextRecord ();
-    }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Add a single row, for all subjects?
-if ( individualinverses && Is1Group1Condition () ) {
-
-                                        // write number of inverses
-    sf.WriteAttribute ( NumInverses () );
-
-                                        // write all files
-    for ( int fi = 0; fi < NumInverses (); fi++ )
-        sf.WriteAttribute ( Inverses[ fi ] );
-
-                                        // complete line with empty attributes
-    for ( int fi = NumInverses (); fi < maxfiles; fi++ )
-        sf.WriteAttribute ( "" );
 
 
     sf.WriteNextRecord ();
@@ -638,9 +673,9 @@ if ( ! firstread ) {
     char            answer      = GetOptionFromUser ( "Do you want to append the new data as (S)ubjects, or as (C)onditions?",
                                                       "Appending Data", "S C", "" );
                                         // appending rows is the natural way
-    appendrows  =                          answer == EOS
-               || Is1Group1Subject   () && answer == 'S'
-               || Is1Group1Condition () && answer == 'C';
+    appendrows  =                            answer == EOS
+               || IsChecked ( GroupSubj ) && answer == 'S'
+               || IsChecked ( GroupCond ) && answer == 'C';
     }
 
 
@@ -770,7 +805,7 @@ else {
 //          || EegPresets->GetSelIndex () == ComputingRisPresetErpFitClusters
 //          || EegPresets->GetSelIndex () == ComputingRisPresetFreq          ) )
 //                                      // reset Spatial Filter if file names already contain .SpatialFilter
-//      SpatialFilter   ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep ) );
+//      SpatialFilter   ->SetCheck ( ! GoGoF.AllStringsGrep ( PostfixSpatialGrep, GrepOptionDefaultFiles ) );
     }
 
 
@@ -1199,13 +1234,14 @@ bool                areepochs       = gofeeg.AllStringsGrep ( InfixEpochConcatGr
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( areclusters ) {
+                                        // A lot is going on here so to give the user a lot of freedom in how he/she drops new groups of files
+
                                         // Clusters can have any numbers now, as long as all groups are equal
-    #define             MaxRisClusters  1000
-    TGoGoF              gogof ( MaxRisClusters );
-    TSelection          selcl ( MaxRisClusters, OrderSorted );
+    constexpr int       MaxRisClusters      = 1000;
+    TGoGoF              gogofc ( MaxRisClusters );
+    TSelection          selcl  ( MaxRisClusters, OrderSorted );
     TStringGrep         grepcl;
     TStrings            matched;
-    int                 numclusters;
 
                                         // scan all files, dispatch them by cluster numbers, which can be totally arbitrary
     for ( int i = 0; i < (int) gofeeg; i++ ) {
@@ -1218,72 +1254,83 @@ if ( areclusters ) {
 
             selcl.Set ( clusteri );
 
-            gogof[ clusteri ].Add ( gofeeg ( i ) );
-            
-//            DBGV ( clusteri, matched ( 0 ) );
+            gogofc[ clusteri ].Add ( gofeeg ( i ) );
             }
         else
-            ShowMessage ( "File doesn't seem to be a proper Cluster file," NewLine 
-                          "skipping it...", gofeeg ( i ), ShowMessageWarning );
+            ShowMessage ( "File name seems to indiciate that this is not a proper Cluster file." NewLine 
+                          "Skipping file...", gofeeg ( i ), ShowMessageWarning );
         }
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Check new groups
-    int             maxfilespercluster  = gogof.GetMaxFiles ();
+                                        // Check if new groups are consistents within themselves
+    int                 maxfilespercluster  = gogofc.GetMaxFilesPerGroup ();
 
     for ( TIteratorSelectedForward cli ( selcl ); (bool) cli; ++cli ) {
-
-//        gogof[ cli() ].Show ( IntegerToString ( cli() ) );
-
                                         // Check all groups have the same number of files among themselves
-        if ( gogof[ cli() ].NumFiles () != maxfilespercluster ) {
+        if ( gogofc[ cli() ].NumFiles () != maxfilespercluster ) {
             char        buff[ 256 ];
             StringCopy  ( buff, "Cluster ", IntegerToString ( cli() ), " is missing some files..." NewLine "Check you didn't forget some files, or put some outliers..." );
             ShowMessage ( buff, ComputingRisTitle, ShowMessageWarning );
             return;
             }
+        }
 
-                                        // check if groups already exist, and if we find duplicate files
-        if ( cli.GetIndex () < GoGoF.NumGroups () && GoGoF[ cli.GetIndex () ].ContainsAny ( gogof[ cli() ] ) ) {
-            ShowMessage ( "It seems you are trying to add already existing files!" NewLine 
-                          "Please check again your files...", ComputingRisTitle, ShowMessageWarning );
-            return;
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Check if new files already exist
+    if ( GoGoF.ContainsAny ( gogofc ) ) {
+        
+        ShowMessage ( "It seems you are trying to add files already included!" NewLine 
+                      "Please check again your files...", ComputingRisTitle, ShowMessageWarning );
+        return;
+        }
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Early check on the number of dropped files
+    if ( GoGoF.IsNotEmpty () ) {
+
+        if      ( IsChecked ( GroupSubj ) ) {
+
+            int                 numselclusters  = selcl.NumSet ();
+
+            if ( numselclusters != NumClusters ( GoGoF ) ) {
+                ShowMessage ( "It seems you are trying to add a different number of clusters!" NewLine 
+                              "Please check again your files...", ComputingRisTitle, ShowMessageWarning );
+                return;
+                }
+            }
+
+        else if ( IsChecked ( GroupCond ) ) {
+
+            int                 numselsubjects  = gogofc[ selcl.FirstSelected () ];
+
+            if ( numselsubjects != NumSubjects ( GoGoF ) ) {
+                ShowMessage ( "It seems you are trying to add a different number of subjects!" NewLine 
+                              "Please check again your files...", ComputingRisTitle, ShowMessageWarning );
+                return;
+                }
             }
         }
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Adding subjects or conditions need to be handled differently
+    if      ( IsChecked ( GroupSubj ) ) {
+                                        // transpose groups to have subjects first
+        TGoGoF              gogofs;
+        gogofc.ConditionsToSubjects ( 0, gogofc.NumGroups () - 1, gogofs );
 
-    numclusters     = selcl.NumSet ();
-
-
-    if ( GoGoF.IsNotEmpty () && numclusters != GoGoF.NumGroups () ) {
-        ShowMessage ( "It seems you are trying to add a different number of clusters!" NewLine 
-                      "Please check again your files...", ComputingRisTitle, ShowMessageWarning );
-        return;
+                                            // insert checked and reordered groups of files
+        for ( int si = 0; si < (int) gogofs; si++ )
+            AddEegGroup ( gogofs[ si ] );
         }
 
-                                        // try to be smart: if user is dropping a set of files with the same # of conditions, that most probably mean adding more subjects to existing groups...
-    bool        updatingtogroups    = GoGoF.IsNotEmpty (); // numclusters == GoGoF.NumGroups ();
-
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    for ( TIteratorSelectedForward cli ( selcl ); (bool) cli; ++cli ) {
-                                        // updating an existing GoGoF could be wrong, if the same number of groups is used, but they actually differ
-        if ( updatingtogroups )     GoGoF[ cli.GetIndex () ].Add ( gogof[ cli() ] );
-        else                        AddEegGroup                  ( gogof[ cli() ] );
-        }
-
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // "manually" updating the groups, bypassing checks for the moment
-    if ( updatingtogroups ) {
-
-        UpdateSubjectsConditions ();
-
-        UpdateGroupSummary ();
+    else if ( IsChecked ( GroupCond ) ) {
+                                        // no need to transpose, adding subjects
+        for ( TIteratorSelectedForward cli ( selcl ); (bool) cli; ++cli )
+            AddEegGroup ( gogofc[ cli() ] );
         }
 
     } // areclusters
@@ -1291,12 +1338,6 @@ if ( areclusters ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 else if ( areepochs ) {
-                                // force change file organization
-//  if ( ! CRISPresets[ EegPresets->GetSelIndex () ].IsEpochs () ) {
-//      EegPresets  ->SetSelIndex ( ComputingRisPresetErpIndivEpochs  );
-//      GroupPresets->SetSelIndex ( GroupsLayout1SubjAllCondAllEpochs );
-//      EvEegPresetsChange ();
-//      }
 
     AddEegGroup ( gofeeg );
     } // areepochs
@@ -1315,43 +1356,31 @@ void    TComputingRisDialog::AddEegGroup ( const TGoF& gofeeg )
 {
                                         // We enforce stronger compatibilities whthin groups, allowing only identical number of subjects or conditions
                                         // Checked are done before CheckEeg, which otherwise will find subgroups by itself
-if ( (bool) GoGoF ) {
 
-    GroupsLayoutEnum        grouplayout     = (GroupsLayoutEnum) GroupPresets->GetSelIndex ();
+int             gofnumsubj      = IsChecked ( GroupCond ) ? gofeeg.NumFiles  () : 1;
+int             gofnumcond      = IsChecked ( GroupSubj ) ? gofeeg.NumFiles  () : 1;
 
-//                                      // the only preset that can have different number of conditions - might turn this feature off, though
-//  if      ( grouplayout == ComputingRisPresetErpGroupMeans )
-//      ;
-//  else
-                                        // epochs are a bit tricky, it needs some massaging to retrieve the number of conditions as there can be more files than conds
-    if      ( grouplayout == GroupsLayout1SubjAllCondAllEpochs ) {
 
-        TGoGoF              splitgogof;
-                                      // Default to split by our epoch name
-        gofeeg    .SplitByNames ( "." InfixEpoch, splitgogof );
+if ( IsChecked ( GroupSubj ) 
+  && NumConditions ( GoGoF  ) > 0 
+  && gofnumcond != NumConditions ( GoGoF ) ) {
 
-        int                 numconds        = (int) splitgogof;
+    ShowMessage ( "Not the same number of conditions!", ComputingRisTitle, ShowMessageWarning );
+    return;
+    }
 
-        if ( numconds != NumConditions )   {
 
-            ShowMessage ( "Not the same number of conditions!", ComputingRisTitle, ShowMessageWarning );
+if ( IsChecked ( GroupCond ) 
+  && NumSubjects ( GoGoF ) > 0 
+  && gofnumsubj != NumSubjects ( GoGoF ) ) {
 
-            return;
-            }
-        }
-
-    else if ( gofeeg.NumFiles () != GoGoF[ 0 ].NumFiles () ) {
-
-        ShowMessage ( grouplayout == GroupsLayout1SubjAllCond   ? "Not the same number of conditions!" 
-                                                                : "Not the same number of subjects!", ComputingRisTitle, ShowMessageWarning );
-
-        return;
-        }
+    ShowMessage ( "Not the same number of subjects!", ComputingRisTitle, ShowMessageWarning );
+    return;
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // We have new values now!
+                                        // Force refresh
 UpdateSubjectsConditions ();
 
 
@@ -1360,7 +1389,21 @@ UpdateSubjectsConditions ();
 TransferData ( tdGetData );
 
                                         // temporarily adding this GoF
-GoGoF.Add ( &gofeeg, true, MaxPathShort );
+if      ( IsChecked ( GroupSubj ) ) {
+                                        // Received a single subject - just append it
+    GoGoF.Add ( &gofeeg, true, TFilenameSize );
+    }
+
+else if ( IsChecked ( GroupCond ) ) {
+                                        // Receive a group of subject - we need to transpose and copy
+    if ( GoGoF.IsEmpty () )             // First time only: adding subjects' groups
+        for ( int fi = 0; fi < gofnumsubj; fi++ )
+            GoGoF.Add ( new TGoF, false );
+
+
+    for ( int fi = 0; fi < gofnumsubj; fi++ )
+        GoGoF[ fi ].Add ( gofeeg[ fi ], MaxPathShort );
+    }
 
                                         // then checking all the groups together
 CheckEeg ();
@@ -1405,7 +1448,18 @@ if ( ComputingRisTransfer.IsEegOK /*&& ComputingRisTransfer.IsInverseAndEegOK*/ 
     UpdateGroupSummary ();
     }
 else {
-    GoGoF.RemoveLastGroup ();
+    //GoGoF.RemoveLastGroup ();
+
+
+    if ( true /* IsChecked ( GroupSubj ) */ )
+        GoGoF.RemoveLastGroup ();
+    else /*if ( IsChecked ( GroupCond ) )*/ {
+        for ( int si = 0; si < GoGoF.NumGroups (); si++ )
+            GoGoF[ si ].RemoveLast ();
+
+        if ( GoGoF[ 0 ].NumFiles () == 0 ) GoGoF.Reset ();
+        }
+
 
     UpdateSubjectsConditions ();
     }
@@ -1423,18 +1477,18 @@ if ( ! GoGoF.RemoveLastGroup () )
     return;
 
 
-if  ( (bool) Inverses ) {
+if  ( HasInverses ( Inverses ) ) {
 
-    if      ( AreIndividualInverses () && Is1Group1Subject   () )
+    if      ( IsChecked ( GroupSubj ) && AreIndividualInverses ( Inverses, GoGoF ) )
                                         // removed a subject -> remove last inverse
         Inverses.RemoveLast ();
 
-    else if ( Is1Group1Condition () && GoGoF.IsEmpty () )
+    else if ( IsChecked ( GroupCond ) && GoGoF.IsEmpty () )
                                         // removed last conditions (and therefor subjects, too) -> remove all inverses
         Inverses.Reset ();
 
 
-    if ( NumInverses () == 0 )
+    if ( ! HasInverses ( Inverses ) )
         ComputingRisTransfer.IsInverseOK = false;
     }
 
@@ -1481,7 +1535,7 @@ ClearString ( InverseFile );
                                         // getting number of tracks is also possible with IS file
 
                                         // no files? try again
-if ( Inverses.IsEmpty () )
+if ( ! HasInverses ( Inverses ) )
     return;
 
 
@@ -1523,12 +1577,12 @@ else if ( CompatInverse.NumSolPoints == CompatibilityIrrelevant ) {
                                         // Here matrices are OK by themselves
 IsInverseOK         = true;
 
-
-if      ( NumInverses () == 0       )                       ClearString ( InverseFile );
-else if ( ! IsInverseOK             )                       StringCopy  ( InverseFile, "<Inverses Not OK!>" );
-//else if ( IsEegOK && IsInverseOK && ! IsInverseAndEegOK )   ClearString ( InverseFile );
-else if ( IsTemplateInverse ()      )                       StringCopy  ( InverseFile, Inverses[ 0 ] );
-else if ( AreIndividualInverses ()  )                       StringCopy  ( InverseFile, "<Subjects Inverses>" );
+if      ( ! HasInverses ( Inverses )                    )   StringCopy  ( InverseFile, InverseFileNone  );
+else if ( ! IsInverseOK                                 )   StringCopy  ( InverseFile, InverseFileNotOK );
+//else if ( IsEegOK && IsInverseOK && ! IsInverseAndEegOK ) ClearString ( InverseFile );
+else if ( IsSingleTemplateInverse ( Inverses         )  )   StringCopy  ( InverseFile, Inverses[ 0 ]    );
+else if ( AreIndividualInverses   ( Inverses, GoGoF  )  )   StringCopy  ( InverseFile, InverseFileIndiv );
+else                                                        StringCopy  ( InverseFile, NumInverses ( Inverses ) < NumSubjects ( GoGoF ) ? InverseFileTooFew : InverseFileTooMany );
 }
 
 
@@ -1644,7 +1698,7 @@ if (   freqgroup && esicase != ComputingRisPresetFreq ) {
 
                                         // Update preset for the user, and clean-up EEGs - usage will tell if this is bothersome
 
-    TGoF*               copylastgof     = new TGoF ( GoGoF.GetLast () );
+    const TGoF*         copylastgof     = new TGoF ( GoGoF.GetLast () );
 
     CmClearEegGroups ();    // deleting all - needs to reintroduce the last gof, though
 
@@ -1665,7 +1719,7 @@ if ( ! freqgroup && esicase == ComputingRisPresetFreq ) {
 
                                         // Update preset for the user, and clean-up EEGs - usage will tell if this is bothersome
 
-    TGoF*               copylastgof     = new TGoF ( GoGoF.GetLast () );
+    const TGoF*         copylastgof     = new TGoF ( GoGoF.GetLast () );
 
     CmClearEegGroups ();    // deleting all - needs to reintroduce the last gof, though
 
@@ -1716,7 +1770,7 @@ if      ( ComputingRisTransfer.CompatEegs.NumAuxTracks > 0 ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Extra testing across conditions
-bool                acrossconditions = NumSubjects > 1;
+bool                acrossconditions    = NumSubjects ( GoGoF ) > 1;
 
 
 if      ( acrossconditions
@@ -1855,7 +1909,7 @@ if ( ! GoGoF.AnyTracksGroup ( tg ) ) {
     }
 
                                         // !this flag should be set before call to be able to run this test!
-if ( GroupPresets->GetSelIndex () == GroupsLayout1SubjAllCondAllEpochs ) {
+if ( CRISPresets[ esicase ].IsEpochs () ) {
 
     if ( ! GoGoF.AllSplitGroupsAreCompatible () ) {
         ShowMessage ( "While the number of epochs can be different per subject,"                    NewLine 
@@ -2070,59 +2124,91 @@ GroupsSummary->ClearList ();
 
 
 ComputingRisPresetsEnum esicase         = (ComputingRisPresetsEnum) EegPresets  ->GetSelIndex ();
-GroupsLayoutEnum        grouplayout     = (GroupsLayoutEnum)        GroupPresets->GetSelIndex ();
-TFileName               buff;
+TFixedString<KiloByte>  buff;
 int                     maxlength       = 0;
 
 
-for ( int gofi = 0; gofi < (int) GoGoF; gofi++ ) {
+int                 numsubjects         = NumSubjects   ( GoGoF    );
+int                 numconditions       = NumConditions ( GoGoF    );
+int                 numinverses         = NumInverses   ( Inverses );
 
-    TGoF&       gof     = GoGoF[ gofi ];
+                                        // We can specialize the names of subjects and conditions for better understanding
+const char*         subjstr             = CRISPresets[ esicase ].Code == ComputingRisPresetErpGroupMeans ?  "Group" 
+                                                                                                         :  "Subject";
 
-                                        // being more explicit on the groups' label
-    if      ( grouplayout == GroupsLayoutAllSubj1Cond          )    StringCopy      ( buff, CRISPresets[ esicase ].IsClusters ()                            ? "Cluster" : "Condition" ); // although equivalent, we can be more specific
-    else if ( grouplayout == GroupsLayout1SubjAllCond          )    StringCopy      ( buff, CRISPresets[ esicase ].Code == ComputingRisPresetErpGroupMeans  ? "Group"   : "Subject"   ); // special case for Grand Average
-    else if ( grouplayout == GroupsLayout1SubjAllCondAllEpochs )    StringCopy      ( buff, "Subject" );
-    else                                                            StringCopy      ( buff, "Group"   );
-    StringAppend    ( buff, " ",  IntegerToString ( gofi + 1, NumIntegerDigits ( (int) GoGoF ) ), ":" );
+const char*         condstr             = CRISPresets[ esicase ].IsEpochs   ()                           ?  "Epoch File" 
+                                        : CRISPresets[ esicase ].IsClusters ()                           ?  "Cluster" 
+                                                                                                         :  "Condition";
 
-    StringAppend    ( buff, "  ", IntegerToString ( gof.NumFiles () ), " " );
+                                        // Recap by conditions
+if ( IsChecked ( GroupCond ) ) {
 
-    if      ( grouplayout == GroupsLayoutAllSubj1Cond          )    StringAppend    ( buff, "Subject"    );
-    else if ( grouplayout == GroupsLayout1SubjAllCond          )    StringAppend    ( buff, CRISPresets[ esicase ].IsClusters ()                            ? "Cluster" : "Condition" ); // although equivalent, we can be more specific
-    else if ( grouplayout == GroupsLayout1SubjAllCondAllEpochs )    StringAppend    ( buff, "Epoch File" );
-    else                                                            StringAppend    ( buff, "File"       );
-    StringAppend    ( buff, StringPlural ( gof.NumFiles () ) );
+    for ( int ci = 0; ci < numconditions; ci++ ) {
 
-    if ( gof.NumFiles () == 1 )     StringAppend    ( buff, "  ( ", ToFileName ( gof.GetFirst () ),                                        " )" );
-    else                            StringAppend    ( buff, "  ( ", ToFileName ( gof.GetFirst () ), " .. ", ToFileName ( gof.GetLast () ), " )" );
+        buff    = condstr;
+        buff   += " " + IntegerToString ( ci + 1, NumIntegerDigits ( numconditions ) ) + ":";
 
 
-    if ( AreIndividualInverses () ) {
+        int         numsubjs    = 0;
+        for ( int si = 0; si < numsubjects; si++ )
+            numsubjs   += ci < GoGoF[ si ].NumFiles ();
 
-        if      ( Is1Group1Condition () ) {
-            StringAppend    ( buff, " + <Subjects Inverses>" );
-            //StringAppend    ( buff, " + ", ToFileName ( Inverses.GetFirst () ) );
-            //if ( NumInverses () > 1 )
-            //    StringAppend    ( buff, " .. ", ToFileName ( Inverses.GetLast () ) );
-            }
-        else if ( Is1Group1Subject () )
-            StringAppend    ( buff, " + ", ToFileName ( Inverses[ gofi ] ) );    // we can be more precise
+        buff   += "  ";
+        buff   += IntegerToString ( numsubjs ) + " " + subjstr + StringPlural ( numsubjs );
+
+
+        if ( numsubjs == 1 )    StringAppend    ( buff, "  ", ToFileName ( GoGoF[ 0 ][ ci ] )                                                      );
+        else                    StringAppend    ( buff, "  ", ToFileName ( GoGoF[ 0 ][ ci ] ), " .. ", ToFileName ( GoGoF[ numsubjs - 1 ][ ci ] ) );
+
+
+        GroupsSummary->InsertString ( buff, 0 );
+
+        Maxed ( maxlength, (int) StringLength ( buff ) );
         }
+    }
+
+                                        // Recap by subjects
+if ( IsChecked ( GroupSubj ) ) {
+
+    for ( int si = 0; si < numsubjects; si++ ) {
+
+        buff    = subjstr;
+        buff   += " " + IntegerToString ( si + 1, NumIntegerDigits ( numsubjects ) ) + ":";
 
 
-    GroupsSummary->InsertString ( buff, 0 );
+        const TGoF&     conds       = GoGoF[ si ];
 
-    Maxed ( maxlength, (int) StringLength ( buff ) );
+        buff   += "  ";
+        buff   += IntegerToString ( conds.NumFiles () ) + " " + condstr + StringPlural ( conds.NumFiles () );
+
+
+        if ( conds.NumFiles () == 1 )   StringAppend    ( buff, "  ", ToFileName ( conds.GetFirst () )                                          );
+        else                            StringAppend    ( buff, "  ", ToFileName ( conds.GetFirst () ), " .. ", ToFileName ( conds.GetLast () ) );
+
+
+        if ( HasInverses ( Inverses ) ) {
+            
+            StringAppend    ( buff, "; Inverse  " );
+
+            if      ( IsSingleTemplateInverse ( Inverses ) )    StringAppend    ( buff, ToFileName ( Inverses[  0 ] ) );
+            else if ( si < numinverses )                        StringAppend    ( buff, ToFileName ( Inverses[ si ] ) );
+            else                                                StringAppend    ( buff, "!Missing!" );
+            }
+
+
+        GroupsSummary->InsertString ( buff, 0 );
+
+        Maxed ( maxlength, (int) StringLength ( buff ) );
+        }
     }
 
 
 UpdateHorizontalScroller ( GroupsSummary, maxlength );
 
 
-NumSubjectsEdit  ->SetIntValue ( NumSubjects    );
-NumConditionsEdit->SetIntValue ( NumConditions  );
-NumInversesEdit  ->SetIntValue ( NumInverses () );
+NumSubjectsEdit  ->SetIntValue ( numsubjects   );
+NumConditionsEdit->SetIntValue ( numconditions );
+NumInversesEdit  ->SetIntValue ( NumInverses   ( Inverses ) );
 
 //SetBaseFilename ();
 }
@@ -2133,50 +2219,20 @@ NumInversesEdit  ->SetIntValue ( NumInverses () );
 void    TComputingRisDialog::UpdateSubjectsConditions ( bool updategroups )
 {
 ComputingRisPresetsEnum esicase         = (ComputingRisPresetsEnum) EegPresets  ->GetSelIndex ();
-GroupsLayoutEnum        grouplayout     = (GroupsLayoutEnum)        GroupPresets->GetSelIndex ();
-
-
-if ( GoGoF.IsEmpty () ) {
-    NumSubjects     = 0;
-    NumConditions   = 0;
-    }
-else {
-    if      ( grouplayout == GroupsLayout1SubjAllCondAllEpochs ) {
-
-        NumSubjects     = GoGoF.NumGroups ();
-
-        TGoGoF              splitgogof0;
-                                        // Default to split by our epoch name
-        GoGoF[ 0 ].SplitByNames ( "." InfixEpoch, splitgogof0 );    // maybe we can store that somewhere, like NumConds
-
-        NumConditions   = (int) splitgogof0;
-        }
-
-    else if ( grouplayout == GroupsLayout1SubjAllCond ) {
-
-        NumSubjects     = GoGoF     .NumGroups ();
-        NumConditions   = GoGoF[ 0 ].NumFiles  ();
-        }
-
-    else if ( grouplayout == GroupsLayoutAllSubj1Cond ) {
-
-        NumSubjects     = GoGoF[ 0 ].NumFiles  ();
-        NumConditions   = GoGoF     .NumGroups ();
-        }
-    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Updating dialog
-NumSubjectsEdit  ->SetIntValue ( NumSubjects    );
-NumConditionsEdit->SetIntValue ( NumConditions  );
-NumInversesEdit  ->SetIntValue ( NumInverses () );
+NumSubjectsEdit  ->SetIntValue ( NumSubjects   ( GoGoF    ) );
+NumConditionsEdit->SetIntValue ( NumConditions ( GoGoF    ) );
+NumInversesEdit  ->SetIntValue ( NumInverses   ( Inverses ) );
 
 
-if      ( NumInverses () == 0 )                 InverseFile->SetText ( "" );
-else if ( ! ComputingRisTransfer.IsInverseOK )  InverseFile->SetText ( "<Inverses Not OK!>" );
-else if ( IsTemplateInverse () )                InverseFile->SetText ( Inverses[ 0 ] );
-else if ( AreIndividualInverses () )            InverseFile->SetText ( "<Subjects Inverses>" );
+if      ( ! HasInverses ( Inverses )                    )   InverseFile->SetText ( InverseFileNone  );
+else if ( ! ComputingRisTransfer.IsInverseOK            )   InverseFile->SetText ( InverseFileNotOK );
+else if ( IsSingleTemplateInverse ( Inverses         )  )   InverseFile->SetText ( Inverses[ 0 ]    );
+else if ( AreIndividualInverses   ( Inverses, GoGoF  )  )   InverseFile->SetText ( InverseFileIndiv );
+else                                                        InverseFile->SetText ( NumInverses ( Inverses ) < NumSubjects ( GoGoF ) ? InverseFileTooFew : InverseFileTooMany );
 
 InverseFile->ResetCaret;
 
@@ -2186,7 +2242,7 @@ if ( updategroups )
     ComputeGroupsAverages->SetCheck ( BoolToCheck ( (    esicase == ComputingRisPresetErpIndivMeans 
                                                       || esicase == ComputingRisPresetErpIndivEpochs
                                                       || esicase == ComputingRisPresetIndIndivEpochs )
-                                                    && NumSubjects > 1                                 ) );
+                                                    && NumSubjects ( GoGoF ) > 1                       ) );
 }
 
 
@@ -2196,7 +2252,7 @@ void    TComputingRisDialog::CmOkEnable ( TCommandEnabler &tce )
 TransferData ( tdGetData );
 
 
-if ( ! ( IsTemplateInverse () || AreIndividualInverses () )
+if ( ! ( IsSingleTemplateInverse ( Inverses ) || AreIndividualInverses ( Inverses, GoGoF ) )
   || ! ComputingRisTransfer.IsInverseOK ) {
     tce.Enable ( false );
     return;
@@ -2300,16 +2356,14 @@ bool                computegroupscentroids  = CheckToBool ( ComputingRisTransfer
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-GroupsLayoutEnum    grouplayout         = (GroupsLayoutEnum) GroupPresets->GetSelIndex ();
-
-int                 numsubjects         = NumSubjects;
-int                 numconditions       = NumConditions;
-int                 numinverses         = NumInverses ();
+int                 numsubjects         = NumSubjects   ( GoGoF    );
+int                 numconditions       = NumConditions ( GoGoF    );
+int                 numinverses         = NumInverses   ( Inverses );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // We can have either 1 inverse matrix per subject, or 1 matrix for all subjects
-bool                individualinverses  = AreIndividualInverses ();
+bool                individualinverses  = AreIndividualInverses ( Inverses, GoGoF );
                                         // Already tested(?)
 //if ( ! Inverses.CanOpenFiles () )
 //    return;
@@ -2361,7 +2415,7 @@ if ( individualinverses && numinverses > 1
 
         StringAppend ( buff, "EEG:", NewLine );
         for ( int fi = 0; fi < numconditions; fi++ )
-            StringAppend ( buff, Tab, ToFileName ( Is1Group1Subject () ? GoGoF[ subji ][ fi ] : GoGoF[ fi ][ subji ] ), NewLine );
+            StringAppend ( buff, Tab, ToFileName ( GoGoF[ subji ][ fi ] ), NewLine );
 
         StringAppend ( buff, NewLine );
         StringAppend ( buff, "Inverse Matrix:", NewLine );
@@ -2493,7 +2547,7 @@ RemoveFilename  ( basedir );
 if ( ! ComputingRis (   esicase,
 
                         GoGoF,              
-                        grouplayout,            NumSubjects,            NumConditions,
+                        numsubjects,            numconditions,
 
                         Inverses,               regularization,         backnorm,
                         datatypeepochs,         datatypefinal,

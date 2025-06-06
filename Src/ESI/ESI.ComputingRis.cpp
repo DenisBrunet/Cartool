@@ -67,7 +67,7 @@ return    ( numfactorszscorefile == 2 || numfactorszscorefile == 9 )    // mean 
 
 bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
                             const TGoGoF&       gogof,                  
-                            GroupsLayoutEnum    grouplayout,            int                 numsubjects,        int             numconditions,
+                            int                 numsubjects,            int                 numconditions,
                             
                             const TGoF&         inversefiles,           RegularizationType  regularization,     BackgroundNormalization     backnorm,
                             AtomType            datatypeepochs,         AtomType            datatypefinal,
@@ -150,8 +150,7 @@ if ( freqgroups ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Testing if we the rigth amount of inverse files
 bool                individualinverses  = (int) inversefiles > 1 
-                                       && (int) inversefiles == ( Is1Group1Subject ( grouplayout ) ? gogof.NumGroups   () 
-                                                                                                   : gogof.GetMaxFiles ( 0, numgroups - 1 ) );
+                                       && (int) inversefiles == gogof.NumGroups ();
 
                                         // Opening the (first) inverse matrix, which is good enough here
 TOpenDoc<TInverseMatrixDoc> isdoc ( inversefiles[ 0 ], OpenDocHidden );
@@ -431,7 +430,7 @@ if ( computegroupscentroids ) {
 verbose.NextTopic ( "Input Files:" );
 {
 verbose.Put ( "Number of groups of input files:", numgroups );
-verbose.Put ( "One group of files contains:", GroupsLayoutString[ grouplayout ] );
+verbose.Put ( "One group of files contains:", CRISPresets[ esicase ].IsEpochs () ? "1 Subject, All Conditions, All Epochs" : "1 Subject, All Conditions" );
 
 verbose.NextLine ();
 verbose.Put ( "Number of subjects:", numsubjects );
@@ -441,13 +440,12 @@ verbose.Put ( "Number of conditions:", numconditions );
 for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
 
     verbose.NextLine ();
-    verbose.Put ( grouplayout == GroupsLayoutAllSubj1Cond        ?  "Condition #:" 
-                : esicase     == ComputingRisPresetErpGroupMeans ?  "Group #:"  // more precise
+    verbose.Put ( esicase     == ComputingRisPresetErpGroupMeans ?  "Group #:"  // more precise
                 :                                                   "Subject #:", gogofi + 1 );
     verbose.Put ( "Number of files:", gogof[ gogofi ].NumFiles () );
 
 
-    if ( grouplayout == GroupsLayout1SubjAllCondAllEpochs ) {
+    if ( CRISPresets[ esicase ].IsEpochs () ) {
 
         TGoGoF              splitgogof;
         TStrings            splitnames;
@@ -562,21 +560,7 @@ int                 gofi2           = numgroups - 1;
 gogof.Show ( gofi1, gofi2, "0) Original Groups" );
 #endif // ShowGroupsShuffling
 
-
-if ( Is1Group1Condition ( grouplayout ) )
-                                        // Re-order the group of files so that we have 1 TGoF for 1 subject
-                                        // 1 gof = 1 subject, all conditions
-    gogof.ConditionsToSubjects ( gofi1, gofi2, gogofpersubject );
-
-else // if ( Is1Group1Subject ( grouplayout ) )
-                                        // well, the input is already in the right orientation...
-                                        // also, there doesn't seem to be any need to reorder the gogof results, as files, they are already at the right place
-    gogofpersubject = gogof;            // ?clipping the input gogof, like gogof ( gofi1, gofi2 )?
-
-
-#ifdef ShowGroupsShuffling
-gogofpersubject.Show ( "1) Groups Reordered per Subject" );
-#endif // ShowGroupsShuffling
+gogofpersubject     = gogof;            // ?clipping the input gogof, like gogof ( gofi1, gofi2 )?
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -754,7 +738,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Splitting epochs is done per subject: one subject can have n files of 1 epoch, another subject 1 file of n epochs
-    bool                splitepochs     =    grouplayout == GroupsLayout1SubjAllCondAllEpochs 
+    bool                splitepochs     =    CRISPresets[ esicase ].IsEpochs ()
                                                                                     // we can avoid splitting files whne not in this case
                                           && computingindividualfiles               
                                                                                     // only 1 file of n epochs to trigger the splitting
@@ -833,7 +817,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // This group layout contains multiple epochs for multiple conditions, try splitting that & average
-    if ( grouplayout == GroupsLayout1SubjAllCondAllEpochs ) {
+    if ( CRISPresets[ esicase ].IsEpochs () ) {
 //  if ( splitepochs ) {
 
         TGoGoF              splitgogof;
@@ -1020,9 +1004,9 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                                         // we have reduced dimensionality, we can proceed with the regular case
         gogofallsubjectspreproc.Add ( &mergedgof, true, MaxPathShort );
 
-        } // GroupsLayout1SubjAllCondAllEpochs
+        } // IsEpochs
 
-    else { // ! GroupsLayout1SubjAllCondAllEpochs
+    else { // ! IsEpochs
                                         // regular case of centroids
         if ( computegroupscentroids )
 
@@ -1062,7 +1046,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                                         // !We can get rid of these big files right now!
             risgogof[ 0 ].DeleteFiles ();
 
-        } // ! GroupsLayout1SubjAllCondAllEpochs
+        } // ! IsEpochs
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

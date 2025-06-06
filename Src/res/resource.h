@@ -1075,7 +1075,6 @@
 #define IDC_COMPUTEGROUPSCENTROIDS      7215
 #define IDC_COMPUTEZSCORE               7216
 #define IDC_LOADZSCOREFILE              7217
-#define IDC_GROUPPRESETS                7218
 #define IDC_SAVEEPOCHFILES              7219
 #define IDC_ENVELOPELOWFREQ             7220
 #define IDC_NUMSUBJECTS                 7221
@@ -1083,6 +1082,8 @@
 #define IDC_NUMINVERSES                 7223
 #define IDC_RANKRIS                     7224
 #define IDC_THRESHOLDRIS                7225
+#define IDC_GROUPCOND                   7226
+#define IDC_GROUPSUBJ                   7227
 #define IDC_MRIPREPROCPRESETS           7300
 #define IDC_ISOTROPIC                   7301
 #define IDC_RESIZING                    7302

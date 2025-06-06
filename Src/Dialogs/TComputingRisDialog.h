@@ -71,23 +71,6 @@ enum        CRISPresetFlags
             };
 
 
-enum        GroupsLayoutEnum
-            {
-            GroupsLayoutUnknown             = -1,
-
-            GroupsLayoutAllSubj1Cond,           // could be split as GroupsLayoutAllSubj1Cluster
-            GroupsLayout1SubjAllCond,
-            GroupsLayout1SubjAllCondAllEpochs,
-
-            NumGroupsLayout,
-            };
-
-extern const char   GroupsLayoutString[ NumGroupsLayout ][ 64 ];
-
-inline bool Is1Group1Subject    ( GroupsLayoutEnum gl )     { return gl != GroupsLayoutAllSubj1Cond; }
-inline bool Is1Group1Condition  ( GroupsLayoutEnum gl )     { return gl == GroupsLayoutAllSubj1Cond; }
-
-
 class       CRISPresetSpec
 {
 public:
@@ -96,18 +79,18 @@ public:
     const char                      Text [ 64 ];
     const CRISPresetFlags           Flags;          // Allowed values
           CRISPresetFlags           Current;        // Init state                       - could also be used to save current user's choices
-          GroupsLayoutEnum          GroupsLayout;   // Init state + user current states - field could be updated
+          bool                      GroupCond;      // Init state + user current states - field could be updated
 
 
     bool                IsErp                   ()  const   {   return  IsFlag ( Flags,     CRISPresetERP       ); }
     bool                IsInduced               ()  const   {   return  IsFlag ( Flags,     CRISPresetInd       ); }
     bool                IsSpontaneous           ()  const   {   return  IsFlag ( Flags,     CRISPresetSpont     ); }
     bool                IsFrequency             ()  const   {   return  IsFlag ( Flags,     CRISPresetFreq      ); }
-                                                    const   
+
     bool                IsClusters              ()  const   {   return  IsFlag ( Flags,     CRISPresetClusters  ); }
     bool                IsEpochs                ()  const   {   return  IsFlag ( Flags,     CRISPresetEpochs    ); }
     bool                IsCentroids             ()  const   {   return  IsFlag ( Flags,     CRISPresetCentroids ); }
-                                                    const   
+
     bool                CanNorm                 ()  const   {   return  IsFlag ( Flags,     CRISPresetNorm      ); }
     bool                CanVect                 ()  const   {   return  IsFlag ( Flags,     CRISPresetVect      ); }
     bool                CmDataTypeEnable        ()  const   {   return  IsFlag ( Flags,     CRISPresetDataTypeMask, CRISPresetDataTypeMask );   }   // enabled if more than 1 data type is available
@@ -134,7 +117,7 @@ public:
                                                             return  datatypefinal;
                                                             }
 
-                                                    const   
+
     bool                CmGroupsAveragingEnable ()  const   {   return  Code == ComputingRisPresetErpIndivMeans
                                                                      || IsEpochs ();                                }   // still needs to check all groups of files are compatibles somewhere
 };
@@ -155,7 +138,8 @@ public:
         
     TComboBoxData       EegPresets;
 
-    TComboBoxData       GroupPresets;
+    TRadioButtonData    GroupCond;
+    TRadioButtonData    GroupSubj;
     TListBoxData        GroupsSummary;
     TEditData           NumSubjectsEdit     [ EditSizeValue ];
     TEditData           NumConditionsEdit   [ EditSizeValue ];
@@ -240,7 +224,8 @@ public:
 protected:
     owl::TComboBox      *EegPresets;
 
-    owl::TComboBox      *GroupPresets;
+    owl::TRadioButton   *GroupCond;
+    owl::TRadioButton   *GroupSubj;
     owl::TListBox       *GroupsSummary;
     owl::TEdit          *NumSubjectsEdit;
     owl::TEdit          *NumConditionsEdit;
@@ -279,9 +264,6 @@ protected:
 
                                         // Use to test files consistencies, with all the asynchronous D&D
     void            CheckEeg                (); // for the moment, method remains in the dialog instead of transfer buffer struct, as it does update the dialog a lot
-
-    bool            Is1Group1Subject        ()  const   { return crtl::Is1Group1Subject   ( (GroupsLayoutEnum) GroupPresets->GetSelIndex () ); }
-    bool            Is1Group1Condition      ()  const   { return crtl::Is1Group1Condition ( (GroupsLayoutEnum) GroupPresets->GetSelIndex () ); }
 
 
     void            SetupWindow             ()  final;

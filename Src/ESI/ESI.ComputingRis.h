@@ -24,7 +24,6 @@ namespace crtl {
 //----------------------------------------------------------------------------
 
 enum    ComputingRisPresetsEnum;
-enum    GroupsLayoutEnum;
 enum    SpatialFilterType;
 class   TGoGoF;
 class   TGoF;
@@ -41,7 +40,7 @@ constexpr FilterTypes   RisEnvelopeMethod   = FilterTypeEnvelopeGapBridging;    
 
 bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
                             const TGoGoF&       gogof,                  
-                            GroupsLayoutEnum    grouplayout,            int                 numsubjects,        int             numconditions,
+                            int                 numsubjects,            int                 numconditions,
                             
                             const TGoF&         inversefiles,           RegularizationType  regularization,     BackgroundNormalization     backnorm,
                             AtomType            datatypeepochs,         AtomType            datatypefinal,
