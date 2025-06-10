@@ -270,8 +270,11 @@ protected:
     void            CmOk                    ();
     void            CmOkEnable              ( owl::TCommandEnabler &tce );
 
+    void            UpdateDialog            ();
+    void            UpdateSubjectsConditions( bool updategroups = true );
+    void            UpdateGroupSummary      ();
+
     void            EvEegPresetsChange      ();
-    void            EvGroupPresetsChange    ();
     void            EvDropFiles             ( owl::TDropInfo drop );
     void            CmGroupPresetsEnable    ( owl::TCommandEnabler &tce );
     void            CmDataTypeEnable        ( owl::TCommandEnabler &tce );
@@ -284,7 +287,7 @@ protected:
     void            CmAddEegGroup           ();
     void            AddEegGroups            ( const TGoF& gofeeg );
     void            AddEegGroup             ( const TGoF& gofeeg );
-    void            CmRemoveEegGroup        ();
+    void            CmRemoveLastGroup       ();
     void            CmClearEegGroups        ();
     void            CmReadParams            ();
     void            ReadParams              ( const char* filename = 0 );
@@ -311,9 +314,6 @@ protected:
     void            CmZScoreChange          ();
     void            CmZScoreFactorsEnable   ( owl::TCommandEnabler &tce );
     void            CmThresholdEnable       ( owl::TCommandEnabler &tce );
-
-    void            UpdateSubjectsConditions( bool updategroups = true );
-    void            UpdateGroupSummary      ();
 
 
     DECLARE_RESPONSE_TABLE ( TComputingRisDialog );

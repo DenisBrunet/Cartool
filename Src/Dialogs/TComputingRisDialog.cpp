@@ -43,6 +43,7 @@ TGoGoF          GoGoF;                  // Groups of Groups of EEG files
 TGoF            Inverses;               // Groups of Inverse files
 
                                         // Functions to be converted to methods at some points, hence the systematic parameters
+bool            HasSubjects             ( const TGoGoF& gogof )                     { return  gogof.IsNotEmpty ();      }
 int             NumSubjects             ( const TGoGoF& gogof )                     { return  gogof.NumGroups ();       }   // 1 Group == 1 Subject
 int             NumConditions           ( const TGoF&   gof   );                                                            // !Accounts for epoch case!
 int             NumConditions           ( const TGoGoF& gogof );                                                            // !Accounts for epoch case!
@@ -51,8 +52,8 @@ int             NumEpochs               ( const TGoF&   gof,   const char* filep
 int             NumEpochs               ( const TGoGoF& gogof, int subji, const char* fileprefix );
 
 
-bool            HasInverses             ( const TGoF&   gofi  )                     { return  (bool) gofi; }
-int             NumInverses             ( const TGoF&   gofi  )                     { return  gofi.NumFiles (); }
+bool            HasInverses             ( const TGoF&   gofi  )                     { return  gofi.IsNotEmpty ();       }
+int             NumInverses             ( const TGoF&   gofi  )                     { return  gofi.NumFiles   ();       }
 bool            IsSingleTemplateInverse ( const TGoF&   gofi  )                     { return  HasInverses ( gofi ) && NumInverses ( gofi ) == 1;                        }   // !these 2 tests are not mutually exclusive!
 bool            AreIndividualInverses   ( const TGoF&   gofi, const TGoGoF& gogof ) { return  HasInverses ( gofi ) && NumInverses ( gofi ) == NumSubjects ( gogof );    }   // !these 2 tests are not mutually exclusive!
 
@@ -149,9 +150,9 @@ CRISPresetSpec  CRISPresets[ NumComputingRisPresets ] =
                                         // Various messages for the InverseFile edit field
 constexpr char*     InverseFileNone         = ""; // "<No Inverse>";
 constexpr char*     InverseFileNotOK        = "<Inverse(s) Not OK!>";
-constexpr char*     InverseFileIndiv        = "<1 Inverse per Subject>";
-constexpr char*     InverseFileTooFew       = "<Too few Inverses..>";
-constexpr char*     InverseFileTooMany      = "<Too many Inverses..>";
+constexpr char*     InverseFileIndiv        = "<Individual Inverses>";
+constexpr char*     InverseFileTooFew       = "<More Subjects than Inverses>";
+constexpr char*     InverseFileTooMany      = "<More Inverses than Subjects>";
 
 
 //----------------------------------------------------------------------------
@@ -241,8 +242,8 @@ DEFINE_RESPONSE_TABLE1 ( TComputingRisDialog, TBaseDialog )
 
     EV_CBN_SELCHANGE            ( IDC_RISPRESETS,               EvEegPresetsChange ),
 
-    EV_COMMAND                  ( IDC_GROUPCOND,                EvGroupPresetsChange ),
-    EV_COMMAND                  ( IDC_GROUPSUBJ,                EvGroupPresetsChange ),
+    EV_COMMAND                  ( IDC_GROUPCOND,                UpdateDialog ),
+    EV_COMMAND                  ( IDC_GROUPSUBJ,                UpdateDialog ),
     EV_COMMAND_ENABLE           ( IDC_GROUPCOND,                CmGroupPresetsEnable ),
     EV_COMMAND_ENABLE           ( IDC_GROUPSUBJ,                CmGroupPresetsEnable ),
     EV_COMMAND_ENABLE           ( IDC_POSITIVEDATA,             CmDataTypeEnable ),
@@ -278,7 +279,7 @@ DEFINE_RESPONSE_TABLE1 ( TComputingRisDialog, TBaseDialog )
     EV_COMMAND_ENABLE           ( IDC_SAVEEPOCHFILES,           CmSaveEpochsEnable ),
 
     EV_COMMAND                  ( IDC_ADDGROUP,                 CmAddEegGroup ),
-    EV_COMMAND                  ( IDC_REMFROMLIST,              CmRemoveEegGroup ),
+    EV_COMMAND                  ( IDC_REMFROMLIST,              CmRemoveLastGroup ),
     EV_COMMAND                  ( IDC_CLEARLISTS,               CmClearEegGroups ),
     EV_COMMAND                  ( IDC_READPARAMS,               CmReadParams ),
     EV_COMMAND                  ( IDC_WRITEPARAMS,              CmWriteParams ),
@@ -367,6 +368,8 @@ TBaseDialog::SetupWindow ();
 TransferData ( tdSetData );
                                         // ?
 //CheckEeg ();
+                                        // mainly to update buttons' text
+UpdateDialog ();
 }
 
 
@@ -508,20 +511,21 @@ SetCheck    ( GroupSubj, ! CRISPresets[ esicase ].GroupCond );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // update transfer buffer(?)
 //TransferData ( tdGetData );
-                                        // only for dialog update
-UpdateSubjectsConditions ();
 
-UpdateGroupSummary ();
+UpdateDialog ();
 }
 
 
 //----------------------------------------------------------------------------
-void    TComputingRisDialog::EvGroupPresetsChange ()
+void    TComputingRisDialog::UpdateDialog ()
 {
                                         // only for dialog update
 UpdateSubjectsConditions ();
 
 UpdateGroupSummary ();
+                                        // refine some buttons' description
+SetDlgItemText  ( IDC_ADDGROUP,     IsChecked ( GroupSubj ) ? "&Add Files of New Subject"     : "&Add Files of New Condition"     );
+SetDlgItemText  ( IDC_REMFROMLIST,  IsChecked ( GroupSubj ) ? "&Remove Files of Last Subject" : "&Remove Files of Last Condition" );
 }
 
 
@@ -1473,27 +1477,64 @@ InverseFile->ResetCaret;
 
 
 //----------------------------------------------------------------------------
-                                        // Until better solution, we kind of sync the EEG list with the Inverse one
-void    TComputingRisDialog::CmRemoveEegGroup ()
+                                        // Removes either a subject or a condition, and possibly inverses
+void    TComputingRisDialog::CmRemoveLastGroup ()
 {
-if ( ! GoGoF.RemoveLastGroup () )
+if ( ! HasSubjects ( GoGoF ) && ! HasInverses ( Inverses ) )
     return;
 
 
-if  ( HasInverses ( Inverses ) ) {
+int                 numsubj         = NumSubjects               ( GoGoF );
+int                 numinv          = NumInverses               ( Inverses );
+bool                templinv        = IsSingleTemplateInverse   ( Inverses );
+bool                indivinv        = AreIndividualInverses     ( Inverses, GoGoF );
 
-    if      ( IsChecked ( GroupSubj ) && AreIndividualInverses ( Inverses, GoGoF ) )
-                                        // removed a subject -> remove last inverse
-        Inverses.RemoveLast ();
+                                        // Removing 1 subject
+if ( IsChecked ( GroupSubj ) ) {
+                                        // Removing EEG files?
+    if ( numsubj > 0 ) {
 
-    else if ( IsChecked ( GroupCond ) && GoGoF.IsEmpty () )
-                                        // removed last conditions (and therefor subjects, too) -> remove all inverses
+        if ( numinv == 0                // no inverses at all
+          || templinv                   // no individual inverses
+          || numsubj >= numinv )        // individual inverses, either in sync, or more subjects than inverses
+
+            GoGoF.RemoveLastGroup ();
+        }
+
+                                        // Removing Inverse files?
+    if ( numinv > 0 ) {
+
+        if ( numinv >= numsubj )        // either in sync, or more inverses than subjects
+
+            Inverses.RemoveLast ();
+        }
+    }
+
+                                        // Removing 1 condition
+else if ( IsChecked ( GroupCond ) ) {
+                                        // Removing last condition per subject
+    if ( numsubj > 0 ) {
+
+        for ( int si = 0; si < numsubj; si++ )
+            GoGoF[ si ].RemoveLast ();
+        }
+
+
+    if      ( numsubj == 0 )            // Already no subjects -> one more click allows to remove all inverses at once
+
         Inverses.Reset ();
 
 
-    if ( ! HasInverses ( Inverses ) )
-        ComputingRisTransfer.IsInverseOK = false;
+    else if ( numsubj > 0 && GoGoF[ 0 ].NumFiles () == 0 ) {// Removed last condition
+
+        GoGoF   .Reset ();
+      //Inverses.Reset ();              // Remove inverses at the same time? or next click (above)?
+        }
     }
+
+
+if  ( /*numinv > 0 &&*/ ! HasInverses ( Inverses ) )
+    ComputingRisTransfer.IsInverseOK = false;
 
 
 //SetBaseFilename ();
