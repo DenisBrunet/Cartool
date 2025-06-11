@@ -80,7 +80,7 @@ return  PresetFileTypeDefaultEEG;
                                         // Dialog font width approximate formula
 int     DialogStringLengthToPixels  ( int stringlength )
 {
-return  Round ( CartoolObjects.CartoolApplication->PointsToPixels ( stringlength * DialogFontHeight ) * 0.575 );
+return  Round ( CartoolObjects.CartoolApplication->PointsToPixels ( stringlength * DialogFontHeight ) * 0.5775 );
 }
 
                                         // It seems well known that listboxes don't update their horizontal scroller "spontaneously", they need an extra kick to do so

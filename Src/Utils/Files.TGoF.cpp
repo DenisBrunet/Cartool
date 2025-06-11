@@ -3727,7 +3727,7 @@ void    TGoGoF::Add ( const TGoF *gof, bool copy, long length )
 {
 if ( copy ) {
                                         // allocate a new TGoF and copy content
-    TGoF       *newgof  = new TGoF ();
+    TGoF*       newgof      = new TGoF ();
 
     for ( int gofi = 0; gofi < gof->NumFiles (); gofi++ )
 
@@ -3736,7 +3736,8 @@ if ( copy ) {
     Group.Append ( newgof );
     }
 else
-    Group.Append ( const_cast< TGoF * > ( gof ) );
+                                        // caller transferred the ownership
+    Group.Append ( const_cast<TGoF*> ( gof ) );
 }
 
 

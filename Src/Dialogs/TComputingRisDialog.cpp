@@ -58,6 +58,12 @@ bool            IsSingleTemplateInverse ( const TGoF&   gofi  )                 
 bool            AreIndividualInverses   ( const TGoF&   gofi, const TGoGoF& gogof ) { return  HasInverses ( gofi ) && NumInverses ( gofi ) == NumSubjects ( gogof );    }   // !these 2 tests are not mutually exclusive!
 
 
+void            AddSubject              ( TGoGoF& gogof, const TGoF& gof )          { gogof.Add ( &gof, true, TFilenameSize );  }   // naturally ordered by subjects
+void            RemoveSubject           ( TGoGoF& gogof )                           { gogof.RemoveLastGroup ();                 }   // naturally ordered by subjects
+void            AddCondition            ( TGoGoF& gogof, const TGoF& gof );         // needs extra work
+void            RemoveCondition         ( TGoGoF& gogof );                          // needs extra work
+
+
 //----------------------------------------------------------------------------
 int             NumConditions ( const TGoF& gof )
 {
@@ -119,6 +125,34 @@ if ( ! IsInsideLimits ( subji, 0, NumSubjects ( gogof ) - 1 ) )
     return  0;
 
 return  NumEpochs ( gogof[ subji ], fileprefix );
+}
+
+
+void            AddCondition ( TGoGoF& gogof, const TGoF& gof )   
+{
+                                        // First time only: adding subjects' groups
+if ( gogof.IsEmpty () )
+    for ( int fi = 0; fi < gof.NumFiles (); fi++ )
+        gogof.Add ( new TGoF, false );
+
+                                        // Now we can append conditions for each subject
+for ( int fi = 0; fi < gof.NumFiles (); fi++ )
+    gogof[ fi ].Add ( gof[ fi ], TFilenameSize );
+}
+
+
+void            RemoveCondition ( TGoGoF& gogof )
+{
+if ( gogof.IsEmpty () )
+    return;
+
+                                        // delete 1 file per group
+for ( int fi = 0; fi < gogof.NumGroups (); fi++ )
+    gogof[ fi ].RemoveLast ();
+
+                                        // delete everything if empty
+if ( gogof[ 0 ].NumFiles () == 0 ) 
+    gogof.Reset ();
 }
 
 
@@ -1399,21 +1433,8 @@ UpdateSubjectsConditions ();
 TransferData ( tdGetData );
 
                                         // temporarily adding this GoF
-if      ( IsChecked ( GroupSubj ) ) {
-                                        // Received a single subject - just append it
-    GoGoF.Add ( &gofeeg, true, TFilenameSize );
-    }
-
-else if ( IsChecked ( GroupCond ) ) {
-                                        // Receive a group of subject - we need to transpose and copy
-    if ( GoGoF.IsEmpty () )             // First time only: adding subjects' groups
-        for ( int fi = 0; fi < gofnumsubj; fi++ )
-            GoGoF.Add ( new TGoF, false );
-
-
-    for ( int fi = 0; fi < gofnumsubj; fi++ )
-        GoGoF[ fi ].Add ( gofeeg[ fi ], MaxPathShort );
-    }
+if      ( IsChecked ( GroupSubj ) )     AddSubject   ( GoGoF, gofeeg );
+else if ( IsChecked ( GroupCond ) )     AddCondition ( GoGoF, gofeeg );
 
                                         // then checking all the groups together
 CheckEeg ();
@@ -1449,29 +1470,14 @@ if ( ComputingRisTransfer.IsEegOK && ComputingRisTransfer.IsXyzOK && ! Computing
     }
 
                                         // off if the inverse has been cleared up, and the EEG files given priority
-if ( ComputingRisTransfer.IsEegOK /*&& ComputingRisTransfer.IsInverseAndEegOK*/ ) {
-
-    //SetBaseFilename ();
-
-    UpdateDialog ();
-    }
-else {
-    //GoGoF.RemoveLastGroup ();
-
-
-    if ( true /* IsChecked ( GroupSubj ) */ )
-        GoGoF.RemoveLastGroup ();
-    else /*if ( IsChecked ( GroupCond ) )*/ {
-        for ( int si = 0; si < GoGoF.NumGroups (); si++ )
-            GoGoF[ si ].RemoveLast ();
-
-        if ( GoGoF[ 0 ].NumFiles () == 0 ) GoGoF.Reset ();
-        }
-
-
-    UpdateDialog ();
+if ( ! ComputingRisTransfer.IsEegOK /*&& ComputingRisTransfer.IsInverseAndEegOK )*/ ) {
+                                        // undoing the temp addition
+    if      ( IsChecked ( GroupSubj ) )     RemoveSubject   ( GoGoF );
+    else if ( IsChecked ( GroupCond ) )     RemoveCondition ( GoGoF );
     }
 
+
+UpdateDialog ();
 
 InverseFile->ResetCaret;
 }
@@ -1499,7 +1505,7 @@ if ( IsChecked ( GroupSubj ) ) {
           || templinv                   // no individual inverses
           || numsubj >= numinv )        // individual inverses, either in sync, or more subjects than inverses
 
-            GoGoF.RemoveLastGroup ();
+            RemoveSubject ( GoGoF );
         }
 
                                         // Removing Inverse files?
@@ -1514,23 +1520,14 @@ if ( IsChecked ( GroupSubj ) ) {
                                         // Removing 1 condition
 else if ( IsChecked ( GroupCond ) ) {
                                         // Removing last condition per subject
-    if ( numsubj > 0 ) {
+    if ( numsubj > 0 )
 
-        for ( int si = 0; si < numsubj; si++ )
-            GoGoF[ si ].RemoveLast ();
-        }
+        RemoveCondition ( GoGoF );
 
 
     if      ( numsubj == 0 )            // Already no subjects -> one more click allows to remove all inverses at once
 
         Inverses.Reset ();
-
-
-    else if ( numsubj > 0 && GoGoF[ 0 ].NumFiles () == 0 ) {// Removed last condition
-
-        GoGoF   .Reset ();
-      //Inverses.Reset ();              // Remove inverses at the same time? or next click (above)?
-        }
     }
 
 
@@ -1538,19 +1535,15 @@ if  ( /*numinv > 0 &&*/ ! HasInverses ( Inverses ) )
     ComputingRisTransfer.IsInverseOK = false;
 
 
-//SetBaseFilename ();
-
 UpdateDialog ();
 }
 
 
+//----------------------------------------------------------------------------
 void    TComputingRisDialog::CmClearEegGroups ()
 {
 GoGoF   .Reset ();
 Inverses.Reset ();
-
-
-//SetBaseFilename ();
 
 UpdateDialog ();
 
@@ -1739,12 +1732,12 @@ if (   freqgroup && esicase != ComputingRisPresetFreq ) {
 
                                         // Update preset for the user, and clean-up EEGs - usage will tell if this is bothersome
 
-    const TGoF*         copylastgof     = new TGoF ( GoGoF.GetLast () );
+    const TGoF          copylastgof     = GoGoF.GetLast ();
 
     CmClearEegGroups ();    // deleting all - needs to reintroduce the last gof, though
 
-    GoGoF.Add ( copylastgof, false, MaxPathShort );
-                                        // conveniently switching preset for the user
+    AddSubject  ( GoGoF, copylastgof );
+                                            // conveniently switching preset for the user
     esicase         = ComputingRisPresetFreq;
 
     EegPresets->SetSelIndex ( esicase );
@@ -1760,11 +1753,11 @@ if ( ! freqgroup && esicase == ComputingRisPresetFreq ) {
 
                                         // Update preset for the user, and clean-up EEGs - usage will tell if this is bothersome
 
-    const TGoF*         copylastgof     = new TGoF ( GoGoF.GetLast () );
+    const TGoF          copylastgof     = GoGoF.GetLast ();
 
     CmClearEegGroups ();    // deleting all - needs to reintroduce the last gof, though
 
-    GoGoF.Add ( copylastgof, false, MaxPathShort );
+    AddSubject  ( GoGoF, copylastgof );
                                         // conveniently switching preset for the user
     bool                allerps         = GoGoF.GetLast ().AllExtensionsAre    ( AllEegErpFilesExt );
 
@@ -2205,7 +2198,7 @@ if      ( IsChecked ( GroupCond ) ) {
 
         GroupsSummary->InsertString ( buff, 0 );
 
-        Maxed ( maxlength, (int) StringLength ( buff ) );
+        Maxed ( maxlength, (int) buff.Length () );
         }
 
 
@@ -2229,7 +2222,7 @@ if      ( IsChecked ( GroupCond ) ) {
 
         GroupsSummary->InsertString ( buff, 0 );
 
-        Maxed ( maxlength, (int) StringLength ( buff ) );
+        Maxed ( maxlength, (int) buff.Length () );
         }
     } // GroupCond
 
@@ -2281,8 +2274,6 @@ UpdateHorizontalScroller ( GroupsSummary, maxlength );
 SetInteger  ( NumSubjectsEdit,   numsubjects                );
 SetInteger  ( NumConditionsEdit, numconditions              );
 SetInteger  ( NumInversesEdit,   NumInverses ( Inverses )   );
-
-//SetBaseFilename ();
 }
 
 
