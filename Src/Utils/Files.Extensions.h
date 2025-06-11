@@ -385,6 +385,8 @@ limitations under the License.
 #define     AllSegFilesExt          FILEEXT_SEG
 #define     AllTextFilesExt         FILEEXT_TXT
 
+#define     AllInverseFilesGrep     ".+\\.(" FILEEXT_IS "|" FILEEXT_SPINV ")$"
+
 
 #define     AllCartoolNewFileExt    FILEEXT_LM " " FILEEXT_IS
 #define     AllCartoolSaveFileExt   FILEEXT_LM " " AllSolPointsFilesExt " " AllCoordinatesFilesExt " " AllMriFilesExt " " AllInverseFilesExt

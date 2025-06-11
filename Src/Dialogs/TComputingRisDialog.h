@@ -284,12 +284,13 @@ protected:
     void            CmNotFrequencyEnable    ( owl::TCommandEnabler &tce );
     void            CmRoisChange            ();
 
-    void            CmAddEegGroup           ();
+    void            CmAddGroup              ();
     void            AddEegGroups            ( const TGoF& gofeeg );
     void            AddEegGroup             ( const TGoF& gofeeg );
     void            CmRemoveLastGroup       ();
-    void            CmClearEegGroups        ();
+    void            CmClearAllGroups        ();
     void            CmClearInverseGroups    ();
+
     void            CmReadParams            ();
     void            ReadParams              ( const char* filename = 0 );
     void            CmWriteParams           ();

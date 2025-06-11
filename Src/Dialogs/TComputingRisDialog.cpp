@@ -312,9 +312,9 @@ DEFINE_RESPONSE_TABLE1 ( TComputingRisDialog, TBaseDialog )
     EV_COMMAND_ENABLE           ( IDC_COMPUTEGROUPSCENTROIDS,   CmGroupsCentroidsEnable ),
     EV_COMMAND_ENABLE           ( IDC_SAVEEPOCHFILES,           CmSaveEpochsEnable ),
 
-    EV_COMMAND                  ( IDC_ADDGROUP,                 CmAddEegGroup ),
+    EV_COMMAND                  ( IDC_ADDGROUP,                 CmAddGroup ),
     EV_COMMAND                  ( IDC_REMFROMLIST,              CmRemoveLastGroup ),
-    EV_COMMAND                  ( IDC_CLEARLISTS,               CmClearEegGroups ),
+    EV_COMMAND                  ( IDC_CLEARLISTS,               CmClearAllGroups ),
     EV_COMMAND                  ( IDC_CLEARINVERSEFILES,        CmClearInverseGroups ),
     EV_COMMAND                  ( IDC_READPARAMS,               CmReadParams ),
     EV_COMMAND                  ( IDC_WRITEPARAMS,              CmWriteParams ),
@@ -560,8 +560,8 @@ UpdateSubjectsConditions ();
 UpdateGroupSummary ();
 
                                         // refine some buttons' text
-SetControlText  ( IDC_ADDGROUP,     IsChecked ( GroupSubj ) ? "&Add a New Subject"
-                                                            : "&Add a New Condition" );
+SetControlText  ( IDC_ADDGROUP,     IsChecked ( GroupSubj ) ? "&Add New Subject"
+                                                            : "&Add New Condition" );
 SetControlText  ( IDC_REMFROMLIST,  IsChecked ( GroupSubj ) ? "&Remove Last Subject" 
                                                             : "&Remove Last Condition" );
 }
@@ -954,7 +954,7 @@ if ( ComputingRisTransfer.IsInverseOK && ComputingRisTransfer.IsEegOK && ! Compu
                                         // or asking? or silent?
 //  ShowMessage ( "Clearing-up the existing EEG files...", ComputingRisTitle, ShowMessageWarning );
 
-    CmClearEegGroups () ;
+    CmClearAllGroups () ;
 
     ComputingRisTransfer.IsEegOK             = false;
     ComputingRisTransfer.IsInverseAndEegOK   = false;
@@ -1237,34 +1237,42 @@ tce.Enable ( IsChecked ( Rank ) );
 
 
 //----------------------------------------------------------------------------
-void    TComputingRisDialog::CmAddEegGroup ()
+void    TComputingRisDialog::CmAddGroup ()
 {
-GetFileFromUser     getfiles ( "Open Files", AllErpEegFilesFilter "|" AllFreqFilesFilter, 1, GetFileMulti );
+GetFileFromUser     getfiles ( IsChecked ( GroupCond ) ? "Add New Condition Files" : "Add New Subject Files", 
+                               AllErpEegFilesFilter "|" AllFreqFilesFilter "|" AllInverseFilesFilter, 1, GetFileMulti );
 
 
 ComputingRisPresetsEnum esicase         = (ComputingRisPresetsEnum) EegPresets->GetSelIndex ();
 
-
 getfiles.SetFileFilterIndex ( esicase == ComputingRisPresetErpGroupMeans    ? 1
                             : esicase == ComputingRisPresetErpIndivMeans    ? 1
                             : esicase == ComputingRisPresetErpIndivEpochs   ? 1
-                            : esicase == ComputingRisPresetErpSegClusters   ? 2
-                            : esicase == ComputingRisPresetErpFitClusters   ? 2
+                            : esicase == ComputingRisPresetErpSegClusters   ? 3
+                            : esicase == ComputingRisPresetErpFitClusters   ? 3
                             : esicase == ComputingRisPresetIndIndivEpochs   ? 1
-                            : esicase == ComputingRisPresetSpont            ? 2
-                            : esicase == ComputingRisPresetSpontClusters    ? 2
-                            : esicase == ComputingRisPresetFreq             ? 3
-                            :                                                 4 
+                            : esicase == ComputingRisPresetSpont            ? 3
+                            : esicase == ComputingRisPresetSpontClusters    ? 3
+                            : esicase == ComputingRisPresetFreq             ? 4
+                            :                                                 6 
                             );
-
 
 if ( ! getfiles.Execute () )
     return;
 
+                                        // Split into EEG and Inverses
+TGoF                gofeeg          = getfiles;
+TGoF                gofinv          = getfiles;
 
-AddEegGroups ( getfiles );
+gofeeg.GrepKeep ( AllTracksFilesGrep,  GrepOptionDefaultFiles );
+gofinv.GrepKeep ( AllInverseFilesGrep, GrepOptionDefaultFiles );
+
+if ( (bool) gofeeg )    AddEegGroups ( gofeeg );
+if ( (bool) gofinv )    AddISGroup   ( gofinv );
 }
 
+
+//----------------------------------------------------------------------------
                                         // This part deciphers these special cases: clusters of data from fitting, or epochs for ERPs
 void    TComputingRisDialog::AddEegGroups ( const TGoF& gofeeg )
 {
@@ -1541,7 +1549,7 @@ UpdateDialog ();
 
 
 //----------------------------------------------------------------------------
-void    TComputingRisDialog::CmClearEegGroups ()
+void    TComputingRisDialog::CmClearAllGroups ()
 {
 GoGoF   .Reset ();
 Inverses.Reset ();
@@ -1745,7 +1753,7 @@ if (   freqgroup && esicase != ComputingRisPresetFreq ) {
 
     const TGoF          copylastgof     = GoGoF.GetLast ();
 
-    CmClearEegGroups ();    // deleting all - needs to reintroduce the last gof, though
+    CmClearAllGroups ();    // deleting all - needs to reintroduce the last gof, though
 
     AddSubject  ( GoGoF, copylastgof );
                                             // conveniently switching preset for the user
@@ -1766,7 +1774,7 @@ if ( ! freqgroup && esicase == ComputingRisPresetFreq ) {
 
     const TGoF          copylastgof     = GoGoF.GetLast ();
 
-    CmClearEegGroups ();    // deleting all - needs to reintroduce the last gof, though
+    CmClearAllGroups ();    // deleting all - needs to reintroduce the last gof, though
 
     AddSubject  ( GoGoF, copylastgof );
                                         // conveniently switching preset for the user
