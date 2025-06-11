@@ -39,7 +39,7 @@ constexpr FilterTypes   RisEnvelopeMethod   = FilterTypeEnvelopeGapBridging;    
 
 
 bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
-                            const TGoGoF&       gogof,                  
+                            const TGoGoF&       subjects,                  
                             int                 numsubjects,            int                 numconditions,
                             
                             const TGoF&         inversefiles,           RegularizationType  regularization,     BackgroundNormalization     backnorm,

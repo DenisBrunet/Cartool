@@ -66,7 +66,7 @@ return    ( numfactorszscorefile == 2 || numfactorszscorefile == 9 )    // mean 
 //----------------------------------------------------------------------------
 
 bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
-                            const TGoGoF&       gogof,                  
+                            const TGoGoF&       subjects,                  
                             int                 numsubjects,            int                 numconditions,
                             
                             const TGoF&         inversefiles,           RegularizationType  regularization,     BackgroundNormalization     backnorm,
@@ -86,7 +86,7 @@ bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
                         )
 {
                                         // well, we do need some data...
-if ( gogof.IsEmpty () )
+if ( subjects.IsEmpty () )
     return false;
 
 
@@ -105,13 +105,13 @@ if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteract
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                 numgroups           = gogof.NumGroups ();
-int                 numfiles            = gogof.NumFiles ( 0, numgroups - 1 );
+int                 numgroups           = subjects.NumGroups ();
+int                 numfiles            = subjects.NumFiles ( 0, numgroups - 1 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Full check - could take some time, skipped at that point
-//bool                freqgroups          = gogof.AllFreqsGroup ();
+//bool                freqgroups          = subjects.AllFreqsGroup ();
 //bool                freqtypecomplex     = false;
 ////bool              freqgtypereal       = false;
 //int                 numfreqs            = 0;
@@ -120,7 +120,7 @@ int                 numfiles            = gogof.NumFiles ( 0, numgroups - 1 );
 //
 //    FreqsCompatibleClass        fc;
 //
-//    gogof.AllFreqsAreCompatible ( fc );
+//    subjects.AllFreqsAreCompatible ( fc );
 //
 //    freqtypecomplex     = freqgroups && IsFreqTypeComplex ( (FrequencyAnalysisType) fc.FreqType );
 ////  freqgtypereal       = freqgroups && IsFreqTypeReal    ( (FrequencyAnalysisType) fc.FreqType );
@@ -128,7 +128,7 @@ int                 numfiles            = gogof.NumFiles ( 0, numgroups - 1 );
 
                                         // fully testing all files should be the responsibility of caller
                                         // here we just wish to retrieve these infos / values, assuming all files are the same
-bool                freqgroups          = IsExtensionAmong ( gogof[ 0 ][ 0 ], AllFreqFilesExt );
+bool                freqgroups          = IsExtensionAmong ( subjects[ 0 ][ 0 ], AllFreqFilesExt );
 int                 freqtype            = FreqUnknown;
 bool                freqtypecomplex     = false;
 //bool              freqgtypereal       = false;
@@ -136,13 +136,13 @@ int                 numfreqs            = 0;
 
 if ( freqgroups ) {
 
-    if ( ! ReadFromHeader ( TFileName ( gogof[ 0 ][ 0 ] ), ReadFrequencyType,  &freqtype ) )
+    if ( ! ReadFromHeader ( TFileName ( subjects[ 0 ][ 0 ] ), ReadFrequencyType,  &freqtype ) )
         return false;
 
     freqtypecomplex     = IsFreqTypeComplex ( (FrequencyAnalysisType) freqtype );
 //  freqgtypereal       = IsFreqTypeReal    ( (FrequencyAnalysisType) freqtype );
 
-    if ( ! ReadFromHeader ( TFileName ( gogof[ 0 ][ 0 ] ), ReadNumFrequencies, &numfreqs ) )
+    if ( ! ReadFromHeader ( TFileName ( subjects[ 0 ][ 0 ] ), ReadNumFrequencies, &numfreqs ) )
         return false;
     }
 
@@ -150,7 +150,7 @@ if ( freqgroups ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Testing if we the rigth amount of inverse files
 bool                individualinverses  = (int) inversefiles > 1 
-                                       && (int) inversefiles == gogof.NumGroups ();
+                                       && (int) inversefiles == subjects.NumGroups ();
 
                                         // Opening the (first) inverse matrix, which is good enough here
 TOpenDoc<TInverseMatrixDoc> isdoc ( inversefiles[ 0 ], OpenDocHidden );
@@ -433,7 +433,7 @@ verbose.Put ( "Number of groups of input files:", numgroups );
 verbose.Put ( "One group of files contains:", CRISPresets[ esicase ].IsEpochs () ? "1 Subject, All Conditions, All Epochs" : "1 Subject, All Conditions" );
 
 verbose.NextLine ();
-verbose.Put ( "Number of subjects:", numsubjects );
+verbose.Put ( "Number of subjects:",   numsubjects );
 verbose.Put ( "Number of conditions:", numconditions );
 
 
@@ -442,7 +442,7 @@ for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
     verbose.NextLine ();
     verbose.Put ( esicase     == ComputingRisPresetErpGroupMeans ?  "Group #:"  // more precise
                 :                                                   "Subject #:", gogofi + 1 );
-    verbose.Put ( "Number of files:", gogof[ gogofi ].NumFiles () );
+    verbose.Put ( "Number of files:", subjects[ gogofi ].NumFiles () );
 
 
     if ( CRISPresets[ esicase ].IsEpochs () ) {
@@ -450,7 +450,7 @@ for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
         TGoGoF              splitgogof;
         TStrings            splitnames;
 
-        gogof[ gogofi ].SplitByNames ( "." InfixEpoch, splitgogof, &splitnames );
+        subjects[ gogofi ].SplitByNames ( "." InfixEpoch, splitgogof, &splitnames );
 
         verbose.Put ( "Number of groups of epochs:", splitgogof.NumGroups () );
 
@@ -459,8 +459,8 @@ for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
             verbose.Put ( fi ? "" : StringCopy ( buff, "Epochs Group #", IntegerToString ( gofi + 1 ), ":" ), splitgogof[ gofi ][ fi ] );
         }
     else 
-        for ( int fi = 0; fi < gogof[ gogofi ].NumFiles (); fi++ )
-            verbose.Put ( "", gogof[ gogofi ][ fi ] );
+        for ( int fi = 0; fi < subjects[ gogofi ].NumFiles (); fi++ )
+            verbose.Put ( "", subjects[ gogofi ][ fi ] );
     }
 
 
@@ -557,10 +557,10 @@ int                 gofi2           = numgroups - 1;
 
 
 #ifdef ShowGroupsShuffling
-gogof.Show ( gofi1, gofi2, "0) Original Groups" );
+subjects.Show ( gofi1, gofi2, "0) Original Groups" );
 #endif // ShowGroupsShuffling
 
-gogofpersubject     = gogof;            // ?clipping the input gogof, like gogof ( gofi1, gofi2 )?
+gogofpersubject     = subjects;         // ?clipping the input subjects, like subjects ( gofi1, gofi2 )?
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -770,7 +770,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
         if ( gofsplitepochs.IsEmpty () )
             splitepochs = false;
-        else                            // !Replacing gogof with split epochs!
+        else                            // !Replacing subjects with split epochs!
             gogofpersubject[ absg ] = gofsplitepochs;
 
         } // if splitepochs
