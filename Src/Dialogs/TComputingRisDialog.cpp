@@ -315,6 +315,7 @@ DEFINE_RESPONSE_TABLE1 ( TComputingRisDialog, TBaseDialog )
     EV_COMMAND                  ( IDC_ADDGROUP,                 CmAddEegGroup ),
     EV_COMMAND                  ( IDC_REMFROMLIST,              CmRemoveLastGroup ),
     EV_COMMAND                  ( IDC_CLEARLISTS,               CmClearEegGroups ),
+    EV_COMMAND                  ( IDC_CLEARINVERSEFILES,        CmClearInverseGroups ),
     EV_COMMAND                  ( IDC_READPARAMS,               CmReadParams ),
     EV_COMMAND                  ( IDC_WRITEPARAMS,              CmWriteParams ),
 
@@ -1432,7 +1433,7 @@ UpdateSubjectsConditions ();
 
 TransferData ( tdGetData );
 
-                                        // temporarily adding this GoF
+                                        // add files to current state to run global checks
 if      ( IsChecked ( GroupSubj ) )     AddSubject   ( GoGoF, gofeeg );
 else if ( IsChecked ( GroupCond ) )     AddCondition ( GoGoF, gofeeg );
 
@@ -1471,7 +1472,7 @@ if ( ComputingRisTransfer.IsEegOK && ComputingRisTransfer.IsXyzOK && ! Computing
 
                                         // off if the inverse has been cleared up, and the EEG files given priority
 if ( ! ComputingRisTransfer.IsEegOK /*&& ComputingRisTransfer.IsInverseAndEegOK )*/ ) {
-                                        // undoing the temp addition
+                                        // remove last appended files
     if      ( IsChecked ( GroupSubj ) )     RemoveSubject   ( GoGoF );
     else if ( IsChecked ( GroupCond ) )     RemoveCondition ( GoGoF );
     }
@@ -1525,7 +1526,7 @@ else if ( IsChecked ( GroupCond ) ) {
         RemoveCondition ( GoGoF );
 
 
-    if      ( numsubj == 0 )            // Already no subjects -> one more click allows to remove all inverses at once
+    if ( numsubj == 0 )                 // Already no subjects -> one more click allows to remove all inverses at once
 
         Inverses.Reset ();
     }
@@ -1548,6 +1549,16 @@ Inverses.Reset ();
 UpdateDialog ();
 
 ComputingRisTransfer.IsEegOK     = false;
+ComputingRisTransfer.IsInverseOK = false;
+}
+
+
+void    TComputingRisDialog::CmClearInverseGroups ()
+{
+Inverses.Reset ();
+
+UpdateDialog ();
+
 ComputingRisTransfer.IsInverseOK = false;
 }
 
@@ -2194,12 +2205,14 @@ if      ( IsChecked ( GroupCond ) ) {
 
         if      ( numinverses < numsubjects && numinverses > 1 )    buff   += "  <" +  IntegerToString ( numsubjects - numinverses ) + " Missing Inverse" + StringPlural ( numsubjects - numinverses ) + ">";
         else if ( numinverses > numsubjects )                       buff   += "  <" +  IntegerToString ( numinverses - numsubjects ) + " Extra Inverse"   + StringPlural ( numinverses - numsubjects ) + ">";
-
-
-        GroupsSummary->InsertString ( buff, 0 );
-
-        Maxed ( maxlength, (int) buff.Length () );
         }
+    else if ( numinverses == 0 && numsubjects > 0 )
+
+        buff    = "<Inverse" + TStringValue ( StringPlural ( numsubjects ) ) + " Missing>";
+
+    GroupsSummary->InsertString ( buff, 0 );
+
+    Maxed ( maxlength, (int) buff.Length () );
 
 
     for ( int ci = 0; ci < numconditions; ci++ ) {

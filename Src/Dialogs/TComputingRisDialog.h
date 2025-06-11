@@ -289,6 +289,7 @@ protected:
     void            AddEegGroup             ( const TGoF& gofeeg );
     void            CmRemoveLastGroup       ();
     void            CmClearEegGroups        ();
+    void            CmClearInverseGroups    ();
     void            CmReadParams            ();
     void            ReadParams              ( const char* filename = 0 );
     void            CmWriteParams           ();

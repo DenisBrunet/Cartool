@@ -567,6 +567,7 @@
 #define IDC_CLEARLISTS                  5124
 #define IDC_SORTLISTS                   5125
 #define IDC_SORTLIST                    5125
+#define IDC_CLEARINVERSEFILES           5126
 #define IDC_CHK_EXCL                    5200
 #define IDC_CHK_AMPL                    5201
 #define IDC_CHKUD_AMPL                  5202
