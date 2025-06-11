@@ -244,8 +244,8 @@ DEFINE_RESPONSE_TABLE1 ( TComputingRisDialog, TBaseDialog )
 
     EV_COMMAND                  ( IDC_GROUPCOND,                UpdateDialog ),
     EV_COMMAND                  ( IDC_GROUPSUBJ,                UpdateDialog ),
-    EV_COMMAND_ENABLE           ( IDC_GROUPCOND,                CmGroupPresetsEnable ),
-    EV_COMMAND_ENABLE           ( IDC_GROUPSUBJ,                CmGroupPresetsEnable ),
+    EV_COMMAND_ENABLE           ( IDC_GROUPCOND,                CmGroupCondSubjEnable ),
+    EV_COMMAND_ENABLE           ( IDC_GROUPSUBJ,                CmGroupCondSubjEnable ),
     EV_COMMAND_ENABLE           ( IDC_POSITIVEDATA,             CmDataTypeEnable ),
     EV_COMMAND_ENABLE           ( IDC_VECTORDATA,               CmDataTypeEnable ),
 
@@ -294,7 +294,6 @@ END_RESPONSE_TABLE;
         TComputingRisDialog::TComputingRisDialog ( TWindow* parent, TResId resId )
       : TBaseDialog ( parent, resId )
 {
-
 EegPresets              = new TComboBox     ( this, IDC_RISPRESETS );
 
 GroupCond               = new TRadioButton  ( this, IDC_GROUPCOND );
@@ -522,14 +521,19 @@ void    TComputingRisDialog::UpdateDialog ()
                                         // only for dialog update
 UpdateSubjectsConditions ();
 
+
 UpdateGroupSummary ();
-                                        // refine some buttons' description
-SetDlgItemText  ( IDC_ADDGROUP,     IsChecked ( GroupSubj ) ? "&Add Files of New Subject"     : "&Add Files of New Condition"     );
-SetDlgItemText  ( IDC_REMFROMLIST,  IsChecked ( GroupSubj ) ? "&Remove Files of Last Subject" : "&Remove Files of Last Condition" );
+
+                                        // refine some buttons' text
+SetControlText  ( IDC_ADDGROUP,     IsChecked ( GroupSubj ) ? "&Add a New Subject"
+                                                            : "&Add a New Condition" );
+SetControlText  ( IDC_REMFROMLIST,  IsChecked ( GroupSubj ) ? "&Remove Last Subject" 
+                                                            : "&Remove Last Condition" );
 }
 
 
-void    TComputingRisDialog::CmGroupPresetsEnable ( TCommandEnabler &tce )
+//----------------------------------------------------------------------------
+void    TComputingRisDialog::CmGroupCondSubjEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( ! CRISPresets[ EegPresets->GetSelIndex () ].IsEpochs () );
 }
@@ -751,9 +755,8 @@ TransferData ( tdSetData );
 ComputingRisTransfer.CheckXyzAndEeg      ();
 TransferData ( tdSetData );
 
-UpdateSubjectsConditions ();
 
-UpdateGroupSummary ();
+UpdateDialog ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1450,9 +1453,7 @@ if ( ComputingRisTransfer.IsEegOK /*&& ComputingRisTransfer.IsInverseAndEegOK*/ 
 
     //SetBaseFilename ();
 
-    UpdateSubjectsConditions ();
-
-    UpdateGroupSummary ();
+    UpdateDialog ();
     }
 else {
     //GoGoF.RemoveLastGroup ();
@@ -1468,7 +1469,7 @@ else {
         }
 
 
-    UpdateSubjectsConditions ();
+    UpdateDialog ();
     }
 
 
@@ -1539,9 +1540,7 @@ if  ( /*numinv > 0 &&*/ ! HasInverses ( Inverses ) )
 
 //SetBaseFilename ();
 
-UpdateSubjectsConditions ();
-
-UpdateGroupSummary ();
+UpdateDialog ();
 }
 
 
@@ -1553,9 +1552,7 @@ Inverses.Reset ();
 
 //SetBaseFilename ();
 
-UpdateSubjectsConditions ();
-
-UpdateGroupSummary ();
+UpdateDialog ();
 
 ComputingRisTransfer.IsEegOK     = false;
 ComputingRisTransfer.IsInverseOK = false;
@@ -2167,14 +2164,12 @@ void    TComputingRisDialog::UpdateGroupSummary ()
 GroupsSummary->ClearList ();
 
 
-ComputingRisPresetsEnum esicase         = (ComputingRisPresetsEnum) EegPresets  ->GetSelIndex ();
-TFixedString<KiloByte>  buff;
-int                     maxlength       = 0;
-
-
 int                 numsubjects         = NumSubjects   ( GoGoF    );
 int                 numconditions       = NumConditions ( GoGoF    );
 int                 numinverses         = NumInverses   ( Inverses );
+
+
+ComputingRisPresetsEnum esicase         = (ComputingRisPresetsEnum) EegPresets  ->GetSelIndex ();
 
                                         // We can specialize the names of subjects and conditions for better understanding
 const char*         subjstr             = CRISPresets[ esicase ].Code == ComputingRisPresetErpGroupMeans ?  "Group" 
@@ -2184,68 +2179,101 @@ const char*         condstr             = CRISPresets[ esicase ].IsEpochs   ()  
                                         : CRISPresets[ esicase ].IsClusters ()                           ?  "Cluster" 
                                                                                                          :  "Condition";
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TFixedString<KiloByte>  buff;
+int                     maxlength       = 0;
+
                                         // Recap by conditions
-if ( IsChecked ( GroupCond ) ) {
+if      ( IsChecked ( GroupCond ) ) {
+
+    if ( numinverses > 0 ) {
+
+        if      ( numinverses == 1 && numsubjects <= 1 )    buff = "Inverse";
+        else if ( numinverses == 1 && numsubjects >  1 )    buff = "Common Inverse";
+        else if ( numinverses >  1 )                        buff = IntegerToString ( numinverses ) + " Individual Inverses";
+        buff   += ":  ";
+
+
+        if ( numinverses == 1 ) StringAppend    ( buff, ToFileName ( Inverses[ 0 ] )                                                     );
+        else                    StringAppend    ( buff, ToFileName ( Inverses[ 0 ] ), " .. ", ToFileName ( Inverses[ numinverses - 1 ] ) );
+
+
+        if      ( numinverses < numsubjects && numinverses > 1 )    buff   += "  <" +  IntegerToString ( numsubjects - numinverses ) + " Missing Inverse" + StringPlural ( numsubjects - numinverses ) + ">";
+        else if ( numinverses > numsubjects )                       buff   += "  <" +  IntegerToString ( numinverses - numsubjects ) + " Extra Inverse"   + StringPlural ( numinverses - numsubjects ) + ">";
+
+
+        GroupsSummary->InsertString ( buff, 0 );
+
+        Maxed ( maxlength, (int) StringLength ( buff ) );
+        }
+
 
     for ( int ci = 0; ci < numconditions; ci++ ) {
 
         buff    = condstr;
-        buff   += " " + IntegerToString ( ci + 1, NumIntegerDigits ( numconditions ) ) + ":";
+        buff   += " " + IntegerToString ( ci + 1, NumIntegerDigits ( numconditions ) ) + ":  ";
 
 
         int         numsubjs    = 0;
         for ( int si = 0; si < numsubjects; si++ )
             numsubjs   += ci < GoGoF[ si ].NumFiles ();
 
-        buff   += "  ";
         buff   += IntegerToString ( numsubjs ) + " " + subjstr + StringPlural ( numsubjs );
 
 
-        if ( numsubjs == 1 )    StringAppend    ( buff, "  ", ToFileName ( GoGoF[ 0 ][ ci ] )                                                      );
-        else                    StringAppend    ( buff, "  ", ToFileName ( GoGoF[ 0 ][ ci ] ), " .. ", ToFileName ( GoGoF[ numsubjs - 1 ][ ci ] ) );
+        buff   += "  ";
+        if ( numsubjs == 1 )    StringAppend    ( buff, ToFileName ( GoGoF[ 0 ][ ci ] )                                                      );
+        else                    StringAppend    ( buff, ToFileName ( GoGoF[ 0 ][ ci ] ), " .. ", ToFileName ( GoGoF[ numsubjs - 1 ][ ci ] ) );
 
 
         GroupsSummary->InsertString ( buff, 0 );
 
         Maxed ( maxlength, (int) StringLength ( buff ) );
         }
-    }
+    } // GroupCond
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Recap by subjects
-if ( IsChecked ( GroupSubj ) ) {
+else if ( IsChecked ( GroupSubj ) ) {
 
-    for ( int si = 0; si < numsubjects; si++ ) {
+    for ( int si = 0; si < max ( numsubjects, numinverses ); si++ ) {   // !also adding lines for missing EEGs!
 
         buff    = subjstr;
-        buff   += " " + IntegerToString ( si + 1, NumIntegerDigits ( numsubjects ) ) + ":";
+        buff   += " " + IntegerToString ( si + 1, NumIntegerDigits ( numsubjects ) ) + ":  ";
 
 
-        const TGoF&     conds       = GoGoF[ si ];
+        if ( si < numsubjects ) {
 
-        buff   += "  ";
-        buff   += IntegerToString ( conds.NumFiles () ) + " " + condstr + StringPlural ( conds.NumFiles () );
+            const TGoF&     conds       = GoGoF[ si ];
 
+            buff   += IntegerToString ( conds.NumFiles () ) + " " + condstr + StringPlural ( conds.NumFiles () );
 
-        if ( conds.NumFiles () == 1 )   StringAppend    ( buff, "  ", ToFileName ( conds.GetFirst () )                                          );
-        else                            StringAppend    ( buff, "  ", ToFileName ( conds.GetFirst () ), " .. ", ToFileName ( conds.GetLast () ) );
-
-
-        if ( HasInverses ( Inverses ) ) {
-            
-            StringAppend    ( buff, "; Inverse  " );
-
-            if      ( IsSingleTemplateInverse ( Inverses ) )    StringAppend    ( buff, ToFileName ( Inverses[  0 ] ) );
-            else if ( si < numinverses )                        StringAppend    ( buff, ToFileName ( Inverses[ si ] ) );
-            else                                                StringAppend    ( buff, "!Missing!" );
+            buff   += "  ";
+            if ( conds.NumFiles () == 1 )   StringAppend    ( buff, ToFileName ( conds.GetFirst () )                                          );
+            else                            StringAppend    ( buff, ToFileName ( conds.GetFirst () ), " .. ", ToFileName ( conds.GetLast () ) );
             }
+        else
+                                        // we can have more inverses than EEGs
+            buff   += "<EEG Missing>";
+
+
+        buff   += ";  ";
+        if      ( numinverses == 1 && numsubjects <= 1 )    StringAppend    ( buff, "Inverse",              "  ", ToFileName ( Inverses[  0 ] ) );
+        else if ( numinverses == 1 && numsubjects >  1 )    StringAppend    ( buff, "Common Inverse",       "  ", ToFileName ( Inverses[  0 ] ) );
+        else if ( si < numinverses )                        StringAppend    ( buff, "Individual Inverse",   "  ", ToFileName ( Inverses[ si ] ) );
+        else                                                StringAppend    ( buff, "<Inverse Missing>" );   // we can have more EEGs than inverses
 
 
         GroupsSummary->InsertString ( buff, 0 );
 
         Maxed ( maxlength, (int) StringLength ( buff ) );
         }
-    }
+    } // GroupSubj
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 UpdateHorizontalScroller ( GroupsSummary, maxlength );
 

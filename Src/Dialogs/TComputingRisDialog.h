@@ -276,7 +276,7 @@ protected:
 
     void            EvEegPresetsChange      ();
     void            EvDropFiles             ( owl::TDropInfo drop );
-    void            CmGroupPresetsEnable    ( owl::TCommandEnabler &tce );
+    void            CmGroupCondSubjEnable   ( owl::TCommandEnabler &tce );
     void            CmDataTypeEnable        ( owl::TCommandEnabler &tce );
 
     void            CmBrowseISFile          ();

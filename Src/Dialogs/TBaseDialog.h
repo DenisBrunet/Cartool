@@ -253,6 +253,8 @@ public:
     void            BeginModal              (); // A Modal window can not lose the focus, contrary to a Modeless window which allows another one to grab it for their own purpose
     void            EndModal                ();
 
+    void            SetControlText          ( int resid, const char* text ) const   { SetDlgItemText ( resid, text ); }
+
 
     virtual void    CmBatchProcess          ();                             // calls BatchProcess with multiple files
     void            CmBatchProcess          ( const char* filesfilter );    

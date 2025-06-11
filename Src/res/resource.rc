@@ -2505,10 +2505,10 @@ FONT 8, "Verdana", 0, 0, 0x0
 BEGIN
     LTEXT           "EEG &Presets:",-1,12,9,120,9,NOT WS_GROUP
     COMBOBOX        IDC_RISPRESETS,132,6,240,269,CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "(1) Groups of EEG Files   (Use Drag && Drop in this area)",114,4,25,376,148,WS_GROUP
-    LTEXT           "1 Group of Files is:",-1,15,43,120,9,NOT WS_GROUP
-    CONTROL         "1 &Condition",IDC_GROUPCOND,"Button",BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_TABSTOP,132,41,60,14
-    CONTROL         "1 Sub&Ject",  IDC_GROUPSUBJ,"Button",BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_TABSTOP,192,41,60,14
+    GROUPBOX        "(1) Groups of EEG && Inverse Files   (Use Drag && Drop in this area)",114,4,25,376,148,WS_GROUP
+    LTEXT           "Manage / Display Groups of Files:",-1,14,43,120,9,NOT WS_GROUP
+    CONTROL         "per &Condition",IDC_GROUPCOND,"Button",BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_TABSTOP,132,41,60,14
+    CONTROL         "per Sub&Ject",  IDC_GROUPSUBJ,"Button",BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_TABSTOP,192,41,60,14
     PUSHBUTTON      "&Add New Group of Files",IDC_ADDGROUP,12,55,120,14,BS_CENTER
     PUSHBUTTON      "&Remove Last Group",IDC_REMFROMLIST,12,69,120,14,BS_CENTER
     PUSHBUTTON      "Clear All Groups",IDC_CLEARLISTS,132,69,120,14,BS_CENTER
