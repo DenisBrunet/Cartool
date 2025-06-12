@@ -142,14 +142,14 @@ if ( CRISPresets[ esicase ].Flags == CRISPresetNone )
 
 int                     numsubjects     = 0;
 int                     numconditions   = 0;
-TGoGoF                  gogof;
+TGoGoF                  subjects;
 
 if ( /*listfiles.IsEmpty () &&*/ gof.IsNotEmpty () ) {
                                         // files in the command-line are assumed to be from the same subject
                                         // we just have to differentiate between epochs and averages/spontaneous
     numsubjects     = 1;
     numconditions   = gof.NumFiles ();
-    gogof           = gof;
+    subjects        = gof;
     }
 
 //else { // listfiles
@@ -253,7 +253,7 @@ bool                savingzscorefactors     = HasCLIFlag ( computingris, __savin
 
 TFileName           basedir;
                                         // use first file directory as the base directory
-StringCopy      ( basedir,  gogof[ 0 ][ 0 ] );
+StringCopy      ( basedir,  subjects[ 0 ][ 0 ] );
 RemoveFilename  ( basedir );
 
 string              prefix          = GetCLIOptionEnum ( computingris, __prefix );
@@ -294,7 +294,7 @@ cout << NewLine;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ComputingRis    (   esicase,
-                    gogof,                  
+                    subjects,                  
                     numsubjects,            numconditions,
                     
                     inversefiles,           regularization,         backnorm,
