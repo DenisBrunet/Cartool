@@ -242,7 +242,7 @@ public:
     void            KeepMarkers             ( const char* greppedwith );
 
     void            SortMarkers             ();                                                     // Does not set MarkersDirty
-    MarkersError    SortAndCleanMarkers     ();                                                     // Does not set MarkersDirty; Returns various error flags for caller
+    MarkersError    SortAndCleanMarkers     ( bool exactmatch = true );                             // Does not set MarkersDirty; Returns various error flags for caller
 
 
     void            EpochsToMarkers         ( EpochsType epochs, const TStrings* epochfrom, const TStrings* epochto, long mintf, long maxtf, long periodiclength );   // will not include non-overlapping epochs

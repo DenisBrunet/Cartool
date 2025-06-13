@@ -350,7 +350,10 @@ void    TTracksDoc::InitLimits ( InitType how )
 {
 ResetLimits ();
 
-                                        // overriding for the moment
+if ( NumTimeFrames == 0 )
+    return;
+
+                                        // overriding parameter for the moment
 how     = InitFast;
 
 

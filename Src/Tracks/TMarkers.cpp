@@ -695,7 +695,7 @@ return  false;
                                         // Force sort the content - Output will therefore also be sorted
                                         // Does NOT update MarkersDirty
                                         // Returned error codes: NoMarkersError, MarkersRemovedDuplicate
-MarkersError    TMarkers::SortAndCleanMarkers ()
+MarkersError    TMarkers::SortAndCleanMarkers ( bool exactmatch )
 {
 if ( GetNumMarkers () < 2 )
     return  NoMarkersError;
@@ -710,7 +710,9 @@ bool                    removedduplicates   = false;
                                         // testing if NEXT marker exists
 for ( iterator.SetForward ( Markers ); iterator.Current ()->Next != 0; ) {
 
-    if ( *iterator.Current ()->ToData == *iterator.Current ()->Next->ToData ) {
+    if (   exactmatch && *iterator.Current ()->ToData ==              *iterator.Current ()->Next->ToData    // test position, type and name
+      || ! exactmatch &&  iterator.Current ()->ToData->SamePosition ( *iterator.Current ()->Next->ToData )  // test only position
+       ) {
 
         Markers.RemoveAtom ( iterator.Current()->Next, Deallocate );
                                         // change occurred

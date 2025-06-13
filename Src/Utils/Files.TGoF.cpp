@@ -2908,11 +2908,14 @@ for ( int i = 0; i < (int) Strings; i++ ) {
                                         // we have no session issues here, so we can load the marker file directly
     TMarkers            eegmarkers ( mrkfilename );
 
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Filtering markers
+                                        // Keeping markers according to caller's request
     eegmarkers.KeepMarkers ( greppedwith );
 
+                                        // !Removing markers with identical position!
+    eegmarkers.SortAndCleanMarkers ( false );
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check what remains after filtering the markers
     if ( eegmarkers.IsEmpty () ) {
                                         // Oops, there is nothing - what do?
@@ -2969,12 +2972,10 @@ for ( int i = 0; i < (int) Strings; i++ ) {
                                         // starting from marker beginning
         oneepoch.From   = eegmarkers[ markeri     ]->From;
 
-                                        // ending is either marker's end, or next marker beginning - 1
-                                        // !does not test for duplicated markers at the same position!
-        oneepoch.To     = eegmarkers[ markeri     ]->IsExtended ()  ? eegmarkers[ markeri     ]->To
-                        : markeri < eegmarkers.GetNumMarkers () - 1 ? eegmarkers[ markeri + 1 ]->From - 1
+                                        // ending depends on current marker
+        oneepoch.To     = eegmarkers[ markeri     ]->IsExtended ()  ? eegmarkers[ markeri     ]->To         // if extended, use marker's span
+                        : markeri < eegmarkers.GetNumMarkers () - 1 ? eegmarkers[ markeri + 1 ]->From - 1   // if not extended, use next marker's beginning
                         :                                             maps.GetNumMaps () - 1;
-
 
         onetaglist.ResetMarkers ();
 
