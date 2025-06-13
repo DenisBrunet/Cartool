@@ -358,7 +358,7 @@ verbose.Put ( "Preset:", CRISPresets[ esicase ].Text );
 
 verbose.NextLine ();
 
-verbose.Put ( "Inverse Matrix case:", individualinverses ? "Per subject's inverse matrix" : "Single template inverse matrix" );
+verbose.Put ( "Inverse Matrix case:", individualinverses ? "Individual Inverse Matrix" : "Common Inverse Matrix" );
 verbose.Put ( "Inverse Matrix file:", individualinverses ? "See Input File section" : isdoc->GetDocPath () );
 verbose.Put ( "Regularization level:", RegularizationToString ( regularization, buff, false ) );
 
@@ -429,20 +429,16 @@ if ( computegroupscentroids ) {
 
 verbose.NextTopic ( "Input Files:" );
 {
-verbose.Put ( "Number of groups of input files:", numgroups );
-verbose.Put ( "One group of files contains:", CRISPresets[ esicase ].IsEpochs () ? "1 Subject, All Conditions, All Epochs" : "1 Subject, All Conditions" );
-
-verbose.NextLine ();
-verbose.Put ( "Number of subjects:",   numsubjects );
+verbose.Put ( "Number of subjects:",   numsubjects   );
 verbose.Put ( "Number of conditions:", numconditions );
 
 
-for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
+for ( int si = 0; si < numgroups; si++ ) {
 
     verbose.NextLine ();
     verbose.Put ( esicase     == ComputingRisPresetErpGroupMeans ?  "Group #:"  // more precise
-                :                                                   "Subject #:", gogofi + 1 );
-    verbose.Put ( "Number of files:", subjects[ gogofi ].NumFiles () );
+                :                                                   "Subject #:", si + 1 );
+    verbose.Put ( "Number of EEG files:", subjects[ si ].NumFiles () );
 
 
     if ( CRISPresets[ esicase ].IsEpochs () ) {
@@ -450,7 +446,7 @@ for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
         TGoGoF              splitgogof;
         TStrings            splitnames;
 
-        subjects[ gogofi ].SplitByNames ( "." InfixEpoch, splitgogof, &splitnames );
+        subjects[ si ].SplitByNames ( "." InfixEpoch, splitgogof, &splitnames );
 
         verbose.Put ( "Number of groups of epochs:", splitgogof.NumGroups () );
 
@@ -459,16 +455,12 @@ for ( int gogofi = 0; gogofi < numgroups; gogofi++ ) {
             verbose.Put ( fi ? "" : StringCopy ( buff, "Epochs Group #", IntegerToString ( gofi + 1 ), ":" ), splitgogof[ gofi ][ fi ] );
         }
     else 
-        for ( int fi = 0; fi < subjects[ gogofi ].NumFiles (); fi++ )
-            verbose.Put ( "", subjects[ gogofi ][ fi ] );
-    }
+        for ( int fi = 0; fi < subjects[ si ].NumFiles (); fi++ )
+            verbose.Put ( "", subjects[ si ][ fi ] );
 
 
-if ( individualinverses ) {
-
-    verbose.NextLine ();
-    for ( int fi = 0; fi < (int) inversefiles; fi++ )
-        verbose.Put ( fi ? "" : "Per subjects' matrices:", inversefiles[ fi ] );
+    if ( individualinverses )
+        verbose.Put ( "Inverse Matrix:", inversefiles[ si ] );
     }
 }
 
@@ -1319,17 +1311,17 @@ if ( (bool) zscoregofout ) {
 
 if ( savingindividualfiles ) {
                                         // 1 gof = 1 condition, all subjects
-    for ( int gogofi = 0; gogofi < (int) gogofpercondition; gogofi++ ) {
+    for ( int si = 0; si < (int) gogofpercondition; si++ ) {
 
         verbose.NextLine ();
-        verbose.Put ( "Group #:", gogofi + 1 );
-        verbose.Put ( "Number of ris files:", gogofpercondition[ gogofi ].NumFiles () );
+        verbose.Put ( "Subject #:", si + 1 );
+        verbose.Put ( "Number of ris files:", gogofpercondition[ si ].NumFiles () );
 
-        for ( int fi = 0; fi < gogofpercondition[ gogofi ].NumFiles (); fi++ ) {
+        for ( int fi = 0; fi < gogofpercondition[ si ].NumFiles (); fi++ ) {
                                         // file within a given condition
-            verbose.Put ( "File:", gogofpercondition[ gogofi ][ fi ] );
+            verbose.Put ( "File:", gogofpercondition[ si ][ fi ] );
                                         // show the exact regularization used for the file
-            verbose.Put ( "Regularization:", usedregularizations[ fi * numconditions + gogofi ] );
+            verbose.Put ( "Regularization:", usedregularizations[ fi * numconditions + si ] );
             }
 
         }
