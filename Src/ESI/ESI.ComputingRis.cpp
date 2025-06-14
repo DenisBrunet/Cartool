@@ -58,8 +58,8 @@ ReadFromHeader ( zscorefile, ReadNumTimeFrames, &numspzscorefile      );
 ReadFromHeader ( zscorefile, ReadNumElectrodes, &numfactorszscorefile );
 
 
-return    ( numfactorszscorefile == 2 || numfactorszscorefile == 9 )    // mean + SD or 9 parameters
-       && numspzscorefile   == isdoc->GetNumSolPoints ();               // exact same number of correction factors as solution points
+return  ( numfactorszscorefile == 2 || numfactorszscorefile == 9 )  // mean + SD or 9 parameters
+       && numspzscorefile == isdoc->GetNumSolPoints ();             // exact same number of correction factors as solution points
 }
 
 
@@ -151,6 +151,8 @@ if ( freqgroups ) {
                                         // Testing if we the rigth amount of inverse files
 bool                individualinverses  = (int) inversefiles > 1 
                                        && (int) inversefiles == subjects.NumGroups ();
+
+int                 stepinverse         = 1;
 
                                         // Opening the (first) inverse matrix, which is good enough here
 TOpenDoc<TInverseMatrixDoc> isdoc ( inversefiles[ 0 ], OpenDocHidden );
@@ -460,7 +462,9 @@ for ( int si = 0; si < numgroups; si++ ) {
 
 
     if ( individualinverses )
-        verbose.Put ( "Inverse Matrix:", inversefiles[ si ] );
+        verbose.Put ( "Individual Inverse Matrix file:", inversefiles[ si ] );
+    else
+        verbose.Put ( "Common Inverse Matrix file:",     inversefiles[  0 ] );
     }
 }
 
@@ -560,7 +564,6 @@ gogofpersubject     = subjects;         // ?clipping the input subjects, like su
                                         // we need to split the data per frequency, therefore generating new files and a new GoF
 if ( esicase == ComputingRisPresetFreq ) {
 
-    TGoGoF				copygogofpersubject ( gogofpersubject );
     TGoGoF              onesubjallfreqs;
     TGoGoF              onesubjallfreqsbycond;
     TGoGoF              onesubjallfreqsbycondrealimag;
@@ -569,12 +572,12 @@ if ( esicase == ComputingRisPresetFreq ) {
     gogofpersubject.Reset ();
 
                                         // for each subject
-    for ( int absg = 0; absg < copygogofpersubject.NumGroups (); absg++ ) {
+    for ( int absg = 0; absg < subjects.NumGroups (); absg++ ) {
 
         Gauge.Next ( gaugerisfreqgroups );
 
                                         // we will have all freqs for cond1, then all freqs for cond2, etc...
-        copygogofpersubject[ absg ].SplitFreqFiles ( SplitFreqByFrequency, &onesubjallfreqs, false );
+        subjects[ absg ].SplitFreqFiles ( SplitFreqByFrequency, &onesubjallfreqs, false );
                                         // results: first GoF   SiC1F1R, SiC1F1I, SiC1F2R, SiC1F2I, etc...
                                         //          next  GoF   SiC2F1R, SiC2F1I, SiC2F2R, SiC2F2I, etc...
 
@@ -634,7 +637,12 @@ if ( esicase == ComputingRisPresetFreq ) {
                 numexpandedfreqs    = onesubjallfreqsbycond.NumGroups ();
             }
 
-        } // for copygogofpersubject
+        } // for subjects
+
+
+                                        // the list of inverses has not been expanded
+    if ( individualinverses )
+        stepinverse     = gogofpersubject.NumGroups () / subjects.NumGroups ();
 
 
     #ifdef ShowGroupsShuffling
@@ -769,10 +777,11 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Switching inverse matrix?    
-    if ( individualinverses )
+                                        // Switching inverse matrix?
+                                        // Be careful for frequency case where we expanded all freqs into tracks
+    if ( individualinverses && IsMultiple ( absg, stepinverse ) )
 
-        isdoc.Open ( inversefiles[ absg ], OpenDocHidden );
+        isdoc.Open ( inversefiles[ absg / stepinverse ], OpenDocHidden );
     
     
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1000,7 +1009,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
     else { // ! IsEpochs
                                         // regular case of centroids
-        if ( computegroupscentroids )
+        if ( computegroupscentroids ) {
 
             ComputeCentroidFiles    (   risgogof[ 0 ],      OneFileOneCentroid,
                                         centroidsmethod,
@@ -1014,11 +1023,11 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                                         centroids[ absg ],
                                         false
                                     );
-
+            }
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // saving actual regularizations
-        if ( (bool) risgogof )
+        if ( (bool) risgogof ) {
 
             for ( int absg = 0; absg < risgogof[ 0 ].NumFiles (); absg++ ) {
 
@@ -1026,6 +1035,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
                 usedregularizations[ (int) usedregularizations - 1 ]    = usedregularization;
                 }
+            }
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

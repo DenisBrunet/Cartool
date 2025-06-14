@@ -172,13 +172,13 @@ CRISPresetSpec  CRISPresets[ NumComputingRisPresets ] =
 
             {   ComputingRisPresetSeparator2,       "",                                                             CRISPresetNone,                                                                                                                           CRISPresetNone,     false     },
                                                                                                                                                                         // vectorial spontaneous not really needed, but let's give the option
-            {   ComputingRisPresetSpont,            "Resting States        - Spontaneous Data",                     (CRISPresetFlags) ( CRISPresetSpont | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetNorm,     true      },
+            {   ComputingRisPresetSpont,            "Resting States        - Spontaneous Data",                     (CRISPresetFlags) ( CRISPresetSpont | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetNorm,     false     },
                                                                                                                                                                         // vectorial spontaneous centroids has not been tested - it checks polarity per solution point
             {   ComputingRisPresetSpontClusters,    "Resting States        - Clusters from Fitting output",         (CRISPresetFlags) ( CRISPresetSpont | CRISPresetNorm | CRISPresetVect | CRISPresetClusters | CRISPresetCentroids                    ),    CRISPresetNorm,     false     },
 
             {   ComputingRisPresetSeparator3,       "",                                                             CRISPresetNone,                                                                                                                           CRISPresetNone,     false     },
 
-            {   ComputingRisPresetFreq,             "Frequency Data      - Complex results",                        (CRISPresetFlags) ( CRISPresetFreq  | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetNorm,     true      },
+            {   ComputingRisPresetFreq,             "Frequency Data       - Complex results",                       (CRISPresetFlags) ( CRISPresetFreq  | CRISPresetNorm | CRISPresetVect                                                               ),    CRISPresetNorm,     false     },
             };
 
                                         // Various messages for the InverseFile edit field
@@ -518,6 +518,7 @@ switch ( esicase ) {
 
     case ComputingRisPresetFreq:
 
+      //ResetCheck  ( SpatialFilter );  // not allowed for frequencies
         SetCheck    ( RegFixed );
 
         SetCheck    ( SavingIndividualFiles );
@@ -2359,6 +2360,7 @@ if ( Subjects.IsEmpty ()
 
 
 if ( CheckToBool ( ComputingRisTransfer.SpatialFilter ) 
+  && ComputingRisTransfer.EegPresets.GetSelIndex () != ComputingRisPresetFreq
   && ( StringIsEmpty ( ComputingRisTransfer.XyzFile ) 
     || ! ComputingRisTransfer.IsXyzOK ) ) {
     tce.Enable ( false );

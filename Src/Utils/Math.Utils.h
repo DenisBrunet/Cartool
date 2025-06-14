@@ -433,6 +433,7 @@ inline  double  SnrToPercentage         ( double snr        )   {  return  1 / P
 
 bool            IsOdd                   ( int v );
 bool            IsEven                  ( int v );
+bool            IsMultiple              ( int v, int of );
 bool            IsInteger               ( double v );
 bool            IsFraction              ( double v );
 int             Sign                    ( double v );   // > 0 -> +1, < 0 -> -1

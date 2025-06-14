@@ -2375,7 +2375,7 @@ delete[]    writingepochslist;
                                         // Complex data will generate 2 files, one real and one imaginary
                                         // Real (FFT Approximation) data will have the spectrum as the squared input
                                         // ?TODO: if file is Complex format, read complex & save norm^2 ?
-void    TGoF::SplitFreqFiles ( SplitFreqFlags how, TGoGoF *gogofout, bool showgauge )
+void    TGoF::SplitFreqFiles ( SplitFreqFlags how, TGoGoF *gogofout, bool showgauge )   const
 {
 if ( gogofout )
     gogofout->Reset ();
@@ -2711,8 +2711,6 @@ for ( int i = 0; i < NumFiles (); i++ ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( showgauge )    Gauge.HappyEnd ();
-
-
 }
 
 

@@ -288,6 +288,12 @@ bool        IsEven ( int v )
 return  ! ( v & 1 );
 }
 
+
+bool        IsMultiple ( int v, int of )
+{
+return  ! ( v % of );
+}
+
                                         // !0 case is ambiguous!
 bool        IsInteger ( double v )
 {
