@@ -70,6 +70,7 @@ public:
     void            ClipFileName            ( int from, int to )                {               StringClip      ( ToFileName ( String ), from, to ); }  // only the (last) file name part
     char*           AddExtension            ( const char* ext    )              { return  crtl::AddExtension    ( String, ext    ); }
     char*           ReplaceExtension        ( const char* newext )              { return  crtl::ReplaceExtension( String, newext ); }
+    char*           RemoveExtension         ()                                  { return  crtl::RemoveExtension ( String );         }
     char*           ReplaceDir              ( const char* newdir )              { return  crtl::ReplaceDir      ( String, newdir ); }
     char*           GetFilename             ()                                  { return  crtl::GetFilename     ( String );         }
 

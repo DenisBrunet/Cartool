@@ -410,7 +410,7 @@ else if ( StringStartsWith ( commonend, "Hz"   ) )  StringCopy ( commonend, comm
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TStringGrep         grephz ( "\\.[0-9]+\\.?[0-9]*Hz\\.", GrepOptionDefaultFiles );
+TStringGrep         grepHz ( "\\.[0-9]+\\.?[0-9]*Hz\\.", GrepOptionDefaultFiles );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -430,7 +430,7 @@ OutFileName.Clear ();
                                         // try to extract a (frequency) value from each file
 for ( int freqi = 0; freqi < numfreqs; freqi++ ) {
 
-    grephz.Matched ( gof[ freqi ], &matched );
+    grepHz.Matched ( gof[ freqi ], &matched );
 
     StringClip ( matched ( 0 ), 1, StringLength ( matched ( 0 ) ) - 2 );
 
@@ -593,11 +593,14 @@ if ( showgauge ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TTracks<float>  EegBuff ( numel, 1 );
-
                                         // Reading everything at once
-TGoMaps         maps ( &gof, AtomTypeScalar, ReferenceAsInFile );
+TGoMaps         maps    ( &gof, AtomTypeScalar, ReferenceAsInFile );
+
+TArray3<float>  results (   expfile.NumTime,                                                        // !already transposed for direct file output!
+                            expfile.NumTracks, 
+                            expfile.NumFrequencies 
+                        * ( expfile.GetAtomType ( AtomTypeUseCurrent ) == AtomTypeComplex ? 2 : 1 ) // multiplex the real / imaginary parts manually
+                        );
 
                                         // actually merge the data
 for ( int freq = 0; freq < numfreqs; freq++ ) {
@@ -605,26 +608,15 @@ for ( int freq = 0; freq < numfreqs; freq++ ) {
     if ( Gauge.IsAlive () )
         Gauge.Next ( 0 );
 
+    for ( int tf = 0; tf < tc.NumTF; tf++ )
+    for ( int e  = 0; e  < numel;    e++  )
+                                        // copy all data into big buffer
+        results ( tf, e, freq ) = maps[ freqindex ( freq , 1 ) ] ( tf, e );
 
-//    DBGV ( freqindex ( freq , 1 ) + 1, strfilenames[ freqindex ( freq , 1 ) ] );
-
-//  EegDoc.Open ( gof[ freqindex ( freq , 1 ) ], OpenDocHidden );
-
-
-    for ( long tf = 0; tf < tc.NumTF; tf++ ) {
-                                        // reading the raw tracks
-//      EegDoc->ReadRawTracks ( tf, tf, EegBuff );
-
-        for ( int e = 0; e < numel; e++ )
-
-//          expfile.Write ( EegBuff ( e , 0 ), tf, e, freq );
-            expfile.Write ( maps[ freqindex ( freq , 1 ) ] ( tf, e ), tf, e, freq );
-
-        } // for tf
-
-
-    EegDoc.Close ();
     } // for file / freq
+
+                                        // write all data in one shot
+expfile.Write ( results, NotTransposed );
 
 
 expfile.End ();
@@ -632,17 +624,17 @@ expfile.End ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // any marker file?
-TFileName           buff;
+TFileName           filemrk;
 
 for ( int i = 0; i < (int) gof; i++ ) {
 
-    StringCopy   ( buff, gof[ i ] );
-    AddExtension ( buff, FILEEXT_MRK );
+    filemrk     = gof[ i ];
+    filemrk.AddExtension ( FILEEXT_MRK );
                                         // copy the first one and stop - would be better to merge all marker files(?)
-    if ( CanOpenFile ( buff ) ) {
-        AddExtension        ( OutFileName, FILEEXT_MRK );
-        CopyFileExtended    ( buff, OutFileName );
-        RemoveExtension     ( OutFileName );
+    if ( filemrk.CanOpenFile () ) {
+        OutFileName.AddExtension    ( FILEEXT_MRK );
+        CopyFileExtended            ( filemrk,     OutFileName );
+        OutFileName.RemoveExtension ();
         break;
         }
     }

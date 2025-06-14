@@ -1406,9 +1406,10 @@ if ( ! silent ) {
 
                                         // we read blocks of EEG data
 TArray2<float>      blockeeg ( eegdoc->GetTotalElectrodes (), blocksize );  // + EegFilterSideSize ); no filters here!
-TArray3<float>      results  (  expfile.NumTime,                                                    // !transposed for direct file output!
+TArray3<float>      results  (  expfile.NumTime,                                                        // !already transposed for direct file output!
                                 expfile.NumTracks, 
-                                expfile.NumFrequencies * ( datatypeout == AtomTypeComplex ? 2 : 1 ) // multiplex the real / imaginary parts manually
+                                expfile.NumFrequencies 
+                            * ( expfile.GetAtomType ( AtomTypeUseCurrent ) == AtomTypeComplex ? 2 : 1 ) // multiplex the real / imaginary parts manually
                              );
 
                                         // FFT Approximation variables 
@@ -1938,7 +1939,7 @@ if ( analysis == FreqAnalysisFFTApproximation ) {
     }
 #endif
 
-                                        // write in one shot                                         
+                                        // write all data in one shot
 if ( outputsequential || analysis == FreqAnalysisSTransform )
 
     expfile.Write ( results, NotTransposed );

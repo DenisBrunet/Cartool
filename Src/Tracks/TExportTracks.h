@@ -171,7 +171,7 @@ public:
     void            CloneParameters ( const char* ext, const char* file1, const char* file2 = 0 );
                                         // Overriding from TDataFormat - force assignation all the time, as the object could be re-used multiple times
                                         // RIS: AtomTypeScalar or AtomTypeVector; FREQ: AtomTypeScalar or AtomTypeComplex
-    void            SetAtomType     ( AtomType at )             { OriginalAtomType = CurrentAtomType = at; }
+    void            SetAtomType     ( AtomType at )     final   { OriginalAtomType = CurrentAtomType = at; }
 
 
     void            Begin           ( bool dummyheader = false );               // checks, create stream, call write header - Called automatically

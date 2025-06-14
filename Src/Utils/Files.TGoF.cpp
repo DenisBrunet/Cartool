@@ -2431,18 +2431,16 @@ for ( int i = 0; i < NumFiles (); i++ ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    int             numel       = FreqDoc->GetNumElectrodes ();
-    long            numtf       = FreqDoc->GetNumTimeFrames ();
+    int             numel       = FreqDoc->GetNumElectrodes  ();
+    long            numtf       = FreqDoc->GetNumTimeFrames  ();
     int             numfreqs    = FreqDoc->GetNumFrequencies ();
 
                                         // !Avoid allocating arrays bigger than a fixed limit!
-    int             readtf      = ( 512 * ( 1 << 20 ) )
+    int             readtf      = GigaByte
                                 / NonNull ( numel * numfreqs * ( FreqDoc->IsComplex ( AtomTypeUseOriginal ) ? 2 : 1 ) * sizeof ( float ) );  // space for "1 slice" of electrodes x frequencies
     Clipped ( readtf, 1, (int) numtf );
 
     int             numblocks   = RoundAbove ( (double) numtf / readtf );
-
-//    DBGV5 ( numel, numtf, numfreqs, readtf, numblocks, "numel, numtf, numfreqs -> readtf numblocks" );
 
 
     if ( FreqDoc->IsComplex ( AtomTypeUseOriginal ) ) {
@@ -2526,6 +2524,8 @@ for ( int i = 0; i < NumFiles (); i++ ) {
                                         // for memory issues, we might need to run the split by blocks...
     for ( long blocktf = 0; blocktf < numtf; blocktf += readtf ) {
 
+        bool        firstblock  = blocktf == 0;
+
                                         // reading exactly this amount of time frames
         long        blocklen        = NoMore ( numtf, blocktf + readtf ) - blocktf;
 
@@ -2543,39 +2543,40 @@ for ( int i = 0; i < NumFiles (); i++ ) {
                 if ( showgauge )    Gauge.Next ( 0 );
 
 
-                StringCopy        ( exptracks.Filename, (*this)[ i ] );
-                crtl::RemoveExtension ( exptracks.Filename );
+                exptracks.Filename  = (*this)[ i ];
 
-                StringAppend    ( exptracks.Filename, ".", FreqDoc->GetFrequencyName ( freq ) );
+                exptracks.Filename.RemoveExtension ();
+
+                exptracks.Filename += "." + TStringValue ( FreqDoc->GetFrequencyName ( freq ) );
                                         // check for buggy "Hz"
         //      if ( StringEndsWith ( exptracks.Filename, " H" ) )
-        //          StringAppend ( exptracks.Filename, "z" );
+        //          exptracks.Filename += "z";
 
                 if ( FreqDoc->IsComplex ( AtomTypeUseOriginal ) )
-                    StringAppend    ( exptracks.Filename, ".", part == 0 ? InfixReal : InfixImag );
+                    exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
 
-                AddExtension    ( exptracks.Filename, FILEEXT_EEGSEF );
+                exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
 
                                         // 2 consecutive equal freq names?
         //      if ( freq && StringIs ( FreqDoc->GetFrequencyName ( freq ), FreqDoc->GetFrequencyName ( freq - 1 ) ) )
         //          ReplaceExtension    ( OutFileName, FILEEXT_EEGSEF );
 
 
-                if ( blocktf == 0 ) {
+                if ( firstblock ) {
 
                     if ( gogofout )
                         (*gogofout)[ i ].Add ( exptracks.Filename );
 
                                         // any marker file?
                     if ( StringIsNotEmpty ( filemrkin ) ) {
-                        StringCopy          ( filemrkout, exptracks.Filename );
-                        AddExtension        ( filemrkout, FILEEXT_MRK );
-                        CopyFileExtended    ( filemrkin,  filemrkout );
+                        filemrkout  = exptracks.Filename;
+                        filemrkout.AddExtension ( FILEEXT_MRK );
+                        CopyFileExtended        ( filemrkin,  filemrkout );
                         }
                     }
 
 
-                exptracks.Begin ( blocktf != 0 );
+                exptracks.Begin ( ! firstblock );
 
 
                 for ( long tf0 = 0; tf0 < blocklen; tf0++ )
@@ -2600,35 +2601,36 @@ for ( int i = 0; i < NumFiles (); i++ ) {
                 if ( showgauge )    Gauge.Next ( 0 );
 
 
-                StringCopy        ( exptracks.Filename, (*this)[ i ] );
-                crtl::RemoveExtension ( exptracks.Filename );
+                exptracks.Filename  = (*this)[ i ];
 
-                StringAppend    ( exptracks.Filename, ".", FreqDoc->GetElectrodeName ( e ) );
+                exptracks.Filename.RemoveExtension ();
+
+                exptracks.Filename += "." + TStringValue ( FreqDoc->GetElectrodeName ( e ) );
                                         // check for buggy "Hz"
         //      if ( StringEndsWith ( exptracks.Filename, " H" ) )
-        //          StringAppend ( exptracks.Filename, "z" );
+        //          exptracks.Filename += "z";
 
                 if ( FreqDoc->IsComplex ( AtomTypeUseOriginal ) )
-                    StringAppend    ( exptracks.Filename, ".", part == 0 ? InfixReal : InfixImag );
+                    exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
 
-                AddExtension    ( exptracks.Filename, FILEEXT_EEGSEF );
+                exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
 
 
-                if ( blocktf == 0 ) {
+                if ( firstblock ) {
 
                     if ( gogofout )
                         (*gogofout)[ i ].Add ( exptracks.Filename );
 
                                         // any marker file?
                     if ( StringIsNotEmpty ( filemrkin ) ) {
-                        StringCopy          ( filemrkout, exptracks.Filename );
-                        AddExtension        ( filemrkout, FILEEXT_MRK );
-                        CopyFileExtended    ( filemrkin,  filemrkout );
+                        filemrkout  = exptracks.Filename;
+                        filemrkout.AddExtension ( FILEEXT_MRK );
+                        CopyFileExtended        ( filemrkin,  filemrkout );
                         }
                     }
 
 
-                exptracks.Begin ( blocktf != 0 );
+                exptracks.Begin ( ! firstblock );
 
 
                 for ( long tf0 = 0; tf0 < blocklen; tf0++ )
@@ -2654,16 +2656,16 @@ for ( int i = 0; i < NumFiles (); i++ ) {
                 if ( showgauge )    Gauge.Next ( 0 );
 
 
-                StringCopy        ( exptracks.Filename, (*this)[ i ] );
-                crtl::RemoveExtension ( exptracks.Filename );
+                exptracks.Filename  = (*this)[ i ];
 
-                char buff[ 32 ];
-                StringAppend    ( exptracks.Filename, "." InfixSpectrum " ", IntegerToString ( buff, blocktf + tf0 + 1, tfwidth ) );
+                exptracks.Filename.RemoveExtension ();
+
+                exptracks.Filename += "." InfixSpectrum " " + IntegerToString ( blocktf + tf0 + 1, tfwidth );
 
                 if ( FreqDoc->IsComplex ( AtomTypeUseOriginal ) )
-                    StringAppend    ( exptracks.Filename, ".", part == 0 ? InfixReal : InfixImag );
+                    exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
 
-                AddExtension    ( exptracks.Filename, FILEEXT_EEGSEF );
+                exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
 
 
                 if ( gogofout )
@@ -2671,9 +2673,9 @@ for ( int i = 0; i < NumFiles (); i++ ) {
 
                                     // any marker file?
                 if ( StringIsNotEmpty ( filemrkin ) ) {
-                    StringCopy          ( filemrkout, exptracks.Filename );
-                    AddExtension        ( filemrkout, FILEEXT_MRK );
-                    CopyFileExtended    ( filemrkin,  filemrkout );
+                    filemrkout  = exptracks.Filename;
+                    filemrkout.AddExtension ( FILEEXT_MRK );
+                    CopyFileExtended        ( filemrkin,  filemrkout );
                     }
 
 
