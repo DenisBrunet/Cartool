@@ -1377,16 +1377,32 @@ sum    /= numfiles;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // save a lot of time with some handy buffer
+TArray3<float>  results (   expfile.NumTime,                                                        // !already transposed for direct file output!
+                            expfile.NumTracks, 
+                            expfile.NumFrequencies 
+                        * ( expfile.GetAtomType ( AtomTypeUseCurrent ) == AtomTypeComplex ? 2 : 1 ) // multiplex the real / imaginary parts manually
+                        );
+
                                         // Save Mean
 Gauge.Next ( 0 );
 
 if ( meanfile ) {
 
+    OmpParallelFor
+
+    for ( int tfi = 0; tfi < numtf;     tfi++ )
+    for ( int fi  = 0; fi  < numfreqs;  fi ++ )
+    for ( int ei  = 0; ei  < numtracks; ei ++ )
+                                        // copy all data into big buffer
+        results ( tfi, ei, fi ) = sum ( fi, ei, tfi );
+
+
     StringCopy      ( expfile.Filename, filemean );
+                                        // write all data in one shot
+    expfile.Write   ( results, NotTransposed );
 
-    expfile.Write   ( sum );
-
-    expfile.End ();
+    expfile.End     ();
 
 
     StringCopy ( meanfile, expfile.Filename );
@@ -1402,11 +1418,20 @@ Gauge.Next ( 0 );
 
 if ( sdfile ) {
 
-    StringCopy      ( expfile.Filename, filesd );
-                                        // !sum2 is now holding the actual sd!
-    expfile.Write   ( sum2 );
+    OmpParallelFor
 
-    expfile.End ();
+    for ( int tfi = 0; tfi < numtf;     tfi++ )
+    for ( int fi  = 0; fi  < numfreqs;  fi ++ )
+    for ( int ei  = 0; ei  < numtracks; ei ++ )
+                                        // !sum2 is now holding the actual sd!
+        results ( tfi, ei, fi ) = sum2 ( fi, ei, tfi );
+
+
+    StringCopy      ( expfile.Filename, filesd );
+                                        // write all data in one shot
+    expfile.Write   ( results, NotTransposed );
+
+    expfile.End     ();
 
 
     StringCopy ( sdfile, expfile.Filename );

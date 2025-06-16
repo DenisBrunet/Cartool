@@ -216,13 +216,13 @@ TFileName           sphsdfile;
 
 if      (   tg.alleeg 
                                         // Vectorial to scalar ris is also done here
-       || ( tg.allris && ( ! tg.allrisv || risvtos ) ) )    BatchAveragingScalar    (   gof,
-                                                                                        meanfile,           sdfile,             0,
-                                                                                        0,                  0,
-//                                                                                      meanfile,           sdfile,             snrfile,
-//                                                                                      medianfile,   madfile,
-                                                                                        true,               true
-                                                                                    );
+       || ( tg.allris && ( ! tg.allrisv || risvtos ) ) )    BatchAveragingScalar        (   gof,
+                                                                                            meanfile,           sdfile,             0,
+                                                                                            0,                  0,
+//                                                                                          meanfile,           sdfile,             snrfile,
+//                                                                                          medianfile,   madfile,
+                                                                                            true,               true
+                                                                                        );
 else if   ( tg.allrisv ) {
 
     if ( risvpooled )                                       BatchPoolAveragingVectorial (   gof,
@@ -234,27 +234,27 @@ else if   ( tg.allrisv ) {
                                                                                             true,               true
                                                                                         );
 
-    else                                                    BatchAveragingVectorial (   gof,
-                                                                                        meanfile,           0,                  0,
-                                                                                        0,                  sphsdfile,          0,
-//                                                                                      meanfile,           nmeanfile,          snrfile,
-//                                                                                      sphmeanfile,        sphsdfile,          sphsnrfile,
-                                                                                        true,               true
-                                                                                    );
+    else                                                    BatchAveragingVectorial     (   gof,
+                                                                                            meanfile,           0,                  0,
+                                                                                            0,                  sphsdfile,          0,
+//                                                                                          meanfile,           nmeanfile,          snrfile,
+//                                                                                          sphmeanfile,        sphsdfile,          sphsnrfile,
+                                                                                            true,               true
+                                                                                        );
     } // allrisv
 
-else if   ( tg.allfreq )                                    BatchAveragingFreq      (   gof,
-                                                                                        freqtype,           fftapproxpolarity,
-                                                                                        meanfile,           0,
-//                                                                                      freqtype,           fftapproxpolarity,
-//                                                                                      meanfile,           sdfile,
-                                                                                        true,               true    
-                                                                                    );
+else if   ( tg.allfreq )                                    BatchAveragingFreq          (   gof,
+                                                                                            freqtype,           fftapproxpolarity,
+                                                                                            meanfile,           0,
+//                                                                                          freqtype,           fftapproxpolarity,
+//                                                                                          meanfile,           sdfile,
+                                                                                            true,               true    
+                                                                                        );
 
-else if   ( tg.alldata )                                    BatchAveragingErrorData (   gof,    
-                                                                                        meanfile,
-                                                                                        true,               true
-                                                                                    );
+else if   ( tg.alldata )                                    BatchAveragingErrorData     (   gof,    
+                                                                                            meanfile,
+                                                                                            true,               true
+                                                                                        );
 }
 
 
