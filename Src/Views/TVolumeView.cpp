@@ -48,7 +48,7 @@ namespace crtl {
 
 extern  TTalairachOracle        Taloracle;
 
-extern  TPreprocessMrisStruct       MriPreprocTransfer;
+extern  TPreprocessMrisStruct   MriPreprocTransfer;
 
 
 const char  EditingToolsString[ NumEditingTools ][ 256 ] =
@@ -88,11 +88,11 @@ const char  EditingToolsString[ NumEditingTools ][ 256 ] =
     TVolumeState::TVolumeState ()    
 {
 RenderingMode   = 0;
-Clip[ 0 ]       =
-Clip[ 1 ]       = 
-Clip[ 2 ]       = 
-Clip[ 3 ]       = 
-Clip[ 4 ]       = 
+Clip[ 0 ]       = 0;
+Clip[ 1 ]       = 0;
+Clip[ 2 ]       = 0;
+Clip[ 3 ]       = 0;
+Clip[ 4 ]       = 0;
 Clip[ 5 ]       = 0;
 }
 
@@ -384,10 +384,10 @@ SlicesPerY      = 20;
 #define     MaterialOutDiffuse      0.80,  0.80,  0.80,  1.00
 
 MaterialOut = TGLMaterial<GLfloat> ( GL_FRONT_AND_BACK,
-                                      MaterialOutAmbient,
-                                      MaterialOutDiffuse,
-                                      0.20,  0.20,  0.20,  1.00,
-                                      0.00,  0.00,  0.00,  0.00,
+                                     MaterialOutAmbient,
+                                     MaterialOutDiffuse,
+                                     0.20,  0.20,  0.20,  1.00,
+                                     0.00,  0.00,  0.00,  0.00,
                                      30.00 );
 
 /*
@@ -395,10 +395,10 @@ MaterialOut = TGLMaterial<GLfloat> ( GL_FRONT_AND_BACK,
 #define     MaterialInDiffuse       0.85,  0.85,  0.45,  1.00
 
 MaterialIn  = TGLMaterial<GLfloat> ( GL_BACK,
-                                      MaterialInAmbient,
-                                      MaterialInDiffuse,
-                                      0.25,  0.25,  0.25,  1.00,
-                                      0.00,  0.00,  0.00,  0.00,
+                                     MaterialInAmbient,
+                                     MaterialInDiffuse,
+                                     0.25,  0.25,  0.25,  1.00,
+                                     0.00,  0.00,  0.00,  0.00,
                                      30.00 );
 */
 
@@ -407,11 +407,11 @@ MaterialIn  = TGLMaterial<GLfloat> ( GL_BACK,
 #define     MaterialTrDiffuse       0.55,  0.55,  0.55,  MRIALPHA
 
 MaterialTr = TGLMaterial<GLfloat> ( GL_FRONT_AND_BACK,
-                                      MaterialTrAmbient,
-                                      MaterialTrDiffuse,
-                                      1.00,  1.00,  1.00,  1.00,
-                                      0.00,  0.00,  0.00,  0.00,
-                                     40.00 );
+                                    MaterialTrAmbient,
+                                    MaterialTrDiffuse,
+                                    1.00,  1.00,  1.00,  1.00,
+                                    0.00,  0.00,  0.00,  0.00,
+                                    40.00 );
 
 /*
 ClipPlane[ 0 ]  = TGLClipPlane ( GL_CLIP_PLANE0, -1,  0,  0, ModelCenter.X, b->XMin() - 1 - MRIDoc->GetOrigin ().X,
@@ -875,9 +875,9 @@ else                                    // otherwise, use local clipping
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Volume&                     vol     = *MRIDoc->GetData ();
+const Volume&               vol     = *MRIDoc->GetData     ();
 const TBoundingBox<double>* b       =  MRIDoc->GetBounding ();
-double                      mrisize = b->GetMeanExtent ();
+double                      mrisize = b->GetMeanExtent     ();
 
 
 GLfloat             mrimin[ 4 ];        // get MRI box
@@ -898,17 +898,16 @@ GLfloat             zshift          = - MRIDoc->GetOrigin ()[ 2 ];
 
 bool                lininterpol     = ! MRIDoc->IsMask ();
 int                 clipmode        = 0;
-char                buff[ 32 ];
 
 TGLCoordinates<GLfloat> v;
 int                 quality;
 bool                slicemode       = SliceMode && ( how & GLPaintOwner );
-TSliceSelection    *slch            = slicemode ? &Slices[ SliceMode - 1 ] : 0;
+TSliceSelection*    slch            = slicemode ? &Slices[ SliceMode - 1 ] : 0;
 int                 slicei;
-int                 nviews          = slicemode ? slch->GetTotalSlices() : 1;
+int                 nviews          = slicemode ? slch->GetTotalSlices () : 1;
 //bool                manyviewpoints = Viewpoints.Mode && !SliceMode; // && ( how & GLPaintOwner );
-//TOneViewpoint    *viewpoint;
-//int                 nviews        = slicemode ? slch->GetTotalSlices() : manyviewpoints ? Viewpoints.NumViewpoints : 1;
+//TOneViewpoint*    viewpoint;
+//int               nviews          = slicemode ? slch->GetTotalSlices() : manyviewpoints ? Viewpoints.NumViewpoints : 1;
 int                 slicex;
 int                 slicey;
 
@@ -940,8 +939,8 @@ minValue    = vol ( minPos );
 MRIDoc->ToAbs ( minPos );
 
 
-GalMaxValue = -DBL_MAX;
-GalMinValue =  DBL_MAX;
+GalMaxValue = Lowest  ( GalMaxValue );
+GalMinValue = Highest ( GalMinValue );
 
 if ( maxValue > GalMaxValue ) {
     GalMaxValue     = maxValue;
@@ -1158,7 +1157,7 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Opaque
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // draw a series of "2D" slices
+                                        // Drawing a series of 2D slices
     if ( slicemode && ( how & GLPaintOpaque ) ) {
 
         GLColoringOn        ();
@@ -1308,7 +1307,7 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // draw MRI as 3D slices
+                                        // Drawing Volume as opaque 3D slices
     if ( ncutplanes && renderingmode == MriSliceOpaque && ( how & GLPaintOpaque ) ) {
 
         GLColoringOn        ();
@@ -1318,11 +1317,11 @@ for ( int nv = 0; nv < nviews; nv++ ) {
             GLFogOff        ();
 
 
-//      if ( (bool) clipplane[0] && ( !manyviewpoints || viewpoint->SliceToShow == 0 || viewpoint->Summary ) )
+//      if ( (bool) clipplane[ 0 ] && ( !manyviewpoints || viewpoint->SliceToShow == 0 || viewpoint->Summary ) )
 
-        if ( (bool) clipplane[0] )  volume->DrawPlaneX ( cx, quality );
-        if ( (bool) clipplane[1] )  volume->DrawPlaneY ( cy, quality );
-        if ( (bool) clipplane[2] )  volume->DrawPlaneZ ( cz, quality );
+        if ( (bool) clipplane[ 0 ] )  volume->DrawPlaneX ( cx, quality );
+        if ( (bool) clipplane[ 1 ] )  volume->DrawPlaneY ( cy, quality );
+        if ( (bool) clipplane[ 2 ] )  volume->DrawPlaneZ ( cz, quality );
 
 
         GLColoringOff       ();
@@ -1356,7 +1355,7 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // draw the isosurface
+                                        // Drawing volume as an isosurface
     if ( renderingmode == MriTransparent && ( how & GLPaintTransparent )
       || renderingmode == MriOpaque      && ( how & GLPaintOpaque ) ) {
 
@@ -1403,14 +1402,10 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 
                                         // take the most benefit of the first pass
         if ( CappingMode != MriNoCapping && ncutplanes == 1 ) {
-            glClearStencil  ( 0 );
-            glStencilMask   ( 1 );
-            glEnable        ( GL_STENCIL_TEST );
-            glClear         ( GL_STENCIL_BUFFER_BIT );
-            glStencilFunc   ( GL_ALWAYS, 0, 1 );
-            glStencilOp     ( GL_KEEP, GL_INVERT, GL_INVERT );
+            GLStencilOn     ();
+            GLStencilInit   ();
 
-            stencilfilled   = drawi[0];
+            stencilfilled   = drawi[ 0 ];
             }
 
                                         // add a global shift
@@ -1484,7 +1479,7 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 
                                         // stop writing to the stencil
             if ( CappingMode != MriNoCapping && ncutplanes == 1 && ! n )
-                glDisable ( GL_STENCIL_TEST );
+                GLStencilOff    ();
             } // for ndraws
 
                                         // 3D implicit texture off
@@ -1516,9 +1511,9 @@ for ( int nv = 0; nv < nviews; nv++ ) {
         glDisableClientState    ( GL_NORMAL_ARRAY );
 
 
-        if ( (bool) clipplane[0] ) clipplane[0].unGLize();
-        if ( (bool) clipplane[1] ) clipplane[1].unGLize();
-        if ( (bool) clipplane[2] ) clipplane[2].unGLize();
+        if ( (bool) clipplane[ 0 ] ) clipplane[ 0 ].unGLize();
+        if ( (bool) clipplane[ 1 ] ) clipplane[ 1 ].unGLize();
+        if ( (bool) clipplane[ 2 ] ) clipplane[ 2 ].unGLize();
         } // draw isosurface
 
 
@@ -1532,8 +1527,8 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // init the capping
-                                        // all triangles are accepted and invert 1 bit
+                                        // Capping initialization
+                                        // All triangles are accepted and invert 1 bit
     if ( CappingMode != MriNoCapping && ncutplanes
 
       && ( renderingmode == MriTransparent && ( how & GLPaintTransparent )
@@ -1558,17 +1553,14 @@ for ( int nv = 0; nv < nviews; nv++ ) {
             }
 
 
-        glClearStencil ( 0 );
-        glStencilMask ( 1 );
-        glEnable ( GL_STENCIL_TEST );
+        GLStencilOn     ();
 
         glEnableClientState ( GL_VERTEX_ARRAY );
 
 
-        auto    StencilBefore = [] {
-                glClear         ( GL_STENCIL_BUFFER_BIT );
-                glStencilFunc   ( GL_ALWAYS, 0, 1 );
-                glStencilOp     ( GL_KEEP, GL_INVERT, GL_INVERT );
+        auto    StencilBegin    = [] {
+                GLStencilInit   ();
+                                        // turning off useless rendering processing
                 glColorMask     ( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
                 glDepthMask     ( GL_FALSE );
                 glDisable       ( GL_LIGHT0 );
@@ -1576,23 +1568,24 @@ for ( int nv = 0; nv < nviews; nv++ ) {
                 glShadeModel    ( GL_FLAT );
                 };
 
-        auto    StencilAfter = [ &renderingmode ] {
+        auto    StencilEnd      = [ &renderingmode ] {
+                                        // restoring rendering processing
                 glColorMask     ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+                if ( renderingmode == MriOpaque )
+                    glDepthMask ( GL_TRUE );
                 glEnable        ( GL_LIGHT0 );
                 glEnable        ( GL_LIGHT1 );
                 glShadeModel    ( GL_SMOOTH );
-                if ( renderingmode == MriOpaque )
-                    glDepthMask ( GL_TRUE );
                 };
 
 
-        if ( (bool) clipplane[0] ) {
-                                        // need to fill the stencil?
+        if ( (bool) clipplane[ 0 ] ) {
+                                        // need to fill the stencil for this clipping plane?
             if ( stencilfilled != 0 ) {
 
-                StencilBefore ();
+                StencilBegin ();
 
-                clipplane[0].GLize ( clipmode );
+                clipplane[ 0 ].GLize ( clipmode );
 
                 if ( maxtrihullpos ) {
                     glVertexPointer ( 3, GL_FLOAT, 0, tsurfpos->GetListTriangles     () );
@@ -1604,37 +1597,37 @@ for ( int nv = 0; nv < nviews; nv++ ) {
                     glDrawArrays    ( GL_TRIANGLES, 0, 3 * maxtrihullneg );
                     }
 
-                StencilAfter ();
+                StencilEnd ();
                 }
-                                        // now use the stencil
-            glStencilFunc ( GL_NOTEQUAL, 0, 1 );
-    //      glStencilOp ( GL_KEEP, GL_KEEP, GL_KEEP );
+
+
+            GLStencilUse    ();
 
                                         // clip
-            clipplane[0].unGLize();
+            clipplane[ 0 ].unGLize();
 
-            if ( (bool) clipplane[1] )  clipplane[1].GLize ( clipmode | InvertedClipPlane );
-            if ( (bool) clipplane[2] )  clipplane[2].GLize ( clipmode | InvertedClipPlane );
+            if ( (bool) clipplane[ 1 ] )  clipplane[ 1 ].GLize ( clipmode | InvertedClipPlane );
+            if ( (bool) clipplane[ 2 ] )  clipplane[ 2 ].GLize ( clipmode | InvertedClipPlane );
 
 
                                         // paint
-            glFrontFace ( clipplane[0].IsForward() ? GL_CW : GL_CCW );
-            glNormal3f  ( clipplane[0].IsForward() ? -1 : 1, 0, 0 );
+            glFrontFace ( clipplane[ 0 ].IsForward() ? GL_CW : GL_CCW );
+            glNormal3f  ( clipplane[ 0 ].IsForward() ? -1 : 1, 0, 0 );
 
             volume->DrawPlaneX ( cx, quality, true );
 
-            if ( (bool) clipplane[1] )  clipplane[1].unGLize();
-            if ( (bool) clipplane[2] )  clipplane[2].unGLize();
+            if ( (bool) clipplane[ 1 ] )  clipplane[ 1 ].unGLize();
+            if ( (bool) clipplane[ 2 ] )  clipplane[ 2 ].unGLize();
             } // clip0
 
 
-        if ( (bool) clipplane[1] ) {
-                                        // need to fill the stencil?
+        if ( (bool) clipplane[ 1 ] ) {
+                                        // need to fill the stencil for this clipping plane?
             if ( stencilfilled != 1 ) {
 
-                StencilBefore ();
+                StencilBegin ();
 
-                clipplane[1].GLize( clipmode );
+                clipplane[ 1 ].GLize( clipmode );
 
                 if ( maxtrihullpos ) {
                     glVertexPointer ( 3, GL_FLOAT, 0, tsurfpos->GetListTriangles     () );
@@ -1646,35 +1639,36 @@ for ( int nv = 0; nv < nviews; nv++ ) {
                     glDrawArrays    ( GL_TRIANGLES, 0, 3 * maxtrihullneg );
                     }
 
-                StencilAfter ();
+                StencilEnd ();
                 }
-                                        // now use the stencil
-            glStencilFunc ( GL_NOTEQUAL, 0, 1 );
+
+
+            GLStencilUse    ();
 
                                         // clip
-            clipplane[1].unGLize();
+            clipplane[ 1 ].unGLize();
 
-            if ( (bool) clipplane[0] )  clipplane[0].GLize ( clipmode | InvertedClipPlane );
-            if ( (bool) clipplane[2] )  clipplane[2].GLize ( clipmode | InvertedClipPlane );
+            if ( (bool) clipplane[ 0 ] )  clipplane[ 0 ].GLize ( clipmode | InvertedClipPlane );
+            if ( (bool) clipplane[ 2 ] )  clipplane[ 2 ].GLize ( clipmode | InvertedClipPlane );
 
                                         // paint
-            glFrontFace ( clipplane[1].IsForward() ? GL_CCW : GL_CW );
-            glNormal3f  ( 0, clipplane[1].IsForward() ? -1 : 1, 0 );
+            glFrontFace ( clipplane[ 1 ].IsForward() ? GL_CCW : GL_CW );
+            glNormal3f  ( 0, clipplane[ 1 ].IsForward() ? -1 : 1, 0 );
 
             volume->DrawPlaneY ( cy, quality, true );
 
-            if ( (bool) clipplane[0] )  clipplane[0].unGLize();
-            if ( (bool) clipplane[2] )  clipplane[2].unGLize();
+            if ( (bool) clipplane[ 0 ] )  clipplane[ 0 ].unGLize();
+            if ( (bool) clipplane[ 2 ] )  clipplane[ 2 ].unGLize();
             } // clip1
 
 
-        if ( (bool) clipplane[2] ) {
-                                        // need to fill the stencil?
+        if ( (bool) clipplane[ 2 ] ) {
+                                        // need to fill the stencil for this clipping plane?
             if ( stencilfilled != 2 ) {
 
-                StencilBefore ();
+                StencilBegin ();
 
-                clipplane[2].GLize( clipmode );
+                clipplane[ 2 ].GLize( clipmode );
 
                 if ( maxtrihullpos ) {
                     glVertexPointer ( 3, GL_FLOAT, 0, tsurfpos->GetListTriangles     () );
@@ -1686,31 +1680,32 @@ for ( int nv = 0; nv < nviews; nv++ ) {
                     glDrawArrays    ( GL_TRIANGLES, 0, 3 * maxtrihullneg );
                     }
 
-                StencilAfter ();
+                StencilEnd ();
                 }
-                                        // now use the stencil
-            glStencilFunc ( GL_NOTEQUAL, 0, 1 );
+
+
+            GLStencilUse    ();
 
                                         // clip
-            clipplane[2].unGLize();
+            clipplane[ 2 ].unGLize();
 
-            if ( (bool) clipplane[0] )  clipplane[0].GLize ( clipmode | InvertedClipPlane );
-            if ( (bool) clipplane[1] )  clipplane[1].GLize ( clipmode | InvertedClipPlane );
+            if ( (bool) clipplane[ 0 ] )  clipplane[ 0 ].GLize ( clipmode | InvertedClipPlane );
+            if ( (bool) clipplane[ 1 ] )  clipplane[ 1 ].GLize ( clipmode | InvertedClipPlane );
 
 
-            glFrontFace ( clipplane[2].IsForward() ? GL_CW : GL_CCW );
-            glNormal3f  ( 0, 0, clipplane[2].IsForward() ? -1 : 1 );
+            glFrontFace ( clipplane[ 2 ].IsForward() ? GL_CW : GL_CCW );
+            glNormal3f  ( 0, 0, clipplane[ 2 ].IsForward() ? -1 : 1 );
 
             volume->DrawPlaneZ ( cz, quality, true );
 
-            if ( (bool) clipplane[0] )  clipplane[0].unGLize();
-            if ( (bool) clipplane[1] )  clipplane[1].unGLize();
+            if ( (bool) clipplane[ 0 ] )  clipplane[ 0 ].unGLize();
+            if ( (bool) clipplane[ 1 ] )  clipplane[ 1 ].unGLize();
             } // clip2
 
 
         glFrontFace ( GL_CW );
 
-        glDisable ( GL_STENCIL_TEST );
+        GLStencilOff    ();
 
         glVertexPointer         ( 3, GL_FLOAT, 0, 0 );
 
@@ -1737,8 +1732,10 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // outline clipping planes
+                                        // Outlining the clipping planes with an outer frame
     if ( ShiftAxis != ShiftNone && ( how & GLPaintOpaque ) && ( how & GLPaintOwner ) ) {
+        
+        TFixedString<32>    buff;
 
         GLLinesModeOn       ();
 
@@ -1746,7 +1743,7 @@ for ( int nv = 0; nv < nviews; nv++ ) {
         if ( ShiftAxis == ShiftX ) {
             glColor4f ( 1.00, 0.00, 0.00, 1.00 );
 
-            sprintf ( buff, "X = %g", cx );
+            buff    = "X = " + FloatToString ( cx );
             SFont->Print ( cx, mrimax[ 1 ], mrimax[ 2 ], buff, TA_CENTER | TA_TOP | TA_BOX, 0, 0, 0.025 );
 
             Prim.Draw3DWireFrame ( cx, cx, mrimin[ 1 ], mrimax[ 1 ], mrimin[ 2 ], mrimax[ 2 ], 3 );
@@ -1755,7 +1752,7 @@ for ( int nv = 0; nv < nviews; nv++ ) {
         if ( ShiftAxis == ShiftY ) {
             glColor4f ( 0.00, 1.00, 0.00, 1.00 );
 
-            sprintf ( buff, "Y = %g", cy );
+            buff    = "Y = " + FloatToString ( cy );
             SFont->Print ( mrimax[ 0 ], cy, mrimax[ 2 ], buff, TA_CENTER | TA_TOP | TA_BOX, 0, 0, 0.025 );
 
             Prim.Draw3DWireFrame ( mrimin[ 0 ], mrimax[ 0 ], cy, cy, mrimin[ 2 ], mrimax[ 2 ], 3 );
@@ -1764,7 +1761,7 @@ for ( int nv = 0; nv < nviews; nv++ ) {
         if ( ShiftAxis == ShiftZ ) {
             glColor4f ( 0.00, 0.00, 1.00, 1.00 );
 
-            sprintf ( buff, "Z = %g", cz );
+            buff    = "Z = " + FloatToString ( cz );
             SFont->Print ( mrimax[ 0 ], mrimax[ 1 ], cz, buff, TA_CENTER | TA_TOP | TA_BOX, 0, 0, 0.025 );
 
             Prim.Draw3DWireFrame ( mrimin[ 0 ], mrimax[ 0 ], mrimin[ 1 ], mrimax[ 1 ], cz, cz, 3 );
@@ -1777,7 +1774,7 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // outline data box
+                                        // Outlining data and size with 3D frames
     if ( ( ShowSizeBox || ShowBoundingBox ) && ( how & GLPaintOpaque ) ) {
 
         GLLinesModeOn       ();
@@ -1806,7 +1803,7 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // temp code for markers
+                                        // Temp code for 3D markers
     if ( (bool) Markers && ! slicemode && ( how & GLPaintOpaque ) ) {
 
         GLMaterialOn        ();
@@ -1846,12 +1843,12 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // outline editing tool
+                                        // Outlining the editing tool
     if ( Editing && Picking.IsNotNull () && ( how & GLPaintTransparent ) ) {
 
         GLLinesModeOn       ();
         GLMaterialOn        ();
-                                                // transparent, proportional sphere
+                                        // transparent, proportional sphere
         MaterialTr.GLize ();
 
         TGLColor<GLfloat>   editcol ( EditingColorTool,   Editing == EditingToolSphereSurface       ? (GLfloat) 0.25
@@ -1976,7 +1973,7 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Transparent
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Show Min/Max in 3D
+                                        // Showing Min/Max positions in 3D
                                 // not needed for the summary slice, in SliceMode?
     if ( ( ShowMin || ShowMax ) && ! SliceMode && ( how & GLPaintOpaque ) ) {
 
@@ -1990,16 +1987,16 @@ for ( int nv = 0; nv < nviews; nv++ ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // draw MRI as 3D slices
+                                        // Drawing volume as transparent 3D slices
     if ( ncutplanes && renderingmode == MriSliceOvercast && ( how & GLPaintTransparent ) ) {
 
         GLLinesModeOn       ( /*how & GLPaintLinked*/ );
 
         MaterialTr.GLize ();
 
-        if ( (bool) clipplane[0] )  volume->DrawPlaneX ( cx, quality );
-        if ( (bool) clipplane[1] )  volume->DrawPlaneY ( cy, quality );
-        if ( (bool) clipplane[2] )  volume->DrawPlaneZ ( cz, quality );
+        if ( (bool) clipplane[ 0 ] )  volume->DrawPlaneX ( cx, quality );
+        if ( (bool) clipplane[ 1 ] )  volume->DrawPlaneY ( cy, quality );
+        if ( (bool) clipplane[ 2 ] )  volume->DrawPlaneZ ( cz, quality );
 
         GLLinesModeOff      ( /*how & GLPaintLinked*/ );
         } // MRI slices
@@ -2142,7 +2139,7 @@ if ( NotSmallWindow () ) {
         double              ypos            = PrintTopPos( PaintRect.Height () );
         double              zpos            = PrintDepthPosBack;
         double              ydelta          = PrintVerticalStep ( SFont );
-        char                buff [ 256 ];
+        TFixedString<256>   buff;
         TVector3Double      voxsize ( MRIDoc->GetVoxelSize () );
 
 
@@ -2275,7 +2272,7 @@ if ( NotSmallWindow () ) {
 
     if ( Editing ) {
 
-        char                buff [ 256 ];
+        TFixedString<256>   buff;
         double              xpos            = PaintRect.Width () * 0.25;
         double              ypos            = PrintBottomPos + 6 * PrintVerticalStep ( BFont );
         double              zpos            = PrintDepthPosBack;

@@ -217,6 +217,10 @@ void    GLSmoothEdgesOn     ();
 void    GLSmoothEdgesOff    ();
 void    GLSmoothPointsOn    ();
 void    GLSmoothPointsOff   ();
+void    GLStencilOn         ();
+void    GLStencilOff        ();
+void    GLStencilInit       ();         // used before each slice
+void    GLStencilUse        ();         // called before making use of the stencil
 void    GLTestDepthOn       ();         // will hide parts below the z-buffer
 void    GLTestDepthOff      ();         // will draw on top of everything
 void    GLTransparencyOn    ();

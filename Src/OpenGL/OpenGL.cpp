@@ -77,23 +77,24 @@ void    GL3DTextureOff      ()          { glDisable   ( GL_TEXTURE_3D );    }
 //----------------------------------------------------------------------------
 void    GLTransparencyOn ()
 {
-GLBlendOn       ();                                     // blend -> transparency & anit-aliasing
-GLWriteDepthOff ();                                     // transparent surfaces are thought of non-solid, therefore non-altering the z-buffer
+GLBlendOn       ();                     // blend -> transparency & anit-aliasing
+GLWriteDepthOff ();                     // transparent surfaces are thought of non-solid, therefore non-altering the z-buffer
 }
 
 void    GLTransparencyOff ()
 {
-GLBlendOff      ();                                     // no more blending, i.e. transparency
-GLWriteDepthOn  ();                                     // will update the z-buffer from now
+GLBlendOff      ();                     // no more blending, i.e. transparency
+GLWriteDepthOn  ();                     // will update the z-buffer from now
 }
 
 
+//----------------------------------------------------------------------------
 void    GLSmoothEdgesOn ()
 {
-GLBlendOn           ();                                 // blend -> transparency & anit-aliasing
+GLBlendOn           ();                 // blend -> transparency & anit-aliasing
 GLLineSmoothOn      ();
-//GLPolygonSmoothOn   ();                               // causing more troubles than helping (triangles artifacts)
-//glHint              ( GL_LINE_SMOOTH_HINT, GL_NICEST /*GL_NICEST GL_FASTEST GL_DONT_CARE*/ ); // not sure if that really helps
+//GLPolygonSmoothOn ();                 // causing more troubles than helping (triangles artifacts)
+//glHint            ( GL_LINE_SMOOTH_HINT, GL_NICEST /*GL_NICEST GL_FASTEST GL_DONT_CARE*/ ); // not sure if that really helps
 }
 
 void    GLSmoothEdgesOff ()
@@ -104,6 +105,7 @@ GLLineSmoothOff     ();
 }
 
 
+//----------------------------------------------------------------------------
 void    GLSmoothPointsOn ()
 {
 glEnable        ( GL_POINT_SMOOTH );
@@ -117,6 +119,7 @@ GLBlendOff      ();
 }
 
 
+//----------------------------------------------------------------------------
 void    GLLinesModeOn ( bool udpatefog )
 {
 GLSmoothEdgesOn     ();
@@ -138,6 +141,7 @@ if ( udpatefog )
 }
 
 
+//----------------------------------------------------------------------------
 void    GLAlphaAboveOn ( double alphathreshold )
 {
 glAlphaFunc         ( GL_GREATER, alphathreshold );
@@ -150,6 +154,34 @@ glDisable           ( GL_ALPHA_TEST );
 }
 
 
+//----------------------------------------------------------------------------
+void    GLStencilOn ()
+{
+glClearStencil  ( 0 );
+glStencilMask   ( 1 );
+glEnable        ( GL_STENCIL_TEST );
+}
+
+void    GLStencilOff ()
+{
+glDisable       ( GL_STENCIL_TEST );
+}
+                                        // Sets / Resets upon entering and exiting isourface
+void    GLStencilInit ()
+{
+glClear         ( GL_STENCIL_BUFFER_BIT );
+glStencilFunc   ( GL_ALWAYS, 0, 1 );
+glStencilOp     ( GL_KEEP, GL_INVERT, GL_INVERT );
+}
+
+void    GLStencilUse ()
+{
+glStencilFunc   ( GL_NOTEQUAL, 0, 1 );
+//glStencilOp   ( GL_KEEP, GL_KEEP, GL_KEEP );
+}
+
+
+//----------------------------------------------------------------------------
 void    GLLoad3DTexture ( GLuint& textureid )
 {
 if ( textureid )
@@ -161,8 +193,8 @@ void    GLUnloadTexture ( GLuint& textureid )
 glDeleteTextures ( 1, &textureid );     // should not complain if 0, or if texture does not exist
 }
 
-// glActiveTexture selects one of the bounded texture
 
+//----------------------------------------------------------------------------
                                         // set 3D implicit texture, generating the texture coordinates automatically
 void    GL3DAutoTextureOn ( const double* origin )
 {
