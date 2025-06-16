@@ -263,8 +263,12 @@ if ( GetDocPath () ) {
     NumTracks           = ( IsVector ( AtomTypeUseOriginal ) ? 3 : 1 ) * NumElectrodes;
 
 
-    if ( ! SetArrays () )
+    if ( ! SetArrays () ) {
+
+        FileStream.Close ();
+
         return false;
+        }
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

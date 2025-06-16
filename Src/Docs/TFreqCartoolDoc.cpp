@@ -31,8 +31,8 @@ namespace crtl {
         TFreqCartoolDoc::TFreqCartoolDoc ( TDocument *parent )
       : TFreqDoc ( parent )
 {
-SpectrumSize        = 0;
 AtomSize            = 0;
+IsAtomScalar        = true;
 
 Version             = 0;
 }
@@ -40,8 +40,6 @@ Version             = 0;
 
 bool	TFreqCartoolDoc::Close ()
 {
-FileStream.Close ();
-
 return  TFileDocument::Close ();
 }
 
@@ -130,7 +128,6 @@ if ( GetDocPath () ) {
 
     FileStream.Read ( &freqheader, sizeof ( freqheader ) );
 
-
     if ( ! IsMagicNumber ( freqheader.Version, FREQBIN_MAGICNUMBER1 )       // obsolete format
       && ! IsMagicNumber ( freqheader.Version, FREQBIN_MAGICNUMBER2 ) ) {
 
@@ -171,10 +168,9 @@ if ( GetDocPath () ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Spectrum to hold the whole data remaining for 1 tracks, 1 TF
-                                        // + dealing with the complex case, which can double the size
-    AtomSize            = ( IsComplex ( AtomTypeUseOriginal ) ? 2 : 1 ) * sizeof ( float );
-    SpectrumSize        = NumFrequencies * AtomSize;
+
+    IsAtomScalar        = ! IsComplex ( AtomTypeUseOriginal );
+    AtomSize            = IsAtomScalar ? 1 : 2;
 
 
     DateTime            = TDateTime ( freqheader.Year, freqheader.Month,  freqheader.Day,
@@ -235,7 +231,44 @@ if ( GetDocPath () ) {
             }
         }
 
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Read all data at once, and reorganize it to improve efficiency
+                                        // File organization is:    time        x electrodes              x frequencies x complex/real
+                                        // Tracks is:               frequencies x ( 1 or 2 * electrodes ) x time
+                                        // Note that real values are stored as multiplexed electrodes
+    FileStream.SeekBegin ( DataOrg );
+
+    TArray3<float>      onetf ( NumElectrodes, NumFrequencies, AtomSize );
+
+    for ( int tf = 0; tf < NumTimeFrames;  tf++ ) {
+
+        FileStream.Read ( onetf.GetArray (), onetf.MemorySize () );
+
+        if ( IsAtomScalar ) {
+            OmpParallelFor
+
+            for ( int e = 0; e < NumElectrodes;  e++ )
+            for ( int f = 0; f < NumFrequencies; f++ )
+
+                Tracks ( f, e,         tf ) = onetf ( e, f, 0 );
+            }
+        else {
+            OmpParallelFor
+
+            for ( int e = 0; e < NumElectrodes;  e++ )
+            for ( int f = 0; f < NumFrequencies; f++ ) {
+
+                Tracks ( f, 2 * e,     tf ) = onetf ( e, f, 0 );
+                Tracks ( f, 2 * e + 1, tf ) = onetf ( e, f, 1 );
+                }
+            }
+
+        } // read tf
+
+
+    FileStream.Close ();
     }
+
 else {
     return false;
     }
@@ -252,7 +285,7 @@ OffDis              = NumElectrodes + PseudoTrackOffsetDis;
 OffAvg              = NumElectrodes + PseudoTrackOffsetAvg;
 
                                         // do all allocations stuff
-Spectrum.Resize ( SpectrumSize / sizeof ( float ) );
+Tracks.Resize ( NumFrequencies, AtomSize * NumElectrodes, NumTimeFrames );  // !Multiplexing real and imaginary parts as successive electrodes!
 
 
 FrequenciesNames.Set ( NumFrequencies,  MaxCharFrequencyName );
@@ -279,83 +312,48 @@ return true;
                                         // read all electrodes of current selected frequency only
 void    TFreqCartoolDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float> &buff, int tfoffset )
 {
-                                        // set file to first TF
-FileStream.SeekBegin ( DataOrg + NumElectrodes * SpectrumSize * tf1 );
-
-
+for ( int  el  = 0;                  el  <  NumElectrodes; el++        )
 for ( long tfi = tf1, tf = tfoffset; tfi <= tf2;           tfi++, tf++ )
-for ( int el   = 0;                  el  <  NumElectrodes; el++        ) {
 
-    FileStream.Read ( Spectrum.GetArray (), SpectrumSize );
-
-    if ( ! IsComplex ( AtomTypeUseOriginal ) )
-        buff ( el, tf )    = Spectrum[ CurrentFrequency ];
-    else
-        buff ( el, tf )    = sqrt ( Square ( Spectrum[ 2 * CurrentFrequency ] ) + Square ( Spectrum[ 2 * CurrentFrequency + 1 ] ) );
-    }
+    if ( IsAtomScalar )     buff ( el, tf )    =                 Tracks ( CurrentFrequency, el,         tfi );
+                                        // compute norm on the fly
+    else                    buff ( el, tf )    = sqrt ( Square ( Tracks ( CurrentFrequency, 2 * el,     tfi ) ) 
+                                                      + Square ( Tracks ( CurrentFrequency, 2 * el + 1, tfi ) ) );
 }
 
 
 //----------------------------------------------------------------------------
 void    TFreqCartoolDoc::ReadFrequencies ( long tf1, long tf2, TSetArray2<float> &buff, int tfoffset )
 {
-                                        // set file to first TF
-FileStream.SeekBegin ( DataOrg + NumElectrodes * SpectrumSize * tf1 );
+for ( int  f   = 0;                  f   <  NumFrequencies; f++         )
+for ( int  el  = 0;                  el  <  NumElectrodes;  el++        )
+for ( long tfi = tf1, tf = tfoffset; tfi <= tf2;            tfi++, tf++ )
 
-
-for ( long tfi = tf1, tf = tfoffset; tfi <= tf2;           tfi++, tf++ )
-for ( int el   = 0;                  el  <  NumElectrodes; el++        ) {
-
-    FileStream.Read ( Spectrum.GetArray (), SpectrumSize );
-
-
-    float*              tof             = &buff ( 0, el, tf );
-
-
-    if ( ! IsComplex ( AtomTypeUseOriginal ) )
-                                                // !not allowed to move the pointer futher!
-        for ( int f = 0; f < NumFrequencies; f++, tof += f < NumFrequencies ? buff.GetLinearDim () : 0 )
-
-            *tof = Spectrum[ f ];
-
-    else
-                                                // !not allowed to move the pointer futher!
-        for ( int f = 0, f2 = 0; f < NumFrequencies; f++, tof += f < NumFrequencies ? buff.GetLinearDim () : 0 )
-                                        // convert real and imaginary to norm on the fly - Spectrum has the right size to hold the real & imaginary parts
-            *tof = sqrt ( Square ( Spectrum[ f2++ ] ) + Square ( Spectrum[ f2++ ] ) );
-    }
+    if ( IsAtomScalar )     buff ( f, el, tf )  =                 Tracks ( f, el,         tfi );
+                                        // compute norm on the fly
+    else                    buff ( f, el, tf )  = sqrt ( Square ( Tracks ( f, 2 * el,     tfi ) ) 
+                                                       + Square ( Tracks ( f, 2 * el + 1, tfi ) ) );
 }
 
 
 //----------------------------------------------------------------------------
 void    TFreqCartoolDoc::ReadFrequencies ( long tf1, long tf2, TSetArray2<float> &realpart, TSetArray2<float> &imagpart, int tfoffset )
 {
-if ( ! IsComplex ( AtomTypeUseOriginal ) ) {
+if ( IsAtomScalar ) {
+
     imagpart.ResetMemory ();
     ReadFrequencies ( tf1, tf2, realpart, tfoffset );
     return;
     }
 
+//else if ( IsAtomComplex )
 
-                                        // set file to first TF
-FileStream.SeekBegin ( DataOrg + NumElectrodes * SpectrumSize * tf1 );
+for ( int  f   = 0;                  f   <  NumFrequencies; f++         )
+for ( int  el  = 0;                  el  <  NumElectrodes;  el++        )
+for ( long tfi = tf1, tf = tfoffset; tfi <= tf2;            tfi++, tf++ ) {
 
-
-for ( long tfi = tf1, tf = tfoffset; tfi <= tf2;           tfi++, tf++ )
-for ( int el   = 0;                  el  <  NumElectrodes; el++        ) {
-
-    FileStream.Read ( Spectrum.GetArray (), SpectrumSize );
-
-
-    float*              tor             = &realpart ( 0, el, tf );
-    float*              toi             = &imagpart ( 0, el, tf );
-
-                                            // !not allowed to move the pointer futher!
-    for ( int f = 0, f2 = 0; f < NumFrequencies; f++, tor += f < NumFrequencies ? realpart.GetLinearDim () : 0, toi += f < NumFrequencies ? imagpart.GetLinearDim () : 0 ) {
-                                        // real and imaginary are interleaved (follow each others)
-        *tor = Spectrum[ f2++ ];                     
-        *toi = Spectrum[ f2++ ];                     
-        }
+    realpart ( f, el, tf )  = Tracks ( f, 2 * el,     tfi );
+    imagpart ( f, el, tf )  = Tracks ( f, 2 * el + 1, tfi );
     }
 }
 
@@ -363,22 +361,8 @@ for ( int el   = 0;                  el  <  NumElectrodes; el++        ) {
 //----------------------------------------------------------------------------
 double  TFreqCartoolDoc::GetFreqValue ( long el, long tf, long f )
 {
-FileStream.SeekBegin ( DataOrg + ( ( NumElectrodes * tf + el ) * NumFrequencies + f ) * AtomSize );
-
-if ( ! IsComplex ( AtomTypeUseOriginal ) ) {
-    float               v;
-
-    FileStream.Read ( &v, sizeof ( float ) );
-
-    return  v;
-    }
-else {
-    float               v[ 2 ];
-
-    FileStream.Read ( &v, 2 * sizeof ( float ) );
-
-    return  sqrt ( Square ( v[ 0 ] ) + Square ( v[ 1 ] ) );
-    }
+return  IsAtomScalar ?                 Tracks ( f, el,     tf ) 
+                     : sqrt ( Square ( Tracks ( f, 2 * el, tf ) ) + Square ( Tracks ( f, 2 * el + 1, tf ) ) );
 }
 
 //----------------------------------------------------------------------------

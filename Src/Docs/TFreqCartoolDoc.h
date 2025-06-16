@@ -122,7 +122,7 @@ public:
     bool            CanClose        ()                                  final;
     bool            Close           ()                                  final;
     bool            Commit          ( bool force = false )              final;
-    bool            IsOpen          ()                                  final       { return FileStream.IsOpen (); }
+    bool            IsOpen          ()                                  final       { return Tracks.IsAllocated (); }
     bool            Open            ( int mode, const char *path = 0 )  final;
 
 
@@ -137,9 +137,9 @@ protected:
 
     int             Version;
 
-    TArray1<float>  Spectrum;
-    size_t          SpectrumSize;
-    size_t          AtomSize;
+    TArray3<float>  Tracks;
+    int             AtomSize;
+    bool            IsAtomScalar;
 
 
     bool            SetArrays       ()  final;
