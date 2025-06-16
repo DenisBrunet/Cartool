@@ -31,7 +31,6 @@ namespace crtl {
         TFreqCartoolDoc::TFreqCartoolDoc ( TDocument *parent )
       : TFreqDoc ( parent )
 {
-InputStream         = 0;
 SpectrumSize        = 0;
 AtomSize            = 0;
 
@@ -41,8 +40,7 @@ Version             = 0;
 
 bool	TFreqCartoolDoc::Close ()
 {
-if ( InputStream != 0 )
-    delete  InputStream, InputStream = 0;
+FileStream.Close ();
 
 return  TFileDocument::Close ();
 }
@@ -125,21 +123,21 @@ SetDirty ( false );
 
 if ( GetDocPath () ) {
 
-    InputStream     = InStream ( ofRead | ofBinary );
-
-    if ( ! InputStream )
-        return  false;
+    FileStream.Open ( GetDocPath(), FileStreamRead );
 
 
     TFreqHeader     freqheader;
 
-    InputStream->read ( (char *) (&freqheader), sizeof ( freqheader ) );
+    FileStream.Read ( &freqheader, sizeof ( freqheader ) );
+
 
     if ( ! IsMagicNumber ( freqheader.Version, FREQBIN_MAGICNUMBER1 )       // obsolete format
       && ! IsMagicNumber ( freqheader.Version, FREQBIN_MAGICNUMBER2 ) ) {
 
         ShowMessage ( "Can not recognize this file (unknown magic number)!", "Open file", ShowMessageWarning );
-        delete  InputStream; InputStream = 0;
+
+        FileStream.Close ();
+
         return false;
         }
 
@@ -189,7 +187,9 @@ if ( GetDocPath () ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // space allocation + default names
     if ( ! SetArrays () ) {
-        delete  InputStream; InputStream = 0;
+
+        FileStream.Close ();
+
         return false;
         }
 
@@ -200,9 +200,9 @@ if ( GetDocPath () ) {
 
     for ( int el = 0; el < NumElectrodes; el++ ) {
 
-        InputStream->read ( buff, sizeof ( TFreqChannel ) );
+        FileStream.Read ( buff, sizeof ( TFreqChannel ) );
 
-        buff[ sizeof ( TFreqChannel ) ] = 0; // force EOS
+        buff[ sizeof ( TFreqChannel ) ] = EOS;  // force End Of String, i.e. 0
 
         StringCopy ( ElectrodesNames[ el ], buff, ElectrodeNameSize - 1 );
         }
@@ -215,7 +215,8 @@ if ( GetDocPath () ) {
         TFreqFrequency      freq;
 
         for ( int f=0; f < NumFrequencies; f++ ) {
-            InputStream->read ( (char *) &freq, sizeof ( freq ) );
+
+            FileStream.Read ( &freq, sizeof ( freq ) );
 
             sprintf ( buff, "%0.2lg Hz", freq.Frequency );
 
@@ -223,10 +224,12 @@ if ( GetDocPath () ) {
             }
         }
     else { // FREQBIN_MAGICNUMBER2
+
         TFreqFrequencyName  freq;
 
         for ( int f=0; f < NumFrequencies; f++ ) {
-            InputStream->read ( (char *) &freq, sizeof ( freq ) );
+
+            FileStream.Read ( &freq, sizeof ( freq ) );
 
             StringCopy ( FrequenciesNames[ f ], freq.FrequencyName );
             }
@@ -277,13 +280,13 @@ return true;
 void    TFreqCartoolDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float> &buff, int tfoffset )
 {
                                         // set file to first TF
-InputStream->seekg ( DataOrg + NumElectrodes * SpectrumSize * tf1, ios::beg );
+FileStream.SeekBegin ( DataOrg + NumElectrodes * SpectrumSize * tf1 );
 
 
 for ( long tfi = tf1, tf = tfoffset; tfi <= tf2;           tfi++, tf++ )
 for ( int el   = 0;                  el  <  NumElectrodes; el++        ) {
 
-    InputStream->read ( (char *) Spectrum.GetArray (), SpectrumSize );
+    FileStream.Read ( Spectrum.GetArray (), SpectrumSize );
 
     if ( ! IsComplex ( AtomTypeUseOriginal ) )
         buff ( el, tf )    = Spectrum[ CurrentFrequency ];
@@ -297,13 +300,13 @@ for ( int el   = 0;                  el  <  NumElectrodes; el++        ) {
 void    TFreqCartoolDoc::ReadFrequencies ( long tf1, long tf2, TSetArray2<float> &buff, int tfoffset )
 {
                                         // set file to first TF
-InputStream->seekg ( DataOrg + NumElectrodes * SpectrumSize * tf1, ios::beg );
+FileStream.SeekBegin ( DataOrg + NumElectrodes * SpectrumSize * tf1 );
 
 
 for ( long tfi = tf1, tf = tfoffset; tfi <= tf2;           tfi++, tf++ )
 for ( int el   = 0;                  el  <  NumElectrodes; el++        ) {
 
-    InputStream->read ( (char *) Spectrum.GetArray (), SpectrumSize );
+    FileStream.Read ( Spectrum.GetArray (), SpectrumSize );
 
 
     float*              tof             = &buff ( 0, el, tf );
@@ -335,13 +338,13 @@ if ( ! IsComplex ( AtomTypeUseOriginal ) ) {
 
 
                                         // set file to first TF
-InputStream->seekg ( DataOrg + NumElectrodes * SpectrumSize * tf1, ios::beg );
+FileStream.SeekBegin ( DataOrg + NumElectrodes * SpectrumSize * tf1 );
 
 
 for ( long tfi = tf1, tf = tfoffset; tfi <= tf2;           tfi++, tf++ )
 for ( int el   = 0;                  el  <  NumElectrodes; el++        ) {
 
-    InputStream->read ( (char *) Spectrum.GetArray (), SpectrumSize );
+    FileStream.Read ( Spectrum.GetArray (), SpectrumSize );
 
 
     float*              tor             = &realpart ( 0, el, tf );
@@ -360,19 +363,19 @@ for ( int el   = 0;                  el  <  NumElectrodes; el++        ) {
 //----------------------------------------------------------------------------
 double  TFreqCartoolDoc::GetFreqValue ( long el, long tf, long f )
 {
-InputStream->seekg ( DataOrg + ( ( NumElectrodes * tf + el ) * NumFrequencies + f ) * AtomSize, ios::beg );
+FileStream.SeekBegin ( DataOrg + ( ( NumElectrodes * tf + el ) * NumFrequencies + f ) * AtomSize );
 
 if ( ! IsComplex ( AtomTypeUseOriginal ) ) {
     float               v;
 
-    InputStream->read ( (char *) &v, sizeof ( float ) );
+    FileStream.Read ( &v, sizeof ( float ) );
 
     return  v;
     }
 else {
     float               v[ 2 ];
 
-    InputStream->read ( (char *) &v, 2 * sizeof ( float ) );
+    FileStream.Read ( &v, 2 * sizeof ( float ) );
 
     return  sqrt ( Square ( v[ 0 ] ) + Square ( v[ 1 ] ) );
     }

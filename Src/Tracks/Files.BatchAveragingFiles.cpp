@@ -1187,7 +1187,7 @@ TSuperGauge         Gauge;
 
 if ( showgauge ) {
     Gauge.Set           ( BatchAveragingTitle );
-    Gauge.AddPart       ( 0, numfiles );
+    Gauge.AddPart       ( 0, numfiles + 5 );
     }
 
 
@@ -1200,9 +1200,7 @@ expfile.SetAtomType ( AtomTypeScalar );
 
 for ( int filei = 0; filei < numfiles; filei++ ) {
 
-    if ( Gauge.IsAlive () )
-        Gauge.Next ( 0 );
-
+    Gauge.Next ( 0 );
 
     if ( ! freqdoc.Open ( gof[ filei ], OpenDocHidden ) )
         continue;
@@ -1294,6 +1292,8 @@ for ( int filei = 0; filei < numfiles; filei++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+Gauge.Next ( 0 );
+
 if ( poleval ) {
                                         // other files, need to test and sum
 //  OmpParallelBegin
@@ -1358,6 +1358,8 @@ if ( poleval ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compute SD - there seems to be some ambiguity on the - operator
+Gauge.Next ( 0 );
+
 if ( sdfile ) {
                                         // do everything in the loop
     OmpParallelFor
@@ -1376,6 +1378,8 @@ sum    /= numfiles;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Save Mean
+Gauge.Next ( 0 );
+
 if ( meanfile ) {
 
     StringCopy      ( expfile.Filename, filemean );
@@ -1394,6 +1398,8 @@ if ( meanfile ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Save SD
+Gauge.Next ( 0 );
+
 if ( sdfile ) {
 
     StringCopy      ( expfile.Filename, filesd );
