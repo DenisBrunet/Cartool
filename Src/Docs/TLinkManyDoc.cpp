@@ -130,7 +130,6 @@ bool    TLinkManyDoc::Open ( int /*mode*/, const char* path )
 {
 TSplitLinkManyFile  lm;
 
-TBaseView*          view;
 TTracksDoc*         doceeg;
 TFreqDoc*           docfreq;
 TRoisDoc*           docrois;
@@ -225,8 +224,6 @@ else {                                  // create -> ask which files to link thr
 
                                         // if a new empty lm, allow to update the file path with future dropped files
 UnspecifiedDocPath  = StringIs ( GetTitle (), EmptyLmFilename );    // or StringEndsWith?
-
-int                 numspirr        = 0;
 
                                         // can we find or ask for all the requested files ?
 if ( lm.leeg .IsNotEmpty () && ! lm.leeg .CanOpenFiles ( CanOpenFileReadAndAsk ) )      goto AbortOpen;
@@ -328,6 +325,8 @@ for ( /*int*/ i = 0; i < (int) lm.leeg; i++ ) {
         doceeg = dynamic_cast <TTracksDoc*> ( CartoolDocManager->OpenDoc ( lm.leeg[ i ], dtOpenOptions | dtNoAutoView ) );
 
                                         // manually and selectively create the view with this group
+    TBaseView*          view;
+
     if ( ( docfreq = dynamic_cast <TFreqDoc*> ( doceeg ) ) != 0 )
         view    = new TFrequenciesView ( *docfreq, 0, this );
     else
@@ -349,7 +348,7 @@ for ( /*int*/ i = 0; i < (int) lm.lris; i++ ) {
     if ( ! docris )
         docris = dynamic_cast <TRisDoc *> ( CartoolDocManager->OpenDoc ( lm.lris[ i ], dtOpenOptions | dtNoAutoView ) );
 
-    view    = new TTracksView ( *docris, 0, this );
+    TBaseView*          view        = new TTracksView ( *docris, 0, this );
 
     CartoolDocManager->PostEvent ( dnCreate, *view );
 
@@ -372,16 +371,14 @@ for ( /*int*/ i = 0; i < (int) ListRoisDoc; i++ )   ListRoisDoc[ i ]->AddLink ( 
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // count spr and spi
-numspirr = GetNumSpDoc ();
 
-                                        // if a SpIrr, compute the interpolation with the MRI mask
-                                        // the SpIrr will test if it has already made the interpolation.
-if ( numspirr && (bool) ListMriDoc ) {
+int                 numspdoc        = GetNumSpDoc ();
 
-    TVolumeDoc*     tohead;
-    TVolumeDoc*     tobrain;
-    TVolumeDoc*     togrey;
+if ( numspdoc && (bool) ListMriDoc ) {
+
+    TVolumeDoc*         tohead;
+    TVolumeDoc*         tobrain;
+    TVolumeDoc*         togrey;
 
     GuessHeadBrainGreyMris ( tohead, tobrain, togrey );
 
@@ -405,19 +402,16 @@ if ( numspirr && (bool) ListMriDoc ) {
                                         // can create scalp potential ?
 if ( (bool) ListEegDoc && (bool) ListXyzDoc ) {
 
-    TPotentialsView      *viewpm;
-    TBaseView              *view;
-
     for ( /*int*/ i = 0; i < (int) ListEegDoc; i++ ) {
                                         // find the right Eeg view id
-        for ( view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) )
+        for ( TBaseView* view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) )
 
             if ( dynamic_cast<TTracksView *> ( view ) )
 
                 { LastEegViewId   = view->GetViewId(); break; }
 
 
-        viewpm      = new TPotentialsView ( *ListEegDoc[ i ], 0, this );
+        TPotentialsView*    viewpm      = new TPotentialsView ( *ListEegDoc[ i ], 0, this );
 
         CartoolDocManager->PostEvent ( dnCreate, *viewpm );
 
@@ -428,21 +422,18 @@ if ( (bool) ListEegDoc && (bool) ListXyzDoc ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // can create inverse solution display from eeg ?
-if ( (bool) ListEegDoc && numspirr && (bool) ListIsDoc && (bool) ListMriDoc ) {
-
-    TInverseView         *viewis;
-    TBaseView              *view;
+if ( (bool) ListEegDoc && numspdoc && (bool) ListIsDoc && (bool) ListMriDoc ) {
 
     for ( /*int*/ i = 0; i < (int) ListEegDoc; i++ ) {
                                         // find the right Eeg view id
-        for ( view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) )
+        for ( TBaseView* view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) )
 
             if ( dynamic_cast<TTracksView *> ( view ) )
 
                 { LastEegViewId   = view->GetViewId(); break; }
 
 
-        viewis      = new TInverseView ( *ListEegDoc[ i ], 0, this );
+        TInverseView*       viewis      = new TInverseView ( *ListEegDoc[ i ], 0, this );
 
         CartoolDocManager->PostEvent ( dnCreate, *viewis );
 
@@ -453,21 +444,18 @@ if ( (bool) ListEegDoc && numspirr && (bool) ListIsDoc && (bool) ListMriDoc ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // can create inverse solution display from ris ?
-if ( (bool) ListRisDoc && numspirr && (bool) ListMriDoc ) {
-
-    TInverseView         *viewis;
-    TBaseView              *view;
+if ( (bool) ListRisDoc && numspdoc && (bool) ListMriDoc ) {
 
     for ( /*int*/ i = 0; i < (int) ListRisDoc; i++ ) {
                                         // find the right Eeg view id
-        for ( view = ListRisDoc[ i ]->GetViewList ( this ); view != 0; view = ListRisDoc[ i ]->NextView ( view, this ) ) {
+        for ( TBaseView* view = ListRisDoc[ i ]->GetViewList ( this ); view != 0; view = ListRisDoc[ i ]->NextView ( view, this ) ) {
 
             if ( dynamic_cast<TTracksView *> ( view ) )
 
                 { LastEegViewId   = view->GetViewId(); break; }
             }
 
-        viewis      = new TInverseView ( *ListRisDoc[ i ], 0, this );
+        TInverseView*       viewis      = new TInverseView ( *ListRisDoc[ i ], 0, this );
 
         CartoolDocManager->PostEvent ( dnCreate, *viewis );
 
@@ -478,24 +466,19 @@ if ( (bool) ListRisDoc && numspirr && (bool) ListMriDoc ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // can we sync something ?
-if ( (bool) ListEegDoc && numspirr && (bool) ListIsDoc && (bool) ListXyzDoc && (bool) ListMriDoc ) {
+if ( (bool) ListEegDoc && numspdoc && (bool) ListIsDoc && (bool) ListXyzDoc && (bool) ListMriDoc ) {
 
-    TBaseView              *view;
-    TBaseView              *view2;
+    for ( /*int*/ i = 0; i < (int) ListEegDoc; i++ )    // scan pairs of views
+    for ( TBaseView* view1 = ListEegDoc[ i ]->GetViewList ( this ); view1 != 0; view1 = ListEegDoc[ i ]->NextView ( view1, this ) )
 
-    for ( /*int*/ i = 0; i < (int) ListEegDoc; i++ ) {  // scan pairs of views
+        if ( dynamic_cast<TPotentialsView *> ( view1 ) )
 
-        for ( view = ListEegDoc[ i ]->GetViewList ( this ); view != 0; view = ListEegDoc[ i ]->NextView ( view, this ) )
+            for ( TBaseView* view2 = ListEegDoc[ i ]->GetViewList ( this ); view2 != 0; view2 = ListEegDoc[ i ]->NextView (view2, this) )
 
-            if ( dynamic_cast<TPotentialsView *> ( view ) )
+                if ( dynamic_cast<TInverseView *> ( view2 )
+                  && view1->LinkedViewId == view2->LinkedViewId )
 
-                for ( view2 = ListEegDoc[ i ]->GetViewList ( this ); view2 != 0; view2 = ListEegDoc[ i ]->NextView (view2, this) )
-
-                    if ( dynamic_cast<TInverseView *> ( view2 )
-                      && view->LinkedViewId == view2->LinkedViewId )
-
-                        view->SetFriendView ( view2 );
-        }
+                    view1->SetFriendView ( view2 );
     }
 
 
@@ -507,7 +490,9 @@ Commit ();                              // write if new file
 
 return true;
 
-                                        // common exit, if anything fails
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // single exit point, if anything fails
 AbortOpen:
 
 SetDirty ( false );
@@ -1266,7 +1251,6 @@ if ( ListRoisDoc.IsInside ( (TRoisDoc*)           doc ) )   return  false;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // recreate n lists of file names
-TFileName           buff;
 TGoF                leeg;
 TGoF                lris;
 TGoF                lxyz;
@@ -1287,11 +1271,25 @@ for ( int i = 0; i < (int) ListRoisDoc; i++ )   lrois.Add ( ListRoisDoc[ i ]->Ge
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // add the new doc to the right list
-StringCopy ( buff, doc->GetDocPath () );
+TFileName           buff            = doc->GetDocPath ();
 
 
-enum                LmFilesAdded { addeeg, addfreq, addxyz, addsp, addis, addris, addroi, addmri };
+enum                LmFilesAdded 
+                    {
+                    addeeg,
+                    addfreq,
+                    addxyz,
+                    addsp,
+                    addis,
+                    addris,
+                    addroi,
+                    addmri
+                    };
+
 LmFilesAdded        adding;
+
+auto    addingtracks    = [ &adding ] () { return adding == addeeg || adding == addfreq || adding == addris; };
+auto    addingeegfreq   = [ &adding ] () { return adding == addeeg || adding == addfreq; };
 
 
 if      ( crtl::IsExtensionAmong ( buff, AllEegFilesExt ) ) {
@@ -1331,6 +1329,7 @@ else if ( crtl::IsExtensionAmong ( buff, AllMriFilesExt ) ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // now, are all these files matching ?
 if ( ! Compatibility ( leeg, lrois, lxyz, lsp, lis, lris ) ) {
+
 //  goto AbortAddToGroup;
     SetDirty ( false );
     return false;
@@ -1339,15 +1338,14 @@ if ( ! Compatibility ( leeg, lrois, lxyz, lsp, lis, lris ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // put to the right list
-if      ( adding == addeeg 
-       || adding == addfreq  ) { 
+if      ( addingeegfreq () ) { 
                                         // re-sort the whole list after each insertion, better f.ex. for subjects or epochs
     leeg.Sort ();
                                         // !don't delete doc pointers!
     ListEegDoc.Reset ( DontDeallocate );
                                         // now can loop in the correct order
     for ( int gofi = 0; gofi < (int) leeg; gofi++ )
-                                        // insert back           IsOpen returns the document* from the path, and we know it is open already
+                                        // insert back       IsOpen returns the document* from the path, and we know it is open already
         ListEegDoc.Append ( (TTracksDoc*) CartoolDocManager->IsOpen ( leeg [ gofi ] ) );
     }
 
@@ -1364,37 +1362,28 @@ else if ( adding == addmri   )   ListMriDoc .Append ( (TVolumeDoc        *) doc 
 doc->AddLink ( this );
 
 
-TBaseView*          view;
 bool                newview         = false;
 
-/*
-if ( adding == addeeg || adding == addris ) {   // add a view
-    newview = true;
-
-    view    = new TTracksView ( *((TTracksDoc*)doc), 0, this );
-
-    CartoolDocManager->PostEvent ( dnCreate, *view );
-    }
-*/
                                         // get first view (more elaborated: scan all for the first non-owned view)
-view    = doc->GetViewList ();
-                                        // add a tracks view
-if ( adding == addeeg 
-  || adding == addfreq 
-  || adding == addris ) {
+TBaseView*          view            = doc->GetViewList ();
 
-    newview = true;
+                                        // adding a tracks view?
+if ( addingtracks () ) {
 
     if ( view->GODoc != 0 ) {           // already owned by a group?
-        if ( adding == addfreq )    view    = new TFrequenciesView ( *((TFreqDoc*)     doc), 0, this );
-        else                        view    = new TTracksView      ( *((TTracksDoc  *) doc), 0, this );
+
+        if ( adding == addfreq )    view    = new TFrequenciesView ( *((TFreqDoc*)   doc), 0, this );
+        else                        view    = new TTracksView      ( *((TTracksDoc*) doc), 0, this );
 
         CartoolDocManager->PostEvent ( dnCreate, *view );
 
         view->WindowMinimize ();
         }
-    else                                // take it for me
+    else                                // grab view for its own use
         view->GODoc = this;
+
+
+    newview     = true;
     }
 
                                         // notify my views to update their pointers
@@ -1402,16 +1391,33 @@ doc->NotifyDocViews ( vnReloadData, EV_VN_RELOADDATA_DOCPOINTERS );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Get the right tracks view ID with this GODoc
+auto    GetLastEegViewId    = [ this ] ( TTracksDoc* doceeg )
+{
+if ( doceeg == 0 )
+    return  (uint) 0;
 
-int                 numspirr        = GetNumSpDoc ();
+for ( TBaseView* view = doceeg->GetViewList (); view != 0; view = doceeg->NextView ( view ) )
+
+    if ( dynamic_cast<TTracksView*> ( view ) && view->GODoc == this )
+        
+        return  view->GetViewId (); 
+
+return  (uint) 0;
+};
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+int                 numspdoc        = GetNumSpDoc ();
 
                                         // if a SP, compute the interpolation with the MRI mask
                                         // the SP will test if it has already made the interpolation.
 if ( adding == addsp && (bool) ListMriDoc ) {
 
-    TVolumeDoc*     tohead;
-    TVolumeDoc*     tobrain;
-    TVolumeDoc*     togrey;
+    TVolumeDoc*         tohead;
+    TVolumeDoc*         tobrain;
+    TVolumeDoc*         togrey;
 
     GuessHeadBrainGreyMris ( tohead, tobrain, togrey );
 
@@ -1429,11 +1435,11 @@ if ( adding == addsp && (bool) ListMriDoc ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // if a MRI, compute the interpolation
-if ( adding == addmri && numspirr ) {
+if ( adding == addmri && numspdoc ) {
 
-    TVolumeDoc*     tohead;
-    TVolumeDoc*     tobrain;
-    TVolumeDoc*     togrey;
+    TVolumeDoc*         tohead;
+    TVolumeDoc*         tobrain;
+    TVolumeDoc*         togrey;
 
     GuessHeadBrainGreyMris ( tohead, tobrain, togrey );
 
@@ -1450,166 +1456,115 @@ if ( adding == addmri && numspirr ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // create additional views if apropriate
+                                        // create additional views if appropriate?
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // can create a potentials view?
+if ( addingeegfreq () && (bool) ListXyzDoc ) {
 
-                                        // can create scalp potential ?
-if ( ( adding == addeeg 
-    || adding == addfreq ) 
-  && (bool) ListXyzDoc ) {
+    TTracksDoc*         doceeg      = dynamic_cast <TTracksDoc*> ( doc );
 
-    TPotentialsView*    viewpm;
-    TBaseView*          view;
-    TTracksDoc*         doceeg  = dynamic_cast <TTracksDoc*> ( doc );
-    newview = true;
+    LastEegViewId   = GetLastEegViewId ( doceeg );
 
-    for ( view = doceeg->GetViewList (); view != 0; view = doceeg->NextView ( view ) )
-        if ( dynamic_cast<TTracksView *> ( view )
-          && view->GODoc == this )
-            { LastEegViewId   = view->GetViewId(); break; }
-
-    viewpm      = new TPotentialsView ( *doceeg, 0, this );
+    TPotentialsView*    viewpm      = new TPotentialsView ( *doceeg, 0, this );
 
     CartoolDocManager->PostEvent ( dnCreate, *viewpm );
 
     viewpm->WindowMinimize ();
+
+    newview         = true;
     }
 
 
 if ( adding == addxyz && (int) ListXyzDoc == 1 && (bool) ListEegDoc ) {
-    TPotentialsView        *viewpm;
-    TBaseView              *view;
-    newview = true;
 
-    for ( int i = 0; i < (int) ListEegDoc; i++ ){
-                                        // find the right Eeg view id
-        for ( view = ListEegDoc[ i ]->GetViewList (); view != 0; view = ListEegDoc[ i ]->NextView ( view ) )
+    for ( int i = 0; i < (int) ListEegDoc; i++ ) {
 
-            if ( dynamic_cast<TTracksView *> ( view )
-              && view->GODoc == this )
-                { LastEegViewId   = view->GetViewId(); break; }
-
-        viewpm      = new TPotentialsView ( *ListEegDoc[ i ], 0, this );
+        LastEegViewId   = GetLastEegViewId ( ListEegDoc[ i ] );
+        
+        TPotentialsView*    viewpm      = new TPotentialsView ( *ListEegDoc[ i ], 0, this );
 
         CartoolDocManager->PostEvent ( dnCreate, *viewpm );
 
         viewpm->WindowMinimize ();
         }
-    }
 
-
-if ( ( adding == addeeg 
-    || adding == addfreq ) 
-  && numspirr && (bool) ListIsDoc && (bool) ListMriDoc ) {
-
-    TInverseView*       viewis;
-    TBaseView*          view;
-    TTracksDoc*         doceeg  = dynamic_cast <TTracksDoc*> ( doc );
-    newview = true;
-
-    for ( view = doceeg->GetViewList (); view != 0; view = doceeg->NextView ( view ) )
-        if ( dynamic_cast<TTracksView *> ( view )
-          && view->GODoc == this )
-            { LastEegViewId   = view->GetViewId(); break; }
-
-    viewis      = new TInverseView ( *doceeg, 0, this );
-
-    CartoolDocManager->PostEvent ( dnCreate, *viewis );
-
-    viewis->WindowMinimize ();
-    }
-
-
-if ( adding == addsp  &&       numspirr   == 1 && (bool) ListEegDoc && (bool) ListIsDoc && (bool) ListMriDoc
-  || adding == addis  && (int) ListIsDoc  == 1 && (bool) ListEegDoc && numspirr && (bool) ListMriDoc
-  || adding == addmri && (int) ListMriDoc == 1 && (bool) ListEegDoc && numspirr && (bool) ListIsDoc ) {
-
-    TInverseView           *viewis;
-    TBaseView              *view;
-    newview = true;
-
-    for ( int i = 0; i < (int) ListEegDoc; i++ ) {
-                                        // find the right Eeg view id
-        for ( view = ListEegDoc[ i ]->GetViewList (); view != 0; view = ListEegDoc[ i ]->NextView ( view ) )
-
-            if ( dynamic_cast<TTracksView *> ( view )
-              && view->GODoc == this )
-                { LastEegViewId   = view->GetViewId(); break; }
-
-        viewis      = new TInverseView ( *ListEegDoc[ i ], 0, this );
-
-        CartoolDocManager->PostEvent ( dnCreate, *viewis );
-
-        viewis->WindowMinimize ();
-        }
-    }
-
-
-if ( adding == addris && numspirr && (bool) ListMriDoc ) {
-    TInverseView*       viewis;
-    TBaseView*          view;
-    TTracksDoc*         docris  = dynamic_cast <TTracksDoc*> ( doc );
-    newview = true;
-
-                                        // find the right Eeg view id
-    for ( view = docris->GetViewList (); view != 0; view = docris->NextView ( view ) ) {
-        if ( dynamic_cast<TTracksView *> ( view )
-          && view->GODoc == this )
-            { LastEegViewId   = view->GetViewId(); break; }
-        }
-
-    viewis      = new TInverseView ( *docris, 0, this );
-
-    CartoolDocManager->PostEvent ( dnCreate, *viewis );
-
-    viewis->WindowMinimize ();
-    }
-
-
-if ( adding == addsp && numspirr == 1 && (bool) ListRisDoc && (bool) ListMriDoc
-  || adding == addmri && (int) ListMriDoc == 1 && (bool) ListRisDoc && numspirr ) {
-    TInverseView           *viewis;
-    TBaseView              *view;
-    newview = true;
-
-    for ( int i = 0; i < (int) ListRisDoc; i++ ) {
-                                        // find the right Eeg view id
-        for ( view = ListRisDoc[ i ]->GetViewList (); view != 0; view = ListRisDoc[ i ]->NextView ( view ) ) {
-            if ( dynamic_cast<TTracksView *> ( view )
-              && view->GODoc == this )
-
-                { LastEegViewId   = view->GetViewId(); break; }
-            }
-
-        viewis      = new TInverseView ( *ListRisDoc[ i ], 0, this );
-
-        CartoolDocManager->PostEvent ( dnCreate, *viewis );
-
-        viewis->WindowMinimize ();
-        }
+    newview         = true;
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // can we sync something ?
-if ( (bool) ListEegDoc && numspirr && (bool) ListIsDoc && (bool) ListXyzDoc && (bool) ListMriDoc ) {
-    TBaseView              *view;
-    TBaseView              *view2;
+                                        // can create inverse view?
+if ( addingeegfreq () && numspdoc && (bool) ListIsDoc && (bool) ListMriDoc 
+  || adding == addris && numspdoc && (bool) ListMriDoc ) {
 
-    for ( int i = 0; i < (int) ListEegDoc; i++ ) {  // scan pairs of views
+    TTracksDoc*         doctracks   = dynamic_cast <TTracksDoc*> ( doc );
 
-        for ( view = ListEegDoc[ i ]->GetViewList (); view != 0; view = ListEegDoc[ i ]->NextView ( view ) )
+    LastEegViewId   = GetLastEegViewId ( doctracks );
 
-            if ( dynamic_cast<TPotentialsView *> ( view )
-              && view->GODoc == this )
+    TInverseView*       viewis      = new TInverseView ( *doctracks, 0, this );
 
-                for ( view2 = ListEegDoc[ i ]->GetViewList (); view2 != 0; view2 = ListEegDoc[ i ]->NextView (view2) )
+    CartoolDocManager->PostEvent ( dnCreate, *viewis );
 
-                    if ( dynamic_cast<TInverseView *> ( view2 )
-                      && view2->GODoc == this
-                      && view->LinkedViewId == view2->LinkedViewId )
+    viewis->WindowMinimize ();
 
-                        view->SetFriendView ( view2 );
+    newview         = true;
+    }
+
+
+if ( adding == addsp  &&       numspdoc   == 1 && (bool) ListEegDoc && (bool) ListIsDoc && (bool) ListMriDoc
+  || adding == addis  && (int) ListIsDoc  == 1 && (bool) ListEegDoc && numspdoc && (bool) ListMriDoc
+  || adding == addmri && (int) ListMriDoc == 1 && (bool) ListEegDoc && numspdoc && (bool) ListIsDoc ) {
+
+    for ( int i = 0; i < (int) ListEegDoc; i++ ) {
+
+        LastEegViewId   = GetLastEegViewId ( ListEegDoc[ i ] );
+
+        TInverseView*       viewis      = new TInverseView ( *ListEegDoc[ i ], 0, this );
+
+        CartoolDocManager->PostEvent ( dnCreate, *viewis );
+
+        viewis->WindowMinimize ();
         }
+
+    newview         = true;
+    }
+
+
+if ( adding == addsp  &&       numspdoc   == 1 && (bool) ListRisDoc && (bool) ListMriDoc
+  || adding == addmri && (int) ListMriDoc == 1 && (bool) ListRisDoc && numspdoc ) {
+
+    for ( int i = 0; i < (int) ListRisDoc; i++ ) {
+
+        LastEegViewId   = GetLastEegViewId ( ListRisDoc[ i ] );
+
+        TInverseView*       viewis      = new TInverseView ( *ListRisDoc[ i ], 0, this );
+
+        CartoolDocManager->PostEvent ( dnCreate, *viewis );
+
+        viewis->WindowMinimize ();
+        }
+
+    newview         = true;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // can we sync some views?
+if ( (bool) ListEegDoc && numspdoc && (bool) ListIsDoc && (bool) ListXyzDoc && (bool) ListMriDoc ) {
+
+    for ( int i = 0; i < (int) ListEegDoc; i++ )    // scan pairs of views
+    for ( TBaseView* view1 = ListEegDoc[ i ]->GetViewList (); view1 != 0; view1 = ListEegDoc[ i ]->NextView ( view1 ) )
+
+        if ( dynamic_cast<TPotentialsView*> ( view1 )
+            && view1->GODoc == this )
+
+            for ( TBaseView* view2 = ListEegDoc[ i ]->GetViewList (); view2 != 0; view2 = ListEegDoc[ i ]->NextView (view2) )
+
+                if ( dynamic_cast<TInverseView*> ( view2 )
+                    && view2->GODoc == this
+                    && view1->LinkedViewId == view2->LinkedViewId )
+
+                    view1->SetFriendView ( view2 );
     }
 
 
@@ -1679,9 +1634,7 @@ return  false;
 
 void    TLinkManyDoc::RefreshWindows ( bool retile )
 {
-TBaseView*          view;
-
-for ( view = GetViewList (); view != 0; view = NextView ( view ) ) {
+for ( TBaseView* view = GetViewList (); view != 0; view = NextView ( view ) ) {
 
     TLinkManyView*  lmview  = dynamic_cast<TLinkManyView*> ( view );
 

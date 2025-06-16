@@ -557,10 +557,11 @@ OriginRadius    = 0.20 * SPDoc->GetPointRadius ();
 //----------------------------------------------------------------------------
 bool    TInverseView::ValidView ()
 {
-return  GODoc
-     && GODoc->GetNumSpDoc () && ( ( GODoc->GetNumEegDoc () && GODoc->GetNumIsDoc () ) || GODoc->GetNumRisDoc () )
-     && GODoc->GetNumMriDoc ()
-     && EEGDoc->GetNumTimeFrames ();
+return  GODoc != 0
+     && GODoc->GetNumSpDoc  () > 0 && ( ( GODoc->GetNumEegDoc () > 0 && GODoc->GetNumIsDoc () > 0 ) 
+                                       || GODoc->GetNumRisDoc () > 0 )
+     && GODoc->GetNumMriDoc () > 0
+     && EEGDoc->GetNumTimeFrames () > 0;
 }
 
 
