@@ -34,6 +34,7 @@ public:
 
                                         // A miniminalistic interface for all objects
     virtual void    GLize   ( int param = 0 )   {};     // Apply  / load   current OpenGL object
+    virtual void    GLize   ( double value  )   {};     // Apply  / load   current OpenGL object
     virtual void    unGLize ()                  {};     // Revert / unload current OpenGL object
 };
 
@@ -113,14 +114,14 @@ public:
     bool            IsAccelerated       ()      const   { return    IsAcceleratedICD () || IsAcceleratedMCD (); }                                   // Either native (ICD) or Microsoft (MCD)
 
 
-    int             GetNumPixelFormats      ( HDC& hdc );
-    bool            RetrievePixelFormat     ( HDC& hdc, int i );
-    int             ChooseBestPixelFormat   ( HDC&            hdc, 
+    int             GetNumPixelFormats      ( const HDC& hdc );
+    bool            RetrievePixelFormat     ( const HDC& hdc, int i );
+    int             ChooseBestPixelFormat   ( const HDC&      hdc, 
                                               FormatWish&     ask_colorbits,  FormatWish&     ask_depthbits,      FormatWish&     ask_stencilbits,
                                               FormatWish&     ask_accumbits,  FormatWish&     ask_doublebuffer,   FormatWish&     ask_accel       );
 
-    bool            ChoosePixelFormat       ( HDC &hdc );
-    bool            SetPixelFormat          ( HDC &hdc );
+    bool            ChoosePixelFormat       ( const HDC& hdc );
+    bool            SetPixelFormat          ( const HDC& hdc );
 
 
                     operator    bool    ()      const   { return    IsDetected (); }

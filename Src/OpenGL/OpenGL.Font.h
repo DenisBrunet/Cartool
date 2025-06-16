@@ -68,18 +68,18 @@ public:
 class   TGLBitmapFont :  public TGLObject
 {
 public:
-                    TGLBitmapFont ( LPCTSTR face,   int     height, int     width,
-                                    int     escapement          = 0,
-                                    int     orientation         = 0,
-                                    int     weight              = FW_MEDIUM,
-                                    DWORD   italic              = false,
-                                    DWORD   underline           = false,
-                                    DWORD   strikeout           = false,
-                                    DWORD   charset             = DEFAULT_CHARSET,
-                                    DWORD   outputprecision     = OUT_TT_ONLY_PRECIS,
-                                    DWORD   clipprecision       = CLIP_DEFAULT_PRECIS,
-                                    DWORD   quality             = PROOF_QUALITY,
-                                    DWORD   pitchandfamily      = DEFAULT_PITCH | FF_DONTCARE );
+                    TGLBitmapFont   ( LPCTSTR face,   int     height, int     width,
+                                      int     escapement          = 0,
+                                      int     orientation         = 0,
+                                      int     weight              = FW_MEDIUM,
+                                      DWORD   italic              = false,
+                                      DWORD   underline           = false,
+                                      DWORD   strikeout           = false,
+                                      DWORD   charset             = DEFAULT_CHARSET,
+                                      DWORD   outputprecision     = OUT_TT_ONLY_PRECIS,
+                                      DWORD   clipprecision       = CLIP_DEFAULT_PRECIS,
+                                      DWORD   quality             = PROOF_QUALITY,
+                                      DWORD   pitchandfamily      = DEFAULT_PITCH | FF_DONTCARE );
 
 
 	GLfloat         GetHeight       ()                  const                       { return FontHeight;            }

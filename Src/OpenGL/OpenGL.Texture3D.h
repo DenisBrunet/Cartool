@@ -41,7 +41,7 @@ constexpr int   GLTextureError                  = -1;
 class   TGLTexture3D :  public TGLObject
 {
 public:
-                    TGLTexture3D ();
+                    TGLTexture3D            ();
 
 
     GLuint          Name;               // Texture Id
@@ -60,8 +60,8 @@ public:
     TGLMatrix       Matrix;             // for texture coordinates
 
 
-    void            GLize   ( int param = 0 );
-    void            unGLize ();
+    void            GLize                   ( int param = 0 )   final;
+    void            unGLize                 ()                  final;
 
     void            GenerateName            ();
     void            SetParameters           ();
@@ -101,23 +101,23 @@ constexpr int   GLTextureIndexError     = -1;
 class   TGLVolume :     public TGLObject
 {
 public:
-                    TGLVolume ();
+                    TGLVolume           ();
 
 
     TGLTexture3D    Texture[ GLTextureMaxNames ];
 
 
-    void            GLize ( const Volume* data, TGLColorTable* colortable, bool interpolate, const double* origin = 0 );
-    void            unGLize ();
+    void            GLize               ( const Volume* data, TGLColorTable* colortable, bool interpolate, const double* origin = 0 );
+    void            unGLize             ()  final;
 
 
     int             GetLoadedTexture    ();
     int             GetTextureIndex     ();
 
 
-    void            DrawPlaneX ( GLfloat x, int quality, bool moreborder = false );
-    void            DrawPlaneY ( GLfloat y, int quality, bool moreborder = false );
-    void            DrawPlaneZ ( GLfloat z, int quality, bool moreborder = false );
+    void            DrawPlaneX          ( GLfloat x, int quality, bool moreborder = false );
+    void            DrawPlaneY          ( GLfloat y, int quality, bool moreborder = false );
+    void            DrawPlaneZ          ( GLfloat z, int quality, bool moreborder = false );
 
 
 protected:

@@ -29,9 +29,9 @@ template <class TypeD>
 class   TGLCoordinates :  public TGLObject
 {
 public:
-                    TGLCoordinates ()                                           { Reset (); }
-                    TGLCoordinates ( TypeD x, TypeD y, TypeD z )                { X = x; Y = y; Z = z; W = 1; }
-                    TGLCoordinates ( TypeD x, TypeD y, TypeD z, TypeD w )       { X = x; Y = y; Z = z; W = w; }
+                    TGLCoordinates          ()                                       { Reset ();                   }
+                    TGLCoordinates          ( TypeD x, TypeD y, TypeD z )            { X = x; Y = y; Z = z; W = 1; }
+                    TGLCoordinates          ( TypeD x, TypeD y, TypeD z, TypeD w )   { X = x; Y = y; Z = z; W = w; }
 
                                         // public, we actually want to change them!
     TypeD           X;
@@ -40,34 +40,34 @@ public:
     TypeD           W;
 
 
-    bool            IsNull    ()                        const   { return ! ( X || Y || Z ); }
-    bool            IsNotNull ()                        const   { return     X || Y || Z; }
+    bool            IsNull                  ()                  const               { return ! ( X || Y || Z ); }
+    bool            IsNotNull               ()                  const               { return     X || Y || Z;   }
 
-    void            Set ( TypeD x, TypeD y, TypeD z )           { X = x;    Y = y;    Z = z;    W = 1; }
-    void            Set ( TypeD x, TypeD y, TypeD z, TypeD w )  { X = x;    Y = y;    Z = z;    W = w; }
-    void            Set ( TPointDouble &p )                     { X = p.X;  Y = p.Y;  Z = p.Z;  W = 1; }
-    void            Set ( TPointFloat  &p )                     { X = p.X;  Y = p.Y;  Z = p.Z;  W = 1; }
+    void            Set                     ( TypeD x, TypeD y, TypeD z )           { X = x;    Y = y;    Z = z;    W = 1; }
+    void            Set                     ( TypeD x, TypeD y, TypeD z, TypeD w )  { X = x;    Y = y;    Z = z;    W = w; }
+    void            Set                     ( TPointDouble &p )                     { X = p.X;  Y = p.Y;  Z = p.Z;  W = 1; }
+    void            Set                     ( TPointFloat  &p )                     { X = p.X;  Y = p.Y;  Z = p.Z;  W = 1; }
 
-    void            Reset ()                                    { X = Y = Z = 0; W = 1; }
-    void            Show  ( char *title = 0 )           const;
+    void            Reset                   ()                                      { X = Y = Z = 0; W = 1; }
+    void            Show                    ( char *title = 0 ) const;
 
-    double          Norm        ()                      const   { return sqrt ( X * X + Y * Y + Z * Z ); }
-    void            Normalize   ()                              { double n = Norm (); if ( n != 0 ) { X /= n; Y /= n; Z /= n; } }
+    double          Norm                    ()                  const               { return sqrt ( X * X + Y * Y + Z * Z ); }
+    void            Normalize               ()                                      { double n = Norm (); if ( n != 0 ) { X /= n; Y /= n; Z /= n; } }
 
-    void            GLize   ( int param = 0 );
-
-
-                    operator const TypeD*   ()          const   { return (TypeD*) &X; }
-                    operator       TypeD*   ()                  { return (TypeD*) &X; }
-                    operator       bool     ()                  { return X || Y || Z; }
+    void            GLize                   ( int param = 0 )   final;
 
 
-    TGLCoordinates<TypeD>   operator    *=  ( const double          op2[] )     { X *= op2[0]; Y *= op2[1]; Z *= op2[2]; W *= op2[3];   return *this; }
-    TGLCoordinates<TypeD>   operator    /=  ( const double          op2[] )     { X /= op2[0]; Y /= op2[1]; Z /= op2[2]; W /= op2[3];   return *this; }
-    TGLCoordinates<TypeD>   operator    *=  ( double                op2   )     { X *= op2;    Y *= op2;    Z *= op2;                   return *this; }
-    TGLCoordinates<TypeD>   operator    /=  ( double                op2   )     { X /= op2;    Y /= op2;    Z /= op2;                   return *this; }
-    TGLCoordinates<TypeD>   operator    +=  ( const TPointDouble&   op2   )     { X += op2.X;  Y += op2.Y;  Z += op2.Z;                 return *this; }
-    TGLCoordinates<TypeD>   operator    +=  ( const TPointFloat&    op2   )     { X += op2.X;  Y += op2.Y;  Z += op2.Z;                 return *this; }
+                    operator const TypeD*   ()                  const               { return (TypeD*) &X; }
+                    operator       TypeD*   ()                                      { return (TypeD*) &X; }
+                    operator       bool     ()                                      { return X || Y || Z; }
+
+
+    TGLCoordinates<TypeD>   operator    *=  ( const double          op2[] )         { X *= op2[0]; Y *= op2[1]; Z *= op2[2]; W *= op2[3];   return *this; }
+    TGLCoordinates<TypeD>   operator    /=  ( const double          op2[] )         { X /= op2[0]; Y /= op2[1]; Z /= op2[2]; W /= op2[3];   return *this; }
+    TGLCoordinates<TypeD>   operator    *=  ( double                op2   )         { X *= op2;    Y *= op2;    Z *= op2;                   return *this; }
+    TGLCoordinates<TypeD>   operator    /=  ( double                op2   )         { X /= op2;    Y /= op2;    Z /= op2;                   return *this; }
+    TGLCoordinates<TypeD>   operator    +=  ( const TPointDouble&   op2   )         { X += op2.X;  Y += op2.Y;  Z += op2.Z;                 return *this; }
+    TGLCoordinates<TypeD>   operator    +=  ( const TPointFloat&    op2   )         { X += op2.X;  Y += op2.Y;  Z += op2.Z;                 return *this; }
 
 };
 
@@ -87,12 +87,12 @@ class   TGLMatrix : public TGLObject,
 {
 public:
                                         // copying current OpenGL matrices
-    void            CopyProjection ()           { glGetDoublev ( GL_PROJECTION_MATRIX, Matrix ); }
-    void            CopyModelView  ()           { glGetDoublev ( GL_MODELVIEW_MATRIX,  Matrix ); }
-    void            CopyTexture    ()           { glGetDoublev ( GL_TEXTURE_MATRIX,    Matrix ); }
+    void            CopyProjection  ()          { glGetDoublev ( GL_PROJECTION_MATRIX, Matrix ); }
+    void            CopyModelView   ()          { glGetDoublev ( GL_MODELVIEW_MATRIX,  Matrix ); }
+    void            CopyTexture     ()          { glGetDoublev ( GL_TEXTURE_MATRIX,    Matrix ); }
 
 
-     void           GLize   ( int param = ApplyToCurrent );
+     void           GLize           ( int param = ApplyToCurrent )  final;
 
 };
 
@@ -107,7 +107,7 @@ constexpr double    MultipasDepthShift  = 0.0005;
 class   TGLDepthRange:  public TGLObject
 {
 public:
-                    TGLDepthRange ();
+                    TGLDepthRange       ();
 
 
     GLclampd        UserShift;          // for user's need, not directly used
@@ -117,8 +117,8 @@ public:
     void            DepthFromMultipass  ( int pass, int maxpass );
     bool            IsShifted           ()  const                   { return NearPlane != 0 || FarPlane != 1; }
 
-    void            GLize   ( int param = 0 );
-    void            unGLize ();
+    void            GLize               ( int param = 0 )   final;
+    void            unGLize             ()                  final;
 
 
 protected:
@@ -128,6 +128,7 @@ protected:
 
 
 //----------------------------------------------------------------------------
+
 enum    ClipPlaneDirection
         {
         ClipPlaneNone,
@@ -149,51 +150,51 @@ enum    {
 class   TGLClipPlane :  public TGLObject
 {
 public:
-                    TGLClipPlane ();
-                    TGLClipPlane ( GLenum plane, GLdouble *equ, GLdouble linf, GLdouble lsup );
-                    TGLClipPlane ( GLenum plane, GLdouble equ0, GLdouble equ1, GLdouble equ2, GLdouble equ3, GLdouble linf, GLdouble lsup );
+                        TGLClipPlane    ();
+                        TGLClipPlane    ( GLenum plane, GLdouble *equ, GLdouble linf, GLdouble lsup );
+                        TGLClipPlane    ( GLenum plane, GLdouble equ0, GLdouble equ1, GLdouble equ2, GLdouble equ3, GLdouble linf, GLdouble lsup );
 
 
-    void            GLize   ( int param = CurrentClipPlane );
-    void            unGLize ();
+    void                GLize           ( int param = CurrentClipPlane )    final;
+    void                unGLize         ()                                  final;
 
 
-    ClipPlaneDirection  GetMode ()      { return Mode; }
-    GLdouble            GetLimitInf ()  { return LimitInf; }
-    GLdouble            GetLimitSup ()  { return LimitSup; }
-    GLdouble            GetPosition    ( double step = 0 );
-    GLdouble            GetAbsPosition ( double step = 0 );
-    GLdouble*           GetVector   ()  { return Equation; }
+    ClipPlaneDirection  GetMode         ()                      { return Mode; }
+    GLdouble            GetLimitInf     ()                      { return LimitInf; }
+    GLdouble            GetLimitSup     ()                      { return LimitSup; }
+    GLdouble            GetPosition     ( double step = 0 );
+    GLdouble            GetAbsPosition  ( double step = 0 );
+    GLdouble*           GetVector       ()                      { return Equation; }
 
-    bool            IsNone      ()  { return Mode == ClipPlaneNone;     }
-    bool            IsForward   ()  { return Mode == ClipPlaneForward;  }
-    bool            IsBackward  ()  { return Mode == ClipPlaneBackward; }
-
-
-    void            Set         ( int mode );
-    void            SetNone     ();
-    void            SetForward  ();
-    void            SetBackward ();
-    void            Invert      ();
-
-    void            Shift           ( GLdouble value );
-    void            SetPosition     ( GLdouble pos );
-    void            SetAbsPosition  ( GLdouble pos );
-    void            SetEquation     ( GLdouble equ0, GLdouble equ1, GLdouble equ2, GLdouble equ3 );
-
-    GLdouble        DirectionRatio ( GLdouble x, GLdouble y, GLdouble *model, bool normalize );
+    bool                IsNone          ()                      { return Mode == ClipPlaneNone;     }
+    bool                IsForward       ()                      { return Mode == ClipPlaneForward;  }
+    bool                IsBackward      ()                      { return Mode == ClipPlaneBackward; }
 
 
-    operator        int     ()      { return Mode; }
-    operator        bool    ()      { return Mode; }
+    void                Set             ( int mode );
+    void                SetNone         ();
+    void                SetForward      ();
+    void                SetBackward     ();
+    void                Invert          ();
+
+    void                Shift           ( GLdouble value );
+    void                SetPosition     ( GLdouble pos );
+    void                SetAbsPosition  ( GLdouble pos );
+    void                SetEquation     ( GLdouble equ0, GLdouble equ1, GLdouble equ2, GLdouble equ3 );
+
+    GLdouble            DirectionRatio  ( GLdouble x, GLdouble y, GLdouble *model, bool normalize );
+
+
+    operator            int             ()                      { return Mode; }
+    operator            bool            ()                      { return Mode; }
 
 
 protected:
-    GLenum          Plane;
+    GLenum              Plane;
     ClipPlaneDirection  Mode;           // On forward, On backward
-    GLdouble        Equation[ 5 ];      // plane equation + 1 as buffer
-    GLdouble        LimitInf;
-    GLdouble        LimitSup;
+    GLdouble            Equation[ 5 ];  // plane equation + 1 as buffer
+    GLdouble            LimitInf;
+    GLdouble            LimitSup;
 };
 
 

@@ -27,21 +27,21 @@ template <class TypeD>
 class   TGLColor :  public TGLObject
 {
 public:
-                    TGLColor ()                                                     { Red = Green = Blue = Alpha = 0; }
-//                  TGLColor ( TypeD r, TypeD g, TypeD b, TypeD a )                 { Red = r; Green = g; Blue = b; Alpha = a; }
-                    TGLColor ( GLfloat  r, GLfloat  g, GLfloat  b, GLfloat  a )     { Red = (TypeD) r; Green = (TypeD) g; Blue = (TypeD) b; Alpha = (TypeD) a; }
-                    TGLColor ( GLdouble r, GLdouble g, GLdouble b, GLdouble a )     { Red = (TypeD) r; Green = (TypeD) g; Blue = (TypeD) b; Alpha = (TypeD) a; }
+                    TGLColor        ()                                                  { Red = Green = Blue = Alpha = 0; }
+//                  TGLColor        ( TypeD r, TypeD g, TypeD b, TypeD a )              { Red = r; Green = g; Blue = b; Alpha = a; }
+                    TGLColor        ( GLfloat  r, GLfloat  g, GLfloat  b, GLfloat  a )  { Red = (TypeD) r; Green = (TypeD) g; Blue = (TypeD) b; Alpha = (TypeD) a; }
+                    TGLColor        ( GLdouble r, GLdouble g, GLdouble b, GLdouble a )  { Red = (TypeD) r; Green = (TypeD) g; Blue = (TypeD) b; Alpha = (TypeD) a; }
 
 
-    void            Set         ( GLdouble r, GLdouble g, GLdouble b )              { Red = r; Green = g; Blue = b; }
-    void            Set         ( GLdouble r, GLdouble g, GLdouble b, GLdouble a )  { Red = r; Green = g; Blue = b; Alpha = a; }
-    void            SetAlpha    ( GLdouble a )                                      { Alpha = a; }
-    void            SetHLS      ( double H, double L, double S );
+    void            Set             ( GLdouble r, GLdouble g, GLdouble b )              { Red = r; Green = g; Blue = b; }
+    void            Set             ( GLdouble r, GLdouble g, GLdouble b, GLdouble a )  { Red = r; Green = g; Blue = b; Alpha = a; }
+    void            SetAlpha        ( GLdouble a )                                      { Alpha = a; }
+    void            SetHLS          ( double H, double L, double S );
 
-    void            GLize   ( int param = 0 );
+    void            GLize           ( int param = 0 )   final;
 
 
-                    operator TypeD* ()                                              { return (TypeD *) &Red; }  // cast
+                    operator TypeD* ()                                                  { return (TypeD *) &Red; }  // cast
 
     TGLColor        operator    -   ( const TGLColor& op2 );
     TGLColor        operator    +   ( const TGLColor& op2 );
@@ -64,19 +64,19 @@ template <class TypeD>
 class   TGLMultiColor :  public TGLObject
 {
 public:
-                    TGLMultiColor ()        { NumColors = 0; }
+                    TGLMultiColor   ()          { NumColors = 0; }
 
 
-    void            Set ( int ci, GLfloat r, GLfloat g, GLfloat b, GLfloat a );
-    void            Set ( int ci, GLdouble r, GLdouble g, GLdouble b, GLdouble a );
-    TypeD*          Get ( int ci );
+    void            Set             ( int ci, GLfloat r, GLfloat g, GLfloat b, GLfloat a );
+    void            Set             ( int ci, GLdouble r, GLdouble g, GLdouble b, GLdouble a );
+    TypeD*          Get             ( int ci );
 
-    void            GLize   ( int param = 0 );
+    void            GLize           ( int param = 0 )   final;
 
 
-                    operator TypeD* ()      { return (TypeD *) Color[0]; }  // cast
+                    operator TypeD* ()          { return (TypeD *) Color[0]; }  // cast
 
-    TGLColor<TypeD> &operator[] ( int i )   { return Color[ i ]; }
+    TGLColor<TypeD> &operator[]     ( int i )   { return Color[ i ]; }
 
 
 protected:
@@ -180,7 +180,7 @@ class   TGLBitmapFont;
 class   TGLColorTable : public TGLObject
 {
 public:
-                    TGLColorTable ();
+                    TGLColorTable   ();
 
 
     double          Alpha;
@@ -189,12 +189,12 @@ public:
     TGLColor<GLfloat>   Table[ GLColorTableSize ];
 
 
-    void            GLize   ( int param = 0 );
-    void            GLize   ( double value );
+    void            GLize           ( int param = 0 )   final;
+    void            GLize           ( double value  )   final;
 
 
-    bool            IsLuminance     ()  const;
-    bool            IsSignedTable   ()  const   { return  crtl::IsSignedTable ( TableType ); }
+    bool            IsLuminance     ()                                          const;
+    bool            IsSignedTable   ()                                          const   { return  crtl::IsSignedTable ( TableType ); }
 
 
     void            Set             ( ColorTablesEnum tabletype );
@@ -204,22 +204,22 @@ public:
     void            SetAlpha        ( double alpha )   { Alpha = alpha; }
 
 
-    int             GetZeroIndex    ()  const   { return ZeroIndex; }
-    int             GetMaxIndex     ()  const   { return MaxIndex; }
-    double          GetPMax         ()  const   { return PMax; }
-    double          GetNMax         ()  const   { return NMax; }
-    double          GetContrast     ()  const   { return Contrast; }
-    int             GetDeltaIndex   ()  const   { return DeltaIndex; }
+    int             GetZeroIndex    ()                                          const   { return ZeroIndex; }
+    int             GetMaxIndex     ()                                          const   { return MaxIndex; }
+    double          GetPMax         ()                                          const   { return PMax; }
+    double          GetNMax         ()                                          const   { return NMax; }
+    double          GetContrast     ()                                          const   { return Contrast; }
+    int             GetDeltaIndex   ()                                          const   { return DeltaIndex; }
     int             GetIndex        ( double value )                            const;
     int             GetColorIndex   ( double value, TGLColor<GLfloat> &glcol )  const;
-    int             GetTableSize    ()  const   { return GLColorTableSize; }
-    ColorTablesEnum GetTableType    ()  const   { return TableType; }
+    int             GetTableSize    ()                                          const   { return GLColorTableSize; }
+    ColorTablesEnum GetTableType    ()                                          const   { return TableType; }
 
 
     void            InterpolateColors ( int index2, TGLColor<GLfloat> color2, InterpolateColorsEnum how = InterpolateColorsLinear, double logstrength = 2 );
     void            NormalizeColors   ( int i1, int i2, double norm );
 
-    void            Show  ( char *title = 0 );
+    void            Show            ( char *title = 0 );
     void            Draw            (   const tagRECT&      paintrect,
                                         TGLColor<GLfloat>&  linecolor,  TGLColor<GLfloat>&  textcolor,
                                         int                 width,      int                 height,
@@ -228,7 +228,7 @@ public:
                                         TGLBitmapFont*      font
                                     );
 
-    TGLColor<GLfloat>  &operator[] ( int i )    { return Table[ i ]; }
+    TGLColor<GLfloat>  &operator[] ( int i )                                            { return Table[ i ]; }
 
 
 protected:
@@ -272,14 +272,14 @@ public:
                     TGLColoring ( int ref, ColoringEnum how, double minv, double maxv, TGLColor<GLfloat> cmin, TGLColor<GLfloat> cmax );
 
 
-    int             GetRef ()               { return Ref; }
-    ColoringEnum    GetHow ()               { return How; }
+    int             GetRef      ()          { return Ref; }
+    ColoringEnum    GetHow      ()          { return How; }
     double          GetValueMin ()          { return ValueMin; }
     double          GetValueMax ()          { return ValueMax; }
 
-    bool            GetColor ( double v, TGLColor<GLfloat> &col );
+    bool            GetColor    ( double v, TGLColor<GLfloat> &col );
 
-    void            GLize ( int param )     { GetColor ( param, ColorReturned ); ColorReturned.GLize (); }
+    void            GLize       ( int param )     { GetColor ( param, ColorReturned ); ColorReturned.GLize (); }
 
 
 protected:

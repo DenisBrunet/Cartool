@@ -340,7 +340,7 @@ return  redaccum + greenaccum + blueaccum + alphaaccum;
 
 
 //----------------------------------------------------------------------------
-int     TGLPixelFormat::GetNumPixelFormats ( HDC& hdc )
+int     TGLPixelFormat::GetNumPixelFormats ( const HDC& hdc )
 {
 Reset ();
                                         // retrieve total number of formats
@@ -348,7 +348,7 @@ return  DescribePixelFormat ( hdc, 1, GetPfdSize (), this );
 }
 
 
-bool    TGLPixelFormat::RetrievePixelFormat ( HDC& hdc, int i )
+bool    TGLPixelFormat::RetrievePixelFormat ( const HDC& hdc, int i )
 {
 Reset ();
 
@@ -358,7 +358,7 @@ return  (bool) DescribePixelFormat ( hdc, i, GetPfdSize (), this );
 }
 
                                         // regular call, pixel format should have been set beforehand!
-bool    TGLPixelFormat::ChoosePixelFormat ( HDC& hdc )
+bool    TGLPixelFormat::ChoosePixelFormat ( const HDC& hdc )
 {
 int                 pf              =  ::ChoosePixelFormat ( hdc, this );
 
@@ -368,7 +368,7 @@ return  IsDetected ();  // PixelFormat > 0
 }
 
 
-bool    TGLPixelFormat::SetPixelFormat ( HDC& hdc )
+bool    TGLPixelFormat::SetPixelFormat ( const HDC& hdc )
 {
 return  ::SetPixelFormat ( hdc, PixelFormat, this ) == TRUE;
 }
@@ -401,7 +401,7 @@ switch ( v ) {
 }
 
                                         // Guessing which pixel format to select according to caller's preferences
-int     TGLPixelFormat::ChooseBestPixelFormat ( HDC&            hdc, 
+int     TGLPixelFormat::ChooseBestPixelFormat ( const HDC&      hdc, 
                                                 FormatWish&     ask_colorbits,  FormatWish&     ask_depthbits,      FormatWish&     ask_stencilbits,
                                                 FormatWish&     ask_accumbits,  FormatWish&     ask_doublebuffer,   FormatWish&     ask_accel       )
 {

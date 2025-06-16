@@ -42,8 +42,8 @@ public:
     TGLCoordinates<GLfloat> Front;
 
 
-    void            GLize   ( int param = BillboardSingleSide );
-    void            unGLize ();
+    void            GLize       ( int param = BillboardSingleSide ) override;
+    void            unGLize     ()                                  final;
 
 
 protected:
@@ -55,13 +55,13 @@ protected:
 class   TGLBillboardSphere : public TGLBillboard
 {
 public:
-                    TGLBillboardSphere ()       { NumRounds = NumSlices = NumPoints = 0; Shape = 0; };
-                    TGLBillboardSphere ( int numrounds, int numslices );
-                   ~TGLBillboardSphere ();
+                    TGLBillboardSphere  ()                                          { NumRounds = NumSlices = NumPoints = 0; Shape = 0; };
+                    TGLBillboardSphere  ( int numrounds, int numslices );
+                   ~TGLBillboardSphere  ();
 
 
-    void            GLize   ( int param = BillboardSingleSide )     { TGLBillboard::GLize ( param ); }
-    void            GLize   ( GLfloat x, GLfloat y, GLfloat z, GLfloat r );
+    void            GLize               ( int param = BillboardSingleSide ) final   { TGLBillboard::GLize ( param ); }
+    void            GLize               ( GLfloat x, GLfloat y, GLfloat z, GLfloat r );
 
 
 protected:
@@ -79,17 +79,17 @@ template <class TypeD>
 class   TGLArrow :  public TGLObject
 {
 public:
-                    TGLArrow ()                 {}
-                    TGLArrow (  GLdouble    fromx,  GLdouble    fromy,  GLdouble    fromz, 
-                                GLdouble    tox,    GLdouble    toy,    GLdouble    toz, 
-                                double      headl,  double      headh, 
-                                GLdouble    r,      GLdouble    g,      GLdouble    b,      GLdouble    a );
+                            TGLArrow    ()                 {}
+                            TGLArrow    (  GLdouble    fromx,  GLdouble    fromy,  GLdouble    fromz, 
+                                           GLdouble    tox,    GLdouble    toy,    GLdouble    toz, 
+                                           double      headl,  double      headh, 
+                                           GLdouble    r,      GLdouble    g,      GLdouble    b,      GLdouble    a );
 
 
     TGLCoordinates<TypeD>   From;
     TGLCoordinates<TypeD>   To;
 
-    void                    GLize   ( int param = 0 );
+    void                    GLize   ( int param = 0 )   final;
 
 
 protected:
@@ -160,10 +160,10 @@ enum    QuadQuality
 class   TGLQuadStrip :  public TGLObject
 {
 public:
-                    TGLQuadStrip ();
+                    TGLQuadStrip    ();
 
 
-    void            GLize           ( int param = 0 );
+    void            GLize           ( int param = 0 )   final;
 
     void            Begin           ( QuadQuality quality, TGLColorTable &colormap );
     void            NextVertices    ( GLfloat v1[ 3 ], GLfloat v2[ 3 ], float val1, float val2 );
@@ -171,7 +171,7 @@ public:
 
 protected:
     QuadQuality     Quality;
-    TGLColorTable  *ColorTable;
+    TGLColorTable*  ColorTable;
     double          TriangleSizeLimit;
     int             TriangleLevel;
 
@@ -193,35 +193,35 @@ private:
 class   TGLQuadMesh :  public TGLObject
 {
 public:
-                    TGLQuadMesh ();
+                            TGLQuadMesh ();
 
 
-    void            Reset ();
+    void                    Reset       ();
 
 
-    void            Begin ( int rowsize, int quality, TGLColorTable& colormap );    // rowsize can vary for each call, though it should remain < maxrowsize
-    void            NextVertex ( GLfloat v[ 3 ], float val );
+    void                    Begin       ( int rowsize, int quality, TGLColorTable& colormap );  // rowsize can vary for each call, though it should remain < maxrowsize
+    void                    NextVertex  ( GLfloat v[ 3 ], float val );
 
 
 protected:
-    int             RowSize;
-    int             Quality;
-    TGLColorTable  *ColorTable;
-    double          TriangleSizeLimit;  // Quality -> GLColorTrianglefv
-    int             TriangleLevel;      // Quality -> GLColorTrianglefv
+    int                     RowSize;
+    int                     Quality;
+    TGLColorTable*          ColorTable;
+    double                  TriangleSizeLimit;  // Quality -> GLColorTrianglefv
+    int                     TriangleLevel;      // Quality -> GLColorTrianglefv
 
 
 private:
-    bool            FirstRow;           // internal counters
-    int             VertexCounter;
+    bool                    FirstRow;   // internal counters
+    int                     VertexCounter;
                                         // store a previous row and previous point
     TArray1<TPointFloat>    VerticesRow;
     TArray1<float>          ValuesRow;
     TPointFloat             Vertex3;
     float                   Value3;
                                         // intermediate variables
-    GLfloat         vecbuff[ 5 ][ 3 ];
-    float           valbuff[ 5 ];
+    GLfloat                 vecbuff[ 5 ][ 3 ];
+    float                   valbuff[ 5 ];
 
 };
 
