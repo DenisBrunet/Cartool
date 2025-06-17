@@ -2410,9 +2410,6 @@ if ( showgauge ) {
 TFileName           filemrkin;
 TFileName           filemrkout;
 
-TSetArray2<float>   realpart;
-TSetArray2<float>   imagpart;
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -2431,27 +2428,18 @@ for ( int i = 0; i < NumFiles (); i++ ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    int             numel       = FreqDoc->GetNumElectrodes  ();
-    long            numtf       = FreqDoc->GetNumTimeFrames  ();
-    int             numfreqs    = FreqDoc->GetNumFrequencies ();
+    int             numel           = FreqDoc->GetNumElectrodes  ();
+    long            numtf           = FreqDoc->GetNumTimeFrames  ();
+    int             numfreqs        = FreqDoc->GetNumFrequencies ();
 
-                                        // !Avoid allocating arrays bigger than a fixed limit!
-    int             readtf      = GigaByte
-                                / NonNull ( numel * numfreqs * ( FreqDoc->IsComplex ( AtomTypeUseOriginal ) ? 2 : 1 ) * sizeof ( float ) );  // space for "1 slice" of electrodes x frequencies
-    Clipped ( readtf, 1, (int) numtf );
+    bool            isatomcomplex   = FreqDoc->IsComplex ( AtomTypeUseOriginal );
+    bool            isatomscalar    = ! isatomcomplex;
+    int             atomsize        = isatomscalar ? 1 : 2;
 
-    int             numblocks   = RoundAbove ( (double) numtf / readtf );
-
-
-    if ( FreqDoc->IsComplex ( AtomTypeUseOriginal ) ) {
-        realpart.Resize ( numfreqs, numel, readtf /*numtf*/ );
-        imagpart.Resize ( numfreqs, numel, readtf /*numtf*/ );
-        }
-    else
-        realpart.Resize ( numfreqs, numel, readtf /*numtf*/ );
-
+    TSetArray2<float>   realpart    ( numfreqs, numel, numtf );
+    TSetArray2<float>   imagpart    ( isatomcomplex ? numfreqs : 0, isatomcomplex ? numel : 0, isatomcomplex ? numtf : 0 );
                                         // there might be more than 1 part, and we want to use the same loop
-    int             numparts        = FreqDoc->IsComplex ( AtomTypeUseOriginal ) ? 2 : 1;
+    int             numparts        = atomsize;
 
     int             tfwidth         = NumIntegerDigits ( numtf );
 
@@ -2459,9 +2447,9 @@ for ( int i = 0; i < NumFiles (); i++ ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // assume all files have the same number of frequencies...
     if ( i == 0 )
-        if      ( how == SplitFreqByFrequency )     Gauge.SetRange ( 0, NumFiles () * numblocks * numfreqs * numparts );
-        else if ( how == SplitFreqByElectrode )     Gauge.SetRange ( 0, NumFiles () * numblocks * numel    * numparts );
-        else if ( how == SplitFreqByTime      )     Gauge.SetRange ( 0, NumFiles () * numtf                * numparts );
+        if      ( how == SplitFreqByFrequency )     Gauge.SetRange ( 0, NumFiles () * numfreqs * numparts );
+        else if ( how == SplitFreqByElectrode )     Gauge.SetRange ( 0, NumFiles () * numel    * numparts );
+        else if ( how == SplitFreqByTime      )     Gauge.SetRange ( 0, NumFiles () * numtf    * numparts );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2505,8 +2493,9 @@ for ( int i = 0; i < NumFiles (); i++ ) {
                                         // this will not match exactly, but is still helpful
             exptracks.SamplingFrequency = ( lastfreq - firstfreq ) / (double) ( FreqDoc->GetNumFrequencies () - 1 );
             }
-
         }
+                                        // Speed up things with an appropriate transposed buffer
+    TArray2<float>      buffer      ( exptracks.NumTime, exptracks.NumTracks );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2521,190 +2510,168 @@ for ( int i = 0; i < NumFiles (); i++ ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // for memory issues, we might need to run the split by blocks...
-    for ( long blocktf = 0; blocktf < numtf; blocktf += readtf ) {
-
-        bool        firstblock  = blocktf == 0;
-
-                                        // reading exactly this amount of time frames
-        long        blocklen        = NoMore ( numtf, blocktf + readtf ) - blocktf;
-
                                         // in case frequency file is big, read by blocks
-        if ( numparts == 2 )    FreqDoc->ReadFrequencies ( blocktf, blocktf + blocklen - 1, realpart, imagpart );
-        else                    FreqDoc->ReadFrequencies ( blocktf, blocktf + blocklen - 1, realpart           );
+    if ( numparts == 2 )    FreqDoc->ReadFrequencies ( 0, numtf - 1, realpart, imagpart );
+    else                    FreqDoc->ReadFrequencies ( 0, numtf - 1, realpart           );
 
 
-        if      ( how == SplitFreqByFrequency ) {
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-            for ( int freq = 0; freq < numfreqs; freq++ )
+    if      ( how == SplitFreqByFrequency ) {
+
+        for ( int freq = 0; freq < numfreqs; freq++ )
                                         // then split to 1 or 2 files per freq
-            for ( int part = 0; part < numparts; part++ ) {
+        for ( int part = 0; part < numparts; part++ ) {
 
-                if ( showgauge )    Gauge.Next ( 0 );
+            if ( showgauge )    Gauge.Next ( 0 );
 
 
-                exptracks.Filename  = (*this)[ i ];
+            exptracks.Filename  = (*this)[ i ];
 
-                exptracks.Filename.RemoveExtension ();
+            exptracks.Filename.RemoveExtension ();
 
-                exptracks.Filename += "." + TStringValue ( FreqDoc->GetFrequencyName ( freq ) );
+            exptracks.Filename += "." + TStringValue ( FreqDoc->GetFrequencyName ( freq ) );
                                         // check for buggy "Hz"
-        //      if ( StringEndsWith ( exptracks.Filename, " H" ) )
-        //          exptracks.Filename += "z";
+    //      if ( StringEndsWith ( exptracks.Filename, " H" ) )
+    //          exptracks.Filename += "z";
 
-                if ( FreqDoc->IsComplex ( AtomTypeUseOriginal ) )
-                    exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
+            if ( isatomcomplex )
+                exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
 
-                exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
+            exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
 
                                         // 2 consecutive equal freq names?
-        //      if ( freq && StringIs ( FreqDoc->GetFrequencyName ( freq ), FreqDoc->GetFrequencyName ( freq - 1 ) ) )
-        //          ReplaceExtension    ( OutFileName, FILEEXT_EEGSEF );
+    //      if ( freq && StringIs ( FreqDoc->GetFrequencyName ( freq ), FreqDoc->GetFrequencyName ( freq - 1 ) ) )
+    //          ReplaceExtension    ( OutFileName, FILEEXT_EEGSEF );
 
 
-                if ( firstblock ) {
-
-                    if ( gogofout )
-                        (*gogofout)[ i ].Add ( exptracks.Filename );
+            if ( gogofout )
+                (*gogofout)[ i ].Add ( exptracks.Filename );
 
                                         // any marker file?
-                    if ( StringIsNotEmpty ( filemrkin ) ) {
-                        filemrkout  = exptracks.Filename;
-                        filemrkout.AddExtension ( FILEEXT_MRK );
-                        CopyFileExtended        ( filemrkin,  filemrkout );
-                        }
-                    }
+            if ( StringIsNotEmpty ( filemrkin ) ) {
+                filemrkout  = exptracks.Filename;
+                filemrkout.AddExtension ( FILEEXT_MRK );
+                CopyFileExtended        ( filemrkin,  filemrkout );
+                }
 
 
-                exptracks.Begin ( ! firstblock );
+            for ( long tf0 = 0; tf0 < numtf; tf0++ )
+            for ( int  e   = 0; e   < numel;   e++ )
+                                    // pick the right buffer
+                buffer ( tf0, e )   = part == 0 ? realpart ( freq, e, tf0 ) : imagpart ( freq, e, tf0 );
+    
+
+            exptracks.Write ( buffer, NotTransposed );
+            } // for freq & part
+
+        } // if SplitFreqByFrequency
 
 
-                for ( long tf0 = 0; tf0 < blocklen; tf0++ )
-                for ( int  e   = 0; e   < numel;    e++   )
-                                   // pick the right buffer
-                    exptracks.Write ( part == 0 ? realpart ( freq, e, tf0 ) : imagpart ( freq, e, tf0 ), blocktf + tf0, e );
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-                                            // done for that freq & block
-                exptracks.End ();
-                } // for freq & part
+    else if  ( how == SplitFreqByElectrode ) {
 
-            } // if SplitFreqByFrequency
-
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        else if  ( how == SplitFreqByElectrode ) {
-
-            for ( int  e   = 0; e   < numel;    e++   )
+        for ( int  e   = 0; e   < numel;    e++   )
                                         // then split to 1 or 2 files per freq
-            for ( int part = 0; part < numparts; part++ ) {
+        for ( int part = 0; part < numparts; part++ ) {
 
-                if ( showgauge )    Gauge.Next ( 0 );
+            if ( showgauge )    Gauge.Next ( 0 );
 
 
-                exptracks.Filename  = (*this)[ i ];
+            exptracks.Filename  = (*this)[ i ];
 
-                exptracks.Filename.RemoveExtension ();
+            exptracks.Filename.RemoveExtension ();
 
-                exptracks.Filename += "." + TStringValue ( FreqDoc->GetElectrodeName ( e ) );
+            exptracks.Filename += "." + TStringValue ( FreqDoc->GetElectrodeName ( e ) );
                                         // check for buggy "Hz"
-        //      if ( StringEndsWith ( exptracks.Filename, " H" ) )
-        //          exptracks.Filename += "z";
+    //      if ( StringEndsWith ( exptracks.Filename, " H" ) )
+    //          exptracks.Filename += "z";
 
-                if ( FreqDoc->IsComplex ( AtomTypeUseOriginal ) )
-                    exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
+            if ( isatomcomplex )
+                exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
 
-                exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
-
-
-                if ( firstblock ) {
-
-                    if ( gogofout )
-                        (*gogofout)[ i ].Add ( exptracks.Filename );
-
-                                        // any marker file?
-                    if ( StringIsNotEmpty ( filemrkin ) ) {
-                        filemrkout  = exptracks.Filename;
-                        filemrkout.AddExtension ( FILEEXT_MRK );
-                        CopyFileExtended        ( filemrkin,  filemrkout );
-                        }
-                    }
+            exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
 
 
-                exptracks.Begin ( ! firstblock );
-
-
-                for ( long tf0 = 0; tf0 < blocklen; tf0++ )
-                for ( int freq = 0; freq < numfreqs; freq++ )
-                                        // !frequency will appear "inverted", low frequencies on top, but coherent with frequency names!
-                                   // pick the right buffer
-                    exptracks.Write ( part == 0 ? realpart ( freq, e, tf0 ) : imagpart ( freq, e, tf0 ), blocktf + tf0, freq );
-
-                                            // done for that freq & block
-                exptracks.End ();
-                } // for freq & part
-
-            } // if SplitFreqByElectrode
-
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        else if  ( how == SplitFreqByTime ) { // i.e. Spectrum
-
-            for ( long tf0 = 0; tf0 < blocklen; tf0++ )
-                                        // then split to 1 or 2 files per freq
-            for ( int part = 0; part < numparts; part++ ) {
-
-                if ( showgauge )    Gauge.Next ( 0 );
-
-
-                exptracks.Filename  = (*this)[ i ];
-
-                exptracks.Filename.RemoveExtension ();
-
-                exptracks.Filename += "." InfixSpectrum " " + IntegerToString ( blocktf + tf0 + 1, tfwidth );
-
-                if ( FreqDoc->IsComplex ( AtomTypeUseOriginal ) )
-                    exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
-
-                exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
-
-
-                if ( gogofout )
-                    (*gogofout)[ i ].Add ( exptracks.Filename );
+            if ( gogofout )
+                (*gogofout)[ i ].Add ( exptracks.Filename );
 
                                     // any marker file?
-                if ( StringIsNotEmpty ( filemrkin ) ) {
-                    filemrkout  = exptracks.Filename;
-                    filemrkout.AddExtension ( FILEEXT_MRK );
-                    CopyFileExtended        ( filemrkin,  filemrkout );
-                    }
+            if ( StringIsNotEmpty ( filemrkin ) ) {
+                filemrkout  = exptracks.Filename;
+                filemrkout.AddExtension ( FILEEXT_MRK );
+                CopyFileExtended        ( filemrkin,  filemrkout );
+                }
 
 
-                exptracks.Begin ();
+            for ( long tf0 = 0; tf0 < numtf;      tf0++ )
+            for ( int freq = 0; freq < numfreqs; freq++ )
+                                    // !frequency will appear "inverted", low frequencies on top, but coherent with frequency names!
+                                // pick the right buffer
+                buffer ( tf0, freq )    = part == 0 ? realpart ( freq, e, tf0 ) : imagpart ( freq, e, tf0 );
 
 
-                for ( int freq = 0; freq < numfreqs; freq++ )
-                for ( int  e   = 0; e   < numel;    e++   ) {
+            exptracks.Write ( buffer, NotTransposed );
+            } // for freq & part
 
-                    double      v;
-
-                    if      ( FreqDoc->IsFreqTypeFFTApproximation () )  v   = Square ( realpart ( freq, e, tf0 ) ); // we could also output fabs(fftapprox)
-                    else if ( part == 0 )                               v   = realpart ( freq, e, tf0 );
-                    else                                                v   = imagpart ( freq, e, tf0 );
-
-                    exptracks.Write ( v, freq, e );
-                    }
-
-                                            // done for that freq & block
-                exptracks.End ();
-                } // for freq & part
-
-            } // if SplitFreqByTime
-
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        } // if SplitFreqByElectrode
 
 
-        } // for block
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    else if  ( how == SplitFreqByTime ) { // i.e. Spectrum
+
+        for ( long tf0 = 0; tf0 < numtf; tf0++ )
+                                    // then split to 1 or 2 files per freq
+        for ( int part = 0; part < numparts; part++ ) {
+
+            if ( showgauge )    Gauge.Next ( 0 );
+
+
+            exptracks.Filename  = (*this)[ i ];
+
+            exptracks.Filename.RemoveExtension ();
+
+            exptracks.Filename += "." InfixSpectrum " " + IntegerToString ( tf0 + 1, tfwidth );
+
+            if ( isatomcomplex )
+                exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
+
+            exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
+
+
+            if ( gogofout )
+                (*gogofout)[ i ].Add ( exptracks.Filename );
+
+                                // any marker file?
+            if ( StringIsNotEmpty ( filemrkin ) ) {
+                filemrkout  = exptracks.Filename;
+                filemrkout.AddExtension ( FILEEXT_MRK );
+                CopyFileExtended        ( filemrkin,  filemrkout );
+                }
+
+
+            for ( int freq = 0; freq < numfreqs; freq++ )
+            for ( int e    = 0; e    < numel;    e++    ) {
+
+                double      v;
+
+                if      ( FreqDoc->IsFreqTypeFFTApproximation () )  v   = Square ( realpart ( freq, e, tf0 ) ); // we could also output fabs(fftapprox)
+                else if ( part == 0 )                               v   = realpart ( freq, e, tf0 );
+                else                                                v   = imagpart ( freq, e, tf0 );
+
+                buffer ( freq, e )  = v;
+                }
+
+
+            exptracks.Write ( buffer, NotTransposed );
+            } // for freq & part
+
+        } // if SplitFreqByTime
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     FreqDoc.Close ();
     } // for file
