@@ -630,7 +630,7 @@ if ( esicase == ComputingRisPresetFreq ) {
             } // if freqtypecomplex
 
         else { // if ( freqgtypereal )
-                                    // all subjects, all freqs concatenated
+                                        // all subjects, all freqs concatenated
             gogofpersubject.Add ( onesubjallfreqsbycond );
 
             if ( numexpandedfreqs == 0 )
@@ -640,7 +640,7 @@ if ( esicase == ComputingRisPresetFreq ) {
         } // for subjects
 
 
-                                        // the list of inverses has not been expanded
+                                        // the list of inverses itself is not expanded, so we have to keep track of the ratio EEG / Inverse for proper stepping
     if ( individualinverses )
         stepinverse     = gogofpersubject.NumGroups () / subjects.NumGroups ();
 

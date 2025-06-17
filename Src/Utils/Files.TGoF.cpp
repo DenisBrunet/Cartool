@@ -2436,6 +2436,10 @@ for ( int i = 0; i < NumFiles (); i++ ) {
     bool            isatomscalar    = ! isatomcomplex;
     int             atomsize        = isatomscalar ? 1 : 2;
 
+    FrequencyAnalysisType freqtype  = FreqDoc->GetFreqType ();
+    const char*     fileext         = freqtype == FreqESI ? FILEEXT_RIS : FILEEXT_EEGSEF;   // could be useful
+
+
     TSetArray2<float>   realpart    ( numfreqs, numel, numtf );
     TSetArray2<float>   imagpart    ( isatomcomplex ? numfreqs : 0, isatomcomplex ? numel : 0, isatomcomplex ? numtf : 0 );
                                         // there might be more than 1 part, and we want to use the same loop
@@ -2538,7 +2542,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
             if ( isatomcomplex )
                 exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
 
-            exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
+            exptracks.Filename.AddExtension ( fileext );
 
                                         // 2 consecutive equal freq names?
     //      if ( freq && StringIs ( FreqDoc->GetFrequencyName ( freq ), FreqDoc->GetFrequencyName ( freq - 1 ) ) )
@@ -2591,7 +2595,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
             if ( isatomcomplex )
                 exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
 
-            exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
+            exptracks.Filename.AddExtension ( /*fileext*/ FILEEXT_EEGSEF );
 
 
             if ( gogofout )
@@ -2638,7 +2642,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
             if ( isatomcomplex )
                 exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
 
-            exptracks.Filename.AddExtension ( FILEEXT_EEGSEF );
+            exptracks.Filename.AddExtension ( /*fileext*/ FILEEXT_EEGSEF );
 
 
             if ( gogofout )
