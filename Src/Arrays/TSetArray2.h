@@ -40,7 +40,7 @@ public:
     int             GetTotalLinearDim ()    const           { return MaxPlanes * LinearDim; }   // LinearDim is only a single plane long
     int             GetMaxPlanes ()         const           { return MaxPlanes; }
     int             GetCurrentPlane ()      const           { return CurrentPlane; }
-    void            SetCurrentPlane ( int p );
+    void            SetCurrentPlane ( int p );      // !NOT thread safe!
 
     void            Resize  ( int newnumplanes, int newdim1, int newdim2 );
 

@@ -1123,35 +1123,20 @@ void    BatchAveragingFreq      (   const TGoF&             gof,
                                     bool                    openresults,    bool            showgauge 
                                 )
 {
+int                 numfiles        = (int) gof;
+bool                poleval         = IsFreqTypeFFTApproximation ( freqtype ) && fftapproxpolarity == PolarityEvaluate;
+
 ClearString ( meanfile   );
 ClearString ( sdfile     );
 
 if ( gof.IsEmpty () )
     return;
 
+if ( sdfile && numfiles <= 1 )
+    sdfile  = false;
+
 if ( ! ( meanfile || sdfile ) )
     return;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TOpenDoc<TFreqDoc>  freqdoc;
-int                 numfiles        = (int) gof;
-int                 numfreqs        = 0;
-int                 numtracks       = 0;
-long                numtf           = 0;
-
-                                        
-TSetArray2<float>   freqbuff;
-TSetArray2<float>   sum;
-TSetArray2<float>   sum2;
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // variables needed for polarity checks
-bool                    poleval         = IsFreqTypeFFTApproximation ( freqtype ) && fftapproxpolarity == PolarityEvaluate;
-std::vector< TGoMaps >  freqmaps;       // yes, we are going to load all data in memory
-TGoMaps                 summaps;
-TMap                    map;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1187,16 +1172,65 @@ TSuperGauge         Gauge;
 
 if ( showgauge ) {
     Gauge.Set           ( BatchAveragingTitle );
-    Gauge.AddPart       ( 0, numfiles + 5 );
+    Gauge.AddPart       ( 0, 3 + 3 * numfiles + ( poleval ? 3 : 0 ) + ( meanfile ? 2 : 0 ) + ( sdfile ? 3 : 0 ) );
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Retrieve some info from first file
+Gauge.Next ( 0 );
 
+TOpenDoc<TFreqDoc>  freqdoc;
+
+if ( ! freqdoc.Open ( gof[ 0 ], OpenDocHidden ) )
+    return;
+
+                                        // Init time
+int                 numfreqs        = freqdoc->GetNumFrequencies ();
+int                 numtracks       = freqdoc->GetNumElectrodes  ();
+int                 numtf           = freqdoc->GetNumTimeFrames  ();
+
+
+TSetArray2<float>   freqbuff    ( numfreqs, numtracks, numtf );
+TSetArray2<float>   sum         ( numfreqs, numtracks, numtf );
+TSetArray2<float>   sum2        ( sdfile ? numfreqs : 0, sdfile ? numtracks : 0, sdfile ? numtf : 0 );
+
+
+vector<TGoMaps>     freqmaps;       // yessir, we are going to load all this data in memory
+TGoMaps             summaps;
+TMap                map;
+
+if ( poleval ) {
+    freqmaps.resize ( numfiles );
+    summaps .Resize (          numfreqs, numtf, numtracks );
+    map     .Resize (                           numtracks );
+
+    for ( int filei = 0; filei < numfiles; filei++ )
+        freqmaps[ filei ].Resize  ( numfreqs, numtf, numtracks );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Init export tracks
 TExportTracks       expfile;
 
 expfile.SetAtomType ( AtomTypeScalar );
 
+expfile.NumTracks           =  freqdoc->GetNumElectrodes     ();
+expfile.NumAuxTracks        =  freqdoc->GetNumAuxElectrodes  ();
+expfile.NumTime             =  freqdoc->GetNumTimeFrames     ();
+expfile.SamplingFrequency   =  freqdoc->GetOriginalSamplingFrequency ();
+expfile.DateTime            =  freqdoc->DateTime;
+expfile.AuxTracks           =  freqdoc->GetAuxTracks ();
+expfile.ElectrodesNames     = *freqdoc->GetElectrodesNames ();
+
+expfile.NumFrequencies      =  freqdoc->GetNumFrequencies    ();
+expfile.BlockFrequency      =  freqdoc->GetSamplingFrequency ();
+StringCopy ( expfile.FreqTypeName, freqdoc->GetFreqTypeName () );
+expfile.FrequencyNames      = *freqdoc->GetFrequenciesNames ();
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 for ( int filei = 0; filei < numfiles; filei++ ) {
 
@@ -1207,43 +1241,6 @@ for ( int filei = 0; filei < numfiles; filei++ ) {
 
         
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    if ( numfreqs == 0 ) {
-                                        // Init time
-        numfreqs    = freqdoc->GetNumFrequencies ();
-        numtracks   = freqdoc->GetNumElectrodes  ();
-        numtf       = freqdoc->GetNumTimeFrames  ();
-
-        freqbuff.Resize  ( numfreqs, numtracks, numtf );
-        sum     .Resize  ( numfreqs, numtracks, numtf );
-        if ( sdfile )   
-            sum2.Resize  ( numfreqs, numtracks, numtf );
-
-
-        if ( poleval ) {
-            freqmaps.resize ( numfiles );
-            summaps .Resize (          numfreqs, numtf, numtracks );
-            map     .Resize (                           numtracks );
-
-            for ( int filei = 0; filei < numfiles; filei++ )
-                freqmaps[ filei ].Resize  ( numfreqs, numtf, numtracks );
-            }
-
-
-        expfile.NumTracks           =  freqdoc->GetNumElectrodes     ();
-        expfile.NumAuxTracks        =  freqdoc->GetNumAuxElectrodes  ();
-        expfile.NumTime             =  freqdoc->GetNumTimeFrames     ();
-        expfile.SamplingFrequency   =  freqdoc->GetOriginalSamplingFrequency ();
-        expfile.DateTime            =  freqdoc->DateTime;
-        expfile.AuxTracks           =  freqdoc->GetAuxTracks ();
-        expfile.ElectrodesNames     = *freqdoc->GetElectrodesNames ();
-
-        expfile.NumFrequencies      =  freqdoc->GetNumFrequencies    ();
-        expfile.BlockFrequency      =  freqdoc->GetSamplingFrequency ();
-        StringCopy ( expfile.FreqTypeName, freqdoc->GetFreqTypeName () );
-        expfile.FrequencyNames      = *freqdoc->GetFrequenciesNames ();
-        }
-
                                         // try our chance on every file
     if ( expfile.SamplingFrequency == 0 && freqdoc->GetOriginalSamplingFrequency () > 0 )
         expfile.SamplingFrequency   = freqdoc->GetOriginalSamplingFrequency ();
@@ -1253,16 +1250,20 @@ for ( int filei = 0; filei < numfiles; filei++ ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // get whole data set
+                                        // get the whole bunch of data
+    Gauge.Next ( 0 );
+
     freqdoc->ReadFrequencies ( 0, numtf - 1, freqbuff );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    Gauge.Next ( 0 );
+
     if ( poleval ) {
                                         // load all files in memory as maps
         for ( int fi = 0; fi < numfreqs; fi++ ) {
-                                        // shift "TArray2" frequency
+                                        // shift "TArray2" frequency - NOT thread safe
             freqbuff.SetCurrentPlane ( fi );
 
             OmpParallelFor
@@ -1292,13 +1293,13 @@ for ( int filei = 0; filei < numfiles; filei++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Gauge.Next ( 0 );
-
 if ( poleval ) {
+
+    Gauge.Next ( 0 );
                                         // other files, need to test and sum
 //  OmpParallelBegin
 
-    TArray1<TMap *>     allmaps ( numfiles );
+    TArray1<TMap*>      allmaps ( numfiles );
 
 //  OmpFor
 
@@ -1307,7 +1308,7 @@ if ( poleval ) {
             
         allmaps.ResetMemory ();
 
-                                        // retrieve collection of pointers to maps, across all files - !we don't copy actual maps!
+                                        // retrieve collection of pointers to maps, across all files - !we don't actually copy maps!
         for ( int filei = 0; filei < numfiles; filei++ )
             allmaps[ filei ]    = &freqmaps[ filei ] ( fi, tfi );
                 
@@ -1320,6 +1321,8 @@ if ( poleval ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    Gauge.Next ( 0 );
                                         // realign first TF to previous freq
     for ( int fi  = 1; fi  < numfreqs; fi ++ )
 
@@ -1340,6 +1343,8 @@ if ( poleval ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // transfer results
+    Gauge.Next ( 0 );
+
     OmpParallelFor
 
     for ( int fi  = 0; fi  < numfreqs;  fi ++ )
@@ -1358,21 +1363,23 @@ if ( poleval ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compute SD - there seems to be some ambiguity on the - operator
-Gauge.Next ( 0 );
-
 if ( sdfile ) {
+
+    Gauge.Next ( 0 );
                                         // do everything in the loop
     OmpParallelFor
 
     for ( int i = 0; i < sum2.GetTotalLinearDim (); i++ )
 
-        sum2.GetValue ( i )     = sqrt ( fabsl ( ( sum2.GetValue ( i ) - Square ( sum.GetValue ( i ) ) / numfiles ) 
-                                                 / NonNull ( numfiles - 1 )                                         ) );
+        sum2.GetValue ( i )     = sqrt ( abs (   ( sum2.GetValue ( i ) - Square ( sum.GetValue ( i ) ) / numfiles ) 
+                                               / ( numfiles - 1 )                                                   ) );
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // compute Mean
+Gauge.Next ( 0 );
+
 sum    /= numfiles;
 
 
@@ -1385,9 +1392,9 @@ TArray3<float>  results (   expfile.NumTime,                                    
                         );
 
                                         // Save Mean
-Gauge.Next ( 0 );
-
 if ( meanfile ) {
+
+    Gauge.Next ( 0 );
 
     OmpParallelFor
 
@@ -1398,6 +1405,8 @@ if ( meanfile ) {
         results ( tfi, ei, fi ) = sum ( fi, ei, tfi );
 
 
+    Gauge.Next ( 0 );
+
     StringCopy      ( expfile.Filename, filemean );
                                         // write all data in one shot
     expfile.Write   ( results, NotTransposed );
@@ -1406,7 +1415,7 @@ if ( meanfile ) {
 
 
     StringCopy ( meanfile, expfile.Filename );
-                                            // complimentary opening the resulting file
+                                        // complimentary opening the resulting file
     if ( openresults )
         expfile.Filename.Open ();
     }
@@ -1414,9 +1423,9 @@ if ( meanfile ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Save SD
-Gauge.Next ( 0 );
-
 if ( sdfile ) {
+
+    Gauge.Next ( 0 );
 
     OmpParallelFor
 
@@ -1427,6 +1436,8 @@ if ( sdfile ) {
         results ( tfi, ei, fi ) = sum2 ( fi, ei, tfi );
 
 
+    Gauge.Next ( 0 );
+
     StringCopy      ( expfile.Filename, filesd );
                                         // write all data in one shot
     expfile.Write   ( results, NotTransposed );
@@ -1435,7 +1446,7 @@ if ( sdfile ) {
 
 
     StringCopy ( sdfile, expfile.Filename );
-                                            // complimentary opening the resulting file
+                                        // complimentary opening the resulting file
     if ( openresults && ! meanfile )
         expfile.Filename.Open ();
     }
@@ -1443,8 +1454,7 @@ if ( sdfile ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-//if ( Gauge.IsAlive () )
-//    Gauge.HappyEnd ();
+Gauge.Finished ();
 }
 
 

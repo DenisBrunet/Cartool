@@ -246,7 +246,6 @@ else if   ( tg.allrisv ) {
 else if   ( tg.allfreq )                                    BatchAveragingFreq          (   gof,
                                                                                             freqtype,           fftapproxpolarity,
                                                                                             meanfile,           0,
-//                                                                                          freqtype,           fftapproxpolarity,
 //                                                                                          meanfile,           sdfile,
                                                                                             true,               true    
                                                                                         );

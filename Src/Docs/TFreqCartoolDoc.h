@@ -137,7 +137,7 @@ protected:
 
     int             Version;
 
-    TArray3<float>  Tracks;
+    TArray3<float>  Tracks;         // frequencies x ( 1 or 2 * electrodes ) x time
     int             AtomSize;
     bool            IsAtomScalar;
 
