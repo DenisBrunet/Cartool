@@ -279,7 +279,7 @@ TracksCompatibleClass   tc;
                                         // Checks for the most important dimensions (note that numsolpoints is NumTracks for .ris)
 gof.AllTracksAreCompatible ( tc );
 
-//DBGV6 ( NumTracks, numauxtracks, numsolpoints, numtf, numfreq, samplingfrequency, "NumTracks, numauxtracks, numsolpoints, numtf, numfreq, samplingfrequency" );
+//DBGV6 ( tc.NumTracks, tc.NumAuxTracks, tc.NumSolPoints, tc.NumTF, tc.NumFreqs, tc.SamplingFrequency, "NumTracks, numauxtracks, numsolpoints, numtf, numfreq, samplingfrequency" );
 
 
 if      ( tc.NumTracks == CompatibilityNotConsistent ) {
@@ -334,13 +334,42 @@ if      ( tc.SamplingFrequency == CompatibilityNotConsistent ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // do some checking + retrieve some info
-int                 numel           = tc.NumTracks;
-int                 numfreqs        = (int) gof;
+                                        // Looking for possible 2 sub-groups of real and imaginary files
+TGoF                gofr            = gof;
+TGoF                gofi            = gof;
 
-                                        // we can fill the gaps here
-if ( freqtype == FreqUnknown && gof.AllExtensionsAre ( AllRisFilesExt ) )
-    freqtype    = FreqESI;
+
+gofr.GrepKeep ( "\\." InfixReal "\\.", GrepOptionDefaultFiles );
+int                 numfreqsr       = (int) gofr;
+
+
+gofi.GrepKeep ( "\\." InfixImag "\\.", GrepOptionDefaultFiles );
+int                 numfreqsi       = (int) gofi;
+
+
+bool                isatomcomplex   = false;
+
+                                        // equal number of real and imag?
+if ( numfreqsr != 0 
+  && numfreqsi != 0
+  && numfreqsr == numfreqsi
+  && numfreqsr +  numfreqsi == (int) gof ) {
+
+    isatomcomplex   = true;
+    }
+else {                                  // in all other cases, just merge all data
+    gofr    = gof;                      // default is now gofr
+    gofi.Reset ();
+
+    isatomcomplex   = false;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+int                 numel           = tc.NumTracks;
+int                 numtf           = tc.NumTF;
+int                 numfreqs        = (int) gofr;   // in all cases
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -350,7 +379,7 @@ TFileName           commonstart;
 TFileName           commonend;
 
 
-gof.GetCommonParts   (   commondir,  commonstart,    commonend,  0   );
+gofr.GetCommonParts   (   commondir,  commonstart,    commonend,  0   );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -405,7 +434,7 @@ else if ( StringStartsWith ( commonend, "Hz."  ) )  StringCopy ( commonend, comm
 else if ( StringStartsWith ( commonend, " Hz"  ) )  StringCopy ( commonend, commonend + 3 );
 else if ( StringStartsWith ( commonend, "Hz"   ) )  StringCopy ( commonend, commonend + 2 );
 
-//DBGM ( (const char*) commonend, "common end / final" );
+//DBGM ( (const char*) commonend, "common end, final" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -430,7 +459,7 @@ OutFileName.Clear ();
                                         // try to extract a (frequency) value from each file
 for ( int freqi = 0; freqi < numfreqs; freqi++ ) {
 
-    grepHz.Matched ( gof[ freqi ], &matched );
+    grepHz.Matched ( gofr[ freqi ], &matched );
 
     StringClip ( matched ( 0 ), 1, StringLength ( matched ( 0 ) ) - 2 );
 
@@ -443,7 +472,7 @@ for ( int freqi = 0; freqi < numfreqs; freqi++ ) {
 
     freqnames.Add   ( freqname.FrequencyName );
 
-//    DBGV ( freqindex ( freqi , 0 ), freqname.FrequencyName );
+    //DBGV ( freqindex ( freqi , 0 ), freqname.FrequencyName );
     }
 
 
@@ -476,7 +505,7 @@ if ( nzeroes > 1 ) {
         freqname.FrequencyName[ sizeof ( freqname.FrequencyName ) - 1 ] = 0;
 
         freqnames.Add ( freqname.FrequencyName );
-//      DBGV ( freqindex ( freqi , 0 ), freqname.FrequencyName );
+        //DBGV ( freqindex ( freqi , 0 ), freqname.FrequencyName );
         }
 
                                         // main output file
@@ -494,7 +523,7 @@ if ( nzeroes > 1 ) {
         StringAppend ( OutFileName, ".", infix ( 0 ) );
 
     ReplaceExtension ( OutFileName, FILEEXT_FREQ );
-//    DBGM ( OutFileName, "OutFileName Not OK" );
+    //DBGM ( (const char*) OutFileName, "OutFileName Not OK" );
     }
 
 else {
@@ -509,7 +538,7 @@ else {
         StringAppend ( OutFileName, ".", infix ( 0 ) );
 
     ReplaceExtension ( OutFileName, FILEEXT_FREQ );
-//    DBGM ( OutFileName, "OutFileName OK" );
+    //DBGM ( (const char*) OutFileName, "OutFileName OK" );
     }
 
                                         // if files were .epsd or .epse, re-introduce the extension, as to differentiate from the data themselves
@@ -539,22 +568,34 @@ if ( ! CanOpenFile ( OutFileName, CanOpenFileWrite ) )
                                         // we need some more details, open first file
 TOpenDoc<TTracksDoc>    EegDoc;
 
-EegDoc.Open ( gof.GetFirst (), OpenDocHidden );
+EegDoc.Open ( gofr.GetFirst (), OpenDocHidden );
 
 
 TExportTracks       expfile;
 
 
-StringCopy ( expfile.Filename, OutFileName );
+StringCopy          ( expfile.Filename, OutFileName );
 
-expfile.SetAtomType ( AtomTypeScalar );
 
-ClearVirtualMemory ( expfile.FreqTypeName, sizeof ( expfile.FreqTypeName ) /*MaxCharFreqType*/ );
-StringCopy         ( expfile.FreqTypeName, FrequencyAnalysisNames[ freqtype ], MaxCharFreqType - 1 );
+expfile.SetAtomType ( isatomcomplex ? AtomTypeComplex : AtomTypeScalar );
+
+                                        // checking frequency type - important for complex data output
+if ( freqtype == FreqUnknown ) {
+
+    if      ( gof.AllExtensionsAre ( AllRisFilesExt ) )         freqtype    = FreqESI;          // we can guess frequency type here
+    else if ( isatomcomplex )                                   freqtype    = FreqFFTComplex;   // best educated guess
+    else                                                        freqtype    = FreqFFTNorm;      // best educated guess
+    }
+else if ( ! IsFreqTypeComplex ( freqtype ) && isatomcomplex )   freqtype    = IsFreqTypeSTransform ( freqtype) ? FreqSTransformComplex : FreqFFTComplex;
+
+
+ClearVirtualMemory  ( expfile.FreqTypeName, sizeof ( expfile.FreqTypeName ) /*MaxCharFreqType*/ );
+StringCopy          ( expfile.FreqTypeName, FrequencyAnalysisNames[ freqtype ], MaxCharFreqType - 1 );
+
 
 expfile.NumTracks           = numel;
 expfile.NumFrequencies      = numfreqs;
-expfile.NumTime             = tc.NumTF;
+expfile.NumTime             = numtf;
 expfile.SamplingFrequency   = 0;
 expfile.BlockFrequency      = EegDoc->GetSamplingFrequency ();
 expfile.DateTime            = EegDoc->DateTime;
@@ -574,7 +615,7 @@ freqindex.SortRows ( 0, Ascending );
                                         // now, can really write the sorted frequency names
 for ( int freq = 0; freq < numfreqs; freq++ ) {
 
-//    DBGV2 ( freqindex ( freq , 1 ) + 1, freqindex ( freq , 0 ), freqnames[ (int) freqindex ( freq , 1 ) ] );
+    //DBGV2 ( freqindex ( freq , 1 ) + 1, freqindex ( freq , 0 ), freqnames[ (int) freqindex ( freq , 1 ) ] );
 
     ClearVirtualMemory ( expfile.FrequencyNames[ freq ], sizeof ( TFreqFrequencyName ) );
 
@@ -594,7 +635,9 @@ if ( showgauge ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Reading everything at once
-TGoMaps         maps    ( &gof, AtomTypeScalar, ReferenceAsInFile );
+TGoMaps         mapsr   ( &gofr, AtomTypeScalar, ReferenceAsInFile );
+TGoMaps         mapsi   ( &gofi, AtomTypeScalar, ReferenceAsInFile );   // will remain empty if no imaginary files
+
 
 TArray3<float>  results (   expfile.NumTime,                                                        // !already transposed for direct file output!
                             expfile.NumTracks, 
@@ -602,16 +645,21 @@ TArray3<float>  results (   expfile.NumTime,                                    
                         * ( expfile.GetAtomType ( AtomTypeUseCurrent ) == AtomTypeComplex ? 2 : 1 ) // multiplex the real / imaginary parts manually
                         );
 
-                                        // actually merge the data
+                                        // actually merging data
 for ( int freq = 0; freq < numfreqs; freq++ ) {
 
-    if ( Gauge.IsAlive () )
-        Gauge.Next ( 0 );
+    Gauge.Next ( 0 );
 
-    for ( int tf = 0; tf < tc.NumTF; tf++ )
-    for ( int e  = 0; e  < numel;    e++  )
+    for ( int tf = 0; tf < numtf; tf++ )
+    for ( int e  = 0; e  < numel; e++  )
                                         // copy all data into big buffer
-        results ( tf, e, freq ) = maps[ freqindex ( freq , 1 ) ] ( tf, e );
+        if ( isatomcomplex ) {
+
+            results ( tf, e, 2 * freq     ) = mapsr[ freqindex ( freq , 1 ) ] ( tf, e );
+            results ( tf, e, 2 * freq + 1 ) = mapsi[ freqindex ( freq , 1 ) ] ( tf, e );    // assuming same order for imaginary files
+            }
+        else
+            results ( tf, e, freq         ) = mapsr[ freqindex ( freq , 1 ) ] ( tf, e );
 
     } // for file / freq
 
@@ -630,11 +678,13 @@ for ( int i = 0; i < (int) gof; i++ ) {
 
     filemrk     = gof[ i ];
     filemrk.AddExtension ( FILEEXT_MRK );
-                                        // copy the first one and stop - would be better to merge all marker files(?)
+                                        // copy first marker file and stop - would it be better to merge all marker files maybe?
     if ( filemrk.CanOpenFile () ) {
+
         OutFileName.AddExtension    ( FILEEXT_MRK );
         CopyFileExtended            ( filemrk,     OutFileName );
         OutFileName.RemoveExtension ();
+
         break;
         }
     }
@@ -645,8 +695,7 @@ if ( returnfreqfile )
 
 //CartoolDocManager->OpenDoc ( OutFileName, dtOpenOptions );
 
-if ( Gauge.IsAlive () )
-    Gauge.HappyEnd ();
+Gauge.HappyEnd ();
 }
 
 

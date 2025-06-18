@@ -5419,7 +5419,8 @@ Resize ( numgroups, nummaps, dim );
 
         TGoMaps::TGoMaps ( const TGoF* gof, AtomType datatype, ReferenceType reference, TStrings*    tracksnames )
 {
-ReadFiles ( *gof, datatype, reference, tracksnames );
+if ( gof != 0 )
+    ReadFiles ( *gof, datatype, reference, tracksnames );
 }
 
 

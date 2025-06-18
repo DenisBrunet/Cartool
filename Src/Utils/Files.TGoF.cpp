@@ -2562,7 +2562,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
 
             for ( long tf0 = 0; tf0 < numtf; tf0++ )
             for ( int  e   = 0; e   < numel;   e++ )
-                                    // pick the right buffer
+                                        // pick the right buffer
                 buffer ( tf0, e )   = part == 0 ? realpart ( freq, e, tf0 ) : imagpart ( freq, e, tf0 );
     
 
@@ -2601,7 +2601,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
             if ( gogofout )
                 (*gogofout)[ i ].Add ( exptracks.Filename );
 
-                                    // any marker file?
+                                        // any marker file?
             if ( StringIsNotEmpty ( filemrkin ) ) {
                 filemrkout  = exptracks.Filename;
                 filemrkout.AddExtension ( FILEEXT_MRK );
@@ -2611,8 +2611,8 @@ for ( int i = 0; i < NumFiles (); i++ ) {
 
             for ( long tf0 = 0; tf0 < numtf;      tf0++ )
             for ( int freq = 0; freq < numfreqs; freq++ )
-                                    // !frequency will appear "inverted", low frequencies on top, but coherent with frequency names!
-                                // pick the right buffer
+                                        // !frequency will appear "inverted", low frequencies on top, but coherent with frequency names!
+                                        // pick the right buffer
                 buffer ( tf0, freq )    = part == 0 ? realpart ( freq, e, tf0 ) : imagpart ( freq, e, tf0 );
 
 
@@ -2627,7 +2627,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
     else if  ( how == SplitFreqByTime ) { // i.e. Spectrum
 
         for ( long tf0 = 0; tf0 < numtf; tf0++ )
-                                    // then split to 1 or 2 files per freq
+                                        // then split to 1 or 2 files per freq
         for ( int part = 0; part < numparts; part++ ) {
 
             if ( showgauge )    Gauge.Next ( 0 );
@@ -2648,7 +2648,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
             if ( gogofout )
                 (*gogofout)[ i ].Add ( exptracks.Filename );
 
-                                // any marker file?
+                                        // any marker file?
             if ( StringIsNotEmpty ( filemrkin ) ) {
                 filemrkout  = exptracks.Filename;
                 filemrkout.AddExtension ( FILEEXT_MRK );
@@ -2796,9 +2796,6 @@ for ( int gofi = 0; gofi < (int) filenameonly; gofi++ ) {
     gogofout[ (int) gogofout - 1 ].Add ( (*this)[ gofi ] );
     }
         
-
-//gogofout.Show ( "Splitting per name" );
-
                                         // returns with what we have at that point
 if ( groupnames )
     groupnames->Set ( namegroup );
@@ -3090,10 +3087,6 @@ if ( StringIs ( commonstart, commonend ) )
     ClearString ( commonend );
 
 
-//Show ( "TGoF::GetCommonParts input files" );
-//DBGM3 ( commondir ? commondir : "", commonstart ? commonstart : "", commonend ? commonend : "", "TGoF::GetCommonParts:  commondir, commonstart, commonend" );
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // extra: returning the difference parts
 if ( ! diffs )
@@ -3111,9 +3104,6 @@ for ( int i = 0; i < numstrings; i++ ) {
                                         // storing all differences
     diffs->Add  ( part );
     }
-
-
-//diffs->Show ( "TGoF::GetCommonParts:  diffs");
 }
 
 
@@ -3427,9 +3417,6 @@ do {
             *toc    = (char) toupper ( *toc );
             }
 
-
-//    for ( int i = 0; i < numstrings; i++ )
-//        DBGM ( string[ i ], "removed inside" );
     } while ( foundone );
 
 
@@ -3470,9 +3457,6 @@ if      ( match.IsEmpty () ) {
     }
 else if ( match.Length () > 20 )        // or too long
     match[ 20 ] = EOS;
-
-
-//DBGM ( match, "match" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
