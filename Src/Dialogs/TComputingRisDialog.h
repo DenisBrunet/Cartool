@@ -118,7 +118,7 @@ public:
                                                             }
 
 
-    bool                CmGroupsAveragingEnable ()  const   {   return  Code == ComputingRisPresetErpIndivMeans
+    bool                CanAverageGroup ()  const           {   return  Code == ComputingRisPresetErpIndivMeans
                                                                      || IsEpochs ();                                }   // still needs to check all groups of files are compatibles somewhere
 };
 

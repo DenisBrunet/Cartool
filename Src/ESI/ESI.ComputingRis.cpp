@@ -76,7 +76,7 @@ bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
                             SpatialFilterType   spatialfilter,          const char*         xyzfile,
                             bool                ranking,
                             bool                thresholding,           double              keepingtopdata,
-                            bool                envelope,               FilterTypes         envelopetype,       double          envelopelowfreq,    double          envelopeduration,
+                            bool                envelope,               FilterTypes         envelopetype,       double          envelopeduration,
                             bool                roiing,                 const char*         roifile,            FilterTypes     roimethod,
 
                             bool                savingindividualfiles,  bool                savingepochfiles,   bool            savingzscorefactors,
@@ -286,10 +286,9 @@ if ( backnorm == BackgroundNormalizationLoadingZScoreFile ) {
                                         // Envelope mainly for Induced filtered data - but option is still open for the others
 envelope        = envelope && ! IsVector ( datatypeproc );
 
-if ( envelope && envelopelowfreq <= 0 ) {
+if ( envelope && envelopeduration <= 0 ) {
     envelope            = false;
     envelopetype        = FilterTypeNone;
-    envelopelowfreq     = 0;
     envelopeduration    = 0;
     }
 
@@ -406,7 +405,7 @@ if ( datathresholding )
 verbose.Put ( "Envelope of results:", envelope );
 if ( envelope ) {
     verbose.Put ( "Envelope method:", FilterPresets[ envelopetype ].Text );
-    verbose.Put ( "Envelope lowest frequency:", envelopelowfreq, 2, " [Hz]" );
+    verbose.Put ( "Envelope lowest frequency:", MillisecondsToFrequency ( envelopeduration ), 2, " [Hz]" );
     verbose.Put ( "Envelope duration:", envelopeduration, 2, " [ms]" );
     }
 
@@ -671,7 +670,7 @@ if ( backnorm == BackgroundNormalizationLoadingZScoreFile ) {
         loadzscorefiles.GrepGoF ( gogofpersubject[ absg ], ".*", ispostfilename, AllZScoreFilesExt, false );
 
                                         // Asking user if no Z-Score file is found(?)
-        if ( loadzscorefiles.IsEmpty () ) {
+        if ( loadzscorefiles.IsEmpty () && verbosey == Interactive ) {
 
             StringCopy      ( f, "Standardization factors file is missing for  '", ToFileName ( gogofpersubject[ absg ][ 0 ] ), "'  , please provide another one:" );
 

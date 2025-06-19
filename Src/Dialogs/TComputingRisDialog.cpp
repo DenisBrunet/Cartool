@@ -167,8 +167,8 @@ CRISPresetSpec  CRISPresets[ NumComputingRisPresets ] =
             {   ComputingRisPresetErpFitClusters,   "ERP Data               - Clusters from Fitting output",        (CRISPresetFlags) ( CRISPresetERP   | CRISPresetNorm | CRISPresetVect | CRISPresetClusters | CRISPresetCentroids                    ),    CRISPresetVect,     false     },  // norm only, vectors vary too much already within a subject, and worse across subjects
 
             {   ComputingRisPresetSeparator1,       "",                                                             CRISPresetNone,                                                                                                                           CRISPresetNone,     false     },
-                                                                                                                                                                                                              // Not sure about centroids here
-            {   ComputingRisPresetIndIndivEpochs,   "Induced Responses - Subjects' Epochs",                         (CRISPresetFlags) ( CRISPresetInd   | CRISPresetNorm                                       | CRISPresetCentroids | CRISPresetEpochs ),    CRISPresetNorm,     false     },  // norm only, we need to ditch out phase and keep only the power contribution
+
+            {   ComputingRisPresetIndIndivEpochs,   "Induced Responses - Subjects' Epochs",                         (CRISPresetFlags) ( CRISPresetInd   | CRISPresetNorm                                                             | CRISPresetEpochs ),    CRISPresetNorm,     false     },  // norm only, we need to ditch out phase and keep only the power contribution
 
             {   ComputingRisPresetSeparator2,       "",                                                             CRISPresetNone,                                                                                                                           CRISPresetNone,     false     },
                                                                                                                                                                         // vectorial spontaneous not really needed, but let's give the option
@@ -1196,7 +1196,7 @@ tce.Enable ( IsNotChecked ( VectorData ) && IsChecked ( Envelope ) );
 
 void    TComputingRisDialog::CmGroupsAveragingEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( CRISPresets[ EegPresets->GetSelIndex () ].CmGroupsAveragingEnable () );
+tce.Enable ( CRISPresets[ EegPresets->GetSelIndex () ].CanAverageGroup () );
 }
 
 
@@ -2591,18 +2591,16 @@ BackgroundNormalization     backnorm    = ! CheckToBool ( ComputingRisTransfer.T
 bool                envelope            = CheckToBool ( ComputingRisTransfer.Envelope )
                                        && ! IsVector ( datatypeproc );
 FilterTypes         envelopetype;
-double              envelopelowfreq     = envelope ? StringToDouble ( ComputingRisTransfer.EnvelopeLowFreq ) : 0;
-double              envelopeduration;
+
+double              envelopeduration    = envelope ? FrequencyToMilliseconds ( StringToDouble ( ComputingRisTransfer.EnvelopeLowFreq ) ) : 0;
 
 
-if ( envelope && envelopelowfreq > 0 ) {
+if ( envelope && envelopeduration > 0 ) {
     envelopetype        = RisEnvelopeMethod;
-    envelopeduration    = FrequencyToMilliseconds ( envelopelowfreq );
     }
 else {
     envelope            = false;
     envelopetype        = FilterTypeNone;
-    envelopelowfreq     = 0;
     envelopeduration    = 0;
     }
 
@@ -2655,7 +2653,7 @@ if ( ! ComputingRis (   esicase,
                         spatialfilter,          xyzfile,
                         ranking,
                         thresholding,           keepingtopdata,
-                        envelope,               envelopetype,           envelopelowfreq,    envelopeduration,
+                        envelope,               envelopetype,           envelopeduration,
                         roiing,                 roifile,                RisRoiMethod,
 
                         savingindividualfiles,  savingepochfiles,       savingzscorefactors,

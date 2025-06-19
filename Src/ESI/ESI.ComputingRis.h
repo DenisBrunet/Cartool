@@ -49,7 +49,7 @@ bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
                             SpatialFilterType   spatialfilter,          const char*         xyzfile,
                             bool                ranking,
                             bool                thresholding,           double              keepingtopdata,
-                            bool                envelope,               FilterTypes         envelopetype,       double          envelopelowfreq,    double          envelopeduration,
+                            bool                envelope,               FilterTypes         envelopetype,       double          envelopeduration,
                             bool                roiing,                 const char*         roifile,            FilterTypes     roimethod,
 
                             bool                savingindividualfiles,  bool                savingepochfiles,   bool            savingzscorefactors,
