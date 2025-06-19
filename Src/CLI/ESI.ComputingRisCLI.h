@@ -40,8 +40,8 @@ if ( computingris == 0 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionEnum     ( computingris,     "",     __preset,               "EEG Preset" )
-->CheckOption           ( CLI::IsMember ( vector<string> ( { __preset1, __preset2, __preset3, __preset4/*, __preset5*/, __preset6, __preset7/*, __preset8*/ } ) ) );
+DefineCLIOptionEnum     ( computingris,     "",     __preset,               "EEG Preset (mandatory);  IndSubjectsEpochs needs: --envelope" )
+->CheckOption           ( CLI::IsMember ( vector<string> ( { __preset1, __preset2, __preset3, __preset4, __preset5, __preset6, __preset7, __preset8 } ) ) );
 
 //DefineCLIOptionFile     ( computingris,     "",     __listfiles,            "A .csv or .txt file containing the input files" );
 
@@ -63,8 +63,9 @@ NeedsCLIOption          ( computingris,     __spatialfilter,    __xyzfile )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionEnum     ( computingris,     "",     __typeformat,           "Final file type" )
+DefineCLIOptionEnum     ( computingris,     "",     __typeformat,           "Final file type (mandatory)" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __norm, __vector } ) ) );
+// !no default enum!
 
 DefineCLIOptionEnum     ( computingris,     __reg,  __regularization,       "Regularization level" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __regnone, __regauto, __reg0, __reg1, __reg2, __reg3, __reg4, __reg5, __reg6, __reg7, __reg8, __reg9, __reg10, __reg11, __reg12 } ) ) )
@@ -73,16 +74,21 @@ DefineCLIOptionEnum     ( computingris,     __reg,  __regularization,       "Reg
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIOptionEnum     ( computingris,     "",     __zscore,           "Final file type" )
-->CheckOption           ( CLI::IsMember ( vector<string> ( { __compute, __loadfile } ) ) )
-->DefaultString         ( __compute );
+->CheckOption           ( CLI::IsMember ( vector<string> ( { __compute, __loadfile } ) ) );
+// !no default enum!
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIFlag           ( computingris,     "",     __ranking,              "Ranking results" );
 
-//DefineCLIOptionDouble   ( computingris,     "",     __envelope,             "Sliding-window smoothing, value in [ms]" );
-//NeedsCLIOption          ( computingris,     __envelope,     __typefile )   // needs __norm
-//->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "smoothing window, in [ms], should be positive" : ""; } );
+
+DefineCLIOptionDouble   ( computingris,     "",     __envelope,             "Envelope filter on positive data, value in [ms]" )
+//NeedsCLIOption          ( computingris,     __envelope,     __typeformat )  // needs __norm
+->CheckOption           ( [ &computingris ]( const string& str )   
+    {   if ( StringToDouble ( str.c_str () ) <= 0 ) return "envelope window, in [ms], should be positive";
+      //if ( GetCLIOptionEnum ( computingris, __typeformat ) == __vector ) return "can not process envelope on vectorial data";
+        return ""; 
+    } );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -122,6 +128,9 @@ if ( ! IsSubCommandUsed ( computingris )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+if ( ! HasCLIOption ( computingris, __preset ) )
+    return;
+
 string              preset          = GetCLIOptionEnum ( computingris, __preset );
 
 ComputingRisPresetsEnum esicase     = preset == __preset1 ? ComputingRisPresetErpGroupMeans
@@ -157,6 +166,9 @@ if ( /*listfiles.IsEmpty () &&*/ gof.IsNotEmpty () ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( ! HasCLIOption ( computingris, __inversefile ) )
+    return;
 
 TGoF                inversefiles ( GetCLIOptionFile ( computingris, __inversefile ) );
 
@@ -202,10 +214,18 @@ BackgroundNormalization backnorm    = zscore == __compute   ? BackgroundNormaliz
 AtomType            datatypeepochs  = CRISPresets[ esicase ].GetAtomTypeEpochs ();
 
                                         // FINAL requested data type
+if ( ! HasCLIOption ( computingris, __typeformat ) )
+    return;
+
 string              typeformat      = GetCLIOptionEnum ( computingris, __typeformat );
 AtomType            datatypefinal   = typeformat == __norm      ?   AtomTypePositive
                                     : typeformat == __vector    ?   AtomTypeVector
                                     :                               AtomTypePositive;
+
+                                        // some silent safety overrides here - difficult to implement on the CLI, so this will run "silently"
+if ( datatypefinal == AtomTypeVector   && ! CRISPresets[ esicase ].CanVect () )     datatypefinal   = AtomTypePositive;
+if ( datatypefinal == AtomTypePositive && ! CRISPresets[ esicase ].CanNorm () )     datatypefinal   = AtomTypeVector;
+
                                         // ACTUAL processing data type + Z-Score + Envelope
 AtomType            datatypeproc    = CRISPresets[ esicase ].GetAtomTypeProcessing ( datatypeepochs, datatypefinal );
 
@@ -223,11 +243,30 @@ double              keepingtopdata  = 0.10;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Envelope mainly for Induced filtered data - but option is still open for the others
+                                        // Envelope mainly for Induced filtered data - but option is still open for some other cases for the moment
 bool                envelope            = false;
 FilterTypes         envelopetype        = FilterTypeNone;
-double              envelopelowfreq     = 0;
 double              envelopeduration    = 0;
+
+                                        // if option exists + one more check on data type
+if ( HasCLIOption ( computingris, __envelope ) && datatypefinal == AtomTypePositive ) {
+
+    envelopeduration    = GetCLIOptionDouble  ( computingris, __envelope );
+
+    if ( envelopeduration > 0 ) {
+        envelope            = true;
+        envelopetype        = RisEnvelopeMethod;
+        }
+    else {
+        envelope            = false;
+        envelopetype        = FilterTypeNone;
+        envelopeduration    = 0;
+        }
+    }
+
+                                        // a bit late in the game, but we can not compute induced response without the envelope
+if ( CRISPresets[ esicase ].IsInduced () && ! envelope )
+    return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -239,11 +278,11 @@ bool                roiing          = CanOpenFile ( roisfile ) // roisfile.IsNot
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Tracks output options
+                                        // Tracks output options - some silent safety overrides here, too
 bool                savingindividualfiles   = HasCLIFlag ( computingris, __savingsubjects       );
-bool                savingepochfiles        = HasCLIFlag ( computingris, __savingsubjectsepochs );
-bool                computegroupsaverages   = HasCLIFlag ( computingris, __savinggrandaverage   );
-bool                computegroupscentroids  = HasCLIFlag ( computingris, __savingtemplates      );
+bool                savingepochfiles        = HasCLIFlag ( computingris, __savingsubjectsepochs ) && CRISPresets[ esicase ].IsEpochs        ();
+bool                computegroupsaverages   = HasCLIFlag ( computingris, __savinggrandaverage   ) && CRISPresets[ esicase ].CanAverageGroup ();
+bool                computegroupscentroids  = HasCLIFlag ( computingris, __savingtemplates      ) && CRISPresets[ esicase ].IsCentroids     ();
 bool                savingzscorefactors     = HasCLIFlag ( computingris, __savingzscore         )
                                            && backnorm != BackgroundNormalizationNone;
 //                                         && backnorm == BackgroundNormalizationComputingZScore;   // note that we could allow a new copy of Z-Scores in case of loading from file...
@@ -268,24 +307,35 @@ string              prefix          = GetCLIOptionEnum ( computingris, __prefix 
 
 CreateConsole ();
 
-cout << "Preset:         "          << CRISPresets[ esicase ].Text << NewLine;
-cout << "Number subjects:"          << numsubjects << NewLine;
-cout << "Number conds.  :"          << numconditions << NewLine;
+cout << "Preset:           "    << CRISPresets[ esicase ].Text << NewLine;
+cout << "Number subjects:  "    << numsubjects << NewLine;
+cout << "Number conds.  :  "    << numconditions << NewLine;
 cout << NewLine;
 
-cout << "XYZ file:       "          << xyzfile << NewLine;
-cout << "IS file:        "          << inversefiles[ 0 ] << NewLine;
-cout << "Spatial Filter: "          << SpatialFilterLongName[ spatialfilter ] << NewLine;
-cout << "Regularization: "          << reg << NewLine;
-cout << "Normalization:  "          << BackgroundNormalizationNames[ backnorm ] << NewLine;
+cout << "XYZ file:         "    << xyzfile << NewLine;
+if ( xyzfile.IsNotEmpty () )
+    cout << "Spatial Filter:   "    << SpatialFilterLongName[ spatialfilter ] << NewLine;
+cout << "IS file:          "    << inversefiles[ 0 ] << NewLine;
+cout << "Regularization:   "    << reg << NewLine;
+cout << "Standardization:  "    << BackgroundNormalizationNames[ backnorm ] << NewLine;
 cout << NewLine;
 
-cout << "Base Dir:       "          << basedir << NewLine;
-cout << "File prefix:    "          << prefix << NewLine;
+if ( CRISPresets[ esicase ].IsEpochs () )
+    cout << "Data Type Epochs: "    << AtomNames[ datatypeepochs ] << NewLine;
+cout << "Data Type Proc:   "    << AtomNames[ datatypeproc ] << NewLine;
+cout << "Data Type Final:  "    << AtomNames[ datatypefinal ] << NewLine;
+cout << "Ranking:          "    << BoolToString ( ranking ) << NewLine;
+cout << "Envelope:         "    << BoolToString ( envelope ) << NewLine;
+if ( envelope )
+    cout << "Envelope Duration:"  << envelopeduration << NewLine;
+cout << NewLine;
+
+cout << "Base Dir:         "    << basedir << NewLine;
+cout << "File prefix:      "    << prefix << NewLine;
 cout << NewLine;
 
 for ( int i = 0; i < (int) gof; i++ )
-    cout << "File: "          << gof[ i ] << NewLine;
+    cout << "File:         "    << gof[ i ] << NewLine;
 
 cout << NewLine;
 
@@ -304,7 +354,7 @@ ComputingRis    (   esicase,
                     spatialfilter,          xyzfile,
                     ranking,
                     thresholding,           keepingtopdata,
-                    envelope,               envelopetype,           envelopelowfreq,    envelopeduration,
+                    envelope,               envelopetype,           envelopeduration,
                     roiing,                 roisfile,               RisRoiMethod,
 
                     savingindividualfiles,  savingepochfiles,       savingzscorefactors,
