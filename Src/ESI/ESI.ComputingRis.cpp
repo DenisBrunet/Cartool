@@ -149,8 +149,8 @@ if ( freqgroups ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Testing if we the rigth amount of inverse files
-bool                individualinverses  = (int) inversefiles > 1 
-                                       && (int) inversefiles == subjects.NumGroups ();
+//bool              singleinverse       = IsSingleInverse       ( inversefiles );
+bool                matchinginverses    = AreMatchingInverses   ( inversefiles, subjects );
 
 int                 stepinverse         = 1;
 
@@ -359,8 +359,8 @@ verbose.Put ( "Preset:", CRISPresets[ esicase ].Text );
 
 verbose.NextLine ();
 
-verbose.Put ( "Inverse Matrix case:", individualinverses ? "Individual Inverse Matrix" : "Common Inverse Matrix" );
-verbose.Put ( "Inverse Matrix file:", individualinverses ? "See Input File section" : isdoc->GetDocPath () );
+verbose.Put ( "Inverse Matrix case:", matchinginverses ? "Individual Inverse Matrices" : numsubjects > 1 ? "Common Inverse Matrix" : "Single Inverse Matrix" );
+verbose.Put ( "Inverse Matrix file:", matchinginverses ? "See Input File section" : isdoc->GetDocPath () );
 verbose.Put ( "Regularization level:", RegularizationToString ( regularization, buff, false ) );
 
 verbose.NextLine ();
@@ -460,10 +460,9 @@ for ( int si = 0; si < numgroups; si++ ) {
             verbose.Put ( "", subjects[ si ][ fi ] );
 
 
-    if ( individualinverses )
-        verbose.Put ( "Individual Inverse Matrix file:", inversefiles[ si ] );
-    else
-        verbose.Put ( "Common Inverse Matrix file:",     inversefiles[  0 ] );
+    if      ( matchinginverses )    verbose.Put ( "Individual Inverse Matrix file:", inversefiles[ si ] );
+    else if ( numsubjects > 1  )    verbose.Put ( "Common Inverse Matrix file:",     inversefiles[  0 ] );
+    else                            verbose.Put ( "Inverse Matrix file:",            inversefiles[  0 ] );
     }
 }
 
@@ -555,7 +554,7 @@ int                 gofi2           = numgroups - 1;
 subjects.Show ( gofi1, gofi2, "0) Original Groups" );
 #endif // ShowGroupsShuffling
 
-gogofpersubject     = subjects;         // ?clipping the input subjects, like subjects ( gofi1, gofi2 )?
+gogofpersubject     = subjects;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -640,7 +639,8 @@ if ( esicase == ComputingRisPresetFreq ) {
 
 
                                         // the list of inverses itself is not expanded, so we have to keep track of the ratio EEG / Inverse for proper stepping
-    if ( individualinverses )
+    if ( matchinginverses )
+
         stepinverse     = gogofpersubject.NumGroups () / subjects.NumGroups ();
 
 
@@ -778,7 +778,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Switching inverse matrix?
                                         // Be careful for frequency case where we expanded all freqs into tracks
-    if ( individualinverses && IsMultiple ( absg, stepinverse ) )
+    if ( matchinginverses && IsMultiple ( absg, stepinverse ) )
 
         isdoc.Open ( inversefiles[ absg / stepinverse ], OpenDocHidden );
     

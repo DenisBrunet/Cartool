@@ -42,29 +42,21 @@ namespace crtl {
 TGoGoF          Subjects;               // Groups of Groups of EEG files
 TGoF            Inverses;               // Groups of Inverse files
 
-                                        // Functions to be converted to methods at some points, hence the systematic parameters
+
 bool            HasSubjects             ( const TGoGoF& gogof )                     { return  gogof.IsNotEmpty ();      }
 int             NumSubjects             ( const TGoGoF& gogof )                     { return  gogof.NumGroups ();       }   // 1 Group == 1 Subject
-int             NumConditions           ( const TGoF&   gof   );                                                            // !Accounts for epoch case!
-int             NumConditions           ( const TGoGoF& gogof );                                                            // !Accounts for epoch case!
 int             NumClusters             ( const TGoGoF& gogof )                     { return NumConditions ( gogof );   }   // Clusters == Conditions
-int             NumEpochs               ( const TGoF&   gof,   const char* fileprefix );
-int             NumEpochs               ( const TGoGoF& gogof, int subji, const char* fileprefix );
-
 
 bool            HasInverses             ( const TGoF&   gofi  )                     { return  gofi.IsNotEmpty ();       }
 int             NumInverses             ( const TGoF&   gofi  )                     { return  gofi.NumFiles   ();       }
-bool            IsSingleTemplateInverse ( const TGoF&   gofi  )                     { return  HasInverses ( gofi ) && NumInverses ( gofi ) == 1;                        }   // !these 2 tests are not mutually exclusive!
-bool            AreIndividualInverses   ( const TGoF&   gofi, const TGoGoF& gogof ) { return  HasInverses ( gofi ) && NumInverses ( gofi ) == NumSubjects ( gogof );    }   // !these 2 tests are not mutually exclusive!
-
+bool            IsSingleInverse         ( const TGoF&   gofi  )                     { return  NumInverses ( gofi ) == 1;                                                    }   // both tests could be false
+bool            AreMatchingInverses     ( const TGoF&   gofi, const TGoGoF& gogof ) { return  NumInverses ( gofi ) >  1 && NumInverses ( gofi ) == NumSubjects ( gogof );   }   // but only 1 can be true
 
 void            AddSubject              ( TGoGoF& gogof, const TGoF& gof )          { gogof.Add ( &gof, true, TFilenameSize );  }   // naturally ordered by subjects
 void            RemoveSubject           ( TGoGoF& gogof )                           { gogof.RemoveLastGroup ();                 }   // naturally ordered by subjects
-void            AddCondition            ( TGoGoF& gogof, const TGoF& gof );         // needs extra work
-void            RemoveCondition         ( TGoGoF& gogof );                          // needs extra work
 
 
-//----------------------------------------------------------------------------
+                                        // !Accounts for epoch case!
 int             NumConditions ( const TGoF& gof )
 {
 if ( gof.IsEmpty () )
@@ -85,7 +77,7 @@ else
     return  gof.NumFiles  ();
 }
 
-
+                                        // !Accounts for epoch case!
 int             NumConditions ( const TGoGoF& gogof )
 {
 if ( gogof.IsEmpty () )
@@ -127,7 +119,7 @@ if ( ! IsInsideLimits ( subji, 0, NumSubjects ( gogof ) - 1 ) )
 return  NumEpochs ( gogof[ subji ], fileprefix );
 }
 
-
+                                        // needs extra work
 void            AddCondition ( TGoGoF& gogof, const TGoF& gof )   
 {
                                         // First time only: adding subjects' groups
@@ -140,7 +132,7 @@ for ( int fi = 0; fi < gof.NumFiles (); fi++ )
     gogof[ fi ].Add ( gof[ fi ], TFilenameSize );
 }
 
-
+                                        // needs extra work
 void            RemoveCondition ( TGoGoF& gogof )
 {
 if ( gogof.IsEmpty () )
@@ -585,7 +577,7 @@ tce.Enable ( IsNotChecked ( ApplyRois )
 //----------------------------------------------------------------------------
 void    TComputingRisDialog::CmWriteParams ()
 {
-if ( Subjects.IsEmpty () )
+if ( ! HasSubjects ( Subjects ) )
     return;
 
 
@@ -597,9 +589,11 @@ if ( ! sf.InitFile () )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                 numgroups           = Subjects.NumGroups           ();
+int                 numgroups           = NumSubjects ( Subjects );
 int                 maxfiles            = Subjects.GetMaxFilesPerGroup ();
-bool                individualinverses  = AreIndividualInverses ( Inverses, Subjects );
+//bool              singleinverse       = IsSingleInverse       ( Inverses );
+//bool              matchinginverses    = AreMatchingInverses   ( Inverses, Subjects );
+bool                inverseattr         = NumInverses ( Inverses ) == NumSubjects ( Subjects ); // allowing for single inverse / single subject case     // matchinginverses; 
 
                                         // header line describes the attributes / fields
 sf.WriteAttribute ( "numfiles" );
@@ -607,7 +601,7 @@ sf.WriteAttribute ( "numfiles" );
 for ( int fi = 0; fi < maxfiles; fi++ )
     sf.WriteAttribute ( "file", fi + 1 );
 
-if ( individualinverses )
+if ( inverseattr )
     sf.WriteAttribute ( "inverse" );
 
 sf.WriteNextRecord ();
@@ -629,7 +623,7 @@ for ( int si = 0; si < numgroups; si++ ) {
         sf.WriteAttribute ( "" );
 
                                         // add a column to the subject?
-    if ( individualinverses )
+    if ( inverseattr )
         sf.WriteAttribute ( Inverses[ si ] );
 
 
@@ -707,7 +701,7 @@ if ( ! hascolinverse ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Ask how to add the new data in case we already have some loaded
 bool                appendrows          = true;             // Natural option, we just append rows to rows. Otherwise we have to do some sorts of permutations
-bool                firstread           = Subjects.IsEmpty ();
+bool                firstread           = ! HasSubjects ( Subjects );
 //int                 numinputconditions  = sf.GetNumRecords    ()     - hasrowinverse;   // remove optional row of inverses
 //int                 numinputsubjects    = sf.GetNumAttributes () - 1 - hascolinverse;   // remove optional col of inverses
 
@@ -1503,10 +1497,10 @@ if ( ! HasSubjects ( Subjects ) && ! HasInverses ( Inverses ) )
     return;
 
 
-int                 numsubj         = NumSubjects               ( Subjects );
-int                 numinv          = NumInverses               ( Inverses );
-bool                templinv        = IsSingleTemplateInverse   ( Inverses );
-bool                indivinv        = AreIndividualInverses     ( Inverses, Subjects );
+int                 numsubj             = NumSubjects           ( Subjects );
+int                 numinv              = NumInverses           ( Inverses );
+bool                singleinverse       = IsSingleInverse       ( Inverses );
+//bool              matchinginverses    = AreMatchingInverses   ( Inverses, Subjects );
 
                                         // Removing 1 subject
 if ( IsChecked ( GroupSubj ) ) {
@@ -1514,7 +1508,7 @@ if ( IsChecked ( GroupSubj ) ) {
     if ( numsubj > 0 ) {
 
         if ( numinv == 0                // no inverses at all
-          || templinv                   // no individual inverses
+          || singleinverse              // no individual inverses
           || numsubj >= numinv )        // individual inverses, either in sync, or more subjects than inverses
 
             RemoveSubject ( Subjects );
@@ -1633,11 +1627,11 @@ else if ( CompatInverse.NumSolPoints == CompatibilityIrrelevant ) {
                                         // Here matrices are OK by themselves
 IsInverseOK         = true;
 
-if      ( ! HasInverses ( Inverses )                     )  StringCopy  ( InverseFile, InverseFileNone  );
-else if ( ! IsInverseOK                                  )  StringCopy  ( InverseFile, InverseFileNotOK );
+if      ( ! HasInverses         ( Inverses )            )   StringCopy  ( InverseFile, InverseFileNone  );
+else if ( ! IsInverseOK                                 )   StringCopy  ( InverseFile, InverseFileNotOK );
 //else if ( IsEegOK && IsInverseOK && ! IsInverseAndEegOK ) ClearString ( InverseFile );
-else if ( IsSingleTemplateInverse ( Inverses           ) )  StringCopy  ( InverseFile, Inverses[ 0 ]    );
-else if ( AreIndividualInverses   ( Inverses, Subjects ) )  StringCopy  ( InverseFile, InverseFileIndiv );
+else if ( IsSingleInverse       ( Inverses           )  )   StringCopy  ( InverseFile, Inverses[ 0 ]    );
+else if ( AreMatchingInverses   ( Inverses, Subjects )  )   StringCopy  ( InverseFile, InverseFileIndiv );
 else                                                        StringCopy  ( InverseFile, NumInverses ( Inverses ) < NumSubjects ( Subjects ) ? InverseFileTooFew : InverseFileTooMany );
 }
 
@@ -1729,7 +1723,7 @@ ComputingRisTransfer.IsEegOK             = false;
 
 ComputingRisTransfer.CompatEegs.Reset ();
 
-if ( Subjects.IsEmpty () )
+if ( ! HasSubjects ( Subjects ) )
     return;
 
 
@@ -2321,10 +2315,10 @@ SetInteger  ( NumConditionsEdit, NumConditions ( Subjects ) );
 SetInteger  ( NumInversesEdit  , NumInverses   ( Inverses ) );
 
 
-if      ( ! HasInverses ( Inverses )                     )  SetText ( InverseFile, InverseFileNone  );
-else if ( ! ComputingRisTransfer.IsInverseOK             )  SetText ( InverseFile, InverseFileNotOK );
-else if ( IsSingleTemplateInverse ( Inverses           ) )  SetText ( InverseFile, Inverses[ 0 ]    );
-else if ( AreIndividualInverses   ( Inverses, Subjects ) )  SetText ( InverseFile, InverseFileIndiv );
+if      ( ! HasInverses         ( Inverses )            )   SetText ( InverseFile, InverseFileNone  );
+else if ( ! ComputingRisTransfer.IsInverseOK            )   SetText ( InverseFile, InverseFileNotOK );
+else if ( IsSingleInverse       ( Inverses           )  )   SetText ( InverseFile, Inverses[ 0 ]    );
+else if ( AreMatchingInverses   ( Inverses, Subjects )  )   SetText ( InverseFile, InverseFileIndiv );
 else                                                        SetText ( InverseFile, NumInverses ( Inverses ) < NumSubjects ( Subjects ) ? InverseFileTooFew : InverseFileTooMany );
 
 InverseFile->ResetCaret;
@@ -2345,14 +2339,14 @@ void    TComputingRisDialog::CmOkEnable ( TCommandEnabler &tce )
 TransferData ( tdGetData );
 
 
-if ( ! ( IsSingleTemplateInverse ( Inverses ) || AreIndividualInverses ( Inverses, Subjects ) )
+if ( ! ( IsSingleInverse ( Inverses ) || AreMatchingInverses ( Inverses, Subjects ) )
   || ! ComputingRisTransfer.IsInverseOK ) {
     tce.Enable ( false );
     return;
     }
 
 
-if ( Subjects.IsEmpty () 
+if ( ! HasSubjects ( Subjects )
   || ! ComputingRisTransfer.IsEegOK ) {
     tce.Enable ( false );
     return;
@@ -2415,7 +2409,7 @@ Destroy ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // well, we do need some data...
-if ( Subjects.IsEmpty () )
+if ( ! HasSubjects ( Subjects ) )
     return;
 
 
@@ -2457,7 +2451,8 @@ int                 numinverses         = NumInverses   ( Inverses );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // We can have either 1 inverse matrix per subject, or 1 matrix for all subjects
-bool                individualinverses  = AreIndividualInverses ( Inverses, Subjects );
+bool                singleinverse       = IsSingleInverse       ( Inverses );
+bool                matchinginverses    = AreMatchingInverses   ( Inverses, Subjects );
                                         // Already tested(?)
 //if ( ! Inverses.CanOpenFiles () )
 //    return;
@@ -2487,13 +2482,12 @@ buff   += NewLine
           NewLine
           "    ";
 
-if ( individualinverses )
-    buff   += IntegerToString ( numinverses ) + " Individual Inverse Matrices";
-else
-    buff   += "1 Common Inverse Matrix";
+if      ( matchinginverses )    buff   += IntegerToString ( numinverses ) + " Individual Inverse Matrices";
+else if ( numsubjects > 1  )    buff   += "1 Common Inverse Matrix";
+else                            buff   += "1 Inverse Matrix";
 
 
-if ( ( numsubjects > 1 || numconditions > 1 ) &&    // no need to ask for a single file processing
+if ( ( numsubjects > 1 || numconditions > 1 ) &&    // no need to ask when processing a single file
    ! GetAnswerFromUser   ( buff, ComputingRisTitle, this ) ) {
 
     ShowMessage ( "Please check your presets and/or your groups of input files," NewLine "then come back again...", ComputingRisTitle, ShowMessageWarning, this );
@@ -2504,7 +2498,7 @@ if ( ( numsubjects > 1 || numconditions > 1 ) &&    // no need to ask for a sing
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Offer to review the subjects / inverses pairing?
-if ( individualinverses && numinverses > 1 
+if ( matchinginverses
   && GetAnswerFromUser   ( "Do you wish to review each and every subjects' EEGs and Inverse pairing?", ComputingRisTitle, this ) ) {
 
     TFixedString<256>  title;

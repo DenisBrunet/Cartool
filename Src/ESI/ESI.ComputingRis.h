@@ -23,10 +23,35 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-enum    ComputingRisPresetsEnum;
-enum    SpatialFilterType;
 class   TGoGoF;
 class   TGoF;
+
+                                        // Functions to be converted as methods at some points, hence the systematic parameters
+bool            HasSubjects             ( const TGoGoF& gogof );
+int             NumSubjects             ( const TGoGoF& gogof );
+int             NumConditions           ( const TGoF&   gof   );
+int             NumConditions           ( const TGoGoF& gogof );
+int             NumClusters             ( const TGoGoF& gogof );
+int             NumEpochs               ( const TGoF&   gof,   const char* fileprefix );
+int             NumEpochs               ( const TGoGoF& gogof, int subji, const char* fileprefix );
+
+
+bool            HasInverses             ( const TGoF&   gofi  );
+int             NumInverses             ( const TGoF&   gofi  );
+bool            IsSingleInverse         ( const TGoF&   gofi  );                        // single inverse matrix
+bool            AreMatchingInverses     ( const TGoF&   gofi, const TGoGoF& gogof );    // multiple inverse matrices AND same number as subjects
+
+
+void            AddSubject              ( TGoGoF& gogof, const TGoF& gof );
+void            RemoveSubject           ( TGoGoF& gogof );
+void            AddCondition            ( TGoGoF& gogof, const TGoF& gof );
+void            RemoveCondition         ( TGoGoF& gogof );
+
+
+//----------------------------------------------------------------------------
+
+enum    ComputingRisPresetsEnum;
+enum    SpatialFilterType;
 
 
 //constexpr CentroidType  RisCentroidMethod = MedianCentroid;                   // Median gives sharper shapes/contours, counterpart is it basically forces to store all the data, and is more time-consuming to compute
