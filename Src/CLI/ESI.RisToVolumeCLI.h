@@ -93,19 +93,35 @@ DefineCLIFlag           ( ristovol,         __h,    __help,                 "Thi
                                         // Running the command
 inline void     RisToVolumeCLI ( CLI::App* ristovol, const TGoF& gof )
 {
-if ( ! IsSubCommandUsed ( ristovol )
-  || gof.IsEmpty () )
-
+if ( ! IsSubCommandUsed ( ristovol )  )
     return;
+
+
+if ( gof.IsEmpty () ) {
+
+    ConsoleErrorMessage ( 0, "No input files provided!" );
+    return;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TFileName           spfile          = GetCLIOptionFile ( ristovol, __spfile   );
+
+if ( spfile.IsEmpty () ) {
+
+    ConsoleErrorMessage ( __spfile, "Missing Solution Points file!" );
+    return;
+    }
+
+
 TFileName           greyfile        = GetCLIOptionFile ( ristovol, __greyfile );
 
-if ( spfile.IsEmpty () || greyfile.IsEmpty () )
+if ( greyfile.IsEmpty () ) {
+
+    ConsoleErrorMessage ( __greyfile, "Missing Grey Mask file!" );
     return;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -134,7 +150,7 @@ SPInterpolationType             spinterpol  = interpol == VolumeInterpolation1NN
                                         // Initialize the requested SP interpolation
 if ( ! SPDoc->BuildInterpolation ( spinterpol, GreyMaskDoc ) ) {
 
-    //ShowMessage ( "Error while trying to compute the Solution Points Interpolation", RisToVolumeTitle, ShowMessageWarning );
+    ConsoleErrorMessage ( __interpolation, "Error while trying to compute the Solution Points Interpolation" );
     return;
     }
     

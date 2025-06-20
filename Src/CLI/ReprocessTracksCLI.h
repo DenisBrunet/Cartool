@@ -207,10 +207,15 @@ DefineCLIFlag           ( reprocsub,        __h,    __help,                 "Thi
                                         // Running the command
 inline void     ReprocessTracksCLI ( CLI::App* reprocsub, const TGoF& gof )
 {
-if ( ! IsSubCommandUsed ( reprocsub )
-  || gof.IsEmpty () )
-
+if ( ! IsSubCommandUsed ( reprocsub )  )
     return;
+
+
+if ( gof.IsEmpty () ) {
+
+    ConsoleErrorMessage ( 0, "No input files provided!" );
+    return;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
