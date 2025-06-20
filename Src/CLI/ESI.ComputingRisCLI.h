@@ -374,7 +374,7 @@ cout << "File prefix:      "    << prefix << NewLine;
 cout << NewLine;
 
 for ( int i = 0; i < (int) gof; i++ )
-    cout << "File:         "    << gof[ i ] << NewLine;
+    cout << "File:             "    << gof[ i ] << NewLine;
 
 cout << NewLine;
 
