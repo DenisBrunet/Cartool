@@ -135,48 +135,11 @@ void    SetProcessPriority  ( ProcessPriorityFlags how = DefaultPriority );
 
 //----------------------------------------------------------------------------
 
-inline  bool    CreateConsole ()
-{
-if ( ! AllocConsole () )
-    return  false;
-
-freopen ( "CONIN$",  "r", stdin  );
-freopen ( "CONOUT$", "w", stderr );
-freopen ( "CONOUT$", "w", stdout );
-
-return  true;
-}
-
-
-inline  bool    DeleteConsole ( bool showpresskey = false )
-{
-if ( showpresskey ) {
-    std::cout << "\n";
-    system ( "pause" );     // show message "Press any key to continue" and waits
-    }
-
-return  FreeConsole ();
-}
-
-
-inline  bool    HasConsole ()
-{
-return  (bool) GetConsoleWindow ();
-}
-
-                                        // Create a console if it does not exist
-inline void     PrintConsole ( const string& message )
-{
-bool                createconsole   = /*IsInteractive () &&*/ ! HasConsole ();
-
-if ( createconsole )
-    CreateConsole ();
-
-::std::cout << message;
-
-if ( createconsole )
-    DeleteConsole ( true );
-}
+bool    CreateConsole       ();
+bool    DeleteConsole       ( bool showpresskey = false );
+bool    HasConsole          ();
+void    PrintConsole        ( const string& message );
+void    ConsoleErrorMessage ( const char* option, const char* m1, const char* m2 = 0, const char* m3 = 0, const char* m4 = 0 );
 
 
 //----------------------------------------------------------------------------

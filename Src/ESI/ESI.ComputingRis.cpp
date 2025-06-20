@@ -306,13 +306,13 @@ bool                computingindividualfiles= savingindividualfiles
 //                                         && backnorm == BackgroundNormalizationComputingZScore;       // note that we could allow a new copy of Z-Scores in case of loading from file...
 
                                         // all processings:
-bool                ispreprocessing         = savingindividualfiles     
+bool                isprocessing            = savingindividualfiles     
                                            || savingepochfiles        
                                            || computegroupsaverages        
                                            || computegroupscentroids
                                            || savingzscorefactors;
 
-if ( ! ispreprocessing )
+if ( ! isprocessing )
     return false;
 
 

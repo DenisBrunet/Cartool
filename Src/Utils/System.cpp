@@ -54,6 +54,68 @@ LocalFree ( lpMsgBuf );
 
 
 //----------------------------------------------------------------------------
+
+bool    CreateConsole ()
+{
+if ( ! AllocConsole () )
+    return  false;
+
+freopen ( "CONIN$",  "r", stdin  );
+freopen ( "CONOUT$", "w", stderr );
+freopen ( "CONOUT$", "w", stdout );
+
+return  true;
+}
+
+
+bool    DeleteConsole ( bool showpresskey )
+{
+if ( showpresskey ) {
+    std::cout << "\n";
+    system ( "pause" );     // show message "Press any key to continue" and waits
+    }
+
+return  FreeConsole ();
+}
+
+
+bool    HasConsole ()
+{
+return  (bool) GetConsoleWindow ();
+}
+
+                                        // Create a console if it does not exist
+void    PrintConsole ( const string& message )
+{
+bool                createconsole   = /*IsInteractive () &&*/ ! HasConsole ();
+
+if ( createconsole )
+    CreateConsole ();
+
+::std::cout << message;
+
+if ( createconsole )
+    DeleteConsole ( true );
+}
+
+
+void    ConsoleErrorMessage ( const char* option, const char* m1, const char* m2, const char* m3, const char* m4 )
+{
+CreateConsole ();
+
+::std::cerr                                     << "Error in command-line parameters: ";
+if ( StringIsNotEmpty ( option ) )  ::std::cerr << option << ": ";
+if ( StringIsNotEmpty ( m1     ) )  ::std::cerr << m1;
+if ( StringIsNotEmpty ( m2     ) )  ::std::cerr << m2;
+if ( StringIsNotEmpty ( m3     ) )  ::std::cerr << m3;
+if ( StringIsNotEmpty ( m4     ) )  ::std::cerr << m4;
+::std::cerr                                     << NewLine;
+
+DeleteConsole ( true );
+}
+
+
+//----------------------------------------------------------------------------
                                         // Changing current process (Cartool for the moment) priority - including all future threads
                                         // !PROCESS_MODE_BACKGROUND_BEGIN is not an option, we don't want to reduce the heap & # of handles!
 void    SetProcessPriority  ( ProcessPriorityFlags how )

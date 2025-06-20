@@ -118,18 +118,27 @@ DefineCLIFlag           ( computingris,     __h,    __help,                 "Thi
                                         // Running the command
 inline void     ComputingRisCLI ( CLI::App* computingris, const TGoF& gof )
 {
+if ( ! IsSubCommandUsed ( computingris )  )
+    return;
+
+
 //TFileName           listfiles       = GetCLIOptionFile ( computingris, __listfiles );
 
-if ( ! IsSubCommandUsed ( computingris ) 
-  || ( gof.IsEmpty () /*&& listfiles.IsEmpty ()*/ ) )
+if ( ( gof.IsEmpty () /*&& listfiles.IsEmpty ()*/ ) ) {
 
+    ConsoleErrorMessage ( 0, "No input files provided!" );
     return;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! HasCLIOption ( computingris, __preset ) )
+if ( ! HasCLIOption ( computingris, __preset ) ) {
+
+    ConsoleErrorMessage ( __preset, "No preset specified!" );
     return;
+    }
+
 
 string              preset          = GetCLIOptionEnum ( computingris, __preset );
 
@@ -143,8 +152,11 @@ ComputingRisPresetsEnum esicase     = preset == __preset1 ? ComputingRisPresetEr
                                     : preset == __preset8 ? ComputingRisPresetFreq
                                     :                       ComputingRisPresetSeparator1;       // null preset
 
-if ( CRISPresets[ esicase ].Flags == CRISPresetNone )
+if ( CRISPresets[ esicase ].Flags == CRISPresetNone ) {
+
+    ConsoleErrorMessage ( __preset, "Wrong preset!" );
     return;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -167,13 +179,13 @@ if ( /*listfiles.IsEmpty () &&*/ gof.IsNotEmpty () ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! HasCLIOption ( computingris, __inversefile ) )
+if ( ! HasCLIOption ( computingris, __inversefile ) ) {
+
+    ConsoleErrorMessage ( __inversefile, "Missing Inverse Matrix file!" );
     return;
+    }
 
 TGoF                inversefiles ( GetCLIOptionFile ( computingris, __inversefile ) );
-
-if ( ! inversefiles.CanOpenFiles () )
-    return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -214,8 +226,11 @@ BackgroundNormalization backnorm    = zscore == __compute   ? BackgroundNormaliz
 AtomType            datatypeepochs  = CRISPresets[ esicase ].GetAtomTypeEpochs ();
 
                                         // FINAL requested data type
-if ( ! HasCLIOption ( computingris, __typeformat ) )
+if ( ! HasCLIOption ( computingris, __typeformat ) ) {
+
+    ConsoleErrorMessage ( __typeformat, "Output format type not provided!" );
     return;
+    }
 
 string              typeformat      = GetCLIOptionEnum ( computingris, __typeformat );
 AtomType            datatypefinal   = typeformat == __norm      ?   AtomTypePositive
@@ -265,8 +280,11 @@ if ( HasCLIOption ( computingris, __envelope ) && datatypefinal == AtomTypePosit
     }
 
                                         // a bit late in the game, but we can not compute induced response without the envelope
-if ( CRISPresets[ esicase ].IsInduced () && ! envelope )
+if ( CRISPresets[ esicase ].IsInduced () && ! envelope ) {
+
+    ConsoleErrorMessage ( __envelope, "Envelope not specified for Induced case!" );
     return;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -286,6 +304,27 @@ bool                computegroupscentroids  = HasCLIFlag ( computingris, __savin
 bool                savingzscorefactors     = HasCLIFlag ( computingris, __savingzscore         )
                                            && backnorm != BackgroundNormalizationNone;
 //                                         && backnorm == BackgroundNormalizationComputingZScore;   // note that we could allow a new copy of Z-Scores in case of loading from file...
+
+bool                isprocessing            = savingindividualfiles     
+                                           || savingepochfiles        
+                                           || computegroupsaverages        
+                                           || computegroupscentroids
+                                           || savingzscorefactors;
+
+if ( ! isprocessing ) {
+
+    ConsoleErrorMessage ( 0, "No output has been selected!" );
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // CanOpenFiles done here
+if ( ! inversefiles.CanOpenFiles () ) {
+
+    ConsoleErrorMessage ( __inversefile, "Can not open Inverse Matrix file ", "\"", inversefiles[ 0 ], "\"" );
+    return;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
