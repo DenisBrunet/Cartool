@@ -27,25 +27,29 @@ class   TGoGoF;
 class   TGoF;
 
                                         // Functions to be converted as methods at some points, hence the systematic parameters
-bool            HasSubjects             ( const TGoGoF& gogof );
-int             NumSubjects             ( const TGoGoF& gogof );
-int             NumConditions           ( const TGoF&   gof   );
-int             NumConditions           ( const TGoGoF& gogof );
-int             NumClusters             ( const TGoGoF& gogof );
-int             NumEpochs               ( const TGoF&   gof,   const char* fileprefix );
-int             NumEpochs               ( const TGoGoF& gogof, int subji, const char* fileprefix );
+bool            HasSubjects             ( const TGoGoF& subjects );
+int             NumSubjects             ( const TGoGoF& subjects );
+int             NumConditions           ( const TGoF&   subject  );
+int             NumConditions           ( const TGoGoF& subjects );
+int             NumClusters             ( const TGoGoF& subjects );
+int             NumEpochs               ( const TGoF&   subject, const char* fileprefix );
+int             NumEpochs               ( const TGoGoF& subjects, int subji, const char* fileprefix );
 
+void            AddSubject              ( TGoGoF& subjects, const TGoF& subject );
+void            AddSubjects             ( TGoGoF& subjects, const TGoGoF& moresubjects );
+void            RemoveSubject           ( TGoGoF& subjects );
+void            AddCondition            ( TGoGoF& subjects, const TGoF& onecondition );
+void            AddConditions           ( TGoGoF& subjects, const TGoGoF& moresubjects );
+void            RemoveCondition         ( TGoGoF& subjects );
 
-bool            HasInverses             ( const TGoF&   gofi  );
-int             NumInverses             ( const TGoF&   gofi  );
-bool            IsSingleInverse         ( const TGoF&   gofi  );                        // single inverse matrix
-bool            AreMatchingInverses     ( const TGoF&   gofi, const TGoGoF& gogof );    // multiple inverse matrices AND same number as subjects
+bool            HasInverses             ( const TGoF& inverses );
+int             NumInverses             ( const TGoF& inverses );
+bool            IsSingleInverse         ( const TGoF& inverses );                           // single inverse matrix
+bool            AreMatchingInverses     ( const TGoF& inverses, const TGoGoF& subjects );   // multiple inverse matrices AND same number as subjects
 
-
-void            AddSubject              ( TGoGoF& gogof, const TGoF& gof );
-void            RemoveSubject           ( TGoGoF& gogof );
-void            AddCondition            ( TGoGoF& gogof, const TGoF& gof );
-void            RemoveCondition         ( TGoGoF& gogof );
+void            AddInverse              ( TGoF& inverses, const char* inverse );
+void            AddInverses             ( TGoF& inverses, const TGoF& moreinverses );
+void            RemoveInverse           ( TGoF& inverses );
 
 
 //----------------------------------------------------------------------------

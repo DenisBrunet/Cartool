@@ -43,58 +43,67 @@ TGoGoF          Subjects;               // Groups of Groups of EEG files
 TGoF            Inverses;               // Groups of Inverse files
 
 
-bool            HasSubjects             ( const TGoGoF& gogof )                     { return  gogof.IsNotEmpty ();      }
-int             NumSubjects             ( const TGoGoF& gogof )                     { return  gogof.NumGroups ();       }   // 1 Group == 1 Subject
-int             NumClusters             ( const TGoGoF& gogof )                     { return NumConditions ( gogof );   }   // Clusters == Conditions
+bool            HasSubjects             ( const TGoGoF& subjects )                      { return  subjects.IsNotEmpty ();       }
+int             NumSubjects             ( const TGoGoF& subjects )                      { return  subjects.NumGroups ();        }   // 1 Group == 1 Subject
+int             NumClusters             ( const TGoGoF& subjects )                      { return  NumConditions ( subjects );   }   // Clusters == Conditions
 
-bool            HasInverses             ( const TGoF&   gofi  )                     { return  gofi.IsNotEmpty ();       }
-int             NumInverses             ( const TGoF&   gofi  )                     { return  gofi.NumFiles   ();       }
-bool            IsSingleInverse         ( const TGoF&   gofi  )                     { return  NumInverses ( gofi ) == 1;                                                    }   // both tests could be false
-bool            AreMatchingInverses     ( const TGoF&   gofi, const TGoGoF& gogof ) { return  NumInverses ( gofi ) >  1 && NumInverses ( gofi ) == NumSubjects ( gogof );   }   // but only 1 can be true
+void            AddSubject              ( TGoGoF& subjects, const TGoF& subject )       { subjects.Add ( &subject, true, TFilenameSize );   }   // naturally ordered by subjects
+void            AddSubjects             ( TGoGoF& subjects, const TGoGoF& moresubjects ){ subjects.Add ( moresubjects,   TFilenameSize );   }   // naturally ordered by subjects
+void            RemoveSubject           ( TGoGoF& subjects )                            { subjects.RemoveLastGroup ();                      }   // naturally ordered by subjects
 
-void            AddSubject              ( TGoGoF& gogof, const TGoF& gof )          { gogof.Add ( &gof, true, TFilenameSize );  }   // naturally ordered by subjects
-void            RemoveSubject           ( TGoGoF& gogof )                           { gogof.RemoveLastGroup ();                 }   // naturally ordered by subjects
+bool            HasInverses             ( const TGoF& inverses )                        { return  inverses.IsNotEmpty ();       }
+int             NumInverses             ( const TGoF& inverses )                        { return  inverses.NumFiles   ();       }
+bool            IsSingleInverse         ( const TGoF& inverses )                        { return  NumInverses ( inverses ) == 1;                                                        }   // both tests could be false
+bool            AreMatchingInverses     ( const TGoF& inverses, const TGoGoF& subjects ){ return  NumInverses ( inverses ) >  1 && NumInverses ( inverses ) == NumSubjects ( subjects );}   // but only 1 can be true
+
+void            AddInverse              ( TGoF& inverses, const char* inverse )         { inverses.Add ( inverse );     }
+void            AddInverses             ( TGoF& inverses, const TGoF& moreinverses )    { inverses.Add ( moreinverses );}
+void            RemoveInverse           ( TGoF& inverses )                              { inverses.RemoveLast ();       }
 
 
+//----------------------------------------------------------------------------
                                         // !Accounts for epoch case!
-int             NumConditions ( const TGoF& gof )
+int             NumConditions ( const TGoF& subject )
 {
-if ( gof.IsEmpty () )
+if ( subject.IsEmpty () )
     return  0;
 
-bool                areepochs       = gof.AllStringsGrep ( InfixEpochConcatGrep, GrepOptionDefaultFiles );
+bool                areepochs       = subject.AllStringsGrep ( InfixEpochConcatGrep, GrepOptionDefaultFiles );
 
 if ( areepochs ) {
 
     TGoGoF          splitgogof;
                                         // Default to split by our epoch name
                                         // !Missing: splitting by "Concat" / "Concatenate" strings!
-    gof.SplitByNames ( "." InfixEpoch, splitgogof );
+    subject.SplitByNames ( "." InfixEpoch, splitgogof );
 
     return  (int) splitgogof;
     }
 else
-    return  gof.NumFiles  ();
+    return  subject.NumFiles  ();
 }
 
+
+//----------------------------------------------------------------------------
                                         // !Accounts for epoch case!
-int             NumConditions ( const TGoGoF& gogof )
+int             NumConditions ( const TGoGoF& subjects )
 {
-if ( gogof.IsEmpty () )
+if ( subjects.IsEmpty () )
     return  0;
 
-//bool                areepochs       = gogof.AllStringsGrep ( InfixEpochConcatGrep, GrepOptionDefaultFiles );
+//bool                areepochs       = subjects.AllStringsGrep ( InfixEpochConcatGrep, GrepOptionDefaultFiles );
 
-return  NumConditions ( gogof[ 0 ] );   // looking at first group should be good enough
+return  NumConditions ( subjects[ 0 ] );   // looking at first group should be good enough
 }
 
 
-int             NumEpochs ( const TGoF& gof, const char* fileprefix )
+//----------------------------------------------------------------------------
+int             NumEpochs ( const TGoF& subject, const char* fileprefix )
 {
 TGoGoF              splitgogof;
                                         // Default to split by our epoch name
                                         // !Missing: splitting by "Concat" / "Concatenate" strings!
-gof.SplitByNames ( "." InfixEpoch, splitgogof );
+subject.SplitByNames ( "." InfixEpoch, splitgogof );
 
 return  splitgogof.NumFiles ();
 
@@ -103,7 +112,7 @@ TGoF                gofsplitepochs;
                                         // !The returned epochs can be any size, as specified by the markers themselves!
                                         // !The Batch Averaging below also seems to not really care, taking the first file size for all epochs!
                                         // ?We could add a fall-back option to split into blocks of known size?
-gof.SplitByEpochs ( InfixEpochConcatGrep, -1, fileprefix /*localfileprefix* /, gofsplitepochs );
+subject.SplitByEpochs ( InfixEpochConcatGrep, -1, fileprefix /*localfileprefix* /, gofsplitepochs );
 
 if ( gofsplitepochs.IsEmpty () )
     return  0;
@@ -111,40 +120,67 @@ if ( gofsplitepochs.IsEmpty () )
 }
 
 
-int             NumEpochs ( const TGoGoF& gogof, int subji, const char* fileprefix )
+//----------------------------------------------------------------------------
+int             NumEpochs ( const TGoGoF& subjects, int subji, const char* fileprefix )
 {
-if ( ! IsInsideLimits ( subji, 0, NumSubjects ( gogof ) - 1 ) )
+if ( ! IsInsideLimits ( subji, 0, NumSubjects ( subjects ) - 1 ) )
     return  0;
 
-return  NumEpochs ( gogof[ subji ], fileprefix );
+return  NumEpochs ( subjects[ subji ], fileprefix );
 }
 
+
+//----------------------------------------------------------------------------
                                         // needs extra work
-void            AddCondition ( TGoGoF& gogof, const TGoF& gof )   
+void            AddCondition ( TGoGoF& subjects, const TGoF& onecondition )   
 {
                                         // First time only: adding subjects' groups
-if ( gogof.IsEmpty () )
-    for ( int fi = 0; fi < gof.NumFiles (); fi++ )
-        gogof.Add ( new TGoF, false );
+if ( subjects.IsEmpty () )
+    for ( int fi = 0; fi < onecondition.NumFiles (); fi++ )
+        subjects.Add ( new TGoF, false );
 
                                         // Now we can append conditions for each subject
-for ( int fi = 0; fi < gof.NumFiles (); fi++ )
-    gogof[ fi ].Add ( gof[ fi ], TFilenameSize );
+for ( int si = 0; si < onecondition.NumFiles (); si++ )
+    subjects[ si ].Add ( onecondition[ si ], TFilenameSize );
 }
 
+
+//----------------------------------------------------------------------------
                                         // needs extra work
-void            RemoveCondition ( TGoGoF& gogof )
+void            AddConditions ( TGoGoF& subjects, const TGoGoF& moresubjects )   
 {
-if ( gogof.IsEmpty () )
+if ( subjects.IsEmpty () ) {
+    subjects    = moresubjects;
+    return;
+    }
+
+
+int                 numsubjects     = NumSubjects   ( subjects );
+int                 numconditions   = NumConditions ( moresubjects );
+
+
+for ( int si = 0; si < numsubjects;   si++ )
+for ( int ci = 0; ci < numconditions; ci++ ) {
+
+    subjects[ si ].Add ( moresubjects[ si ][ ci ], TFilenameSize );
+    }
+}
+
+
+//----------------------------------------------------------------------------
+                                        // needs extra work
+void            RemoveCondition ( TGoGoF& subjects )
+{
+if ( subjects.IsEmpty () )
     return;
 
                                         // delete 1 file per group
-for ( int fi = 0; fi < gogof.NumGroups (); fi++ )
-    gogof[ fi ].RemoveLast ();
+for ( int fi = 0; fi < subjects.NumGroups (); fi++ )
+    subjects[ fi ].RemoveLast ();
 
                                         // delete everything if empty
-if ( gogof[ 0 ].NumFiles () == 0 ) 
-    gogof.Reset ();
+if ( subjects[ 0 ].NumFiles () == 0 ) 
+    subjects.Reset ();
 }
 
 
@@ -575,6 +611,9 @@ tce.Enable ( IsNotChecked ( ApplyRois )
 
 
 //----------------------------------------------------------------------------
+                                        // 1 row             == 1 subject
+                                        // 1 column          == 1 condition
+                                        // 1 optional column == 1 inverse
 void    TComputingRisDialog::CmWriteParams ()
 {
 if ( ! HasSubjects ( Subjects ) )
@@ -589,8 +628,8 @@ if ( ! sf.InitFile () )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                 numgroups           = NumSubjects ( Subjects );
-int                 maxfiles            = Subjects.GetMaxFilesPerGroup ();
+int                 numsubjects         = NumSubjects ( Subjects );
+int                 maxfilespersubj     = Subjects.GetMaxFilesPerGroup ();
 //bool              singleinverse       = IsSingleInverse       ( Inverses );
 //bool              matchinginverses    = AreMatchingInverses   ( Inverses, Subjects );
 bool                inverseattr         = NumInverses ( Inverses ) == NumSubjects ( Subjects ); // allowing for single inverse / single subject case     // matchinginverses; 
@@ -598,7 +637,7 @@ bool                inverseattr         = NumInverses ( Inverses ) == NumSubject
                                         // header line describes the attributes / fields
 sf.WriteAttribute ( "numfiles" );
 
-for ( int fi = 0; fi < maxfiles; fi++ )
+for ( int fi = 0; fi < maxfilespersubj; fi++ )
     sf.WriteAttribute ( "file", fi + 1 );
 
 if ( inverseattr )
@@ -609,7 +648,7 @@ sf.WriteNextRecord ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // now write each row
-for ( int si = 0; si < numgroups; si++ ) {
+for ( int si = 0; si < numsubjects; si++ ) {
 
                                         // write number of files
     sf.WriteAttribute ( Subjects[ si ].NumFiles () );
@@ -619,7 +658,7 @@ for ( int si = 0; si < numgroups; si++ ) {
         sf.WriteAttribute ( Subjects[ si ][ fi ] );
 
                                         // complete line with empty attributes
-    for ( int fi = Subjects[ si ].NumFiles (); fi < maxfiles; fi++ )
+    for ( int fi = Subjects[ si ].NumFiles (); fi < maxfilespersubj; fi++ )
         sf.WriteAttribute ( "" );
 
                                         // add a column to the subject?
@@ -662,76 +701,29 @@ if ( ! (    IsCsvComputingRis ( csvtype )
     return;
     }
 
+                                        // any optional column inverse file?
+bool                hascolinverse   = sf.HasAttribute ( "inverse" );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TFileName           attr;
 TFixedString<256>   buff;
-TGoF                gof;
-int                 numfiles;
+TGoGoF              subjects;
+TGoF                subject;
+TGoF                inverses;
 
-                                        // sort out now if we have either 1 row or 1 column of inverse files
-bool                hascolinverse   = sf.HasAttribute ( "inverse" );
-bool                hasrowinverse   = false;
-
-if ( ! hascolinverse ) {
-
-    int             row             = sf.GetNumRecords () - 1;
-
-    sf.GetRecord ( row, "numfiles",    attr );
-    numfiles    = StringToInteger ( attr );
-
-                                        // transfer the filenames...
-    gof.Reset ();
-
-    for ( int fi = 0; fi < numfiles; fi++ ) {
-
-        buff    = "file" + IntegerToString ( fi + 1 );
-
-        sf.GetRecord ( row, buff, attr );
-
-        gof.Add ( attr );
-        } // for file
-
-                                        // inverses: last row
-    hasrowinverse   = gof.AllExtensionsAre ( AllInverseFilesExt );
-    }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Ask how to add the new data in case we already have some loaded
-bool                appendrows          = true;             // Natural option, we just append rows to rows. Otherwise we have to do some sorts of permutations
-bool                firstread           = ! HasSubjects ( Subjects );
-//int                 numinputconditions  = sf.GetNumRecords    ()     - hasrowinverse;   // remove optional row of inverses
-//int                 numinputsubjects    = sf.GetNumAttributes () - 1 - hascolinverse;   // remove optional col of inverses
-
-                                        // we could somehow skip this tests once 2 groups have been dropped, as the option has been chosen already
-if ( ! firstread ) {
-
-    char            answer      = GetOptionFromUser ( "Do you want to append the new data as (S)ubjects, or as (C)onditions?",
-                                                      "Appending Data", "S C", "" );
-                                        // appending rows is the natural way
-    appendrows  =                            answer == EOS
-               || IsChecked ( GroupSubj ) && answer == 'S'
-               || IsChecked ( GroupCond ) && answer == 'C';
-    }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+                                        // load csv in LOCAL subjects and inverses structures
 for ( int row = 0; row < sf.GetNumRecords (); row++ ) {
 
-    bool        islastrow       = row == sf.GetNumRecords () - 1;
-    bool        isrowinverse    = hasrowinverse && islastrow;   // current input is the row of subjects
-
-
     sf.GetRecord ( row, "numfiles",    attr );
-    numfiles    = StringToInteger ( attr );
+
+    int     numfiles    = StringToInteger ( attr );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // transfer the filenames...
-    gof.Reset ();
+    subject.Reset ();
 
     for ( int fi = 0; fi < numfiles; fi++ ) {
 
@@ -739,33 +731,56 @@ for ( int row = 0; row < sf.GetNumRecords (); row++ ) {
 
         sf.GetRecord ( row, buff, attr );
 
-
-        if      ( isrowinverse ) {
-            if ( firstread || ! appendrows )    Inverses       .Add ( attr );  // skip if user requested it
-            }
-        else if (   appendrows )                gof            .Add ( attr );  // usual case
-
-        else /*if ( ! appendrows )*/            Subjects[ row ].Add ( attr );  // permutating case - this needs some more tests
+        subject.Add ( attr );
         } // for file
 
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    if ( appendrows && ! isrowinverse ) 
-
-        AddEegGroup ( gof );            // checks & updates EEGs
+    AddSubject  ( subjects, subject );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // inverses: last column
-    if ( hascolinverse )
-        if ( firstread || appendrows ) {
+    if ( hascolinverse ) {
 
-        sf.GetRecord ( row, "inverse",     attr );
-        Inverses.Add ( attr );
+        sf.GetRecord ( row, "inverse", attr );
+
+        AddInverse ( inverses, attr );
         }
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Check how a full group of subjects matches any existing one
+if ( HasSubjects ( Subjects ) ) {
+
+    if ( IsChecked ( GroupSubj ) && NumConditions ( Subjects ) != NumConditions ( subjects ) ) {
+        ShowMessage ( "Number of Conditions does not match!", "Read list file", ShowMessageWarning );
+        return;
+        }
+
+    if ( IsChecked ( GroupCond ) && NumSubjects ( Subjects ) != NumSubjects ( subjects ) ) {
+        ShowMessage ( "Number of Subjects does not match!", "Read list file", ShowMessageWarning );
+        return;
+        }
+    }
+
+                                        // Here we are all good
+if ( ! HasSubjects ( Subjects  )
+    || IsChecked   ( GroupSubj ) ) {
+
+    AddSubjects     ( Subjects, subjects );
+    AddInverses     ( Inverses, inverses ); // !if there are empty inverses, this will cause some erroneous shift between subjects and inverses!
+    }
+else {
+
+    AddConditions   ( Subjects, subjects );
+                                        // use last set of inverses only if current set is empty
+    if ( ! HasInverses ( Inverses ) && HasInverses ( inverses ) )
+        AddInverses ( Inverses, inverses );
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Full checks
 CheckEeg ();
 //TransferData ( tdSetData );
@@ -923,10 +938,10 @@ if ( gofis.IsEmpty () ) {
     if ( ! getfile.Execute () || getfile.GetNumFiles () == 0 )
         return;
 
-    Inverses.Add ( (const TGoF&) getfile );
+    AddInverses ( Inverses, (const TGoF&) getfile );
     }
 else
-    Inverses.Add ( gofis );
+    AddInverses ( Inverses, gofis );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1404,7 +1419,7 @@ InverseFile->ResetCaret;
 //----------------------------------------------------------------------------
 void    TComputingRisDialog::AddEegGroup ( const TGoF& gofeeg )
 {
-                                        // We enforce stronger compatibilities whthin groups, allowing only identical number of subjects or conditions
+                                        // We enforce stronger compatibilities within groups, allowing only identical number of subjects or conditions
                                         // Checked are done before CheckEeg, which otherwise will find subgroups by itself
 
 int             gofnumsubj      = IsChecked ( GroupSubj ) ? 1                        : gofeeg.NumFiles ();
@@ -1519,7 +1534,7 @@ if ( IsChecked ( GroupSubj ) ) {
 
         if ( numinv >= numsubj )        // either in sync, or more inverses than subjects
 
-            Inverses.RemoveLast ();
+            RemoveInverse ( Inverses );
         }
     }
 
