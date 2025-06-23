@@ -43,7 +43,10 @@ if ( computingris == 0 )
 DefineCLIOptionEnum     ( computingris,     "",     __preset,               "EEG Preset (Required);  IndSubjectsEpochs needs: --envelope" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __preset1, __preset2, __preset3, __preset4, __preset5, __preset6, __preset7, __preset8 } ) ) );
 
-//DefineCLIOptionFile     ( computingris,     "",     __listfiles,            "A .csv or .txt file containing the input files" );
+DefineCLIOptionFile     ( computingris,     "",     __listfiles,            "A .csv or .txt file containing the input files" );
+
+//ExcludeCLIOptions       ( computingris,     __listfiles,        __files );    // does not seem to work across different CLI11 subcommands
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -122,9 +125,9 @@ if ( ! IsSubCommandUsed ( computingris )  )
     return;
 
 
-//TFileName           listfiles       = GetCLIOptionFile ( computingris, __listfiles );
+TFileName           listfiles       = GetCLIOptionFile ( computingris, __listfiles );
 
-if ( gof.IsEmpty () /*&& listfiles.IsEmpty ()*/ ) {
+if ( gof.IsEmpty () && listfiles.IsEmpty () ) {
 
     ConsoleErrorMessage ( 0, "No input files provided!" );
     return;
@@ -161,11 +164,13 @@ if ( CRISPresets[ esicase ].Flags == CRISPresetNone ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                     numsubjects     = 0;
-int                     numconditions   = 0;
-TGoGoF                  subjects;
+int                 numsubjects     = 0;
+int                 numconditions   = 0;
+TGoGoF              subjects;
+TGoF                csvinverses;
 
-if ( /*listfiles.IsEmpty () &&*/ gof.IsNotEmpty () ) {
+                                        // files on the command-line AND in a csv files are mutually exclusive
+if      ( listfiles.IsEmpty () && gof.IsNotEmpty () ) {
                                         // files in the command-line are assumed to be from the same subject
                                         // we just have to differentiate between epochs and averages/spontaneous
     numsubjects     = 1;
@@ -173,19 +178,63 @@ if ( /*listfiles.IsEmpty () &&*/ gof.IsNotEmpty () ) {
     subjects        = gof;
     }
 
-//else { // listfiles
-//    }
+else if ( listfiles.IsNotEmpty () && gof.IsEmpty () ) {
+                                        // in this case, we can recover some individual inverses
+    if ( ! ReadCsvRis ( listfiles, subjects, csvinverses ) ) {
+
+        ConsoleErrorMessage ( __listfiles, "The provided list of files does not seem to be correct: ", "\"", listfiles, "\"" );
+        return;
+        }
+
+    numsubjects     = NumSubjects   ( subjects );
+    numconditions   = NumConditions ( subjects );
+    }
+
+else { // if ( listfiles.IsNotEmpty () && gof.IsNotEmpty () ) {
+                                        // not allowed to mix command-line and csv file
+    ConsoleErrorMessage ( __listfiles, "Can not mix a list of files with files on the command-line!" );
+    return;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! HasCLIOption ( computingris, __inversefile ) ) {
+TGoF                cliinverse;
 
-    ConsoleErrorMessage ( __inversefile, "Missing Inverse Matrix file!" );
+if ( HasCLIOption ( computingris, __inversefile ) )
+                                        // try to read a single inverse file parameter
+    cliinverse  = TGoF ( GetCLIOptionFile ( computingris, __inversefile ) );
+
+                                        // comment this to allow a single inverse file parameter to override those from the list of files
+//if ( HasInverses ( csvinverses ) && HasInverses ( cliinverse ) ) {
+//
+//    ConsoleErrorMessage ( __listfiles, "Can not mix Inverse Matrix files from a list of files, and another one from the command-line!" );
+//    return;
+//    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // do we have inverses now?
+TGoF                inverses        = cliinverse .IsNotEmpty () ? cliinverse    // prioritize command-line override
+                                    : csvinverses.IsNotEmpty () ? csvinverses   // else use the list of files
+                                    :                             0;
+
+if ( ! HasInverses ( inverses ) ) {
+
+    ConsoleErrorMessage ( __inversefile, "Missing Inverse Matrix file(s)!" );
     return;
     }
 
-TGoF                inversefiles ( GetCLIOptionFile ( computingris, __inversefile ) );
+
+bool                singleinverse       = IsSingleInverse       ( inverses );
+bool                matchinginverses    = AreMatchingInverses   ( inverses, subjects );
+
+                                        // these are the only legit cases
+if ( ! ( singleinverse || matchinginverses ) ) {
+
+    ConsoleErrorMessage ( __inversefile, "Number of Inverse Matrix file(s) does not seem correct!" );
+    return;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -320,9 +369,9 @@ if ( ! isprocessing ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // CanOpenFiles done here
-if ( ! inversefiles.CanOpenFiles () ) {
+if ( ! inverses.CanOpenFiles () ) {
 
-    ConsoleErrorMessage ( __inversefile, "Can not open Inverse Matrix file ", "\"", inversefiles[ 0 ], "\"" );
+    ConsoleErrorMessage ( __inversefile, "Some error occured while reading the provided Inverse Matrix file(s)..." );
     return;
     }
 
@@ -351,10 +400,15 @@ cout << "Number subjects:  "    << numsubjects << NewLine;
 cout << "Number conds.  :  "    << numconditions << NewLine;
 cout << NewLine;
 
-cout << "XYZ file:         "    << xyzfile << NewLine;
-if ( xyzfile.IsNotEmpty () )
+if ( xyzfile.IsNotEmpty () ) {
+    cout << "XYZ file:         "    << xyzfile << NewLine;
     cout << "Spatial Filter:   "    << SpatialFilterLongName[ spatialfilter ] << NewLine;
-cout << "IS file:          "    << inversefiles[ 0 ] << NewLine;
+    }
+
+cout << "# of IS files:    "    << (int) inverses << NewLine;
+for ( int i = 0; i < (int) inverses; i++ )
+    cout << "IS file:          "    << inverses[ i ] << NewLine;
+
 cout << "Regularization:   "    << reg << NewLine;
 cout << "Standardization:  "    << BackgroundNormalizationNames[ backnorm ] << NewLine;
 cout << NewLine;
@@ -386,7 +440,7 @@ ComputingRis    (   esicase,
                     subjects,                  
                     numsubjects,            numconditions,
                     
-                    inversefiles,           regularization,         backnorm,
+                    inverses,               regularization,         backnorm,
                     datatypeepochs,         datatypefinal,
                     RisCentroidMethod,
 

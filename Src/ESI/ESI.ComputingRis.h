@@ -51,6 +51,8 @@ void            AddInverse              ( TGoF& inverses, const char* inverse );
 void            AddInverses             ( TGoF& inverses, const TGoF& moreinverses );
 void            RemoveInverse           ( TGoF& inverses );
 
+bool            ReadCsvRis              ( const char* filename, TGoGoF& subjects, TGoF& inverses, VerboseType verbosey = Interactive );
+
 
 //----------------------------------------------------------------------------
 

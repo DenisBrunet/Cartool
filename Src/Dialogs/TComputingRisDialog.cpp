@@ -683,22 +683,31 @@ ReadParams ();
 }
 
 
-void    TComputingRisDialog::ReadParams ( const char* filename )
+bool    ReadCsvRis ( const char* filename, TGoGoF& subjects, TGoF& inverses, VerboseType verbosey )
 {
+subjects.Reset ();
+inverses.Reset ();
+
+if ( ! CanOpenFile ( filename ) )
+    return  false;
+
                                         // TODO: reading .lm files
 TSpreadSheet        sf;
 
 if ( ! sf.ReadFile ( filename ) )
-    return;
+    return  false;
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 CsvType             csvtype         = sf.GetType ();
 
                                         // We can deal with statistics type, too...
 if ( ! (    IsCsvComputingRis ( csvtype ) 
          || IsCsvStatFiles    ( csvtype ) ) ) {
-    ShowMessage ( SpreadSheetErrorMessage, "Read list file", ShowMessageWarning );
-    return;
+    if ( verbosey != Silent )
+        ShowMessage ( SpreadSheetErrorMessage, "Read list file", ShowMessageWarning );
+    return  false;
     }
 
                                         // any optional column inverse file?
@@ -709,9 +718,7 @@ bool                hascolinverse   = sf.HasAttribute ( "inverse" );
 
 TFileName           attr;
 TFixedString<256>   buff;
-TGoGoF              subjects;
 TGoF                subject;
-TGoF                inverses;
 
                                         // load csv in LOCAL subjects and inverses structures
 for ( int row = 0; row < sf.GetNumRecords (); row++ ) {
@@ -747,6 +754,19 @@ for ( int row = 0; row < sf.GetNumRecords (); row++ ) {
         AddInverse ( inverses, attr );
         }
     }
+
+
+return  subjects.IsNotEmpty ();
+}
+
+
+void    TComputingRisDialog::ReadParams ( const char* filename )
+{
+TGoGoF              subjects;
+TGoF                inverses;
+
+if ( ! ReadCsvRis ( filename, subjects, inverses ) )
+    return;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
