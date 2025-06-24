@@ -107,7 +107,7 @@ C.M. Michel, D. Brunet,
          <H5>
              <br>
              <a href="#dialog"><em>Computing RIS</em>, from the Dialog</a><br>
-             <a href="#cli"><em>Computing RIS</em>, from the Command-Line Interface (CLI)</a><br>
+             <a href="#command-line"><em>Computing RIS</em>, from the Command-Line Interface (CLI)</a><br>
              <A HREF="#technical-points-and-hints">Technical points &amp; hints</A><br>
          </H5>
          <H6>
@@ -787,8 +787,128 @@ C.M. Michel, D. Brunet,
          </TABLE>
 
 		 <P class="mvd-h2">
-             <a name="cli"></a><em>Computing RIS</em>, from the Command-Line Interface (CLI)
+             <a name="command-line"></a><em>Computing RIS</em>, from the Command-Line Interface (CLI)
          </P>
+         <P>
+             You can get the <em>Computing RIS</em> subcommand full syntax with:</P>
+         <pre>cartool64.exe computingris --help</pre>
+         <P>
+             Which gives:</P>
+         <pre>Computing Ris command
+Usage: computingris [OPTIONS]
+
+Options:
+--preset ENUM:{ErpGrandAverages,ErpSubjectsAverages,ErpSubjectsEpochs,ErpSubjectsClusters,IndSubjectsEpochs,SpontSubjects,SpontSubjectsClusters,FreqComplex}
+				EEG Preset (Required); IndSubjectsEpochs needs: --envelope
+--listfiles FILE 		A .csv or .txt file containing the input files
+--isfile FILE 			Inverse Matrix file (Required)
+--xyzfile FILE 			Electrodes coordinates file, for Spatial Filter
+--spatialfilter ENUM:{SpatialOutliers,SpatialOutGauss,SpatialOutWeight,SpatialIGM,SpatialIWM,SpatialMedian,SpatialIQM,SpatialMinMax} [SpatialIWM] Needs: --xyzfile
+				Spatial filter
+--type ENUM:{norm,vector} 	Final file type (Required)
+--reg,--regularization ENUM:{none,auto,0,1,2,3,4,5,6,7,8,9,10,11,12} [auto]
+				Regularization level
+--zscore ENUM:{compute,loadfile}
+				Final file type
+--ranking 			Ranking results
+--envelope FLOAT 		Envelope filter on positive data, value in [ms]
+--roisfile FILE 		Computing ROIs
+--prefix TEXT 			Output files optional prefix
+-s,--savingsubjects Excludes: --savingtemplates
+				Saving subjects
+-e,--savingepochs 		Saving subjects epochs
+-g,--savinggrandaverages 	Saving Grand Averages
+-t,--savingtemplates Excludes: --savingsubjects
+				Saving Templates
+-z,--savingzscore 		Saving Z-Score Factors
+-h,--help 			This message</pre>
+         <h4>
+             ERP
+             Examples:</h4>
+         <P>
+             Computing <strong>4 ERP Grand Averages ris files</strong>, with fixed 
+			 regularization, Z-Score, and saving the norm of dipoles<br>(BTW, 
+			 this is the worst way to compute it - there are much better ways 
+			 than that):</P>
+         <pre>cartool64.exe computingris --preset=ErpGrandAverages --isfile=MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.LORETA.is
+--reg=4 --zscore=compute --type=norm --savingsubjects --prefix=MyGM
+-- &quot;Face.Avg RISE1.V1.Recut.sef&quot; &quot;Face.Avg RISE2pv.V2pv.Recut.sef&quot; &quot;Face.Avg RISE2vu.V2vu.Recut.sef&quot; &quot;Face.Avg RISE3.V3.Recut.sef&quot;</pre>
+         <P>
+             &nbsp;</P>
+		<P>
+             Computing <strong>1 subject's 4 ERP ris files</strong>, with Spatial Filter 
+			 preprocessing, automatic regularization, Z-Score, and saving the 
+			 dipoles as vector (slightly better than using the Grand Average):</P>
+         <pre>cartool64.exe computingris --preset=ErpSubjectsAverages --isfile=MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.LAURA.is 
+--xyzfile=MNI152.NlinAsym20.204.2023.xyz --spatialfilter
+--reg=auto --zscore=compute --type=norm --savingsubjects --prefix=MyInverse 
+-- &quot;Avg AdrienRISE1.V1.Recut.sef&quot; &quot;Avg AdrienRISE2pv.V2pv.Recut.sef&quot; &quot;Avg AdrienRISE2vu.V2vu.Recut.sef&quot; &quot;Avg AdrienRISE3.V3.Recut.sef&quot;</pre>
+         <P>
+             &nbsp;</P>
+         <P>
+             Computing <strong>1 subject's 3 ERP ris files</strong>, using concatenated 
+			 <strong>epochs files</strong>, automatic regularization, Z-Score, and saving the 
+			 norm of dipoles (<em>this</em> is the best way!):</P>
+         <pre>cartool64.exe computingris --preset=ErpSubjectsEpochs --isfile=MNI152.NlinAsym09c.6Shell.Biosemi128.6mm.2023.2.LORETA.is
+--zscore=compute --type=norm --prefix=MyEpochs --savingsubjects
+-- SubjectJuju.CondA.Concat.sef SubjectJuju.CondB.Concat.sef SubjectJuju.CondC.Concat.sef</pre>
+         <P>
+             &nbsp;</P>
+         <P>
+             Computing <strong>1 subject's 8 micro-states template sources</strong>, 
+			 using <strong>cluster files from ERP EEG Back-Fitting</strong>, automatic regularization, Z-Score, and 
+			 saving the norm of dipoles:</P>
+         <pre>cartool64.exe computingris --preset=ErpSubjectsClusters --isfile=MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.LORETA.is
+--zscore=compute --type=norm --savingtemplates --prefix=MyClustering
+-- &quot;Fit.Subj01.Cluster01.sef&quot; &quot;Fit.Subj01.Cluster02.sef&quot; &quot;Fit.Subj01.Cluster03.sef&quot; &quot;Fit.Subj01.Cluster04.sef&quot;
+&quot;Fit.Subj01.Cluster05.sef&quot; &quot;Fit.Subj01.Cluster06.sef&quot; &quot;Fit.Subj01.Cluster07.sef&quot; &quot;Fit.Subj01.Cluster08.sef&quot;</pre>
+         <P>
+             &nbsp;</P>
+         <h4>
+             Induced Responses
+             Examples:</h4>
+         <P>
+             Computing <strong>1 subject's 3 Induced Responses ris files</strong>, using concatenated 
+			 <strong>epochs files</strong>, with automatic regularization, Z-Score, 
+			 Envelope of 33[ms] (corresponding to 30[Hz]), and saving the norm of dipoles:</P>
+         <pre>cartool64.exe computingris --preset=IndSubjectsEpochs --isfile=MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.LORETA.is
+--type=norm --envelope=33 --zscore=compute --prefix=MyInd --savingsubjects --savingzscore
+-- L007.S3.GammaD1A.Epochs.EEG.sef L007.S3.GammaD1B.Epochs.EEG.sef L007.S3.GammaD2A.Epochs.EEG.sef L007.S3.GammaD2B.Epochs.EEG.sef</pre>
+         <P>
+             &nbsp;</P>
+         <h4>
+             Resting States
+             Examples:</h4>
+         <P>
+             Computing <strong>1 subject's full spontaneous ris files</strong>, 
+			 using spontaneous EEG, with automatic regularization, Z-Score, and saving the 
+			 norm of dipoles:</P>
+         <pre>cartool64.exe computingris --preset=SpontSubjects --isfile=MNI152.NlinAsym09c.BrainProduct64Geneva.5000.2022.LORETA.is
+--type=norm --zscore=compute --prefix=MySpont --savingsubjects --savingzscore
+-- subject1.rest.down.filt_ICAcorrected.inter.down.64.SpatialFilter.sef</pre>
+         <P>
+             &nbsp;</P>
+		<P>
+             Computing <strong>1 subject's 6 micro-states template sources</strong>, 
+			 using <strong>cluster files from Resting States EEG Back-Fitting</strong>, automatic regularization, 
+			 Z-Score, and saving the norm of dipoles:</P>
+         <pre>cartool64.exe computingris --preset=SpontSubjectsClusters --isfile=Subject13.is
+--type=norm --zscore=compute --prefix=MySubj --savingtemplates --savingzscore
+-- DemoFitting.subject13.Cluster01.sef DemoFitting.subject13.Cluster02.sef DemoFitting.subject13.Cluster03.sef
+DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitting.subject13.Cluster06.sef</pre>
+         <P>
+             &nbsp;</P>
+         <h4>
+             Frequency
+             Examples:</h4>
+         <P>
+             Computing <strong>1 subject's 4 frequency ris files</strong>, using 
+			 <strong>FFT complex results</strong>, with automatic regularization, Z-Score, and 
+			 saving the norm of dipoles:</P>
+         <pre>cartool64.exe computingris --preset=FreqComplex --isfile=MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.eLORETA.is
+--type=norm --zscore=compute --prefix=MyFreq --savingsubjects --savingzscore
+-- &quot;Avg AdrienRISE1.V1.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot; &quot;Avg AdrienRISE2pv.V2pv.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot;
+&quot;Avg AdrienRISE2vu.V2vu.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot; &quot;Avg AdrienRISE3.V3.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot;</pre>
 
          <P class="mvd-h2">
              <A NAME="technical-points-and-hints"></A>Computing RIS - Technical points &amp; hints
