@@ -6,6 +6,31 @@
   <link rel="stylesheet" href="../cartool.css" type="text/css">
 
   <style type="text/css">
+  .ms-list4-main {
+	  border-left: 1.5pt solid black;
+	  border-right: 1.5pt solid black;
+	  border-top: 1.5pt solid black;
+	  border-bottom: .75pt solid black;
+	  background-color: white;
+  }
+  .ms-list4-top {
+	  font-weight: bold;
+	  color: white;
+	  border-left-style: none;
+	  border-right-style: none;
+	  border-top-style: none;
+	  border-bottom: 1.5pt solid black;
+	  background-color: gray;
+  }
+  .ms-list4-even {
+	  font-weight: normal;
+	  color: black;
+	  border-left-style: none;
+	  border-right-style: none;
+	  border-top-style: none;
+	  border-bottom: .75pt solid black;
+	  background-color: white;
+  }
 .auto-style1 {
 	text-align: center;
 }
@@ -22,6 +47,16 @@
 	padding: 0px;
 	line-height: 1.4;
 }
+  .auto-style5 {
+	  font-weight: normal;
+	  color: black;
+	  text-align: center;
+	  border-left-style: none;
+	  border-right-style: none;
+	  border-top-style: none;
+	  border-bottom: .75pt solid black;
+	  background-color: white;
+  }
   </style>
 
  </HEAD>
@@ -76,6 +111,12 @@ C.M. Michel, D. Brunet,
              <A HREF="#technical-points-and-hints">Technical points &amp; hints</A><br>
          </H5>
          <H6>
+             <a href="#condition-subject"><strong>Per Condition</strong> <i>vs</i> 
+			 <strong>Per Subject</strong> Modes</a><br>
+             <a href="#single-multiple-matrices"><strong>Single</strong> <i>vs</i> 
+			 <strong>Multiple</strong> Inverse Matrices</a><br>
+			 <a href="#reading-writing-lists">Reading and Writing the List of 
+			 Files</a><br>
              <a href="#consistency-checks">Checking the files consistency</a><br>
              <A HREF="#spatial-filter">Spatial Filter</A><br>
              <a href="#z-score">Background normalization</a><br>
@@ -127,17 +168,17 @@ C.M. Michel, D. Brunet,
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
                          Here you can add / remove entire groups of files, 
-						 mainly EEG but also individual
-						 <a href="computing-inverse-solution-matrices.html">
-						 Inverse Matrices files.</a><P>
+						 mainly EEG but also <a href="#single-multiple-matrices">individual
+						 Inverse Matrices files</a>.<P>
                          <strong>The most pratical way to add groups is by using
 						 </strong><em><strong>Drag &amp; Drop</strong></em><strong> 
 						 from a File Explorer:</strong> select the EEG and/or 
 						 inverse matrix files, and simply drop them in this box!</TD>
              </TR>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%" class="mvd-p">Manage / 
-				 Display Groups of Files:</TD>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         <a href="#condition-subject">Manage / Display Groups of Files:</a></TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
                          <strong><em>A very important setting</em>: it specifies 
@@ -146,17 +187,16 @@ C.M. Michel, D. Brunet,
              </tr>
 			 <tr>
                  <TD VALIGN=TOP style="width: 32%" class="mvd-p">
-				 <p class="auto-style2">Per Condition:</p>
+				 <p class="auto-style2"><strong><a href="#condition-subject">Per Condition:</a></strong></p>
 				 </TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         A new group of files will be considered as <em><strong>
-						 n</strong></em><strong> subjects, 1 condition</strong>.
+                         A new group of files will be considered as <em><strong>n</strong></em><strong> subjects, 1 condition</strong>.
                  </TD>
              </tr>
              <tr>
                  <TD VALIGN=TOP style="width: 32%" class="mvd-p">
-				 <p class="auto-style2">Per Subject:</p>
+				 <p class="auto-style2"><strong><a href="#condition-subject">Per Subject:</a></strong></p>
 				 </TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
@@ -167,13 +207,15 @@ C.M. Michel, D. Brunet,
              <TR>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
+                         &nbsp;
                          Add New Condition<br>/ Add New Subject</TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
                          Click this button if you want to add a new group of 
 						 files without using <em>Drag &amp; Drop</em>.<P>
                          Note that the button label will change according to 
-						 current <em>Per Condition / Per Subject</em> state!<P>
+						 current <a href="#condition-subject"> <em>Per Condition / Per Subject</em> state</a> 
+						 above!<P>
                          You can conveniently add the individual inverse matrix 
 						 file at the same time!<P>
                          Upon completion,
@@ -186,12 +228,13 @@ C.M. Michel, D. Brunet,
              <TR>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
+                         &nbsp;&nbsp;
                          Remove Last Condition<br>/&nbsp; Remove Last Subject</TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
                          Similarly to the Add button above, the label will 
-						 change with the current <em>Per Condition / Per Subject</em> 
-						 state.
+						 change with the current <a href="#condition-subject"> <em>Per Condition / Per Subject</em> 
+						 state</a>.
                  </TD>
              </TR>
              <tr>
@@ -216,7 +259,8 @@ C.M. Michel, D. Brunet,
              <TR>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         Read Lists from File
+                         <a href="#reading-writing-lists">Read Lists from File
+                 		</a>
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
@@ -231,7 +275,8 @@ C.M. Michel, D. Brunet,
              <TR>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         Write Lists to File
+                         <a href="#reading-writing-lists">Write Lists to File
+                 		</a>
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
@@ -290,8 +335,7 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         &nbsp;You can simply <em>
-						 Drag &amp; Drop</em> a <strong>.xyz</strong> file here!
+                         &nbsp;You can simply <em>Drag &amp; Drop</em> a <strong>.xyz</strong> file here!
                  </TD>
              </tr>
              <tr>
@@ -333,9 +377,10 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         &nbsp;You can simply <em>Drag &amp; Drop</em> one or 
-						 multiple <strong>.is</strong> 
-						 files here!
+                         &nbsp;You can simply <em>Drag &amp; Drop</em> 
+						 <a href="#single-multiple-matrices">one or 
+						 multiple inverse matrice 
+						 files</a> here!
                  </TD>
              </tr>
              <tr>
@@ -347,13 +392,11 @@ C.M. Michel, D. Brunet,
                      <P>
                          This input is 
 						 of course mandatory, so give either:<ul>
-						 <li>1
-						 <a href="computing-inverse-solution-matrices.html">
-						 Inverse Matrix file</a>, that will be common to all 
-						 subjects</li>
-						 <li><strong><em>New</em></strong> As many
-						 <a href="computing-inverse-solution-matrices.html">
-						 Inverse Matrix files</a> as there are subjects</li>
+						 <li><a href="#single-multiple-matrices">1
+						 Inverse Matrix file, that will be common to all 
+						 subjects</a></li>
+						 <li><a href="#single-multiple-matrices"><strong><em>New</em></strong> As many
+						 Inverse Matrix files as there are subjects</a></li>
 					 </ul>
 					 <P>
                          Any other case is forbidden, like an incomplete list of 
@@ -387,7 +430,7 @@ C.M. Michel, D. Brunet,
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
                          Only the <strong>norm of each dipole</strong> will be saved.<P>
-                         <em>This is what you need 99% of the time.em>
+                         <em>This is what you need 99% of the time</em>
                  </TD>
              </tr>
              <tr>
@@ -400,7 +443,7 @@ C.M. Michel, D. Brunet,
                          ThThe <strong>full vectorial 
 						 information for each dipole</strong> will be saved.
                      <P>
-                         <em>Not recommendedem> unless you know what you are doing. Also, it
+                         <em>Not recommended</em> unless you know what you are doing. Also, it
                          takes more space on the disk.
                  </TD>
              </tr>
@@ -435,10 +478,7 @@ C.M. Michel, D. Brunet,
 						 the lowest regularization factor where results do not 
 						 change much anymore for the next value.
                      <P>
-                         <em>
-                             <strong>
-                                 This is the
-                                 recommended option!strong></em>
+                         <em><strong>This is the recommended option!</strong></em>
                  </TD>
              </tr>
              <tr>
@@ -493,7 +533,7 @@ C.M. Michel, D. Brunet,
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         CoCompute Z-Score
+                         Compute Z-Score
                  </TD>
                  <TD WIDTH="70%" VALIGN=TOP>
                      <P>
@@ -519,7 +559,7 @@ C.M. Michel, D. Brunet,
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         <strong><a href="#templatize">Templatize (per Map):a></strong>
+                         <strong><a href="#templatize">Templatize (per Map)</strong>
                  </TD>
                  <TD WIDTH="70%" VALIGN=TOP>
                      <P>
@@ -750,12 +790,229 @@ C.M. Michel, D. Brunet,
              <a name="cli"></a><em>Computing RIS</em>, from the Command-Line Interface (CLI)
          </P>
 
-         <em>
-
          <P class="mvd-h2">
              <A NAME="technical-points-and-hints"></A>Computing RIS - Technical points &amp; hints
          </P>
+
+
          <P class="mvd-h4">
+             <A NAME="condition-subject"></A><strong>Per Condition</strong> <em>vs</em> 
+			 <strong>Per Subject</strong> modes
+         </P>
+         <P>
+             These two buttons tell Cartool how to incorporate any <strong>
+			 additional group of EEG files</strong>. Use the one mode that is 
+			 the most convenient according to your data organization:</P>
+		<ul>
+			<li><strong>Per Condition</strong> means you are dropping a single 
+			condition, for all of your subjects at once.<br>The number of 
+			subjects should logically match the other existing groups.</li>
+			<li><strong>Per Subject</strong> means you are dropping all 
+			conditions, for a single subject at once.<br>The number of 
+			conditions should logically match the other existing groups.</li>
+		</ul>
+
+         <P>
+             You can see in the summary box how the subjects / conditions grows 
+			 for each group of files you drop.</P>
+		<P>
+             &nbsp;</P>
+		<P>
+             The much convenient part is that <strong>you can switch mode at any 
+			 time</strong>, either to change the summary display, or to change 
+			 the way you will add or remove next groups!</P>
+
+
+         <P class="mvd-h4">
+             <A NAME="single-multiple-matrices"></A><strong>Single</strong> <i>vs</i> 
+			 <strong>Multiple</strong> Inverse Matrices
+         </P>
+         <P>
+             There are two ways to work with inverse 
+			 matrices:</P>
+		<ul>
+			<li>Using a <strong>single inverse matrix</strong>, usually 
+			computed from a <strong>template</strong>, for all subjects</li>
+			<li>Using <strong>one inverse matrix per subject</strong>, 
+			usually computed from <strong>individualized MRI and electrodes data</strong></li>
+		</ul>
+
+         <P>
+             You just need to provide <i>more than 1 matrix to activate the second 
+			 mode</i>. In this case, the number of matrices <i>should be equal
+			 </i>to the 
+			 number of subjects, though!</P>
+		<P>
+             &nbsp;</P>
+		<P>
+             To better understand how Cartool internally works, it makes use of
+			 <strong>2 lists of files</strong> that can grow in parallel:</P>
+		<ul>
+			<li>1 list for the EEGs per subject</li>
+			<li>1 list for the inverse per subject</li>
+		</ul>
+		<P>
+             &nbsp;</P>
+		<P>
+             Let see a simple example, starting with empty lists:</P>
+		<table class="ms-list4-main" style="width: 500">
+			<!-- fpstyle: 27,011111000 -->
+			<tr>
+				<th class="ms-list4-top" style="width: 405px">EEGs per Subject/th>
+				<th class="ms-list4-top" style="width: 406px">Inverse per 
+				Subject</th>
+			</tr>
+			<tr>
+				<td class="auto-style5" style="width: 405px">&lt;empty&gt;</td>
+				<td class="auto-style5" style="width: 406px">&lt;empty&gt;</td>
+			</tr>
+		</table>
+		<P>
+             &nbsp;</P>
+		<P>
+             AAdding 1 subject EEGs 
+			 and 1 inverse together, both lists grow and match together:</P>
+		<table class="ms-list4-main" style="width: 500">
+			<!-- fpstyle: 27,011111000 -->
+			<tr>
+				<th class="ms-list4-top" style="width: 405px">EEGs per Subject/th>
+				<th class="ms-list4-top" style="width: 406px">Inverse per 
+				Subject</th>
+			</tr>
+			<tr>
+				<td class="auto-style5" style="width: 405px">Subject1 EEGs</td>
+				<td class="auto-style5" style="width: 406px">Inverse1</td>
+			</tr>
+		</table>
+		<P>
+             &&nbsp;</P>
+		<P>
+             Adding 1 subject EEGs <i>without/i>  inverse. The EEG list grows, but not the 
+			 Inverse one, so they do not match anymore:</P>
+		<table class="ms-list4-main" style="width: 500">
+			<!-- fpstyle: 27,011111000 -->
+			<tr>
+				<th class="ms-list4-top" style="width: 405px">EEGs per Subject/th>
+				<th class="ms-list4-top" style="width: 406px">Inverse per 
+				Subject</th>
+			</tr>
+			<tr>
+				<td class="auto-style5" style="width: 405px">Subject1 EEGs<br>
+				Subject2 EEGs</td>
+				<td class="auto-style5" style="width: 406px">Inverse1<br>&nbsp;</td>
+			</tr>
+		</table>
+		<P>
+             &nbsp;</P>
+		<P>
+             By adding the inverse now, both lists match again:</P>
+		<table class="ms-list4-main" style="width: 500">
+			<!-- fpstyle: 27,011111000 -->
+			<tr>
+				<th class="ms-list4-top" style="width: 405px">EEGs per Subject</th>
+				<th class="ms-list4-top" style="width: 406px">Inverse per 
+				Subject</th>
+			</tr>
+			<tr>
+				<td class="auto-style5" style="width: 405px">Subject1 EEGs<br>
+				Subject2 EEGs</td>
+				<td class="auto-style5" style="width: 406px">Inverse1<br>
+				Inverse2</td>
+			</tr>
+		</table>
+		<P>
+             &nbsp;</P>
+		<P>
+             BBy repeating the process for each subjects, you should end up with 
+			 complementary lists:</P>
+		<table class="ms-list4-main" style="width: 500">
+			<!-- fpstyle: 27,011111000 -->
+			<tr>
+				<th class="ms-list4-top" style="width: 405px">EEGs per Subject/th>
+				<th class="ms-list4-top" style="width: 406px">Inverse per 
+				Subject</th>
+			</tr>
+			<tr>
+				<td class="auto-style5" style="width: 405px">Subject1 EEGs<br>
+				Subject2 EEGs<br>Subject3 EEGs<br>Subject4 EEGs<br>Subject5 EEGs</td>
+				<td class="auto-style5" style="width: 406px">Inverse1<br>
+				Inverse2<br>Inverse3<br>Inverse4<br>Inverse5</td>
+			</tr>
+		</table>
+		<P>
+             &nbsp;</P>
+		<P>
+             <strong>To summarize, you can fill these 2 lists by using either of 
+			 these two strategies:</strong></P>
+ 	   <ul>
+		   <li>Filling in all the EEG files first, then all the Inverse files.<br>
+		   This is the fastest way, and it should be fine as long as the file 
+		   naming is consistent across files./li>
+		   <li>FFilling one subject at a time, providing both the EEG and the 
+		   Inverse Matrix files each time.<br>This is the safest method but 
+		   might take longer.</li>
+		</ul>
+		<P>
+             &nbsp;</P>
+		<P>
+             Finally, when you are ready to go and press the <i><strong>Process/strong></i>  
+			 button, Cartool will ask you if you want to review each and every 
+			 subjects' EEG and Inverse files. This information is also saved in 
+			 the verbose file.&nbsp;</P>
+
+         <P class="mvd-h4">
+             <A NAME="reading-writing-lists"></A>Reading and Writing the list of files
+         /P>
+         <P>
+             Filling the list of EEG files correctly can be tedious, therefor it 
+			 is highly recommended to <strong>save your final list to a <i>.csv</i> 
+			 or <i>.txt</i> file for later</strong>!</P>
+		<P>
+             BBut, <i>there is more to it</i>! You can actually build and save
+			 <strong>lists for various sub-groups of data</strong>, either per 
+			 conditions or per subjects. Then you can strong>
+			 cumulate and combine</strong>  these lists together, the user being 
+			 prompted at reading time for the appropriate way. This allows for 
+			 conveniently computing the sources localization for all conditions 
+			 at once, then for each condition separately!</P>
+		<P>
+             &nbsp;</P>
+		<P>
+             Let see a first example on a 2 x 4 experiment, 15 subjects:/P>
+ 	   <ul>
+		   <li>Fill the <strong>first 4 conditions</strong>, with 15 subjects. 
+		   Save list to file, then clear groups.</li>
+		   <li>Fill the <strong>second 4 conditions</strong>, same 15 subjects. 
+		   Save list to file, then clear groups.</li>
+		</ul>
+		<P>
+             Next step is to re-use these 2 lists:</P>
+ 	   <ul>
+		   <li>Read the first list. Nothing is required at that point.</li>
+		   <li>Read the second list. When prompted by Cartool, specify you are 		   <strong>adding conditions</strong>.</li>
+		   <li>Now Cartool shows <strong>8 conditions</strong>, 15 subjects!</li>
+		</ul>
+		<P>
+             &nbsp;</P>
+		<P>
+             Another example on the same 5 conditions, with a first set of 20 
+			 subjects, then a second set of 30 subjects:</P>
+ 	   <ul>
+		   <li>Fill the 5 conditions, with the <strong>ffirst 20 subjects.
+		   </strong>Save to file, then clear groups.</li>
+		   <li>Fill the 5 conditions, with the strong>ssecond 30 subjects.
+		   </strong>Save to file, and clear groups.</li>
+		</ul>
+		<P>
+             Re-using these 2 lists:
+        </P>
+ 	   <ul>
+		   <li>Read the first list. Nothing is required at that point.</li>
+		   <li>Read the second list. When prompted by Cartool, specify this time 
+		   you are strong>adding subjects</strong>.</li>
+		   <li>Now Cartool shows 5 conditions, <strong>50 subjects</strong>!</li>
+		</ul>
+		<P class="mvd-h4">
              <A NAME="consistency-checks"></A>Checking the files consistency
          </P>
          <P>
@@ -950,11 +1207,7 @@ C.M. Michel, D. Brunet,
              <li>
                  Inverses will be computed at each frequency, <strong>
                      separately on the
-                 </strong><em><strong>Real</strong></em><strong> and </strong><em>
-                     <strong>
-                         Imaginary
-                     </strong>
-                 </em><strong> parts</strong>,
+                 </strong><em><strong>Real</strong></em><strong> and </strong><em><strong>Imaginary</strong></em><strong> parts</strong>,
              </li>
              <li>
                  Then the <strong>square of the norm of the </strong><em><strong>Real</strong></em><strong>
