@@ -28,16 +28,16 @@ template <class TypeD>
 class   TArray1 :   public  TArray<TypeD>
 {
 public:
-                    TArray1 () : TArray (), Dim1 ( 0 )                      {}
-                    TArray1 ( int dim1 );
+                    TArray1             () : TArray (), Dim1 ( 0 )  {}
+                    TArray1             ( int dim1 );
 
 
-    void            DeallocateMemory ()                                     { TArray<TypeD>::DeallocateMemory (); Dim1 = 0; }
+    void            DeallocateMemory    ()                  { TArray<TypeD>::DeallocateMemory (); Dim1 = 0; }
 
-    int             GetDim  ()                  const       { return Dim1; }
-    int             GetDim1 ()                  const       { return Dim1; }
-    int             MaxSize ()                  const       { return Dim1; }
-    bool            WithinBoundary ( int x )    const       { return x >= 0 && x < Dim1; }
+    int             GetDim              ()          const   { return Dim1; }
+    int             GetDim1             ()          const   { return Dim1; }
+    int             MaxSize             ()          const   { return Dim1; }
+    bool            WithinBoundary      ( int x )   const   { return x >= 0 && x < Dim1; }
 
     void            Resize              ( int newdim1, MemoryAllocationType how = MemoryDefault );
     void            ResizeDelta         ( int delta,   MemoryAllocationType how = ResizeKeepMemory );
@@ -53,13 +53,14 @@ public:
     using   TArray::operator    =;
     
     using   TArray::operator    [];
-    TypeD&          operator    []      ( double v )        { return GetValue ( v ); }  //!converts value to index!
+    TypeD&          operator    []      ( double v )        { return GetValue ( v ); }  // !converts value to index!
 
     using   TArray::operator    ();
-    TypeD&          operator    ()      ( double v )        { return GetValue ( v ); }  //!converts value to index!
+    TypeD&          operator    ()      ( double v )        { return GetValue ( v ); }  // !converts value to index!
 
 
 protected:
+
     int             Dim1;
 
 };

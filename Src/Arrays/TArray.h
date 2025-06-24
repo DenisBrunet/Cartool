@@ -92,41 +92,41 @@ template <class TypeD>
 class   TArray  :   public  TMemory
 {
 public:
-                    TArray () : LinearDim ( 0 ), Array ( 0 ){}
+                    TArray              () : LinearDim ( 0 ), Array ( 0 )   {}
 
 
-    size_t          AtomSize    ()                  const   { return sizeof ( TypeD ); }
-    size_t          MemorySize  ()                  const   { return LinearDim * AtomSize (); }     // minimum consecutive memory needed to store this amount of data
+    size_t          AtomSize            ()          const   { return sizeof ( TypeD ); }
+    size_t          MemorySize          ()          const   { return LinearDim * AtomSize (); }     // minimum consecutive memory needed to store this amount of data
 
-    bool            IsAllocated    ()               const   { return LinearDim != 0; }
-    bool            IsNotAllocated ()               const   { return LinearDim == 0; }
-    virtual void    DeallocateMemory ();            // this is the only thing we can do about memory here
-
-
-    size_t          GetLinearDim ()                 const   { return LinearDim; }
+    bool            IsAllocated         ()          const   { return LinearDim != 0; }
+    bool            IsNotAllocated      ()          const   { return LinearDim == 0; }
+    virtual void    DeallocateMemory    ();            // this is the only thing we can do about memory here
 
 
-    TypeD*          GetArray ()                             { return Array; }
-    const TypeD*    GetArray ()                     const   { return Array; }
+    size_t          GetLinearDim        ()          const   { return LinearDim; }
+
+
+          TypeD*    GetArray            ()                  { return Array; }
+    const TypeD*    GetArray            ()          const   { return Array; }
 
                                                             // access in linear space
-    TypeD&          GetValue            ( int i )           { return Array[ i /*Clip ( i, 0, Dim1 - 1 )*/ ]; }
+          TypeD&    GetValue            ( int i )           { return Array[ i /*Clip ( i, 0, Dim1 - 1 )*/ ]; }
     const TypeD&    GetValue            ( int i )   const   { return Array[ i /*Clip ( i, 0, Dim1 - 1 )*/ ]; }
 
 
     TArray<TypeD>&  operator    =       ( TypeD op2 );
 
                                                             // access in linear space
-    TypeD&          operator    []      ( int i )           { return Array[ i ]; }
+          TypeD&    operator    []      ( int i )           { return Array[ i ]; }
     const TypeD&    operator    []      ( int i )   const   { return Array[ i ]; }
-    TypeD&          operator    ()      ( int i )           { return Array[ i ]; }
+          TypeD&    operator    ()      ( int i )           { return Array[ i ]; }
     const TypeD&    operator    ()      ( int i )   const   { return Array[ i ]; }
 
                                                             // cast
-    virtual         operator    int     ()          const   { return (int) LinearDim; } // used for loops
-    virtual         operator    bool    ()          const   { return LinearDim != 0; }
-    virtual         operator    TypeD*  ()                  { return Array; }
-    virtual         operator    const TypeD*  ()    const   { return Array; }
+    virtual explicit operator   int             ()  const   { return (int) LinearDim; } // used for loops
+    virtual explicit operator   bool            ()  const   { return LinearDim != 0; }
+    virtual         operator          TypeD*    ()          { return Array; }
+    virtual         operator    const TypeD*    ()  const   { return Array; }
 
 
 protected:

@@ -28,49 +28,49 @@ template <class TypeD>
 class   TArray3 :   public  TArray<TypeD>
 {
 public:
-                    TArray3 () : TArray (), Dim1 ( 0 ), Dim2 ( 0 ), Dim3 ( 0 ) {}
-                    TArray3 ( int dim1, int dim2, int dim3 );
+                    TArray3             () : TArray (), Dim1 ( 0 ), Dim2 ( 0 ), Dim3 ( 0 ) {}
+                    TArray3             ( int dim1, int dim2, int dim3 );
 
 
-    void            DeallocateMemory ()                                     { TArray<TypeD>::DeallocateMemory (); Dim1 = 0; Dim2 = 0; Dim3 = 0; }
+    void            DeallocateMemory    ()                                          { TArray<TypeD>::DeallocateMemory (); Dim1 = 0; Dim2 = 0; Dim3 = 0; }
 
 
-    int             GetDim1 ()              const           { return Dim1; }
-    int             GetDim2 ()              const           { return Dim2; }
-    int             GetDim3 ()              const           { return Dim3; }
-    int             GetDim  ( int axis )    const           { return axis == 0 ? Dim1 : axis == 1 ? Dim2 : Dim3; }
-    void            GetDims ( int *dims )   const           { dims[ 0 ] = Dim1; dims[ 1 ] = Dim2; dims[ 2 ] = Dim3;  }
+    int             GetDim1             ()                                  const   { return Dim1; }
+    int             GetDim2             ()                                  const   { return Dim2; }
+    int             GetDim3             ()                                  const   { return Dim3; }
+    int             GetDim              ( int axis )                        const   { return axis == 0 ? Dim1 : axis == 1 ? Dim2 : Dim3; }
+    void            GetDims             ( int *dims )                       const   { dims[ 0 ] = Dim1; dims[ 1 ] = Dim2; dims[ 2 ] = Dim3;  }
                   
-    int             MinSize ()              const           { return min ( Dim1, Dim2 , Dim3 ); }
-    int             MaxSize ()              const           { return max ( Dim1, Dim2 , Dim3 ); }
-    double          MeanSize()              const           { return ( Dim1 + Dim2 + Dim3 ) / 3.0; }
+    int             MinSize             ()                                  const   { return min ( Dim1, Dim2 , Dim3 ); }
+    int             MaxSize             ()                                  const   { return max ( Dim1, Dim2 , Dim3 ); }
+    double          MeanSize            ()                                  const   { return ( Dim1 + Dim2 + Dim3 ) / 3.0; }
 
-    void            Resize  ( int newdim1, int newdim2, int newdim3 );
-    void            Resize  ( const TPointInt& size )       { Resize ( size.X, size.Y, size.Z ); }
+    void            Resize              ( int newdim1, int newdim2, int newdim3 );
+    void            Resize              ( const TPointInt& size )                   { Resize ( size.X, size.Y, size.Z ); }
 
-    bool            WithinBoundary ( int    x, int    y, int    z ) const   { return   x >= 0 &&   y >= 0 &&   z >= 0 &&   x < Dim1 &&   y < Dim2 &&   z < Dim3; }
-    bool            WithinBoundary ( double x, double y, double z ) const   { return   x >= 0 &&   y >= 0 &&   z >= 0 &&   x < Dim1 &&   y < Dim2 &&   z < Dim3; }
-    bool            WithinBoundary ( const TPointInt&   p )         const   { return p.X >= 0 && p.Y >= 0 && p.Z >= 0 && p.X < Dim1 && p.Y < Dim2 && p.Z < Dim3; }
-    bool            WithinBoundary ( const TPointFloat& p )         const   { return p.X >= 0 && p.Y >= 0 && p.Z >= 0 && p.X < Dim1 && p.Y < Dim2 && p.Z < Dim3; }
-    bool            WithinBoundary ( const TPointDouble&p )         const   { return p.X >= 0 && p.Y >= 0 && p.Z >= 0 && p.X < Dim1 && p.Y < Dim2 && p.Z < Dim3; }
+    bool            WithinBoundary      ( int    x, int    y, int    z )    const   { return   x >= 0 &&   y >= 0 &&   z >= 0 &&   x < Dim1 &&   y < Dim2 &&   z < Dim3; }
+    bool            WithinBoundary      ( double x, double y, double z )    const   { return   x >= 0 &&   y >= 0 &&   z >= 0 &&   x < Dim1 &&   y < Dim2 &&   z < Dim3; }
+    bool            WithinBoundary      ( const TPointInt&   p )            const   { return p.X >= 0 && p.Y >= 0 && p.Z >= 0 && p.X < Dim1 && p.Y < Dim2 && p.Z < Dim3; }
+    bool            WithinBoundary      ( const TPointFloat& p )            const   { return p.X >= 0 && p.Y >= 0 && p.Z >= 0 && p.X < Dim1 && p.Y < Dim2 && p.Z < Dim3; }
+    bool            WithinBoundary      ( const TPointDouble&p )            const   { return p.X >= 0 && p.Y >= 0 && p.Z >= 0 && p.X < Dim1 && p.Y < Dim2 && p.Z < Dim3; }
 
-    int             XStep ( int numsteps )                          const   { return  numsteps >= Dim1 ? 1 : Round ( (double) Dim1 / numsteps ); }
-    int             YStep ( int numsteps )                          const   { return  numsteps >= Dim2 ? 1 : Round ( (double) Dim2 / numsteps ); }
-    int             ZStep ( int numsteps )                          const   { return  numsteps >= Dim3 ? 1 : Round ( (double) Dim3 / numsteps ); }
-    int             Step  ( int numsteps, bool minimum )            const   { return  minimum ? min ( XStep ( numsteps ), YStep ( numsteps ), ZStep ( numsteps ) ) : max ( XStep ( numsteps ), YStep ( numsteps ), ZStep ( numsteps ) ); }
-    TPointInt       Steps ( int numsteps )                          const   { return TPointInt ( XStep ( numsteps ), YStep ( numsteps ), ZStep ( numsteps ) ); }
+    int             XStep               ( int numsteps )                    const   { return  numsteps >= Dim1 ? 1 : Round ( (double) Dim1 / numsteps ); }
+    int             YStep               ( int numsteps )                    const   { return  numsteps >= Dim2 ? 1 : Round ( (double) Dim2 / numsteps ); }
+    int             ZStep               ( int numsteps )                    const   { return  numsteps >= Dim3 ? 1 : Round ( (double) Dim3 / numsteps ); }
+    int             Step                ( int numsteps, bool minimum )      const   { return  minimum ? min ( XStep ( numsteps ), YStep ( numsteps ), ZStep ( numsteps ) ) : max ( XStep ( numsteps ), YStep ( numsteps ), ZStep ( numsteps ) ); }
+    TPointInt       Steps               ( int numsteps )                    const   { return TPointInt ( XStep ( numsteps ), YStep ( numsteps ), ZStep ( numsteps ) ); }
 
 
     using   TArray::GetValue;
-    TypeD&          GetValue ( int i1, int i2, int i3 )             const   { return Array[ IndexesToLinearIndex ( i1, i2, i3 ) ]; }
-    TypeD           GetValue ( const TPointInt&    p )              const   { return Array[ IndexesToLinearIndex ( p ) ]; }
-    TypeD           GetValue ( const TPointFloat&  p )              const   { return Array[ IndexesToLinearIndex ( p ) ]; }
-    TypeD           GetValue ( const TPointDouble& p )              const   { return Array[ IndexesToLinearIndex ( p ) ]; }
+    TypeD&          GetValue            ( int i1, int i2, int i3 )          const   { return Array[ IndexesToLinearIndex ( i1, i2, i3 ) ]; }
+    TypeD           GetValue            ( const TPointInt&    p )           const   { return Array[ IndexesToLinearIndex ( p ) ]; }
+    TypeD           GetValue            ( const TPointFloat&  p )           const   { return Array[ IndexesToLinearIndex ( p ) ]; }
+    TypeD           GetValue            ( const TPointDouble& p )           const   { return Array[ IndexesToLinearIndex ( p ) ]; }
 
-    TypeD           GetValueChecked ( int    x, int    y, int    z                                  )   const;
-    TypeD           GetValueChecked ( const TPointInt&     p                                        )   const;
-    TypeD           GetValueChecked ( const TPointFloat&   p                                        )   const;
-    TypeD           GetValueChecked ( const TPointDouble&  p                                        )   const;
+    TypeD           GetValueChecked     ( int    x, int    y, int    z  )   const;
+    TypeD           GetValueChecked     ( const TPointInt&     p        )   const;
+    TypeD           GetValueChecked     ( const TPointFloat&   p        )   const;
+    TypeD           GetValueChecked     ( const TPointDouble&  p        )   const;
 
                                         // last dimension indexes are consecutive
     int             IndexesToLinearIndex ( int i1, int i2, int i3 )         const   { return (          i1   * Dim2 +        i2 ) * Dim3 +        i3; }
@@ -78,12 +78,12 @@ public:
     int             IndexesToLinearIndex ( const TPointFloat&  p )          const   { return ( ( (int) p.X ) * Dim2 + (int) p.Y ) * Dim3 + (int) p.Z; }
     int             IndexesToLinearIndex ( const TPointDouble& p )          const   { return ( ( (int) p.X ) * Dim2 + (int) p.Y ) * Dim3 + (int) p.Z; }
                   
-    void            LinearIndexToXYZ     ( int i, int &x, int &y, int &z )  const   { x   = LinearIndexToX ( i ); y   = LinearIndexToY ( i ); z   = LinearIndexToZ ( i );  }
-    void            LinearIndexToXYZ     ( int i, TPointFloat&  p        )  const   { p.X = LinearIndexToX ( i ); p.Y = LinearIndexToY ( i ); p.Z = LinearIndexToZ ( i );  }
-    void            LinearIndexToXYZ     ( int i, TPointDouble& p        )  const   { p.X = LinearIndexToX ( i ); p.Y = LinearIndexToY ( i ); p.Z = LinearIndexToZ ( i );  }
-    int             LinearIndexToX       ( int i )                          const   { return ( i / Dim3 ) / Dim2; }
-    int             LinearIndexToY       ( int i )                          const   { return ( i / Dim3 ) % Dim2; }
-    int             LinearIndexToZ       ( int i )                          const   { return   i % Dim3; }
+    void            LinearIndexToXYZ    ( int i, int &x, int &y, int &z )   const   { x   = LinearIndexToX ( i ); y   = LinearIndexToY ( i ); z   = LinearIndexToZ ( i );  }
+    void            LinearIndexToXYZ    ( int i, TPointFloat&  p        )   const   { p.X = LinearIndexToX ( i ); p.Y = LinearIndexToY ( i ); p.Z = LinearIndexToZ ( i );  }
+    void            LinearIndexToXYZ    ( int i, TPointDouble& p        )   const   { p.X = LinearIndexToX ( i ); p.Y = LinearIndexToY ( i ); p.Z = LinearIndexToZ ( i );  }
+    int             LinearIndexToX      ( int i )                           const   { return ( i / Dim3 ) / Dim2; }
+    int             LinearIndexToY      ( int i )                           const   { return ( i / Dim3 ) % Dim2; }
+    int             LinearIndexToZ      ( int i )                           const   { return   i % Dim3; }
 
 
     TypeD           GetMaxValue         ()                                                                  const;
@@ -107,7 +107,7 @@ public:
     void            Crop                ( const TArray3<TypeD>& fromarray, const int* origin );
 
 
-                    TArray3             ( const TArray3&        op  );
+                    TArray3<TypeD>      ( const TArray3<TypeD>& op  );
     TArray3<TypeD>& operator    =       ( const TArray3<TypeD>& op2 );
 
 
@@ -115,21 +115,22 @@ public:
 
 
     using   TArray::operator    [];                         // access O[ i ], linear space
-    TypeD&          operator    []      ( const TPointInt&    p  )  const   { return Array[ IndexesToLinearIndex ( p ) ]; }
-    TypeD&          operator    []      ( const TPointFloat&  p  )  const   { return Array[ IndexesToLinearIndex ( p ) ]; }
-    TypeD&          operator    []      ( const TPointDouble& p  )  const   { return Array[ IndexesToLinearIndex ( p ) ]; }
+    TypeD&          operator    []      ( const TPointInt&    p  )          const   { return Array[ IndexesToLinearIndex ( p ) ]; }
+    TypeD&          operator    []      ( const TPointFloat&  p  )          const   { return Array[ IndexesToLinearIndex ( p ) ]; }
+    TypeD&          operator    []      ( const TPointDouble& p  )          const   { return Array[ IndexesToLinearIndex ( p ) ]; }
 
 
     using   TArray::operator    ();                         // access O( i ), linear space
-    TypeD&          operator    ()      ( int i1, int i2, int i3 )  const   { return Array[ IndexesToLinearIndex ( i1, i2, i3 ) ]; }
-    TypeD&          operator    ()      ( const float*  p        )  const   { return Array[ IndexesToLinearIndex ( p[ 0 ], p[ 1 ], p[ 2 ] ) ]; }
-    TypeD&          operator    ()      ( const double* p        )  const   { return Array[ IndexesToLinearIndex ( p[ 0 ], p[ 1 ], p[ 2 ] ) ]; }
-    TypeD&          operator    ()      ( const TPointInt&    p  )  const   { return Array[ IndexesToLinearIndex ( p ) ]; }
-    TypeD&          operator    ()      ( const TPointFloat&  p  )  const   { return Array[ IndexesToLinearIndex ( p ) ]; }
-    TypeD&          operator    ()      ( const TPointDouble& p  )  const   { return Array[ IndexesToLinearIndex ( p ) ]; }
+    TypeD&          operator    ()      ( int i1, int i2, int i3 )          const   { return Array[ IndexesToLinearIndex ( i1, i2, i3 ) ]; }
+    TypeD&          operator    ()      ( const float*  p        )          const   { return Array[ IndexesToLinearIndex ( p[ 0 ], p[ 1 ], p[ 2 ] ) ]; }
+    TypeD&          operator    ()      ( const double* p        )          const   { return Array[ IndexesToLinearIndex ( p[ 0 ], p[ 1 ], p[ 2 ] ) ]; }
+    TypeD&          operator    ()      ( const TPointInt&    p  )          const   { return Array[ IndexesToLinearIndex ( p ) ]; }
+    TypeD&          operator    ()      ( const TPointFloat&  p  )          const   { return Array[ IndexesToLinearIndex ( p ) ]; }
+    TypeD&          operator    ()      ( const TPointDouble& p  )          const   { return Array[ IndexesToLinearIndex ( p ) ]; }
 
 
 protected:
+
     int             Dim1;
     int             Dim2;
     int             Dim3;

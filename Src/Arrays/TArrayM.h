@@ -30,47 +30,47 @@ template <class TypeD>
 class   TMultiArray :   public  TArray<TypeD>
 {
 public:
-                    TMultiArray () : TArray (), NumDims ( 0 ) {}
-                    TMultiArray ( const TArray1<int>& dims )                                    { Resize ( dims ); }
-                    TMultiArray ( int dim1 )                                                    { Resize ( dim1 ); }
-                    TMultiArray ( int dim1, int dim2 )                                          { Resize ( dim1, dim2 ); }
-                    TMultiArray ( int dim1, int dim2, int dim3 )                                { Resize ( dim1, dim2, dim3 ); }
-                    TMultiArray ( int dim1, int dim2, int dim3, int dim4 )                      { Resize ( dim1, dim2, dim3, dim4 ); }
-                    TMultiArray ( int dim1, int dim2, int dim3, int dim4, int dim5 )            { Resize ( dim1, dim2, dim3, dim4, dim5 ); }
-                    TMultiArray ( int dim1, int dim2, int dim3, int dim4, int dim5, int dim6 )  { Resize ( dim1, dim2, dim3, dim4, dim5, dim6 ); }
+                    TMultiArray         () : TArray (), NumDims ( 0 ) {}
+                    TMultiArray         ( const TArray1<int>& dims )                                    { Resize ( dims ); }
+                    TMultiArray         ( int dim1 )                                                    { Resize ( dim1 ); }
+                    TMultiArray         ( int dim1, int dim2 )                                          { Resize ( dim1, dim2 ); }
+                    TMultiArray         ( int dim1, int dim2, int dim3 )                                { Resize ( dim1, dim2, dim3 ); }
+                    TMultiArray         ( int dim1, int dim2, int dim3, int dim4 )                      { Resize ( dim1, dim2, dim3, dim4 ); }
+                    TMultiArray         ( int dim1, int dim2, int dim3, int dim4, int dim5 )            { Resize ( dim1, dim2, dim3, dim4, dim5 ); }
+                    TMultiArray         ( int dim1, int dim2, int dim3, int dim4, int dim5, int dim6 )  { Resize ( dim1, dim2, dim3, dim4, dim5, dim6 ); }
 
 
-    void            DeallocateMemory ()                                     { TArray<TypeD>::DeallocateMemory (); NumDims = 0; Dim.DeallocateMemory (); }
+    void            DeallocateMemory    ()                      { TArray<TypeD>::DeallocateMemory (); NumDims = 0; Dim.DeallocateMemory (); }
 
 
-    int             GetNumDims      ()  const               { return    NumDims; }
-//  const TArray1<int>&   GetDims   ()  const               { return    Dim; }
-    int             GetDim1         ()  const               { return    NumDims >= 1 ? Dim[ 0 ] : 0; }
-    int             GetDim2         ()  const               { return    NumDims >= 2 ? Dim[ 1 ] : 0; }
-    int             GetDim3         ()  const               { return    NumDims >= 3 ? Dim[ 2 ] : 0; }
-    int             GetDim4         ()  const               { return    NumDims >= 4 ? Dim[ 3 ] : 0; }
-    int             GetDim5         ()  const               { return    NumDims >= 5 ? Dim[ 4 ] : 0; }
-    int             GetDim6         ()  const               { return    NumDims >= 6 ? Dim[ 5 ] : 0; }
+    int             GetNumDims          ()  const               { return    NumDims; }
+//  const TArray1<int>&   GetDims       ()  const               { return    Dim; }
+    int             GetDim1             ()  const               { return    NumDims >= 1 ? Dim[ 0 ] : 0; }
+    int             GetDim2             ()  const               { return    NumDims >= 2 ? Dim[ 1 ] : 0; }
+    int             GetDim3             ()  const               { return    NumDims >= 3 ? Dim[ 2 ] : 0; }
+    int             GetDim4             ()  const               { return    NumDims >= 4 ? Dim[ 3 ] : 0; }
+    int             GetDim5             ()  const               { return    NumDims >= 5 ? Dim[ 4 ] : 0; }
+    int             GetDim6             ()  const               { return    NumDims >= 6 ? Dim[ 5 ] : 0; }
 
 
-    void            LinearToIndexes ( int linindex, TArray1<int>& indexes )     const;
-    int             IndexesToLinear ( const TArray1<int>& indexes )             const;
+    void            LinearToIndexes     ( int linindex, TArray1<int>& indexes )     const;
+    int             IndexesToLinear     ( const TArray1<int>& indexes )             const;
 
 
-    void            ResetMemory     ()                      { TMemory::ResetMemory (); }    // NOT deallocating, just zero-ing containers
-    void            Resize  ( const TArray1<int> &dims );   // general purpose - any number of dimensions
-    void            Resize  ( int dim1 );                   // series of specialized Set for lowest dimensions
-    void            Resize  ( int dim1, int dim2 );
-    void            Resize  ( int dim1, int dim2, int dim3 );
-    void            Resize  ( int dim1, int dim2, int dim3, int dim4 );
-    void            Resize  ( int dim1, int dim2, int dim3, int dim4, int dim5 );
-    void            Resize  ( int dim1, int dim2, int dim3, int dim4, int dim5, int dim6 );
+    void            ResetMemory         ()                      { TMemory::ResetMemory (); }    // NOT deallocating, just zero-ing containers
+    void            Resize              ( const TArray1<int> &dims );   // general purpose - any number of dimensions
+    void            Resize              ( int dim1 );                   // series of specialized Set for lowest dimensions
+    void            Resize              ( int dim1, int dim2 );
+    void            Resize              ( int dim1, int dim2, int dim3 );
+    void            Resize              ( int dim1, int dim2, int dim3, int dim4 );
+    void            Resize              ( int dim1, int dim2, int dim3, int dim4, int dim5 );
+    void            Resize              ( int dim1, int dim2, int dim3, int dim4, int dim5, int dim6 );
 
 
     void            Filter  ( int dim, FilterTypes filtertype, int num = 1 );
 
 
-                    TMultiArray         ( const TMultiArray&        op  );
+                    TMultiArray<TypeD>  ( const TMultiArray<TypeD>& op  );
     TMultiArray<TypeD>& operator    =   ( const TMultiArray<TypeD>& op2 );
 
     using   TArray::operator    =;

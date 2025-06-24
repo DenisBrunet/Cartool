@@ -28,24 +28,24 @@ template <class TypeD>
 class   TSetArray2      : public TArray2<TypeD>
 {
 public:
-                    TSetArray2 ();
-                    TSetArray2 ( int numplanes, int dim1, int dim2 );
+                        TSetArray2          ();
+                        TSetArray2          ( int numplanes, int dim1, int dim2 );
 
 
-    size_t          TotalMemorySize ()      const           { return MaxPlanes * MemorySize (); }
+    size_t              TotalMemorySize     ()  const           { return MaxPlanes * MemorySize (); }
 
-    void            DeallocateMemory ();
-
-
-    int             GetTotalLinearDim ()    const           { return MaxPlanes * LinearDim; }   // LinearDim is only a single plane long
-    int             GetMaxPlanes ()         const           { return MaxPlanes; }
-    int             GetCurrentPlane ()      const           { return CurrentPlane; }
-    void            SetCurrentPlane ( int p );      // !NOT thread safe!
-
-    void            Resize  ( int newnumplanes, int newdim1, int newdim2 );
+    void                DeallocateMemory    ();
 
 
-                    TSetArray2              ( const TSetArray2&         op  );
+    int                 GetTotalLinearDim   ()  const           { return MaxPlanes * LinearDim; }   // LinearDim is only a single plane long
+    int                 GetMaxPlanes        ()  const           { return MaxPlanes; }
+    int                 GetCurrentPlane     ()  const           { return CurrentPlane; }
+    void                SetCurrentPlane     ( int p );      // !NOT thread safe!
+
+    void                Resize              ( int newnumplanes, int newdim1, int newdim2 );
+
+
+                        TSetArray2<TypeD>   ( const TSetArray2<TypeD>&  op  );
     TSetArray2<TypeD>&  operator    =       ( const TSetArray2<TypeD>&  op2 );
     TSetArray2<TypeD>&  operator    =       ( const TArray2<TypeD>&     op2 );
 
@@ -65,6 +65,7 @@ public:
 
 
 protected:
+
     int             MaxPlanes;          // "third" dimension
     int             CurrentPlane;
     TypeD*          ArrayOrigin;        // original origin of the series of slices

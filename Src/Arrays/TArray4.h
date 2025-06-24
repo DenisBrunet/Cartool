@@ -28,31 +28,31 @@ template <class TypeD>
 class   TArray4 :   public  TArray<TypeD>
 {
 public:
-                    TArray4 () : TArray (), Dim1 ( 0 ), Dim2 ( 0 ), Dim3 ( 0 ), Dim4 ( 0 ) {}
-                    TArray4 ( int dim1, int dim2, int dim3, int dim4 );
+                    TArray4             () : TArray (), Dim1 ( 0 ), Dim2 ( 0 ), Dim3 ( 0 ), Dim4 ( 0 ) {}
+                    TArray4             ( int dim1, int dim2, int dim3, int dim4 );
 
 
-    void            DeallocateMemory ()                                     { TArray<TypeD>::DeallocateMemory (); Dim1 = 0; Dim2 = 0; Dim3 = 0; Dim4 = 0; }
+    void            DeallocateMemory    ()                                          { TArray<TypeD>::DeallocateMemory (); Dim1 = 0; Dim2 = 0; Dim3 = 0; Dim4 = 0; }
 
 
-    int             GetDim1 ()                      const   { return Dim1; }
-    int             GetDim2 ()                      const   { return Dim2; }
-    int             GetDim3 ()                      const   { return Dim3; }
-    int             GetDim4 ()                      const   { return Dim4; }
-    int             GetDim  ( int axis )            const   { return axis == 0 ? Dim1 : axis == 1 ? Dim2 : axis == 2 ? Dim3 : Dim4; }
-    void            GetDims ( int *dims )           const   { dims[ 0 ] = Dim1; dims[ 1 ] = Dim2; dims[ 2 ] = Dim3; dims[ 3 ] = Dim4;  }
+    int             GetDim1             ()                                  const   { return Dim1; }
+    int             GetDim2             ()                                  const   { return Dim2; }
+    int             GetDim3             ()                                  const   { return Dim3; }
+    int             GetDim4             ()                                  const   { return Dim4; }
+    int             GetDim              ( int axis )                        const   { return axis == 0 ? Dim1 : axis == 1 ? Dim2 : axis == 2 ? Dim3 : Dim4; }
+    void            GetDims             ( int *dims )                       const   { dims[ 0 ] = Dim1; dims[ 1 ] = Dim2; dims[ 2 ] = Dim3; dims[ 3 ] = Dim4;  }
 
-    void            Resize  ( int newdim1, int newdim2, int newdim3, int newdim4 );
+    void            Resize              ( int newdim1, int newdim2, int newdim3, int newdim4 );
 
 
     using   TArray::GetValue;
-    TypeD&          GetValue ( int i1, int i2, int i3, int i4 )                     { return Array[ IndexesToLinearIndex ( i1, i2, i3, i4 ) ]; }
+    TypeD&          GetValue            ( int i1, int i2, int i3, int i4 )          { return Array[ IndexesToLinearIndex ( i1, i2, i3, i4 ) ]; }
 
                                  // row-major - last dimension indexes are consecutive
     int             IndexesToLinearIndex ( int i1, int i2, int i3, int i4 ) const   { return ( ( i1 * Dim2 + i2 ) * Dim3 + i3 ) * Dim4 + i4; }
 
 
-                    TArray4             ( const TArray4&        op );
+                    TArray4<TypeD>      ( const TArray4<TypeD>& op );
     TArray4<TypeD>& operator    =       ( const TArray4<TypeD>& op2 );
 
     using   TArray::operator    =;
@@ -65,6 +65,7 @@ public:
 
 
 protected:
+
     int             Dim1;
     int             Dim2;
     int             Dim3;

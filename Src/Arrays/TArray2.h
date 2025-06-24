@@ -28,25 +28,25 @@ template <class TypeD>
 class   TArray2 :   public  TArray<TypeD>
 {
 public:
-                    TArray2 () : TArray (), Dim1 ( 0 ), Dim2 ( 0 ) {}
-                    TArray2 ( int dim1, int dim2 );
+                    TArray2             () : TArray (), Dim1 ( 0 ), Dim2 ( 0 ) {}
+                    TArray2             ( int dim1, int dim2 );
 
 
-    void            DeallocateMemory ()                                     { TArray<TypeD>::DeallocateMemory (); Dim1 = 0; Dim2 = 0; }
+    void            DeallocateMemory    ()                          { TArray<TypeD>::DeallocateMemory (); Dim1 = 0; Dim2 = 0; }
 
 
-    int             GetDim1 ()          const               { return Dim1; }
-    int             GetDim2 ()          const               { return Dim2; }
+    int             GetDim1             ()          const           { return Dim1; }
+    int             GetDim2             ()          const           { return Dim2; }
 
-    int             MaxSize ()          const               { return max ( Dim1, Dim2 ); }
-    int             MinSize ()          const               { return min ( Dim1, Dim2 ); }
+    int             MaxSize             ()          const           { return max ( Dim1, Dim2 ); }
+    int             MinSize             ()          const           { return min ( Dim1, Dim2 ); }
 
-    virtual void    Resize  ( int newdim1, int newdim2 );
+    virtual void    Resize              ( int newdim1, int newdim2 );
 
 
     using   TArray::GetValue;
-    TypeD&          GetValue ( int i1, int i2 )             { return Array[ IndexesToLinearIndex ( i1, i2 ) ]; }
-    const TypeD&    GetValue ( int i1, int i2 ) const       { return Array[ IndexesToLinearIndex ( i1, i2 ) ]; }
+          TypeD&    GetValue            ( int i1, int i2 )         { return Array[ IndexesToLinearIndex ( i1, i2 ) ]; }
+    const TypeD&    GetValue            ( int i1, int i2 ) const   { return Array[ IndexesToLinearIndex ( i1, i2 ) ]; }
 
                                         // last dimension indexes are consecutive
     int             IndexesToLinearIndex ( int i1, int i2 )             const   { return i1 * Dim2 + i2; }
@@ -65,21 +65,22 @@ public:
     void            Insert              ( const TArray2<TypeD>& fromarray, const int* origin = 0 );
 
 
-                    TArray2             ( const TArray2 &op );
+                    TArray2<TypeD>      ( const TArray2<TypeD> &op );
     TArray2<TypeD>& operator    =       ( const TArray2<TypeD> &op2 );
 
     using   TArray::operator    =;
                                                             
     using   TArray::operator    [];                         // access O[ i ], linear space - !different from TypeD* operator below!
-    TypeD*          operator    []      ( int i )                   { return Array + i * Dim2; }    // returns a pointer to row i, to get a full line with  array[ rowi ], or using the old syntax  array[ rowi ][ colj ]
+          TypeD*    operator    []      ( int i )                   { return Array + i * Dim2; }    // returns a pointer to row i, to get a full line with  array[ rowi ], or using the old syntax  array[ rowi ][ colj ]
     const TypeD*    operator    []      ( int i ) const             { return Array + i * Dim2; }
 
     using   TArray::operator    ();                         // access O( i ), linear space
-    TypeD&          operator    ()      ( int i1, int i2 )          { return Array[ IndexesToLinearIndex ( i1, i2 ) ]; }    // access O(x, y)
+          TypeD&    operator    ()      ( int i1, int i2 )          { return Array[ IndexesToLinearIndex ( i1, i2 ) ]; }    // access O(x, y)
     const TypeD&    operator    ()      ( int i1, int i2 )  const   { return Array[ IndexesToLinearIndex ( i1, i2 ) ]; }
 
 
 protected:
+
     int             Dim1;
     int             Dim2;
 
