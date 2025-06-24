@@ -12,17 +12,6 @@
 .auto-style2 {
 	margin-left: 40px;
 }
-.auto-style3 {
-	font-family: Verdana;
-	font-size: 12px;
-	color: #1155E0;
-	font-weight: bold;
-	font-style: normal;
-	padding: 0px;
-	margin-right: 0px;
-	margin-top: 3px;
-	margin-bottom: 3px;
-}
 .auto-style4 {
 	font-family: Verdana,Arial,Helvetica;
 	font-size: 12px;
@@ -33,7 +22,7 @@
 	padding: 0px;
 	line-height: 1.4;
 }
-</style>
+  </style>
 
  </HEAD>
 
@@ -65,13 +54,10 @@
                  <strong><em>.ris</em></strong>
                  files
              </a> can subsequently be used <strong>
-                 <a href="esi-display.html">for display</a>
-             </strong>,
+                 <a href="esi-display.html">for display</a></strong>,
              <A HREF="computing-statistics.html#which-cases">
                  <strong>
-                     for statistics
-                 </strong>
-             </A>, or even <strong>
+			 statistics</strong></A>, or even <strong>
                  <a href="ris-to-volumes.html">converted to volumes</a>
              </strong> for fMRI
              comparison.
@@ -83,32 +69,24 @@
          <PRE><a href="https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2019.00325/full"><strong>&quot;EEG Source Imaging: A Practical Review of the Analysis Steps&quot;</strong>,
 C.M. Michel, D. Brunet,
 <em>Front. Neurol.</em>, 04 April 2019</a></PRE>
-         <P class="mvd-h6">
-             <a href="#dialog">Computing RIS Dialog</a>
-         </P>
-         <P class="mvd-h6">
-             <A HREF="#technical-points-and-hints">Technical points &amp; hints</A>
-         </P>
-         <P class="mvd-h6">
-             <a href="#consistency-checks">Checking the files consistency</a>
-         </P>
-         <P class="mvd-h6">
-             <A HREF="#spatial-filter">Spatial Filter</A>
-         </P>
-         <P class="mvd-h6">
-             <a href="#z-score">Background normalization</a>
-         </P>
-         <P class="mvd-h6">
-             <a href="#templatize">Templatize results</a>
-         </P>
-         <P class="mvd-h6">
-             <A HREF="#frequency-files">Frequency files</A>
-         </P>
-         <P class="mvd-h6">
-             <a href="#results">Results</a>
-         </P>
+         <H5>
+             <br>
+             <a href="#dialog"><em>Computing RIS</em>, from the Dialog</a><br>
+             <a href="#cli"><em>Computing RIS</em>, from the Command-Line Interface (CLI)</a><br>
+             <A HREF="#technical-points-and-hints">Technical points &amp; hints</A><br>
+         </H5>
+         <H6>
+             <a href="#consistency-checks">Checking the files consistency</a><br>
+             <A HREF="#spatial-filter">Spatial Filter</A><br>
+             <a href="#z-score">Background normalization</a><br>
+             <a href="#templatize">Templatize results</a><br>
+             <A HREF="#frequency-files">Frequency files</A><br>
+         </H6>
+         <H5>
+             <a href="#results">Results</a><br>
+         </H5>
          <P class="mvd-h2">
-             <a name="dialog"></a>Computing RIS Dialog
+             <a name="dialog"></a><em>Computing RIS</em>, from the Dialog
          </P>
          <P>
              Called from the <FONT FACE="Arial Black,Arial,Helvetica">
@@ -120,7 +98,7 @@ C.M. Michel, D. Brunet,
              appears:
          </P>
          <P class="auto-style1">
-             <img alt="Computing RIS Dialog" height="821" src="images/compris.dialog.png" width="697">
+             <img alt="Computing RIS Dialog" src="images/compris.dialog.png"  WIDTH="640">
          </P>
          <P>
              &nbsp;
@@ -134,9 +112,8 @@ C.M. Michel, D. Brunet,
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
                          You can quickly set the most important parameters according to some
-                         predefined scenarios. You are then free to fine-tune any parameter, of
-                         course.
-                 </TD>
+                         predefined scenarios. You can then fine-tune any 
+						 (allowed) parameter to your liking.</TD>
              </tr>
              <TR>
                  <TD VALIGN=TOP style="width: 32%"></TD>
@@ -145,75 +122,95 @@ C.M. Michel, D. Brunet,
              <TR>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         <B>(1) Groups of EEG Files</B>
+                         <B>(1) Groups of EEG &amp; Inverse Files</B>
                  </TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         &nbsp;
-                 </TD>
+                         Here you can add / remove entire groups of files, 
+						 mainly EEG but also individual
+						 <a href="computing-inverse-solution-matrices.html">
+						 Inverse Matrices files.</a><P>
+                         <strong>The most pratical way to add groups is by using
+						 </strong><em><strong>Drag &amp; Drop</strong></em><strong> 
+						 from a File Explorer:</strong> select the EEG and/or 
+						 inverse matrix files, and simply drop them in this box!</TD>
              </TR>
              <tr>
-                 <TD VALIGN=TOP style="width: 32%" class="mvd-p">One Group of Files Contains:</TD>
+                 <TD VALIGN=TOP style="width: 32%" class="mvd-p">Manage / 
+				 Display Groups of Files:</TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         Use this preset to specify how Cartool has to understand each group of
-                         files that you give it:
-                     </P>
-                     <ul>
-                         <li>
-                             All Subjects, One Condition: a group of files holds all subjects at
-                             once, for 1 condition only
-                         </li>
-                         <li>
-                             1 Subject, All Conditions: a group of files holds only 1 subvject,
-                             and all conditions together
-                         </li>
-                         <li>
-                             1 Subject, All Epochs and All Conditions: drop all epochs, all
-                             conditions for a single subject
-                         </li>
-                     </ul>
+                         <strong><em>A very important setting</em>: it specifies 
+						 how a newly added group of files will be considered. It 
+						 also change the summary box below</strong>.</TD>
+             </tr>
+			 <tr>
+                 <TD VALIGN=TOP style="width: 32%" class="mvd-p">
+				 <p class="auto-style2">Per Condition:</p>
+				 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         You can still change the preset even after the files have been dropped
-                         in.
+                         A new group of files will be considered as <em><strong>
+						 n</strong></em><strong> subjects, 1 condition</strong>.
                  </TD>
+             </tr>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%" class="mvd-p">
+				 <p class="auto-style2">Per Subject:</p>
+				 </TD>
+                 <TD WIDTH="74%" VALIGN=TOP>
+                     <P>
+                         A new group of files will be considered as <strong>1 
+						 subject, </strong><em><strong>n</strong></em><strong> 
+						 conditions</strong>.</TD>
              </tr>
              <TR>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         Add New Group of Files
-                 </TD>
+                         Add New Condition<br>/ Add New Subject</TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         Enter a new group <strong>EEG</strong> or <strong>
-                             <A HREF="#frequency-files">Frequency</A>
-                         </strong> files.
-                     <P>
+                         Click this button if you want to add a new group of 
+						 files without using <em>Drag &amp; Drop</em>.<P>
+                         Note that the button label will change according to 
+						 current <em>Per Condition / Per Subject</em> state!<P>
+                         You can conveniently add the individual inverse matrix 
+						 file at the same time!<P>
+                         Upon completion,
                          <A HREF="#consistency-checks">
-                             Cartool will check that the new group of
+                             Cartool will check to see if the new group of
                              files is compatible
-                         </A> with the existing ones, and will complain if
-                         needed...
+                         </A> with previous ones, if any.
                  </TD>
              </TR>
              <TR>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         Remove Last Group
+                         Remove Last Condition<br>/&nbsp; Remove Last Subject</TD>
+                 <TD WIDTH="73%" VALIGN=TOP>
+                     <P>
+                         Similarly to the Add button above, the label will 
+						 change with the current <em>Per Condition / Per Subject</em> 
+						 state.
+                 </TD>
+             </TR>
+             <tr>
+                 <TD VALIGN=TOP style="width: 32%">
+                     <P>
+                         Clear All Inverses
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         Does what it says.
-                 </TD>
-             </TR>
+                         Clears out all inverse 
+						 files.</TD>
+             </tr>
              <TR>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         Clear All Groups
-                 </TD>
+                         Clear All Inverses and EEGs</TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         Clear out all the groups at once.
+                         Clears out everything.
                  </TD>
              </TR>
              <TR>
@@ -223,10 +220,12 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         You can direclty retrieve the lists of groups previously (see below).
+                         You can 
+						 reload the list of EEGs and Inverses previously saved 
+						 to file (see below).
                      </P>
                      <P>
-                         See also Drag &amp; Drop.
+                         See also <em>Drag &amp; Drop</em>.
                  </TD>
              </TR>
              <TR>
@@ -236,11 +235,10 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         You can save the lists of current groups into a file, in case you
-                         want to re-use them (much recommended!).
+                         Save the current list of EEGs and optional individual 
+						 Inverses into a file (<strong>.csv</strong> or <strong>
+						 .txt</strong>).
                      </P>
-                     <P>
-                         See the file formats available.
                  </TD>
              </TR>
              <tr>
@@ -250,31 +248,36 @@ C.M. Michel, D. Brunet,
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         <em>(List of current groups of files)</em>
+                         <em>(Summary box)</em>
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         For your entertainment and great pleasure, you can here contemplate your
-                         life and a summary of all the groups of files you already added to this
-                         sub-box.
+                         This box recaps <strong>your current list of EEG files</strong>:
+					 <ul>
+						 <li>If <em>Per Condition</em> is selected, then each 
+						 line shows a single condition</li>
+						 <li>if <em>Per Subject</em> is selected, then each line 
+						 shows a single subject</li>
+					 </ul>
+					 <P>
+					 	  It also adds information about the <strong>Inverse 
+						  Matrix files</strong>:
+					 <ul>
+						 <li>Either the single, common Inverse Matrix being used</li>
+						 <li>Or each and every individual Inverse Matrix for 
+						 each subject</li>
+					 </ul>
                  </TD>
-             </tr>
-             <tr>
-                 <TD VALIGN=TOP style="width: 32%"></TD>
-                 <TD WIDTH="74%" VALIGN=TOP></TD>
              </tr>
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         Number of Subjects:
-                     <P>
-                         Number of conditions:
-                 </TD>
+                         &nbsp;
+                         Number of Subjects<br>x Number of Conditions<br>x Number of Inverses</TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         A summary of what Cartool understands in terms of subjects and
-                         conditions.
-                 </TD>
+                         Also a recap of the current number subjects / 
+						 conditions / inverses so you know where you are.</TD>
              </tr>
              <tr>
                  <TD VALIGN=TOP style="width: 32%"></TD>
@@ -287,7 +290,8 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         &nbsp;
+                         &nbsp;You can simply <em>
+						 Drag &amp; Drop</em> a <strong>.xyz</strong> file here!
                  </TD>
              </tr>
              <tr>
@@ -315,7 +319,7 @@ C.M. Michel, D. Brunet,
                              Cartool will check that electrodes
                              coordinates is compatible
                          </A> with the other files, and will complain if
-                         needed...
+                         otherwise...
                  </TD>
              </tr>
              <tr>
@@ -329,7 +333,9 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         &nbsp;
+                         &nbsp;You can simply <em>Drag &amp; Drop</em> one or 
+						 multiple <strong>.is</strong> 
+						 files here!
                  </TD>
              </tr>
              <tr>
@@ -339,27 +345,39 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         This one input is mandatory, so give one of the
-                         <a href="computing-inverse-solution-matrices.html">inverse matrix generated here</a>.
-                     <P>
+                         This input is 
+						 of course mandatory, so give either:<ul>
+						 <li>1
+						 <a href="computing-inverse-solution-matrices.html">
+						 Inverse Matrix file</a>, that will be common to all 
+						 subjects</li>
+						 <li><strong><em>New</em></strong> As many
+						 <a href="computing-inverse-solution-matrices.html">
+						 Inverse Matrix files</a> as there are subjects</li>
+					 </ul>
+					 <P>
+                         Any other case is forbidden, like an incomplete list of 
+						 individual matrices!<P>
                          <A HREF="#consistency-checks">
                              Cartool will check that inverse matrix is
                              compatible
-                         </A> with the other files, and will complain if needed...
+                         A> wiwith the other files, and will complain 
+						 otherwise...
                  </TD>
              </tr>
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         <A NAME="results-type"></A>Results Type:
+                         <A NAME="results-type"></A><strong>Final</strong> Results Type:
                  </TD>
                  <TD WIDTH="74%" VALIGN=TOP>
-                     <P>The type of results to be actually saved.<P>
-                         Inverse solutions produces
-                         dipoles for each solution points, each dipole therefor coding for both
-                         orientation and power. You can specify what to do with these vecotrial
-                         information.
-                 </TD>
+                     <P>The <strong>final data type</strong> of the data being actually saved 
+					 to file.<P>
+                         Internally and for most of intermediate steps, Inverse 
+						 results are actually 3D dipoles. But at some points, 
+						 you might be interested to ditch the vectorial 
+						 component and keep only the norm / intensity / power of 
+						 said dipoles.</TD>
              </tr>
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
@@ -368,9 +386,8 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         Only the <strong>norm of each dipole</strong> will be saved.
-                     <P>
-                         <em>This is what you need 99% of the time.</em>
+                         Only the <strong>norm of each dipole</strong> will be saved.<P>
+                         <em>This is what you need 99% of the time.em>
                  </TD>
              </tr>
              <tr>
@@ -380,9 +397,10 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         The <strong>complete vector of each dipole</strong> will be saved.
+                         ThThe <strong>full vectorial 
+						 information for each dipole</strong> will be saved.
                      <P>
-                         <em>Not recommended</em> unless you know what you are doing. Also, it
+                         <em>Not recommendedem> unless you know what you are doing. Also, it
                          takes more space on the disk.
                  </TD>
              </tr>
@@ -412,16 +430,15 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
-                         <strong>Data is tested against all available regularizations</strong>.
-                         Then the optimal one is picked: the lowest regularization factor that
-                         doesn't change much the results.
+                         <strong>DaData is tested against all possible regularizations</strong>, 
+						 and the one with the optimal L-Corner criterion is picked: 
+						 the lowest regularization factor where results do not 
+						 change much anymore for the next value.
                      <P>
                          <em>
                              <strong>
                                  This is the
-                                 recommended option
-                             </strong>
-                         </em>.
+                                 recommended option!strong></em>
                  </TD>
              </tr>
              <tr>
@@ -476,11 +493,11 @@ C.M. Michel, D. Brunet,
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         Compute Z-Score
+                         CoCompute Z-Score
                  </TD>
                  <TD WIDTH="70%" VALIGN=TOP>
                      <P>
-                         Compute the Z-Scores every time.
+                         Systematically compute the Z-Scores.
                  </TD>
              </tr>
              <tr>
@@ -490,9 +507,10 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="70%" VALIGN=TOP>
                      <P>
-                         Try to reload the Z-Score factors from existing files. Files should match
-                         the inverse name and regularization, and of course, subjects' names.
-                 </TD>
+                         Try reloading the Z-Score factors from existing files. Files should match
+                         the inverse name and regularization, and of course, subjects' names.<P>
+                         If the retrieval fails, then the factors will be 
+						 computed from scratch!</TD>
              </tr>
              <tr>
                  <TD VALIGN=TOP style="width: 32%"></TD>
@@ -501,14 +519,13 @@ C.M. Michel, D. Brunet,
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         <strong><a href="#templatize">Templatize (per Map):</a></strong>
+                         <strong><a href="#templatize">Templatize (per Map):a></strong>
                  </TD>
                  <TD WIDTH="70%" VALIGN=TOP>
                      <P>
-                         Apply some sort of normalization to output only <strong>
+                         ApApply some sort of normalization to output only <strong>
                              templates of
-                             activations
-                         </strong>, <strong>stripping the power component out</strong>.
+                             activations</strong>, <strong>stripping the power component outstrong>.
                  </TD>
              </tr>
              <tr>
@@ -619,7 +636,8 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         Each input file will have a one-to-one corresponding output <strong>
+                         EaEach 
+						 and every input file will have a corresponding <strong>
                              <a href="files-formats-cartool.html#ris">
                                  <em>.ris</em>
                              </a>
@@ -634,42 +652,45 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         All Epochs will have a corresponding&nbsp; <strong>
+                         If Epochs are relevant to the current preset, this will 
+						 save their corresponding <strong>
                              <a href="files-formats-cartool.html#ris">
                                  <em>.ris</em>
                              </a>
                          </strong>
-                         file, which means, that could be <em>huge</em>.
+                         files.
+                 	<P>
+                         <em>Not recommended</em>, as the number and size of 
+						 files will be <em>huge</em>.
                  </TD>
              </tr>
              <tr>
                  <TD VALIGN=TOP style="width: 32%" class="auto-style2">
                      <P class="auto-style2">
-                         Computing Grand Averages
-                 </TD>
+                         Groups Grand Averages                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         This option, usually associated with ERP experiments, will gracefully
+                         TThis option, usually associated with ERP experiments, will gracefully
                          compute the <strong>
                              average <a href="files-formats-cartool.html#ris"><em>.ris</em></a>
-                             of each condition
-                         </strong>.
+                             of each condition</strong>.
                      <P>
-                         It will work correctly only if all the files have exactly the same
-                         lengths, across all conditions and all subjects.
+                         To work successfully, all files should have exactly the same
+                         duration, across all conditions and all subjects.
                  </TD>
              </tr>
              <tr>
                  <TD VALIGN=TOP style="width: 32%" class="auto-style2">
                      <P class="auto-style2">
-                         Computing Clusters Centroids
+                         Clusters Templates
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         This option is tailored for clusters of data (from the Fitting f.ex.). It
-                         will compute the <strong>mean template across each cluster of data</strong>. This
-                         might be even the only results of interest in that specific case...
-                 </TD>
+                         This option aims at computing the <strong>template 
+						 sources</strong> for the
+						 <a href="microstates-back-fitting-templates.html">Back-Fitting 
+						 processing</a>, using the optionally saved Clusters of 
+						 Data.</TD>
              </tr>
              <tr>
                  <TD VALIGN=TOP style="width: 32%" class="auto-style2">
@@ -678,8 +699,8 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         Save the Z-Score factors to file. This could be handy in case of
-                         re-computation by just reloading them - these factors take a bit of time
+                         Saving the Z-Score factors to file.<P>
+                         This could come in handy for any ESI re-computation by just reloading them - these factors take a bit of time
                          to compute...
                  </TD>
              </tr>
@@ -690,7 +711,7 @@ C.M. Michel, D. Brunet,
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
-                         <B>Process</B>
+                         <B>Process
                  </TD>
                  <TD WIDTH="70%" VALIGN=TOP>
                      <P>
@@ -724,6 +745,13 @@ C.M. Michel, D. Brunet,
                  </TD>
              </tr>
          </TABLE>
+
+		 <P class="mvd-h2">
+             <a name="cli"></a><em>Computing RIS</em>, from the Command-Line Interface (CLI)
+         </P>
+
+         <em>
+
          <P class="mvd-h2">
              <A NAME="technical-points-and-hints"></A>Computing RIS - Technical points &amp; hints
          </P>
