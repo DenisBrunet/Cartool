@@ -233,7 +233,7 @@ C.M. Michel, D. Brunet,
          <H6>
 			 <a href="#cli-specifying-eeg">Specifying the input EEG files</a><br>
 			 <a href="#cli-specifying-inverses">Specifying the input Inverse Matrix files</a><br>
-			 <a href="#cli-examples">Various command-line examples</a><br>
+			 <a href="#cli-examples">CLI Examples</a><br>
          </H6>
          <H5>
              <A HREF="#technical-points-and-hints">Technical points &amp; hints</A><br>
@@ -957,19 +957,24 @@ Options:
 -h,--help 			This message</pre>
          <p>
              &nbsp;</p>
-		<h4>
-             <a name="cli-specifying-eeg"></a>Specifying the input EEG files</h4>
+		<h3>
+             <a name="cli-specifying-eeg"></a>Specifying the input EEG files</h3>
 		<p>
              There are 
 			 2 <em>mutually exclusive</em> ways to specify the files to be 
-			 processed. One is by using the usual command-line
-			 <a href="command-line-interface.html#syntax"><strong>&quot;--&quot; 
-			 option</strong></a>, the other one is by using the <strong><em>--listfiles</em></strong> 
-			 option.</p>
+			 processed:</p>
+		<ul>
+			<li>One is by using the usual command-line
+			<a href="command-line-interface.html#syntax"><strong>&quot;--&quot; 
+			 option</strong></a></li>
+			<li>The other one is by using the <strong><em>--listfiles</em></strong> 
+			option</li>
+		</ul>
 		<p>
              &nbsp;</p>
+		<h4>
+             EEG files on the command-line</h4>
 		<p>
-             1)
              You can provide the EEG files at the <strong>end of the 
 			 command-line, after the </strong>
 			 <a href="command-line-interface.html#syntax"><strong>&quot;--&quot; part</strong></a>. 
@@ -984,8 +989,10 @@ Options:
    &quot;Avg AdrienRISE2vu.V2vu.Recut.sef&quot; &quot;Avg AdrienRISE3.V3.Recut.sef&quot;</strong></pre>
          <P>
              &nbsp;</P>
+		<h4>
+             EEG files from a <strong>.csv</strong> file</h4>
 		<p>
-             2) You can use the <strong><em>--listfiles</em></strong> 
+             You can use the <strong><em>--listfiles</em></strong> 
 			 option to provide a <a href="#cli-specifying-eeg"><strong>.csv </strong>file</a>. 
 			 This file enumerates <strong>all subjects, 
 			 all conditions</strong>, and <a href="#cli-specifying-inverses">optionally some individual inverse 
@@ -1017,25 +1024,30 @@ Options:
 		<ul>
 			<li>Make sure that all paths are absolute, and that all files exist!</li>
 			<li>The <strong>.csv list</strong> and <strong>the explicit 
-			command-line</strong> ways <strong>are mutually exclusive</strong>.</li>
+			command-line</strong> options <strong>are mutually exclusive</strong>.</li>
 			<li>See the <a href="#cli-specifying-inverses">section about 
 			specifying the inverse matrices</a>.</li>
 		</ul>
          <p>
              &nbsp;</p>
-		<h4>
+		<h3>
              <a name="cli-specifying-inverses"></a>Specifying the input Inverse 
-			 Matrix file(s)</h4>
+			 Matrix file(s)</h3>
 		<p>
              There are 2 <em>non-mutually exclusive</em> ways to 
-			 specify the inverse matrix file(s). One is by using the
-			 <strong><em>--isfile</em></strong> option, the other one is by 
-			 using the <strong><em>--listfiles</em></strong> option, or both can 
-			 be combined together.</p>
+			 specify the inverse matrix file(s):</p>
+		<ul>
+			<li>One is by using the <strong><em>--isfile</em></strong> option</li>
+			<li>The other one is by 
+			 using the <strong><em>--listfiles</em></strong> option</li>
+			<li>Both can be combined together</li>
+		</ul>
 		<p>
              &nbsp;</p>
+		<h4>
+             Single Inverse Matrix</h4>
 		<p>
-             1) You can provide a <strong>single inverse matrix file</strong> with 
+             You can provide a <strong>single inverse matrix file</strong> with 
 			 the <strong><em>--isfile</em></strong> option. <strong>This 
 			 matrix will be used for this single subject</strong>:</p>
          <pre>cartool64.exe computingris --preset=ErpSubjectsAverages <strong>--isfile=LORETA.is</strong> --type=norm --savingsubjects
@@ -1043,8 +1055,10 @@ Options:
     &quot;Avg AdrienRISE2vu.V2vu.Recut.sef&quot; &quot;Avg AdrienRISE3.V3.Recut.sef&quot;</pre>
          <P>
              &nbsp;</P>
+		<h4>
+             Individual Inverse Matrices</h4>
 		<P>
-             2) You can use the <strong><em>--listfiles</em></strong> option to provide a <a href="#cli-specifying-eeg"><strong>.csv</strong> 
+             You can use the <strong><em>--listfiles</em></strong> option to provide a <a href="#cli-specifying-eeg"><strong>.csv</strong> 
 			 file</a>. This file can contains both the <strong>subjects' EEGs</strong>
 			 <em>and</em> the <strong>subjects' Inverse Matrix files</strong>.
 			 <strong>These individual matrices will therefor be used for each subject
@@ -1052,17 +1066,20 @@ Options:
          <pre>cartool64.exe computingris --preset=ErpSubjectsAverages <strong>--listfiles=&quot;ListCondition1.csv&quot;</strong>
 --type=norm --savingsubjects --savinggrandaverages</pre>
          <P>
-             and&nbsp; <em>ListCondition1.csv</em> file listing both EEGs and 
-			 Inverse Matrix files for each subject:</P>
+             with the <em>ListCondition1.csv</em> file listing both the <strong>EEG
+			 </strong>and 
+			 the <strong>Inverse Matrix files</strong> for each subject (scroll 
+			 to the right):</P>
 		<pre>numfiles,file1,file2,file3,file4,inverse
 4,E:\Data\Avg AdrienRISE1.V1.Recut.sef,E:\Data\Avg AdrienRISE2pv.V2pv.Recut.sef,E:\Data\Avg AdrienRISE2vu.V2vu.Recut.sef,E:\Data\Avg AdrienRISE3.V3.Recut.sef,E:\Data\Inverses\Adrien.LORETA.is
 4,E:\Data\Avg CelineRISE1.V1.Recut.sef,E:\Data\Avg CelineRISE2pv.V2pv.Recut.sef,E:\Data\Avg CelineRISE2vu.V2vu.Recut.sef,E:\Data\Avg CelineRISE3.V3.Recut.sef,E:\Data\Inverses\Celine.LORETA.is
 4,E:\Data\Avg PierreRISE1.V1.Recut.sef,E:\Data\Avg PierreRISE2pv.V2pv.Recut.sef,E:\Data\Avg PierreRISE2vu.V2vu.Recut.sef,E:\Data\Avg PierreRISE3.V3.Recut.sef,E:\Data\Inverses\Pierre.LORETA.is</pre>
 		<p>
              &nbsp;</p>
+		<h4>
+             Bypassing the individual Inverse Matrices</h4>
 		<P>
-             3) 
-			 You can combine both the <strong><em>--isfile</em></strong> <em>and</em> 
+             You can combine both the <strong><em>--isfile</em></strong> <em>and</em> 
 			 the <strong><em>--listfiles</em></strong> options above. In this case, 
 			 <strong>any existing inverse matrices from the <em>.csv</em> file 
 			 will be ignored</strong>, and <strong>only the single, overriding 
@@ -1072,13 +1089,16 @@ Options:
          <P>
              Even if the <em>ListCondition1.csv</em> file contains the individual inverse matrices,
 			 <strong>these will be bypassed</strong>:</P>
-		<pre>numfiles,file1,file2,file3,file4,inverse,E:\Data\Avg AdrienRISE1.V1.Recut.sef,E:\Data\Avg AdrienRISE2pv.V2pv.Recut.sef,E:\Data\Avg AdrienRISE2vu.V2vu.Recut.sef,E:\Data\Avg AdrienRISE3.V3.Recut.sef,E:\Data\Inverses\Adrien.LORETA.is
+		<pre>numfiles,file1,file2,file3,file4,inverse
+4,E:\Data\Avg AdrienRISE1.V1.Recut.sef,E:\Data\Avg AdrienRISE2pv.V2pv.Recut.sef,E:\Data\Avg AdrienRISE2vu.V2vu.Recut.sef,E:\Data\Avg AdrienRISE3.V3.Recut.sef,E:\Data\Inverses\Adrien.LORETA.is
 4,E:\Data\Avg CelineRISE1.V1.Recut.sef,E:\Data\Avg CelineRISE2pv.V2pv.Recut.sef,E:\Data\Avg CelineRISE2vu.V2vu.Recut.sef,E:\Data\Avg CelineRISE3.V3.Recut.sef,E:\Data\Inverses\Celine.LORETA.is
-4,4,E:\Data\Avg PierreRISE1.V1.Recut.sef,E:\Data\Avg PierreRISE2pv.V2pv.Recut.sef,E:\Data\Avg PierreRISE2vu.V2vu.Recut.sef,E:\Data\Avg PierreRISE3.V3.Recut.sef,E:\Data\Inverses\Pierre.LORETA.is</pre>
+4,E:\Data\Avg PierreRISE1.V1.Recut.sef,E:\Data\Avg PierreRISE2pv.V2pv.Recut.sef,E:\Data\Avg PierreRISE2vu.V2vu.Recut.sef,E:\Data\Avg PierreRISE3.V3.Recut.sef,E:\Data\Inverses\Pierre.LORETA.is</pre>
 		<p>
              &nbsp;</p>
+		<h3>
+             <a name="cli-examples"></a>CLI Examples</h3>
 		<h4>
-             <a name="cli-examples"></a>ERP
+             ERP
              Examples:</h4>
          <P>
              Computing the <strong>Grand Average 4 ERPs ris files</strong>, with fixed 
