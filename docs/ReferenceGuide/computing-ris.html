@@ -6,6 +6,47 @@
   <link rel="stylesheet" href="../cartool.css" type="text/css">
 
   <style type="text/css">
+  .ms-grid4-main {
+	  border-left: .75pt solid black;
+	  border-right: .75pt solid black;
+	  border-top-style: none;
+	  border-bottom-style: none;
+	  background-color: white;
+  }
+  .ms-grid4-tl {
+	  font-weight: normal;
+	  color: black;
+	  border-left: .75pt solid black;
+	  border-right: .75pt solid black;
+	  border-top-style: none;
+	  border-bottom-style: none;
+	  background-color: #FFFFCA;
+  }
+  .ms-grid4-left {
+	  font-weight: normal;
+	  color: black;
+	  border-left: .75pt solid black;
+	  border-right: .75pt solid black;
+	  border-top: .75pt solid black;
+	  border-bottom-style: none;
+	  background-color: white;
+  }
+  .ms-grid4-top {
+	  font-weight: normal;
+	  color: black;
+	  border-left-style: none;
+	  border-right: .75pt solid black;
+	  border-top-style: none;
+	  border-bottom-style: none;
+	  background-color: #FFFFCA;
+  }
+  .ms-grid4-even {
+	  color: black;
+	  border-left-style: none;
+	  border-right: .75pt solid black;
+	  border-top: .75pt solid black;
+	  border-bottom-style: none;
+  }
   .ms-list4-main {
 	  border-left: 1.5pt solid black;
 	  border-right: 1.5pt solid black;
@@ -22,16 +63,7 @@
 	  border-bottom: 1.5pt solid black;
 	  background-color: gray;
   }
-  .ms-list4-even {
-	  font-weight: normal;
-	  color: black;
-	  border-left-style: none;
-	  border-right-style: none;
-	  border-top-style: none;
-	  border-bottom: .75pt solid black;
-	  background-color: white;
-  }
-.auto-style1 {
+  .auto-style1 {
 	text-align: center;
 }
 .auto-style2 {
@@ -56,6 +88,94 @@
 	  border-top-style: none;
 	  border-bottom: .75pt solid black;
 	  background-color: white;
+  }
+  .auto-style10 {
+	  color: black;
+	  border-left-style: none;
+	  border-right: .75pt solid black;
+	  border-top: .75pt solid black;
+	  border-bottom-style: none;
+	  background-color: #EFF6FF;
+  }
+  .auto-style11 {
+	  font-weight: normal;
+	  color: black;
+	  border-left: .75pt solid black;
+	  border-right: .75pt solid black;
+	  border-top: .75pt solid black;
+	  border-bottom-style: none;
+	  background-color: #EFF6FF;
+  }
+  .auto-style12 {
+	  color: black;
+	  border-left-style: none;
+	  border-right: .75pt solid black;
+	  border-top: .75pt solid black;
+	  border-bottom-style: none;
+	  background-color: #FAFAFA;
+  }
+  .auto-style13 {
+	  font-weight: normal;
+	  color: black;
+	  border-left: .75pt solid black;
+	  border-right: .75pt solid black;
+	  border-top: .75pt solid black;
+	  border-bottom-style: none;
+	  background-color: #FAFAFA;
+  }
+  .auto-style14 {
+	  font-weight: normal;
+	  color: black;
+	  border-left-style: none;
+	  border-right: .75pt solid black;
+	  border-top-style: none;
+	  border-top-width: medium;
+	  border-bottom-style: none;
+	  background-color: #E0E8FF;
+  }
+  .auto-style15 {
+	  font-weight: normal;
+	  color: black;
+	  border-left: .75pt solid black;
+	  border-right: .75pt solid black;
+	  border-top-style: none;
+	  border-top-width: medium;
+	  border-bottom-style: none;
+	  background-color: #E0E8FF;
+  }
+  .auto-style16 {
+	  font-family: Verdana;
+  }
+  .auto-style17 {
+	  color: black;
+	  font-family: Verdana;
+	  font-weight: normal;
+	  border-left-style: none;
+	  border-right: .75pt solid black;
+	  border-top: .75pt solid black;
+	  border-bottom-style: none;
+	  background-color: #EFF6FF;
+  }
+  .auto-style19 {
+	  font-weight: normal;
+  }
+  .auto-style20 {
+	  color: black;
+	  font-weight: normal;
+	  border-left-style: none;
+	  border-right: .75pt solid black;
+	  border-top: .75pt solid black;
+	  border-bottom-style: none;
+	  background-color: #FAFAFA;
+  }
+  .auto-style21 {
+	  color: black;
+	  font-weight: normal;
+	  border-left-style: none;
+	  border-right: .75pt solid black;
+	  border-top: .75pt solid black;
+	  border-bottom-style: none;
+	  background-color: #EFF6FF;
   }
   </style>
 
@@ -84,7 +204,8 @@
              obtain some <a href="files-formats-cartool.html#ris">
                  <strong><em>.ris</em></strong>
                  files
-             </a> (<strong>r</strong>esults of <strong>i</strong>nverse <strong>s</strong>olution).
+             </a> (<strong>R</strong>esults of <strong>I</strong>nverse <strong>
+			 S</strong>olution).
              These&nbsp; <a href="files-formats-cartool.html#ris">
                  <strong><em>.ris</em></strong>
                  files
@@ -94,8 +215,8 @@
                  <strong>
 			 statistics</strong></A>, or even <strong>
                  <a href="ris-to-volumes.html">converted to volumes</a>
-             </strong> for fMRI
-             comparison.
+             </strong> for direct comparison 
+			 with other modalities.
          </P>
          <p>
              Here is a highly recommended article about practical use of the inverse
@@ -111,6 +232,7 @@ C.M. Michel, D. Brunet,
              <A HREF="#technical-points-and-hints">Technical points &amp; hints</A><br>
          </H5>
          <H6>
+             <A HREF="#presets">Scenarios and Presets</A><br>
              <a href="#condition-subject"><strong>Per Condition</strong> <i>vs</i> 
 			 <strong>Per Subject</strong> Modes</a><br>
              <a href="#single-multiple-matrices"><strong>Single</strong> <i>vs</i> 
@@ -148,13 +270,15 @@ C.M. Michel, D. Brunet,
              <tr>
                  <TD VALIGN=TOP style="width: 32%">
                      <P>
+                         <a href="#presets">
                          <strong>Presets</strong>
+                 </a>
                  </TD>
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>
                          You can quickly set the most important parameters according to some
-                         predefined scenarios. You can then fine-tune any 
-						 (allowed) parameter to your liking.</TD>
+                         <a href="#presets">predefined scenarios</a>. You can then fine-tune 
+						 the allowed parameters to your liking.</TD>
              </tr>
              <TR>
                  <TD VALIGN=TOP style="width: 32%"></TD>
@@ -416,7 +540,7 @@ C.M. Michel, D. Brunet,
                  <TD WIDTH="74%" VALIGN=TOP>
                      <P>The <strong>final data type</strong> of the data being actually saved 
 					 to file.<P>
-                         Internally and for most of intermediate steps, Inverse 
+                         Internally, and for most of intermediate steps, Inverse 
 						 results are actually 3D dipoles. But at some points, 
 						 you might be interested to ditch the vectorial 
 						 component and keep only the norm / intensity / power of 
@@ -429,8 +553,8 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         Only the <strong>norm of each dipole</strong> will be saved.<P>
-                         <em>This is what you need 99% of the time</em>
+                         Only the <strong>norm of dipoles</strong> will be saved.<P>
+                         <em>This is what you need 99% of the time!</em>
                  </TD>
              </tr>
              <tr>
@@ -440,8 +564,9 @@ C.M. Michel, D. Brunet,
                  </TD>
                  <TD WIDTH="73%" VALIGN=TOP>
                      <P>
-                         ThThe <strong>full vectorial 
-						 information for each dipole</strong> will be saved.
+                         The <strong>complete vectorial 
+						 information of dipoles</strong> will be saved, i.e. 
+						 orientation and norm.
                      <P>
                          <em>Not recommended</em> unless you know what you are doing. Also, it
                          takes more space on the disk.
@@ -490,8 +615,9 @@ C.M. Michel, D. Brunet,
                      <P>
                          Or you can set a <strong>specific regularization factor</strong>, ranging
                          from <strong>0 (none) to 12 (max)</strong>, <strong>4</strong> being the
-                         default value.
-                 </TD>
+                         default value.<P>
+                         You can opt for the fixed regularization for saving a 
+						 bit of computation time, otherwise keep it <em>auto</em>!</TD>
              </tr>
              <tr>
                  <TD VALIGN=TOP style="width: 32%"></TD>
@@ -565,7 +691,7 @@ C.M. Michel, D. Brunet,
                      <P>
                          ApApply some sort of normalization to output only <strong>
                              templates of
-                             activations</strong>, <strong>stripping the power component outstrong>.
+                             activations</strong>, <strong>stripping the power component out</strong>.
                  </TD>
              </tr>
              <tr>
@@ -728,7 +854,7 @@ C.M. Michel, D. Brunet,
                      <P>
                          This option aims at computing the <strong>template 
 						 sources</strong> for the
-						 <a href="microstates-back-fitting-templates.html">Back-Fitting 
+						 <a href="microstates-back-fitting-templates.html#data-per-cluster">Back-Fitting 
 						 processing</a>, using the optionally saved Clusters of 
 						 Data.</TD>
              </tr>
@@ -828,27 +954,29 @@ Options:
              ERP
              Examples:</h4>
          <P>
-             Computing <strong>4 ERP Grand Averages ris files</strong>, with fixed 
+             Computing the <strong>Grand Average 4 ERPs ris files</strong>, with fixed 
 			 regularization, Z-Score, and saving the norm of dipoles<br>(BTW, 
 			 this is the worst way to compute it - there are much better ways 
 			 than that):</P>
          <pre>cartool64.exe computingris --preset=ErpGrandAverages --isfile=MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.LORETA.is
 --reg=4 --zscore=compute --type=norm --savingsubjects --prefix=MyGM
--- &quot;Face.Avg RISE1.V1.Recut.sef&quot; &quot;Face.Avg RISE2pv.V2pv.Recut.sef&quot; &quot;Face.Avg RISE2vu.V2vu.Recut.sef&quot; &quot;Face.Avg RISE3.V3.Recut.sef&quot;</pre>
+-- &quot;Face.Avg RISE1.V1.Recut.sef&quot; &quot;Face.Avg RISE2pv.V2pv.Recut.sef&quot;
+   &quot;Face.Avg RISE2vu.V2vu.Recut.sef&quot; &quot;Face.Avg RISE3.V3.Recut.sef&quot;</pre>
          <P>
              &nbsp;</P>
 		<P>
-             Computing <strong>1 subject's 4 ERP ris files</strong>, with Spatial Filter 
+             Computing <strong>1 subject 4 conditions ERPs ris files</strong>, with Spatial Filter 
 			 preprocessing, automatic regularization, Z-Score, and saving the 
 			 dipoles as vector (slightly better than using the Grand Average):</P>
-         <pre>cartool64.exe computingris --preset=ErpSubjectsAverages --isfile=MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.LAURA.is 
+         <pre>cartool64.exe computingris --preset=ErpSubjectsAverages --isfile=MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.LAURA.is
 --xyzfile=MNI152.NlinAsym20.204.2023.xyz --spatialfilter
 --reg=auto --zscore=compute --type=norm --savingsubjects --prefix=MyInverse 
--- &quot;Avg AdrienRISE1.V1.Recut.sef&quot; &quot;Avg AdrienRISE2pv.V2pv.Recut.sef&quot; &quot;Avg AdrienRISE2vu.V2vu.Recut.sef&quot; &quot;Avg AdrienRISE3.V3.Recut.sef&quot;</pre>
+-- &quot;Avg AdrienRISE1.V1.Recut.sef&quot; &quot;Avg AdrienRISE2pv.V2pv.Recut.sef&quot;
+   &quot;Avg AdrienRISE2vu.V2vu.Recut.sef&quot; &quot;Avg AdrienRISE3.V3.Recut.sef&quot;</pre>
          <P>
              &nbsp;</P>
          <P>
-             Computing <strong>1 subject's 3 ERP ris files</strong>, using concatenated 
+             Computing <strong>1 subject 3 conditions ERPs ris files</strong>, using concatenated 
 			 <strong>epochs files</strong>, automatic regularization, Z-Score, and saving the 
 			 norm of dipoles (<em>this</em> is the best way!):</P>
          <pre>cartool64.exe computingris --preset=ErpSubjectsEpochs --isfile=MNI152.NlinAsym09c.6Shell.Biosemi128.6mm.2023.2.LORETA.is
@@ -857,33 +985,36 @@ Options:
          <P>
              &nbsp;</P>
          <P>
-             Computing <strong>1 subject's 8 micro-states template sources</strong>, 
-			 using <strong>cluster files from ERP EEG Back-Fitting</strong>, automatic regularization, Z-Score, and 
+             Computing <strong>1 subject 8
+			 <a href="microstates-segmentation.html">Micro-States</a> Template Sources</strong>, 
+			 using the <strong>cluster files from 
+			 <a href="microstates-back-fitting-templates.html#data-per-cluster">ERP EEG Back-Fitting</a></strong>, automatic regularization, Z-Score, and 
 			 saving the norm of dipoles:</P>
          <pre>cartool64.exe computingris --preset=ErpSubjectsClusters --isfile=MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.LORETA.is
 --zscore=compute --type=norm --savingtemplates --prefix=MyClustering
 -- &quot;Fit.Subj01.Cluster01.sef&quot; &quot;Fit.Subj01.Cluster02.sef&quot; &quot;Fit.Subj01.Cluster03.sef&quot; &quot;Fit.Subj01.Cluster04.sef&quot;
-&quot;Fit.Subj01.Cluster05.sef&quot; &quot;Fit.Subj01.Cluster06.sef&quot; &quot;Fit.Subj01.Cluster07.sef&quot; &quot;Fit.Subj01.Cluster08.sef&quot;</pre>
+   &quot;Fit.Subj01.Cluster05.sef&quot; &quot;Fit.Subj01.Cluster06.sef&quot; &quot;Fit.Subj01.Cluster07.sef&quot; &quot;Fit.Subj01.Cluster08.sef&quot;</pre>
          <P>
              &nbsp;</P>
          <h4>
              Induced Responses
              Examples:</h4>
          <P>
-             Computing <strong>1 subject's 3 Induced Responses ris files</strong>, using concatenated 
+             Computing <strong>1 subject 4 Induced Responses ris files</strong>, using concatenated 
 			 <strong>epochs files</strong>, with automatic regularization, Z-Score, 
 			 Envelope of 33[ms] (corresponding to 30[Hz]), and saving the norm of dipoles:</P>
          <pre>cartool64.exe computingris --preset=IndSubjectsEpochs --isfile=MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.LORETA.is
 --type=norm --envelope=33 --zscore=compute --prefix=MyInd --savingsubjects --savingzscore
--- L007.S3.GammaD1A.Epochs.EEG.sef L007.S3.GammaD1B.Epochs.EEG.sef L007.S3.GammaD2A.Epochs.EEG.sef L007.S3.GammaD2B.Epochs.EEG.sef</pre>
+-- L007.S3.GammaD1A.Epochs.EEG.sef L007.S3.GammaD1B.Epochs.EEG.sef
+   L007.S3.GammaD2A.Epochs.EEG.sef L007.S3.GammaD2B.Epochs.EEG.sef</pre>
          <P>
              &nbsp;</P>
          <h4>
              Resting States
              Examples:</h4>
          <P>
-             Computing <strong>1 subject's full spontaneous ris files</strong>, 
-			 using spontaneous EEG, with automatic regularization, Z-Score, and saving the 
+             Computing <strong>1 subject full spontaneous ris files</strong>, 
+			 using the full spontaneous EEG, with automatic regularization, Z-Score, and saving the 
 			 norm of dipoles:</P>
          <pre>cartool64.exe computingris --preset=SpontSubjects --isfile=MNI152.NlinAsym09c.BrainProduct64Geneva.5000.2022.LORETA.is
 --type=norm --zscore=compute --prefix=MySpont --savingsubjects --savingzscore
@@ -891,31 +1022,139 @@ Options:
          <P>
              &nbsp;</P>
 		<P>
-             Computing <strong>1 subject's 6 micro-states template sources</strong>, 
-			 using <strong>cluster files from Resting States EEG Back-Fitting</strong>, automatic regularization, 
+             Computing <strong>1 subject 6 
+			 <a href="microstates-segmentation.html">Micro-States</a> Template Sources</strong>, 
+			 using the <strong>cluster files from 
+			 <a href="microstates-back-fitting-templates.html#data-per-cluster">Resting States EEG Back-Fitting</a></strong>, automatic regularization, 
 			 Z-Score, and saving the norm of dipoles:</P>
          <pre>cartool64.exe computingris --preset=SpontSubjectsClusters --isfile=Subject13.is
 --type=norm --zscore=compute --prefix=MySubj --savingtemplates --savingzscore
--- DemoFitting.subject13.Cluster01.sef DemoFitting.subject13.Cluster02.sef DemoFitting.subject13.Cluster03.sef
-DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitting.subject13.Cluster06.sef</pre>
+-- DemoFitting.subject13.Cluster01.sef DemoFitting.subject13.Cluster02.sef
+   DemoFitting.subject13.Cluster03.sef DemoFitting.subject13.Cluster04.sef
+   DemoFitting.subject13.Cluster05.sef DemoFitting.subject13.Cluster06.sef</pre>
          <P>
              &nbsp;</P>
          <h4>
              Frequency
              Examples:</h4>
          <P>
-             Computing <strong>1 subject's 4 frequency ris files</strong>, using 
-			 <strong>FFT complex results</strong>, with automatic regularization, Z-Score, and 
+             Computing <strong>1 subject 4 
+			 <a href="frequency-analysis.html">Frequency ris files</a></strong>, using 
+			 <strong><a href="frequency-analysis.html#output-types">FFT complex results</a></strong>, with automatic regularization, Z-Score, and 
 			 saving the norm of dipoles:</P>
          <pre>cartool64.exe computingris --preset=FreqComplex --isfile=MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.eLORETA.is
 --type=norm --zscore=compute --prefix=MyFreq --savingsubjects --savingzscore
--- &quot;Avg AdrienRISE1.V1.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot; &quot;Avg AdrienRISE2pv.V2pv.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot;
-&quot;Avg AdrienRISE2vu.V2vu.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot; &quot;Avg AdrienRISE3.V3.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot;</pre>
+-- &quot;Avg AdrienRISE1.V1.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot;
+   &quot;Avg AdrienRISE2pv.V2pv.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot;
+   &quot;Avg AdrienRISE2vu.V2vu.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot;
+   &quot;Avg AdrienRISE3.V3.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot;</pre>
 
          <P class="mvd-h2">
              <A NAME="technical-points-and-hints"></A>Computing RIS - Technical points &amp; hints
          </P>
 
+         <P class="mvd-h4">
+             <A NAME="presets"></A>Scenarios and Presets<P>
+             There are some very diverse scenarios when sources localization can 
+			 be computed. These scenarios, or presets, depend on your <strong>
+			 type of experiment</strong>, <strong>type of analysis</strong>, and
+			 <strong>type of input data</strong>. <strong>Picking the right one 
+			 is of utmost importance</strong>, as it will drive many parameters 
+			 internally. The good news is that the Presets lists should be 
+			 clearly labelled, and your case is likely to be covered!</P>
+		<P>
+             &nbsp;</P>
+		<P>
+             Here are the 9 currently available presets:</P>
+		<table cellpadding="8" cellspacing="8" class="ms-grid4-main" style="width: 80%">
+			<!-- fpstyle: 19,011111100 -->
+			<tr>
+				<th class="auto-style15" style="height: 29">Preset</th>
+				<th class="auto-style14" style="height: 29">Case</th>
+				<th class="auto-style14" style="height: 29">Input Data</th>
+				<th class="auto-style14" style="height: 29">Output Data</th>
+			</tr>
+			<tr>
+				<th class="auto-style11">ERPs Grand Averages</th>
+				<th class="auto-style21"><span class="auto-style16">ERPs</th>
+				<th class="auto-style10"><span class="auto-style19">Grand Means 
+				ERPs,<br>all conditions together</span></span></th>
+				<th class="auto-style10">ESI ERPs</th>
+			</tr>
+			<tr>
+				<th class="auto-style11">ERPs Subjects Averages</th>
+				<th class="auto-style21"><span class="auto-style16">ERPs</th>
+				<th class="auto-style10"><span class="auto-style19">ERPs per 
+				subject,<br>all conditions together</span></span></th>
+				<th class="auto-style10">ESI ERPs</th>
+			</tr>
+			<tr>
+				<th class="auto-style11">ERPs Subjects Epochs</th>
+				<th class="auto-style21"><span class="auto-style16">ERPs</th>
+				<th class="auto-style10"><span class="auto-style19">All epochs 
+				per subject,<br>all conditions together</span></span></th>
+				<th class="auto-style10">ESI ERPs</th>
+			</tr>
+			<tr>
+				<th class="auto-style11">ERPs Segmentation Clusters</th>
+				<th class="auto-style17">
+				<a href="microstates-segmentation.html">ERPs</a><br>
+				<a href="microstates-segmentation.html">&amp; Micro-States</a></th>
+				<th class="auto-style10"><span class="auto-style19">
+				<a href="microstates-segmentation.html#data-clusters-output">
+				Cluster files</a></span>,<span class="auto-style19"><br>all 
+				conditions/clusters together</span></th>
+				<th class="auto-style10">ESI Templates</th>
+			</tr>
+			<tr>
+				<th class="auto-style11">ERPs Back-Fitting Clusters</th>
+				<th class="auto-style17">
+				<a href="microstates-back-fitting-templates.html">ERPs</a><br>
+				<a href="microstates-back-fitting-templates.html">&amp; Micro-States</a></th>
+				<th class="auto-style10"><span class="auto-style19">
+				<a href="microstates-back-fitting-templates.html#data-per-cluster">
+				Cluster files for each subject</a></span>,<span class="auto-style19"><br>
+				all conditions/clusters together</span></th>
+				<th class="auto-style10">ESI Templates</th>
+			</tr>
+			<tr>
+				<th class="auto-style13">Induced Responses Epochs</th>
+				<th class="auto-style20"><span class="auto-style16">Induced 
+				Responses</th>
+				<th class="auto-style12"><span class="auto-style19">All epochs 
+				per subject,<br>all conditions together</span></span></th>
+				<th class="auto-style12">ESI Induced Responses</th>
+			</tr>
+			<tr>
+				<th class="auto-style11">Resting States Spontaneous Data</th>
+				<th class="auto-style21"><span class="auto-style16">Spontaneous 
+				data</th>
+				<th class="auto-style10"><span class="auto-style19">Any number 
+				of recordings<br>from the same session per subject</span></span></th>
+				<th class="auto-style10">Spontaneous ESI</th>
+			</tr>
+			<tr>
+				<th class="auto-style11">Resting States Back-Fitting Clusters</th>
+				<th class="auto-style17">
+				<a href="microstates-back-fitting-templates.html">
+				<span class="auto-style19">Resting States<br>&amp; Micro-States</span></a></th>
+				<th class="auto-style10"><span class="auto-style19">
+				<a href="microstates-back-fitting-templates.html#data-per-cluster">
+				Cluster files for each subject</a></span>,<span class="auto-style19"><br>
+				all conditions/clusters together</span></th>
+				<th class="auto-style10">ESI Templates</th>
+			</tr>
+			<tr>
+				<th class="auto-style13">Frequency Analysis</th>
+				<th class="auto-style20"><span class="auto-style16">All cases</th>
+				<th class="auto-style12"><span class="auto-style19">No specific 
+				constraints,<br>but data must be of
+				<a href="frequency-analysis.html#output-types">complex type</a></span></span></th>
+				<th class="auto-style12">Frequency ESI</th>
+			</tr>
+		</table>
+		<P>
+             &nbsp;</P>
 
          <P class="mvd-h4">
              <A NAME="condition-subject"></A><strong>Per Condition</strong> <em>vs</em> 
@@ -943,6 +1182,8 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
              The much convenient part is that <strong>you can switch mode at any 
 			 time</strong>, either to change the summary display, or to change 
 			 the way you will add or remove next groups!</P>
+		<P>
+             &nbsp;</P>
 
 
          <P class="mvd-h4">
@@ -980,9 +1221,8 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
 		<table class="ms-list4-main" style="width: 500">
 			<!-- fpstyle: 27,011111000 -->
 			<tr>
-				<th class="ms-list4-top" style="width: 405px">EEGs per Subject/th>
-				<th class="ms-list4-top" style="width: 406px">Inverse per 
-				Subject</th>
+				<th class="ms-list4-top" style="width: 405px">EEGs per Subject</th>
+				<th class="ms-list4-top" style="width: 406px">Inverse per Subject</th>
 			</tr>
 			<tr>
 				<td class="auto-style5" style="width: 405px">&lt;empty&gt;</td>
@@ -992,14 +1232,13 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
 		<P>
              &nbsp;</P>
 		<P>
-             AAdding 1 subject EEGs 
+             Adding 1 subject EEGs 
 			 and 1 inverse together, both lists grow and match together:</P>
 		<table class="ms-list4-main" style="width: 500">
 			<!-- fpstyle: 27,011111000 -->
 			<tr>
-				<th class="ms-list4-top" style="width: 405px">EEGs per Subject/th>
-				<th class="ms-list4-top" style="width: 406px">Inverse per 
-				Subject</th>
+				<th class="ms-list4-top" style="width: 405px">EEGs per Subject</th>
+				<th class="ms-list4-top" style="width: 406px">Inverse per Subject</th>
 			</tr>
 			<tr>
 				<td class="auto-style5" style="width: 405px">Subject1 EEGs</td>
@@ -1007,16 +1246,15 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
 			</tr>
 		</table>
 		<P>
-             &&nbsp;</P>
+             &nbsp;</P>
 		<P>
-             Adding 1 subject EEGs <i>without/i>  inverse. The EEG list grows, but not the 
+             Adding 1 subject EEGs <i>without</i>  inverse. The EEG list grows, but not the 
 			 Inverse one, so they do not match anymore:</P>
 		<table class="ms-list4-main" style="width: 500">
 			<!-- fpstyle: 27,011111000 -->
 			<tr>
-				<th class="ms-list4-top" style="width: 405px">EEGs per Subject/th>
-				<th class="ms-list4-top" style="width: 406px">Inverse per 
-				Subject</th>
+				<th class="ms-list4-top" style="width: 405px">EEGs per Subject</th>
+				<th class="ms-list4-top" style="width: 406px">Inverse per Subject</th>
 			</tr>
 			<tr>
 				<td class="auto-style5" style="width: 405px">Subject1 EEGs<br>
@@ -1032,8 +1270,7 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
 			<!-- fpstyle: 27,011111000 -->
 			<tr>
 				<th class="ms-list4-top" style="width: 405px">EEGs per Subject</th>
-				<th class="ms-list4-top" style="width: 406px">Inverse per 
-				Subject</th>
+				<th class="ms-list4-top" style="width: 406px">Inverse per Subject</th>
 			</tr>
 			<tr>
 				<td class="auto-style5" style="width: 405px">Subject1 EEGs<br>
@@ -1045,14 +1282,13 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
 		<P>
              &nbsp;</P>
 		<P>
-             BBy repeating the process for each subjects, you should end up with 
+             By repeating the process for each subjects, you should end up with 
 			 complementary lists:</P>
 		<table class="ms-list4-main" style="width: 500">
 			<!-- fpstyle: 27,011111000 -->
 			<tr>
-				<th class="ms-list4-top" style="width: 405px">EEGs per Subject/th>
-				<th class="ms-list4-top" style="width: 406px">Inverse per 
-				Subject</th>
+				<th class="ms-list4-top" style="width: 405px">EEGs per Subject</th>
+				<th class="ms-list4-top" style="width: 406px">Inverse per Subject</th>
 			</tr>
 			<tr>
 				<td class="auto-style5" style="width: 405px">Subject1 EEGs<br>
@@ -1069,7 +1305,7 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
  	   <ul>
 		   <li>Filling in all the EEG files first, then all the Inverse files.<br>
 		   This is the fastest way, and it should be fine as long as the file 
-		   naming is consistent across files./li>
+		   naming is consistent across files.</li>
 		   <li>FFilling one subject at a time, providing both the EEG and the 
 		   Inverse Matrix files each time.<br>This is the safest method but 
 		   might take longer.</li>
@@ -1077,22 +1313,25 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
 		<P>
              &nbsp;</P>
 		<P>
-             Finally, when you are ready to go and press the <i><strong>Process/strong></i>  
+             Finally, when you are ready to go and press the <i><strong>Process</strong></i>  
 			 button, Cartool will ask you if you want to review each and every 
 			 subjects' EEG and Inverse files. This information is also saved in 
-			 the verbose file.&nbsp;</P>
+			 the verbose file.&nbsp;
+		</P>
+		<P>
+             &nbsp;</P>
 
          <P class="mvd-h4">
              <A NAME="reading-writing-lists"></A>Reading and Writing the list of files
-         /P>
+         </P>
          <P>
              Filling the list of EEG files correctly can be tedious, therefor it 
 			 is highly recommended to <strong>save your final list to a <i>.csv</i> 
 			 or <i>.txt</i> file for later</strong>!</P>
 		<P>
-             BBut, <i>there is more to it</i>! You can actually build and save
+             But, <i>there is more to it</i>! You can actually build and save
 			 <strong>lists for various sub-groups of data</strong>, either per 
-			 conditions or per subjects. Then you can strong>
+			 conditions or per subjects. Then you can <strong>
 			 cumulate and combine</strong>  these lists together, the user being 
 			 prompted at reading time for the appropriate way. This allows for 
 			 conveniently computing the sources localization for all conditions 
@@ -1100,7 +1339,7 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
 		<P>
              &nbsp;</P>
 		<P>
-             Let see a first example on a 2 x 4 experiment, 15 subjects:/P>
+             Let see a first example on a 2 x 4 experiment, 15 subjects:</P>
  	   <ul>
 		   <li>Fill the <strong>first 4 conditions</strong>, with 15 subjects. 
 		   Save list to file, then clear groups.</li>
@@ -1120,9 +1359,9 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
              Another example on the same 5 conditions, with a first set of 20 
 			 subjects, then a second set of 30 subjects:</P>
  	   <ul>
-		   <li>Fill the 5 conditions, with the <strong>ffirst 20 subjects.
+		   <li>Fill the 5 conditions, with the <strong>first 20 subjects.
 		   </strong>Save to file, then clear groups.</li>
-		   <li>Fill the 5 conditions, with the strong>ssecond 30 subjects.
+		   <li>Fill the 5 conditions, with the <strong>second 30 subjects.
 		   </strong>Save to file, and clear groups.</li>
 		</ul>
 		<P>
@@ -1131,9 +1370,10 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
  	   <ul>
 		   <li>Read the first list. Nothing is required at that point.</li>
 		   <li>Read the second list. When prompted by Cartool, specify this time 
-		   you are strong>adding subjects</strong>.</li>
+		   you are <strong>adding subjects</strong>.</li>
 		   <li>Now Cartool shows 5 conditions, <strong>50 subjects</strong>!</li>
 		</ul>
+		<P>&nbsp;</P>
 		<P class="mvd-h4">
              <A NAME="consistency-checks"></A>Checking the files consistency
          </P>
@@ -1199,6 +1439,7 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
          <P class="auto-style4">
              <img alt="files compatibility checks - with ROIs" height="321" SRC="images/compris.files-consistency.2.png" width="449">
          </P>
+		<P>&nbsp;</P>
          <P class="mvd-h4">
              <A NAME="spatial-filter"></A>Spatial Filter
          </P>
@@ -1226,6 +1467,7 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
          <P class="auto-style4">
              <img alt="spatial filter" height="331" SRC="images/compris.spatial-filter.png" width="659">
          </P>
+		<P>&nbsp;</P>
          <P class="mvd-h4">
              <a name="z-score"></a>Background normalization via custom <em>Z-Score</em>
          </P>
@@ -1269,6 +1511,7 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
              <img height="434" SRC="images/compris.z-score.before-and-after.png" width="576">
          </P>
+		<P>&nbsp;</P>
          <P class="mvd-h4">
              <a name="templatize"></a>Templatize results
          </P>
@@ -1305,6 +1548,7 @@ DemoFitting.subject13.Cluster04.sef DemoFitting.subject13.Cluster05.sef DemoFitt
          <P>
              <img height="585" src="images/compris.templatize.png" width="839">
          </P>
+		<P>&nbsp;</P>
          <P class="mvd-h4">
              <A NAME="frequency-files"></A>Frequency files
          </P>
