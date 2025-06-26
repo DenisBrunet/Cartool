@@ -990,15 +990,17 @@ Options:
          <P>
              &nbsp;</P>
 		<h4>
-             EEG files from a <strong>.csv</strong> file</h4>
+             EEG files from a <strong>.csv</strong> or <strong>.txt</strong> file</h4>
 		<p>
              You can use the <strong><em>--listfiles</em></strong> 
-			 option to provide a <a href="#cli-specifying-eeg"><strong>.csv </strong>file</a>. 
+			 option to provide a <a href="#cli-specifying-eeg"><strong>.csv</strong> 
+			 or <strong>.txt </strong>file</a>. 
 			 This file enumerates <strong>all subjects, 
-			 all conditions</strong>, and <a href="#cli-specifying-inverses">optionally some individual inverse 
-			 matrices</a>. This method allows for <strong>whole groups</strong> to 
-			 be computed from a single call, as well as the computation of Grand 
-			 Averages if relevant. This list of files can typically be produced
+			 all conditions</strong>, and <a href="#cli-specifying-inverses">optionally some 
+			 <strong>individual inverse 
+			 matrices</strong></a>. This method allows for the <strong>
+			 computation of whole groups</strong>, and optionally <strong>Grand 
+			 Averages / Grand Templates</strong>, from a single call. This list of files can typically be produced
 			 <a href="#reading-writing-lists">from the dialog</a>, but you can 
 			 make one yourself, too.</p>
 		<p>
@@ -1015,14 +1017,15 @@ Options:
 		<P>
              Or, for 3 subjects and 4 conditions, and 
 			 <a href="#cli-specifying-inverses">3 <strong>individual 
-			 inverse matrices</strong></a>:</P>
+			 inverse matrices</strong></a> (scroll right):</P>
 		<pre>numfiles,file1,file2,file3,file4,inverse
 4,E:\Data\Avg AdrienRISE1.V1.Recut.sef,E:\Data\Avg AdrienRISE2pv.V2pv.Recut.sef,E:\Data\Avg AdrienRISE2vu.V2vu.Recut.sef,E:\Data\Avg AdrienRISE3.V3.Recut.sef,E:\Data\Inverses\Adrien.LORETA.is
 4,E:\Data\Avg CelineRISE1.V1.Recut.sef,E:\Data\Avg CelineRISE2pv.V2pv.Recut.sef,E:\Data\Avg CelineRISE2vu.V2vu.Recut.sef,E:\Data\Avg CelineRISE3.V3.Recut.sef,E:\Data\Inverses\Celine.LORETA.is
 4,E:\Data\Avg PierreRISE1.V1.Recut.sef,E:\Data\Avg PierreRISE2pv.V2pv.Recut.sef,E:\Data\Avg PierreRISE2vu.V2vu.Recut.sef,E:\Data\Avg PierreRISE3.V3.Recut.sef,E:\Data\Inverses\Pierre.LORETA.is</pre>
 		<h5>Note:</h5>
 		<ul>
-			<li>Make sure that all paths are absolute, and that all files exist!</li>
+			<li>Make sure that all paths are absolute, and that all files 
+			actually exist!</li>
 			<li>The <strong>.csv list</strong> and <strong>the explicit 
 			command-line</strong> options <strong>are mutually exclusive</strong>.</li>
 			<li>See the <a href="#cli-specifying-inverses">section about 
@@ -1040,8 +1043,11 @@ Options:
 			<li>One is by using the <strong><em>--isfile</em></strong> option</li>
 			<li>The other one is by 
 			 using the <strong><em>--listfiles</em></strong> option</li>
-			<li>Both can be combined together</li>
+			<li><em>Both</em> can be combined together - but read carefully!</li>
 		</ul>
+		<p>
+             See also this section about <a href="#single-multiple-matrices">
+			 single vs multiple inverse matrix files</a>.</p>
 		<p>
              &nbsp;</p>
 		<h4>
@@ -1052,24 +1058,25 @@ Options:
 			 matrix will be used for this single subject</strong>:</p>
          <pre>cartool64.exe computingris --preset=ErpSubjectsAverages <strong>--isfile=LORETA.is</strong> --type=norm --savingsubjects
 -- &quot;Avg AdrienRISE1.V1.Recut.sef&quot; &quot;Avg AdrienRISE2pv.V2pv.Recut.sef&quot;
-    &quot;Avg AdrienRISE2vu.V2vu.Recut.sef&quot; &quot;Avg AdrienRISE3.V3.Recut.sef&quot;</pre>
+   &quot;Avg AdrienRISE2vu.V2vu.Recut.sef&quot; &quot;Avg AdrienRISE3.V3.Recut.sef&quot;</pre>
          <P>
              &nbsp;</P>
 		<h4>
              Individual Inverse Matrices</h4>
 		<P>
              You can use the <strong><em>--listfiles</em></strong> option to provide a <a href="#cli-specifying-eeg"><strong>.csv</strong> 
+			 or <strong>.txt</strong> 
 			 file</a>. This file can contains both the <strong>subjects' EEGs</strong>
 			 <em>and</em> the <strong>subjects' Inverse Matrix files</strong>.
 			 <strong>These individual matrices will therefor be used for each subject
-			 </strong>(be careful, no <strong><em>--isfile</em></strong> parameter):</P>
+			 </strong>(be careful, no <strong><em>--isfile</em></strong> option):</P>
          <pre>cartool64.exe computingris --preset=ErpSubjectsAverages <strong>--listfiles=&quot;ListCondition1.csv&quot;</strong>
 --type=norm --savingsubjects --savinggrandaverages</pre>
          <P>
              with the <em>ListCondition1.csv</em> file listing both the <strong>EEG
 			 </strong>and 
 			 the <strong>Inverse Matrix files</strong> for each subject (scroll 
-			 to the right):</P>
+			 right):</P>
 		<pre>numfiles,file1,file2,file3,file4,inverse
 4,E:\Data\Avg AdrienRISE1.V1.Recut.sef,E:\Data\Avg AdrienRISE2pv.V2pv.Recut.sef,E:\Data\Avg AdrienRISE2vu.V2vu.Recut.sef,E:\Data\Avg AdrienRISE3.V3.Recut.sef,E:\Data\Inverses\Adrien.LORETA.is
 4,E:\Data\Avg CelineRISE1.V1.Recut.sef,E:\Data\Avg CelineRISE2pv.V2pv.Recut.sef,E:\Data\Avg CelineRISE2vu.V2vu.Recut.sef,E:\Data\Avg CelineRISE3.V3.Recut.sef,E:\Data\Inverses\Celine.LORETA.is
@@ -1083,7 +1090,8 @@ Options:
 			 the <strong><em>--listfiles</em></strong> options above. In this case, 
 			 <strong>any existing inverse matrices from the <em>.csv</em> file 
 			 will be ignored</strong>, and <strong>only the single, overriding 
-			 matrix will be used for all subjects</strong>:</P>
+			 matrix will be used for all subjects </strong>(be careful, both <strong><em>--isfile</em></strong> 
+			 and <strong><em>--listfiles</em></strong> options):</P>
          <pre>cartool64.exe computingris --preset=ErpSubjectsAverages <strong>--listfiles=&quot;ListCondition1.csv&quot;</strong> <strong>--isfile=LORETA.is</strong>
 --type=norm --savingsubjects --savinggrandaverages</pre>
          <P>
@@ -1223,24 +1231,24 @@ Options:
 			</tr>
 			<tr>
 				<th class="auto-style11">ERPs Grand Averages</th>
-				<th class="auto-style21"><span class="auto-style16">ERPs</th>
+				<th class="auto-style21"><span class="auto-style16">ERPs</span></th>
 				<th class="auto-style10"><span class="auto-style19">Grand Means 
-				ERPs,<br>all conditions together</span></span></th>
-				<th class="auto-style10">ESI ERPs</th>
+				ERPs,<br>all conditions together</span></th>
+				<th class="auto-style10">ESI Grand Means ERPs</th>
 			</tr>
 			<tr>
 				<th class="auto-style11">ERPs Subjects Averages</th>
-				<th class="auto-style21"><span class="auto-style16">ERPs</th>
+				<th class="auto-style21"><span class="auto-style16">ERPs</span></th>
 				<th class="auto-style10"><span class="auto-style19">ERPs per 
-				subject,<br>all conditions together</span></span></th>
-				<th class="auto-style10">ESI ERPs</th>
+				subject,<br>all conditions together</span></th>
+				<th class="auto-style10">ESI Individual &amp;<br>Grand Means ERPs</th>
 			</tr>
 			<tr>
 				<th class="auto-style11">ERPs Subjects Epochs</th>
-				<th class="auto-style21"><span class="auto-style16">ERPs</th>
+				<th class="auto-style21"><span class="auto-style16">ERPs</span></th>
 				<th class="auto-style10"><span class="auto-style19">All epochs 
-				per subject,<br>all conditions together</span></span></th>
-				<th class="auto-style10">ESI ERPs</th>
+				per subject,<br>all conditions together</span></th>
+				<th class="auto-style10">ESI Individual &amp;<br>Grand Means ERPs</th>
 			</tr>
 			<tr>
 				<th class="auto-style11">ERPs Segmentation Clusters</th>
@@ -1251,7 +1259,7 @@ Options:
 				<a href="microstates-segmentation.html#data-clusters-output">
 				Cluster files</a></span>,<span class="auto-style19"><br>all 
 				conditions/clusters together</span></th>
-				<th class="auto-style10">ESI Templates</th>
+				<th class="auto-style10">ESI Templates Sources</th>
 			</tr>
 			<tr>
 				<th class="auto-style11">ERPs Back-Fitting Clusters</th>
@@ -1262,22 +1270,22 @@ Options:
 				<a href="microstates-back-fitting-templates.html#data-per-cluster">
 				Cluster files for each subject</a></span>,<span class="auto-style19"><br>
 				all conditions/clusters together</span></th>
-				<th class="auto-style10">ESI Templates</th>
+				<th class="auto-style10">ESI Templates Sources</th>
 			</tr>
 			<tr>
 				<th class="auto-style13">Induced Responses Epochs</th>
 				<th class="auto-style20"><span class="auto-style16">Induced 
-				Responses</th>
+				Responses</span></th>
 				<th class="auto-style12"><span class="auto-style19">All epochs 
-				per subject,<br>all conditions together</span></span></th>
-				<th class="auto-style12">ESI Induced Responses</th>
+				per subject,<br>all conditions together</span></th>
+				<th class="auto-style12">ESI Individual &amp;<br>Grand Means Induced Responses</th>
 			</tr>
 			<tr>
 				<th class="auto-style11">Resting States Spontaneous Data</th>
 				<th class="auto-style21"><span class="auto-style16">Spontaneous 
-				data</th>
+				data</span></th>
 				<th class="auto-style10"><span class="auto-style19">Any number 
-				of recordings<br>from the same session per subject</span></span></th>
+				of recordings<br>from the same session per subject</span></th>
 				<th class="auto-style10">Spontaneous ESI</th>
 			</tr>
 			<tr>
@@ -1289,14 +1297,14 @@ Options:
 				<a href="microstates-back-fitting-templates.html#data-per-cluster">
 				Cluster files for each subject</a></span>,<span class="auto-style19"><br>
 				all conditions/clusters together</span></th>
-				<th class="auto-style10">ESI Templates</th>
+				<th class="auto-style10">ESI Templates Sources</th>
 			</tr>
 			<tr>
 				<th class="auto-style13">Frequency Analysis</th>
-				<th class="auto-style20"><span class="auto-style16">All cases</th>
+				<th class="auto-style20"><span class="auto-style16">All cases</span></th>
 				<th class="auto-style12"><span class="auto-style19">No specific 
 				constraints,<br>but data must be of
-				<a href="frequency-analysis.html#output-types">complex type</a></span></span></th>
+				<a href="frequency-analysis.html#output-types">complex type</a></span></th>
 				<th class="auto-style12">Frequency ESI</th>
 			</tr>
 		</table>
