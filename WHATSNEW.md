@@ -1,6 +1,40 @@
 
-## 2025-01-22
-- **Reference Guide**, aka Help, has been moved from a local _.chm_ file to an [**online Reference Guide**](https://denisbrunet.github.io/Cartool/ReferenceGuide/index.html).
+## 2025-06-26
+- **Computing Results of Inverse Solutions** toolbox major update:
+    - Toolbox now allows for individual inverse matrices to be loaded
+    - Command-Line Interface has been fully implemented
+    - Help fully rewritten
+- Frequency files boosted (read, write, batch averaging, split and merge, display)
+
+## 2025-04-03
+- **Reprocessing MRI** toolbox upgraded
+    - Added an optional Clean-Up first stage
+    - Added the option to port solution points from a common space to subjects' MRIs
+    - Help updated
+
+## 2025-03-31
+- **RIS To Volume** toolbox upgraded:
+    - It can now output 4D nifti files
+    - Saved files are now correctly calibrated
+    - Added a Command-Line Interface
+    - Help updated
+
+## 2025-03-17
+- **Generate Markers from Tracks** toolbox upgraded:
+    - Toolbox can now truly run in batch mode
+    - Now it can run through all sessions of each EEG
+    - Now outputting a verbose file!
+    - Help updated
+- Whole Markers operations big overhaul, increasing speed and reliability
+
+## 2025-02-07
+- **Micro-States Meta-Criterion** updated:
+    - Re-tested all available criteria, and slightly changed the "basket" used to compute the meta-criterion
+
+## 2025-02-03
+- **Cartool GitHub Website** updated:
+    - Moved the old Cartool Community website to GitHub
+    - Moved the whole [**Reference Guide online**](https://denisbrunet.github.io/Cartool/ReferenceGuide/index.html)
 
 ## 2025-01-15
 - **Fixed giganormous EEG files opening and access** (Geodesics MFF, BrainVision...)
