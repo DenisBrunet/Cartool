@@ -112,6 +112,7 @@ void    ApproximateFrequencyOptimized   (   std::complex<float>     cstl[],
 //----------------------------------------------------------------------------
                                         // Frequency analysis, with all options
 enum    ReferenceType;
+enum    SkippingEpochsType;
 enum    MarkerType;
 class   TTracksDoc;
 
@@ -122,6 +123,7 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 const char*         channels,           // could be empty or "*" to select all regular tracks
                                 ReferenceType       ref,                const char*         reflist,
                                 long                timemin,            long                timemax,            bool                endoffile,
+                                SkippingEpochsType  badepochs,          const char*         listbadepochs,
                                 double              samplingfrequency,
                                 int                 numblocks,          int                 blocksize,          int                 blockstep,          double              blocksoverlap,
                                 FFTRescalingType    fftnorm,

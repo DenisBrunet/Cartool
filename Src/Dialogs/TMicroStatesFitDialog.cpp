@@ -2027,17 +2027,17 @@ SkippingEpochsType  badepochs       = ! CheckToBool ( FitTransfer.SkipBadEpochs 
                                     :                                                   NoSkippingBadEpochs;
 
 
-char                listbadepochs [ 4 * KiloByte ];
+char                listbadepochs [ EditSizeText ];
+ClearString ( listbadepochs );
 
 if ( badepochs == SkippingBadEpochsList ) {
 
-    StringCopy ( listbadepochs,    FitTransfer.SkipMarkers );
+    StringCopy      ( listbadepochs,    FitTransfer.SkipMarkers );
+    StringCleanup   ( listbadepochs );
 
     if ( StringIsEmpty ( listbadepochs ) )
-        badepochs   = SkippingBadEpochsAuto;
+        badepochs   = NoSkippingBadEpochs;
     }
-else
-    ClearString ( listbadepochs );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

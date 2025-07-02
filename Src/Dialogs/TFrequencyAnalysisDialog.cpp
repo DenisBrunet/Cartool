@@ -81,6 +81,8 @@ WindowOverlap0      = BoolToCheck ( DefaultWindowOverlap == 0.00 );
 WindowOverlap75     = BoolToCheck ( DefaultWindowOverlap == 0.75 );
 WindowOverlapMax    = BoolToCheck ( DefaultWindowOverlap == 1.00 );
 ClearString ( WindowsInterval );
+SkipBadEpochs       = BoolToCheck ( false );
+ClearString ( SkipMarkers );
 
 ClearString ( SamplingFrequency );
 ClearString ( FreqMin );
@@ -188,6 +190,8 @@ DEFINE_RESPONSE_TABLE1 ( TFrequencyAnalysisDialog, TBaseDialog )
     EV_COMMAND_ENABLE           ( IDC_WINDOWOVERLAP75,          CmWindowOverlapEnable ),
     EV_COMMAND_ENABLE           ( IDC_WINDOWOVERLAPMAX,         CmWindowOverlapEnable ),
 
+    EV_COMMAND_ENABLE           ( IDC_SKIPMARKERS,              CmSkipBadEpochsEnable ),
+
     EV_CBN_SELCHANGE            ( IDC_PRESETS,                  EvPresetsChange ),
 
     EV_COMMAND                  ( IDC_SIMPLEFFT,                CmSetAnalysis ),
@@ -249,6 +253,8 @@ WindowOverlap0      = new TRadioButton ( this, IDC_WINDOWOVERLAP0 );
 WindowOverlap75     = new TRadioButton ( this, IDC_WINDOWOVERLAP75 );
 WindowOverlapMax    = new TRadioButton ( this, IDC_WINDOWOVERLAPMAX );
 WindowsInterval     = new TEdit ( this, IDC_WINDOWSINTERVAL, EditSizeValue );
+SkipBadEpochs       = new TCheckBox     ( this, IDC_SKIPBADEPOCHS );
+SkipMarkers         = new TEdit         ( this, IDC_SKIPMARKERS, EditSizeText );
 
 SamplingFrequency   = new TEdit ( this, IDC_SAMPLINGFREQUENCY, EditSizeValue );
 FreqMin             = new TEdit ( this, IDC_FREQMIN, EditSizeValue );
@@ -413,6 +419,7 @@ delete  TimeMin;            delete  TimeMax;            delete  ClippedTimeMax; 
 delete  NumBlocks;          delete  BlockSize;
 delete  WindowOverlap0;     delete  WindowOverlap75;    delete  WindowOverlapMax;
 delete  WindowsInterval;
+delete  SkipBadEpochs;      delete  SkipMarkers;
 delete  SamplingFrequency;
 delete  FreqMin;            delete  FreqMax;            delete  FreqStep;
 delete  SaveInterval;       delete  SaveBands;
@@ -835,6 +842,12 @@ tce.Enable ( ! ( EEGDoc && EEGDoc->GetSamplingFrequency () > 0 ) );
 void    TFrequencyAnalysisDialog::CmWindowOverlapEnable ( TCommandEnabler &tce )
 {
 tce.Enable ( ! IsSTransform ( CurrentPreset ) );
+}
+
+
+void    TFrequencyAnalysisDialog::CmSkipBadEpochsEnable ( TCommandEnabler &tce )
+{
+tce.Enable ( IsChecked ( SkipBadEpochs ) );
 }
 
 
@@ -1757,6 +1770,25 @@ long                timenum             = ( timemax - timemin + 1 );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+SkippingEpochsType  badepochs       = CheckToBool ( transfer->SkipBadEpochs     ) ? SkippingBadEpochsList
+                                    :                                               NoSkippingBadEpochs;
+
+
+char                listbadepochs [ EditSizeText ];
+ClearString ( listbadepochs );
+
+if ( badepochs == SkippingBadEpochsList ) {
+
+    StringCopy      ( listbadepochs,    transfer->SkipMarkers );
+    StringCleanup   ( listbadepochs );
+
+    if ( StringIsEmpty ( listbadepochs ) )
+        badepochs   = NoSkippingBadEpochs;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 FreqOutputBands     outputbands         = CheckToBool ( transfer->SaveInterval     ) ? CheckToBool ( transfer->SaveLogInterval ) ? OutputLogInterval 
                                                                                                                                  : OutputLinearInterval
                                         : CheckToBool ( transfer->SaveBands        ) ?                                             OutputBands
@@ -1925,6 +1957,7 @@ FrequencyAnalysis   (   EEGDoc,
                         transfer->Channels,
                         ref,                transfer->RefList,
                         timemin,            timemax,            endoffile,
+                        badepochs,          listbadepochs,
                         samplingfrequency,
                         numblocks,          blocksize,          blockstep,      blocksoverlap,
                         fftnorm,

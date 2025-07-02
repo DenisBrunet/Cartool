@@ -2324,11 +2324,21 @@ CheckReference ( dataref, datatype );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-char                listbadepochs [ 4 * KiloByte ];
+SkippingEpochsType  badepochs       = CheckToBool ( transfer.SkipBadEpochs     ) ? SkippingBadEpochsList
+                                    :                                              NoSkippingBadEpochs;
 
-StringCopy ( listbadepochs,    transfer.SkipMarkers );
 
-SkippingEpochsType  badepochs           = CheckToBool ( transfer.SkipBadEpochs ) && StringIsNotEmpty ( listbadepochs ) ? SkippingBadEpochsList : NoSkippingBadEpochs;
+char                listbadepochs [ EditSizeText ];
+ClearString ( listbadepochs );
+
+if ( badepochs == SkippingBadEpochsList ) {
+
+    StringCopy      ( listbadepochs,    transfer.SkipMarkers );
+    StringCleanup   ( listbadepochs );
+
+    if ( StringIsEmpty ( listbadepochs ) )
+        badepochs   = NoSkippingBadEpochs;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

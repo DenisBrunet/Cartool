@@ -151,6 +151,8 @@ public:
     TRadioButtonData    WindowOverlap75;
     TRadioButtonData    WindowOverlapMax;
     TEditData           WindowsInterval [ EditSizeValue ];
+    TCheckBoxData       SkipBadEpochs;
+    TEditData           SkipMarkers     [ EditSizeText ];
 
     TEditData           SamplingFrequency   [ EditSizeValue ];
     TEditData           FreqMin             [ EditSizeValue ];
@@ -253,6 +255,8 @@ protected:
     owl::TRadioButton   *WindowOverlap75;
     owl::TRadioButton   *WindowOverlapMax;
     owl::TEdit          *WindowsInterval;
+    owl::TCheckBox      *SkipBadEpochs;
+    owl::TEdit          *SkipMarkers;
 
     owl::TEdit          *SamplingFrequency;
     owl::TEdit          *FreqMin;
@@ -354,6 +358,7 @@ protected:
     void                CmMarkersEnable                 ( owl::TCommandEnabler &tce );
     void                CmBlockSizeEnable               ( owl::TCommandEnabler &tce );
     void                CmWindowOverlapEnable           ( owl::TCommandEnabler &tce );
+    void                CmSkipBadEpochsEnable           ( owl::TCommandEnabler &tce );
     void                CmIntervalEnable                ( owl::TCommandEnabler &tce );
     void                CmIntervalStepEnable            ( owl::TCommandEnabler &tce );
     void                CmDecadeStepEnable              ( owl::TCommandEnabler &tce );
