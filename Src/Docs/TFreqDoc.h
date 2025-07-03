@@ -34,7 +34,7 @@ constexpr int       MaxCharFrequencyName        = 16;
 constexpr int       MaxCharFreqType             = 32;
 
                                         // max number of points to be displayed
-constexpr int       FreqMaxPointsDisplay        = 1 * 60 * 1000;
+constexpr int       FreqMaxPointsDisplay        = 10 * 60 * 1000;
 
                                         // known frequency analysis types, and their names
 enum                FrequencyAnalysisType 

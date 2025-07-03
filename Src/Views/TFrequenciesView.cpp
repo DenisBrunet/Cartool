@@ -103,16 +103,16 @@ if ( ! ValidView() ) {
     }
 
                                         // get max size for display
-BuffSize            = NoMore ( FreqDoc->GetNumTimeFrames(), (long) FreqMaxPointsDisplay );
+BuffSize            = NoMore ( FreqDoc->GetNumTimeFrames (), (long) FreqMaxPointsDisplay );
 
-CDPt                = TInterval ( 0, FreqDoc->GetNumTimeFrames() - 1, BuffSize );
+CDPt                = TInterval ( 0, FreqDoc->GetNumTimeFrames () - 1, BuffSize );
 
                                         // now set CDP for frequencies
 CDPf                = TInterval ( 0, FreqDoc->GetNumFrequencies () - 1 );
 CDPf.SetMinMax ( CDPf.GetLimitMin (), CDPf.GetLimitMax () );
 
-
-FCursor             = TTFCursor ( FreqDoc, CDPf.GetLimitMin (), CDPf.GetLimitMax (), CDPf.GetMiddle () );
+                                        // showing all frequencies upon creation
+FCursor             = TTFCursor ( FreqDoc, CDPf.GetLimitMin (), CDPf.GetLimitMax (), CDPf.GetLimitMin (), CDPf.GetLimitMax () );
 FCursor.SentTo      = 0;
 FCursor.SentFrom    = 0;
 
