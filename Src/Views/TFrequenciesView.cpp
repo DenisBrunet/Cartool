@@ -154,6 +154,7 @@ SetCDP ();
 CDPt.SetMinLength ( 0, CDPt.GetLimitLength(), true );
 
 ReloadBuffers   ();
+
 ResetScaleFreqs ();                     // use the beginning of the file to calibrate the frequency scaling
 
 
@@ -165,8 +166,11 @@ AverageMode             = false;
 
                                         // display doesn't look nice when there is no time
 if ( FreqDoc->GetNumTimeFrames () == 1 ) {
+
     FreqMode            = FreqModeSpectrum;
     SetTracksMode ();
+    FCursor.SetPos ( FCursor.GetPosMiddle () );
+    ShowHorizScale      = TimeDisplayTime;
     TracksSuper         = true;
     }
 
@@ -3940,12 +3944,12 @@ else {                                  // case 3: deltamin < 0 && deltamax > 0 
                                         // the others are relatively scaled to an average ratio
 void    TFrequenciesView::ResetScaleTracks ( const TSelection *sel )
 {
-//int               firstfreq   = IsModeEFAvg () ? FCursor.GetPosMin () : 0;
-//int               lastfreq    = IsModeEFAvg () ? FCursor.GetPosMin () : FreqDoc->GetNumFrequencies () - 1;
+//int               firstfreq       = IsModeEFAvg () ? FCursor.GetPosMin () : 0;
+//int               lastfreq        = IsModeEFAvg () ? FCursor.GetPosMin () : FreqDoc->GetNumFrequencies () - 1;
 
-                                                // for all mode, for a smarter auto-scaling
-int                 firstfreq   = IsModeSpectrum () ? 0                                 : FCursor.GetPosMin ();
-int                 lastfreq    = IsModeSpectrum () ? FreqDoc->GetNumFrequencies () - 1 : FCursor.GetPosMax ();
+                                                    // for all mode, for a smarter auto-scaling
+int                 firstfreq       = IsModeSpectrum () ? 0                                 : FCursor.GetPosMin ();
+int                 lastfreq        = IsModeSpectrum () ? FreqDoc->GetNumFrequencies () - 1 : FCursor.GetPosMax ();
 
 long                fromtf          = 0;
 long                totf            = CDPt.GetLength() - 1;
@@ -4062,7 +4066,7 @@ void    TFrequenciesView::ResetScaleFreqs ()
 {
 int                 numel           = FreqDoc->GetNumElectrodes  ();
 int                 numfreq         = FreqDoc->GetNumFrequencies ();
-int                 numtf           = CDPt.GetLength ();
+int                 numtf           = CDPt    .GetLength         ();
 
                                         // temporarily reset block shift
 if ( IsModeEFAvg () )
@@ -4071,26 +4075,30 @@ if ( IsModeEFAvg () )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // weighting is done through AVG or GFP, then rescaled to give a mean weight of 1
-TEasyStats          stat;
+TGoEasyStats        stats ( numfreq, numel * numtf );
 
+OmpParallelFor
 
 for ( int f = 0; f < numfreq; f++ ) {
-
-    stat.Reset ();
 
     for ( int e  = 0; e  < numel; e++  )
     for ( int tf = 0; tf < numtf; tf++ )
 
-        stat.Add ( abs ( EegBuff ( f, e, tf ) ), ThreadSafetyIgnore );
+        if ( EegBuff ( f, e, tf ) )
+
+            stats[ f ].Add ( abs ( EegBuff ( f, e, tf ) ), ThreadSafetyIgnore );
 
 
-    ScaleFreqs[ f ]     = stat.Average ();
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Median will help ignore transient events like epileptic seizure
+                                        // Max Mode should be even better to adjust for some background activity - unfortunately, it gives some weird "streaks" across frequencies
+    ScaleFreqs[ f ]     = stats[ f ].Median ( false );
     }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // get the min of averages
-double              minavg      = ScaleFreqs[ 0 ];
+double              minavg          = ScaleFreqs[ 0 ];
 
 for ( int f = 0; f < numfreq; f++ )
     Mined ( minavg, ScaleFreqs[ f ] );
