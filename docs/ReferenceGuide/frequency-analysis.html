@@ -1,4 +1,4 @@
-<HTML>
+﻿<HTML>
  <HEAD>
   <TITLE>Frequency Analysis</TITLE>
   <link rel="icon" type="image/x-icon" href="../favicon.ico">
@@ -25,18 +25,16 @@
              &nbsp;
          </P>
          <H5>
-             <A HREF="#analysis">What kind of analysis?</A><br><A HREF="#run-dialog">How to run the frequency analysis</A><br>
-             <A HREF="#results">Results</A><br><A HREF="#fft-approximation">FFT Approximation</A><br>Display: <A HREF="frequency-display.html">Frequency Display</A>&nbsp;
-             and&nbsp;&nbsp; <A HREF="frequency-display.html#advanced-display">
-                 Displaying
-                 maps for frequenciess
-             </A>
+             <A HREF="#analysis">What kind of analysis?</A><br>
+             <A HREF="#run-dialog">How to run the frequency analysis</A><br>
+             <A HREF="#results">Results</A><br>
+             <A HREF="#fft-approximation">FFT Approximation</A><br>
+             Display: <A HREF="frequency-display.html">Frequency Display</A>&nbsp;
+             and&nbsp;&nbsp; <A HREF="frequency-display.html#advanced-display">Displaying maps for frequencies</A><br>
+             <br>
+             <A HREF="#technical-points">Technical points:</A>
          </H5>
-         <H5>
-             <A HREF="#technical-points">Technical points</A>
-         </H5>
-         <UL>
-             <H5>
+         <H6>
                  <A HREF="#file-types-in">Files that can be processed</A><br>
                  <A HREF="#data-reference">Reference of data</A><br>
                  <A HREF="#window-time-ref">Time reference for each window</A><br>
@@ -45,8 +43,7 @@
                  <A HREF="#averaging-freqs">Averaging frequencies together</A><br>
                  <A HREF="#averaging-fft-appr">FFT Approximation and averaging</A><br>
                  <A HREF="#avg-after-norm">Averaging is done after conversion</A>
-             </H5>
-         </UL>
+         </H6>
          <H2>
              <A NAME="analysis"></A>What kind of analysis?
          </H2>
@@ -54,20 +51,19 @@
              Currently, the analysis available are:
          </P>
          <UL>
-             <LI CLASS="mvd-P">
-                 <P>
-                     Plain ol' <B>FFT</B><BR>
+             <LI CLASS="mvd-P">Plain ol' <B>FFT</B><BR>
              <LI CLASS="mvd-P"><B>Power Maps</B><SUP>*</SUP><BR>
              <LI CLASS="mvd-P"><B><A HREF="#fft-approximation">FFT Approximation</A></B><SUP>*</SUP><BR>
-             <LI CLASS="mvd-P"><B>S-Transform</B></P>
+             <LI CLASS="mvd-P"><B>S-Transform</B>
          </UL>
          <P>
-             However, new analysis will be added in the future. Also, you won't
-             find here the theory behind these methods, you can browse the
+             &nbsp;</P>
+		<P>
+             You won't
+             find here the theory behind these methods, please browse the
              internet <A HREF="https://www.google.com/search?q=FFT+analysis+beginners">
                  about
-                 the FFT
-             </A>, and <A HREF="https://en.wikipedia.org/wiki/S_transform">
+                 the FFT</A>, and <A HREF="https://en.wikipedia.org/wiki/S_transform">
                  the
                  S-Transform
              </A>.
@@ -79,8 +75,6 @@
                  how
                  to work with the display
              </A>.<BR>
-             <BR>
-             <BR>
              <BR>
          </P>
          <P>
@@ -1123,11 +1117,10 @@
          </P>
          <UL>
              <LI CLASS="mvd-P">
-                 <P>
                      <A HREF="files-formats-others.html#eeg"><I>Any</I> EEG files recognized by Cartool,</A><BR>
              <LI CLASS="mvd-P">
                  <A HREF="files-formats-cartool.html#ris">Ris files</A>
-                 (Results from Inverse Solution computation),</P>
+                 (Results from Inverse Solution computation),
          </UL>
          <H3>
              <A NAME="data-reference"></A>Reference of data
@@ -1220,9 +1213,8 @@
          </P>
          <UL>
              <LI CLASS="mvd-P">
-                 <P>
-                     All frequencies within the specified range (including both limits),
-                     with all the available steps (say, again, 0.5 Hz) will be averaged together.<BR>
+                 All frequencies within the specified range (including both limits),
+                 with all the available steps (say, again, 0.5 Hz) will be averaged together.<BR>
              <LI CLASS="mvd-P">
                  But if the available steps are smaller than 0.25
                  Hz, f.ex. 0.125 Hz, the steps taken will be limited to those
@@ -1233,7 +1225,7 @@
                  frequencies averaged together has been limited to a total of 25 per
                  band. Because the S-Transform is very smooth, and it does not provide
                  much informations to average more, and because this transformation is
-                 very costly!</P>
+                 very costly!
          </UL>
          <P>
              F.ex.: band 3-8 Hz, with steps of 0.5 Hz, will average frequencies 3,
@@ -1247,21 +1239,20 @@
          </P>
          <UL>
              <LI CLASS="mvd-P">
-                 <P>
-                     You have to specify a range of frequencies, plus a step to save. If
-                     your step is greater than the transformation available step, an
-                     averaging will occur. F.ex. you ask from 3 to 8 Hz, by steps of 1 Hz,
-                     but the resolution allows up to 0.25 Hz, then frequencies 3, 3.25,
-                     3.5 and 3.75 are averaged together for your first saved frequency.
-                     Then 4, 4.25, 4.5 and 4.75 for your second saved frequency etc...
-                     Stated otherwise, they are treated like a serie of small bands.<BR>
+                 You have to specify a range of frequencies, plus a step to save. If
+                 your step is greater than the transformation available step, an
+                 averaging will occur. F.ex. you ask from 3 to 8 Hz, by steps of 1 Hz,
+                 but the resolution allows up to 0.25 Hz, then frequencies 3, 3.25,
+                 3.5 and 3.75 are averaged together for your first saved frequency.
+                 Then 4, 4.25, 4.5 and 4.75 for your second saved frequency etc...
+                 Stated otherwise, they are treated like a serie of small bands.<BR>
              <LI CLASS="mvd-P">
                  As for the band case, averaged steps will be
                  limited to a minimum of 0.25 Hz.<BR>
              <LI CLASS="mvd-P">
                  As for the band case, the <B>number</B> of
                  frequencies averaged together for the S-Transform for each step is
-                 also limited to 25 (but this is quite unlikely to happen!).</P>
+                 also limited to 25 (but this is quite unlikely to happen!).
          </UL>
          <P>
              &nbsp;
