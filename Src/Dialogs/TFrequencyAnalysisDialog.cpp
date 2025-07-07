@@ -1002,17 +1002,26 @@ else                                                    return  timespan >= bloc
 }
 
 
-int     ComputeTimeMax ( bool isstransform, bool windowoverlapmax, int timemin, int blocksize, double blocksoverlap, int numblocks )
+int     ComputeTimeMax ( bool isstransform, bool onetfjump, int timemin, int blocksize, double blocksoverlap, int numblocks )
 {
-if      ( isstransform      )   return  timemin + blocksize - ( blocksize ? 1 : 0 );
-else if ( windowoverlapmax  )   return  timemin + blocksize + ( numblocks - 1 ) - 1;
-else                            return  timemin + blocksize * ( blocksoverlap + ( 1 - blocksoverlap ) * numblocks ) - 1;
+if      ( isstransform  )   return  timemin + blocksize - ( blocksize ? 1 : 0 );
+else if ( onetfjump     )   return  timemin + blocksize + ( numblocks - 1 ) - 1;
+else                        return  timemin + blocksize * ( blocksoverlap + ( 1 - blocksoverlap ) * numblocks ) - 1;
 }
 
 
 int     TFrequencyAnalysisDialog::ComputeTimeMax ( int timemin, int blocksize, double blocksoverlap, int numblocks )
 {
 return  crtl::ComputeTimeMax ( IsSTransform ( CurrentPreset ), IsChecked ( WindowOverlapMax ), timemin, blocksize, blocksoverlap, numblocks );
+}
+                                        // For the FFT, it could be efficient to round the block size - we don't want odd/prime numbers block size
+                                        // As a first version, we try to truncate to either some multiples of 128 (efficient), or 100 (user friendly, still efficient)
+int     RoundFFTBlockSize ( int blocksize )
+{
+int                 bs1             = TruncateTo ( blocksize, 128 );
+int                 bs2             = TruncateTo ( blocksize, 100 );
+                                    // pick the one closer to the original interval
+return  abs ( (double) blocksize - bs1 ) < abs ( (double) blocksize - bs2 ) ? bs1 : bs2;
 }
 
 
@@ -1096,6 +1105,8 @@ timenum     = AtLeast ( 0, timemax - timemin + 1 );
 
 //DBGV3 ( timemin, timemax, timenum, "timemin, timemax, timenum" );
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // force update the BlockSize if we change of processing time (FFT <-> S-Transform)
                                         // we have to do this quite early
 
@@ -1106,19 +1117,13 @@ if ( ! IsSTransform ( PreviousPreset )  )
 
                                         // transitionning to a S-Transform?
 if ( IsSTransform ( CurrentPreset ) && ! IsSTransform ( PreviousPreset ) ) {
-                                        // window size is the max duration
-                                        // BUT we don't want the user ton input weird (odd, or prime) numbers, or the FFT will be very slow
-                                        // As a first version, we try to truncate to either some multiples of 128 (efficient), or 100 (user friendly, still efficient)
-    int                 tn1             = TruncateTo ( timenum, 128 );
-    int                 tn2             = TruncateTo ( timenum, 100 );
-                                        // pick the one closer to the original interval
-    timenum     = fabs ( (double) timenum - tn1 ) < fabs ( (double) timenum - tn2 ) ? tn1 : tn2;
 
+    timenum     = RoundFFTBlockSize ( timenum );
 
     SetInteger ( BlockSize, timenum );
 
     if ( timenum <= 1 )
-        ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "" : "Invalid" );
+        ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "<File End>" : "<Invalid>" );
 
 //  DBGV4 ( timemin, timemax, timenum, sf, "timemin, timemax, timenum, sf - ST" );
     }
@@ -1136,6 +1141,7 @@ overlap     = GetWindowOverlap ( blocksize );
 //DBGV ( blocksize, "blocksize" );
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /*                                      // init block size?
 if ( blocksize <= 0 )
     if ( IsChecked ( EndOfFile ) ) {
@@ -1155,12 +1161,14 @@ if ( blocksize <= 0 || IsChecked ( EndOfFile ) )
     return;
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 numblocks   = ComputeNumBlocks ( timenum, blocksize, overlap );
 
 
 //DBGV ( numblocks, "numblocks" );
 
-/*                                      // ajust for the user to a new block size
+/*                                      // adjust for the user to a new block size
 if ( numblocks == 0 ) {
     if ( ! IsPower2 ( timenum ) ) {     // not power of 2?
         blocksize = Power2Rounded ( timenum);
@@ -1184,8 +1192,9 @@ if ( numblocks ) {
     }
 else {
 //  timemax = 0;
-    ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "" : "Invalid" );
+    ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "<File End>" : "<Invalid>" );
     }
+
 
 //SetInteger ( TimeMin, timemin );       // not needed to set, and it will generate a call to this procedure!
 TimeMin->ResetCaret;
@@ -1215,20 +1224,22 @@ if (    timenum <= 0
      || IsChecked ( EndOfFile ) ) {
 //if ( ! IsValidTime () ) {
 
-    ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "" : "Invalid" );
+    ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "<File End>" : "<Invalid>" );
 
     if ( numblocks != 0 )               // be cautious, otherwise it will loop for ever within this procedure!
         NumBlocks->SetText ( "" );
 
     if ( IsSTransform ( CurrentPreset ) ) {
         BlockSize->SetText ( "" );
-        ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "" : "Invalid" );
+        ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "<File End>" : "<Invalid>" );
         }
 
     UpdateFreqMinMaxStep ();
     return;
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 int                 maxblocks       = ComputeNumBlocks ( timenum, blocksize, overlap );
 
@@ -1243,8 +1254,9 @@ if ( numblocks ) {
     }
 else {
 //  timemax = 0;
-    ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "" : "Invalid" );
+    ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "<File End>" : "<Invalid>" );
     }
+
 
 SetInteger ( NumBlocks, numblocks );
 NumBlocks->ResetCaret;
@@ -1284,6 +1296,8 @@ if ( timenum <= 0 || blocksize < MinBlockSize /*|| !IsPower2 ( blocksize )*/ || 
     }
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 numblocks   = ComputeNumBlocks ( timenum, blocksize, overlap );
 
                                         // updates
@@ -1291,14 +1305,15 @@ if ( numblocks ) {
     timemax = ComputeTimeMax ( timemin, blocksize, overlap, numblocks );
 
     if ( timenum <= 0 )
-        ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "" : "Invalid" );
+        ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "<File End>" : "<Invalid>" );
     else
         SetInteger ( ClippedTimeMax, timemax );
     }
 else {
 //  timemax = 0;
-    ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "" : "Invalid" );
+    ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "<File End>" : "<Invalid>" );
     }
+
 
 SetInteger ( NumBlocks, numblocks );
 NumBlocks->ResetCaret;
@@ -1736,19 +1751,23 @@ if ( EEGDoc->GetNumElectrodes () == 1 && ref == ReferenceAverage )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-double              samplingfrequency   = StringToDouble ( transfer->SamplingFrequency );
+double              samplingfrequency   = StringToDouble  ( transfer->SamplingFrequency );
 
 long                timemin             = StringToInteger ( transfer->TimeMin );
 
-long                timemax             = StringToInteger ( transfer->ClippedTimeMax ); // using OPTIMIZED time instead of TimeMax, which will make the FFT faster
+bool                endoffile           = CheckToBool     ( transfer->EndOfFile );
 
-bool                endoffile           = CheckToBool ( transfer->EndOfFile );
+long                timemax             = endoffile ? EEGDoc->GetNumTimeFrames () - 1               // use real, full length when using EOF option 
+                                                    : StringToInteger ( transfer->ClippedTimeMax ); // using OPTIMIZED time instead of TimeMax, which will make the FFT faster
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // if S-Transform, block size is the full time window
-int                 blocksize           = analysis == FreqAnalysisSTransform ? ( endoffile ? EEGDoc->GetNumTimeFrames () : timemax - timemin + 1 )
-                                                                             : StringToInteger ( transfer->BlockSize );
+int                 blocksizedialog     = StringToInteger ( transfer->BlockSize );
+
+int                 blocksize           = analysis == FreqAnalysisSTransform ? timemax - timemin + 1
+                                                                             : blocksizedialog;
+
                                         // because we have real input, signal can be processed faster and holding less memory
 int                 freqsize            = blocksize / 2 + 1;
 
@@ -1757,15 +1776,16 @@ double              blocksoverlap       = GetWindowOverlap ( blocksize );
 int                 blockstep           = ComputeStep ( blocksize, blocksoverlap );
                                         // if S-Transform, only 1 block is allowed
 int                 numpossibleblocks   = analysis == FreqAnalysisSTransform ? 1 
-                                                                             : ComputeNumBlocks ( EEGDoc->GetNumTimeFrames() - timemin + 1, blocksize, blocksoverlap );
+                                                                             : ComputeNumBlocks ( EEGDoc->GetNumTimeFrames () - timemin + 1, blocksize, blocksoverlap );
+int                 numblocksdialog     = StringToInteger ( transfer->NumBlocks );
 
 int                 numblocks           = endoffile ?          numpossibleblocks
-                                                    : NoMore ( numpossibleblocks, StringToInteger ( transfer->NumBlocks ) );
+                                                    : NoMore ( numpossibleblocks, numblocksdialog );
 
                                         // update timemax
                     timemax             = ComputeTimeMax ( timemin, blocksize, blocksoverlap, numblocks );
 
-long                timenum             = ( timemax - timemin + 1 );
+long                timenum             = timemax - timemin + 1;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1956,7 +1976,7 @@ FrequencyAnalysis   (   EEGDoc,
                         analysis,
                         transfer->Channels,
                         ref,                transfer->RefList,
-                        timemin,            timemax,            endoffile,
+                        timemin,            timemax,
                         badepochs,          listbadepochs,
                         samplingfrequency,
                         numblocks,          blocksize,          blockstep,      blocksoverlap,

@@ -358,7 +358,8 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 FreqAnalysisType    analysis,
                                 const char*         channels,           // could be empty or "*" to select all regular tracks
                                 ReferenceType       ref,                const char*         reflist,
-                                long                timemin,            long                timemax,            bool                endoffile,
+                                long                timemin,            long                timemax,
+                                SkippingEpochsType  badepochs,          const char*         listbadepochs,
                                 double              samplingfrequency,
                                 int                 numblocks,          int                 blocksize,          int                 blockstep,          double              blocksoverlap,
                                 FFTRescalingType    fftnorm,
@@ -388,7 +389,7 @@ if ( numblocks <= 0
   || blocksize <= 0 )
     return  false;
 
-
+                                        // values are currently: 0% (100% jump); 75% (25% jump); ((blocksize-1)/blocksize)% (1TF jump)
 Clipped ( blocksoverlap, 0.0, 1.0 );
 
 if ( analysis == FreqAnalysisSTransform )
@@ -451,6 +452,15 @@ int                 numelsave       = (int) elsave;
                                         // no tracks to analyze?
 if ( numelsave == 0 )
     return  false;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TMarkers            rejectmarkers;
+
+if ( badepochs == SkippingBadEpochsList )
+                                        // transfer & filter at the same time
+    rejectmarkers.InsertMarkers ( *eegdoc, listbadepochs );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -769,7 +779,7 @@ AtomType            datatypeout         = outputatomtype == OutputAtomComplex ? 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int                 timedown            = 1;
+int                 stdownsamplingfactor= 1;
 
                                         // S-Transform is very smooth, and we don't need the extra time resolution (?)
 if ( optimaldownsampling
@@ -777,13 +787,13 @@ if ( optimaldownsampling
 //&& ( IsStFFT ( CurrentPreset ) || IsSTransform ( CurrentPreset ) )    // StFFT case needs more work, i.e. changing the block step & number of time frames...
   && savedfreqmax > 0 ) {
                                         // giving the Nyquist seems OK
-    timedown    = AtLeast ( 1, Truncate ( samplingfrequency / ( 2 * savedfreqmax ) ) );
+    stdownsamplingfactor    = AtLeast ( 1, Truncate ( samplingfrequency / ( 2 * savedfreqmax ) ) );
 
-//    Maxed ( blockstep, timedown );
+//  Maxed ( blockstep, stdownsamplingfactor );
     }
 
                                         // well, turns out we cannot downsample, better turn the option off for safety
-if ( timedown == 1 )
+if ( stdownsamplingfactor == 1 )
     optimaldownsampling = false;
 
 
@@ -1019,11 +1029,18 @@ if ( analysis != FreqAnalysisSTransform ) {
 
     verbose.NextLine ();
     verbose.Put ( "Windows size:", blocksize, 0, " [TF]" );
-    verbose.Put ( "Windows step:", blocksoverlap == 0.00 ? "100% Window" 
+    verbose.Put ( "Windows step:", blocksoverlap == 0.00 ? "100% Window"    // transform overlap back to jump
                                  : blocksoverlap == 0.75 ? "25% Window" 
                                  :                         "1 TF"       );  // blocksoverlap = ( blocksize - 1 ) / blocksize
     verbose.Put ( "Windows step duration:", TimeFrameToMilliseconds ( blockstep, samplingfrequency ), 2, " [ms]" );
     verbose.Put ( "Number of windows:", numblocks );
+    }
+
+verbose.NextLine ();
+verbose.Put ( "Excluding bad epochs:", SkippingEpochsNames[ badepochs ] );
+if ( badepochs == SkippingBadEpochsList ) {
+    verbose.Put ( "Skipping markers:", listbadepochs );
+    verbose.Put ( "Number of excluding markers:", (int) rejectmarkers );
     }
 }
 
@@ -1170,12 +1187,10 @@ verbose.Put ( "Splitting results per spectrum :",       splitspectrum );
 verbose.NextLine ();
 verbose.Put ( "Optimally downsampling the file:", optimaldownsampling );
 if ( optimaldownsampling )
-    verbose.Put ( "Downsampling factor:", timedown );
+    verbose.Put ( "Downsampling factor:", stdownsamplingfactor );
 }
 
 
-verbose.NextLine ();
-verbose.NextLine ();
 verbose.Flush ();
 
 
@@ -1232,19 +1247,21 @@ expfile.NumTracks           = numelsave;
 expfile.NumFrequencies      = numsavedfreqs;
 expfile.SamplingFrequency   = samplingfrequency;
 
-
+                                        // technically, we need to shift time to half block forward to be centered
+//long                epochtimeoffset     = analysis == FreqAnalysisSTransform ? 0 : blocksize / 2;
+                                        // but not applying any shift looks actually more intuitive. It also means we see the time at the beginning of each block
+long                epochtimeoffset     = 0;
 long                usoffset;
 
 if     ( analysis == FreqAnalysisSTransform ) {
-    expfile.NumTime             = RoundAbove ( blocksize / (double) timedown );
-    expfile.BlockFrequency      = samplingfrequency / timedown;
+    expfile.NumTime             = RoundAbove ( blocksize         / (double) stdownsamplingfactor );
+    expfile.BlockFrequency      =              samplingfrequency /          stdownsamplingfactor;
     usoffset                    = TimeFrameToMicroseconds ( timemin, samplingfrequency ); // + 0.25; // ?
-//    DBGV ( blocksize, "S-T blocksize" );
     }
 else {
     expfile.NumTime             = outputsequential ? numblocks : 1;
     expfile.BlockFrequency      = samplingfrequency / blockstep;
-    usoffset                    = TimeFrameToMicroseconds ( timemin /*+ blocksize / 2*/, samplingfrequency );
+    usoffset                    = TimeFrameToMicroseconds ( timemin + epochtimeoffset, samplingfrequency );
     }
 
                                         // get the shift from starting point in ms
@@ -1418,6 +1435,7 @@ TTracks<AComplex>   blockfft;           // each frequency to be saved, all the e
 TTracks<AComplex>   sumfft;             // declare, but don't allocate if not needed
 TArray3<AComplex>   fftappr;            // all the intermediate frequencies needed, for all bands
 TVector<double>     windowingtable;
+int                 numgoodblocks       = 0;
 
                                         // do create summation buffer
 if ( analysis != FreqAnalysisSTransform )       
@@ -1504,19 +1522,49 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
         Gauge.Next ( gaugefreqloop );
         CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
         }
+
+
+    int             fromtf          = firsttf;
+    int             totf            = firsttf + blocksize - 1;
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    bool            goodblock       = true;
+
+
+    if ( badepochs == SkippingBadEpochsList 
+      && analysis  != FreqAnalysisSTransform ) {    // we need the data anyway
+
+        for ( int i = 0; i < (int) rejectmarkers; i++ )
+
+            if ( rejectmarkers[ i ]->IsOverlappingInterval ( fromtf, totf ) ) {
+
+                goodblock   = false;
+                break;
+                }
+        }
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if ( goodblock ) {
+
+        numgoodblocks++;
                                         // read the block of time frames, with all electrodes, without filters and pseudos
-                                        // (it won't really go any faster to read the whole file at once, and cut our epochs in it)
-    eegdoc->GetTracks   (   firsttf,        firsttf + blocksize - 1, 
-                            blockeeg,       0, 
-                            datatypein, 
-                            ComputePseudoTracks, 
-                            ref,            &refsel 
-                        );
+        eegdoc->GetTracks   (   fromtf,         totf, 
+                                blockeeg,       0, 
+                                datatypein, 
+                                ComputePseudoTracks, 
+                                ref,            &refsel 
+                            );
+        }
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Settinp up our variables
     if ( analysis == FreqAnalysisFFTApproximation )
+
         fftappr.ResetMemory ();
 
 
@@ -1574,13 +1622,17 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // transfer data + optional windowing
-        if ( windowing == FreqWindowingHanning ) 
-        
-            for ( int i = 0; i < blocksize; i++ )   X ( i ) = blockeeg ( el, i ) * windowingtable ( i );
+        if ( goodblock ) {
 
-        else
-//          for ( int i = 0; i < blocksize; i++ )   X ( i ) = blockeeg ( el, i );
-            X.CopyMemoryFrom ( &blockeeg ( el, 0 ) );
+            if ( windowing == FreqWindowingHanning ) 
+        
+                for ( int i = 0; i < blocksize; i++ )   X ( i ) = blockeeg ( el, i ) * windowingtable ( i );
+
+            else
+    //          for ( int i = 0; i < blocksize; i++ )   X ( i ) = blockeeg ( el, i );
+
+                X.CopyMemoryFrom ( &blockeeg ( el, 0 ) );
+            }
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1589,25 +1641,31 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
                                         // real FFT only - will not touch anything past freqsize in the F vector, which will remain 0
             fft ( X, F );
+
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Analytic signal (signal + i * Hilbert)
                                         // 1) double the frequencies - !but NOT for f=0 nor f=dim/2!
             for ( int i = 1;        i < freqsize - 1; i++ )     F ( i ) *= 2;
                                         // 2) then clear-up the negative frequencies
 //          for ( int i = freqsize; i < blocksize;    i++ )     F ( i )  = 0;   // !buffer was not touched by the real FFT, so it is still 0!
 
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // loop through the output bands
             const TOneFrequencyBand*    fb          = freqbands.data ();
 
             for ( int fbi = 0, savedfi0 = 0; fbi < numfreqbands; fbi++, fb++ ) {
 
                                         // process all the freqs within the current band
-//              for ( fi = fb->SaveFreqMin_i, fi0 = 0; fi <= fb->SaveFreqMax_i; fi0++, fi += fb->SaveFreqStep_i ) {
                 for ( int fi = fb->SaveFreqMin_i; fi <= fb->SaveFreqMax_i; fi += fb->SaveFreqStep_i, savedfi0++ ) {
 
                                         // clear sum buffer
                     SumST   = (AComplex) 0;
 
-//                  for ( int downf = 0; downf < fb->SaveFreqStep_i; downf++, fi++ ) {
+
+                    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
                     for ( int downf = 0, fi2 = fi; downf < fb->AvgNumFreqs; downf++, fi2 += fb->AvgFreqStep_i ) {
 
                         Gauge.Actualize ();
@@ -1658,11 +1716,34 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
                                 }
 
+
+                            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // End of analytic signal:
                                         // 5) Invert FFT, using full inverse scaling
                             ffti ( FG, ST );    // actually, we could use some in-place transform here, getting rid od FG
 
 
+                            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // here clipping any bad epochs FROM the single data epoch
+                            if ( badepochs == SkippingBadEpochsList ) {
+
+                                for ( int mi = 0; mi < (int) rejectmarkers; mi++ ) {
+
+                                    if ( rejectmarkers[ mi ]->IsOverlappingInterval ( fromtf, totf ) ) {
+
+                                            // !markers could actually go beyond buffer!
+                                        int         mfrom       = Clip ( rejectmarkers[ mi ]->From, timemin, timemax ) - timemin;
+                                        int         mto         = Clip ( rejectmarkers[ mi ]->To,   timemin, timemax ) - timemin;
+
+                                            // zero-ing results at markers intervals
+                                        for ( int i = mfrom; i <= mto; i++ )
+                                            ST ( i )  = (AComplex) 0;
+                                        }
+                                    } // for rejectmarkers
+                                } // if SkippingBadEpochsList
+
+
+                            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // apply windowing at the end, to get rid of lousy borders
                                         // this is also known as Cone Of Influence (COI)
                             if ( windowing      == FreqWindowingHanningBorder 
@@ -1672,10 +1753,8 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
                                         // Formula that does a good job at cleaning the borders, using 2 (4/8) full cycles on each side (instead of 1)
                                         // It has to be reminded that with Hanning, weighting will be 50% at the middle of that window
-//                              #define     numcyclesinhanning  8
-//                              #define     numcyclesinhanning  4
-//                              #define     numcyclesinhanning  ( 2 * ( SqrtTwo * 6 / TwoPi ) ) // from literature
-                                #define     numcyclesinhanning  2
+//                              constexpr double    numcyclesinhanning  = ( 2 * ( SqrtTwo * 6 / TwoPi ) ); // = 2.70 - from litterature
+                                constexpr double    numcyclesinhanning  = 2;
 
                                 double      sthwd       = Clip ( blocksize / (double) fi2 * numcyclesinhanning, 0.0, blocksize / 2.0 );    
                                 int         sthwi       = Truncate ( sthwd );
@@ -1697,6 +1776,8 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                                     }
                                 } // post-windowing
 
+
+                            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // ST is of complex type, some care should be taken for the averaging
                                         // converting to needed type
                             for ( int i = 0; i < blocksize; i++ ) {
@@ -1712,18 +1793,23 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
                         } // for downfreq
 
+                    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // average of multiple frequencies
                     SumST  /= fb->AvgNumFreqs;
 
+
+                    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // in case of downsampling, we don't fear any aliasing effect as a Gaussian has already been applied before
-                    for ( int i = 0, i0 = 0; i < blocksize; i += timedown, i0++ ) // do all TFs
+                    for ( int i = 0, i0 = 0; i < blocksize; i += stdownsamplingfactor, i0++ ) // do all TFs
 
                         if      ( datatypeout == AtomTypeComplex )  {   results ( i0, eli, 2 * savedfi0     )   = SumST ( i ).real ();
                                                                         results ( i0, eli, 2 * savedfi0 + 1 )   = SumST ( i ).imag ();     }
                         else                                            results ( i0, eli,     savedfi0     )   = SumST ( i ).real ();
 
                     } // for savefreqs
+
                 } // for freqband
+
             } // if S-Transform
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1731,22 +1817,23 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                                         // so bands and sub-bands averaging should be avoided
         else if ( analysis == FreqAnalysisFFTApproximation ) {
 
+            if ( ! goodblock )
+                continue; // eli
+
                                         // real FFT only
             fft ( X, F );
 
                                         // loop through the output bands, saving ALL data of each band
             const TOneFrequencyBand*    fb          = freqbands.data ();
 
-            for ( int fbi = 0; fbi < numfreqbands; fbi++, fb++ ) {
-
+            for ( int fbi = 0;                             fbi   <  numfreqbands;       fbi++, fb++ )
                                         // frequencies by steps
-                for ( int fi = fb->SaveFreqMin_i, fftafi0 = 0; fi <= fb->SaveFreqMax_i; fi += fb->SaveFreqStep_i )
+            for ( int fi = fb->SaveFreqMin_i, fftafi0 = 0; fi    <= fb->SaveFreqMax_i;  fi += fb->SaveFreqStep_i )
                                         // we need to store the whole band - BUT only 1 band at a time
-                    for ( int downf = 0, fi2 = fi; downf < fb->AvgNumFreqs; downf++, fi2 += fb->AvgFreqStep_i, fftafi0++ )
+            for ( int downf = 0, fi2 = fi;                 downf <  fb->AvgNumFreqs;    downf++, fi2 += fb->AvgFreqStep_i, fftafi0++ )
                                         // simply store in temp
-                        fftappr ( fbi, fftafi0, eli ) = F ( fi2 );
+                fftappr ( fbi, fftafi0, eli ) = F ( fi2 );
 
-                } // for freqbands
             } // FFT Approximation
 
 
@@ -1754,9 +1841,28 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
         else { // all other FFT analysis
 
+            if ( ! goodblock ) {
+                                        // do nothing except filling results with 0's
+                if ( outputsequential )
+
+                    for ( int fi0 = 0; fi0 < numsavedfreqs; fi0++ )
+
+                        if      ( datatypeout == AtomTypeComplex )  {   results ( blocki0, eli, 2 * fi0     )   = 0;    
+                                                                        results ( blocki0, eli, 2 * fi0 + 1 )   = 0; }
+                        else                                            results ( blocki0, eli,     fi0     )   = 0;
+
+                                        // simply skipping without summing 0's for sumfft
+
+                continue; // eli
+                }
+
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // real FFT only
             fft ( X, F );
 
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // loop through the output bands
             const TOneFrequencyBand*    fb          = freqbands.data ();
 
@@ -1795,24 +1901,24 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                 } // for freqband
 
 
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
             for ( int fi0 = 0; fi0 < numsavedfreqs; fi0++ ) {
 
-                if ( outputsequential ) {   // write directly to file
+                if ( outputsequential ) {
                     if      ( datatypeout == AtomTypeComplex )  {   results ( blocki0, eli, 2 * fi0     )   = blockfft ( fi0, eli ).real ();    
                                                                     results ( blocki0, eli, 2 * fi0 + 1 )   = blockfft ( fi0, eli ).imag ();}
                     else                                            results ( blocki0, eli,     fi0     )   = blockfft ( fi0, eli ).real ();
                     } // if outputsequential
 
-                else {                      // sum up in buffer
+                else {
                     if      ( datatypeout == AtomTypeComplex )  {   sumfft  ( fi0, eli )                   += blockfft ( fi0, eli );        }   // shouldn't happen, not meaningful to average complex numbers!
                     else                                        {   sumfft  ( fi0, eli )                   += blockfft ( fi0, eli ).real ();}   // norm/norm2 has already been computed, and is stored in the Real component
                     } // if average freqs
 
                 } // for savedfreqband
-            } // other FFT analysis
 
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            } // other FFT analysis
 
         } // for eli
 
@@ -1822,7 +1928,28 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
     OmpParallelEnd
 
                                         // FFT Approximation - filling completed, time to actually process results
+                                        // loop is NOT parallelized
     if ( analysis == FreqAnalysisFFTApproximation ) {
+
+        if ( ! goodblock ) {
+                                        // do nothing except filling results with 0's
+            if ( outputsequential ) {
+
+                const TOneFrequencyBand*    fb          = freqbands.data ();
+
+                for ( int fbi = 0, savedfi0 = 0; fbi  < numfreqbands;     fbi++, fb++ )
+                for ( int fi0 = 0;               fi0  < fb->SaveNumFreqs; fi0++, savedfi0++ )
+                for ( int eli2 = 0;              eli2 < numelsave;        eli2++ )
+
+                    if      ( datatypeout == AtomTypeComplex )  {   results ( blocki0, eli2, 2 * savedfi0       )   = 0;  
+                                                                    results ( blocki0, eli2, 2 * savedfi0 + 1   )   = 0;   }
+                    else                                            results ( blocki0, eli2,     savedfi0       )   = 0;
+                }
+                                        // simply skipping without summing 0's for sumfft
+
+            continue; // blocki0
+            }
+
                                         // loop through the output bands
         const TOneFrequencyBand*    fb          = freqbands.data ();
 
@@ -1891,12 +2018,13 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                 } // for saved frequencies
 
 
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                     // Writing to file
             for ( int fi0 = 0; fi0 <  fb->SaveNumFreqs; fi0++, savedfi0++ ) {
                                     // we have to explicitly run an electrodes loop here, as we disrupted the outer electrode loop
                 for ( int eli2 = 0; eli2 < numelsave; eli2++ ) {
 
-                    if ( outputsequential ) {   // write directly to file
+                    if ( outputsequential ) {
 
                         if      ( datatypeout == AtomTypeComplex )  {   results ( blocki0, eli2, 2 * savedfi0       )   = blockfft ( fi0, eli2 ).real ();  
                                                                         results ( blocki0, eli2, 2 * savedfi0 + 1   )   = blockfft ( fi0, eli2 ).imag ();   }
@@ -1914,10 +2042,10 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                         }
                     }
                 } // for freq
-            } // for freqband
-        } // FFT Approximation
 
-//    OmpParallelEnd
+            } // for freqband
+
+        } // FFT Approximation
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -1940,13 +2068,14 @@ if ( analysis == FreqAnalysisFFTApproximation ) {
 #endif
 
                                         // write all data in one shot
-if ( outputsequential || analysis == FreqAnalysisSTransform )
+if ( outputsequential 
+  || analysis == FreqAnalysisSTransform )
 
     expfile.Write ( results, NotTransposed );
 
 else {                                  // writing temporal mean
-
-    sumfft     /= numblocks;
+                                        // we averaged only the good blocks
+    sumfft     /= NonNull ( numgoodblocks );
 
                                         // go through the selected electrodes
     for ( int eli = 0; eli < numelsave; eli++ ) {
@@ -1956,6 +2085,13 @@ else {                                  // writing temporal mean
             if      ( datatypeout == AtomTypeComplex )  expfile.Write ( sumfft ( fi0, eli ),         0, eli, fi0 );
             else                                        expfile.Write ( sumfft ( fi0, eli ).real (), 0, eli, fi0 );
         } // for electrode
+
+
+    verbose.NextBlock ();
+    verbose.Put ( "Number of blocks:", numblocks );
+    verbose.Put ( "Number of good blocks:", numgoodblocks );
+    verbose.Put ( "Percentage of good blocks:", 100 * numgoodblocks / (double) numblocks, 2, "%" );
+    verbose.Flush ();
     }
 
 expfile.End ();
@@ -1982,35 +2118,25 @@ if ( ! silent ) {
 
 if ( outputmarkers ) {
 
-    TMarker         marker;
-    int             nummarkers      = 0;
-
-    marker.Set ( -1 );                     // start from first trigger
-
-    bool            isstransform        = analysis == FreqAnalysisSTransform;
-
-    bool            windowoverlapmax    = blocksoverlap != 0.00 && blocksoverlap != 0.75;   // a bit ad-hoc to retrieve this parameter
-                                        // min error in conversion
-    int             margin              = isstransform ? 0 : blocksize * blocksoverlap / 2;
-                                        // should shift timemin to avoid new TF < 0
-    long            mrktimemin  = timemin
-                                + margin;
-                                        // same on the other side
-    long            mrktimemax  = ComputeTimeMax ( isstransform, windowoverlapmax, mrktimemin, blocksize, blocksoverlap, numblocks ) 
-                                - margin;
-
     ofstream        ofmrk ( TFileName ( fileoutmrk, TFilenameExtendedPath ) );
 
     WriteMarkerHeader ( ofmrk );
 
-                                        // read triggers as currently selected
-    for ( ; eegdoc->GetNextMarker ( marker, true, outputmarkerstype ) && marker.From <= mrktimemax; ) {
-                                        // keep only those fully inside (extended) range
-        if ( IsInsideLimits ( marker.From, marker.To, mrktimemin, mrktimemax ) ) {
 
+    double          mrkdownsampling = analysis == FreqAnalysisSTransform ? stdownsamplingfactor : blockstep;
+    TMarker         marker;
+    int             nummarkers      = 0;
+
+    marker.Set ( -1 );                  // start from first trigger
+
+                                        // read triggers as currently selected
+    for ( ; eegdoc->GetNextMarker ( marker, true, outputmarkerstype ) && marker.From <= timemax; ) {
+                                        // keep markers that overlap
+        if ( marker.IsOverlappingInterval ( timemin, timemax ) ) {
+                                        // but take care to clip them!
             WriteMarker (   ofmrk, 
-                            ( marker.From - mrktimemin ) / ( isstransform ? timedown : blockstep ), 
-                            ( marker.To   - mrktimemin ) / ( isstransform ? timedown : blockstep ), 
+                            Clip ( Round ( ( marker.From - ( timemin + epochtimeoffset ) ) / mrkdownsampling ), 0, (int) expfile.NumTime - 1 ),
+                            Clip ( Round ( ( marker.To   - ( timemin + epochtimeoffset ) ) / mrkdownsampling ), 0, (int) expfile.NumTime - 1 ),
                             marker.Name 
                         );
 
@@ -2019,7 +2145,7 @@ if ( outputmarkers ) {
         } // for marker
 
 
-    ofmrk.close();
+    ofmrk.close ();
 
                                         // erase a file with 0 triggers, and prevent duplication
     if ( nummarkers == 0 ) {
@@ -2076,6 +2202,9 @@ if ( ! savefreq ) {
     DeleteFileExtended ( fileoutfreq );
     DeleteFileExtended ( fileoutmrk  );
     }
+
+
+verbose.NextLine ( 2 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

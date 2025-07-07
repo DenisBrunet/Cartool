@@ -122,7 +122,7 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 FreqAnalysisType    analysis,
                                 const char*         channels,           // could be empty or "*" to select all regular tracks
                                 ReferenceType       ref,                const char*         reflist,
-                                long                timemin,            long                timemax,            bool                endoffile,
+                                long                timemin,            long                timemax,
                                 SkippingEpochsType  badepochs,          const char*         listbadepochs,
                                 double              samplingfrequency,
                                 int                 numblocks,          int                 blocksize,          int                 blockstep,          double              blocksoverlap,

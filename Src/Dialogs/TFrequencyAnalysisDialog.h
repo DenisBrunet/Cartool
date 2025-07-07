@@ -226,7 +226,7 @@ constexpr int                   MaxInitBlockSize        = 2000;
 constexpr double                DefaultWindowOverlap    = 0.75;
 
 
-int                 ComputeTimeMax ( bool isstransform, bool windowoverlapmax, int timemin, int blocksize, double blocksoverlap, int numblocks );
+int                 ComputeTimeMax ( bool isstransform, bool onetfjump, int timemin, int blocksize, double blocksoverlap, int numblocks );
 
 
 //----------------------------------------------------------------------------
