@@ -1,4 +1,9 @@
 
+## 2025-07-07
+- **Frequency Analysis** toolbox:
+    - Added an _Excluding Bad Epochs_ option
+    - Help updated
+
 ## 2025-06-26
 - **Computing Results of Inverse Solutions** toolbox major update:
     - Toolbox now allows for individual inverse matrices to be loaded
