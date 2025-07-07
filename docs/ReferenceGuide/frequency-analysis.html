@@ -365,7 +365,7 @@
                              Showing the resulting step in [ms] between successive time windows.
                      </TD>
                  </TR>
-                 <TR>
+                 <tr>
                      <TD WIDTH="27%" VALIGN=TOP>
                          <P>
                              Number of Window(s):
@@ -377,6 +377,27 @@
                          <P>
                              If the S-Transform analysis is used, there is only 1 window which
                              extends exactly on the time range selected above.
+                     </TD>
+                 </tr>
+                 <TR>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             Excluding Bad Epochs at Markers:
+                     </TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             You can specify a bad epochs list of markers that 
+							 will be ignored:</P>
+						 <ul>
+							 <li><strong>FFT case</strong>: for any window / 
+							 block that <em>has some overlap with any of these 
+							 markers</em>, <a href="#windows-processed">
+							 Sequential output</a> will be 0's, while
+							 <a href="#windows-processed">Average output</a> 
+							 will simply ignore it.</li>
+							 <li><strong>S-Transform case</strong>: results will 
+							 be 0'ed at markers' positions.</li>
+						 </ul>
                      </TD>
                  </TR>
                  <TR>
@@ -1139,17 +1160,21 @@
          <H3>
              <A NAME="window-time-ref"></A>Time reference for each window
          </H3>
-         <P>
-             Each window is a part cut from the original file, say from&nbsp;<I> t</I>&nbsp;
-             to&nbsp; <I>t + window_size - 1</I>. Once processed, the results are <B>
-                 frequencies
-                 for that whole window
-             </B>. Therefor, it is natural to attribute the <B>
-                 mean
-                 time
-             </B>&nbsp; <I>t + window_size / 2</I>&nbsp; of that window as
-             its time position in the output file.
-         </P>
+         <p>Each time window is a segment taken 
+		 from the original file, spanning from time <em>t</em> 
+		 to <em>t + window_size - 1</em>. After 
+		 processing, the result represents frequency data for the entire window. 
+		 Mathematically, it would be most accurate to assign the <strong>time 
+		 reference to the center of the window, i.e., </strong>
+		 <em><strong>t + window_size / 2</strong></em>. 
+		 However, for the sake of simplicity, we chose to use <strong>the 
+		 starting time of each window instead</strong>.</p>
+		<p>For example, if the analysis begins 
+		at 9:15:00 and each window is 2 seconds long, the true average time of 
+		the first window is 9:15:01. This would introduce a 1-second shift in 
+		the timestamps. To avoid this shift and keep things straightforward, we 
+		instead label the output with the window's start time - beginning at 
+		9:15:00.</p>
          <H3>
              <A NAME="averaging-windows"></A>Averaging windows
          </H3>
