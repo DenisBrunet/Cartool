@@ -294,6 +294,12 @@ bool        IsMultiple ( int v, int of )
 return  ! ( v % of );
 }
 
+
+bool        IsNotMultiple ( int v, int of )
+{
+return  v % of;
+}
+
                                         // !0 case is ambiguous!
 bool        IsInteger ( double v )
 {

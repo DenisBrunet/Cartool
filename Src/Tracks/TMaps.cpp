@@ -1673,7 +1673,6 @@ if ( allmaps.IsNotAllocated () )
 
 
 int                 Dimension       = allmaps[ 0 ]->GetDim ();
-int                 DimensionSP     = Dimension / 3;
 int                 NumMaps         = allmaps     . GetDim ();
 
 map.Resize ( Dimension );
@@ -1906,7 +1905,6 @@ if ( allmaps.IsNotAllocated () )
 
 
 int                 Dimension       = allmaps[ 0 ]->GetDim ();
-int                 DimensionSP     = Dimension / 3;
 int                 NumMaps         = allmaps     . GetDim ();
 
 map.Resize ( Dimension );
@@ -2066,13 +2064,14 @@ for ( int mi1 = 0, mri1 = 0; mi1 < NumMaps; mi1++ ) {
                                         // skip wrong labels, if any
     if ( labels && (*labels)[ mi1 ] != l )
         continue;
+
                                         // getting a handy reference to current map
     const TMap&         mapi1           = *allmaps[ mi1 ];
                                         // skipping null maps - these might come from empty clusters files which contain a null map
     if ( mapi1.IsNull () )
         continue;
                                         // from the right labels, downsample the remaining maps
-    if ( mri1++ % step )
+    if ( IsNotMultiple ( mri1++, step ) )
         continue;
 
 
@@ -2085,13 +2084,14 @@ for ( int mi1 = 0, mri1 = 0; mi1 < NumMaps; mi1++ ) {
 
         if ( labels && (*labels)[ mi2 ] != l )
             continue;
+
                                         // getting a handy reference to current map
         const TMap&         mapi2           = *allmaps[ mi2 ];
                                         // skipping null maps - these might come from empty clusters files which contain a null map
         if ( mapi2.IsNull () )
             continue;
 
-        if ( mri2++ % step )
+        if ( IsNotMultiple ( mri2++, step ) )
             continue;
 
                                         // Evaluate some polarity
@@ -2102,14 +2102,14 @@ for ( int mi1 = 0, mri1 = 0; mi1 < NumMaps; mi1++ ) {
                                         // labels polarity is irrelevant here
                 for ( int spi = 0; spi < DimensionSP; spi++ )
                                         // sum of Absolute of SP-by-SP projection
-                    sumcorr    += fabs ( mapi2.Get3DVector ( spi ).ScalarProduct ( mapi1.Get3DVector ( spi ) ) );
+                    sumcorr    += abs ( mapi2.Get3DVector ( spi ).ScalarProduct ( mapi1.Get3DVector ( spi ) ) );
 
                 } // IsVector
                                         
             else {                      // Scalar data
                                         // We don't make use of labeling polarity, because we test maps 2 by 2
 //              sumcorr    += Project ( mapi2, mapi1, polarity );       // only for normalized data
-                sumcorr    += fabs ( mapi2.ScalarProduct ( mapi1 ) );   // other cases
+                sumcorr    += abs ( mapi2.ScalarProduct ( mapi1 ) );    // other cases
                 }
 
             } // PolarityEvaluate
@@ -2197,7 +2197,7 @@ for ( int mi1 = 0, mri1 = 0; mi1 < NumMaps; mi1++ ) {
     if ( allmaps[ mi1 ]->IsNull () )
         continue;
                                         // from the right labels, downsample the remaining maps
-    if ( mri1++ % step )
+    if ( IsNotMultiple ( mri1++, step ) )
         continue;
 
 
@@ -2217,7 +2217,7 @@ for ( int mi1 = 0, mri1 = 0; mi1 < NumMaps; mi1++ ) {
         if ( allmaps[ mi2 ]->IsNull () )
             continue;
 
-        if ( mri2++ % step )
+        if ( IsNotMultiple ( mri2++, step ) )
             continue;
 
 
@@ -2706,6 +2706,7 @@ for ( int mi = 0; mi < NumMaps; mi++ ) {
 if ( numweigths == 0 )
     return  refmap;
 
+                                        // Here weights contains only data with positive correlation to the reference map - all negative correlation data has been ditched
                                         // We are interested in the top-most correlated maps to the referential one
 weights.SortRows ( WeightIndex, Descending, numweigths );
 
@@ -2725,7 +2726,7 @@ for ( int wi = 0; wi < nummaps; wi++ ) {
   //double              w           = PearsonToKendall ( weights ( wi, WeightIndex ) ); // de-skewed distance weight
     double              w           = nummaps - wi;                                     // rank weight - no need to normalize..
                         sumw       += w;                                                // ..as we cumulate the total sum of weights for normalization anyway
-    int                 mi          = weights ( wi, MapIndex    );
+    int                 mi          = weights ( wi, MapIndex );
     const TMap&         mapi        = *allmaps[ mi ];
 
 
@@ -3044,7 +3045,7 @@ for ( int mi = 0, mri = 0; mi < NumMaps; mi++ ) {
     if ( mapi.IsNull () )
         continue;
                                         // from the right labels, downsample the remaining maps
-    if ( mri++ % step )
+    if ( IsNotMultiple ( mri++, step ) )
         continue;
 
                                         // remember 1 data point from cluster
