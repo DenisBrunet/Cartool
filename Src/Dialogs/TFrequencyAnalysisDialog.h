@@ -224,6 +224,8 @@ constexpr FreqOutputAtomType    DefaultFreqOutputAtom   = OutputAtomNorm2;
 constexpr int                   MinBlockSize            =    4;
 constexpr int                   MaxInitBlockSize        = 2000;
 constexpr double                DefaultWindowOverlap    = 0.75;
+constexpr double                DefaultSaveFreqMin      = 1; // 0 or 1
+constexpr double                DefaultSaveFreqMax      = 40;
 
 
 int                 ComputeTimeMax ( bool isstransform, bool onetfjump, int timemin, int blocksize, double blocksoverlap, int numblocks );

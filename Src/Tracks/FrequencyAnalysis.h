@@ -90,26 +90,6 @@ enum    FreqWindowingType
 
 
 //----------------------------------------------------------------------------
-                                        //  a few utilities used by FrequencyAnalysis
-void    InvertFreqMap                   (   std::complex<float>*    v,  
-                                            int                     numel   
-                                        );
-
-bool    IsNegativeCorrelation           (   std::complex<float>*    vc1, 
-                                            std::complex<float>*    vc2, 
-                                            int                     numel   
-                                        );
-
-void    ApproximateFrequency            (   std::complex<float>     cstl[], 
-                                            int                     numel   
-                                        );
-
-void    ApproximateFrequencyOptimized   (   std::complex<float>     cstl[], 
-                                            int                     numel   
-                                        );
-
-
-//----------------------------------------------------------------------------
                                         // Frequency analysis, with all options
 enum    ReferenceType;
 enum    SkippingEpochsType;

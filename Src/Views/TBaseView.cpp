@@ -433,8 +433,9 @@ ColorTable.SetTableAllowed ( NoTables );
                                         // Positive and Vectorial data
 if      ( IsAbsolute ( datatype ) ) {
 
-    ColorTable.SetTableAllowed ( AbsColorTable_GrayGreenYellowRed );
+    ColorTable.SetTableAllowed ( AbsColorTable_WhiteBlack );
     ColorTable.SetTableAllowed ( AbsColorTable_GrayYellow );
+    ColorTable.SetTableAllowed ( AbsColorTable_GrayGreenYellowRed );
     ColorTable.SetTableAllowed ( AbsColorTable_MagentaBlueCyanGrayGreenYellowRed );
 
     if ( ColorTableIndex[ datatype ] == UnknownTable )

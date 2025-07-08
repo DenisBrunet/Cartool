@@ -191,6 +191,9 @@ RenderingMode           = LayoutOnePage;
 SetColorTable ( FreqDoc->GetAtomType ( AtomTypeUseCurrent ) );
 
 
+ScalingContrast         = ColorTableToScalingContrast ( 0.5 );
+
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // re-use EEG menu, as it is mainly the same, thus avoiding tedious updates in both
 SetViewMenu ( new TMenuDescr (IDM_EEG) );

@@ -365,19 +365,20 @@ if ( ! BatchProcessing && sf ) {
                                         // keep any existing frequencies when entering batch mode
 if ( ! BatchProcessing && sf && blocksize ) {
                                         // reset frequency limits
-    fstep       = sf / blocksize;
+    double  nyquist     = GetNyquist ( sf, IsSTransform ( CurrentPreset ) );
+            fstep       = sf / blocksize;
 
     SetDouble   ( SamplingFrequency, sf );
     SetInteger  ( FreqMin, 0 );
-    SetDouble   ( FreqMax,  GetNyquist ( sf, IsSTransform ( CurrentPreset ) ) );
+    SetDouble   ( FreqMax,  nyquist );
     SetDouble   ( FreqStep, fstep );
 
                                         // set this only if found blank
     if ( StringIsEmpty ( FrequencyAnalysisTransfer.SaveFreqMin ) )  // only reading existing transfer buffer
-        SetDouble ( SaveFreqMin, 0 /*1*/ );
+        SetDouble ( SaveFreqMin, DefaultSaveFreqMin );
 
     if ( StringIsEmpty ( FrequencyAnalysisTransfer.SaveFreqMax ) )  // only reading existing transfer buffer
-        CopyText    ( SaveFreqMax, FreqMax );
+        SetDouble ( SaveFreqMax, NoMore ( DefaultSaveFreqMax, nyquist ) );
 
     if ( ! IsSTransform ( CurrentPreset ) )
         CopyText    ( SaveFreqStep, FreqStep );

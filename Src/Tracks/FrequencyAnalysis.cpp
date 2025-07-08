@@ -121,16 +121,16 @@ double              orgx,   orgy,   orgz;
 #endif
 
 
-void    ApproximateFrequency    (   std::complex<float>     cstl[], 
-                                    int                     numel   
-                                )
+auto    ApproximateFrequency    = []    (   std::complex<float>     cstl[], 
+                                            int                     numel   
+                                        )
 {
 #if defined (OutputConstellation)
                                         // write original constellation
 for ( int eli = 0; eli < numel; eli++ )
-    *toooo << StreamFormatFloat32 << ( orgx + cstl[ eli ].real () * maxw ) << "\t"
-           << StreamFormatFloat32 << ( orgy + cstl[ eli ].imag () * maxw ) << "\t"
-           << StreamFormatFloat32 << orgz << "\n";
+    *toooo << StreamFormatFloat32 << ( orgx + cstl[ eli ].real () * maxw ) << Tab
+           << StreamFormatFloat32 << ( orgy + cstl[ eli ].imag () * maxw ) << Tab
+           << StreamFormatFloat32 << orgz << NewLine;
 #endif
 
 
@@ -176,167 +176,30 @@ double              ps;
 for ( int eli = 0; eli < numel; eli++ ) {
     ps = cstl[ eli ].real ();
 
-    *toooo << StreamFormatFloat32 << ( orgx + cosphi * ps * maxw ) << "\t"
-           << StreamFormatFloat32 << ( orgy + sinphi * ps * maxw ) << "\t"
-           << StreamFormatFloat32 << ( orgz + 1 ) << "\n";
+    *toooo << StreamFormatFloat32 << ( orgx + cosphi * ps * maxw ) << Tab
+           << StreamFormatFloat32 << ( orgy + sinphi * ps * maxw ) << Tab
+           << StreamFormatFloat32 << ( orgz + 1 ) << NewLine;
     }
 #endif
-}
-
-
-//----------------------------------------------------------------------------
-void    ApproximateFrequencyOptimized   (   std::complex<float>     cstl[], 
-                                            int                     numel   
-                                        )
-{
-double              x;
-double              y;
-double              sumx2;
-double              sumy2;
-double              sumxy;
-double              cosphi;
-double              sinphi;
-
-TSelection          lesssel ( numel, OrderSorted );  // use less electrodes to find the approximation axis
-double              meand;
-double              sd;
-double              lse;
-double              ps;
-int                 numloop     = 10;
-TEasyStats          stat;
-//double              oldcosphi, oldsinphi;
-
-
-lesssel.Set ();                         // start with all electrodes
-
-
-#if defined (OutputConstellation)
-                                        // write original constellation
-for ( int eli = 0; eli < numel; eli++ )
-    *toooo << StreamFormatFloat32 << ( orgx + cstl[ eli ].real () ) * maxw ) << "\t"
-           << StreamFormatFloat32 << ( orgy + cstl[ eli ].imag () ) * maxw ) << "\t"
-           << StreamFormatFloat32 << orgz << "\n";
-#endif
-
-
-for ( int i = 0; i < numloop; i++ ) {
-
-    sumx2   =   sumy2   =   sumxy   = 0;
-                                        // compute stat variables
-    for ( TIteratorSelectedForward eli ( lesssel ); (bool) eli; ++eli ) {
-        x       = cstl[ eli() ].real ();
-        y       = cstl[ eli() ].imag ();
-
-        sumx2  += x * x;
-        sumy2  += y * y;
-        sumxy  += x * y;
-        }
-
-    double      phi1    = 0.5 * atan2 ( 2 * sumxy, sumx2 - sumy2 );
-    double      phi2    = phi1 + HalfPi;
-
-    double      phisd   = cos ( 2 * phi1 ) * ( sumx2 - sumy2 ) + 2 * sin ( 2 * phi1 ) * sumxy;
-
-    if ( phisd > 0 ) {
-        cosphi = cos ( phi1 );
-        sinphi = sin ( phi1 );
-        }
-    else {
-        cosphi = cos ( phi2 );
-        sinphi = sin ( phi2 );
-        }
-
-
-    stat.Reset ();
-    lesssel.Set ();                     // restart from all electrodes
-
-    for ( TIteratorSelectedForward eli ( lesssel ); (bool) eli; ++eli ) {
-                                        // scalar product = projection
-        ps      = cosphi * cstl[ eli() ].real () + sinphi * cstl[ eli() ].imag ();
-                                        // compute distance
-        lse     = sqrt ( fabs ( abs ( cstl[ eli() ] ) * abs ( cstl[ eli() ] ) - ps * ps ) );
-
-        stat.Add ( lse );
-        }
-
-    meand   = stat.Average ();
-    sd      = stat.SD ();
-
-
-    for ( TIteratorSelectedForward eli ( lesssel ); sd && (bool) eli; ++eli ) {
-                                        // scalar product = projection
-        ps      = cosphi * cstl[ eli() ].real () + sinphi * cstl[ eli() ].imag ();
-                                        // compute distance
-        lse     = sqrt ( fabs ( abs ( cstl[ eli() ] ) * abs ( cstl[ eli() ] ) - ps * ps ) );
-
-//      if ( lse - meand > 1.0 * sd )
-                                        // loose selection at first, then make it stricter through iterations
-        if ( lse - meand > ( 0.5 + (double) ( numloop - i ) / numloop * 0.75 ) * sd )
-            lesssel.Reset ( eli() );
-        }
-
-
-
-//#if defined (OutputConstellation)
-//                                        // write 1st projected constellation
-//    if ( !i )
-//        for ( int eli = 0; eli < numel; eli++ ) {
-//            ps = cosphi * cstl[ eli ].real () + sinphi * cstl[ eli ].imag ();
-//
-//            *toooo << StreamFormatFloat32 << ( orgx + cosphi * ps * maxw ) << "\t"
-//                   << StreamFormatFloat32 << ( orgy + sinphi * ps * maxw ) << "\t"
-//                   << StreamFormatFloat32 << ( orgz + (double) i * 2 ) << "\n";
-//            }
-//#endif
-    }
-
-
-//#if defined (OutputConstellation)
-//                                        // write remaining constellation
-//for ( TIteratorSelectedForward eli ( lesssel ); (bool) eli; ++eli )
-//    *toooo << StreamFormatFloat32 << ( orgx + cstl[ eli() ].real () * maxw ) << "\t"
-//           << StreamFormatFloat32 << ( orgy + cstl[ eli() ].imag () * maxw ) << "\t"
-//           << StreamFormatFloat32 << ( orgz + 4 ) << "\n";
-//#endif
-
-
-                                        // we have the axis direction, project all even if not all are saved
-for ( int eli = 0; eli < numel; eli++ )
-                                        // project on directional, unity vector
-                                        // and store in the complex as a real
-    cstl[ eli ] = cosphi * cstl[ eli ].real () + sinphi * cstl[ eli ].imag ();
-
-
-
-#if defined (OutputConstellation)
-                                        // write projected constellation
-for ( int eli = 0; eli < numel; eli++ ) {
-    ps = cstl[ eli ].real ();
-
-    *toooo << StreamFormatFloat32 << ( orgx + cosphi * ps * maxw ) << "\t"
-           << StreamFormatFloat32 << ( orgy + sinphi * ps * maxw ) << "\t"
-           << StreamFormatFloat32 << ( orgz + 1 ) << "\n";
-    }
-#endif
-}
+};
 
 
 //----------------------------------------------------------------------------
                                         // invert a whole set of electrodes values
                                         // could use some TMap...
-void    InvertFreqMap           (   complex<float>*     v,  
-                                    int                 numel   
-                                )
+auto    InvertFreqMap           = []    (   complex<float>*     v,
+                                            int                 numel   
+                                        )
 {
 for ( int eli = 0; eli < numel; eli++ )
     v[ eli ] = - v[ eli ];
-}
+};
 
                                         // just convert data format
-bool    IsNegativeCorrelation   (   complex<float>*     vc1, 
-                                    complex<float>*     vc2, 
-                                    int                 numel   
-                                )
+auto    IsNegativeCorrelation   = []    (   complex<float>*     vc1, 
+                                            complex<float>*     vc2, 
+                                            int                 numel   
+                                        )
 {
 TVector<float>      v1 ( numel );
 TVector<float>      v2 ( numel );
@@ -347,7 +210,7 @@ for ( int eli = 0; eli < numel; eli++ ) {
     }
 
 return  v1.Correlation ( v2 ) < 0;
-}
+};
 
 
 //----------------------------------------------------------------------------
@@ -1077,7 +940,7 @@ if          ( outputbands == OutputLinearInterval ) {
             verbose.Put ( fi0 ? "" : "Merging frequencies [Hz]:" );
 
             for ( int downf = 0, fi2 = fi; downf < fb->AvgNumFreqs; downf++, fi2 += fb->AvgFreqStep_i )
-                (ofstream&) verbose << ( downf ? ",\t" : "" ) << fi2 * datafreqstep_hz;
+                (ofstream&) verbose << ( downf ? "," Tab : "" ) << fi2 * datafreqstep_hz;
 
             verbose.NextLine ();
             }
@@ -1110,7 +973,7 @@ else if     ( outputbands == OutputBands
                     verbose.Put ( fi0 ? "" : "Merging frequencies [Hz]:" );
 
                     for ( int downf = 0, fi2 = fi; downf < fb->AvgNumFreqs; downf++, fi2 += fb->AvgFreqStep_i )
-                        (ofstream&) verbose << ( downf ? ",\t" : "" ) << fi2 * datafreqstep_hz;
+                        (ofstream&) verbose << ( downf ? "," Tab : "" ) << fi2 * datafreqstep_hz;
 
                     verbose.NextLine ();
                     }
@@ -1469,7 +1332,7 @@ if ( analysis == FreqAnalysisFFTApproximation ) {
     for ( int fi0 = 0; fi0 <  numsavedfreqs; fi0++ ) {
         sprintf ( buff, "E:\\Data\\Constellation.%02d.spi", fi0 );
         ooo[ fi0 ].open ( buff );
-        //ooo << ( numsavefreq * elsave.NumSet () ) << "  " << 1.0 << "\n";
+        //ooo << ( numsavefreq * elsave.NumSet () ) << "  " << 1.0 << NewLine;
         ooo[ fi0 ] << StreamFormatScientific;
         }
 
