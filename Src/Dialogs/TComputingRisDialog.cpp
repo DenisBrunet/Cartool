@@ -2677,7 +2677,7 @@ if ( ! ComputingRis (   esicase,
 
                         Inverses,               regularization,         backnorm,
                         datatypeepochs,         datatypefinal,
-                        RisCentroidMethod,
+                        ESICentroidMethod,
                         
                         spatialfilter,          xyzfile,
                         ranking,

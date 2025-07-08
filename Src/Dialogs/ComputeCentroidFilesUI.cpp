@@ -162,8 +162,8 @@ AtomType            datatype        = tg.alleeg                 ?   AtomTypeScal
 
                                         // ranking norm RIS
 bool                ranking         = tg.allris 
-//                                 && IsPositive ( datatype )           // "vectorial" ranking is allowed
-                                   && centroidflag != MedianCentroid    // Median can produce a lot of 0's, which will behave badly with our Ranking parameters
+//                                 && IsPositive ( datatype )           // !"vectorial" ranking is actually allowed!
+//                                 && centroidflag != MedianCentroid    // Median can produce a lot of 0's, which will behave badly with our Ranking parameters
                                    && GetAnswerFromUser ( "Ranking input RIS data (recommended for more robust results)?", CentroidTitle, this );
 
 
@@ -175,8 +175,8 @@ bool                ranking         = tg.allris
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // thresholding norm RIS
 bool                thresholding    = tg.allris 
-//                                 && IsPositive ( datatype )           // "vectorial" ranking is allowed
-                                   && centroidflag != MedianCentroid    // Median can produce a lot of 0's, which will behave badly with our Ranking parameters
+//                                 && IsPositive ( datatype )           // !"vectorial" thresholding is actually allowed!
+//                                 && centroidflag != MedianCentroid    // Median can produce a lot of 0's, which will behave badly with our Ranking parameters
                                    && ranking
                                    && GetAnswerFromUser ( "Thresholding input RIS data?", CentroidTitle, this );
 double              threshold       = 0;

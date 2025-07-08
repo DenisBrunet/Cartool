@@ -2333,8 +2333,8 @@ int                 reqmaxclusters      = StringToInteger ( SegTransfer.MaxClust
 
 
 int                 numrandomtrials     = StringToInteger ( SegTransfer.RandomTrials );
-CentroidType        centroid            = isesipreset ? MedianCentroid      // keeping the best spatial resolution - especially after 2 stages of template-ing
-                                                      : MeanCentroid;       // fastest for EEG
+CentroidType        centroid            = isesipreset ? ESICentroidMethod
+                                                      : EEGCentroidMethod;
 
 
 bool                dolimitcorr         = CheckToBool ( SegTransfer.ClipCorrelation );

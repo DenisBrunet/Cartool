@@ -60,10 +60,6 @@ enum    ComputingRisPresetsEnum;
 enum    SpatialFilterType;
 
 
-//constexpr CentroidType  RisCentroidMethod = MedianCentroid;                   // Median gives sharper shapes/contours, counterpart is it basically forces to store all the data, and is more time-consuming to compute
-constexpr CentroidType  RisCentroidMethod   = MeanCentroid;                     // maps can be quite empty after optional thresholding, a Median might be too radical while a Mean will still output something
-//constexpr CentroidType  RisCentroidMethod = WeightedMeanCentroid;
-
 constexpr FilterTypes   RisRoiMethod        = FilterTypeMean;                   // for the same reason as for centroids: merging clipped data with a Median can produce too much null results
 
 constexpr FilterTypes   RisEnvelopeMethod   = FilterTypeEnvelopeGapBridging;    // results close to analytic, but can work with positive-only data

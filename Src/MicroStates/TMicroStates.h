@@ -34,12 +34,18 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
                                         // A few general flags used to control some of the micro-states analysis behavior
-constexpr int       SmoothingDefaultHalfSize    =  3;       // Default smoothing half-window size - usually for samnpling rates in the 250[Hz] range
-constexpr double    SmoothingDefaultBesag       = 20;       // Default smoothing Besag / lambda factor (was 10 for a very long time)
-                                        
-constexpr bool      AllowEmptyClusterFiles      = true;     // Choosing how to write empty clusters on files: ignoring / writing empty file / writing a null map
-                                        
-constexpr bool      SavingNormalizedClusters    = false;    // Controlling if data clusters are written normalized or with original power
+constexpr int           SmoothingDefaultHalfSize    =  3;               // Default smoothing half-window size - usually for samnpling rates in the 250[Hz] range
+constexpr double        SmoothingDefaultBesag       = 20;               // Default smoothing Besag / lambda factor (was 10 for a very long time)
+                                            
+constexpr bool          AllowEmptyClusterFiles      = true;             // Choosing how to write empty clusters on files: ignoring / writing empty file / writing a null map
+                                            
+constexpr bool          SavingNormalizedClusters    = false;            // Controlling if data clusters are written normalized or with original power
+
+
+constexpr CentroidType  EEGCentroidMethod           = MeanCentroid;     // always, we want to keep it linear
+constexpr CentroidType  MEGCentroidMethod           = MeanCentroid;     // always, we want to keep it linear
+constexpr CentroidType  ESICentroidMethod           = MeanCentroid;     // maps can be quite empty after optional thresholding, a Median might be too radical while a Mean will still output something
+//constexpr CentroidType  ESICentroidMethod         = MedianCentroid;   // Median gives sharper shapes/contours, counterpart is it basically forces to store all the data, and is more time-consuming to compute
 
                                         // Flag used to generate all known criteria for tests
 //#define             UseAllCriteria

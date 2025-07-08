@@ -449,7 +449,7 @@ for ( int    filei   = 0;                filei   <  numfiles;        filei++ ) {
                                     datatype,           polarity,       dataref,// same as the real clustering
                                     ClusteringTAAHC /*ClusteringKMeans*/,       // T-AAHC is NOT random, and should be faster(?)
                                     nummapsmin,         nummapsmax,             // important
-                                    numrandtrials,      MeanCentroid,           // important
+                                    numrandtrials,      what == GenerateRis ? ESICentroidMethod : EEGCentroidMethod,    // important
                                     false,              0.50,                   // cloud of maps should be consistent at that point
 
                                     false,

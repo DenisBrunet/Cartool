@@ -341,7 +341,7 @@ if      ( dualdata == DualRis ) {
     dualdatatype        = DualDataPresets[ dualdata ].DataType;
     dualdataref         = ReferenceNone; // GetProcessingRef ( ProcessingReferenceESI );
     dualranking         = true;
-    dualcentroid        = MedianCentroid;
+    dualcentroid        = ESICentroidMethod;
 
                                         // load & concatenate all files
     DualData.ReadFiles  (   *gofalt, dualdatatype, ReferenceNone );
@@ -383,7 +383,7 @@ else if ( dualdata == DualMeg ) {
     dualdatatype        = DualDataPresets[ dualdata ].DataType;
     dualdataref         = ReferenceNone; // GetProcessingRef ( ProcessingRefMEG );
     dualranking         = false;
-    dualcentroid        = MeanCentroid;
+    dualcentroid        = MEGCentroidMethod;
 
                                         // load & concatenate all files
     DualData.ReadFiles  (   *gofalt, dualdatatype, ReferenceNone );
@@ -3172,7 +3172,7 @@ return  Segmentation    (   gof,
                             datatype,               polarity,           dataref,
                             clusteringmethod,
                             reqminclusters,         reqmaxclusters,
-                            numrandomtrials,        MeanCentroid,
+                            numrandomtrials,        EEGCentroidMethod,
                             dolimitcorr,            limitcorr,
 
                             sequentialize,

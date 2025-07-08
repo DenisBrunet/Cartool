@@ -241,6 +241,8 @@ TStrings            diffs;
 
 gof.GetCommonParts    (   commondir,  commonstart,    0,  &diffs  );
 
+StringCleanup   ( commonstart );
+
                                         // this could happen if files have nothing in common at their beginning
 if ( StringIsEmpty ( commonstart ) )
 
@@ -248,9 +250,6 @@ if ( StringIsEmpty ( commonstart ) )
 
                                         // Concatenate diffs
 TFileName           alldiffs;
-
-ClearString ( alldiffs );
-
 
 for ( int i = 0;     i < (int) diffs; i++ ) {
 
@@ -266,7 +265,8 @@ if ( StringLength ( alldiffs ) > 50 )
     StringCopy ( alldiffs, " ", diffs[ 0 ], " .. ", diffs[ (int) diffs - 1 ] );
 
                                         // clean-up
-ReplaceChars ( alldiffs, "()[]", "" );
+StringCleanup   ( alldiffs );
+ReplaceChars    ( alldiffs, "()[]", "" );
 
 //DBGM ( alldiffs, "alldiffs" );
 
@@ -276,14 +276,17 @@ ReplaceChars ( alldiffs, "()[]", "" );
 TFileName           filename;
 
                                         // first part
-StringCopy      ( filename, commondir, "\\", commonstart, *LastChar ( commonstart ) == '.' ? "" : "." );
-//StringAppend  ( filename, "Centroid", StringPlural ( (int) gof ) );
-StringAppend    ( filename, CentroidNames[ centroidflag ], StringPlural ( (int) gof ) );
+filename    = commondir + "\\" + commonstart;
 
-//DBGM ( filename, "filename begin" );
+if ( *LastChar ( commonstart ) != '.' )     filename   += ".";
+if ( IsVector ( datatype ) )                filename   += TFileName ( InfixVectorial ) + " ";
+
+filename   += TFileName ( CentroidNames[ centroidflag ] ) + StringPlural ( (int) gof );
+
+//DBGM ( (char*) filename, "filename begin" );
 
 
-                                        // try to add all diffs if not too long...
+                                        // then try to add all diffs if not too long...
 if ( StringIsNotEmpty ( alldiffs )
   && StringLength ( filename ) + StringLength ( alldiffs ) + 4 <= NoMore ( WindowsMaxComponentLength, MaxPathShort )  )
                                         // we're good here
@@ -291,12 +294,11 @@ if ( StringIsNotEmpty ( alldiffs )
                                         // else: nothing
 
 
-AddExtension    ( filename, IsExtensionAmong ( gof[ 0 ], AllRisFilesExt ) ? FILEEXT_RIS : FILEEXT_EEGSEF );
+filename.AddExtension   ( IsExtensionAmong ( gof[ 0 ], AllRisFilesExt ) ? FILEEXT_RIS : FILEEXT_EEGSEF );
 
+filename.CheckNoOverwrite    ();
 
-CheckNoOverwrite    ( filename );
-
-//DBGM ( filename, "filename" );
+//DBGM ( (char*) filename, "filename" );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

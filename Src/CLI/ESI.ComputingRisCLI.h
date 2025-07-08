@@ -442,7 +442,7 @@ ComputingRis    (   esicase,
                     
                     inverses,               regularization,         backnorm,
                     datatypeepochs,         datatypefinal,
-                    RisCentroidMethod,
+                    ESICentroidMethod,
 
                     spatialfilter,          xyzfile,
                     ranking,
