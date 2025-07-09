@@ -44,8 +44,9 @@ constexpr bool          SavingNormalizedClusters    = false;            // Contr
 
 constexpr CentroidType  EEGCentroidMethod           = MeanCentroid;     // always, we want to keep it linear
 constexpr CentroidType  MEGCentroidMethod           = MeanCentroid;     // always, we want to keep it linear
-constexpr CentroidType  ESICentroidMethod           = MeanCentroid;     // maps can be quite empty after optional thresholding, a Median might be too radical while a Mean will still output something
-//constexpr CentroidType  ESICentroidMethod         = MedianCentroid;   // Median gives sharper shapes/contours, counterpart is it basically forces to store all the data, and is more time-consuming to compute
+//constexpr CentroidType  ESICentroidMethod           = MeanCentroid;     // maps can be quite empty after optional thresholding, a Median might be too radical while a Mean will still output something
+constexpr CentroidType  ESICentroidMethod           = MedianCentroid;   // Median gives sharper shapes/contours, counterpart is it basically forces to store all the data, and is more time-consuming to compute
+constexpr double        ESICentroidTopData          = 0.25;             // top part of ranked data to optionally keep
 
                                         // Flag used to generate all known criteria for tests
 //#define             UseAllCriteria

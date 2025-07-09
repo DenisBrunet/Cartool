@@ -2597,10 +2597,10 @@ AtomType            datatypeproc    = CRISPresets[ esicase ].GetAtomTypeProcessi
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // epochs / subjects initial ranking
 bool                ranking         = CheckToBool ( ComputingRisTransfer.Rank      );
+                                        // not available for the moment - also only the combo ranking + thresholding is currently possible
+bool                thresholding    = false; // ranking;
 
-bool                thresholding    = false;    // note that only the combo ranking + thresholding is currently allowed
-                                        // Using a fixed threshold at each step
-double              keepingtopdata  = 0.10;
+double              keepingtopdata  = ESICentroidTopData;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

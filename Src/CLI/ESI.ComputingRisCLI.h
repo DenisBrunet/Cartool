@@ -300,10 +300,10 @@ AtomType            datatypeproc    = CRISPresets[ esicase ].GetAtomTypeProcessi
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // epochs / subjects initial ranking
 bool                ranking         = HasCLIFlag ( computingris, __ranking );
-                                        // not available for the moment
-bool                thresholding    = false;    // note that only the combo ranking + thresholding is currently allowed
-                                        // Using a fixed threshold at each step
-double              keepingtopdata  = 0.10;
+                                        // not available for the moment - also only the combo ranking + thresholding is currently possible
+bool                thresholding    = false; // ranking;
+
+double              keepingtopdata  = ESICentroidTopData;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

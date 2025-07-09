@@ -20,6 +20,7 @@ limitations under the License.
 #include    "Dialogs.Input.h"
 #include    "TFilters.h"
 #include    "CartoolTypes.h"            // PolarityType CentroidType
+#include    "TMicroStates.h"            // ESICentroidTopData
 
 #include    "ComputeCentroidFiles.h"
 
@@ -144,7 +145,8 @@ bool                centroidv       = false;
 
 if ( tg.allrisv ) {
                                         // in case of vectorial RIS, offer to compute either on the norm or on the vectors
-    answer      = GetOptionFromUser ( "RIS data appear to be vectorial,\ncomputing the (N)orm or the (V)ectorial centroids?", 
+    answer      = GetOptionFromUser ( "Your RIS data appear to be all vectorial." NewLine 
+                                      "Computing the centroids on the (N)orm or the (V)ectorial data?", 
                                       CentroidTitle, "N V", "N", this );
 
     centroidv   = answer == 'V';
@@ -158,56 +160,58 @@ AtomType            datatype        = tg.alleeg                 ?   AtomTypeScal
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Current way the segmentation produces RIS templates
-
-                                        // ranking norm RIS
+                                        // Ranking norm RIS
+                                        // vectorial data can be ranked, in that case, it will be done on the vector's norms
 bool                ranking         = tg.allris 
-//                                 && IsPositive ( datatype )           // !"vectorial" ranking is actually allowed!
-//                                 && centroidflag != MedianCentroid    // Median can produce a lot of 0's, which will behave badly with our Ranking parameters
-                                   && GetAnswerFromUser ( "Ranking input RIS data (recommended for more robust results)?", CentroidTitle, this );
+                                   && GetAnswerFromUser ( "Ranking input & output RIS data (recommended for robust templates)?", CentroidTitle, this );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // ranking is useless here if ranking later
+                                        // No need to standardize if ranking is used
 //bool              toabszscore     = allris && ! ranking;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // thresholding norm RIS
+                                        // Thresholding norm RIS
+                                        // vectorial data can be thresholded, in that case, it will be done on the vector's norms
 bool                thresholding    = tg.allris 
-//                                 && IsPositive ( datatype )           // !"vectorial" thresholding is actually allowed!
-//                                 && centroidflag != MedianCentroid    // Median can produce a lot of 0's, which will behave badly with our Ranking parameters
                                    && ranking
-                                   && GetAnswerFromUser ( "Thresholding input RIS data?", CentroidTitle, this );
+                                   && GetAnswerFromUser ( centroidflag == MedianCentroid ? "Thresholding input & output RIS data?" NewLine "(NOT recommended for Median Centroids)" 
+                                                                                         : "Thresholding input & output RIS data?", CentroidTitle, this );
 double              threshold       = 0;
 
-if ( thresholding )
-    GetValueFromUser ( "Threshold value:", CentroidTitle, threshold, "0.90", this );
+if ( thresholding ) {
 
-if ( thresholding && threshold == 0 )
-    thresholding    = false;
+    GetValueFromUser ( "Threshold value:", CentroidTitle, threshold, FloatToString ( 1 - ESICentroidTopData, 2 ) /*"0.80"*/, this );
+
+    if ( threshold <= 0 )
+        thresholding    = false;
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // default is to normalize, but this is also exclusive with ranking
+                                        // Default is to normalize, but this is also exclusive with ranking
 bool                normalize       = ! ranking;
 //                                 && ! IsVector ( datatype );  // allow to normalize per 3D vector
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // then ask for some petty details
+                                        // Finally asking for some more details
                                    
 PolarityType        polarity        = ! IsPositive ( datatype )     // EEG or vectorial RIS are OK
-                                   && GetAnswerFromUser ( "Ignore polarity?", CentroidTitle, this ) ? PolarityEvaluate : PolarityDirect;
+                                   && GetAnswerFromUser ( IsVector ( datatype ) ? "Ignore Dipoles Polarities for Resting States case?" 
+                                                                                : "Ignore Maps Polarities for Resting States case?", CentroidTitle, this ) ? PolarityEvaluate 
+                                                                                                                                                           : PolarityDirect;
 
-
-ReferenceType       processingref   = tg.alleeg ? ReferenceAverage : ReferenceNone;
+ReferenceType       processingref   = tg.alleeg ? ReferenceAverage 
+                                                : ReferenceNone;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+                                        // Note that we could now do a spatial filter on RIS / Solution Points
 SpatialFilterType   spatialfilter   = ( tg.alleeg                     // ESI has no Spatial filtering
-                                     && GetAnswerFromUser ( "Applying Spatial filtering?", CentroidTitle, this ) ) ? SpatialFilterDefault : SpatialFilterNone;
+                                     && GetAnswerFromUser ( "Applying Spatial filtering?", CentroidTitle, this ) ) ? SpatialFilterDefault 
+                                                                                                                   : SpatialFilterNone;
 
 TFileName           xyzfile;
 

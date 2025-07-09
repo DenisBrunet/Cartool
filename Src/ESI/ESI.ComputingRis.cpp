@@ -400,7 +400,7 @@ verbose.Put ( "Ranking results:", dataranking );
 
 verbose.Put ( "Thresholding results:", datathresholding );
 if ( datathresholding )
-    verbose.Put ( "Threshold level:", datathreshold );
+    verbose.Put ( "Threshold level:", datathreshold, 2 );
 
 verbose.Put ( "Envelope of results:", envelope );
 if ( envelope ) {
@@ -422,7 +422,7 @@ if ( computegroupscentroids ) {
     verbose.Put ( "Centroids ranking:",         centroidsranking );
     verbose.Put ( "Centroids thresholding:",    centroidsthresholding );
     if ( centroidsthresholding )
-        verbose.Put ( "Centroids threshold level:", centroidsthreshold );
+        verbose.Put ( "Centroids threshold level:", centroidsthreshold, 2 );
     verbose.Put ( "Centroids normalization:",   centroidsnormalized );
     }
 }
