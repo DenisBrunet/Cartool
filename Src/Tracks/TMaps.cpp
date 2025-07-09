@@ -1596,10 +1596,10 @@ if ( IsVector ( datatype ) )
     return  ComputeCloudsFolding      ( allmaps,                   ReferenceNumSamplesSP, labels, l );
 
 else
-                                        // Global Medoid will do the job pretty well while being way faster than Eigenvector
-    return  ComputeMedoidCentroid     ( allmaps, datatype, PolarityEvaluate, ReferenceNumSamplesMap, labels, l );
                                         // Officially the best solution
 //  return  ComputeEigenvectorCentroid ( allmaps, refmap, polarity );
+                                        // Global Medoid will do the job pretty well while being way faster than Eigenvector
+    return  ComputeMedoidCentroid     ( allmaps, datatype, PolarityEvaluate, ReferenceNumSamplesMap, labels, l );
 }
 
 
@@ -2376,7 +2376,7 @@ if ( nummaps < maxsamples /*ReferenceNumSamplesSP*/ ) {
                                         // just a backup strategy
     for ( int tfi = 0; tfi < NumMaps; tfi++ )
     
-        if ( labels && (*labels)[ tfi ] != l )
+        if ( ! labels || (*labels)[ tfi ] == l )
                                         // hoping for the best with an averaging - very low number of maps should come from ERP case, and we can expect vectors to be somehow consistent...
             map    += *(allmaps[ tfi ]);
 
