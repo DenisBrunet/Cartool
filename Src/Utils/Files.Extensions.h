@@ -312,7 +312,7 @@ limitations under the License.
 #define     InfixEpochsGrep             "(\\.|_)?" InfixEpochs "(\\.|_)?"
 #define     InfixConcatGrep             "(\\.|_)?Concat(|enate)s?(\\.|_)?"
                                         // "Epoch" or "Concat" or "Concatenate" strings could be used exchangeably
-#define     InfixEpochConcatGrep        "(\\.|_)?" "(Epoch|Concat|Concatenate)s? *[0-9]*" "(\\.|_)?"
+#define     InfixEpochConcatGrep        "(\\.|_)?" "(Epoch|conc|Concat|Concatenate)s? *[0-9]*" "(\\.|_)?"
 
                                         // Known extensions don't include locale chars
 #define     InfixAnyExtensionGrep       "\\.([A-Za-z]+)$"

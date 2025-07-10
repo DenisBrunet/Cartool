@@ -738,7 +738,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Splitting epochs is done per subject: one subject can have n files of 1 epoch, another subject 1 file of n epochs
     bool                splitepochs     =    CRISPresets[ esicase ].IsEpochs ()
-                                                                                    // we can avoid splitting files whne not in this case
+                                                                                    // we can avoid splitting files when not in this case
                                           && computingindividualfiles               
                                                                                     // only 1 file of n epochs to trigger the splitting
 //                                        && (    gogofpersubject[ absg ].AllStringsGrep ( InfixEpochsGrep, GrepOptionDefaultFiles )    // !this is testing for file names, NOT markers!
