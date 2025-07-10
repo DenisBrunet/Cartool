@@ -596,7 +596,7 @@
          </P>
          <CENTER>
              <P ALIGN=CENTER>
-                 <IMG SRC="images/eeg.filters.png" VSPACE="0" HSPACE="0" BORDER="0">
+                 <IMG SRC="images/eeg.filters.png" WIDTH="640">
              </P>
          </CENTER>
          <P>
@@ -944,25 +944,47 @@
                              are positive...
                      </TD>
                  </tr>
-                 <TR>
+                 <tr>
                      <TD WIDTH="27%" VALIGN=TOP>
                          <P>
-                             <B>+ Envelope, of window duration:</B>
+                             <B>Peak Envelope:</B>
                      </TD>
                      <TD WIDTH="73%" VALIGN=TOP>
                          <P>
-                             Compute the Envelope, a kind of fast frequency analysis.
+                             Compute the Envelope of the signal.
                          <P>
-                             To be able to compute the Envelope, all these points must be fulfilled:<ul class="mvd-p">
-                                 <li>High- and Low-pass filters should be set</li>
-                                 <li>Some Rectification (button above) should be set</li>
+                             Instead the usual Analytic Signal method, a
+							 <a href="https://www.google.com/search?q=signal+processing+peak+envelope">
+							 <strong>Peak Envelope</strong> method</a> has been 
+							 chosen, which can work on <strong>both signed <em>
+							 and </em>rectified data</strong>.<P>
+                             To be able to compute the Envelope, these 
+							 conditions must be fulfilled:<ul class="mvd-p">
+                                 <li>Some Band-pass filters</li>
+                                 <li>Optionally some Rectification (button 
+								 above)</li>
                                  <li>
-                                     A sliding-window duration must be specified.<br>The suggested
-                                     window size is&nbsp; 1.5 / LowFreq
-                                 </li>
+                                     Specifying a windows size or a lowest 
+									 frequency (see below)</li>
                              </ul>
                      </TD>
-                 </TR>
+                 </tr>
+				 <tr>
+                     <TD WIDTH="27%" VALIGN=TOP>
+                         <P>
+                             <B>Window size<br>/<br>Lowest Frequency</B></TD>
+                     <TD WIDTH="73%" VALIGN=TOP>
+                         <P>
+                             Fill the one parameter that is the most convenient 
+							 for you - the other one will update automatically:<ul>
+							 <li><strong>Window Size</strong> is the duration of 
+							 the envelope filter, in <strong>[ms]</strong></li>
+							 <li><strong>Lowest Frequency</strong> is the lowest 
+							 frequency from the band-pass filter, in <strong>
+							 [Hz]</strong></li>
+						 </ul>
+                     </TD>
+                 </tr>
                  <tr>
                      <TD WIDTH="27%" VALIGN=TOP></TD>
                      <TD WIDTH="73%" VALIGN=TOP></TD>
