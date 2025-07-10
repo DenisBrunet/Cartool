@@ -3289,7 +3289,7 @@ else if ( filtertype == FilterTypeHighPass              )   filter  = new TFilte
 else if ( filtertype == FilterTypeBandPass              )   filter  = new TFilterButterworthBandPass<double> ( params[ FilterParamOrder ], FilterNonCausal, SamplingFrequency, params[ FilterParamFreqCutMin ], params[ FilterParamFreqCutMax ] );
 else if ( filtertype == FilterTypeBandStop              )   filter  = new TFilterButterworthBandStop<double> ( params[ FilterParamOrder ], FilterNonCausal, SamplingFrequency, params[ FilterParamFreqCutMin ], params[ FilterParamFreqCutMax ] );
 else if ( filtertype == FilterTypeEnvelopeSlidingWindow )   filter  = new TFilterEnvelope<double> ( FilterTypeEnvelopeSlidingWindow, SamplingFrequency, params[ FilterParamEnvelopeWidth ] );
-else if ( filtertype == FilterTypeEnvelopeGapBridging   )   filter  = new TFilterEnvelope<double> ( FilterTypeEnvelopeGapBridging,   SamplingFrequency, params[ FilterParamEnvelopeWidth ] );
+else if ( filtertype == FilterTypeEnvelopePeak          )   filter  = new TFilterEnvelope<double> ( FilterTypeEnvelopePeak,          SamplingFrequency, params[ FilterParamEnvelopeWidth ] );
 else if ( filtertype == FilterTypeEnvelopeAnalytic      )   filter  = new TFilterEnvelope<double> ( FilterTypeEnvelopeAnalytic,      SamplingFrequency, params[ FilterParamEnvelopeWidth ] );
 
                                         // data is not ordered for time filters, load every line at a time to perform the filtering...

@@ -45,7 +45,7 @@ public:
 
     void            Apply                   ( TypeD* data, int numpts );
     void            ApplySlidingWindow      ( TypeD* data, int numpts );    // will rectify data
-    void            ApplyGapBridging        ( TypeD* data, int numpts );    // will rectify data
+    void            ApplyPeak               ( TypeD* data, int numpts );    // will rectify data
     void            ApplyAnalytic           ( TypeD* data, int numpts );    // input must be non-rectified, signed signal
 
     double          GetEnvelopeWidthTF      ( ArraySizeType sizeconstraint = AnySize )  const;  // Width[ms] to Width[TF]
@@ -71,7 +71,7 @@ protected:
 void    CheckFilterTypeEnvelope ( FilterTypes& how ) 
 {
 if ( ! (    how == FilterTypeEnvelopeSlidingWindow 
-         || how == FilterTypeEnvelopeGapBridging
+         || how == FilterTypeEnvelopePeak
          || how == FilterTypeEnvelopeAnalytic      ) )
 
     how     = FilterTypeNone;
@@ -83,12 +83,12 @@ FilterTypes     GetEnvelopeTypeFromUser ()
 char                option          = GetOptionFromUser (   "Envelope filter (NOT Analytic for positive data):" NewLine 
                                                             NewLine
                                                             Tab "- (S)liding Window - Signed or positive data"  NewLine
-                                                            Tab "- (G)ap bridging    - Signed or positive data"  NewLine 
+                                                            Tab "- (P)eak Envelope   - Signed or positive data"  NewLine 
                                                             Tab "- (A)nalytic           - Signed data only", 
-                                                            "Envelope Filter", "S G A", "G" );
+                                                            "Envelope Filter", "S P A", "P" );
 
 if      ( option == 'S' )   return FilterTypeEnvelopeSlidingWindow;
-else if ( option == 'G' )   return FilterTypeEnvelopeGapBridging;
+else if ( option == 'P' )   return FilterTypeEnvelopePeak;
 else if ( option == 'A' )   return FilterTypeEnvelopeAnalytic;
 else                        return FilterTypeNone;
 }
@@ -183,7 +183,7 @@ if ( How == FilterTypeNone )
 
 
 if      ( How == FilterTypeEnvelopeSlidingWindow    )   ApplySlidingWindow  ( data, numpts );
-else if ( How == FilterTypeEnvelopeGapBridging      )   ApplyGapBridging    ( data, numpts );
+else if ( How == FilterTypeEnvelopePeak             )   ApplyPeak           ( data, numpts );
 else if ( How == FilterTypeEnvelopeAnalytic         )   ApplyAnalytic       ( data, numpts );
 }
 
@@ -290,7 +290,7 @@ CopyVirtualMemory ( data, EnvelopeBuff.GetArray (), numpts * sizeof ( TypeD ) );
                                         // Data will be rectified internally
                                         // Does not need nor use any mirroring at boundaries - borders results are actually quite OK
 template <class TypeD>
-void    TFilterEnvelope<TypeD>::ApplyGapBridging ( TypeD* data, int numpts )
+void    TFilterEnvelope<TypeD>::ApplyPeak ( TypeD* data, int numpts )
 {
                                         // convert width to a correct buffer size
 double              EnvelopeWidthTF     = GetEnvelopeWidthTF ();

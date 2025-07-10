@@ -62,7 +62,7 @@ enum    SpatialFilterType;
 
 constexpr FilterTypes   RisRoiMethod        = FilterTypeMean;                   // for the same reason as for centroids: merging clipped data with a Median can produce too much null results
 
-constexpr FilterTypes   RisEnvelopeMethod   = FilterTypeEnvelopeGapBridging;    // results close to analytic, but can work with positive-only data
+constexpr FilterTypes   RisEnvelopeMethod   = FilterTypeEnvelopePeak;           // results close to analytic, but can work with positive-only data
 
 
 bool    ComputingRis    (   ComputingRisPresetsEnum esicase,

@@ -62,7 +62,7 @@ enum                FilterPrecedence
                     };
 
 
-constexpr FilterTypes   TracksFiltersEnvelope   = FilterTypeEnvelopeGapBridging;
+constexpr FilterTypes   TracksFiltersEnvelope   = FilterTypeEnvelopePeak;   // works either with signed or abs / rectified data
 
 
 //----------------------------------------------------------------------------

@@ -169,7 +169,7 @@ enum            FilterTypes
                 FilterTypeAntialiasing,
 
                 FilterTypeEnvelopeSlidingWindow,
-                FilterTypeEnvelopeGapBridging,
+                FilterTypeEnvelopePeak,
                 FilterTypeEnvelopeAnalytic,
 
                 FilterTypeResize,

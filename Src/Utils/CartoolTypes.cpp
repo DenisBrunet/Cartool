@@ -143,7 +143,7 @@ const FilterPresetSpec  FilterPresets[ NumFilterTypes ] =
             {   FilterTypeAntialiasing,         "Antialiasing Filter",                  "Antialias"                 },
 
             {   FilterTypeEnvelopeSlidingWindow,"Sliding Window Envelope",              "EnvWindow"                 },
-            {   FilterTypeEnvelopeGapBridging,  "Gap Bridging Envelope",                "EnvGapBridg"               },
+            {   FilterTypeEnvelopePeak,         "Peak Envelope",                        "EnvPeak"                   },
             {   FilterTypeEnvelopeAnalytic,     "Analytic Envelope",                    "EnvAnalytic"               },
 
             {   FilterTypeResize,               "Resizing",                             "Resizing"                  },
