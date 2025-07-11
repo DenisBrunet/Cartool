@@ -55,7 +55,7 @@ DefineCLIOptionFile     ( computingris,     "",     __inversefile,          "Inv
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionFile     ( computingris,     "",     __xyzfile,              "Electrodes coordinates file, for Spatial Filter" );
+DefineCLIOptionFile     ( computingris,     "",     __xyzfile,              "Electrodes coordinates file for Spatial Filter" /*__xyzfile_descr*/ );
 
                                         // !it is enough to provide the xyzfile to activate the default spatial filter!
 DefineCLIOptionEnum     ( computingris,     "",     __spatialfilter,        "Spatial filter" );
@@ -95,11 +95,11 @@ DefineCLIOptionDouble   ( computingris,     "",     __envelope,             "Env
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionFile     ( computingris,     "",     __roisfile,             "Computing ROIs" );
+DefineCLIOptionFile     ( computingris,     "",     __roisfile,             __roisfile_descr );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionString   ( computingris,     "",     __prefix,               "Output files optional prefix" );
+DefineCLIOptionString   ( computingris,     "",     __prefix,               __prefix_descr );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Options with short version
@@ -113,7 +113,7 @@ ExcludeCLIOptions       ( computingris,     __savingtemplates,      __savingsubj
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIFlag           ( computingris,     __h,    __help,                 "This message" );
+DefineCLIFlag           ( computingris,     __h,    __help,                 __help_descr );
 }
 
 

@@ -42,6 +42,7 @@ limitations under the License.
 #include    "System.CLI11.h"
 #include    "CLIDefines.h"
 #include    "ReprocessTracksCLI.h"
+#include    "FrequencyAnalysisCLI.h"
 #include    "ESI.ComputingRisCLI.h"
 #include    "ESI.RisToVolumeCLI.h"
 
@@ -656,8 +657,8 @@ CLI::App*           toapp           = &app;
 
 //CLI::Option*        opthelp         = app.set_help_flag       ( "-h,--help", "Show help" );           // raises an exception(?)
 app.set_help_flag ();                                                                                   // overriding default
-DefineCLIOptionString   ( toapp,                    __h,    __help,                 "This message" )    // adding the flag manually, but as an optional string
-->TypeOfOption          ( "SUBCOMMAND" )
+DefineCLIOptionString   ( toapp,                    __h,    __help,                 __help_descr )      // adding the flag manually, but as an optional string
+->TypeOfOption          ( "[SUBCOMMAND]" )
 ->ZeroOrOneArgument;
 
 
@@ -698,14 +699,14 @@ DefineCLIOptionInt      ( toapp,                    "",     __monitor,          
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Registration sub-command
-CLI::App*           regsub          = app.add_subcommand ( __register, "Registration command" )
+CLI::App*           regsub          = app.add_subcommand ( __register, "Windows Registry commands" )
 ->ExclusiveOptions;
 
 DefineCLIFlag           ( regsub,                   __y,    __yes,                  "Register program to Windows (associating icons & file extensions)" );
 DefineCLIFlag           ( regsub,                   __n,    __no,                   "Un-register program to Windows (removing icons & file associations)" );
 DefineCLIFlag           ( regsub,                   __r,    __reset,                "Clean-up Windows registration to default (un-register, then register again)" );
 //DefineCLIFlag         ( regsub,                   __o,    __none,                 "Force skipping program registration" );    // not sure if still useful, as Cartool does not touch registers when launched
-DefineCLIFlag           ( regsub,                   __h,    __help,                 "This message" );
+DefineCLIFlag           ( regsub,                   __h,    __help,                 __help_descr );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -713,6 +714,13 @@ DefineCLIFlag           ( regsub,                   __h,    __help,             
 CLI::App*           reprocsub       = app.add_subcommand ( __reprocesstracks, "Re-process / Export tracks command" );
 
 ReprocessTracksCLIDefine ( reprocsub );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Frequency Analysis sub-command
+CLI::App*           freqsub         = app.add_subcommand ( __frequency, "Frequency Analysis command" );
+
+FrequencyAnalysisCLIDefine ( freqsub );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -733,7 +741,7 @@ RisToVolumeCLIDefine ( ristovolsub );
                                         // Positional options (not starting with '-')
                                         // Note that files list usually need to separated from other parameters with " -- ", like in "--<option>=<something> -- <file1> <file2> <file3>"
                                         // Absolute paths are recommended, though local path to current exe file will be resolved
-DefineCLIOptionFiles    ( toapp,           -1,      "",     __files,                "List of files" )
+DefineCLIOptionFiles    ( toapp,           -1,      "",     __files,                __files_descr )
 ->TypeOfOption          ( "" );         // bypassing default message, which is kind of ugly
 
 
@@ -769,6 +777,7 @@ TGoF                gof             = GetCLIOptionFiles ( toapp, __files );
 if ( HasCLIOption ( toapp,              __help )   // redefined NOT as a flag
   || HasCLIFlag   ( regsub,             __help )
   || HasCLIFlag   ( reprocsub,          __help )
+  || HasCLIFlag   ( freqsub,            __help )
   || HasCLIFlag   ( computingrissub,    __help )
   || HasCLIFlag   ( ristovolsub,        __help )
    ) {
@@ -778,6 +787,7 @@ if ( HasCLIOption ( toapp,              __help )   // redefined NOT as a flag
 
     if      ( HasCLIFlag ( regsub,          __help ) )  helpmessage     = regsub         ->help (); // <subcommand>  --help
     else if ( HasCLIFlag ( reprocsub,       __help ) )  helpmessage     = reprocsub      ->help ();
+    else if ( HasCLIFlag ( freqsub,         __help ) )  helpmessage     = freqsub        ->help ();
     else if ( HasCLIFlag ( computingrissub, __help ) )  helpmessage     = computingrissub->help ();
     else if ( HasCLIFlag ( ristovolsub,     __help ) )  helpmessage     = ristovolsub    ->help ();
     else if ( showhelp.empty ()                      )  helpmessage     = app             .help (); // <application> --help
@@ -821,6 +831,13 @@ else if ( IsSubCommandUsed ( regsub ) ) {
 else if ( IsSubCommandUsed ( reprocsub ) ) {
 
     ReprocessTracksCLI ( reprocsub, gof );
+
+    exit ( 0 );
+    }
+
+else if ( IsSubCommandUsed ( freqsub ) ) {
+
+    FrequencyAnalysisCLI ( freqsub, gof );
 
     exit ( 0 );
     }

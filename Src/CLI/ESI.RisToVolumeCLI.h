@@ -54,9 +54,9 @@ NeedsCLIOption          ( ristovol,         __greyfile,     __spfile   );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionInt      ( ristovol,         "",     __timemin,              "Converting from Time Frame (default 0)" );
-DefineCLIOptionInt      ( ristovol,         "",     __timemax,              "Converting to Time Frame (default End-Of-File)" );
-DefineCLIOptionInt      ( ristovol,         "",     __timestep,             "Converting by Step Time Frames (default 1)" );
+DefineCLIOptionInt      ( ristovol,         "",     __timemin,              __timemin_descr );
+DefineCLIOptionInt      ( ristovol,         "",     __timemax,              __timemax_descr );
+DefineCLIOptionInt      ( ristovol,         "",     __timestep,             "Stepping by time frames (Default is 1)" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -65,7 +65,7 @@ DefineCLIOptionEnum     ( ristovol,         "",     __interpolation,        "Typ
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionString   ( ristovol,         "",     __prefix,               "Output files optional prefix" );
+DefineCLIOptionString   ( ristovol,         "",     __prefix,               __prefix_descr );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -85,7 +85,7 @@ DefineCLIOptionEnum     ( ristovol,         "",     __dimensions,           "Fil
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIFlag           ( ristovol,         __h,    __help,                 "This message" );
+DefineCLIFlag           ( ristovol,         __h,    __help,                 __help_descr );
 }
 
 

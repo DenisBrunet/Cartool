@@ -45,30 +45,35 @@ if ( reprocsub == 0 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Parameters appearance follow the dialog's visual design
-DefineCLIOptionString   ( reprocsub,        "",     __tracks,               "Tracks to export" Tab Tab Tab Tab "Special values: * gfp dis avg" );
+DefineCLIOptionString   ( reprocsub,        "",     __tracks,               "Tracks to export" Tab Tab Tab Tab "Special values: * gfp dis avg" )
+->TypeOfOption          ( "TRACKS" );
 
-DefineCLIOptionFile     ( reprocsub,        "",     __xyzfile,              "Using electrodes names from a XYZ electrodes coordinates file" );
-DefineCLIOptionFile     ( reprocsub,        "",     __roisfile,             "Computing ROIs & using ROIs names from a ROIs file" );
+DefineCLIOptionFile     ( reprocsub,        "",     __xyzfile,              __xyzfile_descr );
+DefineCLIOptionFile     ( reprocsub,        "",     __roisfile,             __roisfile_descr );
 
 ExcludeCLIOptions       ( reprocsub,        __xyzfile,      __roisfile );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionInt      ( reprocsub,        "",     __timemin,              "Exporting from Time Frame" );
-DefineCLIOptionInt      ( reprocsub,        "",     __timemax,              "Exporting to Time Frame" );
+DefineCLIOptionInt      ( reprocsub,        "",     __timemin,              __timemin_descr );
+DefineCLIOptionInt      ( reprocsub,        "",     __timemax,              __timemax_descr );
 
-DefineCLIOptionString   ( reprocsub,        "",     __keeptriggers,         "Exporting only the data from a triggers / markers list" );
-DefineCLIOptionString   ( reprocsub,        "",     __excludetriggers,      "Exporting all data but from a triggers / markers list" );
+DefineCLIOptionString   ( reprocsub,        "",     __keeptriggers,         __keeptriggers_descr );
+DefineCLIOptionString   ( reprocsub,        "",     __excludetriggers,      __excludetriggers_descr );
 
 ExcludeCLIOptions       ( reprocsub,        __timemin,          __keeptriggers,     __excludetriggers );
 ExcludeCLIOptions       ( reprocsub,        __timemax,          __keeptriggers,     __excludetriggers );
 ExcludeCLIOptions       ( reprocsub,        __keeptriggers,     __excludetriggers );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionString   ( reprocsub,        "",     __nulltracks,           "List of null tracks to append" );
+DefineCLIOptionString   ( reprocsub,        "",     __nulltracks,           "List of null tracks to append" )
+->TypeOfOption          ( "TRACKS" );
 
 ExcludeCLIOptions       ( reprocsub,        __nulltracks,   __roisfile );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Reprocess Tracks filters options
@@ -157,20 +162,25 @@ NeedsCLIOption          ( reprocsub,        __envelope,     __rectification )   
 DefineCLIOptionDouble   ( reprocsub,        "",     __keepabove,            "Thresholding data, keeping data above value" );
 DefineCLIOptionDouble   ( reprocsub,        "",     __keepbelow,            "Thresholding data, keeping data below value" );
 
-DefineCLIOptionDouble   ( reprocsub,        "",     __samplingfrequency,    "Default Sampling Frequency, only in case a file has none" )
+DefineCLIOptionDouble   ( reprocsub,        "",     __samplingfrequency,    __samplingfrequency_descr )
 ->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "sampling frequency should be above 0" : ""; } );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionString   ( reprocsub,        "",     __reference,            "List of new reference tracks" Tab Tab "Special values: 'none' (default) or 'average'" );
+DefineCLIOptionString   ( reprocsub,        "",     __reference,            __reference_descr )
+->TypeOfOption          ( "TRACKS" );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIOptionInts     ( reprocsub,    2,  "",     __baselinecorr,         "Baseline correction interval, in time frames since beginning of file" );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIOptionString   ( reprocsub,        "",     __rescaling,            "Scaling factor" Tab Tab Tab Tab "Special value: 'meangfp'" );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -178,18 +188,21 @@ DefineCLIFlag           ( reprocsub,        "",     __sequential,           "Seq
 DefineCLIFlag           ( reprocsub,        "",     __average,              "Averaging the time dimension" );
 ExcludeCLIOptions       ( reprocsub,        __sequential,   __average );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIOptionInt      ( reprocsub,        "",     __downsampling,         "Downsampling ratio" )
 ->CheckOption           ( []( const string& str ) { return StringToInteger ( str.c_str () ) <= 1 ? "factor should be above 1" : ""; } );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionString   ( reprocsub,        "",     __infix,                "Infix appended to the file name" );
+DefineCLIOptionString   ( reprocsub,        "",     __infix,                __infix_descr );
 
-DefineCLIOptionEnum     ( reprocsub,        __ext,  __extension,            "Output file extension" )
+DefineCLIOptionEnum     ( reprocsub,        __ext,  __extension,            __ext_descr )
 ->DefaultString         ( SavingEegFileExtPreset[ PresetFileTypeDefaultEEG ] )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( SavingEegFileExtPreset, SavingEegFileExtPreset + NumSavingEegFileTypes ) ) );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -197,9 +210,10 @@ DefineCLIFlag           ( reprocsub,        "",     __nomarkers,            "Not
 
 DefineCLIFlag           ( reprocsub,        "",     __concatenate,          "Concatenate all output into a single file" );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIFlag           ( reprocsub,        __h,    __help,                 "This message" );
+DefineCLIFlag           ( reprocsub,        __h,    __help,                 __help_descr );
 }
 
 

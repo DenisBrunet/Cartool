@@ -369,6 +369,7 @@
     <ClInclude Include="..\Src\App\TCartoolApp.ProductVersion.h" />
     <ClInclude Include="..\Src\CLI\CLIDefines.h" />
     <ClInclude Include="..\Src\CLI\ESI.ComputingRisCLI.h" />
+    <ClInclude Include="..\Src\CLI\FrequencyAnalysisCLI.h" />
     <ClInclude Include="..\Src\CLI\ReprocessTracksCLI.h" />
     <ClInclude Include="..\Src\CLI\ESI.RisToVolumeCLI.h" />
     <ClInclude Include="..\Src\res\resource.h" />

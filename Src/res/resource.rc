@@ -2149,7 +2149,7 @@ FONT 8, "Verdana", 0, 0, 0x0
 BEGIN
     LTEXT           "&Presets:",-1,12,10,120,9,NOT WS_GROUP
     COMBOBOX        IDC_PRESETS,132,7,240,295,CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "(1) Tracks to Analyse   (Use Drag && Drop in this area)",102,4,27,375,44,WS_GROUP
+    GROUPBOX        "(1) Tracks to Analyze   (Use Drag && Drop in this area)",102,4,27,375,44,WS_GROUP
     LTEXT           "F.ex: 1, 2, 10-15",103,12,40,120,9,NOT WS_GROUP
     EDITTEXT        IDC_CHANNELS,132,39,240,12,ES_AUTOHSCROLL
     CONTROL         "Names from XYZ:",IDC_USEXYZDOC,"Button",BS_AUTOCHECKBOX | BS_LEFT | BS_PUSHLIKE | WS_TABSTOP,12,51,120,14

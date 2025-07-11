@@ -1328,6 +1328,9 @@
     <ClInclude Include="..\Src\Utils\Files.TFileName.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\CLI\FrequencyAnalysisCLI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\Src\res\resource.rc">
