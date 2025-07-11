@@ -105,7 +105,7 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 long                timemin,            long                timemax,
                                 SkippingEpochsType  badepochs,          const char*         listbadepochs,
                                 double              samplingfrequency,
-                                int                 numblocks,          int                 blocksize,          int                 blockstep,          double              blocksoverlap,
+                                int                 numblocks,          int                 blocksize,          double              blocksoverlap,
                                 FFTRescalingType    fftnorm,
                                 FreqOutputBands     outputbands,
                                 FreqOutputAtomType  outputatomtype,

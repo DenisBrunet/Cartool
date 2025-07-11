@@ -226,9 +226,11 @@ constexpr int                   MaxInitBlockSize        = 2000;
 constexpr double                DefaultWindowOverlap    = 0.75;
 constexpr double                DefaultSaveFreqMin      = 1; // 0 or 1
 constexpr double                DefaultSaveFreqMax      = 40;
+constexpr int                   DefaultSaveLogDecade    = 20;
 
 
-int                 ComputeTimeMax ( bool isstransform, bool onetfjump, int timemin, int blocksize, double blocksoverlap, int numblocks );
+int                 ComputeTimeMax  ( bool isstransform, bool onetfjump, int timemin, int blocksize, double blocksoverlap, int numblocks );
+int                 ComputeStep     ( bool isstransform, int blocksize, double blocksoverlap );
 
 
 //----------------------------------------------------------------------------
@@ -371,6 +373,7 @@ protected:
     void                CmXyzEnable                     ( owl::TCommandEnabler &tce );
     void                CmAnalysisTypeEnable            ( owl::TCommandEnabler &tce );
     void                CmSplitEnable                   ( owl::TCommandEnabler &tce );
+    void                CmOptimalDownsamplingEnable     ( owl::TCommandEnabler &tce );
 
     DECLARE_RESPONSE_TABLE ( TFrequencyAnalysisDialog );
 };

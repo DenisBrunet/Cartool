@@ -95,7 +95,8 @@ ClearString ( SaveFreqMin );
 ClearString ( SaveFreqMax );
 ClearString ( SaveFreqStep );
 SaveLogInterval   = BoolToCheck ( false );
-StringCopy  ( SaveDecadeStep, "20" );
+IntegerToString ( SaveDecadeStep, DefaultSaveLogDecade );
+
 ClearString ( SaveBandsValue );
 
 Presets.Clear ();
@@ -227,6 +228,7 @@ DEFINE_RESPONSE_TABLE1 ( TFrequencyAnalysisDialog, TBaseDialog )
     EV_COMMAND_ENABLE           ( IDC_SPLITBYELECTRODE,         CmSplitEnable ),
     EV_COMMAND_ENABLE           ( IDC_SPLITBYFREQUENCY,         CmSplitEnable ),
     EV_COMMAND_ENABLE           ( IDC_SPLITBYSPECTRUM,          CmSplitEnable ),
+    EV_COMMAND_ENABLE           ( IDC_OPTIMALDOWNSAMPLING,      CmOptimalDownsamplingEnable ),
 
     EV_COMMAND_ENABLE           ( IDC_PROCESSCURRENT,           CmProcessCurrentEnable ),
     EV_COMMAND_ENABLE           ( IDC_PROCESSBATCH,             CmProcessBatchEnable ),
@@ -985,6 +987,12 @@ tce.Enable ( IsChecked ( FileTypeFreq ) );
 }
 
 
+void    TFrequencyAnalysisDialog::CmOptimalDownsamplingEnable ( TCommandEnabler &tce )
+{
+tce.Enable ( IsSTransform ( CurrentPreset ) );
+}
+
+
 //----------------------------------------------------------------------------
 double  TFrequencyAnalysisDialog::GetWindowOverlap ( int blocksize )
 {
@@ -1034,11 +1042,17 @@ else                                                    return  TimeFrameToMilli
 }
 
 
+int     ComputeStep ( bool isstransform, int blocksize, double blocksoverlap )
+{
+if      ( isstransform )    return  0;
+//else if ( onetfjump  )    return  1;
+else                        return  AtLeast ( 1, Truncate ( blocksize * ( 1 - blocksoverlap ) ) );  // should also return 1 for WindowOverlapMax / onetfjump
+}
+
+
 int     TFrequencyAnalysisDialog::ComputeStep ( int blocksize, double blocksoverlap )
 {
-if      ( IsSTransform ( CurrentPreset ) )              return  0;
-else if ( IsChecked ( WindowOverlapMax ) )              return  1;
-else                                                    return  blocksize * ( 1 - blocksoverlap );
+return  crtl::ComputeStep ( IsSTransform ( CurrentPreset ), blocksize, blocksoverlap );
 }
 
 
@@ -1774,8 +1788,7 @@ int                 freqsize            = blocksize / 2 + 1;
 
 double              blocksoverlap       = GetWindowOverlap ( blocksize );
 
-int                 blockstep           = ComputeStep ( blocksize, blocksoverlap );
-                                        // if S-Transform, only 1 block is allowed
+                                        // if S-Transform, only 1 block is allowe
 int                 numpossibleblocks   = analysis == FreqAnalysisSTransform ? 1 
                                                                              : ComputeNumBlocks ( EEGDoc->GetNumTimeFrames () - timemin + 1, blocksize, blocksoverlap );
 int                 numblocksdialog     = StringToInteger ( transfer->NumBlocks );
@@ -1920,23 +1933,10 @@ else if ( outputbands == OutputLinearInterval ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool                optimaldownsampling = CheckToBool ( transfer->OptimalDownsampling );
-int                 timedown            = 1;
-
-                                        // S-Transform is very smooth, and we don't need the extra time resolution (?)
-if ( optimaldownsampling
-  && analysis == FreqAnalysisSTransform 
-//&& ( IsStFFT ( CurrentPreset ) || IsSTransform ( CurrentPreset ) )    // StFFT case needs more work, i.e. changing the block step & number of time frames...
-  && savedfreqmax > 0 ) {
-                                        // setting the Nyquist limit seems OK
-    timedown    = AtLeast ( 1, Truncate ( samplingfrequency / ( 2 * savedfreqmax ) ) );
-
-//  Maxed ( blockstep, timedown );
-    }
-
-                                        // well, turns out we cannot downsample, better turn the option off for safety
-if ( timedown == 1 )
-    optimaldownsampling = false;
+bool                optimaldownsampling = CheckToBool ( transfer->OptimalDownsampling )
+                                       && analysis == FreqAnalysisSTransform                                // S-Transform is very smooth, and we don't need the extra time resolution (?)
+                                     //&& ( IsStFFT ( CurrentPreset ) || IsSTransform ( CurrentPreset ) )   // StFFT case needs more work, i.e. changing the block step & number of time frames...
+                                       && savedfreqmax > 0;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1980,7 +1980,7 @@ FrequencyAnalysis   (   EEGDoc,
                         timemin,            timemax,
                         badepochs,          listbadepochs,
                         samplingfrequency,
-                        numblocks,          blocksize,          blockstep,      blocksoverlap,
+                        numblocks,          blocksize,          blocksoverlap,
                         fftnorm,
                         outputbands,
                         outputatomtype,

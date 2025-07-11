@@ -37,7 +37,7 @@ limitations under the License.
 
 #include    "TCartoolDocManager.h"
 
-#include    "TFrequencyAnalysisDialog.h"    // ComputeTimeMax
+#include    "TFrequencyAnalysisDialog.h"    // ComputeTimeMax, ComputeStep
 
 #pragma     hdrstop
 //-=-=-=-=-=-=-=-=-
@@ -224,7 +224,7 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 long                timemin,            long                timemax,
                                 SkippingEpochsType  badepochs,          const char*         listbadepochs,
                                 double              samplingfrequency,
-                                int                 numblocks,          int                 blocksize,          int                 blockstep,          double              blocksoverlap,
+                                int                 numblocks,          int                 blocksize,          double              blocksoverlap,
                                 FFTRescalingType    fftnorm,
                                 FreqOutputBands     outputbands,
                                 FreqOutputAtomType  outputatomtype,
@@ -331,6 +331,8 @@ if ( badepochs == SkippingBadEpochsList )
 int                 freqsize            = blocksize / 2 + 1;
 
 long                timenum             = ( timemax - timemin + 1 );
+
+int                 blockstep           = ComputeStep ( analysis == FreqAnalysisSTransform, blocksize, blocksoverlap );
 
 
 double              datafreqstep_hz     = samplingfrequency / (double) blocksize;
@@ -641,23 +643,24 @@ AtomType            datatypeout         = outputatomtype == OutputAtomComplex ? 
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-int                 stdownsamplingfactor= 1;
+                                        // Currently applies only to S-Transform
+                    optimaldownsampling = optimaldownsampling
+                                       && analysis == FreqAnalysisSTransform                                // S-Transform is very smooth, and we don't need the extra time resolution (?)
+                                     //&& ( IsStFFT ( CurrentPreset ) || IsSTransform ( CurrentPreset ) )   // StFFT case needs more work, i.e. changing the block step & number of time frames...
+                                       && savedfreqmax > 0;
+                                        // default is to not downsample results
+int                 downsamplingfactor  = 1;
 
                                         // S-Transform is very smooth, and we don't need the extra time resolution (?)
-if ( optimaldownsampling
-  && analysis == FreqAnalysisSTransform 
-//&& ( IsStFFT ( CurrentPreset ) || IsSTransform ( CurrentPreset ) )    // StFFT case needs more work, i.e. changing the block step & number of time frames...
-  && savedfreqmax > 0 ) {
+if ( optimaldownsampling ) {
                                         // giving the Nyquist seems OK
-    stdownsamplingfactor    = AtLeast ( 1, Truncate ( samplingfrequency / ( 2 * savedfreqmax ) ) );
+    downsamplingfactor  = AtLeast ( 1, Truncate ( samplingfrequency / ( 2 * savedfreqmax ) ) );
 
-//  Maxed ( blockstep, stdownsamplingfactor );
+//  Maxed ( blockstep, downsamplingfactor );
+                                        // well, turns out we cannot downsample, better turn off the option
+    if ( downsamplingfactor == 1 )
+        optimaldownsampling = false;
     }
-
-                                        // well, turns out we cannot downsample, better turn the option off for safety
-if ( stdownsamplingfactor == 1 )
-    optimaldownsampling = false;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1023,19 +1026,22 @@ verbose.Put ( "Output values:", FreqOutputAtomString[ outputatomtype ] );
 
 verbose.NextTopic ( "Reference of data:" );
 {
-if      ( ref == ReferenceAsInFile          )       verbose.Put ( "Reference:", "No reference, as in file" );
-else if ( ref == ReferenceAverage           )       verbose.Put ( "Reference:", "Average reference" );
+if      ( ref == ReferenceAsInFile          )       verbose.Put ( "Reference:", ReferenceNames[ ref ] );
+else if ( ref == ReferenceAverage           )       verbose.Put ( "Reference:", ReferenceNames[ ref ] );
 else if ( ref == ReferenceArbitraryTracks   )       verbose.Put ( "Reference:", reflist );
 else if ( ref == ReferenceUsingCurrent      ) {
 
-    if      ( eegdoc->GetReferenceType () == ReferenceAverage  )    verbose.Put ( "Current reference:", "Average reference" );
-    else if ( eegdoc->GetReferenceType () == ReferenceAsInFile )    verbose.Put ( "Current reference:", "No reference, as in file" );
+    ReferenceType   currref     = eegdoc->GetReferenceType ();
+
+    if      ( currref == ReferenceAsInFile )        verbose.Put ( "Current reference:", ReferenceNames[ currref ] );
+    else if ( currref == ReferenceAverage  )        verbose.Put ( "Current reference:", ReferenceNames[ currref ] );
     else {
         eegdoc->GetReferenceTracks ().ToText ( buff, xyzdoc.IsOpen () ? xyzdoc->GetElectrodesNames() : eegdoc->GetElectrodesNames(), AuxiliaryTracksNames );
-                                                                        verbose.Put ( "Current reference:", buff );
+                                                                    
+                                                    verbose.Put ( "Current reference:", buff );
         }
     }
-else                                                verbose.Put ( "Reference:", "Unknown" );
+else                                                verbose.Put ( "Reference:", ReferenceNames[ ref ] );
 }
 
 
@@ -1050,7 +1056,7 @@ verbose.Put ( "Splitting results per spectrum :",       splitspectrum );
 verbose.NextLine ();
 verbose.Put ( "Optimally downsampling the file:", optimaldownsampling );
 if ( optimaldownsampling )
-    verbose.Put ( "Downsampling factor:", stdownsamplingfactor );
+    verbose.Put ( "Downsampling factor:", downsamplingfactor );
 }
 
 
@@ -1117,8 +1123,8 @@ long                epochtimeoffset     = 0;
 long                usoffset;
 
 if     ( analysis == FreqAnalysisSTransform ) {
-    expfile.NumTime             = RoundAbove ( blocksize         / (double) stdownsamplingfactor );
-    expfile.BlockFrequency      =              samplingfrequency /          stdownsamplingfactor;
+    expfile.NumTime             = RoundAbove ( blocksize         / (double) downsamplingfactor );
+    expfile.BlockFrequency      =              samplingfrequency /          downsamplingfactor;
     usoffset                    = TimeFrameToMicroseconds ( timemin, samplingfrequency ); // + 0.25; // ?
     }
 else {
@@ -1663,7 +1669,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
                     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // in case of downsampling, we don't fear any aliasing effect as a Gaussian has already been applied before
-                    for ( int i = 0, i0 = 0; i < blocksize; i += stdownsamplingfactor, i0++ ) // do all TFs
+                    for ( int i = 0, i0 = 0; i < blocksize; i += downsamplingfactor, i0++ ) // do all TFs
 
                         if      ( datatypeout == AtomTypeComplex )  {   results ( i0, eli, 2 * savedfi0     )   = SumST ( i ).real ();
                                                                         results ( i0, eli, 2 * savedfi0 + 1 )   = SumST ( i ).imag ();     }
@@ -1986,7 +1992,7 @@ if ( outputmarkers ) {
     WriteMarkerHeader ( ofmrk );
 
 
-    double          mrkdownsampling = analysis == FreqAnalysisSTransform ? stdownsamplingfactor : blockstep;
+    double          mrkdownsampling = analysis == FreqAnalysisSTransform ? downsamplingfactor : blockstep;
     TMarker         marker;
     int             nummarkers      = 0;
 
