@@ -22,6 +22,7 @@ limitations under the License.
 #include    "System.CLI11.h"
 #include    "CLIDefines.h"
 
+#include    "Math.FFT.h"
 #include    "FrequencyAnalysis.h"
 #include    "TFrequencyAnalysisDialog.h"
 
@@ -56,40 +57,34 @@ DefineCLIOptionString   ( freqan,   "",     __excludetriggers,      __excludetri
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionDouble   ( freqan,   "",     __samplingfrequency,    __samplingfrequency_descr )
-->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "sampling frequency should be above 0" : ""; } );
+DefineCLIOptionDouble   ( freqan,   "",     __samplingfrequency,    __samplingfrequency_descr );
 
-DefineCLIOptionInt      ( freqan,   "",     __windowsize,           "Window Size, in [TF]" );
+DefineCLIOptionInt      ( freqan,   "",     __windowsize,           "FFT Window Size, in [TF] (not for STransform)" );
 
-DefineCLIOptionEnum     ( freqan,           "",     __windowstep,           "Window Step" )
+DefineCLIOptionEnum     ( freqan,   "",     __windowstep,           "FFT Window Step (not for STransform)" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __windowstep1, __windowstep25, __windowstep100 } ) ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionDouble   ( freqan,   "",     __freqmin,              "Lowest frequency" )
-->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
+DefineCLIOptionDouble   ( freqan,   "",     __freqmin,              "Lowest frequency" RequiredString );
 
-DefineCLIOptionDouble   ( freqan,   "",     __freqmax,              "Highest frequency" )
-->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
+DefineCLIOptionDouble   ( freqan,   "",     __freqmax,              "Highest frequency" RequiredString );
 
-DefineCLIOptionDouble   ( freqan,   "",     __freqlinstep,          "Saving a Linear Interval, with Frequency step" )
-->CheckOption           ( []( const string& str ) { return StringToDouble ( str.c_str () ) <= 0 ? "frequency cut should be above 0" : ""; } );
+DefineCLIOptionDouble   ( freqan,   "",     __freqlinstep,          "Saving frequencies as Linear Interval, with Frequency step" );
 
-DefineCLIOptionInt      ( freqan,   "",     __freqlogdecade,        "Saving a Log Interval, with Number per Decade" )
-->DefaultInteger        ( DefaultSaveLogDecade );
+DefineCLIOptionInt      ( freqan,   "",     __freqlogdecade,        "Saving frequencies as Log Interval, with Number per Decade" );
+//->DefaultInteger        ( DefaultSaveLogDecade );
 
-// add interval type?
-DefineCLIOptionStrings  ( freqan,   -1, "",     __freqbands,        "Saving a list of Frequency Bands (f.ex. 1-4;4-8;8-14)" )
-->TypeOfOption          ( "INTERVALS" );
+DefineCLIOptionIntervals( freqan,   -1, "",     __freqbands,        "Saving a list of Frequency Bands (f.ex. 1-4,4-8,8-14)" );
 
 ExcludeCLIOptions       ( freqan,     __freqlinstep,    __freqlogdecade,    __freqbands );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionEnum     ( freqan,   "",     __analysis,             "Type of analysis" )
-->CheckOption           ( CLI::IsMember ( vector<string> ( { __analysisfft, __analysisfftapprox, __analysisstransform } ) ) );
+DefineCLIOptionEnum     ( freqan,   "",     __analysis,             "Type of analysis" RequiredString )
+->CheckOption           ( CLI::IsMember ( vector<string> ( { __analysispowermaps, __analysisfft, __analysisfftapprox, __analysisstransform } ) ) );
 
 DefineCLIFlag           ( freqan,   "",     __windowinghanning,     "Hanning Windowing" );
 
@@ -98,11 +93,11 @@ DefineCLIFlag           ( freqan,   "",     __average,              "Average out
 ExcludeCLIOptions       ( freqan,     __sequential,     __average );
 
 
-DefineCLIOptionEnum     ( freqan,   "",     __rescaling,            "Window rescaling" )
+DefineCLIOptionEnum     ( freqan,   "",     __rescaling,            "Window rescaling (Default:parseval)" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __rescalingnone, __rescalingsqrt, __rescalingsize } ) ) );
 
 
-DefineCLIOptionEnum     ( freqan,   "",     __output,               "Output type" )
+DefineCLIOptionEnum     ( freqan,   "",     __output,               "Output type (Default:power)" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __outputreal, __outputnorm, __outputpower, __outputcomplex, __outputphase } ) ) );
 
 
@@ -137,6 +132,483 @@ inline void     FrequencyAnalysisCLI ( CLI::App* freqan, const TGoF& gof )
 if ( ! IsSubCommandUsed ( freqan )  )
     return;
 
+
+if ( gof.IsEmpty () ) {
+
+    ConsoleErrorMessage ( 0, "No input files provided!" );
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/*
+if ( ! HasCLIOption ( freqan, __preset ) ) {
+
+    ConsoleErrorMessage ( __preset, "No preset specified!" );
+    return;
+    }
+
+
+string              preset          = GetCLIOptionEnum ( freqan, __preset );
+
+ComputingRisPresetsEnum esicase     = preset == __preset1 ? ComputingRisPresetErpGroupMeans
+                                    : preset == __preset2 ? ComputingRisPresetErpIndivMeans
+                                    : preset == __preset3 ? ComputingRisPresetErpIndivEpochs
+                                    : preset == __preset4 ? ComputingRisPresetErpFitClusters
+                                    : preset == __preset5 ? ComputingRisPresetIndIndivEpochs
+                                    : preset == __preset6 ? ComputingRisPresetSpont
+                                    : preset == __preset7 ? ComputingRisPresetSpontClusters
+                                    : preset == __preset8 ? ComputingRisPresetFreq
+                                    :                       ComputingRisPresetSeparator1;       // null preset
+
+if ( CRISPresets[ esicase ].Flags == CRISPresetNone ) {
+
+    ConsoleErrorMessage ( __preset, "Wrong preset!" );
+    return;
+    }
+*/
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( ! HasCLIOption ( freqan, __analysis ) ) {
+
+    ConsoleErrorMessage ( __analysis, "Type of analysis is not specified!" );
+    return;
+    }
+
+string              typeanalysis    = GetCLIOptionEnum ( freqan, __analysis );
+
+FreqAnalysisType    analysis        = typeanalysis == __analysisfft         ?   FreqAnalysisFFT
+                                    : typeanalysis == __analysispowermaps   ?   FreqAnalysisPowerMaps
+                                    : typeanalysis == __analysisfftapprox   ?   FreqAnalysisFFTApproximation
+                                    :                                           FreqAnalysisSTransform;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+string              tracks          = GetCLIOptionString ( freqan, __tracks );
+
+TFileName           xyzfile         = GetCLIOptionFile   ( freqan, __xyzfile );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Time parameters, exclusively between time interval, triggers to keep or triggers to exclude
+                                        // default values
+TimeOptions         timeoptions     = ExportTimeInterval;
+long                timemin         = 0;                      
+long                timemax         = Highest ( timemax );    
+string              excludetriggers;
+
+
+if      ( HasCLIOption ( freqan, __timemin )
+       || HasCLIOption ( freqan, __timemax ) ) {
+
+    timeoptions     = ExportTimeInterval;
+
+    if  ( HasCLIOption ( freqan, __timemin ) )
+        timemin     = GetCLIOptionInt ( freqan, __timemin );
+
+    if  ( HasCLIOption ( freqan, __timemax ) )
+        timemax     = GetCLIOptionInt ( freqan, __timemax );
+
+    CheckOrder ( timemin, timemax );
+    }
+
+else if ( HasCLIOption ( freqan, __excludetriggers ) ) {
+
+    timeoptions     = ExcludeTimeTriggers;
+    excludetriggers = GetCLIOptionString ( freqan, __excludetriggers );
+    }
+
+else // no options provided
+    timeoptions     = ExportTimeInterval;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // For total safety, it is convenient to have a default sampling frequency at hand, which could be passed to EEGs that lack one
+double              samplingfrequency   = 0;
+
+                                        // First see if caller provided one
+if ( HasCLIOption ( freqan, __samplingfrequency ) ) {
+
+    samplingfrequency   = GetCLIOptionDouble ( freqan, __samplingfrequency );
+
+    if ( samplingfrequency <= 0 ) {
+
+        ConsoleErrorMessage ( __samplingfrequency, "Sampling frequency should greater than 0!" );
+        return;
+        }
+    }
+else {
+                                        // Loop through all files and stop at first positive sampling frequency
+    for ( int filei = 0; filei < (int) gof; filei++ )
+
+        if ( ReadFromHeader ( gof[ filei ],  ReadSamplingFrequency,    &samplingfrequency )
+          && samplingfrequency > 0 )
+
+            break;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+long                blocksize       = 0;
+
+if ( analysis != FreqAnalysisSTransform ) {
+    
+    if ( ! HasCLIOption ( freqan, __windowsize ) ) {
+
+        ConsoleErrorMessage ( __windowsize, "FFT Window size is not specified!" );
+        return;
+        }
+
+    blocksize   = GetCLIOptionInt ( freqan, __windowsize );
+
+    if ( blocksize < 2 ) {
+
+        ConsoleErrorMessage ( __windowsize, "FFT Window size is too small!" );
+        return;
+        }
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+string              blockstep;
+double              blocksoverlap   = 0;
+
+if ( analysis != FreqAnalysisSTransform ) {
+    
+    if ( ! HasCLIOption ( freqan, __windowstep ) ) {
+
+        ConsoleErrorMessage ( __windowstep, "FFT Window step is not specified!" );
+        return;
+        }
+
+    blockstep       = GetCLIOptionEnum ( freqan, __windowstep );
+
+    blocksoverlap   = blockstep == __windowstep100 ? 0.00
+                    : blockstep == __windowstep25  ? 0.75
+                    : blockstep == __windowstep1   ? ( blocksize > 0 ? (double) ( blocksize - 1 ) / blocksize : 0 )
+                    :                                0.00;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+double              nyquist         = GetNyquist ( samplingfrequency, analysis == FreqAnalysisSTransform );
+
+
+if ( ! HasCLIOption ( freqan, __freqmin ) ) {
+
+    ConsoleErrorMessage ( __freqmin, "Frequency min is not specified!" );
+    return;
+    }
+
+double              freqmin         = GetCLIOptionDouble ( freqan, __freqmin );
+
+if ( ! IsInsideLimits ( freqmin, (double) 0, nyquist ) ) {
+
+    ConsoleErrorMessage ( __freqmin, "Frequency min is not in range [0..", FloatToString ( nyquist, 2 ), "]" );
+    return;
+    }
+
+
+if ( ! HasCLIOption ( freqan, __freqmax ) ) {
+
+    ConsoleErrorMessage ( __freqmax, "Frequency max is not specified!" );
+    return;
+    }
+
+double              freqmax         = GetCLIOptionDouble ( freqan, __freqmax );
+
+if ( ! IsInsideLimits ( freqmax, (double) 0, nyquist ) ) {
+
+    ConsoleErrorMessage ( __freqmax, "Frequency max is not in range [0..", FloatToString ( nyquist, 2 ), "]" );
+    return;
+    }
+
+
+if ( freqmin >= freqmax ) {
+
+    ConsoleErrorMessage ( 0, "Frequency max is equal or lower than Frequency min!" );
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FreqOutputBands     outputinterval      = HasCLIOption ( freqan, __freqlinstep   ) ? OutputLinearInterval
+                                        : HasCLIOption ( freqan, __freqlogdecade ) ? OutputLogInterval
+                                        : HasCLIOption ( freqan, __freqbands     ) ? OutputBands
+                                        :                                            (FreqOutputBands) -1;
+
+if ( outputinterval == -1 ) {
+
+    ConsoleErrorMessage ( 0, "Either a linear interval, a logarithmic interval, or frequency bands should be specified!" );
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+double              outputfreqstep      = GetCLIOptionDouble    ( freqan, __freqlinstep   );
+int                 outputdecadestep    = GetCLIOptionInt       ( freqan, __freqlogdecade );
+vector<interval>    outputbands         = GetCLIOptionIntervals ( freqan, __freqbands     );
+
+
+if ( HasCLIOption ( freqan, __freqlinstep ) && outputfreqstep <= 0 ) {
+
+    ConsoleErrorMessage ( __freqlinstep, "Linear interval step should be greater than 0!" );
+    return;
+    }
+
+
+if ( HasCLIOption ( freqan, __freqlogdecade ) && outputdecadestep <= 0 ) {
+
+    ConsoleErrorMessage ( __freqlogdecade, "Logarithmic number of steps per decade should be greater than 0!" );
+    return;
+    }
+
+
+if ( HasCLIOption ( freqan, __freqbands ) ) {
+    
+    if ( outputbands.empty () ) {
+
+        ConsoleErrorMessage ( __freqbands, "Frequency Bands appear to be empty!" );
+        return;
+        }
+
+    for ( const auto& i : outputbands ) {
+
+        if ( ! IsInsideLimits ( i.first, (double) 0, nyquist ) ) {
+            ConsoleErrorMessage ( __freqbands, "Frequency band first value '", FloatToString ( i.first ), "' is not in range [0..", FloatToString ( nyquist, 2 ), "]" );
+            return;
+            }
+        if ( ! IsInsideLimits ( i.second, (double) 0, nyquist ) ) {
+            ConsoleErrorMessage ( __freqbands, "Frequency band second value '", FloatToString ( i.second ), "' is not in range [0..", FloatToString ( nyquist, 2 ), "]" );
+            return;
+            }
+        }
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( ! HasCLIFlag ( freqan, __sequential )
+  && ! HasCLIFlag ( freqan, __average    ) ) {
+
+    ConsoleErrorMessage ( 0, "You need to specify either ", __sequential, " or ", __average, " output!" );
+    return;
+    }
+
+bool                outputsequential    = HasCLIFlag ( freqan, __sequential )
+                                       || analysis == FreqAnalysisSTransform;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+FreqWindowingType   windowing           = HasCLIFlag ( freqan, __windowinghanning ) ? analysis != FreqAnalysisSTransform ? FreqWindowingHanning 
+                                                                                                                         : FreqWindowingHanningBorder 
+                                                                                    :                                      FreqWindowingNone;
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+//if ( ! HasCLIOption ( freqan, __rescaling ) ) {
+//
+//    ConsoleErrorMessage ( __rescaling, "Rescaling has to be specified!" );
+//    return;
+//    }
+
+string              rescaling           = GetCLIOptionEnum ( freqan, __rescaling );
+
+FFTRescalingType    fftnorm             = rescaling == __rescalingnone ? FFTRescalingNone
+                                        : rescaling == __rescalingsqrt ? FFTRescalingSqrtWindowSize
+                                        :                                FFTRescalingWindowSize;    // default is Parseval
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+string              outputtype          = GetCLIOptionEnum ( freqan, __output );
+
+FreqOutputAtomType  outputatomtype      = outputtype == __outputreal    ? OutputAtomReal
+                                        : outputtype == __outputnorm    ? OutputAtomNorm
+                                        : outputtype == __outputpower   ? OutputAtomNorm2
+                                        : outputtype == __outputcomplex ? OutputAtomComplex
+                                        : outputtype == __outputphase   ? OutputAtomPhase
+                                        :                               ( analysis == FreqAnalysisFFTApproximation ? OutputAtomReal : OutputAtomNorm2 ); // default is power
+
+if ( analysis == FreqAnalysisFFTApproximation
+  && outputatomtype != OutputAtomReal ) {
+
+    ConsoleErrorMessage ( __output, "Output must be of 'real' type for the FFT Approximation analysis!" );
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+string              reflist         = GetCLIOptionString ( freqan, __reference );
+
+ReferenceType       ref             = reflist.empty ()
+                                   || reflist == "none"
+                                   || reflist == "asinfile"             ? ReferenceAsInFile
+                                    : reflist == "average"
+                                   || reflist == "avgref"               ? ReferenceAverage
+                                    :                                     ReferenceArbitraryTracks;
+
+
+//CheckReference ( ref, datatypein );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+string              infix           = GetCLIOptionString ( freqan, __infix );
+
+bool                subdir          = HasCLIFlag ( freqan, __subdir        );
+
+
+bool                savingfreq      = HasCLIFlag ( freqan, __savingfreq    );
+bool                splitelec       = HasCLIFlag ( freqan, __splitelec     );
+bool                splitfreq       = HasCLIFlag ( freqan, __splitfreq     );
+bool                splitspectrum   = HasCLIFlag ( freqan, __splitspectrum );
+
+if ( ! ( savingfreq || splitelec || splitfreq || splitspectrum ) ) {
+
+    ConsoleErrorMessage ( 0, "No output files has been selected!" );
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( HasCLIFlag ( freqan, __downsampling ) && analysis != FreqAnalysisSTransform ) {
+
+    ConsoleErrorMessage ( __downsampling, "Optimal downsampling is only compatible with STransform type of analysis!" );
+    return;
+    }
+
+bool                optimaldownsampling = HasCLIFlag ( freqan, __downsampling );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool                silent              = true;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Console output prototype
+#define     CLIConsoleOutput
+//#undef      CLIConsoleOutput
+
+#if defined(CLIConsoleOutput)
+
+CreateConsole ();
+
+cout << "Tracks:            " << ( tracks.empty () ? "All" : tracks ) << NewLine;
+if ( xyzfile.IsNotEmpty () )
+    cout << "XYZ file:          " << xyzfile << NewLine;
+
+cout << "Time Options:      " << ( timeoptions == ExportTimeInterval  ? "Time Interval" 
+                                 : timeoptions == ExportTimeTriggers  ? "Keeping triggers List"
+                                 : timeoptions == ExcludeTimeTriggers ? "Excluding triggers List"
+                                 :                                      "Unknown" ) << NewLine;
+
+cout << "Time Min:          " << ( timemin == 0                   ? "Beginning of file" : IntegerToString ( timemin ) ) << NewLine;
+cout << "Time Max:          " << ( timemax == Highest ( timemax ) ? "End of file"       : IntegerToString ( timemax ) ) << NewLine;
+
+if ( timeoptions == ExcludeTimeTriggers )
+    cout << "Exclude Triggers:  " << excludetriggers << NewLine;
+
+cout << NewLine;
+
+cout << "Analysis:          " << typeanalysis << NewLine;
+cout << "Sampling Frequency:" << samplingfrequency << NewLine;
+if ( analysis != FreqAnalysisSTransform ) {
+    cout << "Window Size:       " << blocksize << NewLine;
+    cout << "Window Step:       " << blockstep << NewLine;
+    cout << "Window Overlap:    " << ( blocksoverlap * 100 ) << "%" << NewLine;
+    }
+cout << "Frequency Min:     " << freqmin << NewLine;
+cout << "Frequency Max:     " << freqmax << NewLine;
+if      ( outputinterval == OutputLinearInterval )  cout << "Linear Interv Step:" << outputfreqstep << NewLine;
+else if ( outputinterval == OutputLogInterval    )  cout << "Log, # per Decade: " << outputdecadestep << NewLine;
+else if ( outputinterval == OutputBands          ) {
+    cout << "Num Freq Bands:    " << outputbands.size () << NewLine;
+    for ( const auto& i : outputbands )
+        cout << "Freq Bands:        " << i.first << " to " << i.second << NewLine;
+    }
+
+cout << NewLine;
+
+cout << "Sequential output: " << BoolToString ( outputsequential ) << NewLine;
+cout << "Windowing:         " << FreqWindowingString    [ windowing ] << NewLine;
+cout << "Rescaling:         " << FFTRescalingString     [ fftnorm ] << NewLine;
+cout << "Output:            " << FreqOutputAtomString   [ outputatomtype ] << NewLine;
+cout << "Reference:         " << ReferenceNames         [ ref ] << NewLine;
+if ( ref == ReferenceArbitraryTracks )
+    cout << "Reference list:    " << reflist << NewLine;
+
+cout << NewLine;
+
+cout << "Infix:             " << infix << NewLine;
+cout << "Sub-Directory:     " << BoolToString ( subdir              ) << NewLine;
+cout << "Saving .freq:      " << BoolToString ( savingfreq          ) << NewLine;
+cout << "Split Electrodes:  " << BoolToString ( splitelec           ) << NewLine;
+cout << "Split Frequencies: " << BoolToString ( splitfreq           ) << NewLine;
+cout << "Split Spectrum:    " << BoolToString ( splitspectrum       ) << NewLine;
+cout << "Optimal Downsampl: " << BoolToString ( optimaldownsampling ) << NewLine;
+
+cout << NewLine;
+
+for ( int i = 0; i < (int) gof; i++ )
+    cout << "File:              "    << gof[ i ] << NewLine;
+
+cout << NewLine;
+
+#endif
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/*
+TFileName           fileoutfreq;
+TFileName           fileoutsplitelec;
+TFileName           fileoutsplitfreq;
+TFileName           fileoutspectrum;
+TFileName           fileoutapprfreqs;
+
+
+FrequencyAnalysis   (   EEGDoc,
+                        xyzfile,
+                        analysis,
+                        transfer->Channels,
+                        ref,                transfer->RefList,
+                        timemin,            timemax,
+                        badepochs,          listbadepochs,
+                        samplingfrequency,
+                        numblocks,          blocksize,          blocksoverlap,
+                        fftnorm,
+                        outputbands,
+                        outputatomtype,
+                        outputmarkers,      outputmarkerstype,
+                        transfer->SaveBandsValue,
+                        outputfreqmin,      outputfreqmax,      outputfreqstep,     
+                        outputdecadestep,
+                        outputsequential,
+                        windowing,
+                        optimaldownsampling,
+                        transfer->InfixFilename,    createsubdir,
+                        savefreq       ? (char*) fileoutfreq        : (char*) 0,
+                        splitelectrode ? (char*) fileoutsplitelec   : (char*) 0,
+                        splitfrequency ? (char*) fileoutsplitfreq   : (char*) 0,
+                        splitspectrum  ? (char*) fileoutspectrum    : (char*) 0,
+                        savefftapprox  ? (char*) fileoutapprfreqs   : (char*) 0,
+                        silent
+                    );
+*/
+
+#if defined(CLIConsoleOutput)
+DeleteConsole ( true );
+#endif
 }
 
 //----------------------------------------------------------------------------

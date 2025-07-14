@@ -1842,7 +1842,7 @@ FreqOutputAtomType  outputatomtype      = (FreqOutputAtomType)  GetIndex ( Write
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 bool                outputsequential    = CheckToBool ( transfer->Sequence ) 
-                                        || ( analysis == FreqAnalysisSTransform );
+                                       || analysis == FreqAnalysisSTransform;
 
 FreqWindowingType   windowing           = transfer->WindowingHanning ? analysis != FreqAnalysisSTransform ? FreqWindowingHanning 
                                                                                                           : FreqWindowingHanningBorder 
@@ -1885,7 +1885,7 @@ double              limitfreqmin_i      = 1;
 double              limitfreqmin_hz     = limitfreqmin_i * datafreqstep_hz;
 
                                         // we need this value for some sanity checks
-double              savedfreqmax            = 0;
+double              savedfreqmax        = 0;
 
 
 if      ( outputbands == OutputBands ) {
@@ -1944,7 +1944,6 @@ bool                optimaldownsampling = CheckToBool ( transfer->OptimalDownsam
 bool                createsubdir        = CheckToBool ( transfer->CreateSubdir     );
 
 bool                savefreq            = CheckToBool ( transfer->FileTypeFreq );
-                                        // .freq file is actually used to split results into smaller files
 bool                splitelectrode      = savefreq && CheckToBool ( transfer->SplitByElectrode ) && ( outputatomtype != OutputAtomComplex );
 bool                splitfrequency      = savefreq && CheckToBool ( transfer->SplitByFrequency ) && ( outputatomtype != OutputAtomComplex );
 bool                splitspectrum       = savefreq && CheckToBool ( transfer->SplitBySpectrum  ) && ( outputatomtype != OutputAtomComplex );
