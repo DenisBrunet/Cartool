@@ -67,6 +67,14 @@ const char  FreqOutputAtomString[ NumFreqOutputAtomType ][ 32 ] =
             };
 
 
+const char  FreqWindowingString[ NumFreqWindowingType ][ 64 ] =
+            {
+            "No Windowing / Flat Top",
+            "Hanning Windowing, done on each block",
+            "Hanning Windowing, done only on the edges",
+            };
+
+
 //----------------------------------------------------------------------------
                                         // Used internally to keep tracks of real / truncated / index of frequencies
 class   TOneFrequencyBand
@@ -247,13 +255,18 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
 if ( ! eegdoc )
     return  false;
 
+                                        // Off, as this will be checked later on
+//if ( timemin < 0 || timemax < 0 || timemin > timemax )
+//    return  false;
 
-if ( numblocks <= 0
-  || blocksize <= 0 )
+                                        // FFT analysis requires these parameters
+if ( analysis != FreqAnalysisSTransform
+ && (    numblocks     <= 0
+      || blocksize     <= 0
+      || blocksoverlap <  0             // values are currently: 0% (100% jump); 75% (25% jump); ((blocksize-1)/blocksize)% (1TF jump)
+      || blocksoverlap >  1 ) )
     return  false;
 
-                                        // values are currently: 0% (100% jump); 75% (25% jump); ((blocksize-1)/blocksize)% (1TF jump)
-Clipped ( blocksoverlap, 0.0, 1.0 );
 
 if ( analysis == FreqAnalysisSTransform )
     outputsequential    = true;
@@ -262,6 +275,8 @@ if ( analysis == FreqAnalysisSTransform )
 if ( analysis != FreqAnalysisFFTApproximation && outputatomtype == OutputAtomReal )
     outputatomtype  = OutputAtomNorm2;
 
+if ( analysis == FreqAnalysisFFTApproximation )
+    outputatomtype  = OutputAtomReal;
 
 if ( analysis == FreqAnalysisSTransform && fftnorm != FFTRescalingNone )
     fftnorm         = FFTRescalingNone;
@@ -318,6 +333,19 @@ if ( numelsave == 0 )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // resolve possible EOF
+Clipped ( timemin, timemax, (long) 0, eegdoc->GetNumTimeFrames () - 1 );
+
+
+if ( analysis == FreqAnalysisSTransform  ) {
+                                        // override / provide these parameters
+    numblocks       = 1;
+    blocksize       = timemax - timemin + 1;
+    blocksoverlap   = 0;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TMarkers            rejectmarkers;
 
@@ -330,7 +358,7 @@ if ( badepochs == SkippingBadEpochsList )
                                         // because we have real input signal, it can be processed faster and with less memory with some tricks
 int                 freqsize            = blocksize / 2 + 1;
 
-long                timenum             = ( timemax - timemin + 1 );
+long                timenum             = timemax - timemin + 1;
 
 int                 blockstep           = ComputeStep ( analysis == FreqAnalysisSTransform, blocksize, blocksoverlap );
 
@@ -1000,11 +1028,7 @@ else if     ( analysis == FreqAnalysisFFTApproximation )    verbose.Put ( "Type 
 else if     ( analysis == FreqAnalysisSTransform )          verbose.Put ( "Type of frequency analysis:", "Wavelet (S-Transform)" );
 else                                                        verbose.Put ( "Type of frequency analysis:", "Unknown" );
 
-verbose.Put ( "Windowing function:", windowing != FreqWindowingNone ? "Hanning" : "None / Flat Top" );
-if ( windowing )
-    verbose.Put ( "Windowing applied on:", windowing == FreqWindowingHanning        ? "the full block" 
-                                         : windowing == FreqWindowingHanningBorder  ? "the block's borders only" 
-                                         :                                            "unknwown windowing" );
+verbose.Put ( "Windowing function:", FreqWindowingString[ windowing ] );
 
 verbose.NextLine ();
 
@@ -1033,8 +1057,8 @@ else if ( ref == ReferenceUsingCurrent      ) {
 
     ReferenceType   currref     = eegdoc->GetReferenceType ();
 
-    if      ( currref == ReferenceAsInFile )        verbose.Put ( "Current reference:", ReferenceNames[ currref ] );
-    else if ( currref == ReferenceAverage  )        verbose.Put ( "Current reference:", ReferenceNames[ currref ] );
+    if      ( currref == ReferenceAsInFile  )       verbose.Put ( "Current reference:", ReferenceNames[ currref ] );
+    else if ( currref == ReferenceAverage   )       verbose.Put ( "Current reference:", ReferenceNames[ currref ] );
     else {
         eegdoc->GetReferenceTracks ().ToText ( buff, xyzdoc.IsOpen () ? xyzdoc->GetElectrodesNames() : eegdoc->GetElectrodesNames(), AuxiliaryTracksNames );
                                                                     

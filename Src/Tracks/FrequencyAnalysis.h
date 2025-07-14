@@ -38,10 +38,10 @@ constexpr double    HanningRescaling            = 2.0;
 
 enum    FreqAnalysisType
         {
-        FreqAnalysisFFT,
-        FreqAnalysisPowerMaps,          // FFT for surface EEG: Average Reference, Norm^2
-        FreqAnalysisFFTApproximation,   // FFT projected on a single Real axis
-        FreqAnalysisSTransform,         // Stockwell transform, a sort of Wavelet very close to Morlet's
+        FreqAnalysisFFT,                // General FFT
+        FreqAnalysisPowerMaps,          // Surface EEG dedicated FFT: forcing Average Reference and Norm^2
+        FreqAnalysisFFTApproximation,   // Surface EEG special FFT projection method: each block projected back on a single Real axis
+        FreqAnalysisSTransform,         // S-Transofmr (Stockwell), a sort of Wavelet very close to Morlet's
         };
 
 
@@ -86,7 +86,10 @@ enum    FreqWindowingType
         FreqWindowingNone,
         FreqWindowingHanning,
         FreqWindowingHanningBorder,
+        NumFreqWindowingType
         };
+
+extern const char   FreqWindowingString[ NumFreqWindowingType ][ 64 ];
 
 
 //----------------------------------------------------------------------------
