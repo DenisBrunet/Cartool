@@ -18,6 +18,7 @@ limitations under the License.
 
 #include    "CLI/CLI.hpp"
 #include    "Strings.Utils.h"
+#include    "Strings.Grep.h"
 #include    "Files.TGoF.h"
 
 using namespace std;
@@ -92,6 +93,8 @@ return  name;
                                         // Side-effect is that the --help will also require any argument listed
 #define                 Required                required
 
+using                   interval            = pair<double,double>;
+
 
 //----------------------------------------------------------------------------
                                         // None of these definition allocate nor make use of any variable
@@ -133,6 +136,14 @@ inline CLI::Option*     DefineCLIOptionDouble   ( CLI::App* app, const string na
 {
 return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
         ->TypeOfOption          ( "FLOAT" );
+}
+
+
+inline CLI::Option*     DefineCLIOptionInterval ( CLI::App* app, const string name1, const string name2, const string& description )
+{
+return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
+        ->TypeOfOption          ( "INTERVAL" )
+        ->CheckOption           ( []( const string& str ) { return ! StringGrep ( str.c_str (), GrepOneInterval, GrepOptionDefault ) ? "not a properly formed interval, as in 12.3-45.6" : ""; } );
 }
 
 
@@ -192,6 +203,17 @@ return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
 }
 
 
+inline CLI::Option*     DefineCLIOptionIntervals( CLI::App* app, int howmany, const string name1, const string name2, const string& description )
+{
+return  app->add_option ( CLIBuildOptionName ( name1, name2 ), description )
+        ->TypeOfOption          ( "INTERVALS" + AsManyString ( howmany ) )
+        ->delimiter             ( ',' )
+        ->expected              ( howmany )
+        ->multi_option_policy   ( AsManyPolicy ( howmany ) )
+        ->CheckOption           ( []( const string& str ) { return ! StringGrep ( str.c_str (), GrepManyIntervals, GrepOptionDefault ) ? "not a properly formed series of intervals, as in 12.3-45.6" : ""; } );
+}
+
+
 //----------------------------------------------------------------------------
                                         // Retrieving options
 //----------------------------------------------------------------------------
@@ -234,6 +256,12 @@ inline string           GetCLIOptionEnum        ( CLI::App* app, const string op
 inline TFileName        GetCLIOptionFile        ( CLI::App* app, const string option )  { return  TFileName (       GetCLIOptionString ( app, option ).c_str (), TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) ); }  // nicely resolving any relative path
 inline int              GetCLIOptionInt         ( CLI::App* app, const string option )  { return  StringToInteger ( GetCLIOptionString ( app, option ).c_str () );  }   // empty string / option will convert to 0
 inline double           GetCLIOptionDouble      ( CLI::App* app, const string option )  { return  StringToDouble  ( GetCLIOptionString ( app, option ).c_str () );  }   // empty string / option will convert to 0
+inline interval         GetCLIOptionInterval    ( CLI::App* app, const string option )  
+{
+interval            i;
+sscanf ( GetCLIOptionString ( app, option ).c_str (), "%lf-%lf", &i.first, &i.second ); // simplest way
+return  i;
+}
 
 
 //----------------------------------------------------------------------------
@@ -244,6 +272,22 @@ inline vector<string>   GetCLIOptionEnums       ( CLI::App* app, const string op
 inline TGoF             GetCLIOptionFiles       ( CLI::App* app, const string option )  { return  TGoF ( GetCLIOptionStrings ( app, option ), TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) ); } // nicely resolving all relative paths
 inline vector<int>      GetCLIOptionInts        ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->as<vector<int>> ()    : vector<int>();    }
 inline vector<double>   GetCLIOptionDoubles     ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->as<vector<double>> () : vector<double>(); }
+inline vector<interval> GetCLIOptionIntervals   ( CLI::App* app, const string option )
+{
+if ( ! HasCLIOption ( app, option ) )
+    return vector<interval>();
+
+vector<string>      vs          = GetCLIOption ( app, option )->results ();
+vector<interval>    vi;
+interval            i;
+
+for ( const auto& s : vs ) {
+    sscanf ( s.c_str (), "%lf-%lf", &i.first, &i.second ); // simplest way
+    vi.push_back ( i );
+    }
+
+return  vi;
+}
 
 
 //----------------------------------------------------------------------------

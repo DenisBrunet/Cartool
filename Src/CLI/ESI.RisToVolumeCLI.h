@@ -43,10 +43,10 @@ if ( ristovol == 0 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Parameters appearance follow the dialog's visual design
-DefineCLIOptionFile     ( ristovol,         "",     __spfile,               "Solution Points file (Required)" );
+DefineCLIOptionFile     ( ristovol,         "",     __spfile,               "Solution Points file" RequiredString );
 //->Required ();    // interferes with --help
 
-DefineCLIOptionFile     ( ristovol,         "",     __greyfile,             "Grey Mask file (Required)" );
+DefineCLIOptionFile     ( ristovol,         "",     __greyfile,             "Grey Mask file" RequiredString );
 //->Required ();    // interferes with --help
 
 NeedsCLIOption          ( ristovol,         __spfile,       __greyfile );
@@ -185,7 +185,6 @@ FilterTypes         merging         = timestep > 1 ? FilterTypeMedian : FilterTy
 
 string              typeformat      = GetCLIOptionEnum ( ristovol, __typeformat );
 
-
 AtomFormatType      atomformat      = typeformat == __byte  ?   AtomFormatByte
                                     : typeformat == __float ?   AtomFormatFloat
                                     :                           RisToVolumeDefaultAtomFormat;
@@ -227,8 +226,8 @@ cout << "Volume Interpolation: "    << VolumeInterpolationPresetString[ interpol
 cout << "SP Interpolation: "        << SPInterpolationTypeNames[ spinterpol ] << NewLine;
 cout << NewLine;
 
-cout << "Time Min: "                << ( timemin == 0 ? "Beginning of file" : IntegerToString ( timemin ) ) << NewLine;
-cout << "Time Max: "                << ( timemax == Highest ( timemax ) ? "End of file" : IntegerToString ( timemax ) ) << NewLine;
+cout << "Time Min: "                << ( timemin == 0                   ? "Beginning of file" : IntegerToString ( timemin ) ) << NewLine;
+cout << "Time Max: "                << ( timemax == Highest ( timemax ) ? "End of file"       : IntegerToString ( timemax ) ) << NewLine;
 cout << "Time Step: "               << timestep << NewLine;
 cout << NewLine;
 

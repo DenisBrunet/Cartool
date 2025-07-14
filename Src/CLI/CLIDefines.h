@@ -53,6 +53,8 @@ constexpr char*     __monitor                   = "--monitor";
 
 //----------------------------------------------------------------------------
                                         // Common options, with most common associated description strings
+#define             RequiredString              " (Required)"
+
 constexpr char*     __files                     = "files";
 constexpr char*     __files_descr               = "List of files";
 
@@ -73,7 +75,7 @@ constexpr char*     __timemin_descr             = "Starting from time frame (Def
 constexpr char*     __timemax                   = "--timemax";
 constexpr char*     __timemax_descr             = "Ending at time frame (Default is End Of File)";
 constexpr char*     __keeptriggers              = "--keeptriggers";
-constexpr char*     __keeptriggers_descr        = "Using only the time intervals from a triggers / markers list";
+constexpr char*     __keeptriggers_descr        = "Using only time intervals from a triggers / markers list";
 constexpr char*     __excludetriggers           = "--excludetriggers";
 constexpr char*     __excludetriggers_descr     = "Excluding time intervals from a triggers / markers list";
 
@@ -155,6 +157,7 @@ constexpr char*     __freqbands                 = "--freqbands";
 
 constexpr char*     __analysis                  = "--analysis";
 constexpr char*     __analysisfft               = "FFT";
+constexpr char*     __analysispowermaps         = "PowerMaps";
 constexpr char*     __analysisfftapprox         = "FFTApprox";
 constexpr char*     __analysisstransform        = "STransform";
 constexpr char*     __windowinghanning          = "--hanning";

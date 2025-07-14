@@ -40,7 +40,7 @@ if ( computingris == 0 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionEnum     ( computingris,     "",     __preset,               "EEG Preset (Required);  IndSubjectsEpochs needs: --envelope" )
+DefineCLIOptionEnum     ( computingris,     "",     __preset,               "EEG Preset" RequiredString ";  IndSubjectsEpochs needs: --envelope" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __preset1, __preset2, __preset3, __preset4, __preset5, __preset6, __preset7, __preset8 } ) ) );
 
 DefineCLIOptionFile     ( computingris,     "",     __listfiles,            "A .csv or .txt file containing the input files" );
@@ -50,7 +50,7 @@ DefineCLIOptionFile     ( computingris,     "",     __listfiles,            "A .
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionFile     ( computingris,     "",     __inversefile,          "Inverse Matrix file (Required)" );
+DefineCLIOptionFile     ( computingris,     "",     __inversefile,          "Inverse Matrix file" RequiredString );
 //->Required ();    // interferes with --help
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -66,7 +66,7 @@ NeedsCLIOption          ( computingris,     __spatialfilter,    __xyzfile )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionEnum     ( computingris,     "",     __typeformat,           "Final file type (Required)" )
+DefineCLIOptionEnum     ( computingris,     "",     __typeformat,           "Final file type" RequiredString )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __norm, __vector } ) ) );
 // !no default enum!
 

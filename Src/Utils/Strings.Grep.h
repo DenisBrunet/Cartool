@@ -78,8 +78,21 @@ constexpr int       PCRE_MAXOVECTOR         = 2 * PCRE_MAXRETURNMATCHES;
 constexpr int       PCRE_REPLACEDLENGTH     = KiloByte;
 
                                         // A few useful grep expressions
-constexpr char*     GrepEmptyString         = "^$";             // empty string - !will return true for "\n" string!
-constexpr char*     GrepEmptyInput          = "^(|\\s)*$";      // empty dialog input: empty, or any mix of spaces, tabs and newlines
+#define             GrepBegin               "^"
+#define             GrepEnd                 "$"
+                                                // 12 12. 12.34 but not .34
+#define             GrepDecimal             "(\\d+(?:\\.\\d*)?)"
+                                                // 12.0-34.0
+#define             GrepInterval            GrepDecimal "-" GrepDecimal
+                                                // 12.0-34.0,23.4-45.6
+#define             GrepIntervals           GrepInterval "(?:," GrepInterval ")*"
+
+constexpr char*     GrepOneInterval         = GrepBegin GrepInterval GrepEnd;
+                                                // a series of interval - catches only groups 1 and 2, then last and before last only
+constexpr char*     GrepManyIntervals       = GrepBegin GrepIntervals GrepEnd;
+
+constexpr char*     GrepEmptyString         = GrepBegin GrepEnd;            // empty string - !will return true for "\n" string!
+constexpr char*     GrepEmptyInput          = GrepBegin "(|\\s)*" GrepEnd;  // empty dialog input: empty, or any mix of spaces, tabs and newlines
 
 
 class               TStrings;

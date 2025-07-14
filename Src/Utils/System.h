@@ -139,7 +139,7 @@ bool    CreateConsole       ();
 bool    DeleteConsole       ( bool showpresskey = false );
 bool    HasConsole          ();
 void    PrintConsole        ( const string& message );
-void    ConsoleErrorMessage ( const char* option, const char* m1, const char* m2 = 0, const char* m3 = 0, const char* m4 = 0 );
+void    ConsoleErrorMessage ( const char* option, const char* m1, const char* m2 = 0, const char* m3 = 0, const char* m4 = 0, const char* m5 = 0 );
 
 
 //----------------------------------------------------------------------------

@@ -534,8 +534,8 @@ cout << "Time Options: " << ( timeoptions == ExportTimeInterval  ? "Time Interva
                             : timeoptions == ExcludeTimeTriggers ? "Excluding triggers List"
                             :                                      "Unknown" ) << NewLine;
 if ( timeoptions == ExportTimeInterval ) {
-    cout << "Time Min: " << ( timemin == 0 ? "Beginning of file" : IntegerToString ( timemin ) ) << NewLine;
-    cout << "Time Max: " << ( timemax == Highest ( timemax ) ? "End of file" : IntegerToString ( timemax ) ) << NewLine;
+    cout << "Time Min: " << ( timemin == 0                   ? "Beginning of file" : IntegerToString ( timemin ) ) << NewLine;
+    cout << "Time Max: " << ( timemax == Highest ( timemax ) ? "End of file"       : IntegerToString ( timemax ) ) << NewLine;
     }
 else if ( timeoptions == ExportTimeTriggers )
     cout << "Keep Triggers: " << keeptriggers << NewLine;
@@ -577,7 +577,7 @@ cout << "Sequence Option: " << ( sequenceoptions == SequenceProcessing  ? "Seque
                                :                                          "Unknown" ) << NewLine;
 cout << "Downsample Ratio: " << ( downsampleratio == 0 ? "No" : IntegerToString ( downsampleratio ) ) << NewLine;
 cout << "File Type & Extension: " << filetype << ", " << SavingEegFileExtPreset[ filetype ] << NewLine;
-cout << "Infix: " << ( infix.empty () ? "None" : infix ) << NewLine;
+cout << "Infix: " << ( infix.empty () ? ""<none>" : infix ) << NewLine;
 cout << "Saving Markers: " << BoolToString ( outputmarkers ) << NewLine;
 
 cout << "Concatenate Time: " << BoolToString ( concatenateoptions ) << NewLine;

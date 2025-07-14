@@ -99,7 +99,7 @@ if ( createconsole )
 }
 
 
-void    ConsoleErrorMessage ( const char* option, const char* m1, const char* m2, const char* m3, const char* m4 )
+void    ConsoleErrorMessage ( const char* option, const char* m1, const char* m2, const char* m3, const char* m4, const char* m5 )
 {
 CreateConsole ();
 
@@ -109,6 +109,7 @@ if ( StringIsNotEmpty ( m1     ) )  ::std::cerr << m1;
 if ( StringIsNotEmpty ( m2     ) )  ::std::cerr << m2;
 if ( StringIsNotEmpty ( m3     ) )  ::std::cerr << m3;
 if ( StringIsNotEmpty ( m4     ) )  ::std::cerr << m4;
+if ( StringIsNotEmpty ( m5     ) )  ::std::cerr << m5;
 ::std::cerr                                     << NewLine;
 
 DeleteConsole ( true );
