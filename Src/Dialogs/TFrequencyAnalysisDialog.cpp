@@ -206,15 +206,15 @@ DEFINE_RESPONSE_TABLE1 ( TFrequencyAnalysisDialog, TBaseDialog )
 //  EV_COMMAND_ENABLE           ( IDC_WINDOWINGNONE,            CmSequenceMeanEnable ),
 //  EV_COMMAND_ENABLE           ( IDC_WINDOWINGHANNING,         CmSequenceMeanEnable ),
 
-    EV_COMMAND                  ( IDC_MEAN,                     CmMeanOrSequence ),
-    EV_COMMAND                  ( IDC_SEQUENCE,                 CmMeanOrSequence ),
+    EV_COMMAND                  ( IDC_MEAN,                     AnalysisAtomtypeCompatibility ),
+    EV_COMMAND                  ( IDC_SEQUENCE,                 AnalysisAtomtypeCompatibility ),
     EV_COMMAND_ENABLE           ( IDC_MEAN,                     CmSequenceMeanEnable ),
     EV_COMMAND_ENABLE           ( IDC_SEQUENCE,                 CmSequenceMeanEnable ),
 
     EV_COMMAND_ENABLE           ( IDC_FFTNORMALIZATION,         CmFFTNormalizationEnable ),
 
-    EV_COMMAND                  ( IDC_SAVEBANDS,                CmSetFreqBands ),
-    EV_CBN_SELCHANGE            ( IDC_WRITETYPE,                CmWriteType ),
+    EV_COMMAND                  ( IDC_SAVEBANDS,                AnalysisAtomtypeCompatibility ),
+    EV_CBN_SELCHANGE            ( IDC_WRITETYPE,                AnalysisAtomtypeCompatibility ),
     EV_COMMAND_ENABLE           ( IDC_WRITETYPE,                CmWriteTypeEnable ),
 
     EV_COMMAND_ENABLE           ( IDC_NOREF,                    CmReferenceEnable ),
@@ -1565,85 +1565,25 @@ CmEndOfFile ();
 
 
 //----------------------------------------------------------------------------
-                                        // These 3 methods work together to assess the consistency between output type and other options.
-                                        // They used to correct the parameters silently, now they warn the user.
-void    TFrequencyAnalysisDialog::CmMeanOrSequence ()
+                                        // Single method to assess the consistency between analysis and output type
+                                        // Used for Averaging blocks, Frequency Bands and Output type preset changes
+void    TFrequencyAnalysisDialog::AnalysisAtomtypeCompatibility ()
 {
-if (  ( IsIndex   ( WriteType, OutputAtomComplex )
-     || IsIndex   ( WriteType, OutputAtomPhase   ) )
-   &&   IsChecked ( Mean )                         ) {
+FreqAnalysisType    analysis    = IsRegularFFT       ( CurrentPreset )  ? FreqAnalysisFFT
+                                : IsPowerMaps        ( CurrentPreset )  ? FreqAnalysisPowerMaps
+                                : IsFFTApproximation ( CurrentPreset )  ? FreqAnalysisFFTApproximation
+                                : IsSTransform       ( CurrentPreset )  ? FreqAnalysisSTransform
+                                :                                         (FreqAnalysisType) -1;
 
-    ShowMessage ( "Can not compute the average of" NewLine "Complex or Phase values!", FrequencyAnalysisTitle, ShowMessageWarning );
+const char*         aac         = crtl::AnalysisAtomtypeCompatibility ( analysis, 
+                                                                        IsChecked ( SaveBands ), 
+                                                                        IsChecked ( Mean      ), 
+                                                                        (FreqOutputAtomType) GetIndex ( WriteType ) );
 
-    EvPresetsChange ();
-    }
-}
+if ( StringIsNotEmpty ( aac ) ) {
 
-
-void    TFrequencyAnalysisDialog::CmSetFreqBands ()
-{
-if ( IsIndex ( WriteType, OutputAtomComplex ) 
-  || IsIndex ( WriteType, OutputAtomPhase   ) ) {
-
-    ShowMessage ( "Can not save Complex or Phase values" NewLine "for Bands of Frequencies!", FrequencyAnalysisTitle, ShowMessageWarning );
-
-    EvPresetsChange ();
-    }
-}
-
-
-void    TFrequencyAnalysisDialog::CmWriteType ()
-{
-                                        // Counterpart of CmMeanOrSequence and CmSetFreqBands
-if ( IsIndex ( WriteType, OutputAtomComplex ) 
-  || IsIndex ( WriteType, OutputAtomPhase   ) ) {
-
-    if ( IsChecked ( SaveBands ) ) {
-
-        ShowMessage ( "Can not save Complex or Phase values" NewLine "for Bands of Frequencies!", FrequencyAnalysisTitle, ShowMessageWarning );
-
-        ResetCheck  ( SaveBands    );
-        SetCheck    ( SaveInterval );
-        }
-
-    if ( IsChecked ( Mean ) ) {
-
-        ShowMessage ( "Can not compute the average of" NewLine "Complex or Phase values!", FrequencyAnalysisTitle, ShowMessageWarning );
-
-        ResetCheck  ( Mean     );
-        SetCheck    ( Sequence );
-        }
-    }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // User changed type from drop-down
-if      (    IsIndex ( WriteType, OutputAtomReal )
-        && ! IsFFTApproximation ( CurrentPreset  ) ) {
-
-    ShowMessage ( "Can not save Real components if not for FFT Approximation case!", FrequencyAnalysisTitle, ShowMessageWarning );
-
-    EvPresetsChange ();
-    }
-                                        // does not currently happen because CmWriteTypeEnable prevents this
-else if (  ( IsIndex ( WriteType, OutputAtomNorm  ) 
-          || IsIndex ( WriteType, OutputAtomNorm2 ) )
-      && ! ( IsRegularFFT ( CurrentPreset ) 
-          || IsSTransform ( CurrentPreset )
-          || IsPowerMaps  ( CurrentPreset ) )         ) {
-
-    ShowMessage ( "Can not save Norm/Power values if not for FFT or S-Transform cases!", FrequencyAnalysisTitle, ShowMessageWarning );
-
-    EvPresetsChange ();
-    }
-                                        // does not currently happen because CmWriteTypeEnable prevents this
-else if (    IsIndex ( WriteType, OutputAtomComplex )
-      && ! ( IsRegularFFT ( CurrentPreset ) 
-          || IsSTransform ( CurrentPreset )
-          || IsPowerMaps  ( CurrentPreset ) )         ) {
-
-    ShowMessage ( "Can not save Complex values if not for FFT or S-Transform cases!", FrequencyAnalysisTitle, ShowMessageWarning );
-
+    ShowMessage ( aac, FrequencyAnalysisTitle, ShowMessageWarning );
+                                        // easiest on the user: resetting to default of current preset
     EvPresetsChange ();
     }
 }

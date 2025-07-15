@@ -352,13 +352,11 @@ protected:
 //  void                CmSaveFrequenciesChange         ();
     void                CmEndOfFile                     ();
     void                CmSetAnalysis                   ();
-    void                CmSetFreqBands                  ();
-    void                CmWriteType                     ();
+    void                AnalysisAtomtypeCompatibility                     ();
     void                CmFFTNormalizationEnable        ( owl::TCommandEnabler &tce );
     void                CmWriteTypeEnable               ( owl::TCommandEnabler &tce );
     void                CmReferenceEnable               ( owl::TCommandEnabler &tce );
     void                CmWindowOverlapChange           ();
-    void                CmMeanOrSequence                ();
     void                CmMarkersEnable                 ( owl::TCommandEnabler &tce );
     void                CmBlockSizeEnable               ( owl::TCommandEnabler &tce );
     void                CmWindowOverlapEnable           ( owl::TCommandEnabler &tce );

@@ -438,10 +438,15 @@ FreqOutputAtomType  outputatomtype      = outputtype == __outputreal    ? Output
                                         : outputtype == __outputphase   ? OutputAtomPhase
                                         :                               ( analysis == FreqAnalysisFFTApproximation ? OutputAtomReal : OutputAtomNorm2 ); // default is power
 
-if ( analysis == FreqAnalysisFFTApproximation
-  && outputatomtype != OutputAtomReal ) {
 
-    ConsoleErrorMessage ( __output, "Output must be of 'real' type for the FFT Approximation analysis!" );
+const char*         aac                 = AnalysisAtomtypeCompatibility (   analysis, 
+                                                                            HasCLIOption ( freqan, __freqbands ), 
+                                                                            ! outputsequential, 
+                                                                            outputatomtype      );
+
+if ( StringIsNotEmpty ( aac ) ) {
+
+    ConsoleErrorMessage ( 0, aac );
     return;
     }
 

@@ -91,6 +91,12 @@ enum    FreqWindowingType
 
 extern const char   FreqWindowingString[ NumFreqWindowingType ][ 64 ];
 
+                                        // Analysis and legal output types have a not-straightforward relationship, so let's wrap it into a proper function
+const char* AnalysisAtomtypeCompatibility ( FreqAnalysisType    analysis,   
+                                            bool                savingbands,  
+                                            bool                averagingblocks, 
+                                            FreqOutputAtomType  outputatomtype  );
+
 
 //----------------------------------------------------------------------------
                                         // Frequency analysis, with all options

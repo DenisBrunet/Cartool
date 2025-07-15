@@ -76,6 +76,76 @@ const char  FreqWindowingString[ NumFreqWindowingType ][ 64 ] =
 
 
 //----------------------------------------------------------------------------
+                                        // Returns an error message if types don't match, and 0 if they are compatible
+const char* AnalysisAtomtypeCompatibility ( FreqAnalysisType    analysis,   
+                                            bool                savingbands,  
+                                            bool                averagingblocks, 
+                                            FreqOutputAtomType  outputatomtype  )
+{
+switch ( outputatomtype ) {
+
+    case    OutputAtomReal:
+    
+        if      ( analysis != FreqAnalysisFFTApproximation )
+
+            return  "Can not save Real components for the FFT, PowerMaps and S-Transform analysis!";
+
+        else if ( analysis == FreqAnalysisSTransform && averagingblocks )   // case shouldn't happen 
+
+            return  "Can not average blocks for S-Transform analysis!";
+
+        break;
+
+
+    case    OutputAtomNorm:
+    case    OutputAtomNorm2:
+
+        if      ( analysis == FreqAnalysisFFTApproximation )
+
+            return  "Can not save Norm/Power values for the FFT Approximation analysis!";
+
+        else if ( analysis == FreqAnalysisSTransform && averagingblocks )   // case shouldn't happen
+
+            return  "Can not average blocks for S-Transform analysis!";
+
+        break;
+
+
+    case    OutputAtomComplex:
+
+        if      ( savingbands )     // for ALL types of analysis
+
+            return  "Can not save Complex values for Frequency Bands output!";
+
+        else if ( averagingblocks ) // for ALL types of analysis
+
+            return  "Can not average Complex values!";
+
+        else if ( analysis == FreqAnalysisFFTApproximation )
+
+            return  "Can not save Complex values for the FFT Approximation analysis!";
+
+        break;
+
+
+    case    OutputAtomPhase:
+
+        if      ( savingbands )     // for ALL types of analysis
+
+            return  "Can not save Phase values for Frequency Bands output!";
+
+        else if ( averagingblocks ) // for ALL types of analysis
+
+            return  "Can not average Phase values!";
+        
+        break;
+    }
+
+return  0;
+}
+
+
+//----------------------------------------------------------------------------
                                         // Used internally to keep tracks of real / truncated / index of frequencies
 class   TOneFrequencyBand
 {
@@ -255,10 +325,6 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
 if ( ! eegdoc )
     return  false;
 
-                                        // Off, as this will be checked later on
-//if ( timemin < 0 || timemax < 0 || timemin > timemax )
-//    return  false;
-
                                         // FFT analysis requires these parameters
 if ( analysis != FreqAnalysisSTransform
  && (    numblocks     <= 0
@@ -271,12 +337,13 @@ if ( analysis != FreqAnalysisSTransform
 if ( analysis == FreqAnalysisSTransform )
     outputsequential    = true;
 
+                                        // !It is assumed caller has already checked the consistency between analysis and outputatomtype!
+//if ( ! AnalysisAtomtypeCompatibility    (   analysis, 
+//                                            outputbands == OutputBands,
+//                                            ! outputsequential, 
+//                                            outputatomtype      ) )
+//    return  false;
 
-if ( analysis != FreqAnalysisFFTApproximation && outputatomtype == OutputAtomReal )
-    outputatomtype  = OutputAtomNorm2;
-
-if ( analysis == FreqAnalysisFFTApproximation )
-    outputatomtype  = OutputAtomReal;
 
 if ( analysis == FreqAnalysisSTransform && fftnorm != FFTRescalingNone )
     fftnorm         = FFTRescalingNone;
@@ -407,6 +474,7 @@ double              savedfreqmax            = 0;
 
 
 if      ( outputbands == OutputBands ) {
+
     double          fminhz;
     double          fmaxhz;
 
@@ -1575,11 +1643,11 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                                 mean   /= blocksize;
 //                              }
                                         // assigning single real value
-                            if      ( outputatomtype == OutputAtomComplex )     { SumST = (AComplex)          mean;    }
-                            if      ( outputatomtype == OutputAtomPhase   )     { SumST = (AComplex)          0;       } // no imaginary -> phase is 0
+                            if      ( outputatomtype == OutputAtomComplex )     { SumST = (AComplex)          mean;    }    // we only have a real part
+                            if      ( outputatomtype == OutputAtomPhase   )     { SumST = (AComplex)          0;       }    // no imaginary -> phase is 0
                             else if ( outputatomtype == OutputAtomNorm    )     { SumST = (AComplex) abs    ( mean );  }
                             else if ( outputatomtype == OutputAtomNorm2   )     { SumST = (AComplex) Square ( mean );  }
-                            else if ( outputatomtype == OutputAtomReal    )     { SumST = (AComplex)          mean;    } // shouldn't occur
+                            else if ( outputatomtype == OutputAtomReal    )     { SumST = (AComplex)          mean;    }    // case shouldn't happen - provide a default formula
                             }
 
                         else {          // freqs > 0 [Hz]
@@ -1764,11 +1832,11 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                                         // convert & average frequencies by steps
                 for ( int fi = fb->SaveFreqMin_i; fi <= fb->SaveFreqMax_i; fi += fb->SaveFreqStep_i, savedfi0++ ) {
 
-                    if      ( outputatomtype == OutputAtomComplex )             { blockfft ( savedfi0, eli )    =              F ( fi );    }   // OK when dealing with norm of complex, but not norm^2
-                    else if ( outputatomtype == OutputAtomPhase   )             { blockfft ( savedfi0, eli )    = ArcTangent ( F ( fi ) );  }
-                    else if ( outputatomtype == OutputAtomNorm    )             { blockfft ( savedfi0, eli )    = abs        ( F ( fi ) );  }
-                    else if ( outputatomtype == OutputAtomNorm2   )             { blockfft ( savedfi0, eli )    = norm       ( F ( fi ) );  }
-                    else if ( outputatomtype == OutputAtomReal    )             { blockfft ( savedfi0, eli )    = abs        ( F ( fi ) );  }   // this case shouldn't happen, but let's feed it something anyway
+                    if      ( outputatomtype == OutputAtomComplex )             { blockfft ( savedfi0, eli )    =              F ( fi );        }   // OK when dealing with norm of complex, but not norm^2
+                    else if ( outputatomtype == OutputAtomPhase   )             { blockfft ( savedfi0, eli )    = ArcTangent ( F ( fi ) );      }
+                    else if ( outputatomtype == OutputAtomNorm    )             { blockfft ( savedfi0, eli )    = abs        ( F ( fi ) );      }
+                    else if ( outputatomtype == OutputAtomNorm2   )             { blockfft ( savedfi0, eli )    = norm       ( F ( fi ) );      }
+                    else if ( outputatomtype == OutputAtomReal    )             { blockfft ( savedfi0, eli )    =              F ( fi ).real ();}   // case shouldn't happen - provide a default formula
 
 
                                         // allow frequency averaging only if not complex - AvgNumFreqs must be set to 1
@@ -1779,9 +1847,9 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                         for ( int downf = 1, fi2 = fi + fb->AvgFreqStep_i ; downf < fb->AvgNumFreqs; downf++, fi2 += fb->AvgFreqStep_i ) {
 
                                         // !OutputAtomComplex and OutputAtomPhase types are NOT allowed for averaging!
-                            if      ( outputatomtype == OutputAtomNorm    )     { blockfft ( savedfi0, eli )   += abs        ( F ( fi2 ) ); }
-                            else if ( outputatomtype == OutputAtomNorm2   )     { blockfft ( savedfi0, eli )   += norm       ( F ( fi2 ) ); }
-                            else if ( outputatomtype == OutputAtomReal    )     { blockfft ( savedfi0, eli )   += abs        ( F ( fi2 ) ); }
+                            if      ( outputatomtype == OutputAtomNorm    )     { blockfft ( savedfi0, eli )   += abs        ( F ( fi2 ) );         }
+                            else if ( outputatomtype == OutputAtomNorm2   )     { blockfft ( savedfi0, eli )   += norm       ( F ( fi2 ) );         }
+                            else if ( outputatomtype == OutputAtomReal    )     { blockfft ( savedfi0, eli )   +=              F ( fi2 ).real ();   }   // case shouldn't happen - provide a default formula
                             }
 
                                         // then average
@@ -1805,7 +1873,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                     } // if outputsequential
 
                 else {
-                    if      ( datatypeout == AtomTypeComplex )  {   sumfft  ( fi0, eli )                   += blockfft ( fi0, eli );        }   // shouldn't happen, not meaningful to average complex numbers!
+                    if      ( datatypeout == AtomTypeComplex )  {   sumfft  ( fi0, eli )                   += blockfft ( fi0, eli );        }   // case shouldn't happen - not meaningful to average complex numbers!
                     else                                        {   sumfft  ( fi0, eli )                   += blockfft ( fi0, eli ).real ();}   // norm/norm2 has already been computed, and is stored in the Real component
                     } // if average freqs
 
@@ -1930,7 +1998,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
                             InvertFreqMap ( blockfft[ fi0 ], numelsave );
 
-                        if      ( datatypeout == AtomTypeComplex )  {   sumfft ( savedfi0, eli2 )                      += blockfft ( fi0, eli2 );           }   // shouldn't happen, not meaningful to average in C!
+                        if      ( datatypeout == AtomTypeComplex )  {   sumfft ( savedfi0, eli2 )                      += blockfft ( fi0, eli2 );           }   // case shouldn't happen - not meaningful to average in C!
                         else                                        {   sumfft ( savedfi0, eli2 )                      += blockfft ( fi0, eli2 ).real ();   }   // norm, norm2 have already been computed, in the Real part
                         }
                     }
