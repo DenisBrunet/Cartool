@@ -46,6 +46,7 @@ public:
 
                                         // Wrapping calls and enforcing fixed size limit + null terminated
     void                    Clear                   ()                                          { ClearString  ( String, N );       }   // reset the whole array
+    void                    CleanUp                 ()                                          { StringCleanup ( String );         }
     long                    Length                  ()                          const           { return StringLength ( String );   }
     constexpr long          Size                    ()                          const           { return N;                         }
     constexpr long          MaxLength               ()                          const           { return N - 1;                     }

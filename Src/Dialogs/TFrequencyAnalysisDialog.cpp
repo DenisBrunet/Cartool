@@ -1003,18 +1003,24 @@ if ( IsChecked ( WindowOverlapMax ) )                   return  blocksize ? (dou
 }
 
 
-int     TFrequencyAnalysisDialog::ComputeNumBlocks ( int timespan, int blocksize, double blocksoverlap )
+int     ComputeNumBlocks    ( bool isstransform, bool blockstep1tf, int timespan, int blocksize, double blocksoverlap )
 {
-if      ( IsSTransform ( CurrentPreset ) )              return  timespan >= blocksize ? 1 : 0;
-else if ( IsChecked ( WindowOverlapMax ) )              return  timespan >= blocksize ? timespan - ( blocksize - 1 ) : 0;   // avoid rounding error
-else                                                    return  timespan >= blocksize ? (int) ( ( (double) timespan / blocksize - blocksoverlap ) / ( 1 - blocksoverlap ) ) : 0;
+if      ( isstransform  )   return  timespan >= blocksize ? 1 : 0;
+else if ( blockstep1tf  )   return  timespan >= blocksize ? timespan - ( blocksize - 1 ) : 0;   // avoid rounding error
+else                        return  timespan >= blocksize ? (int) ( ( (double) timespan / blocksize - blocksoverlap ) / ( 1 - blocksoverlap ) ) : 0;
 }
 
 
-int     ComputeTimeMax ( bool isstransform, bool onetfjump, int timemin, int blocksize, double blocksoverlap, int numblocks )
+int     TFrequencyAnalysisDialog::ComputeNumBlocks ( int timespan, int blocksize, double blocksoverlap )
+{
+return crtl::ComputeNumBlocks ( IsSTransform ( CurrentPreset ), IsChecked ( WindowOverlapMax ), timespan, blocksize, blocksoverlap );
+}
+
+
+int     ComputeTimeMax ( bool isstransform, bool blockstep1tf, int timemin, int blocksize, double blocksoverlap, int numblocks )
 {
 if      ( isstransform  )   return  timemin + blocksize - ( blocksize ? 1 : 0 );
-else if ( onetfjump     )   return  timemin + blocksize + ( numblocks - 1 ) - 1;
+else if ( blockstep1tf  )   return  timemin + blocksize + ( numblocks - 1 ) - 1;
 else                        return  timemin + blocksize * ( blocksoverlap + ( 1 - blocksoverlap ) * numblocks ) - 1;
 }
 
@@ -1045,8 +1051,8 @@ else                                                    return  TimeFrameToMilli
 int     ComputeStep ( bool isstransform, int blocksize, double blocksoverlap )
 {
 if      ( isstransform )    return  0;
-//else if ( onetfjump  )    return  1;
-else                        return  AtLeast ( 1, Truncate ( blocksize * ( 1 - blocksoverlap ) ) );  // should also return 1 for WindowOverlapMax / onetfjump
+//else if ( blockstep1tf )    return  1;
+else                        return  AtLeast ( 1, Truncate ( blocksize * ( 1 - blocksoverlap ) ) );  // should also return 1 for WindowOverlapMax / blockstep1tf
 }
 
 
@@ -1705,41 +1711,30 @@ if ( EEGDoc->GetNumElectrodes () == 1 && ref == ReferenceAverage )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // cooking the time interval, number and block sizes
+double              samplingfrequency   = StringToDouble    ( transfer->SamplingFrequency );
 
-double              samplingfrequency   = StringToDouble  ( transfer->SamplingFrequency );
+long                timemin             = StringToInteger   ( transfer->TimeMin );
 
-long                timemin             = StringToInteger ( transfer->TimeMin );
-
-bool                endoffile           = CheckToBool     ( transfer->EndOfFile );
+bool                endoffile           = CheckToBool       ( transfer->EndOfFile );
 
 long                timemax             = endoffile ? EEGDoc->GetNumTimeFrames () - 1               // use real, full length when using EOF option 
                                                     : StringToInteger ( transfer->ClippedTimeMax ); // using OPTIMIZED time instead of TimeMax, which will make the FFT faster
+long                timenum             = timemax - timemin + 1;
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // if S-Transform, block size is the full time window
-int                 blocksizedialog     = StringToInteger ( transfer->BlockSize );
+int                 blocksizedialog     = StringToInteger   ( transfer->BlockSize );
 
-int                 blocksize           = analysis == FreqAnalysisSTransform ? timemax - timemin + 1
+int                 blocksize           = analysis == FreqAnalysisSTransform ? timenum
                                                                              : blocksizedialog;
+double              blocksoverlap       = GetWindowOverlap  ( blocksize );
+
+//int               numblocks           = ComputeNumBlocks  ( timenum, blocksize, blocksoverlap );
+                                        // final timemax update?
+//                  timemax             = ComputeTimeMax    ( timemin, blocksize, blocksoverlap, numblocks );
 
                                         // because we have real input, signal can be processed faster and holding less memory
 int                 freqsize            = blocksize / 2 + 1;
-
-double              blocksoverlap       = GetWindowOverlap ( blocksize );
-
-                                        // if S-Transform, only 1 block is allowe
-int                 numpossibleblocks   = analysis == FreqAnalysisSTransform ? 1 
-                                                                             : ComputeNumBlocks ( EEGDoc->GetNumTimeFrames () - timemin + 1, blocksize, blocksoverlap );
-int                 numblocksdialog     = StringToInteger ( transfer->NumBlocks );
-
-int                 numblocks           = endoffile ?          numpossibleblocks
-                                                    : NoMore ( numpossibleblocks, numblocksdialog );
-
-                                        // update timemax
-                    timemax             = ComputeTimeMax ( timemin, blocksize, blocksoverlap, numblocks );
-
-long                timenum             = timemax - timemin + 1;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1748,15 +1743,14 @@ SkippingEpochsType  badepochs       = CheckToBool ( transfer->SkipBadEpochs     
                                     :                                               NoSkippingBadEpochs;
 
 
-char                listbadepochs [ EditSizeText ];
-ClearString ( listbadepochs );
+TFixedString<EditSizeText>  listbadepochs;
 
 if ( badepochs == SkippingBadEpochsList ) {
 
-    StringCopy      ( listbadepochs,    transfer->SkipMarkers );
-    StringCleanup   ( listbadepochs );
+    listbadepochs   = transfer->SkipMarkers;
+    listbadepochs.CleanUp ();
 
-    if ( StringIsEmpty ( listbadepochs ) )
+    if ( listbadepochs.IsEmpty () )
         badepochs   = NoSkippingBadEpochs;
     }
 
@@ -1792,18 +1786,6 @@ bool                outputmarkers       = outputsequential;
 
 TTracksView*        eegview             = dynamic_cast<TTracksView*> ( EEGDoc->GetViewList () );
 MarkerType          outputmarkerstype   = eegview ? eegview->GetMarkerType () : AllMarkerTypes;     // refining to current view's marker type
-
-
-//if ( analysis == FreqAnalysisSTransform && timenum > STranformIntervalWarning ) {
-//    if ( ! GetAnswerFromUser (  "You asked for a very long time interval"   NewLine 
-//                                "to be analysed with the S-Transform,"      NewLine 
-//                                NewLine 
-//                                "do you really want to proceed?", 
-//                                FrequencyAnalysisTitle ) ) {
-//        CmCancel ();
-//        return;
-//        }
-//    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1893,7 +1875,7 @@ bool                savefftapprox       = analysis == FreqAnalysisFFTApproximati
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // silencing in these cases
-bool                silent              = NumBatchFiles () > 1;
+VerboseType         verbosey            = NumBatchFiles () > 1 ? Silent : Interactive;
 
 
 if ( IsBatchFirstCall () && BatchFileNames.NumFiles () > 1 )
@@ -1919,7 +1901,7 @@ FrequencyAnalysis   (   EEGDoc,
                         timemin,            timemax,
                         badepochs,          listbadepochs,
                         samplingfrequency,
-                        numblocks,          blocksize,          blocksoverlap,
+                        blocksize,          blocksoverlap,
                         fftnorm,
                         outputbands,
                         outputatomtype,
@@ -1936,7 +1918,7 @@ FrequencyAnalysis   (   EEGDoc,
                         splitfrequency ? (char*) fileoutsplitfreq   : (char*) 0,
                         splitspectrum  ? (char*) fileoutspectrum    : (char*) 0,
                         savefftapprox  ? (char*) fileoutapprfreqs   : (char*) 0,
-                        silent
+                        verbosey
                     );
 
 

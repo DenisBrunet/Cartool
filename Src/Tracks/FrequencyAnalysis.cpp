@@ -302,13 +302,14 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 long                timemin,            long                timemax,
                                 SkippingEpochsType  badepochs,          const char*         listbadepochs,
                                 double              samplingfrequency,
-                                int                 numblocks,          int                 blocksize,          double              blocksoverlap,
+                                int                 blocksize,          double              blocksoverlap,
                                 FFTRescalingType    fftnorm,
                                 FreqOutputBands     outputbands,
                                 FreqOutputAtomType  outputatomtype,
                                 bool                outputmarkers,      MarkerType          outputmarkerstype,
                                 const char*         outputbandslist,
-                                double              outputfreqmin,      double              outputfreqmax,      double              outputfreqstep,     
+                                double              outputfreqmin,      double              outputfreqmax,
+                                double              outputfreqstep,     
                                 int                 outputdecadestep,
                                 bool                outputsequential,   // averaged otherwise
                                 FreqWindowingType   windowing,
@@ -319,7 +320,7 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 char*               fileoutsplitfreq,
                                 char*               fileoutspectrum,
                                 char*               fileoutapprfreqs,
-                                bool                silent
+                                VerboseType         verbosey
                             )
 {
 if ( ! eegdoc )
@@ -327,8 +328,7 @@ if ( ! eegdoc )
 
                                         // FFT analysis requires these parameters
 if ( analysis != FreqAnalysisSTransform
- && (    numblocks     <= 0
-      || blocksize     <= 0
+ && (    blocksize     <= 0
       || blocksoverlap <  0             // values are currently: 0% (100% jump); 75% (25% jump); ((blocksize-1)/blocksize)% (1TF jump)
       || blocksoverlap >  1 ) )
     return  false;
@@ -356,8 +356,8 @@ bool                splitspectrum       = fileoutspectrum  != 0;
 bool                savefftapprox       = fileoutapprfreqs != 0;
 
                                         // force silent if not in interactive mode
-if ( ! silent && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    silent  = true;
+if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
+    verbosey = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -403,13 +403,21 @@ if ( numelsave == 0 )
                                         // resolve possible EOF
 Clipped ( timemin, timemax, (long) 0, eegdoc->GetNumTimeFrames () - 1 );
 
+long                timenum             = timemax - timemin + 1;
 
-if ( analysis == FreqAnalysisSTransform  ) {
+
+if ( analysis == FreqAnalysisSTransform ) {
                                         // override / provide these parameters
-    numblocks       = 1;
-    blocksize       = timemax - timemin + 1;
+    blocksize       = timenum;
     blocksoverlap   = 0;
     }
+
+                                        // heuristic to retrieve 1TF step
+bool                blockstep1tf        = blocksoverlap > 0.75;  // blocksoverlap = ( blocksize - 1 ) / blocksize
+
+int                 blockstep           = ComputeStep       ( analysis == FreqAnalysisSTransform, blocksize, blocksoverlap );
+
+int                 numblocks           = ComputeNumBlocks  ( analysis == FreqAnalysisSTransform, blockstep1tf, timenum, blocksize, blocksoverlap );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -424,10 +432,6 @@ if ( badepochs == SkippingBadEpochsList )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // because we have real input signal, it can be processed faster and with less memory with some tricks
 int                 freqsize            = blocksize / 2 + 1;
-
-long                timenum             = timemax - timemin + 1;
-
-int                 blockstep           = ComputeStep ( analysis == FreqAnalysisSTransform, blocksize, blocksoverlap );
 
 
 double              datafreqstep_hz     = samplingfrequency / (double) blocksize;
@@ -455,12 +459,13 @@ enum                {
 
 TSuperGauge         Gauge;
                                         // Frequency is annoying, concatenation is fast
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
 
     Gauge.Set           ( FrequencyAnalysisTitle, SuperGaugeLevelInter );
 
     Gauge.AddPart       ( gaugefreqglobal,  8,                                05 );
-    Gauge.AddPart       ( gaugefreqloop,    numblocks * ( 1 + numelsave ),    95 );
+                                        // S-Transform has only 1 block, so let's animate on the electrodes
+    Gauge.AddPart       ( gaugefreqloop,    analysis == FreqAnalysisSTransform ? numelsave : numblocks, 95 );
 
     CartoolObjects.CartoolApplication->SetMainTitle ( "Frequency Analysis of", eegdoc->GetDocPath (), Gauge );
     }
@@ -729,7 +734,7 @@ for_each (  freqbands.cbegin (), freqbands.cend (),
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -764,7 +769,7 @@ if ( optimaldownsampling ) {
 if (   numblocks <= 0 
     || blocksize <= 0 ) {
 
-    if ( ! silent ) {
+    if ( verbosey == Interactive ) {
 
         if ( numblocks <= 0 || blocksize <= 0 )
             ShowMessage ( "Number of windows or window size seem to be incorrect...", FrequencyAnalysisTitle, ShowMessageWarning );
@@ -776,7 +781,7 @@ if (   numblocks <= 0
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -867,7 +872,7 @@ StringCopy ( BaseFileNameSplitElecs,    BaseDirSplitElecs,  "\\",   fileoutprefi
 
 
 if ( StringLength ( BaseFileName ) > MaxPathShort - 32 ) {
-    if ( ! silent )
+    if ( verbosey == Interactive )
         ShowMessage ( "File name is too long to generate a correct output...", eegdoc->GetDocPath(), ShowMessageWarning );
     return  false;
     }
@@ -917,7 +922,7 @@ if ( ref == ReferenceArbitraryTracks ) {
 
     refsel.Reset ();
 
-    refsel.Set    ( reflist, xyzdoc.IsOpen () ? xyzdoc->GetElectrodesNames() : eegdoc->GetElectrodesNames(), ! silent );
+    refsel.Set    ( reflist, xyzdoc.IsOpen () ? xyzdoc->GetElectrodesNames() : eegdoc->GetElectrodesNames(), verbosey == Interactive );
 
                                         // that should not be...
     if ( refsel.NumSet () == 0 ) {
@@ -1162,7 +1167,7 @@ bool                oldfiltersactivated = eegdoc->DeactivateFilters ( true );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -1377,7 +1382,7 @@ else if ( outputbands == OutputBands
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -1471,7 +1476,7 @@ else { // FFT, Power Maps (also FFT), FFT Approximation
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -1479,7 +1484,7 @@ if ( ! silent ) {
                                         // scan all blocks
 for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firsttf += blockstep ) {
 
-    if ( ! silent ) {
+    if ( verbosey == Interactive && analysis != FreqAnalysisSTransform ) {
         Gauge.Next ( gaugefreqloop );
         CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
         }
@@ -1575,7 +1580,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
         int         el      = elsave.GetValue ( eli );
 
-        if ( ! silent ) {
+        if ( verbosey == Interactive && analysis == FreqAnalysisSTransform ) {
             Gauge.Next ( gaugefreqloop );
             CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
             }
@@ -1628,8 +1633,6 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
                     for ( int downf = 0, fi2 = fi; downf < fb->AvgNumFreqs; downf++, fi2 += fb->AvgFreqStep_i ) {
-
-                        Gauge.Actualize ();
 
                         if ( fi2 == 0 ) {   // 0 Hz - manually computing the mean of signal
 
@@ -2014,7 +2017,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -2071,7 +2074,7 @@ eegdoc->SetFiltersActivated ( oldfiltersactivated, true );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // write a marker file
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -2119,7 +2122,7 @@ if ( outputmarkers ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // ouput to different files
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -2175,7 +2178,7 @@ if ( xyzdoc.IsOpen () && xyzdoc->CanClose ( true ) )
     xyzdoc.Close ( isxyzdocalreadyopen /*|| BatchProcessing*/ ? CloseDocLetOpen : CloseDocRestoreAsBefore );
 
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
 
     Gauge.FinishParts ();
 

@@ -229,7 +229,8 @@ constexpr double                DefaultSaveFreqMax      = 40;
 constexpr int                   DefaultSaveLogDecade    = 20;
 
 
-int                 ComputeTimeMax  ( bool isstransform, bool onetfjump, int timemin, int blocksize, double blocksoverlap, int numblocks );
+int                 ComputeTimeMax  ( bool isstransform, bool blockstep1tf, int timemin, int blocksize, double blocksoverlap, int numblocks );
+int                 ComputeNumBlocks( bool isstransform, bool blockstep1tf, int timespan, int blocksize, double blocksoverlap );
 int                 ComputeStep     ( bool isstransform, int blocksize, double blocksoverlap );
 
 

@@ -71,19 +71,19 @@ constexpr char*     __roisfile                  = "--roisfile";
 constexpr char*     __roisfile_descr            = "Computing ROIs from a ROIs file";
 
 constexpr char*     __timemin                   = "--timemin";
-constexpr char*     __timemin_descr             = "Starting from time frame (Default is 0)";
+constexpr char*     __timemin_descr             = "Starting from time frame (Default:0)";
 constexpr char*     __timemax                   = "--timemax";
-constexpr char*     __timemax_descr             = "Ending at time frame (Default is End Of File)";
+constexpr char*     __timemax_descr             = "Ending at time frame (Default:EOF)";
 constexpr char*     __keeptriggers              = "--keeptriggers";
 constexpr char*     __keeptriggers_descr        = "Using only time intervals from a triggers / markers list";
 constexpr char*     __excludetriggers           = "--excludetriggers";
 constexpr char*     __excludetriggers_descr     = "Excluding time intervals from a triggers / markers list";
 
 constexpr char*     __reference                 = "--reference";
-constexpr char*     __reference_descr           = "Reference tracks" Tab Tab "Special values: 'none' (default) or 'average'";
+constexpr char*     __reference_descr           = "Reference tracks" Tab Tab "Special values: 'none' (default), 'asinfile', 'average' or 'avgref'";
 
 constexpr char*     __samplingfrequency         = "--samplingfrequency";
-constexpr char*     __samplingfrequency_descr   = "Default Sampling Frequency, in case it is missing";
+constexpr char*     __samplingfrequency_descr   = "Overriding Sampling Frequency";
 constexpr char*     __downsampling              = "--downsampling";
 
 constexpr char*     __subdir                    = "--subdir";

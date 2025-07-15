@@ -41,7 +41,7 @@ if ( freqan == 0 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Parameters appearance follow the dialog's visual design
-DefineCLIOptionString   ( freqan,   "",     __tracks,               "Tracks to analyze" )
+DefineCLIOptionString   ( freqan,   "",     __tracks,               "Tracks to analyze (Default:all)" )
 ->TypeOfOption          ( "TRACKS" );
 
 DefineCLIOptionFile     ( freqan,   "",     __xyzfile,              __xyzfile_descr );
@@ -67,18 +67,19 @@ DefineCLIOptionEnum     ( freqan,   "",     __windowstep,           "FFT Window 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionDouble   ( freqan,   "",     __freqmin,              "Lowest frequency" RequiredString );
+DefineCLIOptionDouble   ( freqan,   "",     __freqmin,              "Lowest frequency to save" RequiredString );
 
-DefineCLIOptionDouble   ( freqan,   "",     __freqmax,              "Highest frequency" RequiredString );
+DefineCLIOptionDouble   ( freqan,   "",     __freqmax,              "Highest frequency to save" RequiredString );
 
 DefineCLIOptionDouble   ( freqan,   "",     __freqlinstep,          "Saving frequencies as Linear Interval, with Frequency step" );
 
-DefineCLIOptionInt      ( freqan,   "",     __freqlogdecade,        "Saving frequencies as Log Interval, with Number per Decade" );
+DefineCLIOptionInt      ( freqan,   "",     __freqlogdecade,        "Saving frequencies as Log Interval, with this amount per Decade" );
 //->DefaultInteger        ( DefaultSaveLogDecade );
 
 DefineCLIOptionIntervals( freqan,   -1, "",     __freqbands,        "Saving a list of Frequency Bands (f.ex. 1-4,4-8,8-14)" );
 
 ExcludeCLIOptions       ( freqan,     __freqlinstep,    __freqlogdecade,    __freqbands );
+ExcludeCLIOptions       ( freqan,     __freqlogdecade,  __freqbands );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -194,34 +195,35 @@ TFileName           xyzfile         = GetCLIOptionFile   ( freqan, __xyzfile );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Time parameters, exclusively between time interval, triggers to keep or triggers to exclude
                                         // default values
-TimeOptions         timeoptions     = ExportTimeInterval;
 long                timemin         = 0;                      
 long                timemax         = Highest ( timemax );    
-string              excludetriggers;
 
 
-if      ( HasCLIOption ( freqan, __timemin )
-       || HasCLIOption ( freqan, __timemax ) ) {
+if  ( HasCLIOption ( freqan, __timemin ) )
+    timemin     = GetCLIOptionInt ( freqan, __timemin );
 
-    timeoptions     = ExportTimeInterval;
+if  ( HasCLIOption ( freqan, __timemax ) )
+    timemax     = GetCLIOptionInt ( freqan, __timemax );
 
-    if  ( HasCLIOption ( freqan, __timemin ) )
-        timemin     = GetCLIOptionInt ( freqan, __timemin );
+CheckOrder ( timemin, timemax );
 
-    if  ( HasCLIOption ( freqan, __timemax ) )
-        timemax     = GetCLIOptionInt ( freqan, __timemax );
 
-    CheckOrder ( timemin, timemax );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SkippingEpochsType  badepochs       = HasCLIOption ( freqan, __excludetriggers )  ? SkippingBadEpochsList
+                                    :                                               NoSkippingBadEpochs;
+
+
+TFixedString<EditSizeText>  listbadepochs;
+
+if ( badepochs == SkippingBadEpochsList ) {
+
+    listbadepochs   = GetCLIOptionString ( freqan, __excludetriggers ).c_str ();
+    listbadepochs.CleanUp ();
+
+    if ( listbadepochs.IsEmpty () )
+        badepochs   = NoSkippingBadEpochs;
     }
-
-else if ( HasCLIOption ( freqan, __excludetriggers ) ) {
-
-    timeoptions     = ExcludeTimeTriggers;
-    excludetriggers = GetCLIOptionString ( freqan, __excludetriggers );
-    }
-
-else // no options provided
-    timeoptions     = ExportTimeInterval;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -395,15 +397,35 @@ if ( HasCLIOption ( freqan, __freqbands ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! HasCLIFlag ( freqan, __sequential )
-  && ! HasCLIFlag ( freqan, __average    ) ) {
+if ( analysis == FreqAnalysisSTransform ) {
 
-    ConsoleErrorMessage ( 0, "You need to specify either ", __sequential, " or ", __average, " output!" );
-    return;
+    if ( HasCLIFlag ( freqan, __sequential )
+      || HasCLIFlag ( freqan, __average    ) ) {
+
+        ConsoleErrorMessage ( 0, "You do not need to specify ", __sequential, " or ", __average, " options for the S-Transform!" );
+        return;
+        }
+    }
+
+else {
+
+    if ( ! HasCLIFlag ( freqan, __sequential )
+      && ! HasCLIFlag ( freqan, __average    ) ) {
+
+        ConsoleErrorMessage ( 0, "You need to specify either ", __sequential, " or ", __average, " output for the FFT!" );
+        return;
+        }
     }
 
 bool                outputsequential    = HasCLIFlag ( freqan, __sequential )
                                        || analysis == FreqAnalysisSTransform;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+bool                outputmarkers       = outputsequential;
+
+MarkerType          outputmarkerstype   = AllMarkerTypes;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -478,7 +500,9 @@ bool                splitelec       = HasCLIFlag ( freqan, __splitelec     );
 bool                splitfreq       = HasCLIFlag ( freqan, __splitfreq     );
 bool                splitspectrum   = HasCLIFlag ( freqan, __splitspectrum );
 
-if ( ! ( savingfreq || splitelec || splitfreq || splitspectrum ) ) {
+bool                savefftapprox   = analysis == FreqAnalysisFFTApproximation;
+
+if ( ! ( savingfreq || splitelec || splitfreq || splitspectrum || savefftapprox ) ) {
 
     ConsoleErrorMessage ( 0, "No output files has been selected!" );
     return;
@@ -497,14 +521,9 @@ bool                optimaldownsampling = HasCLIFlag ( freqan, __downsampling );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-bool                silent              = true;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Console output prototype
-#define     CLIConsoleOutput
-//#undef      CLIConsoleOutput
+//#define     CLIConsoleOutput
+#undef      CLIConsoleOutput
 
 #if defined(CLIConsoleOutput)
 
@@ -514,16 +533,11 @@ cout << "Tracks:            " << ( tracks.empty () ? "All" : tracks ) << NewLine
 if ( xyzfile.IsNotEmpty () )
     cout << "XYZ file:          " << xyzfile << NewLine;
 
-cout << "Time Options:      " << ( timeoptions == ExportTimeInterval  ? "Time Interval" 
-                                 : timeoptions == ExportTimeTriggers  ? "Keeping triggers List"
-                                 : timeoptions == ExcludeTimeTriggers ? "Excluding triggers List"
-                                 :                                      "Unknown" ) << NewLine;
-
 cout << "Time Min:          " << ( timemin == 0                   ? "Beginning of file" : IntegerToString ( timemin ) ) << NewLine;
 cout << "Time Max:          " << ( timemax == Highest ( timemax ) ? "End of file"       : IntegerToString ( timemax ) ) << NewLine;
 
-if ( timeoptions == ExcludeTimeTriggers )
-    cout << "Exclude Triggers:  " << excludetriggers << NewLine;
+if ( badepochs == SkippingBadEpochsList )
+    cout << "Exclude Triggers:  " << listbadepochs << NewLine;
 
 cout << NewLine;
 
@@ -562,19 +576,15 @@ cout << "Saving .freq:      " << BoolToString ( savingfreq          ) << NewLine
 cout << "Split Electrodes:  " << BoolToString ( splitelec           ) << NewLine;
 cout << "Split Frequencies: " << BoolToString ( splitfreq           ) << NewLine;
 cout << "Split Spectrum:    " << BoolToString ( splitspectrum       ) << NewLine;
+cout << "Saving FFT Approx: " << BoolToString ( savefftapprox       ) << NewLine;
 cout << "Optimal Downsampl: " << BoolToString ( optimaldownsampling ) << NewLine;
-
-cout << NewLine;
-
-for ( int i = 0; i < (int) gof; i++ )
-    cout << "File:              "    << gof[ i ] << NewLine;
 
 cout << NewLine;
 
 #endif
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/*
+
 TFileName           fileoutfreq;
 TFileName           fileoutsplitelec;
 TFileName           fileoutsplitfreq;
@@ -582,34 +592,46 @@ TFileName           fileoutspectrum;
 TFileName           fileoutapprfreqs;
 
 
-FrequencyAnalysis   (   EEGDoc,
-                        xyzfile,
-                        analysis,
-                        transfer->Channels,
-                        ref,                transfer->RefList,
-                        timemin,            timemax,
-                        badepochs,          listbadepochs,
-                        samplingfrequency,
-                        numblocks,          blocksize,          blocksoverlap,
-                        fftnorm,
-                        outputbands,
-                        outputatomtype,
-                        outputmarkers,      outputmarkerstype,
-                        transfer->SaveBandsValue,
-                        outputfreqmin,      outputfreqmax,      outputfreqstep,     
-                        outputdecadestep,
-                        outputsequential,
-                        windowing,
-                        optimaldownsampling,
-                        transfer->InfixFilename,    createsubdir,
-                        savefreq       ? (char*) fileoutfreq        : (char*) 0,
-                        splitelectrode ? (char*) fileoutsplitelec   : (char*) 0,
-                        splitfrequency ? (char*) fileoutsplitfreq   : (char*) 0,
-                        splitspectrum  ? (char*) fileoutspectrum    : (char*) 0,
-                        savefftapprox  ? (char*) fileoutapprfreqs   : (char*) 0,
-                        silent
-                    );
-*/
+for ( int filei = 0; filei < (int) gof; filei++ ) {
+
+#if defined(CLIConsoleOutput)
+    cout << "Processing:        " << gof  [ filei ]<< NewLine;
+#endif
+
+    TOpenDoc<TTracksDoc>    EEGDoc ( gof[ filei ], OpenDocHidden );
+
+
+    FrequencyAnalysis   (   EEGDoc,
+                            xyzfile,
+                            analysis,
+                            tracks.c_str (),
+                            ref,                reflist.c_str (),
+                            timemin,            timemax,
+                            badepochs,          listbadepochs,
+                            samplingfrequency,
+                            blocksize,          blocksoverlap,
+                            fftnorm,
+                            outputinterval,
+                            outputatomtype,
+                            outputmarkers,      outputmarkerstype,
+                            GetCLIOptionString ( freqan, __freqbands ).c_str (),    // provide the whole list of intervals as a single string
+                            freqmin,            freqmax,
+                            outputfreqstep,     
+                            outputdecadestep,
+                            outputsequential,
+                            windowing,
+                            optimaldownsampling,
+                            infix.c_str (),     subdir,
+                            savingfreq    ? (char*) fileoutfreq        : (char*) 0,
+                            splitelec     ? (char*) fileoutsplitelec   : (char*) 0,
+                            splitfreq     ? (char*) fileoutsplitfreq   : (char*) 0,
+                            splitspectrum ? (char*) fileoutspectrum    : (char*) 0,
+                            savefftapprox ? (char*) fileoutapprfreqs   : (char*) 0,
+                            Silent
+                        );
+
+    } // for file
+
 
 #if defined(CLIConsoleOutput)
 DeleteConsole ( true );

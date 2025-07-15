@@ -103,6 +103,7 @@ const char* AnalysisAtomtypeCompatibility ( FreqAnalysisType    analysis,
 enum    ReferenceType;
 enum    SkippingEpochsType;
 enum    MarkerType;
+enum    VerboseType;
 class   TTracksDoc;
 
 
@@ -114,13 +115,14 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 long                timemin,            long                timemax,
                                 SkippingEpochsType  badepochs,          const char*         listbadepochs,
                                 double              samplingfrequency,
-                                int                 numblocks,          int                 blocksize,          double              blocksoverlap,
+                                int                 blocksize,          double              blocksoverlap,
                                 FFTRescalingType    fftnorm,
                                 FreqOutputBands     outputbands,
                                 FreqOutputAtomType  outputatomtype,
                                 bool                outputmarkers,      MarkerType          outputmarkerstype,
                                 const char*         outputbandslist,
-                                double              outputfreqmin,      double              outputfreqmax,      double              outputfreqstep,     
+                                double              outputfreqmin,      double              outputfreqmax,
+                                double              outputfreqstep,     
                                 int                 outputdecadestep,
                                 bool                outputsequential,   // averaged otherwise
                                 FreqWindowingType   windowing,
@@ -131,7 +133,7 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 char*               fileoutsplitfreq,
                                 char*               fileoutspectrum,
                                 char*               fileoutapprfreqs,
-                                bool                silent
+                                VerboseType         verbosey
                             );
 
 
