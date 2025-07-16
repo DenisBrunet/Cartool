@@ -18,6 +18,8 @@ limitations under the License.
 
 #include    <complex>
 
+#include    "Math.Utils.h"
+
 namespace crtl {
 
 //----------------------------------------------------------------------------
@@ -36,6 +38,8 @@ constexpr double    FreqMinLog10Value           = 1e-3;
 constexpr double    HanningRescaling            = 2.0;
 
 
+//----------------------------------------------------------------------------
+                                        // Analysis specifications
 enum    FreqAnalysisType
         {
         FreqAnalysisFFT,                // General FFT
@@ -44,6 +48,58 @@ enum    FreqAnalysisType
         FreqAnalysisSTransform,         // S-Transofmr (Stockwell), a sort of Wavelet very close to Morlet's
         };
 
+
+enum    FreqAnalysisCases
+        {
+        FreqCaseUndefined       = 0x0000,
+                                            // Use cases (all exclusive)
+        FreqCaseEEGSurface      = 0x0100,
+        FreqCaseEEGIntra        = 0x0200,
+        FreqCaseGeneral         = 0x0400,   // general case, neither surface nor intra-cranial    
+
+                                            // General computation method (all exclusive)
+        FreqMethodFFT           = 0x0010,   // FFT method
+        FreqMethodFFTApprox     = 0x0020,   // FFT Approximation method
+        FreqMethodST            = 0x0040,   // STransform method
+
+                                            // Computation specificities (all exclusive)
+        FreqTimeSeq             = 0x0001,   // Sequential
+        FreqTimeAvg             = 0x0002,   // Average
+        FreqTimeSht             = 0x0004,   // Short-Term
+        };
+
+
+inline  bool    IsSurfaceCase       ( FreqAnalysisCases c )     { return IsFlag ( c, FreqCaseEEGSurface ); }
+inline  bool    IsIntraCase         ( FreqAnalysisCases c )     { return IsFlag ( c, FreqCaseEEGIntra   ); }
+inline  bool    IsGeneralCase       ( FreqAnalysisCases c )     { return IsFlag ( c, FreqCaseGeneral    ); }
+
+inline  bool    IsFFTMethod         ( FreqAnalysisCases c )     { return IsFlag ( c, FreqMethodFFT      ); }                // ONLY real FFT
+inline  bool    IsFFTApproxMethod   ( FreqAnalysisCases c )     { return IsFlag ( c, FreqMethodFFTApprox); }                // ONLY FFT Approximation
+inline  bool    IsFFTAnyMethod      ( FreqAnalysisCases c )     { return IsFFTMethod ( c ) || IsFFTApproxMethod ( c ); }    // ANY type of FFT method
+inline  bool    IsSTMethod          ( FreqAnalysisCases c )     { return IsFlag ( c, FreqMethodST       ); }
+
+inline  bool    IsSequential        ( FreqAnalysisCases c )     { return IsFlag ( c, FreqTimeSeq        ); }
+inline  bool    IsAveraging         ( FreqAnalysisCases c )     { return IsFlag ( c, FreqTimeAvg        ); }
+inline  bool    IsShortTerm         ( FreqAnalysisCases c )     { return IsFlag ( c, FreqTimeSht        ); }
+
+inline  bool    IsPowerMaps         ( FreqAnalysisCases c )     { return IsSurfaceCase ( c ) && IsFFTMethod ( c ); } // Power Maps is FFT on Surface EEG + Average Reference
+
+
+                                        // Analysis and legal output types have a not-straightforward relationship, so let's wrap it into a proper function
+enum    FreqOutputAtomType;
+
+const char*     AnalysisAtomtypeCompatibility ( FreqAnalysisType    analysis,   
+                                                bool                savingbands,  
+                                                bool                averagingblocks, 
+                                                FreqOutputAtomType  outputatomtype  );
+
+const char*     AnalysisAtomtypeCompatibility ( FreqAnalysisCases   flags,   
+                                                bool                savingbands,  
+                                                bool                averagingblocks, 
+                                                FreqOutputAtomType  outputatomtype  );
+
+
+//----------------------------------------------------------------------------
 
 enum    FreqOutputBands
         {
@@ -90,12 +146,6 @@ enum    FreqWindowingType
         };
 
 extern const char   FreqWindowingString[ NumFreqWindowingType ][ 64 ];
-
-                                        // Analysis and legal output types have a not-straightforward relationship, so let's wrap it into a proper function
-const char* AnalysisAtomtypeCompatibility ( FreqAnalysisType    analysis,   
-                                            bool                savingbands,  
-                                            bool                averagingblocks, 
-                                            FreqOutputAtomType  outputatomtype  );
 
 
 //----------------------------------------------------------------------------

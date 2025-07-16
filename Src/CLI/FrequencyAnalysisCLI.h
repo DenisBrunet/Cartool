@@ -179,10 +179,10 @@ if ( ! HasCLIOption ( freqan, __analysis ) ) {
 
 string              typeanalysis    = GetCLIOptionEnum ( freqan, __analysis );
 
-FreqAnalysisType    analysis        = typeanalysis == __analysisfft         ?   FreqAnalysisFFT
-                                    : typeanalysis == __analysispowermaps   ?   FreqAnalysisPowerMaps
-                                    : typeanalysis == __analysisfftapprox   ?   FreqAnalysisFFTApproximation
-                                    :                                           FreqAnalysisSTransform;
+FreqAnalysisType    analysis        = typeanalysis == __analysispowermaps   ? FreqAnalysisPowerMaps         // most specific case first
+                                    : typeanalysis == __analysisfft         ? FreqAnalysisFFT
+                                    : typeanalysis == __analysisfftapprox   ? FreqAnalysisFFTApproximation
+                                    :                                         FreqAnalysisSTransform;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

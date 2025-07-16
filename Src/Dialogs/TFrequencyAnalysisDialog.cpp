@@ -39,26 +39,30 @@ namespace crtl {
 TFrequencyAnalysisStructEx  FrequencyAnalysisTransfer;
 
 
-const char  FreqPresetsString[ NumFreqPresets ][ 128 ] =
+const FreqPresetSpec    FreqPresets[ NumFreqPresets ]   =
             {
-            "EEG / Surface / FFT (Power Maps)",
-            "EEG / Surface / FFT (Power Maps) Average Spectrum",
-            "EEG / Surface / Short-Term FFT (Power Maps)",
-            "EEG / Surface / FFT Approximation",
-            "EEG / Surface / Short-Term FFT Approximation",
-            "EEG / Surface / Wavelet (S-Transform)",
-            "EEG / Surface / Wavelet (S-Transform) for Sources Localization",
-            "",
-            "EEG / Intra-Cranial / FFT",
-            "EEG / Intra-Cranial / FFT Average Spectrum",
-            "EEG / Intra-Cranial / Short-Term FFT",
-            "EEG / Intra-Cranial / Wavelet (S-Transform)",
-            "EEG / Intra-Cranial / Wavelet (S-Transform) for Phase Analysis",
-            "",
-            "General case / FFT",
-            "General case / FFT Average Spectrum",
-            "General case / Short-Term FFT",
-            "General case / Wavelet (S-Transform)",
+            { FreqPresetSurfacePowermaps,       "EEG / Surface / FFT (Power Maps)",                                 (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFT       | FreqTimeSeq )  },
+            { FreqPresetSurfacePowermapsAvg,    "EEG / Surface / FFT (Power Maps) Average Spectrum",                (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFT       | FreqTimeAvg )  },
+            { FreqPresetSurfacePowermapsSt,     "EEG / Surface / Short-Term FFT (Power Maps)",                      (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFT       | FreqTimeSht )  },
+            { FreqPresetSurfaceFftapprox,       "EEG / Surface / FFT Approximation",                                (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFTApprox | FreqTimeSeq )  },
+            { FreqPresetSurfaceFftapproxSt,     "EEG / Surface / Short-Term FFT Approximation",                     (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFTApprox | FreqTimeSht )  },
+            { FreqPresetSurfaceStransf,         "EEG / Surface / Wavelet (S-Transform)",                            (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodST        | FreqTimeSeq )  },
+            { FreqPresetSurfaceStransfForESI,   "EEG / Surface / Wavelet (S-Transform) for Sources Localization",   (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodST        | FreqTimeSeq )  },  // same parameters as previous preset
+
+            { FreqPresetSeparator1,              "",                                                                FreqCaseUndefined                                                               },
+
+            { FreqPresetIntraFft,               "EEG / Intra-Cranial / FFT",                                        (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodFFT       | FreqTimeSeq )  },
+            { FreqPresetIntraFftAvg,            "EEG / Intra-Cranial / FFT Average Spectrum",                       (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodFFT       | FreqTimeAvg )  },
+            { FreqPresetIntraFftSt,             "EEG / Intra-Cranial / Short-Term FFT",                             (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodFFT       | FreqTimeSht )  },
+            { FreqPresetIntraStransf,           "EEG / Intra-Cranial / Wavelet (S-Transform)",                      (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodST        | FreqTimeSeq )  },
+            { FreqPresetIntraStransfPhase,      "EEG / Intra-Cranial / Wavelet (S-Transform) for Phase Analysis",   (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodST        | FreqTimeSeq )  },  // same parameters as previous preset
+
+            { FreqPresetSeparator2,             "",                                                                 FreqCaseUndefined                                                               },
+
+            { FreqPresetFft,                    "General case / FFT",                                               (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodFFT       | FreqTimeSeq )  },
+            { FreqPresetFftAvg,                 "General case / FFT Average Spectrum",                              (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodFFT       | FreqTimeAvg )  },
+            { FreqPresetFftSt,                  "General case / Short-Term FFT",                                    (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodFFT       | FreqTimeSht )  },
+            { FreqPresetFftSt,                  "General case / Wavelet (S-Transform)",                             (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodST        | FreqTimeSeq )  },
             };
 
 
@@ -101,7 +105,7 @@ ClearString ( SaveBandsValue );
 
 Presets.Clear ();
 for ( int i = 0; i < NumFreqPresets; i++ )
-    Presets.AddString ( FreqPresetsString[ i ], i == FreqPresetDefault );
+    Presets.AddString ( FreqPresets[ i ].Text, i == FreqPresetDefault );
 
 Fft                 = BoolToCheck ( true  );
 FftApproximation    = BoolToCheck ( false );
@@ -367,7 +371,7 @@ if ( ! BatchProcessing && sf ) {
                                         // keep any existing frequencies when entering batch mode
 if ( ! BatchProcessing && sf && blocksize ) {
                                         // reset frequency limits
-    double  nyquist     = GetNyquist ( sf, IsSTransform ( CurrentPreset ) );
+    double  nyquist     = GetNyquist ( sf, FreqPresets[ CurrentPreset ].IsSTMethod () );
             fstep       = sf / blocksize;
 
     SetDouble   ( SamplingFrequency, sf );
@@ -382,7 +386,7 @@ if ( ! BatchProcessing && sf && blocksize ) {
     if ( StringIsEmpty ( FrequencyAnalysisTransfer.SaveFreqMax ) )  // only reading existing transfer buffer
         SetDouble ( SaveFreqMax, NoMore ( DefaultSaveFreqMax, nyquist ) );
 
-    if ( ! IsSTransform ( CurrentPreset ) )
+    if ( ! FreqPresets[ CurrentPreset ].IsSTMethod () )
         CopyText    ( SaveFreqStep, FreqStep );
     }
 //else {
@@ -451,7 +455,7 @@ int     TFrequencyAnalysisDialog::GetDefaultBlocksize ()
 int                 blocksize;
 
                                         // some override, on each call
-if ( IsSTransform ( CurrentPreset ) ) {
+if ( FreqPresets[ CurrentPreset ].IsSTMethod () ) {
 
     if ( IsChecked ( EndOfFile ) )
 
@@ -519,7 +523,7 @@ return blocksize;
 //----------------------------------------------------------------------------
 void    TFrequencyAnalysisDialog::EvPresetsChange ()
 {
-if ( StringIsEmpty ( FreqPresetsString[ GetIndex ( Presets ) ] ) )
+if ( FreqPresets[ GetIndex ( Presets ) ].IsUndefined () )
     return;
 
 
@@ -532,15 +536,15 @@ CurrentPreset   = GetIndex ( Presets );
 static int      CurrentFFTNormalization     = DefaultFFTRescaling;
 
                                         // Saving current state when not in S-Transform
-if      ( ! IsSTransform ( PreviousPreset ) && ! IsSTransform ( CurrentPreset ) )
+if      ( ! FreqPresets[ PreviousPreset ].IsSTMethod () && ! FreqPresets[ CurrentPreset ].IsSTMethod () )
     CurrentFFTNormalization     = GetIndex ( FFTNormalization );
 
                                         // Quitting S-Transform settings, restore saved state
-else if (   IsSTransform ( PreviousPreset ) && ! IsSTransform ( CurrentPreset ) )
+else if (   FreqPresets[ PreviousPreset ].IsSTMethod () && ! FreqPresets[ CurrentPreset ].IsSTMethod () )
     SetIndex    ( FFTNormalization, CurrentFFTNormalization );
 
                                         // Entering S-Transform, save old state then reset it
-else if ( ! IsSTransform ( PreviousPreset ) &&   IsSTransform ( CurrentPreset ) ) {
+else if ( ! FreqPresets[ PreviousPreset ].IsSTMethod () &&   FreqPresets[ CurrentPreset ].IsSTMethod () ) {
     CurrentFFTNormalization     = GetIndex ( FFTNormalization );
     SetIndex    ( FFTNormalization, FFTRescalingNone );
     }
@@ -562,7 +566,7 @@ ResetCheck  ( STransform       );
 ResetCheck  ( Mean             );
 SetCheck    ( Sequence         );
 
-//if ( ! IsGeneralCaseAnalysis ( CurrentPreset ) ) {
+//if ( ! FreqPresets[ CurrentPreset ].IsGeneralCase () ) {
     ResetCheck  ( NoRef        );
     ResetCheck  ( CurrentRef   );
     ResetCheck  ( AvgRef       );
@@ -741,7 +745,7 @@ if ( (bool) remainingfiles )
 //----------------------------------------------------------------------------
 //void    TFrequencyAnalysisDialog::CmChannelsEnable ( TCommandEnabler &tce )
 //{
-//tce.Enable ( ! IsSurfaceAnalysis ( CurrentPreset ) );
+//tce.Enable ( ! FreqPresets[ CurrentPreset ].IsSurfaceCase );
 //}
 
 
@@ -820,8 +824,8 @@ tce.Enable ( ! IsChecked ( EndOfFile ) );
 
 void    TFrequencyAnalysisDialog::CmBlockSizeEnable ( TCommandEnabler &tce )
 {
-//tce.Enable ( ! IsChecked ( EndOfFile ) && ! IsSTransform ( CurrentPreset ) );
-tce.Enable ( ! IsSTransform ( CurrentPreset ) );
+//tce.Enable ( ! IsChecked ( EndOfFile ) && ! FreqPresets[ CurrentPreset ].IsSTMethod () );
+tce.Enable ( ! FreqPresets[ CurrentPreset ].IsSTMethod () );
 }
 
 
@@ -830,8 +834,8 @@ void    TFrequencyAnalysisDialog::CmOtherRefEnable ( TCommandEnabler &tce )
 TransferData ( tdGetData );
 
 tce.Enable ( IsChecked ( OtherRef )
-             && (    IsRegularFFT ( CurrentPreset ) 
-                  || IsSTransform ( CurrentPreset ) ) );
+             && (    FreqPresets[ CurrentPreset ].IsFFTAnyMethod () && ! FreqPresets[ CurrentPreset ].IsSurfaceCase ()
+                  || FreqPresets[ CurrentPreset ].IsSTMethod () ) );
 }
 
 
@@ -844,7 +848,7 @@ tce.Enable ( ! ( EEGDoc && EEGDoc->GetSamplingFrequency () > 0 ) );
 
 void    TFrequencyAnalysisDialog::CmWindowOverlapEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( ! IsSTransform ( CurrentPreset ) );
+tce.Enable ( ! FreqPresets[ CurrentPreset ].IsSTMethod () );
 }
 
 
@@ -864,8 +868,8 @@ int                 numblocks       = GetInteger ( NumBlocks );
 int                 blocksize       = GetInteger ( BlockSize );
 
 
-return  ( IsChecked ( EndOfFile )        || ( numblocks > 0 && timenum > 0 ) )
-     && ( IsSTransform ( CurrentPreset ) || blocksize >= MinBlockSize /*&& IsPower2 ( blocksize )*/ );
+return  ( IsChecked ( EndOfFile )                    || ( numblocks > 0 && timenum > 0 ) )
+     && ( FreqPresets[ CurrentPreset ].IsSTMethod () || blocksize >= MinBlockSize /*&& IsPower2 ( blocksize )*/ );
 }
 
 
@@ -884,9 +888,9 @@ double              fmin            = GetDouble ( FreqMin );
 double              fmax            = GetDouble ( FreqMax );
 
                                         // these might not exist, set them manually
-if ( IsSTransform ( CurrentPreset ) && IsChecked ( EndOfFile ) ) {
+if ( FreqPresets[ CurrentPreset ].IsSTMethod () && IsChecked ( EndOfFile ) ) {
     fmin    = 0;
-    fmax    = GetNyquist ( sf, IsSTransform ( CurrentPreset ) );
+    fmax    = GetNyquist ( sf, FreqPresets[ CurrentPreset ].IsSTMethod () );
     }
 
 
@@ -977,7 +981,7 @@ tce.Enable ( IsChecked ( SaveBands ) );
 
 void    TFrequencyAnalysisDialog::CmSequenceMeanEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( ! IsSTransform ( CurrentPreset ) );
+tce.Enable ( ! FreqPresets[ CurrentPreset ].IsSTMethod () );
 }
 
 
@@ -989,7 +993,7 @@ tce.Enable ( IsChecked ( FileTypeFreq ) );
 
 void    TFrequencyAnalysisDialog::CmOptimalDownsamplingEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( IsSTransform ( CurrentPreset ) );
+tce.Enable ( FreqPresets[ CurrentPreset ].IsSTMethod () );
 }
 
 
@@ -1013,7 +1017,7 @@ else                        return  timespan >= blocksize ? (int) ( ( (double) t
 
 int     TFrequencyAnalysisDialog::ComputeNumBlocks ( int timespan, int blocksize, double blocksoverlap )
 {
-return crtl::ComputeNumBlocks ( IsSTransform ( CurrentPreset ), IsChecked ( WindowOverlapMax ), timespan, blocksize, blocksoverlap );
+return crtl::ComputeNumBlocks ( FreqPresets[ CurrentPreset ].IsSTMethod (), IsChecked ( WindowOverlapMax ), timespan, blocksize, blocksoverlap );
 }
 
 
@@ -1027,7 +1031,7 @@ else                        return  timemin + blocksize * ( blocksoverlap + ( 1 
 
 int     TFrequencyAnalysisDialog::ComputeTimeMax ( int timemin, int blocksize, double blocksoverlap, int numblocks )
 {
-return  crtl::ComputeTimeMax ( IsSTransform ( CurrentPreset ), IsChecked ( WindowOverlapMax ), timemin, blocksize, blocksoverlap, numblocks );
+return  crtl::ComputeTimeMax ( FreqPresets[ CurrentPreset ].IsSTMethod (), IsChecked ( WindowOverlapMax ), timemin, blocksize, blocksoverlap, numblocks );
 }
                                         // For the FFT, it could be efficient to round the block size - we don't want odd/prime numbers block size
                                         // As a first version, we try to truncate to either some multiples of 128 (efficient), or 100 (user friendly, still efficient)
@@ -1042,9 +1046,9 @@ return  abs ( (double) blocksize - bs1 ) < abs ( (double) blocksize - bs2 ) ? bs
 
 double  TFrequencyAnalysisDialog::ComputeWindowsInterval ( double sf, int blocksize, double blocksoverlap )
 {
-if      ( IsSTransform ( CurrentPreset ) || ! sf )      return  0;
-else if ( IsChecked ( WindowOverlapMax ) )              return  TimeFrameToMilliseconds ( 1, sf );      // avoid rounding error
-else                                                    return  TimeFrameToMilliseconds ( Truncate ( blocksize * ( 1 - blocksoverlap ) ), sf );
+if      ( FreqPresets[ CurrentPreset ].IsSTMethod () || ! sf )  return  0;
+else if ( IsChecked ( WindowOverlapMax ) )                      return  TimeFrameToMilliseconds ( 1, sf );      // avoid rounding error
+else                                                            return  TimeFrameToMilliseconds ( Truncate ( blocksize * ( 1 - blocksoverlap ) ), sf );
 }
 
 
@@ -1058,7 +1062,7 @@ else                        return  AtLeast ( 1, Truncate ( blocksize * ( 1 - bl
 
 int     TFrequencyAnalysisDialog::ComputeStep ( int blocksize, double blocksoverlap )
 {
-return  crtl::ComputeStep ( IsSTransform ( CurrentPreset ), blocksize, blocksoverlap );
+return  crtl::ComputeStep ( FreqPresets[ CurrentPreset ].IsSTMethod (), blocksize, blocksoverlap );
 }
 
 
@@ -1132,12 +1136,12 @@ timenum     = AtLeast ( 0, timemax - timemin + 1 );
                                         // we have to do this quite early
 
                                         // be convenient to the user: save the current block size, which might not be the default anymore
-if ( ! IsSTransform ( PreviousPreset )  )
+if ( ! FreqPresets[ PreviousPreset ].IsSTMethod ()  )
 
     savedblocksize  = GetInteger ( BlockSize );
 
                                         // transitionning to a S-Transform?
-if ( IsSTransform ( CurrentPreset ) && ! IsSTransform ( PreviousPreset ) ) {
+if ( FreqPresets[ CurrentPreset ].IsSTMethod () && ! FreqPresets[ PreviousPreset ].IsSTMethod () ) {
 
     timenum     = RoundFFTBlockSize ( timenum );
 
@@ -1150,7 +1154,7 @@ if ( IsSTransform ( CurrentPreset ) && ! IsSTransform ( PreviousPreset ) ) {
     }
 
                                         // quitting a S-Transform, or simply needing to refresh the number of blocks
-else if ( /*IsSTransform ( PreviousPreset ) &&*/ ! IsSTransform ( CurrentPreset ) ) {
+else if ( /*FreqPresets[ PreviousPreset ].IsSTMethod () &&*/ ! FreqPresets[ CurrentPreset ].IsSTMethod () ) {
                                         // restore the saved block size, which the user might be happy to see back
     SetInteger ( BlockSize, savedblocksize );
     }
@@ -1250,7 +1254,7 @@ if (    timenum <= 0
     if ( numblocks != 0 )               // be cautious, otherwise it will loop for ever within this procedure!
         NumBlocks->SetText ( "" );
 
-    if ( IsSTransform ( CurrentPreset ) ) {
+    if ( FreqPresets[ CurrentPreset ].IsSTMethod () ) {
         BlockSize->SetText ( "" );
         ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "<File End>" : "<Invalid>" );
         }
@@ -1387,7 +1391,7 @@ double              sf              = GetDouble ( SamplingFrequency );
 if ( sf <= 0 )
     return;
 
-double              fmax            = GetNyquist ( sf, IsSTransform ( CurrentPreset ) );
+double              fmax            = GetNyquist ( sf, FreqPresets[ CurrentPreset ].IsSTMethod () );
 
 if ( savefmin < 0 || savefmin > fmax )
     savefmin = 0;
@@ -1422,15 +1426,15 @@ if ( sf <= 0 || blocksize < MinBlockSize /*|| !IsPower2 ( blocksize )*/ ) {
 
 
 double              fmin            = 0;
-double              fmax            = GetNyquist ( sf, IsSTransform ( CurrentPreset ) );
+double              fmax            = GetNyquist ( sf, FreqPresets[ CurrentPreset ].IsSTMethod () );
 double              fstep           = sf / ( blocksize ? blocksize : 1 );
 
                                         // force clipping to the new boundaries (especially in the case of S-Transform)
 Clipped ( savefmax, fmin, fmax );
 
                                         // don't allow too little steps (especially in the case of S-Transform)
-savefstep   = AtLeast ( IsSTransform ( CurrentPreset ) ? 0.5 : 0.25, fstep );   // when not retrieving SaveFreqStep
-//Maxed ( savefstep, fstep );                                                   // when retrieving SaveFreqStep
+savefstep   = AtLeast ( FreqPresets[ CurrentPreset ].IsSTMethod () ? 0.5 : 0.25, fstep );   // when not retrieving SaveFreqStep
+//Maxed ( savefstep, fstep );                                                               // when retrieving SaveFreqStep
     
 
                                         // update dialog
@@ -1469,7 +1473,7 @@ CmTimeLimitsChange ();
 void    TFrequencyAnalysisDialog::CmWindowOverlapChange ()
 {
                                         // no window overlap sets no windowing
-if      ( IsChecked ( WindowOverlap0 ) && ! IsSTransform ( CurrentPreset ) ) {
+if      ( IsChecked ( WindowOverlap0 ) && ! FreqPresets[ CurrentPreset ].IsSTMethod () ) {
 
     ResetCheck  ( WindowingHanning );
     SetCheck    ( WindowingNone    );
@@ -1507,15 +1511,14 @@ TransferData ( tdGetData );
 TFrequencyAnalysisStructEx  &transfer   = FrequencyAnalysisTransfer;
 
                                         // set reference
-if ( IsPowerMaps        ( CurrentPreset ) 
-  || IsFFTApproximation ( CurrentPreset ) ) {
+if ( FreqPresets[ CurrentPreset ].IsSurfaceCase () ) {
     transfer.NoRef      = BoolToCheck ( false );
     transfer.CurrentRef = BoolToCheck ( false );
     transfer.OtherRef   = BoolToCheck ( false );
     transfer.AvgRef     = BoolToCheck ( true  );
     }
-/*else if ( IsRegularFFT ( CurrentPreset ) 
-         || IsSTransform ( CurrentPreset ) ) {
+/*else if ( FreqPresets[ CurrentPreset ].IsFFTAnyMethod () && ! FreqPresets[ CurrentPreset ].IsSurfaceCase ()
+         || FreqPresets[ CurrentPreset ].IsSTMethod () ) {
     transfer.CurrentRef = BoolToCheck ( false );
     transfer.OtherRef   = BoolToCheck ( false );
     transfer.AvgRef     = BoolToCheck ( false );
@@ -1523,20 +1526,20 @@ if ( IsPowerMaps        ( CurrentPreset )
     }*/
 
                                         // set output format
-if      ( IsRegularFFT ( CurrentPreset ) && IsIndex ( transfer.WriteType, OutputAtomReal )
-       || IsPowerMaps  ( CurrentPreset ) 
-       || IsSTransform ( CurrentPreset ) ) {
+if      ( FreqPresets[ CurrentPreset ].IsFFTAnyMethod () && ! FreqPresets[ CurrentPreset ].IsSurfaceCase () && IsIndex ( transfer.WriteType, OutputAtomReal )
+       || FreqPresets[ CurrentPreset ].IsPowerMaps    ()
+       || FreqPresets[ CurrentPreset ].IsSTMethod     () ) {
 
     SetIndex ( transfer.WriteType, OutputAtomNorm2 );
     }
 
-else if ( IsFFTApproximation ( CurrentPreset ) ) {
+else if ( FreqPresets[ CurrentPreset ].IsFFTApproxMethod () ) {
 
     SetIndex ( transfer.WriteType, OutputAtomReal );
     }
 
                                         // other settings
-if ( IsSTransform ( CurrentPreset ) ) {
+if ( FreqPresets[ CurrentPreset ].IsSTMethod () ) {
     transfer.Mean               = BoolToCheck ( false );
     transfer.Sequence           = BoolToCheck ( true  );
 
@@ -1549,7 +1552,7 @@ if ( IsSTransform ( CurrentPreset ) ) {
     }
 
                                         // update block size
-if ( ! IsSTransform ( CurrentPreset ) && ! StringToInteger ( transfer.BlockSize ) )
+if ( ! FreqPresets[ CurrentPreset ].IsSTMethod () && StringToInteger ( transfer.BlockSize ) == 0 )
     IntegerToString ( transfer.BlockSize, GetDefaultBlocksize () );
 
 
@@ -1559,8 +1562,9 @@ TransferData ( tdSetData );
 //UpdateFreqMinMaxStep ();  // that's quite annoying
 
                                         // set windowing
-if ( IsPowerMaps        ( CurrentPreset ) 
-  || IsFFTApproximation ( CurrentPreset ) ) {
+if ( FreqPresets[ CurrentPreset ].IsPowerMaps       ()
+  || FreqPresets[ CurrentPreset ].IsFFTApproxMethod () ) {
+
     if ( CheckToBool ( transfer.WindowOverlap0 ) && CheckToBool ( transfer.WindowingHanning ) )
         SetDefaultWindowing ();
     }
@@ -1575,13 +1579,7 @@ CmEndOfFile ();
                                         // Used for Averaging blocks, Frequency Bands and Output type preset changes
 void    TFrequencyAnalysisDialog::AnalysisAtomtypeCompatibility ()
 {
-FreqAnalysisType    analysis    = IsRegularFFT       ( CurrentPreset )  ? FreqAnalysisFFT
-                                : IsPowerMaps        ( CurrentPreset )  ? FreqAnalysisPowerMaps
-                                : IsFFTApproximation ( CurrentPreset )  ? FreqAnalysisFFTApproximation
-                                : IsSTransform       ( CurrentPreset )  ? FreqAnalysisSTransform
-                                :                                         (FreqAnalysisType) -1;
-
-const char*         aac         = crtl::AnalysisAtomtypeCompatibility ( analysis, 
+const char*         aac         = crtl::AnalysisAtomtypeCompatibility ( FreqPresets[ CurrentPreset ].Flags, 
                                                                         IsChecked ( SaveBands ), 
                                                                         IsChecked ( Mean      ), 
                                                                         (FreqOutputAtomType) GetIndex ( WriteType ) );
@@ -1597,29 +1595,29 @@ if ( StringIsNotEmpty ( aac ) ) {
 
 void    TFrequencyAnalysisDialog::CmWriteTypeEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( ! ( IsFFTApproximation ( CurrentPreset ) 
-              || CurrentPreset == FreqPresetSurfaceStransfForESI
-              || CurrentPreset == FreqPresetIntraStransfPhase    ) );
+tce.Enable ( ! (   FreqPresets[ CurrentPreset ].IsFFTApproxMethod ()
+                || CurrentPreset == FreqPresetSurfaceStransfForESI
+                || CurrentPreset == FreqPresetIntraStransfPhase    ) );
 }
 
 
 //----------------------------------------------------------------------------
 void    TFrequencyAnalysisDialog::CmFFTNormalizationEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( ! IsSTransform ( CurrentPreset ) );
+tce.Enable ( ! FreqPresets[ CurrentPreset ].IsSTMethod () );
 }
 
 
 //----------------------------------------------------------------------------
 void    TFrequencyAnalysisDialog::CmReferenceEnable ( TCommandEnabler &tce )
 {
-tce.Enable ( IsGeneralCaseAnalysis ( CurrentPreset ) );
+tce.Enable ( FreqPresets[ CurrentPreset ].IsGeneralCase () );
 }
 
                                         // user can't push analysis buttons anymore, everything is done throuh the Presets
 void    TFrequencyAnalysisDialog::CmAnalysisTypeEnable ( TCommandEnabler &tce )
 {
-//tce.Enable ( IsGeneralCaseAnalysis ( CurrentPreset ) );
+//tce.Enable ( FreqPresets[ CurrentPreset ].IsGeneralCase () );
 tce.Enable ( false );
 }
 
@@ -1655,11 +1653,11 @@ if ( openxyz )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // the actual job of sorting the analysis type is already done in these functions
-FreqAnalysisType    analysis            = IsRegularFFT       ( CurrentPreset )  ? FreqAnalysisFFT
-                                        : IsPowerMaps        ( CurrentPreset )  ? FreqAnalysisPowerMaps
-                                        : IsFFTApproximation ( CurrentPreset )  ? FreqAnalysisFFTApproximation
-                                        : IsSTransform       ( CurrentPreset )  ? FreqAnalysisSTransform
-                                        :                                         (FreqAnalysisType) -1;
+FreqAnalysisType    analysis    = FreqPresets[ CurrentPreset ].IsPowerMaps          ()  ? FreqAnalysisPowerMaps         // most specific case first
+                                : FreqPresets[ CurrentPreset ].IsFFTMethod          ()  ? FreqAnalysisFFT
+                                : FreqPresets[ CurrentPreset ].IsFFTApproxMethod    ()  ? FreqAnalysisFFTApproximation
+                                : FreqPresets[ CurrentPreset ].IsSTMethod           ()  ? FreqAnalysisSTransform
+                                :                                                         (FreqAnalysisType) -1;
 
 if ( analysis == (FreqAnalysisType) -1 )
     return;
@@ -1857,7 +1855,6 @@ else if ( outputbands == OutputLinearInterval ) {
 
 bool                optimaldownsampling = CheckToBool ( transfer->OptimalDownsampling )
                                        && analysis == FreqAnalysisSTransform                                // S-Transform is very smooth, and we don't need the extra time resolution (?)
-                                     //&& ( IsStFFT ( CurrentPreset ) || IsSTransform ( CurrentPreset ) )   // StFFT case needs more work, i.e. changing the block step & number of time frames...
                                        && savedfreqmax > 0;
 
 

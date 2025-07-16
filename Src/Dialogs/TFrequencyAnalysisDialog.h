@@ -21,7 +21,7 @@ limitations under the License.
 #include    "System.h"
 #include    "TBaseDialog.h"
 
-#include    "FrequencyAnalysis.h"       // FFTRescalingType, FreqOutputAtomType
+#include    "FrequencyAnalysis.h"       // FFTRescalingType, FreqAnalysisCases, FreqOutputAtomType
 
 namespace crtl {
 
@@ -59,71 +59,32 @@ enum        FreqPresetsEnum
             };
 
 
-extern const char   FreqPresetsString[ NumFreqPresets ][ 128 ];
-
-
-inline  bool    IsSurfaceAnalysis       ( int preset )      
+class       FreqPresetSpec
 {
-return  IsInsideLimits ( preset, (int) FreqPresetSurfacePowermaps, (int) FreqPresetSurfaceStransfForESI );
-}
+public:
+    FreqPresetsEnum     Code;                   // redundant but included for clarity
+    char                Text [ 128 ];           // for dialog
+    FreqAnalysisCases   Flags;
 
 
-inline  bool    IsIntraCranialAnalysis  ( int preset )      
-{
-return  IsInsideLimits ( preset, (int) FreqPresetIntraFft, (int) FreqPresetIntraStransfPhase );
-}
+    bool                IsSurfaceCase           ()  const   { return crtl::IsSurfaceCase        ( Flags );  }
+    bool                IsIntraCase             ()  const   { return crtl::IsIntraCase          ( Flags );  }
+    bool                IsGeneralCase           ()  const   { return crtl::IsGeneralCase        ( Flags );  }
+    bool                IsUndefined             ()  const   { return Flags == FreqCaseUndefined;            }
 
+    bool                IsFFTMethod             ()  const   { return crtl::IsFFTMethod          ( Flags );  }
+    bool                IsFFTApproxMethod       ()  const   { return crtl::IsFFTApproxMethod    ( Flags );  }
+    bool                IsFFTAnyMethod          ()  const   { return crtl::IsFFTAnyMethod       ( Flags );  }
+    bool                IsSTMethod              ()  const   { return crtl::IsSTMethod           ( Flags );  }
 
-inline  bool    IsGeneralCaseAnalysis   ( int preset )      
-{
-return  IsInsideLimits ( preset, (int) FreqPresetFft, (int) FreqPresetStransf );
-}
+    bool                IsSequential            ()  const   { return crtl::IsSequential         ( Flags );  }
+    bool                IsAveraging             ()  const   { return crtl::IsAveraging          ( Flags );  }
+    bool                IsShortTerm             ()  const   { return crtl::IsShortTerm          ( Flags );  }
 
-                                        // All FFT family, including Power Maps & FFT Approximation
-inline  bool    IsAnyTypeFFT    ( int preset )
-{
-return  IsInsideLimits ( preset, (int) FreqPresetSurfacePowermaps, (int) FreqPresetSurfaceFftapproxSt )
-     || IsInsideLimits ( preset, (int) FreqPresetIntraFft,         (int) FreqPresetIntraFftSt )
-     || IsInsideLimits ( preset, (int) FreqPresetFft,              (int) FreqPresetFftSt );
-}
+    bool                IsPowerMaps             ()  const   { return crtl::IsPowerMaps          ( Flags );  }
+};
 
-                                        // Only Power-Maps FFT
-inline  bool    IsPowerMaps     ( int preset )
-{
-return  IsInsideLimits ( preset, (int) FreqPresetSurfacePowermaps, (int) FreqPresetSurfacePowermapsSt );
-}
-
-                                        // Only Frequency Approximation FFT
-inline  bool    IsFFTApproximation  ( int preset )
-{
-return  IsInsideLimits ( preset, (int) FreqPresetSurfaceFftapprox, (int) FreqPresetSurfaceFftapproxSt );
-}
-
-                                        // Other FFTs than Power Maps or FFT Approx
-inline  bool    IsRegularFFT    ( int preset )
-{
-return  IsInsideLimits ( preset, (int) FreqPresetIntraFft, (int) FreqPresetIntraFftSt )
-     || IsInsideLimits ( preset, (int) FreqPresetFft,      (int) FreqPresetFftSt      );
-}
-
-                                        // Only Short-Term FFT
-inline  bool    IsStFFT         ( int preset )
-{
-return  preset  == FreqPresetSurfacePowermapsSt
-     || preset  == FreqPresetSurfaceFftapproxSt
-     || preset  == FreqPresetIntraFftSt
-     || preset  == FreqPresetFftSt;
-}
-
-                                        // Only S-Transform
-inline  bool    IsSTransform    ( int preset )
-{
-return  preset  == FreqPresetSurfaceStransf
-     || preset  == FreqPresetSurfaceStransfForESI
-     || preset  == FreqPresetIntraStransf
-     || preset  == FreqPresetIntraStransfPhase
-     || preset  == FreqPresetStransf;
-}
+extern const FreqPresetSpec     FreqPresets[ NumFreqPresets ];
 
 
 //----------------------------------------------------------------------------
@@ -353,7 +314,7 @@ protected:
 //  void                CmSaveFrequenciesChange         ();
     void                CmEndOfFile                     ();
     void                CmSetAnalysis                   ();
-    void                AnalysisAtomtypeCompatibility                     ();
+    void                AnalysisAtomtypeCompatibility   ();
     void                CmFFTNormalizationEnable        ( owl::TCommandEnabler &tce );
     void                CmWriteTypeEnable               ( owl::TCommandEnabler &tce );
     void                CmReferenceEnable               ( owl::TCommandEnabler &tce );

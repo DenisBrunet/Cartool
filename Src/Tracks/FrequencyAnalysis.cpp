@@ -145,6 +145,74 @@ return  0;
 }
 
 
+const char* AnalysisAtomtypeCompatibility ( FreqAnalysisCases   flags,   
+                                            bool                savingbands,  
+                                            bool                averagingblocks, 
+                                            FreqOutputAtomType  outputatomtype  )
+{
+switch ( outputatomtype ) {
+
+    case    OutputAtomReal:
+    
+        if      ( ! IsFFTApproxMethod ( flags ) )
+
+            return  "Saving the Real components is only possible with the FFT Approximation analysis!";
+
+        else if ( IsSTMethod ( flags ) && averagingblocks )   // case shouldn't happen 
+
+            return  "Can not average blocks with the S-Transform analysis!";
+
+        break;
+
+
+    case    OutputAtomNorm:
+    case    OutputAtomNorm2:
+
+        if      ( IsFFTApproxMethod ( flags ) )
+
+            return  "Saving the Norm/Power values is not possible with the FFT Approximation analysis!";
+
+        else if ( IsSTMethod ( flags ) && averagingblocks )   // case shouldn't happen
+
+            return  "Can not average blocks for S-Transform analysis!";
+
+        break;
+
+
+    case    OutputAtomComplex:
+
+        if      ( savingbands )     // for ALL types of analysis
+
+            return  "Saving Complex values is not possible with Frequency Bands output!";
+
+        else if ( averagingblocks ) // for ALL types of analysis
+
+            return  "Can not average Complex values!";
+
+        else if ( IsFFTApproxMethod ( flags ) )
+
+            return  "Saving Complex values is not possible with the FFT Approximation analysis!";
+
+        break;
+
+
+    case    OutputAtomPhase:
+
+        if      ( savingbands )     // for ALL types of analysis
+
+            return  "Saving Phase values is not possible with Frequency Bands output!";
+
+        else if ( averagingblocks ) // for ALL types of analysis
+
+            return  "Can not average Phase values!";
+        
+        break;
+    }
+
+return  0;
+}
+
+
 //----------------------------------------------------------------------------
                                         // Used internally to keep tracks of real / truncated / index of frequencies
 class   TOneFrequencyBand
@@ -747,7 +815,6 @@ AtomType            datatypeout         = outputatomtype == OutputAtomComplex ? 
                                         // Currently applies only to S-Transform
                     optimaldownsampling = optimaldownsampling
                                        && analysis == FreqAnalysisSTransform                                // S-Transform is very smooth, and we don't need the extra time resolution (?)
-                                     //&& ( IsStFFT ( CurrentPreset ) || IsSTransform ( CurrentPreset ) )   // StFFT case needs more work, i.e. changing the block step & number of time frames...
                                        && savedfreqmax > 0;
                                         // default is to not downsample results
 int                 downsamplingfactor  = 1;
