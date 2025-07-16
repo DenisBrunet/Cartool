@@ -364,7 +364,7 @@ return  v1.Correlation ( v2 ) < 0;
 
 bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not const, because we activate/deactivate filters
                                 const char*         xyzfile,
-                                FreqAnalysisType    analysis,
+                                FreqAnalysisCases   analysis,
                                 const char*         channels,           // could be empty or "*" to select all regular tracks
                                 ReferenceType       ref,                const char*         reflist,
                                 long                timemin,            long                timemax,
@@ -395,14 +395,14 @@ if ( ! eegdoc )
     return  false;
 
                                         // FFT analysis requires these parameters
-if ( analysis != FreqAnalysisSTransform
+if ( ! IsSTMethod ( analysis )
  && (    blocksize     <= 0
       || blocksoverlap <  0             // values are currently: 0% (100% jump); 75% (25% jump); ((blocksize-1)/blocksize)% (1TF jump)
       || blocksoverlap >  1 ) )
     return  false;
 
 
-if ( analysis == FreqAnalysisSTransform )
+if ( IsSTMethod ( analysis ) )
     outputsequential    = true;
 
                                         // !It is assumed caller has already checked the consistency between analysis and outputatomtype!
@@ -413,7 +413,7 @@ if ( analysis == FreqAnalysisSTransform )
 //    return  false;
 
 
-if ( analysis == FreqAnalysisSTransform && fftnorm != FFTRescalingNone )
+if ( IsSTMethod ( analysis ) && fftnorm != FFTRescalingNone )
     fftnorm         = FFTRescalingNone;
 
                                         // recover output files flags
@@ -448,8 +448,8 @@ StringCleanup   ( buff );
                                         
 if ( StringIsEmpty ( buff ) 
   || StringIs ( buff, "*" )             // bypassing the '*' of TSelection
-//|| analysis == FreqAnalysisPowerMaps  // force?
-//|| analysis == FreqAnalysisFFTApproximation 
+//|| IsPowerMaps       ( analysis )     // force?
+//|| IsFFTApproxMethod ( analysis )
    ) {
 
     eegdoc->SetRegular ( elsave );
@@ -474,7 +474,7 @@ Clipped ( timemin, timemax, (long) 0, eegdoc->GetNumTimeFrames () - 1 );
 long                timenum             = timemax - timemin + 1;
 
 
-if ( analysis == FreqAnalysisSTransform ) {
+if ( IsSTMethod ( analysis ) ) {
                                         // override / provide these parameters
     blocksize       = timenum;
     blocksoverlap   = 0;
@@ -483,9 +483,9 @@ if ( analysis == FreqAnalysisSTransform ) {
                                         // heuristic to retrieve 1TF step
 bool                blockstep1tf        = blocksoverlap > 0.75;  // blocksoverlap = ( blocksize - 1 ) / blocksize
 
-int                 blockstep           = ComputeStep       ( analysis == FreqAnalysisSTransform, blocksize, blocksoverlap );
+int                 blockstep           = ComputeStep       ( IsSTMethod ( analysis ), blocksize, blocksoverlap );
 
-int                 numblocks           = ComputeNumBlocks  ( analysis == FreqAnalysisSTransform, blockstep1tf, timenum, blocksize, blocksoverlap );
+int                 numblocks           = ComputeNumBlocks  ( IsSTMethod ( analysis ), blockstep1tf, timenum, blocksize, blocksoverlap );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -503,18 +503,18 @@ int                 freqsize            = blocksize / 2 + 1;
 
 
 double              datafreqstep_hz     = samplingfrequency / (double) blocksize;
-int                 limitfreqmax_i      = freqsize - 1;                             // Nyquist frequency; = blocksize / 2 - was:  GetNyquist ( blocksize, analysis == FreqAnalysisSTransform )
+int                 limitfreqmax_i      = freqsize - 1;                             // Nyquist frequency; = blocksize / 2 - was:  GetNyquist ( blocksize, IsSTMethod ( analysis ) )
 double              limitfreqmax_hz     = limitfreqmax_i * datafreqstep_hz;
 double              limitfreqmin_i      = 1;                                        // first non-null frequency
 double              limitfreqmin_hz     = limitfreqmin_i * datafreqstep_hz;
 
                                         // these are the cases where we DON'T want to average sub-bands frequencies
-bool                nofreqavg           = outputatomtype == OutputAtomComplex               // don't average complex values
-                                       || outputatomtype == OutputAtomPhase                 // don't average complex values, then computing the phase
-                                       || outputbands    == OutputLogInterval               // this seems visually heavy when showing all frequencies
+bool                nofreqavg           = outputatomtype == OutputAtomComplex       // don't average complex values
+                                       || outputatomtype == OutputAtomPhase         // don't average complex values, then computing the phase
+                                       || outputbands    == OutputLogInterval       // this seems visually heavy when showing all frequencies
                                        || outputbands    == OutputLinearInterval
-                                       || analysis       == FreqAnalysisSTransform;         // never for S-Transform, smooth enough all the time(?)
-//                                     || analysis       == FreqAnalysisFFTApproximation;   // never for FFT Approximation
+                                       || IsSTMethod        ( analysis );           // never for S-Transform, smooth enough all the time(?)
+//                                     || IsFFTApproxMethod ( analysis );           // never for FFT Approximation
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -533,7 +533,7 @@ if ( verbosey == Interactive ) {
 
     Gauge.AddPart       ( gaugefreqglobal,  8,                                05 );
                                         // S-Transform has only 1 block, so let's animate on the electrodes
-    Gauge.AddPart       ( gaugefreqloop,    analysis == FreqAnalysisSTransform ? numelsave : numblocks, 95 );
+    Gauge.AddPart       ( gaugefreqloop,    IsSTMethod ( analysis ) ? numelsave : numblocks, 95 );
 
     CartoolObjects.CartoolApplication->SetMainTitle ( "Frequency Analysis of", eegdoc->GetDocPath (), Gauge );
     }
@@ -605,7 +605,7 @@ if      ( outputbands == OutputBands ) {
         fb->AvgNumFreqs     = ( fb->SaveFreqMax_i - fb->SaveFreqMin_i ) / fb->AvgFreqStep_i + 1;
 
                                         // limit the STransform number of averaging
-        if ( analysis == FreqAnalysisSTransform && fb->AvgNumFreqs > STranformMaxAvg ) {
+        if ( IsSTMethod ( analysis ) && fb->AvgNumFreqs > STranformMaxAvg ) {
 
             fb->AvgFreqStep_i   = ( fb->SaveFreqMax_i - fb->SaveFreqMin_i ) / ( STranformMaxAvg - 1 );
             fb->AvgNumFreqs     = ( fb->SaveFreqMax_i - fb->SaveFreqMin_i ) / fb->AvgFreqStep_i + 1;
@@ -778,7 +778,7 @@ else if ( outputbands == OutputLinearInterval ) {
     fb->AvgNumFreqs     = ( fb->SaveFreqStep_i - 1 ) / fb->AvgFreqStep_i + 1;
 
                                         // limit the STransform number of averaging
-    if ( analysis == FreqAnalysisSTransform && fb->AvgNumFreqs > STranformMaxAvg ) {
+    if ( IsSTMethod ( analysis ) && fb->AvgNumFreqs > STranformMaxAvg ) {
 
         fb->AvgFreqStep_i   = ( fb->SaveFreqStep_i - 1 ) / ( STranformMaxAvg - 1 );
         fb->AvgNumFreqs     = ( fb->SaveFreqStep_i - 1 ) / fb->AvgFreqStep_i + 1;
@@ -814,7 +814,7 @@ AtomType            datatypeout         = outputatomtype == OutputAtomComplex ? 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Currently applies only to S-Transform
                     optimaldownsampling = optimaldownsampling
-                                       && analysis == FreqAnalysisSTransform                                // S-Transform is very smooth, and we don't need the extra time resolution (?)
+                                       && IsSTMethod ( analysis )   // S-Transform is very smooth, and we don't need the extra time resolution (?)
                                        && savedfreqmax > 0;
                                         // default is to not downsample results
 int                 downsamplingfactor  = 1;
@@ -878,11 +878,11 @@ if ( StringIsNotEmpty ( infixfilename ) )
 
 else {
                                         // append method name + parameters
-    StringCopy ( BaseDir, buff, ".", analysis == FreqAnalysisFFT ?              InfixFft
-                                   : analysis == FreqAnalysisPowerMaps ?        InfixPowerMaps
-                                   : analysis == FreqAnalysisFFTApproximation ? InfixFftApprox
-                                   : analysis == FreqAnalysisSTransform ?       InfixSTransform
-                                   :                                            "Other" );
+    StringCopy ( BaseDir, buff, ".", IsPowerMaps        ( analysis ) ?  InfixPowerMaps
+                                   : IsFFTMethod        ( analysis ) ?  InfixFft
+                                   : IsFFTApproxMethod  ( analysis ) ?  InfixFftApprox
+                                   : IsSTMethod         ( analysis ) ?  InfixSTransform
+                                   :                                    "Other"         );
 
     if      ( outputbands == OutputLinearInterval 
            || outputbands == OutputLogInterval    )
@@ -893,7 +893,7 @@ else {
         sprintf ( StringEnd ( BaseDir ), " %0d %s", numfreqbands, numfreqbands > 1 ? InfixBands : InfixBand );
 
                                         // add if average or sequence
-    if ( analysis != FreqAnalysisSTransform )
+    if ( ! IsSTMethod ( analysis ) )
         if ( outputsequential ) StringAppend ( BaseDir, "." InfixSeq );
         else                    StringAppend ( BaseDir, "." InfixAvg );
     }
@@ -1059,7 +1059,7 @@ verbose.Put ( "From      Time Frame:",  (int) timemin );
 verbose.Put ( "To        Time Frame:",  (int) timemax );
 verbose.Put ( "Number of Time Frames:", (int) timenum );
 
-if ( analysis != FreqAnalysisSTransform ) {
+if ( ! IsSTMethod ( analysis ) ) {
 
     verbose.NextLine ();
     verbose.Put ( "Windows size:", blocksize, 0, " [TF]" );
@@ -1162,23 +1162,23 @@ else if     ( outputbands == OutputBands
 
 verbose.NextTopic ( "Analysis:" );
 {
-if          ( analysis == FreqAnalysisFFT )                 verbose.Put ( "Type of frequency analysis:", "FFT" );
-else if     ( analysis == FreqAnalysisPowerMaps )           verbose.Put ( "Type of frequency analysis:", "FFT (Power Maps)" );
-else if     ( analysis == FreqAnalysisFFTApproximation )    verbose.Put ( "Type of frequency analysis:", "FFT Approximation" );
-else if     ( analysis == FreqAnalysisSTransform )          verbose.Put ( "Type of frequency analysis:", "Wavelet (S-Transform)" );
-else                                                        verbose.Put ( "Type of frequency analysis:", "Unknown" );
+if      ( IsPowerMaps       ( analysis ) )  verbose.Put ( "Type of frequency analysis:", "FFT (Power Maps)" );
+else if ( IsFFTMethod       ( analysis ) )  verbose.Put ( "Type of frequency analysis:", "FFT" );
+else if ( IsFFTApproxMethod ( analysis ) )  verbose.Put ( "Type of frequency analysis:", "FFT Approximation" );
+else if ( IsSTMethod        ( analysis ) )  verbose.Put ( "Type of frequency analysis:", "Wavelet (S-Transform)" );
+else                                        verbose.Put ( "Type of frequency analysis:", "Unknown" );
 
 verbose.Put ( "Windowing function:", FreqWindowingString[ windowing ] );
 
 verbose.NextLine ();
 
-if ( analysis != FreqAnalysisSTransform ) {
+if ( ! IsSTMethod ( analysis ) ) {
 
     verbose.Put ( "FFT Time Windows rescaling:", FFTRescalingString[ fftnorm ] );
     verbose.Put ( "Time Windows results are:", outputsequential ? "Written sequentially" : "Averaged" );
 
     if ( ! outputsequential )
-        if ( analysis == FreqAnalysisFFTApproximation )
+        if ( IsFFTApproxMethod ( analysis ) )
             verbose.Put ( "Averaging is done:", "After polarity check" );
         else
             verbose.Put ( "Averaging is done:", "After taking norm" );
@@ -1256,23 +1256,23 @@ expfile.Type    = ExportTracksFreq;
                                         // clear string
 ClearVirtualMemory ( expfile.FreqTypeName, sizeof ( expfile.FreqTypeName ) /*MaxCharFreqType*/ );
                                         // choose the analysis type and result type
-if          ( analysis == FreqAnalysisFFTApproximation )    StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqFFTApproximation     ] );
+if          ( IsFFTApproxMethod ( analysis ) )          StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqFFTApproximation     ] );
 
-else if     ( analysis == FreqAnalysisSTransform ) {
+else if     ( IsSTMethod ( analysis ) ) {
 
-    if      ( outputatomtype == OutputAtomNorm    )         StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqSTransformNorm       ] );
-    else if ( outputatomtype == OutputAtomNorm2   )         StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqSTransformNorm2      ] );
-    else if ( outputatomtype == OutputAtomComplex )         StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqSTransformComplex    ] );
-    else if ( outputatomtype == OutputAtomPhase   )         StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqSTransformPhase      ] );
+    if      ( outputatomtype == OutputAtomNorm    )     StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqSTransformNorm       ] );
+    else if ( outputatomtype == OutputAtomNorm2   )     StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqSTransformNorm2      ] );
+    else if ( outputatomtype == OutputAtomComplex )     StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqSTransformComplex    ] );
+    else if ( outputatomtype == OutputAtomPhase   )     StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqSTransformPhase      ] );
     }
 
-else if     ( analysis == FreqAnalysisPowerMaps
-           || analysis == FreqAnalysisFFT ) {
+else if     ( IsPowerMaps ( analysis )
+           || IsFFTMethod ( analysis ) ) {
 
-    if      ( outputatomtype == OutputAtomNorm    )         StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqFFTNorm              ] );
-    else if ( outputatomtype == OutputAtomNorm2   )         StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqFFTNorm2             ] );
-    else if ( outputatomtype == OutputAtomComplex )         StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqFFTComplex           ] );
-    else if ( outputatomtype == OutputAtomPhase   )         StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqFFTPhase             ] );
+    if      ( outputatomtype == OutputAtomNorm    )     StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqFFTNorm              ] );
+    else if ( outputatomtype == OutputAtomNorm2   )     StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqFFTNorm2             ] );
+    else if ( outputatomtype == OutputAtomComplex )     StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqFFTComplex           ] );
+    else if ( outputatomtype == OutputAtomPhase   )     StringCopy ( expfile.FreqTypeName, FrequencyAnalysisNames[ FreqFFTPhase             ] );
     }
 
 
@@ -1281,12 +1281,12 @@ expfile.NumFrequencies      = numsavedfreqs;
 expfile.SamplingFrequency   = samplingfrequency;
 
                                         // technically, we need to shift time to half block forward to be centered
-//long                epochtimeoffset     = analysis == FreqAnalysisSTransform ? 0 : blocksize / 2;
+//long                epochtimeoffset     = IsSTMethod ( analysis ) ? 0 : blocksize / 2;
                                         // but not applying any shift looks actually more intuitive. It also means we see the time at the beginning of each block
 long                epochtimeoffset     = 0;
 long                usoffset;
 
-if     ( analysis == FreqAnalysisSTransform ) {
+if     ( IsSTMethod ( analysis ) ) {
     expfile.NumTime             = RoundAbove ( blocksize         / (double) downsamplingfactor );
     expfile.BlockFrequency      =              samplingfrequency /          downsamplingfactor;
     usoffset                    = TimeFrameToMicroseconds ( timemin, samplingfrequency ); // + 0.25; // ?
@@ -1471,7 +1471,7 @@ TVector<double>     windowingtable;
 int                 numgoodblocks       = 0;
 
                                         // do create summation buffer
-if ( analysis != FreqAnalysisSTransform )       
+if ( ! IsSTMethod ( analysis ) )       
     blockfft.Resize ( numsavedfreqs, numelsave );
 
                                         // do create summation buffer
@@ -1479,7 +1479,7 @@ if ( ! outputsequential )
     sumfft.Resize ( numsavedfreqs, numelsave );
 
                                         // do create intermediate buffer
-if ( analysis == FreqAnalysisFFTApproximation ) 
+if ( IsFFTApproxMethod ( analysis ) ) 
     fftappr.Resize ( numfreqbands, maxfftafreqs, numelsave );
 
                                         // create windowing buffer
@@ -1498,7 +1498,7 @@ if ( windowing == FreqWindowingHanning ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 #if defined (OutputConstellation)
-if ( analysis == FreqAnalysisFFTApproximation ) {
+if ( IsFFTApproxMethod ( analysis ) ) {
     for ( int fi0 = 0; fi0 <  numsavedfreqs; fi0++ ) {
         sprintf ( buff, "E:\\Data\\Constellation.%02d.spi", fi0 );
         ooo[ fi0 ].open ( buff );
@@ -1517,7 +1517,7 @@ if ( analysis == FreqAnalysisFFTApproximation ) {
 mkl::TMklFft        fft;
 mkl::TMklFft        ffti;
 
-if ( analysis == FreqAnalysisSTransform ) {
+if ( IsSTMethod ( analysis ) ) {
                                         // There is no available FFT rescaling option here, as we do the full (forward -> backward) transform
     fft .Set ( mkl::FromReal,      FFTRescalingForward,     blocksize );
     ffti.Set ( mkl::BackToComplex, FFTRescalingBackward,    blocksize );
@@ -1551,7 +1551,7 @@ if ( verbosey == Interactive ) {
                                         // scan all blocks
 for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firsttf += blockstep ) {
 
-    if ( verbosey == Interactive && analysis != FreqAnalysisSTransform ) {
+    if ( verbosey == Interactive && ! IsSTMethod ( analysis ) ) {
         Gauge.Next ( gaugefreqloop );
         CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
         }
@@ -1567,7 +1567,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
 
     if ( badepochs == SkippingBadEpochsList 
-      && analysis  != FreqAnalysisSTransform ) {    // we need the data anyway
+      && ! IsSTMethod ( analysis ) ) {    // we need the data anyway
 
         for ( int i = 0; i < (int) rejectmarkers; i++ )
 
@@ -1596,7 +1596,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Settinp up our variables
-    if ( analysis == FreqAnalysisFFTApproximation )
+    if ( IsFFTApproxMethod ( analysis ) )
 
         fftappr.ResetMemory ();
 
@@ -1615,7 +1615,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
     TVector<AComplex>   SumST;
 
 
-    if ( analysis == FreqAnalysisSTransform ) {
+    if      ( IsSTMethod ( analysis ) ) {
 
         X               .Resize ( fft .GetDirectDomainSize ()   );
 
@@ -1626,7 +1626,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
         ST              .Resize ( ffti.GetDirectDomainSize ()   );
         SumST           .Resize ( ffti.GetDirectDomainSize ()   );
         }
-    else if ( analysis == FreqAnalysisFFTApproximation ) {
+    else if ( IsFFTApproxMethod ( analysis ) ) {
 
         X               .Resize ( fft.GetDirectDomainSize ()    );
         F               .Resize ( fft.GetFrequencyDomainSize () );  // FFT optimization of real signal allows to allocate half data points
@@ -1647,7 +1647,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
         int         el      = elsave.GetValue ( eli );
 
-        if ( verbosey == Interactive && analysis == FreqAnalysisSTransform ) {
+        if ( verbosey == Interactive && IsSTMethod ( analysis ) ) {
             Gauge.Next ( gaugefreqloop );
             CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
             }
@@ -1670,7 +1670,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-        if ( analysis == FreqAnalysisSTransform ) {
+        if ( IsSTMethod ( analysis ) ) {
 
                                         // real FFT only - will not touch anything past freqsize in the F vector, which will remain 0
             fft ( X, F );
@@ -1846,7 +1846,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Note: FFT Approximation and bands can somehow produce some weird results (summing discontinuities)
                                         // so bands and sub-bands averaging should be avoided
-        else if ( analysis == FreqAnalysisFFTApproximation ) {
+        else if ( IsFFTApproxMethod ( analysis ) ) {
 
             if ( ! goodblock )
                 continue; // eli
@@ -1960,7 +1960,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
                                         // FFT Approximation - filling completed, time to actually process results
                                         // loop is NOT parallelized
-    if ( analysis == FreqAnalysisFFTApproximation ) {
+    if ( IsFFTApproxMethod ( analysis ) ) {
 
         if ( ! goodblock ) {
                                         // do nothing except filling results with 0's
@@ -2091,7 +2091,7 @@ if ( verbosey == Interactive ) {
 
 
 #if defined (OutputConstellation)
-if ( analysis == FreqAnalysisFFTApproximation ) {
+if ( IsFFTApproxMethod ( analysis ) ) {
     for ( int fi0 = 0; fi0 <  numsavedfreqs; fi0++ ) {
         ooo[fi0].close ();
         }
@@ -2100,7 +2100,7 @@ if ( analysis == FreqAnalysisFFTApproximation ) {
 
                                         // write all data in one shot
 if ( outputsequential 
-  || analysis == FreqAnalysisSTransform )
+  || IsSTMethod ( analysis ) )
 
     expfile.Write ( results, NotTransposed );
 
@@ -2130,7 +2130,7 @@ expfile.End ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // re-order results
-if ( analysis == FreqAnalysisFFTApproximation )
+if ( IsFFTApproxMethod ( analysis ) )
     SortFFTApproximation ( fileoutfreq );
 
 
@@ -2154,7 +2154,7 @@ if ( outputmarkers ) {
     WriteMarkerHeader ( ofmrk );
 
 
-    double          mrkdownsampling = analysis == FreqAnalysisSTransform ? downsamplingfactor : blockstep;
+    double          mrkdownsampling = IsSTMethod ( analysis ) ? downsamplingfactor : blockstep;
     TMarker         marker;
     int             nummarkers      = 0;
 

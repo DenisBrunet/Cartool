@@ -1652,14 +1652,10 @@ if ( openxyz )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // the actual job of sorting the analysis type is already done in these functions
-FreqAnalysisType    analysis    = FreqPresets[ CurrentPreset ].IsPowerMaps          ()  ? FreqAnalysisPowerMaps         // most specific case first
-                                : FreqPresets[ CurrentPreset ].IsFFTMethod          ()  ? FreqAnalysisFFT
-                                : FreqPresets[ CurrentPreset ].IsFFTApproxMethod    ()  ? FreqAnalysisFFTApproximation
-                                : FreqPresets[ CurrentPreset ].IsSTMethod           ()  ? FreqAnalysisSTransform
-                                :                                                         (FreqAnalysisType) -1;
 
-if ( analysis == (FreqAnalysisType) -1 )
+FreqAnalysisCases   analysis    = FreqPresets[ CurrentPreset ].Flags;
+
+if ( analysis == FreqCaseUndefined )
     return;
 
 
@@ -1723,8 +1719,8 @@ long                timenum             = timemax - timemin + 1;
                                         // if S-Transform, block size is the full time window
 int                 blocksizedialog     = StringToInteger   ( transfer->BlockSize );
 
-int                 blocksize           = analysis == FreqAnalysisSTransform ? timenum
-                                                                             : blocksizedialog;
+int                 blocksize           = IsSTMethod ( analysis )   ? timenum
+                                                                    : blocksizedialog;
 double              blocksoverlap       = GetWindowOverlap  ( blocksize );
 
 //int               numblocks           = ComputeNumBlocks  ( timenum, blocksize, blocksoverlap );
@@ -1774,11 +1770,11 @@ FreqOutputAtomType  outputatomtype      = (FreqOutputAtomType)  GetIndex ( Write
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 bool                outputsequential    = CheckToBool ( transfer->Sequence ) 
-                                       || analysis == FreqAnalysisSTransform;
+                                       || IsSTMethod ( analysis );
 
-FreqWindowingType   windowing           = transfer->WindowingHanning ? analysis != FreqAnalysisSTransform ? FreqWindowingHanning 
-                                                                                                          : FreqWindowingHanningBorder 
-                                                                     :                                      FreqWindowingNone;
+FreqWindowingType   windowing           = transfer->WindowingHanning ? IsSTMethod ( analysis )  ? FreqWindowingHanningBorder
+                                                                                                : FreqWindowingHanning 
+                                                                     :                            FreqWindowingNone;
 
 bool                outputmarkers       = outputsequential;
 
@@ -1799,7 +1795,7 @@ CheckOrder ( outputfreqmin, outputfreqmax );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 double              datafreqstep_hz     = samplingfrequency / (double) blocksize; 
-int                 limitfreqmax_i      = freqsize - 1;                             // = blocksize / 2 - was:  GetNyquist ( blocksize, analysis == FreqAnalysisSTransform )
+int                 limitfreqmax_i      = freqsize - 1;                             // = blocksize / 2 - was:  GetNyquist ( blocksize, IsSTMethod ( analysis ) )
 double              limitfreqmax_hz     = limitfreqmax_i * datafreqstep_hz;
 double              limitfreqmin_i      = 1;
 double              limitfreqmin_hz     = limitfreqmin_i * datafreqstep_hz;
@@ -1854,7 +1850,7 @@ else if ( outputbands == OutputLinearInterval ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 bool                optimaldownsampling = CheckToBool ( transfer->OptimalDownsampling )
-                                       && analysis == FreqAnalysisSTransform                                // S-Transform is very smooth, and we don't need the extra time resolution (?)
+                                       && IsSTMethod ( analysis )   // S-Transform is very smooth, and we don't need the extra time resolution (?)
                                        && savedfreqmax > 0;
 
 
@@ -1867,7 +1863,7 @@ bool                splitelectrode      = savefreq && CheckToBool ( transfer->Sp
 bool                splitfrequency      = savefreq && CheckToBool ( transfer->SplitByFrequency ) && ( outputatomtype != OutputAtomComplex );
 bool                splitspectrum       = savefreq && CheckToBool ( transfer->SplitBySpectrum  ) && ( outputatomtype != OutputAtomComplex );
 
-bool                savefftapprox       = analysis == FreqAnalysisFFTApproximation;
+bool                savefftapprox       = IsSTMethod ( analysis );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1937,7 +1933,7 @@ if ( openauto ) {
     if ( splitspectrum && ! outputsequential )
         fileoutspectrum.Open ();
 
-    if ( splitspectrum && analysis == FreqAnalysisFFTApproximation && ! outputsequential )
+    if ( splitspectrum && IsFFTApproxMethod ( analysis ) && ! outputsequential )
         fileoutapprfreqs.Open ();
     }
 

@@ -159,7 +159,7 @@ class   TTracksDoc;
 
 bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not const, because we activate/deactivate filters
                                 const char*         xyzfile,
-                                FreqAnalysisType    analysis,
+                                FreqAnalysisCases   analysiscase,
                                 const char*         channels,           // could be empty or "*" to select all regular tracks
                                 ReferenceType       ref,                const char*         reflist,
                                 long                timemin,            long                timemax,
