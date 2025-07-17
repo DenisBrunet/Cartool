@@ -472,9 +472,9 @@ double              limitfreqmin_hz     = limitfreqmin_i * datafreqstep_hz;
 bool                nofreqavg           = outputatomtype == OutputAtomComplex       // don't average complex values
                                        || outputatomtype == OutputAtomPhase         // don't average complex values, then computing the phase
                                        || outputbands    == OutputLogInterval       // this seems visually heavy when showing all frequencies
-                                       || outputbands    == OutputLinearInterval
-                                       || IsSTMethod        ( analysis );           // never for S-Transform, smooth enough all the time(?)
-//                                     || IsFFTApproxMethod ( analysis );           // never for FFT Approximation
+                                       || outputbands    == OutputLinearInterval;
+                                     //|| IsSTMethod        ( analysis );           // never for S-Transform, smooth enough all the time(?)
+                                     //|| IsFFTApproxMethod ( analysis );           // never for FFT Approximation
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -995,7 +995,7 @@ if ( splitspectrum )
 if ( splitspectrum && savefftapprox )
     verbose.Put ( "FFT Approximation EEG file(s):", fileoutapprfreqs );
 
-verbose.Put ( "Creating sub-directory:", createsubdir );
+//verbose.Put ( "Creating sub-directory:", createsubdir );
 
 verbose.Put ( "Verbose file (this):", fileoutvrb );
 }
@@ -1085,22 +1085,26 @@ if ( badepochs == SkippingBadEpochsList ) {
 
 verbose.NextTopic ( "Frequencies:" );
 {
-verbose.Put ( "Sampling frequency   [Hz]:", samplingfrequency );
-verbose.Put ( "Frequency min        [Hz]:", limitfreqmin_hz );
-verbose.Put ( "Frequency max        [Hz]:", limitfreqmax_hz );
-verbose.Put ( "Frequency resolution [Hz]:", datafreqstep_hz );
+verbose.Put ( "Sampling frequency  :", samplingfrequency, -1, " [Hz]" );
+verbose.Put ( "Lowest frequency    :", limitfreqmin_hz, -1, " [Hz]" );
+verbose.Put ( "Highest frequency   :", limitfreqmax_hz, -1, " [Hz]" );
+verbose.Put ( "Frequency resolution:", datafreqstep_hz, -1, " [Hz]" );
 
 verbose.NextLine ();
-if          ( outputbands == OutputLinearInterval ) verbose.Put ( "Saving:", "Interval" );
+if          ( outputbands == OutputLinearInterval ) verbose.Put ( "Saving:", "Linear Interval" );
 else if     ( outputbands == OutputLogInterval    ) verbose.Put ( "Saving:", "Log Interval" );
 else if     ( outputbands == OutputBands          ) verbose.Put ( "Saving:", "Frequency Bands" );
 else                                                verbose.Put ( "Saving:", "Unknown" );
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 if          ( outputbands == OutputLinearInterval ) {
 
-    verbose.Put ( "From frequency [Hz]:",           freqbands[ 0 ].SaveFreqMin_hz );
-    verbose.Put ( "To   frequency [Hz]:",           freqbands[ 0 ].SaveFreqMax_hz );
-    verbose.Put ( "By steps of    [Hz]:",           freqbands[ 0 ].SaveFreqStep_hz );
+    verbose.Put ( "Frequency min  (requested):", outputfreqmin,                  -1, " [Hz]" );
+    verbose.Put ( "Frequency max  (requested):", outputfreqmax,                  -1, " [Hz]" );
+    verbose.Put ( "Frequency step (requested):", outputfreqstep,                 -1, " [Hz]" );
+    verbose.Put ( "Frequency min  (actual)   :", freqbands[ 0 ].SaveFreqMin_hz,  -1, " [Hz]" );
+    verbose.Put ( "Frequency max  (actual)   :", freqbands[ 0 ].SaveFreqMax_hz,  -1, " [Hz]" );
+    verbose.Put ( "Frequency step (actual)   :", freqbands[ 0 ].SaveFreqStep_hz, -1, " [Hz]" );
 
     verbose.NextLine ();
     verbose.Put ( "Number of frequencies saved:",   freqbands[ 0 ].SaveNumFreqs );
@@ -1124,8 +1128,44 @@ if          ( outputbands == OutputLinearInterval ) {
         }
     }
 
-else if     ( outputbands == OutputBands 
-           || outputbands == OutputLogInterval ) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+else if     ( outputbands == OutputLogInterval ) {
+
+    verbose.Put ( "Frequency min  (requested):",           outputfreqmin, -1, " [Hz]" );
+    verbose.Put ( "Frequency max  (requested):",           outputfreqmax, -1, " [Hz]" );
+    verbose.Put ( "Number of frequencies per Log Decade:", outputdecadestep );
+    verbose.Put ( "Actual number of saved frequencies:", numfreqbands );
+
+    verbose.NextLine ();
+
+    const TOneFrequencyBand*    fb          = freqbands.data ();
+
+    for ( int fbi = 0; fbi < numfreqbands; fbi++, fb++ ) {
+
+        if ( fb->AvgNumFreqs > 1 ) {
+
+            verbose.Put ( "From frequency:                ", fb->SaveFreqMin_hz, -1, " [Hz]" );
+            verbose.Put ( "To   frequency:                ", fb->SaveFreqMax_hz, -1, " [Hz]" );
+            verbose.Put ( "Number of averaged frequencies:", fb->AvgNumFreqs );
+
+            for ( int fi = fb->SaveFreqMin_i, fi0 = 0; fi <= fb->SaveFreqMax_i; fi += fb->SaveFreqStep_i, fi0++ ) {
+
+                verbose.Put ( fi0 ? "" : "Merging frequencies [Hz]:" );
+
+                for ( int downf = 0, fi2 = fi; downf < fb->AvgNumFreqs; downf++, fi2 += fb->AvgFreqStep_i )
+                    (ofstream&) verbose << ( downf ? "," Tab : "" ) << fi2 * datafreqstep_hz;
+
+                verbose.NextLine ();
+                }
+            }
+        else {
+            verbose.Put ( fbi ? "" : "Frequencies [Hz]:",    fb->SaveFreqMin_hz );
+            }
+        }
+    }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+else if     ( outputbands == OutputBands ) {
 
     verbose.Put ( "Number of frequency bands:", numfreqbands );
 
@@ -1134,26 +1174,22 @@ else if     ( outputbands == OutputBands
     for ( int fbi = 0; fbi < numfreqbands; fbi++, fb++ ) {
 
         verbose.NextLine ();
-        verbose.Put ( "Frequency band #:",          fbi + 1 );
+        verbose.Put ( "Frequency band #:", fbi + 1 );
 
         if ( fb->AvgNumFreqs > 1 ) {
 
-            verbose.Put ( "From frequency [Hz]:",            fb->SaveFreqMin_hz );
-            verbose.Put ( "To   frequency [Hz]:",            fb->SaveFreqMax_hz );
-            verbose.Put ( "Number of frequencies averaged:", fb->AvgNumFreqs );
+            verbose.Put ( "From frequency:                ", fb->SaveFreqMin_hz, -1, " [Hz]" );
+            verbose.Put ( "To   frequency:                ", fb->SaveFreqMax_hz, -1, " [Hz]" );
+            verbose.Put ( "Number of averaged frequencies:", fb->AvgNumFreqs );
 
             for ( int fi = fb->SaveFreqMin_i, fi0 = 0; fi <= fb->SaveFreqMax_i; fi += fb->SaveFreqStep_i, fi0++ ) {
 
-                if ( fb->AvgNumFreqs > 1 ) {
-                    verbose.Put ( fi0 ? "" : "Merging frequencies [Hz]:" );
+                verbose.Put ( fi0 ? "" : "Merging frequencies [Hz]:" );
 
-                    for ( int downf = 0, fi2 = fi; downf < fb->AvgNumFreqs; downf++, fi2 += fb->AvgFreqStep_i )
-                        (ofstream&) verbose << ( downf ? "," Tab : "" ) << fi2 * datafreqstep_hz;
+                for ( int downf = 0, fi2 = fi; downf < fb->AvgNumFreqs; downf++, fi2 += fb->AvgFreqStep_i )
+                    (ofstream&) verbose << ( downf ? "," Tab : "" ) << fi2 * datafreqstep_hz;
 
-                    verbose.NextLine ();
-                    }
-                else
-                    verbose.Put ( fi0 ? "" : "Frequencies [Hz]:", fi * datafreqstep_hz );
+                verbose.NextLine ();
                 }
             }
         else {
@@ -1166,11 +1202,14 @@ else if     ( outputbands == OutputBands
 
 verbose.NextTopic ( "Options:" );
 {
+verbose.Put ( "File name infix:",                       infixfilename );
+verbose.Put ( "Creating sub-directory for results:",    createsubdir );
+
+verbose.NextLine ();
 verbose.Put ( "Saving all freqs into a single file:",   savefreq );
 verbose.Put ( "Splitting results per electrode:",       splitelectrode );
 verbose.Put ( "Splitting results per frequency:",       splitfrequency );
 verbose.Put ( "Splitting results per spectrum :",       splitspectrum );
-//verbose.Put ( "Creating sub-directory for results:", createsubdir );
 
 verbose.NextLine ();
 verbose.Put ( "Optimally downsampling the file:", optimaldownsampling );

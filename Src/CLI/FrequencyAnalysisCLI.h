@@ -25,6 +25,7 @@ limitations under the License.
 #include    "Math.FFT.h"
 #include    "FrequencyAnalysis.h"
 #include    "TFrequencyAnalysisDialog.h"
+#include    "Files.TVerboseFile.h"
 
 using namespace std;
 
@@ -412,6 +413,8 @@ if ( HasCLIOption ( freqan, __freqlogdecade ) && outputdecadestep <= 0 ) {
     }
 
 
+TFixedString<KiloByte>  freqbands;
+
 if ( HasCLIOption ( freqan, __freqbands ) ) {
     
     if ( outputbands.empty () ) {
@@ -431,6 +434,10 @@ if ( HasCLIOption ( freqan, __freqbands ) ) {
             return;
             }
         }
+
+                                        // we have to manually concatenate all bands back into a single string
+    for ( const auto& s : GetCLIOptionStrings ( freqan, __freqbands ) )
+        freqbands  += ( freqbands.IsEmpty () ? "" : "," ) + TFixedString<KiloByte> ( s.c_str () );
     }
 
 
@@ -575,61 +582,132 @@ bool                optimaldownsampling = HasCLIFlag ( freqan, __downsampling );
 
 CreateConsole ();
 
-cout << "Analysis case:     " << GetCaseString   ( analysis ) << NewLine;
-cout << "Analysis method:   " << GetMethodString ( analysis ) << NewLine;
-cout << "Power Maps case:   " << BoolToString ( IsPowerMaps ( analysis ) ) << NewLine;
-cout << "Output data is:    " << ( outputsequential ? "Sequential" : "Averaged" ) << NewLine;
 
-cout << NewLine;
+TVerboseFile        verbose ( "cout", VerboseFileDefaultWidth );
 
-cout << "Tracks:            " << ( tracks.empty () ? "All" : tracks ) << NewLine;
-if ( xyzfile.IsNotEmpty () )
-    cout << "XYZ file:          " << xyzfile << NewLine;
+verbose.NextTopic ( "Analysis:" );
+{
+verbose.Put ( "Analysis general case:   ", GetCaseString   ( analysis ) );
+verbose.Put ( "Analysis method:         ", GetMethodString ( analysis ) );
+verbose.Put ( "Power Maps analysis case:", IsPowerMaps     ( analysis ) );  // we can be more specific here
+verbose.Put ( "Output data is:          ", outputsequential ? "Sequential" : "Averaged" );
 
-cout << "Time Min:          " << ( timemin == 0                   ? "Beginning of file" : IntegerToString ( timemin ) ) << NewLine;
-cout << "Time Max:          " << ( timemax == Highest ( timemax ) ? "End of file"       : IntegerToString ( timemax ) ) << NewLine;
+verbose.NextLine ();
 
-if ( badepochs == SkippingBadEpochsList )
-    cout << "Exclude Triggers:  " << listbadepochs << NewLine;
+verbose.Put ( "Windowing function:", FreqWindowingString[ windowing ] );
 
-cout << NewLine;
+if ( ! IsSTMethod ( analysis ) )
+    verbose.Put ( "FFT Time Windows rescaling:", FFTRescalingString[ fftnorm ] );
 
-cout << "Sampling Frequency:" << samplingfrequency << NewLine;
-if ( ! IsSTMethod ( analysis ) ) {
-    cout << "Window Size:       " << blocksize << NewLine;
-    cout << "Window Step:       " << blockstep << NewLine;
-    cout << "Window Overlap:    " << ( blocksoverlap * 100 ) << "%" << NewLine;
-    }
-cout << "Frequency Min:     " << freqmin << NewLine;
-cout << "Frequency Max:     " << freqmax << NewLine;
-if      ( outputinterval == OutputLinearInterval )  cout << "Linear Interv Step:" << outputfreqstep << NewLine;
-else if ( outputinterval == OutputLogInterval    )  cout << "Log, # per Decade: " << outputdecadestep << NewLine;
-else if ( outputinterval == OutputBands          ) {
-    cout << "Num Freq Bands:    " << outputbands.size () << NewLine;
-    for ( const auto& i : outputbands )
-        cout << "Freq Bands:        " << i.first << " to " << i.second << NewLine;
-    }
+verbose.Put ( "Output values:", FreqOutputAtomString[ outputatomtype ] );
+}
 
-cout << NewLine;
 
-cout << "Windowing:         " << FreqWindowingString    [ windowing ] << NewLine;
-cout << "Rescaling:         " << FFTRescalingString     [ fftnorm ] << NewLine;
-cout << "Output:            " << FreqOutputAtomString   [ outputatomtype ] << NewLine;
-cout << "Reference:         " << ReferenceNames         [ ref ] << NewLine;
+verbose.NextTopic ( "Tracks to analyse:" );
+{
+verbose.Put ( "Tracks to analyze:", tracks.empty () ? "All" : tracks );
+}
+
+
+verbose.NextTopic ( "Reference of data:" );
+{
+verbose.Put ( "Reference:", ReferenceNames[ ref ] );
+
 if ( ref == ReferenceArbitraryTracks )
-    cout << "Reference list:    " << reflist << NewLine;
+    verbose.Put ( "Reference list:", reflist );
+}
+
+
+verbose.NextTopic ( "Time windows:" );
+{
+verbose.Put ( "From Time Frame:", timemin == 0                   ? "Beginning of file" : IntegerToString ( timemin ) );
+verbose.Put ( "To   Time Frame:", timemax == Highest ( timemax ) ? "End of file"       : IntegerToString ( timemax ) );
+
+if ( ! IsSTMethod ( analysis ) ) {
+
+    verbose.NextLine ();
+    verbose.Put ( "Windows size:", blocksize, 0, " [TF]" );
+    //verbose.Put ( "Windows step:", blockstep );
+    verbose.Put ( "Windows step:", blocksoverlap == 0.00 ? "100% Window"    // transform overlap back to jump
+                                 : blocksoverlap == 0.75 ? "25% Window" 
+                                 :                         "1 TF"       );  // blocksoverlap = ( blocksize - 1 ) / blocksize
+
+    //verbose.Put ( "Windows overlap:", blocksoverlap * 100, 2, "%" );
+    }
+
+verbose.NextLine ();
+verbose.Put ( "Excluding bad epochs:", SkippingEpochsNames[ badepochs ] );
+if ( badepochs == SkippingBadEpochsList )
+    verbose.Put ( "Skipping markers:", listbadepochs );
+}
+
+
+verbose.NextTopic ( "Frequencies:" );
+{
+verbose.Put ( "Sampling frequency:", samplingfrequency, -1, " [Hz]" );
+
+verbose.NextLine ();
+if          ( outputinterval == OutputLinearInterval )  verbose.Put ( "Saving:", "Linear Interval" );
+else if     ( outputinterval == OutputLogInterval    )  verbose.Put ( "Saving:", "Log Interval" );
+else if     ( outputinterval == OutputBands          )  verbose.Put ( "Saving:", "Frequency Bands" );
+else                                                    verbose.Put ( "Saving:", "Unknown" );
+
+if          ( outputinterval == OutputLinearInterval ) {
+
+    verbose.Put ( "Frequency min  (requested):", freqmin, -1, " [Hz]" );
+    verbose.Put ( "Frequency max  (requested):", freqmax, -1, " [Hz]" );
+    verbose.Put ( "Frequency step (requested):", outputfreqstep, -1, " [Hz]" );
+    }
+
+else if     ( outputinterval == OutputLogInterval ) {
+
+    verbose.Put ( "Frequency min  (requested):", freqmin, -1, " [Hz]" );
+    verbose.Put ( "Frequency max  (requested):", freqmax, -1, " [Hz]" );
+    verbose.Put ( "Number of frequencies per Log Decade:", outputdecadestep );
+    }
+
+else if     ( outputinterval == OutputBands ) {
+
+    verbose.Put ( "Number of frequency bands:", (int) outputbands.size () );
+    verbose.Put ( "Frequency bands:", freqbands );
+
+    //for ( const auto& i : outputbands )
+    //    verbose.Put ( "Freq Bands: ", i.first, " to ", i.second );
+    }
+}
+
+
+verbose.NextTopic ( "Input files:" );
+{
+verbose.Put ( "Number of input files:", (int) gof );
+
+for ( int i = 0; i < (int) gof; i++ )
+    verbose.Put ( "Input file:", gof[ i ] );
+
+verbose.Put ( "Electrodes coordinates file:", xyzfile.IsNotEmpty () ? xyzfile : "None" );
+}
+
+
+verbose.NextTopic ( "Options:" );
+{
+verbose.Put ( "File name infix:",                       infix );
+verbose.Put ( "Creating sub-directory for results:",    subdir );
+
+verbose.NextLine ();
+verbose.Put ( "Saving all freqs into a single file:",   savingfreq );
+verbose.Put ( "Splitting results per electrode:",       splitelec );
+verbose.Put ( "Splitting results per frequency:",       splitfreq );
+verbose.Put ( "Splitting results per spectrum :",       splitspectrum );
+//verbose.Put ( "Saving FFT Approximation:",              savefftapprox );
+
+verbose.NextLine ();
+verbose.Put ( "Optimally downsampling the file:",       optimaldownsampling );
+}
+
+
+verbose.Close ();
 
 cout << NewLine;
-
-cout << "Infix:             " << infix << NewLine;
-cout << "Sub-Directory:     " << BoolToString ( subdir              ) << NewLine;
-cout << "Saving .freq:      " << BoolToString ( savingfreq          ) << NewLine;
-cout << "Split Electrodes:  " << BoolToString ( splitelec           ) << NewLine;
-cout << "Split Frequencies: " << BoolToString ( splitfreq           ) << NewLine;
-cout << "Split Spectrum:    " << BoolToString ( splitspectrum       ) << NewLine;
-cout << "Saving FFT Approx: " << BoolToString ( savefftapprox       ) << NewLine;
-cout << "Optimal Downsampl: " << BoolToString ( optimaldownsampling ) << NewLine;
-
 cout << NewLine;
 
 #endif
@@ -646,7 +724,7 @@ TFileName           fileoutapprfreqs;
 for ( int filei = 0; filei < (int) gof; filei++ ) {
 
 #if defined(CLIConsoleOutput)
-    cout << "Processing:        " << gof  [ filei ]<< NewLine;
+    cout << "Now Processing: " << gof  [ filei ]<< NewLine;
 #endif
 
     TOpenDoc<TTracksDoc>    EEGDoc ( gof[ filei ], OpenDocHidden );
@@ -665,7 +743,7 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                             outputinterval,
                             outputatomtype,
                             outputmarkers,      outputmarkerstype,
-                            GetCLIOptionString ( freqan, __freqbands ).c_str (),    // provide the whole list of intervals as a single string
+                            freqbands,                              // providing the whole list of intervals as a single string
                             freqmin,            freqmax,
                             outputfreqstep,     
                             outputdecadestep,
