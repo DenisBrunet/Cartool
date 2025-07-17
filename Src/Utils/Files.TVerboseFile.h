@@ -39,43 +39,44 @@ constexpr int       VerboseFileDefaultWidth     = 40;
 class   TVerboseFile
 {
 public:
-    inline          TVerboseFile ();
-    inline          TVerboseFile ( const char* file, int desclength );
-    inline         ~TVerboseFile ();
+    inline          TVerboseFile    ();
+    inline          TVerboseFile    ( const char* file, int desclength );
+    inline         ~TVerboseFile    ();
 
                                         // For outputting a table
     TStrings        TableColNames;      // holding: row title (could be empty) then n columns -> n + 1 strings
     TStrings        TableRowNames;
 
 
-    inline void    Open    ( const char* file, int desclength );
-    inline bool    IsOpen  ()      const           { return ofv != 0; }
-    inline void    Close   ();
-    inline void    Flush   ();
+    inline void     Open            ( const char* file, int desclength );
+    bool            IsOpen          ()                      const       { return ofv != 0; }
+    inline void     Close           ();
+    inline void     Flush           ();
 
 
-    inline void    PutTitle        ( const char* title )   const;
-    inline void    NextLine        ( int numlines = 1 )    const;
-    inline void    NextTopic       ( const char* topic )   const;
-    inline void    NextBlock       ()                      const;
+    inline void     PutTitle        ( const char* title )   const;
+    inline void     NextLine        ( int numlines = 1 )    const;
+    inline void     NextTopic       ( const char* topic )   const;
+    inline void     NextBlock       ()                      const;
 
-    inline void    Put             ( const char* desc );
-    inline void    Put             ( const char* desc, const char   char1 );
-    inline void    Put             ( const char* desc, const char*  text1, const char* text2 = 0, const char* text3 = 0 );
-    inline void    Put             ( const char* desc, const char*  text1, int value, const char* text2 = 0 );
-    inline void    Put             ( const char* desc, int          value, int width = 0,      const char* text1 = 0, const char* text2 = 0, const char* text3 = 0 );
-    inline void    Put             ( const char* desc, double       value, int precision = -1, const char* text = 0 );
-    inline void    Put             ( const char* desc, bool         b );
-    inline void    Put             ( const char* desc, UINT32       value );
-    inline void    Put             ( const char* desc, TPointFloat  p );
-    inline void    Put             ( const char* desc, TPointDouble p );
+    inline void     Put             ( const char* desc );
+    inline void     Put             ( const char* desc, const char   char1 );
+    inline void     Put             ( const char* desc, const char*  text1, const char* text2 = 0, const char* text3 = 0 );
+    inline void     Put             ( const char* desc, const std::string text1, const std::string text2 = "", const std::string text3 = "" );
+    inline void     Put             ( const char* desc, const char*  text1, int value, const char* text2 = 0 );
+    inline void     Put             ( const char* desc, int          value, int width = 0,      const char* text1 = 0, const char* text2 = 0, const char* text3 = 0 );
+    inline void     Put             ( const char* desc, double       value, int precision = -1, const char* text = 0 );
+    inline void     Put             ( const char* desc, bool         b );
+    inline void     Put             ( const char* desc, UINT32       value );
+    inline void     Put             ( const char* desc, TPointFloat  p );
+    inline void     Put             ( const char* desc, TPointDouble p );
 
-    inline void    ResetTable      ();
-    inline void    BeginTable      ( int colsize );
-    inline void    EndTable        ();
-    inline void    PutTable        ( const char* text                 );
-    inline void    PutTable        ( int         value                );
-    inline void    PutTable        ( double      value, int precision );
+    inline void     ResetTable      ();
+    inline void     BeginTable      ( int colsize );
+    inline void     EndTable        ();
+    inline void     PutTable        ( const char* text                 );
+    inline void     PutTable        ( int         value                );
+    inline void     PutTable        ( double      value, int precision );
 
 
                     operator std::ofstream& ()      { return  *ofv; }
@@ -127,16 +128,17 @@ void    TVerboseFile::Open ( const char* file, int desclength )
 {
 Close ();
 
-
 DescriptionLength   = desclength;
-
 
 if ( StringIsEmpty ( file ) )
     return;
 
 
-ofv                 = new std::ofstream ( TFileName ( file, TFilenameExtendedPath ) );
-//(*ofv).open ( file );
+if ( StringIs ( file, "cout" ) )
+    ofv     = static_cast<std::ofstream*> ( &std::cout );
+else
+    ofv     = new std::ofstream ( TFileName ( file, TFilenameExtendedPath ) );
+
 
 *ofv << StreamFormatFixed;
 *ofv << StreamFormatLeft;
@@ -148,9 +150,12 @@ void    TVerboseFile::Close ()
 if ( ! IsOpen () )
     return;
 
+                                        // do not close cout on our own
+if ( ofv != &std::cout ) {
+    ofv->close ();
+    delete  ofv;
+    }
 
-ofv->close ();
-delete  ofv;
 ofv                 = 0;
 }
 
@@ -253,6 +258,19 @@ Put ( desc );
 (*ofv) << ( text1 ? text1 : "" )
        << ( text2 ? text2 : "" )
        << ( text3 ? text3 : "" )
+       << fastendl;
+
+//ofv->flush ();
+}
+
+
+void    TVerboseFile::Put ( const char* desc, const std::string text1, const std::string text2, const std::string text3 )
+{
+Put ( desc );
+
+(*ofv) << ( text1.empty () ? "" : text1 )
+       << ( text2.empty () ? "" : text2 )
+       << ( text3.empty () ? "" : text3 )
        << fastendl;
 
 //ofv->flush ();
