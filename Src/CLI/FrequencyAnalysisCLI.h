@@ -40,7 +40,20 @@ if ( freqan == 0 )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Parameters appearance follow the dialog's visual design
+
+DefineCLIOptionEnum     ( freqan,   "",     __case,                 "Analysis case" RequiredString )
+->CheckOption           ( CLI::IsMember ( vector<string> ( { __caseeegsurf, __caseeegintra, __caseeeggeneral } ) ) );
+
+DefineCLIOptionEnum     ( freqan,   "",     __method,               "Analysis method" RequiredString )
+->CheckOption           ( CLI::IsMember ( vector<string> ( { __methodfft, __methodfftapprox, __methodstransform } ) ) );
+
+DefineCLIFlag           ( freqan,   "",     __sequential,           "Sequential output" );
+DefineCLIFlag           ( freqan,   "",     __average,              "Averaging blocks" );
+ExcludeCLIOptions       ( freqan,     __sequential,     __average );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 DefineCLIOptionString   ( freqan,   "",     __tracks,               "Tracks to analyze (Default:all)" )
 ->TypeOfOption          ( "TRACKS" );
 
@@ -84,14 +97,7 @@ ExcludeCLIOptions       ( freqan,     __freqlogdecade,  __freqbands );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionEnum     ( freqan,   "",     __analysis,             "Type of analysis" RequiredString )
-->CheckOption           ( CLI::IsMember ( vector<string> ( { __analysispowermaps, __analysisfft, __analysisfftapprox, __analysisstransform } ) ) );
-
 DefineCLIFlag           ( freqan,   "",     __windowinghanning,     "Hanning Windowing" );
-
-DefineCLIFlag           ( freqan,   "",     __sequential,           "Sequential output" );
-DefineCLIFlag           ( freqan,   "",     __average,              "Average output" );
-ExcludeCLIOptions       ( freqan,     __sequential,     __average );
 
 
 DefineCLIOptionEnum     ( freqan,   "",     __rescaling,            "Window rescaling (Default:parseval)" )
@@ -170,19 +176,36 @@ if ( CRISPresets[ esicase ].Flags == CRISPresetNone ) {
 */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Merging flags to set the analysis case
+if ( ! HasCLIOption ( freqan, __case ) ) {
 
-if ( ! HasCLIOption ( freqan, __analysis ) ) {
-
-    ConsoleErrorMessage ( __analysis, "Type of analysis is not specified!" );
+    ConsoleErrorMessage ( __case, "Analysis case is not specified!" );
     return;
     }
 
-string              typeanalysis    = GetCLIOptionEnum ( freqan, __analysis );
+string              optioncase      = GetCLIOptionEnum ( freqan, __case   );
 
-FreqAnalysisType    analysis        = typeanalysis == __analysispowermaps   ? FreqAnalysisPowerMaps         // most specific case first
-                                    : typeanalysis == __analysisfft         ? FreqAnalysisFFT
-                                    : typeanalysis == __analysisfftapprox   ? FreqAnalysisFFTApproximation
-                                    :                                         FreqAnalysisSTransform;
+
+if ( ! HasCLIOption ( freqan, __method ) ) {
+
+    ConsoleErrorMessage ( __method, "Analysis method is not specified!" );
+    return;
+    }
+
+string              method          = GetCLIOptionEnum ( freqan, __method );
+
+
+FreqAnalysisCases   analysis        = FreqCaseUndefined;
+
+                                        // First setting the use case
+if      ( optioncase == __caseeegsurf       )   SetFlags ( analysis, FreqCaseEEGSurface );
+else if ( optioncase == __caseeegintra      )   SetFlags ( analysis, FreqCaseEEGIntra   );
+else /*__caseeeggeneral*/                       SetFlags ( analysis, FreqCaseGeneral    );
+
+                                        // Then setting the method
+if      ( method     == __methodfft         )   SetFlags ( analysis, FreqMethodFFT       );
+else if ( method     == __methodfftapprox   )   SetFlags ( analysis, FreqMethodFFTApprox );
+else if ( method     == __methodstransform  )   SetFlags ( analysis, FreqMethodST        );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -256,7 +279,7 @@ else {
 
 long                blocksize       = 0;
 
-if ( analysis != FreqAnalysisSTransform ) {
+if ( ! IsSTMethod ( analysis ) ) {
     
     if ( ! HasCLIOption ( freqan, __windowsize ) ) {
 
@@ -272,6 +295,14 @@ if ( analysis != FreqAnalysisSTransform ) {
         return;
         }
     }
+else {
+
+    if ( HasCLIOption ( freqan, __windowsize ) ) {
+
+        ConsoleErrorMessage ( 0, "You do not need to specify ", __windowsize, " option for the S-Transform!" );
+        return;
+        }
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -279,7 +310,7 @@ if ( analysis != FreqAnalysisSTransform ) {
 string              blockstep;
 double              blocksoverlap   = 0;
 
-if ( analysis != FreqAnalysisSTransform ) {
+if ( ! IsSTMethod ( analysis ) ) {
     
     if ( ! HasCLIOption ( freqan, __windowstep ) ) {
 
@@ -294,11 +325,19 @@ if ( analysis != FreqAnalysisSTransform ) {
                     : blockstep == __windowstep1   ? ( blocksize > 0 ? (double) ( blocksize - 1 ) / blocksize : 0 )
                     :                                0.00;
     }
+else {
+
+    if ( HasCLIOption ( freqan, __windowstep ) ) {
+
+        ConsoleErrorMessage ( 0, "You do not need to specify ", __windowstep, " option for the S-Transform!" );
+        return;
+        }
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-double              nyquist         = GetNyquist ( samplingfrequency, analysis == FreqAnalysisSTransform );
+double              nyquist         = GetNyquist ( samplingfrequency, IsSTMethod ( analysis ) );
 
 
 if ( ! HasCLIOption ( freqan, __freqmin ) ) {
@@ -397,12 +436,11 @@ if ( HasCLIOption ( freqan, __freqbands ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( analysis == FreqAnalysisSTransform ) {
+if ( IsSTMethod ( analysis ) ) {
+                                        // __sequential is implicit, but still allowed
+    if ( HasCLIFlag ( freqan, __average ) ) {
 
-    if ( HasCLIFlag ( freqan, __sequential )
-      || HasCLIFlag ( freqan, __average    ) ) {
-
-        ConsoleErrorMessage ( 0, "You do not need to specify ", __sequential, " or ", __average, " options for the S-Transform!" );
+        ConsoleErrorMessage ( 0, "You can not specify the ", __average, " option for the S-Transform!" );
         return;
         }
     }
@@ -418,7 +456,7 @@ else {
     }
 
 bool                outputsequential    = HasCLIFlag ( freqan, __sequential )
-                                       || analysis == FreqAnalysisSTransform;
+                                       || IsSTMethod ( analysis );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -430,9 +468,9 @@ MarkerType          outputmarkerstype   = AllMarkerTypes;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-FreqWindowingType   windowing           = HasCLIFlag ( freqan, __windowinghanning ) ? analysis != FreqAnalysisSTransform ? FreqWindowingHanning 
-                                                                                                                         : FreqWindowingHanningBorder 
-                                                                                    :                                      FreqWindowingNone;
+FreqWindowingType   windowing           = HasCLIFlag ( freqan, __windowinghanning ) ? IsSTMethod ( analysis ) ? FreqWindowingHanningBorder
+                                                                                                              : FreqWindowingHanning
+                                                                                    :                           FreqWindowingNone;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -458,7 +496,7 @@ FreqOutputAtomType  outputatomtype      = outputtype == __outputreal    ? Output
                                         : outputtype == __outputpower   ? OutputAtomNorm2
                                         : outputtype == __outputcomplex ? OutputAtomComplex
                                         : outputtype == __outputphase   ? OutputAtomPhase
-                                        :                               ( analysis == FreqAnalysisFFTApproximation ? OutputAtomReal : OutputAtomNorm2 ); // default is power
+                                        :                               ( IsFFTApproxMethod ( analysis ) ? OutputAtomReal : OutputAtomNorm2 ); // default is power
 
 
 const char*         aac                 = AnalysisAtomtypeCompatibility (   analysis, 
@@ -477,12 +515,20 @@ if ( StringIsNotEmpty ( aac ) ) {
 
 string              reflist         = GetCLIOptionString ( freqan, __reference );
 
-ReferenceType       ref             = reflist.empty ()
-                                   || reflist == "none"
-                                   || reflist == "asinfile"             ? ReferenceAsInFile
-                                    : reflist == "average"
-                                   || reflist == "avgref"               ? ReferenceAverage
-                                    :                                     ReferenceArbitraryTracks;
+ReferenceType       ref             = reflist == "none"    || reflist == "asinfile" ? ReferenceAsInFile
+                                    : reflist == "average" || reflist == "avgref"   ? ReferenceAverage
+                                    : ! reflist.empty ()                            ? ReferenceArbitraryTracks
+                                    : IsSurfaceCase ( analysis )                    ? ReferenceAverage          // default for surface case
+                                    :                                                 ReferenceAsInFile;        // default for other cases
+
+                                        // force overriding?
+//if ( IsPowerMaps ( analysis ) ) {
+//    
+//    if ( ref != ReferenceAverage ) {
+//        ConsoleErrorMessage ( __reference, "Power Maps analysis need an Average Reference!" );
+//        return;
+//        }
+//    }
 
 
 //CheckReference ( ref, datatypein );
@@ -500,7 +546,7 @@ bool                splitelec       = HasCLIFlag ( freqan, __splitelec     );
 bool                splitfreq       = HasCLIFlag ( freqan, __splitfreq     );
 bool                splitspectrum   = HasCLIFlag ( freqan, __splitspectrum );
 
-bool                savefftapprox   = analysis == FreqAnalysisFFTApproximation;
+bool                savefftapprox   = IsFFTApproxMethod ( analysis );
 
 if ( ! ( savingfreq || splitelec || splitfreq || splitspectrum || savefftapprox ) ) {
 
@@ -511,7 +557,7 @@ if ( ! ( savingfreq || splitelec || splitfreq || splitspectrum || savefftapprox 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( HasCLIFlag ( freqan, __downsampling ) && analysis != FreqAnalysisSTransform ) {
+if ( HasCLIFlag ( freqan, __downsampling ) && ! IsSTMethod ( analysis ) ) {
 
     ConsoleErrorMessage ( __downsampling, "Optimal downsampling is only compatible with STransform type of analysis!" );
     return;
@@ -529,6 +575,13 @@ bool                optimaldownsampling = HasCLIFlag ( freqan, __downsampling );
 
 CreateConsole ();
 
+cout << "Analysis case:     " << GetCaseString   ( analysis ) << NewLine;
+cout << "Analysis method:   " << GetMethodString ( analysis ) << NewLine;
+cout << "Power Maps case:   " << BoolToString ( IsPowerMaps ( analysis ) ) << NewLine;
+cout << "Output data is:    " << ( outputsequential ? "Sequential" : "Averaged" ) << NewLine;
+
+cout << NewLine;
+
 cout << "Tracks:            " << ( tracks.empty () ? "All" : tracks ) << NewLine;
 if ( xyzfile.IsNotEmpty () )
     cout << "XYZ file:          " << xyzfile << NewLine;
@@ -541,9 +594,8 @@ if ( badepochs == SkippingBadEpochsList )
 
 cout << NewLine;
 
-cout << "Analysis:          " << typeanalysis << NewLine;
 cout << "Sampling Frequency:" << samplingfrequency << NewLine;
-if ( analysis != FreqAnalysisSTransform ) {
+if ( ! IsSTMethod ( analysis ) ) {
     cout << "Window Size:       " << blocksize << NewLine;
     cout << "Window Step:       " << blockstep << NewLine;
     cout << "Window Overlap:    " << ( blocksoverlap * 100 ) << "%" << NewLine;
@@ -560,7 +612,6 @@ else if ( outputinterval == OutputBands          ) {
 
 cout << NewLine;
 
-cout << "Sequential output: " << BoolToString ( outputsequential ) << NewLine;
 cout << "Windowing:         " << FreqWindowingString    [ windowing ] << NewLine;
 cout << "Rescaling:         " << FFTRescalingString     [ fftnorm ] << NewLine;
 cout << "Output:            " << FreqOutputAtomString   [ outputatomtype ] << NewLine;

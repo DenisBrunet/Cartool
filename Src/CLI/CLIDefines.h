@@ -145,7 +145,7 @@ constexpr char*     __concatenate               = "--concatenate";
                                         // FrequencyAnalysis
 constexpr char*     __windowsize                = "--windowsize";
 constexpr char*     __windowstep                = "--windowstep";
-constexpr char*     __windowstep1               = "1TF";
+constexpr char*     __windowstep1               = "1tf";
 constexpr char*     __windowstep25              = "25%";
 constexpr char*     __windowstep100             = "100%";
 
@@ -155,11 +155,14 @@ constexpr char*     __freqlinstep               = "--freqlinstep";
 constexpr char*     __freqlogdecade             = "--freqlogdecade";
 constexpr char*     __freqbands                 = "--freqbands";
 
-constexpr char*     __analysis                  = "--analysis";
-constexpr char*     __analysisfft               = "FFT";
-constexpr char*     __analysispowermaps         = "PowerMaps";
-constexpr char*     __analysisfftapprox         = "FFTApprox";
-constexpr char*     __analysisstransform        = "STransform";
+constexpr char*     __case                      = "--case";
+constexpr char*     __caseeegsurf               = "eegsurface";
+constexpr char*     __caseeegintra              = "eegintra";
+constexpr char*     __caseeeggeneral            = "general";
+constexpr char*     __method                    = "--method";
+constexpr char*     __methodfft                 = "fft";
+constexpr char*     __methodfftapprox           = "fftapprox";
+constexpr char*     __methodstransform          = "stransform";
 constexpr char*     __windowinghanning          = "--hanning";
 constexpr char*     __rescalingnone             = "none";
 constexpr char*     __rescalingsqrt             = "sqrt";

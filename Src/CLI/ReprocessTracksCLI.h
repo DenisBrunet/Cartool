@@ -447,12 +447,10 @@ FiltersOptions          filteringoptions    = altfilters.HasNoFilters () ? NotUs
 
 string              reflist         = GetCLIOptionString ( reprocsub, __reference );
 
-ReferenceType       ref             = reflist.empty ()
-                                   || reflist == "none"
-                                   || reflist == "asinfile"             ? ReferenceAsInFile
-                                    : reflist == "average"
-                                   || reflist == "avgref"               ? ReferenceAverage
-                                    :                                     ReferenceArbitraryTracks;
+ReferenceType       ref             = reflist == "none"    || reflist == "asinfile" ? ReferenceAsInFile
+                                    : reflist == "average" || reflist == "avgref"   ? ReferenceAverage
+                                    : ! reflist.empty ()                            ? ReferenceArbitraryTracks
+                                    :                                                 ReferenceAsInFile;        // default
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
