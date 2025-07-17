@@ -76,76 +76,36 @@ const char  FreqWindowingString[ NumFreqWindowingType ][ 64 ] =
 
 
 //----------------------------------------------------------------------------
-                                        // Returns an error message if types don't match, and 0 if they are compatible
-const char* AnalysisAtomtypeCompatibility ( FreqAnalysisType    analysis,   
-                                            bool                savingbands,  
-                                            bool                averagingblocks, 
-                                            FreqOutputAtomType  outputatomtype  )
+
+const char*     GetCaseString   ( FreqAnalysisCases c )
 {
-switch ( outputatomtype ) {
-
-    case    OutputAtomReal:
-    
-        if      ( analysis != FreqAnalysisFFTApproximation )
-
-            return  "Can not save Real components for the FFT, PowerMaps and S-Transform analysis!";
-
-        else if ( analysis == FreqAnalysisSTransform && averagingblocks )   // case shouldn't happen 
-
-            return  "Can not average blocks for S-Transform analysis!";
-
-        break;
-
-
-    case    OutputAtomNorm:
-    case    OutputAtomNorm2:
-
-        if      ( analysis == FreqAnalysisFFTApproximation )
-
-            return  "Can not save Norm/Power values for the FFT Approximation analysis!";
-
-        else if ( analysis == FreqAnalysisSTransform && averagingblocks )   // case shouldn't happen
-
-            return  "Can not average blocks for S-Transform analysis!";
-
-        break;
-
-
-    case    OutputAtomComplex:
-
-        if      ( savingbands )     // for ALL types of analysis
-
-            return  "Can not save Complex values for Frequency Bands output!";
-
-        else if ( averagingblocks ) // for ALL types of analysis
-
-            return  "Can not average Complex values!";
-
-        else if ( analysis == FreqAnalysisFFTApproximation )
-
-            return  "Can not save Complex values for the FFT Approximation analysis!";
-
-        break;
-
-
-    case    OutputAtomPhase:
-
-        if      ( savingbands )     // for ALL types of analysis
-
-            return  "Can not save Phase values for Frequency Bands output!";
-
-        else if ( averagingblocks ) // for ALL types of analysis
-
-            return  "Can not average Phase values!";
-        
-        break;
-    }
-
-return  0;
+if      ( IsSurfaceCase     ( c ) )     return "EEG Surface";
+else if ( IsIntraCase       ( c ) )     return "EEG Intra-Cranial";
+else if ( IsGeneralCase     ( c ) )     return "General";
+else                                    return "Unspecified";
 }
 
 
-const char* AnalysisAtomtypeCompatibility ( FreqAnalysisCases   flags,   
+const char*     GetMethodString ( FreqAnalysisCases c )
+{
+if      ( IsFFTMethod       ( c ) )     return "FFT";
+else if ( IsFFTApproxMethod ( c ) )     return "FFT Approximation";
+else if ( IsSTMethod        ( c ) )     return "S-Transform (Wavelet)";
+else                                    return "Unspecified";
+}
+
+
+const char*     GetInfix ( FreqAnalysisCases c )
+{
+if      ( IsPowerMaps        ( c ) )    return InfixPowerMaps;  // special case first
+else if ( IsFFTMethod        ( c ) )    return InfixFft;
+else if ( IsFFTApproxMethod  ( c ) )    return InfixFftApprox;
+else if ( IsSTMethod         ( c ) )    return InfixSTransform;
+else                                    return "Other";
+}
+
+                                        // Returns an error message if types don't match, and 0 if they are compatible
+const char* AnalysisAtomtypeCompatibility ( FreqAnalysisCases   analysis,
                                             bool                savingbands,  
                                             bool                averagingblocks, 
                                             FreqOutputAtomType  outputatomtype  )
@@ -154,11 +114,11 @@ switch ( outputatomtype ) {
 
     case    OutputAtomReal:
     
-        if      ( ! IsFFTApproxMethod ( flags ) )
+        if      ( ! IsFFTApproxMethod ( analysis ) )
 
             return  "Saving the Real components is only possible with the FFT Approximation analysis!";
 
-        else if ( IsSTMethod ( flags ) && averagingblocks )   // case shouldn't happen 
+        else if ( IsSTMethod ( analysis ) && averagingblocks )   // case shouldn't happen 
 
             return  "Can not average blocks with the S-Transform analysis!";
 
@@ -168,11 +128,11 @@ switch ( outputatomtype ) {
     case    OutputAtomNorm:
     case    OutputAtomNorm2:
 
-        if      ( IsFFTApproxMethod ( flags ) )
+        if      ( IsFFTApproxMethod ( analysis ) )
 
             return  "Saving the Norm/Power values is not possible with the FFT Approximation analysis!";
 
-        else if ( IsSTMethod ( flags ) && averagingblocks )   // case shouldn't happen
+        else if ( IsSTMethod ( analysis ) && averagingblocks )   // case shouldn't happen
 
             return  "Can not average blocks for S-Transform analysis!";
 
@@ -189,7 +149,7 @@ switch ( outputatomtype ) {
 
             return  "Can not average Complex values!";
 
-        else if ( IsFFTApproxMethod ( flags ) )
+        else if ( IsFFTApproxMethod ( analysis ) )
 
             return  "Saving Complex values is not possible with the FFT Approximation analysis!";
 
@@ -448,7 +408,7 @@ StringCleanup   ( buff );
                                         
 if ( StringIsEmpty ( buff ) 
   || StringIs ( buff, "*" )             // bypassing the '*' of TSelection
-//|| IsPowerMaps       ( analysis )     // force?
+//|| IsPowerMaps       ( analysis )     // forcing?
 //|| IsFFTApproxMethod ( analysis )
    ) {
 
@@ -878,11 +838,7 @@ if ( StringIsNotEmpty ( infixfilename ) )
 
 else {
                                         // append method name + parameters
-    StringCopy ( BaseDir, buff, ".", IsPowerMaps        ( analysis ) ?  InfixPowerMaps
-                                   : IsFFTMethod        ( analysis ) ?  InfixFft
-                                   : IsFFTApproxMethod  ( analysis ) ?  InfixFftApprox
-                                   : IsSTMethod         ( analysis ) ?  InfixSTransform
-                                   :                                    "Other"         );
+    StringCopy ( BaseDir, buff, ".", GetInfix ( analysis ) );
 
     if      ( outputbands == OutputLinearInterval 
            || outputbands == OutputLogInterval    )
@@ -1045,11 +1001,59 @@ verbose.Put ( "Verbose file (this):", fileoutvrb );
 }
 
 
+verbose.NextTopic ( "Analysis:" );
+{
+verbose.Put ( "Analysis general case:   ", GetCaseString   ( analysis ) );
+verbose.Put ( "Analysis method:         ", GetMethodString ( analysis ) );
+verbose.Put ( "Power Maps analysis case:", IsPowerMaps     ( analysis ) );  // we can be more specific here
+verbose.Put ( "Output data is:          ", outputsequential ? "Sequential" : "Averaged" );
+
+verbose.NextLine ();
+
+verbose.Put ( "Windowing function:", FreqWindowingString[ windowing ] );
+
+if ( ! IsSTMethod ( analysis ) ) {
+
+    verbose.Put ( "FFT Time Windows rescaling:", FFTRescalingString[ fftnorm ] );
+
+    if ( ! outputsequential ) {
+        if ( IsFFTApproxMethod ( analysis ) )
+            verbose.Put ( "Averaging is done:", "After polarity check" );
+        else
+            verbose.Put ( "Averaging is done:", "After taking norm" );
+        }
+    }
+
+verbose.Put ( "Output values:", FreqOutputAtomString[ outputatomtype ] );
+}
+
+
 verbose.NextTopic ( "Tracks to analyse:" );
 {
 //verbose.Put ( "Writing tracks:", channels );
 verbose.Put ( "Number of tracks:", (int) elsave );
 verbose.Put ( "Writing tracks:", elsave.ToText ( buff, xyzdoc.IsOpen () ? xyzdoc->GetElectrodesNames() : eegdoc->GetElectrodesNames(), AuxiliaryTracksNames ) );
+}
+
+
+verbose.NextTopic ( "Reference of data:" );
+{
+if      ( ref == ReferenceAsInFile          )       verbose.Put ( "Reference:", ReferenceNames[ ref ] );
+else if ( ref == ReferenceAverage           )       verbose.Put ( "Reference:", ReferenceNames[ ref ] );
+else if ( ref == ReferenceArbitraryTracks   )       verbose.Put ( "Reference:", reflist );
+else if ( ref == ReferenceUsingCurrent      ) {
+
+    ReferenceType   currref     = eegdoc->GetReferenceType ();
+
+    if      ( currref == ReferenceAsInFile  )       verbose.Put ( "Current reference:", ReferenceNames[ currref ] );
+    else if ( currref == ReferenceAverage   )       verbose.Put ( "Current reference:", ReferenceNames[ currref ] );
+    else {
+        eegdoc->GetReferenceTracks ().ToText ( buff, xyzdoc.IsOpen () ? xyzdoc->GetElectrodesNames() : eegdoc->GetElectrodesNames(), AuxiliaryTracksNames );
+                                                                    
+                                                    verbose.Put ( "Current reference:", buff );
+        }
+    }
+else                                                verbose.Put ( "Reference:", ReferenceNames[ ref ] );
 }
 
 
@@ -1157,55 +1161,6 @@ else if     ( outputbands == OutputBands
             }
         }
     }
-}
-
-
-verbose.NextTopic ( "Analysis:" );
-{
-if      ( IsPowerMaps       ( analysis ) )  verbose.Put ( "Type of frequency analysis:", "FFT (Power Maps)" );
-else if ( IsFFTMethod       ( analysis ) )  verbose.Put ( "Type of frequency analysis:", "FFT" );
-else if ( IsFFTApproxMethod ( analysis ) )  verbose.Put ( "Type of frequency analysis:", "FFT Approximation" );
-else if ( IsSTMethod        ( analysis ) )  verbose.Put ( "Type of frequency analysis:", "Wavelet (S-Transform)" );
-else                                        verbose.Put ( "Type of frequency analysis:", "Unknown" );
-
-verbose.Put ( "Windowing function:", FreqWindowingString[ windowing ] );
-
-verbose.NextLine ();
-
-if ( ! IsSTMethod ( analysis ) ) {
-
-    verbose.Put ( "FFT Time Windows rescaling:", FFTRescalingString[ fftnorm ] );
-    verbose.Put ( "Time Windows results are:", outputsequential ? "Written sequentially" : "Averaged" );
-
-    if ( ! outputsequential )
-        if ( IsFFTApproxMethod ( analysis ) )
-            verbose.Put ( "Averaging is done:", "After polarity check" );
-        else
-            verbose.Put ( "Averaging is done:", "After taking norm" );
-    }
-
-verbose.Put ( "Output values:", FreqOutputAtomString[ outputatomtype ] );
-}
-
-
-verbose.NextTopic ( "Reference of data:" );
-{
-if      ( ref == ReferenceAsInFile          )       verbose.Put ( "Reference:", ReferenceNames[ ref ] );
-else if ( ref == ReferenceAverage           )       verbose.Put ( "Reference:", ReferenceNames[ ref ] );
-else if ( ref == ReferenceArbitraryTracks   )       verbose.Put ( "Reference:", reflist );
-else if ( ref == ReferenceUsingCurrent      ) {
-
-    ReferenceType   currref     = eegdoc->GetReferenceType ();
-
-    if      ( currref == ReferenceAsInFile  )       verbose.Put ( "Current reference:", ReferenceNames[ currref ] );
-    else if ( currref == ReferenceAverage   )       verbose.Put ( "Current reference:", ReferenceNames[ currref ] );
-    else {
-        eegdoc->GetReferenceTracks ().ToText ( buff, xyzdoc.IsOpen () ? xyzdoc->GetElectrodesNames() : eegdoc->GetElectrodesNames(), AuxiliaryTracksNames );
-                                                                    
-                                                    verbose.Put ( "Current reference:", buff );
-        }
-    }
-else                                                verbose.Put ( "Reference:", ReferenceNames[ ref ] );
 }
 
 

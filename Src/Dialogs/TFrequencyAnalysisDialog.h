@@ -21,7 +21,7 @@ limitations under the License.
 #include    "System.h"
 #include    "TBaseDialog.h"
 
-#include    "FrequencyAnalysis.h"       // FFTRescalingType, FreqAnalysisCases, FreqOutputAtomType
+#include    "FrequencyAnalysis.h"       // FreqAnalysisCases, FFTRescalingType, FreqOutputAtomType
 
 namespace crtl {
 
@@ -64,7 +64,7 @@ class       FreqPresetSpec
 public:
     FreqPresetsEnum     Code;                   // redundant but included for clarity
     char                Text [ 128 ];           // for dialog
-    FreqAnalysisCases   Flags;
+    FreqAnalysisCases   Flags;                  // type of processing only
 
 
     bool                IsSurfaceCase           ()  const   { return crtl::IsSurfaceCase        ( Flags );  }
@@ -74,12 +74,7 @@ public:
 
     bool                IsFFTMethod             ()  const   { return crtl::IsFFTMethod          ( Flags );  }
     bool                IsFFTApproxMethod       ()  const   { return crtl::IsFFTApproxMethod    ( Flags );  }
-    bool                IsFFTAnyMethod          ()  const   { return crtl::IsFFTAnyMethod       ( Flags );  }
     bool                IsSTMethod              ()  const   { return crtl::IsSTMethod           ( Flags );  }
-
-    bool                IsSequential            ()  const   { return crtl::IsSequential         ( Flags );  }
-    bool                IsAveraging             ()  const   { return crtl::IsAveraging          ( Flags );  }
-    bool                IsShortTerm             ()  const   { return crtl::IsShortTerm          ( Flags );  }
 
     bool                IsPowerMaps             ()  const   { return crtl::IsPowerMaps          ( Flags );  }
 };

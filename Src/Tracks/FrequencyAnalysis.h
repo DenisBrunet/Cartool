@@ -40,32 +40,18 @@ constexpr double    HanningRescaling            = 2.0;
 
 //----------------------------------------------------------------------------
                                         // Analysis specifications
-enum    FreqAnalysisType
-        {
-        FreqAnalysisFFT,                // General FFT
-        FreqAnalysisPowerMaps,          // Surface EEG dedicated FFT: forcing Average Reference and Norm^2
-        FreqAnalysisFFTApproximation,   // Surface EEG special FFT projection method: each block projected back on a single Real axis
-        FreqAnalysisSTransform,         // S-Transofmr (Stockwell), a sort of Wavelet very close to Morlet's
-        };
-
-
 enum    FreqAnalysisCases
         {
         FreqCaseUndefined       = 0x0000,
-                                            // Use cases (all exclusive)
+                                            // General use cases (all mutually exclusive):
         FreqCaseEEGSurface      = 0x0100,
         FreqCaseEEGIntra        = 0x0200,
         FreqCaseGeneral         = 0x0400,   // general case, neither surface nor intra-cranial    
 
-                                            // General computation method (all exclusive)
+                                            // Computation method (all mutually exclusive):
         FreqMethodFFT           = 0x0010,   // FFT method
         FreqMethodFFTApprox     = 0x0020,   // FFT Approximation method
         FreqMethodST            = 0x0040,   // STransform method
-
-                                            // Computation specificities (all exclusive)
-        FreqTimeSeq             = 0x0001,   // Sequential
-        FreqTimeAvg             = 0x0002,   // Average
-        FreqTimeSht             = 0x0004,   // Short-Term
         };
 
 
@@ -73,27 +59,20 @@ inline  bool    IsSurfaceCase       ( FreqAnalysisCases c )     { return IsFlag 
 inline  bool    IsIntraCase         ( FreqAnalysisCases c )     { return IsFlag ( c, FreqCaseEEGIntra   ); }
 inline  bool    IsGeneralCase       ( FreqAnalysisCases c )     { return IsFlag ( c, FreqCaseGeneral    ); }
 
-inline  bool    IsFFTMethod         ( FreqAnalysisCases c )     { return IsFlag ( c, FreqMethodFFT      ); }                // ONLY real FFT
-inline  bool    IsFFTApproxMethod   ( FreqAnalysisCases c )     { return IsFlag ( c, FreqMethodFFTApprox); }                // ONLY FFT Approximation
-inline  bool    IsFFTAnyMethod      ( FreqAnalysisCases c )     { return IsFFTMethod ( c ) || IsFFTApproxMethod ( c ); }    // ANY type of FFT method
+inline  bool    IsFFTMethod         ( FreqAnalysisCases c )     { return IsFlag ( c, FreqMethodFFT      ); }
+inline  bool    IsFFTApproxMethod   ( FreqAnalysisCases c )     { return IsFlag ( c, FreqMethodFFTApprox); }
 inline  bool    IsSTMethod          ( FreqAnalysisCases c )     { return IsFlag ( c, FreqMethodST       ); }
+                                        // Power Maps is just Surface EEG + FFT + Average Reference
+inline  bool    IsPowerMaps         ( FreqAnalysisCases c )     { return IsSurfaceCase ( c ) && IsFFTMethod ( c ); }
 
-inline  bool    IsSequential        ( FreqAnalysisCases c )     { return IsFlag ( c, FreqTimeSeq        ); }
-inline  bool    IsAveraging         ( FreqAnalysisCases c )     { return IsFlag ( c, FreqTimeAvg        ); }
-inline  bool    IsShortTerm         ( FreqAnalysisCases c )     { return IsFlag ( c, FreqTimeSht        ); }
-
-inline  bool    IsPowerMaps         ( FreqAnalysisCases c )     { return IsSurfaceCase ( c ) && IsFFTMethod ( c ); } // Power Maps is FFT on Surface EEG + Average Reference
-
+const char*     GetCaseString       ( FreqAnalysisCases c );
+const char*     GetMethodString     ( FreqAnalysisCases c );
+const char*     GetInfix            ( FreqAnalysisCases c );
 
                                         // Analysis and legal output types have a not-straightforward relationship, so let's wrap it into a proper function
 enum    FreqOutputAtomType;
 
-const char*     AnalysisAtomtypeCompatibility ( FreqAnalysisType    analysis,   
-                                                bool                savingbands,  
-                                                bool                averagingblocks, 
-                                                FreqOutputAtomType  outputatomtype  );
-
-const char*     AnalysisAtomtypeCompatibility ( FreqAnalysisCases   flags,   
+const char*     AnalysisAtomtypeCompatibility ( FreqAnalysisCases   analysis,   
                                                 bool                savingbands,  
                                                 bool                averagingblocks, 
                                                 FreqOutputAtomType  outputatomtype  );
@@ -159,7 +138,7 @@ class   TTracksDoc;
 
 bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not const, because we activate/deactivate filters
                                 const char*         xyzfile,
-                                FreqAnalysisCases   analysiscase,
+                                FreqAnalysisCases   analysis,
                                 const char*         channels,           // could be empty or "*" to select all regular tracks
                                 ReferenceType       ref,                const char*         reflist,
                                 long                timemin,            long                timemax,

@@ -40,29 +40,29 @@ TFrequencyAnalysisStructEx  FrequencyAnalysisTransfer;
 
 
 const FreqPresetSpec    FreqPresets[ NumFreqPresets ]   =
-            {
-            { FreqPresetSurfacePowermaps,       "EEG / Surface / FFT (Power Maps)",                                 (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFT       | FreqTimeSeq )  },
-            { FreqPresetSurfacePowermapsAvg,    "EEG / Surface / FFT (Power Maps) Average Spectrum",                (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFT       | FreqTimeAvg )  },
-            { FreqPresetSurfacePowermapsSt,     "EEG / Surface / Short-Term FFT (Power Maps)",                      (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFT       | FreqTimeSht )  },
-            { FreqPresetSurfaceFftapprox,       "EEG / Surface / FFT Approximation",                                (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFTApprox | FreqTimeSeq )  },
-            { FreqPresetSurfaceFftapproxSt,     "EEG / Surface / Short-Term FFT Approximation",                     (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFTApprox | FreqTimeSht )  },
-            { FreqPresetSurfaceStransf,         "EEG / Surface / Wavelet (S-Transform)",                            (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodST        | FreqTimeSeq )  },
-            { FreqPresetSurfaceStransfForESI,   "EEG / Surface / Wavelet (S-Transform) for Sources Localization",   (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodST        | FreqTimeSeq )  },  // same parameters as previous preset
+            {                                                                                                       // Only the type of analysis, hence some duplicates - differences would be in the output types f.ex.
+            { FreqPresetSurfacePowermaps,       "EEG / Surface / FFT (Power Maps)",                                 (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFT       )  },
+            { FreqPresetSurfacePowermapsAvg,    "EEG / Surface / FFT (Power Maps) Average Spectrum",                (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFT       )  },
+            { FreqPresetSurfacePowermapsSt,     "EEG / Surface / Short-Term FFT (Power Maps)",                      (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFT       )  },
+            { FreqPresetSurfaceFftapprox,       "EEG / Surface / FFT Approximation",                                (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFTApprox )  },
+            { FreqPresetSurfaceFftapproxSt,     "EEG / Surface / Short-Term FFT Approximation",                     (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodFFTApprox )  },
+            { FreqPresetSurfaceStransf,         "EEG / Surface / Wavelet (S-Transform)",                            (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodST        )  },
+            { FreqPresetSurfaceStransfForESI,   "EEG / Surface / Wavelet (S-Transform) for Sources Localization",   (FreqAnalysisCases) ( FreqCaseEEGSurface | FreqMethodST        )  },
 
-            { FreqPresetSeparator1,              "",                                                                FreqCaseUndefined                                                               },
+            { FreqPresetSeparator1,              "",                                                                FreqCaseUndefined                                                 },
 
-            { FreqPresetIntraFft,               "EEG / Intra-Cranial / FFT",                                        (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodFFT       | FreqTimeSeq )  },
-            { FreqPresetIntraFftAvg,            "EEG / Intra-Cranial / FFT Average Spectrum",                       (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodFFT       | FreqTimeAvg )  },
-            { FreqPresetIntraFftSt,             "EEG / Intra-Cranial / Short-Term FFT",                             (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodFFT       | FreqTimeSht )  },
-            { FreqPresetIntraStransf,           "EEG / Intra-Cranial / Wavelet (S-Transform)",                      (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodST        | FreqTimeSeq )  },
-            { FreqPresetIntraStransfPhase,      "EEG / Intra-Cranial / Wavelet (S-Transform) for Phase Analysis",   (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodST        | FreqTimeSeq )  },  // same parameters as previous preset
+            { FreqPresetIntraFft,               "EEG / Intra-Cranial / FFT",                                        (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodFFT       )  },
+            { FreqPresetIntraFftAvg,            "EEG / Intra-Cranial / FFT Average Spectrum",                       (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodFFT       )  },
+            { FreqPresetIntraFftSt,             "EEG / Intra-Cranial / Short-Term FFT",                             (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodFFT       )  },
+            { FreqPresetIntraStransf,           "EEG / Intra-Cranial / Wavelet (S-Transform)",                      (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodST        )  },
+            { FreqPresetIntraStransfPhase,      "EEG / Intra-Cranial / Wavelet (S-Transform) for Phase Analysis",   (FreqAnalysisCases) ( FreqCaseEEGIntra   | FreqMethodST        )  },
 
-            { FreqPresetSeparator2,             "",                                                                 FreqCaseUndefined                                                               },
+            { FreqPresetSeparator2,             "",                                                                 FreqCaseUndefined                                                 },
 
-            { FreqPresetFft,                    "General case / FFT",                                               (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodFFT       | FreqTimeSeq )  },
-            { FreqPresetFftAvg,                 "General case / FFT Average Spectrum",                              (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodFFT       | FreqTimeAvg )  },
-            { FreqPresetFftSt,                  "General case / Short-Term FFT",                                    (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodFFT       | FreqTimeSht )  },
-            { FreqPresetFftSt,                  "General case / Wavelet (S-Transform)",                             (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodST        | FreqTimeSeq )  },
+            { FreqPresetFft,                    "General case / FFT",                                               (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodFFT       )  },
+            { FreqPresetFftAvg,                 "General case / FFT Average Spectrum",                              (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodFFT       )  },
+            { FreqPresetFftSt,                  "General case / Short-Term FFT",                                    (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodFFT       )  },
+            { FreqPresetFftSt,                  "General case / Wavelet (S-Transform)",                             (FreqAnalysisCases) ( FreqCaseGeneral    | FreqMethodST        )  },
             };
 
 
@@ -834,8 +834,8 @@ void    TFrequencyAnalysisDialog::CmOtherRefEnable ( TCommandEnabler &tce )
 TransferData ( tdGetData );
 
 tce.Enable ( IsChecked ( OtherRef )
-             && (    FreqPresets[ CurrentPreset ].IsFFTAnyMethod () && ! FreqPresets[ CurrentPreset ].IsSurfaceCase ()
-                  || FreqPresets[ CurrentPreset ].IsSTMethod () ) );
+             && (    FreqPresets[ CurrentPreset ].IsFFTMethod () && ! FreqPresets[ CurrentPreset ].IsSurfaceCase ()
+                  || FreqPresets[ CurrentPreset ].IsSTMethod  () ) );
 }
 
 
@@ -1517,8 +1517,8 @@ if ( FreqPresets[ CurrentPreset ].IsSurfaceCase () ) {
     transfer.OtherRef   = BoolToCheck ( false );
     transfer.AvgRef     = BoolToCheck ( true  );
     }
-/*else if ( FreqPresets[ CurrentPreset ].IsFFTAnyMethod () && ! FreqPresets[ CurrentPreset ].IsSurfaceCase ()
-         || FreqPresets[ CurrentPreset ].IsSTMethod () ) {
+/*else if ( FreqPresets[ CurrentPreset ].IsFFTMethod () && ! FreqPresets[ CurrentPreset ].IsSurfaceCase ()
+         || FreqPresets[ CurrentPreset ].IsSTMethod  () ) {
     transfer.CurrentRef = BoolToCheck ( false );
     transfer.OtherRef   = BoolToCheck ( false );
     transfer.AvgRef     = BoolToCheck ( false );
@@ -1526,9 +1526,9 @@ if ( FreqPresets[ CurrentPreset ].IsSurfaceCase () ) {
     }*/
 
                                         // set output format
-if      ( FreqPresets[ CurrentPreset ].IsFFTAnyMethod () && ! FreqPresets[ CurrentPreset ].IsSurfaceCase () && IsIndex ( transfer.WriteType, OutputAtomReal )
-       || FreqPresets[ CurrentPreset ].IsPowerMaps    ()
-       || FreqPresets[ CurrentPreset ].IsSTMethod     () ) {
+if      ( FreqPresets[ CurrentPreset ].IsFFTMethod () && ! FreqPresets[ CurrentPreset ].IsSurfaceCase () && IsIndex ( transfer.WriteType, OutputAtomReal )
+       || FreqPresets[ CurrentPreset ].IsPowerMaps ()
+       || FreqPresets[ CurrentPreset ].IsSTMethod  () ) {
 
     SetIndex ( transfer.WriteType, OutputAtomNorm2 );
     }
@@ -1653,7 +1653,7 @@ if ( openxyz )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-FreqAnalysisCases   analysis    = FreqPresets[ CurrentPreset ].Flags;
+FreqAnalysisCases   analysis            = FreqPresets[ CurrentPreset ].Flags;
 
 if ( analysis == FreqCaseUndefined )
     return;
@@ -1696,10 +1696,14 @@ else if ( CheckToBool ( transfer->OtherRef   ) ) {
     }
 else                                                ref = ReferenceAsInFile;
 
+                                        // force overriding?
+//if ( IsPowerMaps ( analysis ) IsSurfaceCase ( analysis ) )
+//    ref     = ReferenceAverage;
+
 
 CheckReference ( ref, datatypein );
 
-                                        // rare case, user asked for average reference on 1 track...
+                                        // edge case where user asked for the average reference on 1 track...
 if ( EEGDoc->GetNumElectrodes () == 1 && ref == ReferenceAverage )
     ref     = ReferenceAsInFile;
 
