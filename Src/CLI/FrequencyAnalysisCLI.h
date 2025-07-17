@@ -338,48 +338,6 @@ else {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-double              nyquist         = GetNyquist ( samplingfrequency, IsSTMethod ( analysis ) );
-
-
-if ( ! HasCLIOption ( freqan, __freqmin ) ) {
-
-    ConsoleErrorMessage ( __freqmin, "Frequency min is not specified!" );
-    return;
-    }
-
-double              freqmin         = GetCLIOptionDouble ( freqan, __freqmin );
-
-if ( ! IsInsideLimits ( freqmin, (double) 0, nyquist ) ) {
-
-    ConsoleErrorMessage ( __freqmin, "Frequency min is not in range [0..", FloatToString ( nyquist, 2 ), "]" );
-    return;
-    }
-
-
-if ( ! HasCLIOption ( freqan, __freqmax ) ) {
-
-    ConsoleErrorMessage ( __freqmax, "Frequency max is not specified!" );
-    return;
-    }
-
-double              freqmax         = GetCLIOptionDouble ( freqan, __freqmax );
-
-if ( ! IsInsideLimits ( freqmax, (double) 0, nyquist ) ) {
-
-    ConsoleErrorMessage ( __freqmax, "Frequency max is not in range [0..", FloatToString ( nyquist, 2 ), "]" );
-    return;
-    }
-
-
-if ( freqmin >= freqmax ) {
-
-    ConsoleErrorMessage ( 0, "Frequency max is equal or lower than Frequency min!" );
-    return;
-    }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 FreqOutputBands     outputinterval      = HasCLIOption ( freqan, __freqlinstep   ) ? OutputLinearInterval
                                         : HasCLIOption ( freqan, __freqlogdecade ) ? OutputLogInterval
                                         : HasCLIOption ( freqan, __freqbands     ) ? OutputBands
@@ -394,28 +352,90 @@ if ( outputinterval == -1 ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+double              nyquist         = GetNyquist ( samplingfrequency, IsSTMethod ( analysis ) );
+
+
+if ( ! HasCLIOption ( freqan, __freqmin ) && outputinterval != OutputBands ) {
+
+    ConsoleErrorMessage ( __freqmin, "Frequency min is not specified!" );
+    return;
+    }
+else if ( HasCLIOption ( freqan, __freqmin ) && outputinterval == OutputBands ) {
+
+    ConsoleErrorMessage ( __freqmin, "You do not need the ", __freqmin, " option when saving frequency bands!" );
+    return;
+    }
+
+double              freqmin         = GetCLIOptionDouble ( freqan, __freqmin );
+
+if ( ! IsInsideLimits ( freqmin, (double) 0, nyquist ) ) {
+
+    ConsoleErrorMessage ( __freqmin, "Frequency min is not in range [0..", FloatToString ( nyquist, 2 ), "]" );
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( ! HasCLIOption ( freqan, __freqmax ) && outputinterval != OutputBands ) {
+
+    ConsoleErrorMessage ( __freqmax, "Frequency max is not specified!" );
+    return;
+    }
+else if ( HasCLIOption ( freqan, __freqmax ) && outputinterval == OutputBands ) {
+
+    ConsoleErrorMessage ( __freqmax, "You do not need the ", __freqmax, " option when saving frequency bands!" );
+    return;
+    }
+
+double              freqmax         = GetCLIOptionDouble ( freqan, __freqmax );
+
+if ( ! IsInsideLimits ( freqmax, (double) 0, nyquist ) ) {
+
+    ConsoleErrorMessage ( __freqmax, "Frequency max is not in range [0..", FloatToString ( nyquist, 2 ), "]" );
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+if ( freqmin > freqmax ) {
+
+    ConsoleErrorMessage ( 0, "Frequency min is greater than Frequency max!" );
+    return;
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 double              outputfreqstep      = GetCLIOptionDouble    ( freqan, __freqlinstep   );
-int                 outputdecadestep    = GetCLIOptionInt       ( freqan, __freqlogdecade );
-vector<interval>    outputbands         = GetCLIOptionIntervals ( freqan, __freqbands     );
 
 
-if ( HasCLIOption ( freqan, __freqlinstep ) && outputfreqstep <= 0 ) {
+if ( outputinterval == OutputLinearInterval && outputfreqstep <= 0 ) {
 
     ConsoleErrorMessage ( __freqlinstep, "Linear interval step should be greater than 0!" );
     return;
     }
 
 
-if ( HasCLIOption ( freqan, __freqlogdecade ) && outputdecadestep <= 0 ) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+int                 outputdecadestep    = GetCLIOptionInt       ( freqan, __freqlogdecade );
+
+if ( outputinterval == OutputLogInterval && outputdecadestep <= 0 ) {
 
     ConsoleErrorMessage ( __freqlogdecade, "Logarithmic number of steps per decade should be greater than 0!" );
     return;
     }
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+vector<interval>    outputbands         = GetCLIOptionIntervals ( freqan, __freqbands     );
 TFixedString<KiloByte>  freqbands;
 
-if ( HasCLIOption ( freqan, __freqbands ) ) {
+
+if ( outputinterval == OutputBands ) {
     
     if ( outputbands.empty () ) {
 
