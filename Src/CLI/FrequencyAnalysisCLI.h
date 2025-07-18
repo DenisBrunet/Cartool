@@ -149,34 +149,6 @@ if ( gof.IsEmpty () ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/*
-if ( ! HasCLIOption ( freqan, __preset ) ) {
-
-    ConsoleErrorMessage ( __preset, "No preset specified!" );
-    return;
-    }
-
-
-string              preset          = GetCLIOptionEnum ( freqan, __preset );
-
-ComputingRisPresetsEnum esicase     = preset == __preset1 ? ComputingRisPresetErpGroupMeans
-                                    : preset == __preset2 ? ComputingRisPresetErpIndivMeans
-                                    : preset == __preset3 ? ComputingRisPresetErpIndivEpochs
-                                    : preset == __preset4 ? ComputingRisPresetErpFitClusters
-                                    : preset == __preset5 ? ComputingRisPresetIndIndivEpochs
-                                    : preset == __preset6 ? ComputingRisPresetSpont
-                                    : preset == __preset7 ? ComputingRisPresetSpontClusters
-                                    : preset == __preset8 ? ComputingRisPresetFreq
-                                    :                       ComputingRisPresetSeparator1;       // null preset
-
-if ( CRISPresets[ esicase ].Flags == CRISPresetNone ) {
-
-    ConsoleErrorMessage ( __preset, "Wrong preset!" );
-    return;
-    }
-*/
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Merging flags to set the analysis case
 if ( ! HasCLIOption ( freqan, __case ) ) {
 

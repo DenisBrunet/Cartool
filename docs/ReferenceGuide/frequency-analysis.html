@@ -11,6 +11,43 @@
       gtag('js', new Date());
       gtag('config', 'G-HDBBL5LK8P');
     </script>
+  <style type="text/css">
+.ms-grid6-main {
+	border-left: .75pt solid black;
+	border-right: 1.5pt solid black;
+	border-top: 1.5pt solid black;
+	border-bottom: .75pt solid black;
+	background-color: white;
+}
+.ms-grid6-top {
+	font-weight: bold;
+	color: black;
+	border-left: .75pt solid black;
+	border-right-style: none;
+	border-top-style: none;
+	border-bottom: .75pt solid black;
+	background-color: white;
+}
+.ms-grid6-even {
+	font-weight: normal;
+	color: black;
+	border-left: .75pt solid black;
+	border-right-style: none;
+	border-top-style: none;
+	border-bottom-style: none;
+	background-color: white;
+}
+.auto-style1 {
+	font-weight: normal;
+	color: black;
+	text-align: center;
+	border-left: .75pt solid black;
+	border-right-style: none;
+	border-top-style: none;
+	border-bottom-style: none;
+	background-color: white;
+}
+</style>
  </HEAD>
  <BODY>
 
@@ -22,16 +59,22 @@
              Frequency Analysis
          </H1>
          <P ALIGN=LEFT>
-             &nbsp;
-         </P>
+             &nbsp;This 
+			 page presents the frequency analysis methods implemented in 
+			 Cartool. You can also go the related <strong>
+			 <a href="frequency-display.html">Frequency Display</a></strong> 
+			 page to see how to visualize the results.</P>
+		<P ALIGN=LEFT>
+             &nbsp;</P>
          <H5>
-             <A HREF="#analysis">What kind of analysis?</A><br>
-             <A HREF="#run-dialog">How to run the frequency analysis</A><br>
-             <A HREF="#results">Results</A><br>
+             <A HREF="#analysis">Types of analysis</A><br>
+         <H6>
+             <A HREF="#power-maps"><em>Power Maps</em> definition</A><br>
              <A HREF="#fft-approximation">FFT Approximation</A><br>
-             Display: <A HREF="frequency-display.html">Frequency Display</A>&nbsp;
-             and&nbsp;&nbsp; <A HREF="frequency-display.html#advanced-display">Displaying maps for frequencies</A><br>
-             <br>
+         </H6>
+         <H5>
+             <A HREF="#run-dialog"><em>Frequency Analysis</em>, from the Dialog</A><br>
+			 <a href="#cli"><em>Frequency Analysis</em>, from the Command-Line Interface (CLI)</a><br>
              <A HREF="#technical-points">Technical points:</A>
          </H5>
          <H6>
@@ -44,50 +87,155 @@
                  <A HREF="#averaging-fft-appr">FFT Approximation and averaging</A><br>
                  <A HREF="#avg-after-norm">Averaging is done after conversion</A>
          </H6>
+         <H5>
+             <A HREF="#results">Results</A><br>
+         </H5>
          <H2>
-             <A NAME="analysis"></A>What kind of analysis?
-         </H2>
+             <A NAME="analysis"></A>Types of analysis</H2>
          <P>
-             Currently, the analysis available are:
-         </P>
-         <UL>
-             <LI CLASS="mvd-P">Plain ol' <B>FFT</B><BR>
-             <LI CLASS="mvd-P"><B>Power Maps</B><SUP>*</SUP><BR>
-             <LI CLASS="mvd-P"><B><A HREF="#fft-approximation">FFT Approximation</A></B><SUP>*</SUP><BR>
-             <LI CLASS="mvd-P"><B>S-Transform</B>
-         </UL>
-         <P>
+             For users convenience, Cartool first splits into 3 major scenarios:</P>
+		<ul>
+			<li><strong>Surface EEG</strong></li>
+			<li><strong>Intra-Cranial EEG</strong></li>
+			<li><strong>General case</strong> (any other case)</li>
+		</ul>
+		<P>
+             These scenarios then combine with the following methods:</P>
+		<ul>
+			<li><strong><a HREF="https://www.google.com/search?q=FFT+analysis+beginners">FFT</a></strong></li>
+			<li><strong><a href="#fft-approximation">FFT Approximation</a></strong> 
+			(Surface EEG only)</li>
+			<li><strong><a HREF="https://en.wikipedia.org/wiki/S_transform">S-Transform</a></strong> (wavelet)</li>
+		</ul>
+		<P>
+             Results can then be saved:</P>
+		<ul>
+			<li><strong>Sequentially</strong>, to see the evolution of 
+			frequencies in time</li>
+			<li><strong>Averaged</strong>, under certain conditions, to get a 
+			global snapshot of frequencies</li>
+		</ul>
+		<P>
              &nbsp;</P>
 		<P>
-             You won't
-             find here the theory behind these methods, please browse the
-             internet <A HREF="https://www.google.com/search?q=FFT+analysis+beginners">
-                 about
-                 the FFT</A>, and <A HREF="https://en.wikipedia.org/wiki/S_transform">
-                 the
-                 S-Transform
-             </A>.
+             We therefor have (most of) these possible combinations:</P>
+		<table class="ms-grid6-main" style="width: 75%">
+			<!-- fpstyle: 21,011111000 -->
+			<tr>
+				<td class="ms-grid6-top">
+				<p><strong>Scenario</strong></p>
+				</td>
+				<td class="ms-grid6-top">
+				<p></p>
+				</td>
+				<td class="ms-grid6-top">
+				<p><strong>Method</strong></p>
+				</td>
+				<td class="ms-grid6-top">
+				<p></p>
+				</td>
+				<td class="ms-grid6-top">
+				<p><strong>Output</strong></p>
+				</td>
+			</tr>
+			<tr>
+				<td class="ms-grid6-even">
+				<p>Surface EEG<br>Intra-Cranial EEG<br>General case</p>
+				</td>
+				<td class="auto-style1">
+				<p>X&nbsp; </p>
+				</td>
+				<td class="ms-grid6-even">
+				<p>FFT<br>FFT Approximation (Surface EEG)<br>S-Transform</p>
+				</td>
+				<td class="auto-style1">
+				<p>X&nbsp; </p>
+				</td>
+				<td class="ms-grid6-even">
+				<p>Sequential<br>Average<br>&nbsp;</p>
+				</td>
+			</tr>
+		</table>
+		<P>
+             &nbsp;</P>
+		<P>
+             You can see the following article for more details:</P>
+		<pre><a NAME="article"></a><a href="https://www.sciencedirect.com/science/article/pii/001346949090022C"><b>"Intracerebral dipole source localization for FFT power maps",</b>
+D. Lehman and C.M. Michel,
+<i>Electroencephalography and clinical Neurophysiology</i>, 1990, Elsevier</a></pre>
+		<h3>
+             <em><a name="power-maps"></a>Power Maps</em> definition</h3>
+		<P>
+             It is often referred to Power Maps in the dialog or in the 
+			 documentation. This term actually refers to the combination of:</P>
+		<ul>
+			<li>Surface EEG</li>
+			<li>Average Reference</li>
+			<li>FFT analysis</li>
+		</ul>
+
+<h3>
+             <A NAME="fft-approximation"></A>FFT Approximation
+         </h3>
+         <P>
+             The FFT Approximation <A HREF="#article">(see article)</A> is a very convenient way
+             to retrieve an <B>EEG-like</B> signal, made of signed values, from
+             the FFT results.
          </P>
          <P>
-             You have to first run the analysis, which generates new <A HREF="files-formats-cartool.html#freq">files</A>,
-             and then open those files to see the results. This part only refers
-             to the <U>analysis</U> itself, the other part is <A HREF="frequency-display.html">
-                 how
-                 to work with the display
-             </A>.<BR>
-             <BR>
+             To begin with, the FFT, when applied to a time window, always returns
+             results in the Complex space <B>C</B>. Each electrode, for each
+             frequency, is a complex number made of two parts, the real and
+             imaginary values. Hence, we can plot them on a plane (X is the real
+             axis, Y is the imaginary axis), here for one time window, and three
+             successive frequencies:
          </P>
          <P>
-             <A NAME="article"></A>* see article&nbsp; <B>
-                 Intracerebral dipole
-                 source localization for FFT power maps
-             </B>&nbsp; by D. Lehman and
-             C.M. Michel, in <I>Electroencephalography and clinical Neurophysiology</I>,
-             1990, Elsevier.
+             <IMG SRC="images/freq.fftapprox.w1f1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f2.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f3.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0">
          </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             The FFT Approximation finds the <B>best fitting line</B> in the
+             average referenced data (equivalent to the best fitting dipole), then <B>projects</B>
+             the electrodes complex values on this axis. Being left with a single
+             dimension, a line, we arbitrarily assign a polarity to one direction,
+             and voil&agrave;, we have <A HREF="frequency-display.html#advanced-display">
+                 real,
+                 signed, scalar values
+             </A>. See again the same three frequencies, for
+             one time window, with the resulting projected electrodes:
+         </P>
+         <P>
+             <IMG SRC="images/freq.fftapprox.w1f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f2.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f3.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             We repeat this operation for each time window, see here the first <B>
+                 three
+                 time windows
+             </B>, for a single frequency (see the rotating pattern
+             due to phase shift of the signal):
+         </P>
+         <P>
+             <IMG SRC="images/freq.fftapprox.w1f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w2f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w3f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0">
+         </P>
+         <P>
+             &nbsp;
+         </P>
+         <P>
+             You may have noted that the final polarity is arbitrary, which should
+             be accounted for <A HREF="#averaging-fft-appr">in case of averaging</A>.
+             As long as patterns / topographies are concerns, this is not a real
+             problem, though.
+         </P>
+         
          <H2>
-             <A NAME="run-dialog"></A>How to run the frequency analysis
-         </H2>
+             <A NAME="run-dialog"></A><em>Frequency Analysis</em>, from the 
+			 Dialog</H2>
          <P>
              Call the dialog from <FONT FACE="Arial Black,Arial,Helvetica">
                  <A HREF="all-processings.html#tools">
@@ -1036,97 +1184,10 @@
              </TABLE>
          </P>
          <H2>
-             <A NAME="results"></A>Frequency analysis - Results
-         </H2>
-         <UL>
-             <LI CLASS="mvd-P">
-                 <P>
-                     <A HREF="files-formats-cartool.html#freq"><B><I>.freq</I></B></A> file with
-                     all the important informations, if this <A HREF="#file-types-out">option</A>
-                     has been selected (of course recommended!). Freq files are written in
-                     the same directories as their sources. <A HREF="frequency-display.html">Open</A>
-                     them to <A HREF="frequency-display.html">work with the results</A>.
-                 </P>
-             <LI CLASS="mvd-P">
-                 <P>
-                     <I><a href="files-formats-cartool.html#sef"><B>.sef</B></a></I> files for each
-                     split electrode, frequency or spectrum, if any of splitting options have
-                     been used.
-                 </P>
-             <LI CLASS="mvd-P">
-                 <P>
-                     <I><B>.ApproxEeg</B><A HREF="files-formats-cartool.html#ep"><B>.ep</B></A></I>
-                     file(s), for the approximated EEG of each electrode, for each saved
-                     time window (if the &quot;Spectrum&quot; option above has been
-                     selected). Note that these files also have the <B>
-                         frequencies on the
-                         horizontal axis
-                     </B>, like the Spectrum.
-                 </P>
-             <LI CLASS="mvd-P">
-                 <P>
-                     Verbose file <I><B>...&lt;type of analysis&gt;</B><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>&nbsp;
-                     (text), showing all the parameters.
-                 </P>
-         </UL>
-         <H2>
-             <A NAME="fft-approximation"></A>FFT Approximation
-         </H2>
-         <P>
-             The <A HREF="#article">FFT Approximation</A> is a very convenient way
-             to retrieve an <B>EEG-like</B> signal, made of signed values, from
-             the FFT results.
-         </P>
-         <P>
-             To begin with, the FFT, when applied to a time window, always returns
-             results in the Complex space <B>C</B>. Each electrode, for each
-             frequency, is a complex number made of two parts, the real and
-             imaginary values. Hence, we can plot them on a plane (X is the real
-             axis, Y is the imaginary axis), here for one time window, and three
-             successive frequencies:
-         </P>
-         <P>
-             <IMG SRC="images/freq.fftapprox.w1f1.png" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f2.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f3.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0">
-         </P>
-         <P>
-             &nbsp;
-         </P>
-         <P>
-             The FFT Approximation finds the <B>best fitting line</B> in the
-             average referenced data (equivalent to the best fitting dipole), then <B>projects</B>
-             the electrodes complex values on this axis. Being left with a single
-             dimension, a line, we arbitrarily assign a polarity to one direction,
-             and voil&agrave;, we have <A HREF="frequency-display.html#advanced-display">
-                 real,
-                 signed, scalar values
-             </A>. See again the same three frequencies, for
-             one time window, with the resulting projected electrodes:
-         </P>
-         <P>
-             <IMG SRC="images/freq.fftapprox.w1f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f2.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w1f3.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0">
-         </P>
-         <P>
-             &nbsp;
-         </P>
-         <P>
-             We repeat this operation for each time window, see here the first <B>
-                 three
-                 time windows
-             </B>, for a single frequency (see the rotating pattern
-             due to phase shift of the signal):
-         </P>
-         <P>
-             <IMG SRC="images/freq.fftapprox.w1f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w2f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/freq.fftapprox.w3f1.proj.png" WIDTH="274" HEIGHT="267" VSPACE="0" HSPACE="0" BORDER="0">
-         </P>
-         <P>
-             &nbsp;
-         </P>
-         <P>
-             You may have noted that the final polarity is arbitrary, which should
-             be accounted for <A HREF="#averaging-fft-appr">in case of averaging</A>.
-             As long as patterns / topographies are concerns, this is not a real
-             problem, though.
-         </P>
+			 <em><a name="cli"></a>Frequency Analysis</em>, from the Command-Line Interface (CLI)</H2>
+		<p>
+             .</p>
+         
          <H2>
              <A NAME="technical-points"></A>Frequency analysis - Technical points
          </H2>
@@ -1327,6 +1388,40 @@
              values, usually by taking the norm, the squared norm of the results,
              or through the FFT Approximation.
          </P>
+		<H2>
+             <A NAME="results"></A>Frequency Analysis - Results
+         </H2>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A HREF="files-formats-cartool.html#freq"><B><I>.freq</I></B></A> file with
+                     all the important informations, if this <A HREF="#file-types-out">option</A>
+                     has been selected (of course recommended!). Freq files are written in
+                     the same directories as their sources. <A HREF="frequency-display.html">Open</A>
+                     them to <A HREF="frequency-display.html">work with the results</A>.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <I><a href="files-formats-cartool.html#sef"><B>.sef</B></a></I> files for each
+                     split electrode, frequency or spectrum, if any of splitting options have
+                     been used.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <I><B>.ApproxEeg</B><A HREF="files-formats-cartool.html#ep"><B>.ep</B></A></I>
+                     file(s), for the approximated EEG of each electrode, for each saved
+                     time window (if the &quot;Spectrum&quot; option above has been
+                     selected). Note that these files also have the <B>
+                         frequencies on the
+                         horizontal axis
+                     </B>, like the Spectrum.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Verbose file <I><B>...&lt;type of analysis&gt;</B><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>&nbsp;
+                     (text), showing all the parameters.
+                 </P>
+         </UL>
          <P>
              &nbsp;
          </P>
