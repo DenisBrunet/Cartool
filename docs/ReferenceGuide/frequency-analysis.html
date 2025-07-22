@@ -79,9 +79,10 @@
          <H6>
                  <A HREF="#cli-options">CLI Options</A><br>
                  <A HREF="#cli-cases-methods">Cases and Methods</A><br>
-                 <A HREF="#cli-time">Time Parameters</A><br>
-                 <A HREF="#cli-frequencies">Frequencies Parameters</A><br>
-                 <A HREF="#cli-fft">FFT Methods</A><br>
+                 <A HREF="#cli-time">Time Related Parameters</A><br>
+                 <A HREF="#cli-frequencies">Frequencies Related Parameters</A><br>
+                 <A HREF="#cli-fft">FFT Method</A><br>
+                 <A HREF="#cli-fft-approximation">FFT Approximation Method</A><br>
                  <A HREF="#cli-stransform">S-Transform (wavelet) Method</A><br>
                  <A HREF="#cli-examples">CLI Examples</A><br>
          </H6>
@@ -286,7 +287,7 @@ D. Lehman and C.M. Michel,
                  <tr>
                      <TD WIDTH="27%" VALIGN=TOP>
                          <P>
-                             <B>Presets:</B>
+                             <B><a name="dialog-presets"></a>Presets:</B>
                      </TD>
                      <TD WIDTH="73%" VALIGN=TOP>
                          <P>
@@ -1250,16 +1251,17 @@ Options:
 -h,--help 			This message</pre>
 		<p>
              &nbsp;</p>
-		<p>
-             We are first going to describe the options used for all methods, 
-			 then address each and every specific method on a second step.</p>
 		<h3>
-             <a name="cli-cases-methods"></a>Parameters controlling <em>cases</em> and <em>methods</em></h3>
+             <a name="cli-cases-methods"></a><em>Cases</em> and <em>Methods</em> 
+			 parameters</h3>
 		<p>
-             First of all, you have to specify your <strong>analysis method</strong>.<br>To do so, you use a combination of 
+             To specify your <strong>analysis method</strong>, you use a combination of 
 			 the&nbsp; <strong><em>--case</em></strong>&nbsp; and&nbsp; <strong><em>--method</em></strong>&nbsp; 
-			 options. <em>Case</em> not only tells the <em>intent</em> of your analysis, 
-			 but can also affect how default parameters are set as well.</p>
+			 options that mimick the <a href="#dialog-presets">Presets of the 
+			 dialog</a>. <em>Case</em> is the general intent of your analysis, 
+			 like surface or intra-cranial, while <em>method</em> relates to the 
+			 analysis itself, like the FFT. Note that the <em>case</em> option can also affect how default parameters are set, 
+			 too.</p>
 		<p>
              A simple example to compute the FFT of some surface eeg file would 
 			 be:&nbsp;</p>
@@ -1289,18 +1291,19 @@ Options:
 		<p>
              &nbsp;</p>
 		<h3>
-             <a name="cli-time"></a>Parameters related to <em>time</em></h3>
+             <a name="cli-time"></a><em>Time related</em> parameters</h3>
 		<h4>
              <a name="cli-sequential-average"></a>Sequential <em>vs</em> Average</h4>
 		<p>
              <em>You have to</em> specify
-			 <strong>how the results of the analysis will be used</strong>, 
-			 either sequentially in time, or as a global average.<br>You do so 
+			 <strong>how the results of the analysis will be used / written to 
+			 file</strong>: 
+			 either a sequential series in time, or as a global average.<br>You do so 
 			 with either the&nbsp; <strong><em>--sequential</em></strong>&nbsp; 
 			 or the&nbsp; <strong><em>--average</em></strong>&nbsp; options.</p>
 		<p>
              F.ex. saving an <strong>average FFT</strong> would be:&nbsp;</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft<strong> --average</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft<strong> --average</strong>  <em>all-the-other-options -- files-to-process</em></pre>
 		<p>
              &nbsp;</p>
 		<h4>
@@ -1309,126 +1312,128 @@ Options:
              You <em>can</em> specify the <strong>starting and ending time point 
 			 of the analysis</strong> with the&nbsp; <strong><em>--timemin</em></strong>&nbsp; and&nbsp; 
 			 <strong><em>--timemax</em></strong>&nbsp; options. If one of these 
-			 is missing, though, it will be replaced by <strong>0</strong> and
+			 is missing, it will be assumed to be either <strong>0</strong> or
 			 <strong>End Of File</strong> (EOF) respectively.</p>
 		<p>
              F.ex. saving an <strong>average FFT</strong> from range 1000 to 
 			 5000 time frames would be:&nbsp;</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average<strong> --timemin=1000 --timemax=5000</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average<strong> --timemin=1000 --timemax=5000</strong>  <em>all-the-other-options -- files-to-process</em></pre>
          <p>
              &nbsp;</p>
 		<h4>
              Excluding Bad Epochs</h4>
 		<p>
-             You can <strong>skip the analysis on blocks that overlap a list of 
+             You can <strong>skip the analysis on blocks that overlap a given list of 
 			 triggers / markers</strong>, usually set around artefacts. <br>You 
 			 do so with the&nbsp; <strong><em>--excludetriggers&nbsp; </em></strong>
 			 option and give a comma separated list of marker names:&nbsp;&nbsp;</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --timemin=1000 --timemax=5000<strong> --excludetriggers=bad,art</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --timemin=1000 --timemax=5000<strong> --excludetriggers=bad,art</strong>  <em>all-the-other-options -- files-to-process</em></pre>
          <p>
-             How it affects the results depends on your
-			 <a href="#cli-sequential-average">temporal saving parameters</a>. 
-			 If the output is sequential, output will zero'ed at the overlapping 
-			 time periods. If the output is an average of blocks, then 
-			 overlapping blocks will be ignored in the average. You could later 
-			 check in the verbose file for the actual amount of rejected 
-			 blocks...</p>
+             How it affects the analysis results depends on your
+			 <a href="#cli-sequential-average">temporal saving parameters</a>:</p>
+		<ul>
+			<li>For <strong>sequential output</strong>, results will <strong>zero'ed at the overlapping 
+			 time periods</strong></li>
+			<li>For <strong>average output</strong>, overlapping blocks will be 
+			<strong>skipped from the averaging</strong>. You could then later 
+			 check in the verbose file for the <em>actual</em> amount of 
+			accepted/rejected 
+			 blocks...</li>
+		</ul>
 		<p>
              &nbsp;</p>
 		<h3>
-             <a name="cli-frequencies"></a>Parameters related to <em>frequencies</em></h3>
+             <a name="cli-frequencies"></a><em>Frequencies related</em> 
+			 parameters</h3>
 		<h4>
              Frequency Range of Analysis</h4>
 		<p>
-             <em>You have to</em> specify the <strong>minimum and maximum output 
-			 frequencies</strong> for your analysis.<br>You do so with the&nbsp; <strong><em>--freqmin</em></strong>&nbsp; and&nbsp; 
+             <em>You have to</em> specify the <strong>frequency range</strong> 
+			 of your analysis.<br>You do so with the&nbsp; <strong><em>--freqmin</em></strong>&nbsp; and&nbsp; 
 			 <strong><em>--freqmax</em></strong>&nbsp; options:&nbsp;</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft<strong> --freqmin=1 --freqmax=40 </strong> all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft<strong> --freqmin=1 --freqmax=40 </strong> <em>all-the-other-options -- files-to-process</em></pre>
 		<p>
              &nbsp;</p>
 		<h4>
-             Saving <em>Linear</em>, <em>Logarithmics</em> or <em>Frequency 
+             Saving <em>Linear interval</em>, <em>Logarithmic interval</em>,<br>or <em>Frequency 
 			 Bands</em></h4>
 		<p>
-             There are 3 options for you to control how frequencies are saved to 
-			 file:</p>
+             There are 3 ways to save the frequency results to file:</p>
 		<ul>
-			<li><strong>A single frequency interval</strong>, with <strong>
+			<li>Saving a <strong>single frequency interval</strong>, with <strong>
 			linear steps</strong></li>
-			<li><strong>A single frequency interval</strong>, with <strong>log 
+			<li>Saving a <strong>single frequency interval</strong>, with <strong>log 
 			steps</strong></li>
-			<li>Averages from any set of arbitrary <strong>frequency bands</strong></li>
+			<li>Saving the average of <strong>frequency bands</strong></li>
 		</ul>
 		<p>
              &nbsp;</p>
 		<p>
 			 You use the&nbsp; <strong><em>--freqlinstep</em></strong>&nbsp; 
 			 option to both indicate that you want to save <strong>a single 
-			 frequency interval</strong>, <em>and</em> the interval is <strong>
-			 linear</strong>, <em>and</em> the <strong>frequency step</strong> 
-			 between each successive frequencies.</p>
+			 frequency interval</strong>, <em>and</em> that the interval is <strong>
+			 linear</strong> with a given <strong>frequency step</strong>.</p>
 		<p>
              F.ex. to save all frequencies from 1 to 40, by steps of 1Hz you 
 			 should use:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --freqmin=1 --freqmax=40 <strong>--freqlinstep=1</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --freqmin=1 --freqmax=40 <strong>--freqlinstep=1</strong>  <em>all-the-other-options -- files-to-process</em></pre>
          <p>
              &nbsp;</p>
 		<p>
 			 You use the&nbsp; <strong><em>--freqlogdecade</em></strong>&nbsp; 
 			 option to both indicate that you want to save <strong>a single 
-			 frequency interval</strong>, <em>and</em> the interval is <strong>
-			 logarithmic</strong>, <em>and</em> the <strong>number of 
+			 frequency interval</strong>, <em>and</em> that the interval is <strong>
+			 logarithmic</strong> with a given <strong>number of 
 			 frequencies per decade</strong> (the number of steps from 1 to 10, 
 			 10 to 100, 100 to 1000 etc..).</p>
 		<p>
              F.ex. to save all frequencies from 1 to 40, with 20 frequencies per 
 			 decade you should use:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --freqmin=1 --freqmax=40 <strong>--freqlogdecade=20</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --freqmin=1 --freqmax=40 <strong>--freqlogdecade=20</strong>  <em>all-the-other-options -- files-to-process</em></pre>
          <p>
              &nbsp;</p>
 		<p>
              Finally, you use the&nbsp; <strong><em>--freqbands</em></strong>&nbsp; 
 			 option to indicate that you want to save the <strong>average of 
 			 specific frequency bands intervals</strong>. Each interval should 
-			 be in the format "10-20", and successive bands comma separated. 
-			 Note that the order and any possible frequency overlaps is up to 
+			 be in the format <em>"lowfreq-highfreq"</em>, and successive bands 
+			 should be comma separated. 
+			 Note that the order and any frequency overlaps is up to 
 			 the user (you).</p>
 		<p>
              F.ex. to save the usual frequency bands 0.5 to 4, 4 to 8, 8 to 13 
 			 and 13 to 30, you should use:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --freqmin=1 --freqmax=40 <strong>--freqbands=0.5-4,4-8,8-13,13-30</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --freqmin=1 --freqmax=40 <strong>--freqbands=0.5-4,4-8,8-13,13-30</strong>  <em>all-the-other-options -- files-to-process</em></pre>
          <p>
              &nbsp;</p>
 		<h4>
              Default Sampling Frequency</h4>
 		<p>
              You can <strong>override the sampling frequency value</strong> for 
-			 the analysis, either if some files are missing it, or have 
-			 erroneous values. It totally bypasses any sampling frequency from 
-			 all the files on the command-line, though, so you it with caution!<br>
+			 the analysis, if some files have an erroneous or missing one. It 
+			 <em>totally</em> bypasses any existing sampling frequency for all the files on the command-line, though, so you it with caution!</p>
+		<p>
 			 You use the&nbsp; <strong><em>--samplingfrequency</em></strong>&nbsp; 
 			 option to do so:&nbsp;</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --freqmin=1 --freqmax=40 <strong>--samplingfrequency=250</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --freqmin=1 --freqmax=40 <strong>--samplingfrequency=250</strong>  <em>all-the-other-options -- files-to-process</em></pre>
          <p>
              &nbsp;</p>
-		<p>
-             Now we can address the options specific to each method:</p>
 		<h3>
-             <em><a name="cli-fft"></a>FFT</em> methods</h3>
+             <em><a name="cli-fft"></a>FFT</em> method</h3>
 		<p>
-             The core principle of the FFT is that the analysis is done on a 
-			 block basis. A block, or window, is specified by its size. The 
-			 amount of overlap across successive blocks has also to be 
-			 specified, too.</p>
+             The core principle to the FFT is that the analysis is done on a 
+			 block-by-block basis. A block, or time window, is specified by its 
+			 <strong>size</strong> and the 
+			 amount of <strong>overlap</strong> across successive blocks.</p>
 		<p>
              &nbsp;</p>
 		<h4>
              Window Size and Window Step</h4>
 		<p>
              The <strong>Window Size</strong> is specified by the option&nbsp;
-			 <strong>--windowsize</strong>. It is recommended to be powers of 2, 
-			 or powers of 10, although nothing except loss of efficiency, 
-			 prevents you give any other number. The rule of thumb for the 
+			 <strong>--windowsize</strong>. It is good practice to be powers of 2, 
+			 or powers of 10, although nothing, except for some loss of efficiency, 
+			 forbids you to give any number of your liking. The rule of thumb for the 
 			 window size is usually to <strong>multiply the sampling frequency 
 			 by 2</strong>. F.ex. for a sampling frequency of 250Hz, a regular 
 			 window size would be 500 time frames. This also produces a nice 
@@ -1449,7 +1454,7 @@ Options:
              &nbsp;</p>
 		<p>
              Here is a typical average FFT example:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 <strong>--windowsize=500</strong> <strong>--windowstep=25%</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 <strong>--windowsize=500</strong> <strong>--windowstep=25%</strong>  <em>all-the-other-options -- files-to-process</em></pre>
          <p>
              &nbsp;</p>
 		<h4>
@@ -1461,11 +1466,12 @@ Options:
 			 Hanning Window</a></strong>. What to retain is that it helps 
 			 mitigate frequency smearing artifacts from the FFT.</p>
 		<p>
-             You specify the Hanning Window with the option&nbsp; <strong>
+             You 
+			 trigger the Hanning Window option with&nbsp; <strong>
 			 --hanning</strong>.</p>
 		<p>
              Completing the example above with the Hanning Window yelds:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 <strong>--windowsize=500</strong> <strong>--windowstep=25% --hanning</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 <strong>--windowsize=500</strong> <strong>--windowstep=25% --hanning</strong>  <em>all-the-other-options -- files-to-process</em></pre>
          <p>
              &nbsp;</p>
 		<h4>
@@ -1482,18 +1488,18 @@ Options:
 		</ul>
 		<p>
              Cases 1 and 2 have the undesirable side effect of the results 
-			 absolute numbers being dependant on the window size. While case 3 
-			 however is the only option insensitive to the window size, as it 
+			 absolute numbers being dependant on the window size. Case 3 
+			 on the other hand is the only option giving results insensitive to the window size, as it 
 			 gives the correct absolute frequency values all the time. If you 
 			 don't really care about absolute values (well, most of the case), 
-			 then this parameter has no impact on the relative frequency 
+			 then this parameter has no impact on the <em>relative</em> frequency 
 			 results. Still, use Parseval option!</p>
 		<p>
              To set the appropriate rescaling factor, use the&nbsp; <strong>
 			 --rescaling</strong>&nbsp; option.</p>
 		<p>
              Completing the example above:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 <strong>--windowsize=500</strong> <strong>--windowstep=25% --hanning --rescaling=parseval</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 <strong>--windowsize=500</strong> <strong>--windowstep=25% --hanning --rescaling=parseval</strong>  <em>all-the-other-options -- files-to-process</em></pre>
          <p>
              &nbsp;</p>
 		<h4>
@@ -1504,23 +1510,22 @@ Options:
 			 frequency analysis results.</p>
 		<p>
              You can specify any reference with the option&nbsp; <strong>
-			 --reference</strong>, but the standard option is to use the <strong>
+			 --reference</strong>, but the standard practice is to use the <strong>
 			 Average Reference for Surface EEG analysis</strong>, aka
 			 <a href="#power-maps"><strong>Power Maps</strong></a>. Any other 
 			 case has to be evaluate on a case-by-case basis, especially for 
-			 intracranial electrodes, due to the specificities of the electrodes 
-			 used.</p>
+			 intracranial electrodes, due to the specificities of the montage used.</p>
 		<p>
              Completing the example above:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 <strong>--windowsize=500</strong> <strong>--windowstep=25% --hanning --rescaling=parseval --reference=average</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 <strong>--windowsize=500</strong> <strong>--windowstep=25% --hanning --rescaling=parseval --reference=average</strong>  <em>all-the-other-options -- files-to-process</em></pre>
          <p>
              &nbsp;</p>
 		<h4>
              <a name="cli-fft-output"></a>Types of output</h4>
 		<p>
              Finally, when you have set all the FFT parameters above, you 
-			 finally have to specify what outputs you are interested in. The FFT 
-			 produces Complex values, equivalent to 2D vectors, which you can 
+			 specify what type of outputs you are interested in. The FFT 
+			 analyis produces Complex values, equivalent to 2D vectors, which you can 
 			 convert to either:</p>
 		<ul>
 			<li><strong>Norm</strong> of complex number</li>
@@ -1533,36 +1538,42 @@ Options:
              The default output is Power, but Norm would be totally legit, too. 
 			 Saving the full complex values could be handy to
 			 <a href="computing-ris.html#frequency-files">compute some source 
-			 localization</a>. And saving the phase to compute some 
-			 correlations.</p>
+			 localization</a>. And saving the phase could be needed to compute some 
+			 sorts of correlations.</p>
 		<p>
              Completing the example above:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 <strong>--windowsize=500</strong> <strong>--windowstep=25% --hanning --rescaling=parseval --reference=average --output=power</strong>  all-the-other-options -- files-to-process</pre>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 <strong>--windowsize=500</strong> <strong>--windowstep=25% --hanning --rescaling=parseval --reference=average --output=power</strong>  <em>all-the-other-options -- files-to-process</em></pre>
          <p>
              &nbsp;</p>
-		<h4>
-             FFT Approximation</h4>
+		<h3>
+             <em><a name="cli-fft-approximation"></a>FFT Approximation</em> 
+			 method</h3>
 		<p>
-             The FFT Approximation parameters are just identical to the regular 
-			 FFT, as it is a variation of it.</p>
+             The <a href="#fft-approximation">FFT Approximation</a> 
+			 parameters are exactly the same as the ones from the 
+			 <a href="#cli-fft">regular 
+			 FFT above</a>.</p>
 		<p>
-             The only difference is in the <strong>output type</strong>, which, 
-			 if specified, <em>has to be</em> <strong>real</strong>:</p>
-         <pre>cartool64.exe frequency <strong>--case=eegsurface --method=fftapprox --sequential</strong> --freqmin=1 --freqmax=40 <strong>--windowsize=500</strong> <strong>--windowstep=25% --hanning --rescaling=parseval --reference=average --output=real  </strong>all-the-other-options -- files-to-process</pre>
+             The only restrictions are the <strong>case</strong> that should be
+			 <strong>Surface EEG</strong>, and the <strong>output type</strong>, which 
+			 should always be <strong>real</strong> (would it be specified). The
+			 <strong>sequential</strong> flag is also recommended, though it 
+			 would technically work to use the global average one:</p>
+         <pre>cartool64.exe frequency <strong>--case=eegsurface --method=fftapprox --sequential</strong> --freqmin=1 --freqmax=40 --windowsize=500 --windowstep=25% --hanning --rescaling=parseval --reference=average <strong>--output=real  </strong><em>all-the-other-options -- files-to-process</em></pre>
          <p>
              &nbsp;</p>
 		<h3>
              <em><a name="cli-stransform"></a>S-Transform</em> (wavelet) method</h3>
 		<p>
              The <strong>S-Transform</strong>, contrary to the FFT, is not 
-			 designed by repeating some analysis on blocks. It runs only once on 
-			 the whole selected time range. And, yes, the S-Transform is not <em>
+			 designed on a block-by-block analysis. Instead, it runs on 
+			 the whole selected time range once. And, yes, the S-Transform is not <em>
 			 stricto sensu</em> a wavelet, but for the sake of simplicity we 
 			 still talk about wavelet, as it produces the same kind of 
 			 results...</p>
 		<p>
-             Consequently, the following options become irrelevant, and will 
-			 trigger an error:</p>
+             Consequently, the following options are irrelevant, and will 
+			 trigger an error if used for the S-Transform:</p>
 		<ul>
 			<li><strong>--windowsize</strong></li>
 			<li><strong>--windowstep</strong></li>
@@ -1574,11 +1585,12 @@ Options:
              Hanning Window</h4>
 		<p>
              The&nbsp; <strong>--hanning</strong>&nbsp; option still holds for 
-			 the S-Transform, though its meaning slightly differs.</p>
+			 the S-Transform, though its meaning slightly differs than for the 
+			 FFT.</p>
 		<p>
-             It will apply a half-hanning on the starting and ending points of 
-			 the time interval. The size of the tapering window depends of 
-			 course of each frequency.</p>
+             It will apply a <strong>half-hanning on the starting and ending points of 
+			 the time interval</strong>. The size of the tapering window depends on 
+			 the frequency.</p>
 		<p>
              &nbsp;</p>
 		<h4>
@@ -1599,29 +1611,38 @@ Options:
              Average Spectrum</h4>
 		<p>
              Computing the <strong>average spectrum for surface EEG</strong>, 
-			 with sampling frequency of 250Hz, starting from 1 Hz, by steps of 
-			 0.5Hz:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqlinstep=0.5 --windowsize=500 --windowstep=25% --hanning --rescaling=parseval --reference=average --output=power --excludetriggers=bad --infix=MySpectrum --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
+			 with sampling frequency of 250Hz, from 1 Hz to 40Hz, by steps of 
+			 0.5Hz, on the whole time range while skipping bad epochs:</p>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 --freqlinstep=0.5 --windowsize=500 --windowstep=25% --hanning --rescaling=parseval --reference=average --output=power --excludetriggers=bad --infix=MySpectrum --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
          <p>
-             Computing the <strong>average spectrum for surface EEG</strong>, 
-			 with sampling frequency of 250Hz, starting from 1 Hz, with log 
-			 frequencies output:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqlogdecade=20 --windowsize=500 --windowstep=25% --hanning --rescaling=parseval --reference=average --output=power --excludetriggers=bad --infix=MySpectrum --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
+             Same as previous, but saving log 
+			 frequencies interval:</p>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqmin=1 --freqmax=40 --freqlogdecade=20 --windowsize=500 --windowstep=25% --hanning --rescaling=parseval --reference=average --output=power --excludetriggers=bad --infix=MySpectrum --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
+         <p>
+             Same as previous, but saving frequency bands:</p>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --average --freqbands=0.5-4,4-8,8-13,13-30 --windowsize=500 --windowstep=25% --hanning --rescaling=parseval --reference=average --output=power --excludetriggers=bad --infix=MySpectrum --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
          <p>
              Computing the <strong>average spectrum for intra-cranial EEG</strong>, 
-			 with sampling frequency of 1000Hz, starting from 1 Hz, with log 
-			 frequencies output - Note that you might have to set the reference 
+			 with sampling frequency of 1000Hz, from 1 Hz to 40Hz, with log 
+			 frequencies output. Note that you might have to set the reference 
 			 according to your montage:</p>
-         <pre>cartool64.exe frequency --case=eegintra --method=fft --average --freqmin=1 --freqlogdecade=20 --windowsize=2000 --windowstep=25% --hanning --rescaling=parseval --reference=none --output=power --excludetriggers=bad --infix=MySpectrum --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
+         <pre>cartool64.exe frequency --case=eegintra --method=fft --average --freqmin=1 --freqmax=40 --freqlogdecade=20 --windowsize=2000 --windowstep=25% --hanning --rescaling=parseval --reference=none --output=power --excludetriggers=bad --infix=MySpectrum --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
 		<p>
              &nbsp;</p>
 		<h4>
              Sequential FFT</h4>
 		<p>
              Computing the <strong>sequence of spectrum for surface EEG</strong>, 
-			 with sampling frequency of 250Hz, starting from 1 Hz, by steps of 
-			 0.5Hz:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --sequential --freqmin=1 --freqlinstep=0.5 --windowsize=500 --windowstep=25% --hanning --rescaling=parseval --reference=average --output=power --excludetriggers=bad --infix=MyFFTs --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
+			 with sampling frequency of 250Hz, from 1 Hz to 40Hz, by steps of 
+			 0.5Hz, on the whole time range while skipping bad epochs:</p>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --sequential --freqmin=1 --freqmax=40 --freqlinstep=0.5 --windowsize=500 --windowstep=25% --hanning --rescaling=parseval --reference=average --output=power --excludetriggers=bad --infix=MyFFTs --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
+         <p>
+             Same as previous, but saving log 
+			 frequencies interval:</p>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --sequential --freqmin=1 --freqmax=40 --freqlogdecade=20 --windowsize=500 --windowstep=25% --hanning --rescaling=parseval --reference=average --output=power --excludetriggers=bad --infix=MyFFTs --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
+         <p>
+             Same as previous, but saving frequency bands:</p>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --sequential --freqbands=0.5-4,4-8,8-13,13-30 --windowsize=500 --windowstep=25% --hanning --rescaling=parseval --reference=average --output=power --excludetriggers=bad --infix=MyFFTs --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
          <p>
              Computing the <strong>sequence of spectrum for intra-cranial EEG</strong>, 
 			 with sampling frequency of 1000Hz, from 1 Hz to 40 Hz and time 1000 
@@ -1637,16 +1658,21 @@ Options:
              Short-Term FFT</h4>
 		<p>
              Computing the <strong>short-term FFT for surface EEG</strong>, with 
-			 sampling frequency of 250Hz, starting from 1 Hz, by steps of 0.5Hz:</p>
-         <pre>cartool64.exe frequency --case=eegsurface --method=fft --sequential --freqmin=1 --freqlinstep=0.5 --windowsize=500 --windowstep=1tf --hanning --rescaling=parseval --reference=average --output=power --excludetriggers=bad --infix=MySTFFT --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
+			 sampling frequency of 250Hz, from 1 Hz to 40Hz, by steps of 0.5Hz:</p>
+         <pre>cartool64.exe frequency --case=eegsurface --method=fft --sequential --freqmin=1 --freqmax=40 --freqlinstep=0.5 --windowsize=500 --windowstep=1tf --hanning --rescaling=parseval --reference=average --output=power --excludetriggers=bad --infix=MystFFT --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
          <p>
              &nbsp;</p>
 		<h4>
              S-Transform</h4>
 		<p>
              Computing the <strong>S-Transform for surface EEG</strong>, from 1 
-			 Hz to 40 Hz, by steps of 1Hz:</p>
+			 Hz to 40 Hz, by steps of 1Hz, on the whole time range while 
+			 skipping bad epochs:</p>
          <pre>cartool64.exe frequency --case=eegsurface --method=stransform --freqmin=1 --freqmax=40 --freqlinstep=1 --hanning --reference=average --output=power --excludetriggers=bad --infix=MyST --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
+		<p>
+             Same as previous, but saving log 
+			 frequencies interval:</p>
+         <pre>cartool64.exe frequency --case=eegsurface --method=stransform --freqmin=1 --freqmax=40 --freqlogdecade=20 --hanning --reference=average --output=power --excludetriggers=bad --infix=MyST --savefreq -- &lt;eegfile1&gt; &lt;eegfile2&gt; &lt;eegfile3&gt;</pre>
          <p>
              Computing the <strong>S-Transform for intra-cranial EEG</strong>, 
 			 for tracks y1, y2, y3, from 1 Hz to 40 Hz, with log frequencies 
