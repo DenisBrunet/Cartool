@@ -240,6 +240,7 @@ C.M. Michel, D. Brunet,
              <a href="#command-line"><em>Computing RIS</em>, from the Command-Line Interface (CLI)</a><br>
          </H5>
          <H6>
+			 <a href="#cli-options">CLI Options</a><br>
 			 <a href="#cli-specifying-eeg">Specifying the input EEG files</a><br>
 			 <a href="#cli-specifying-inverses">Specifying the input Inverse Matrix files</a><br>
 			 <a href="#cli-examples">CLI Examples</a><br>
@@ -264,9 +265,9 @@ C.M. Michel, D. Brunet,
          <H5>
              <a href="#results">Results</a><br>
          </H5>
-         <P class="mvd-h2">
+         <h2>
              <a name="dialog"></a><em>Computing RIS</em>, from the Dialog
-         </P>
+         </h2>
          <P>
              Called from the <FONT FACE="Arial Black,Arial,Helvetica">
                  <A HREF="all-processings.html#tools">
@@ -931,9 +932,22 @@ C.M. Michel, D. Brunet,
              </tr>
          </TABLE>
 
-		 <P class="mvd-h2">
+		 <h2>
              <a name="command-line"></a><em>Computing RIS</em>, from the Command-Line Interface (CLI)
-         </P>
+         </h2>
+
+         <H6>
+			 <a href="#cli-options">CLI Options</a><br>
+			 <a href="#cli-specifying-eeg">Specifying the input EEG files</a><br>
+			 <a href="#cli-specifying-inverses">Specifying the input Inverse Matrix files</a><br>
+			 <a href="#cli-examples">CLI Examples</a><br>
+			 <br>
+         </H6>
+
+		<h3>
+             <a name="cli-options"></a>CLI Options
+        </h3>
+
          <P>
              You can get the exact <em>Computing RIS </em>subcommand options with:</P>
          <pre>cartool64.exe computingris --help</pre>
@@ -1216,12 +1230,29 @@ Options:
    &quot;Avg AdrienRISE2vu.V2vu.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot;
    &quot;Avg AdrienRISE3.V3.Recut.PowerMaps 0.00-40.00 Hz.Seq.freq&quot;</pre>
 
-         <P class="mvd-h2">
+         <h2>
              <A NAME="technical-points-and-hints"></A>Computing RIS - Technical points &amp; hints
-         </P>
+         </h2>
 
-         <P class="mvd-h4">
-             <A NAME="presets"></A>Scenarios and Presets<P>
+         <H6>
+             <A HREF="#presets">Scenarios and Presets</A><br>
+             <a href="#condition-subject"><strong>Per Condition</strong> <i>vs</i> 
+			 <strong>Per Subject</strong> Modes</a><br>
+             <a href="#single-multiple-matrices"><strong>Single</strong> <i>vs</i> 
+			 <strong>Multiple</strong> Inverse Matrices</a><br>
+			 <a href="#reading-writing-lists">Reading and Writing the List of 
+			 Files</a><br>
+             <a href="#consistency-checks">Checking the files consistency</a><br>
+             <A HREF="#spatial-filter">Spatial Filter</A><br>
+             <a href="#z-score">Background normalization</a><br>
+             <a href="#templatize">Templatize results</a><br>
+             <A HREF="#frequency-files">Frequency files</A><br>
+             <br>
+         </H6>
+
+         <h3>
+             <A NAME="presets"></A>Scenarios and Presets
+         </h3>
              There are some very diverse scenarios when sources localization can 
 			 be computed. These scenarios, or presets, depend on your <strong>
 			 type of experiment</strong>, <strong>type of analysis</strong>, and
@@ -1323,10 +1354,9 @@ Options:
 		<P>
              &nbsp;</P>
 
-         <P class="mvd-h4">
-             <A NAME="condition-subject"></A><strong>Per Condition</strong> <em>vs</em> 
-			 <strong>Per Subject</strong> modes
-         </P>
+         <h3>
+             <A NAME="condition-subject"></A>Per Condition <em>vs</em> Per Subject modes
+         </h3>
          <P>
              These two buttons tell Cartool how to incorporate any <strong>
 			 additional group of EEG files</strong>. Use the one mode that is 
@@ -1353,10 +1383,9 @@ Options:
              &nbsp;</P>
 
 
-         <P class="mvd-h4">
-             <A NAME="single-multiple-matrices"></A><strong>Single</strong> <i>vs</i> 
-			 <strong>Multiple</strong> Inverse Matrices
-         </P>
+		<h3>
+             <A NAME="single-multiple-matrices"></A>Single <em>vs</em> Multiple Inverse Matrices
+		</h3>
          <P>
              There are two ways to work with inverse 
 			 matrices:</P>
@@ -1488,10 +1517,10 @@ Options:
 		<P>
              &nbsp;</P>
 
-         <P class="mvd-h4">
-             <A NAME="reading-writing-lists"></A>Reading and Writing the list of files
-         </P>
-         <P>
+		<h3>
+		    <A NAME="reading-writing-lists"></A>Reading and Writing the list of files
+		</h3>
+		     <P>
              Filling the list of EEG files correctly can be tedious, therefor it 
 			 is highly recommended to <strong>save your final list to a <i>.csv</i> 
 			 or <i>.txt</i> file for later</strong>!</P>
@@ -1541,9 +1570,10 @@ Options:
 		   <li>Now Cartool shows 5 conditions, <strong>50 subjects</strong>!</li>
 		</ul>
 		<P>&nbsp;</P>
-		<P class="mvd-h4">
-             <A NAME="consistency-checks"></A>Checking the files consistency
-         </P>
+		
+		<h3>
+		 <A NAME="consistency-checks"></A>Checking the files consistency
+		</h3>
          <P>
              Cartool will run your input files through an extensive set of consistency
              rules. The purpose being first to avoid crashes, and second to check that you
@@ -1607,9 +1637,10 @@ Options:
              <img alt="files compatibility checks - with ROIs" height="321" SRC="images/compris.files-consistency.2.png" width="449">
          </P>
 		<P>&nbsp;</P>
-         <P class="mvd-h4">
+
+		<h3>
              <A NAME="spatial-filter"></A>Spatial Filter
-         </P>
+		</h3>
          <P class="mvd-normal">
              Applying the <strong>Spatial filter is strongly recommended</strong> before computing the
              results of inverse solutions if there remains any transient artifacts, and/or
@@ -1635,9 +1666,10 @@ Options:
              <img alt="spatial filter" height="331" SRC="images/compris.spatial-filter.png" width="659">
          </P>
 		<P>&nbsp;</P>
-         <P class="mvd-h4">
+		
+		<h3>
              <a name="z-score"></a>Background normalization via custom <em>Z-Score</em>
-         </P>
+		</h3>
          <P>
              Due to various reasons, like an incorrect head geometry, or approximate skull
              conductivity, <strong>some solution points will show more power than others</strong>.
@@ -1679,9 +1711,10 @@ Options:
              <img height="434" SRC="images/compris.z-score.before-and-after.png" width="576">
          </P>
 		<P>&nbsp;</P>
-         <P class="mvd-h4">
+		
+		<h3>
              <a name="templatize"></a>Templatize results
-         </P>
+		</h3>
          <P>
              If one is interested on only having a <strong>
                  template of all active brains
@@ -1716,9 +1749,10 @@ Options:
              <img height="585" src="images/compris.templatize.png" width="839">
          </P>
 		<P>&nbsp;</P>
-         <P class="mvd-h4">
+		
+		<h3>
              <A NAME="frequency-files"></A>Frequency files
-         </P>
+		</h3>
          <P>
              Noteworthy is the fact that you can <strong>input frequency files</strong>,
              and hence compute the results of inverse solution at different frequencies.
@@ -1766,9 +1800,9 @@ Options:
              <img alt="" height="382" SRC="images/compris.ris-frequency.1.png" width="275"><img alt="" height="382" SRC="images/compris.ris-frequency.2.png" width="275"><br>
              <img alt="" height="382" SRC="images/compris.ris-frequency.3.png" width="275"><img alt="" height="382" SRC="images/compris.ris-frequency.4.png" width="275">
          </P>
-         <P class="mvd-h2">
+         <h2>
              <a name="results"></a>Computing RIS - Results
-         </P>
+         </h2>
          <ul>
              <li>
                  For each input file, its corresponding <strong>&lt;input file&gt;<a href="files-formats-cartool.html#ris">.ris</a></strong>

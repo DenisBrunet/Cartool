@@ -1197,9 +1197,24 @@ D. Lehman and C.M. Michel,
              </TABLE>
          </P>
          <H2>
-			 <em><a name="cli"></a>Frequency Analysis</em>, from the Command-Line Interface (CLI)</H2>
-         <h3>
-             <a name="cli-options"></a>CLI Options</h3>
+			 <em><a name="cli"></a>Frequency Analysis</em>, from the Command-Line Interface (CLI)
+		 </H2>
+
+         <H6>
+                 <A HREF="#cli-options">CLI Options</A><br>
+                 <A HREF="#cli-cases-methods">Cases and Methods</A><br>
+                 <A HREF="#cli-time">Time Related Parameters</A><br>
+                 <A HREF="#cli-frequencies">Frequencies Related Parameters</A><br>
+                 <A HREF="#cli-fft">FFT Method</A><br>
+                 <A HREF="#cli-fft-approximation">FFT Approximation Method</A><br>
+                 <A HREF="#cli-stransform">S-Transform (wavelet) Method</A><br>
+                 <A HREF="#cli-examples">CLI Examples</A><br>
+                 <br>
+         </H6>
+
+		<h3>
+             <a name="cli-options"></a>CLI Options
+        </h3>
 		<P>
              You can get the exact <em>Frequency Analysis </em>subcommand 
 			 options with:</P>
@@ -1554,8 +1569,8 @@ Options:
 			 <a href="#cli-fft">regular 
 			 FFT above</a>.</p>
 		<p>
-             The only restrictions are the <strong>case</strong> that should be
-			 <strong>Surface EEG</strong>, and the <strong>output type</strong>, which 
+             The only 
+			 restrictions are the <strong>case</strong> that should be <strong>Surface EEG</strong>, and the <strong>output type</strong>, which 
 			 should always be <strong>real</strong> (would it be specified). The
 			 <strong>sequential</strong> flag is also recommended, though it 
 			 would technically work to use the global average one:</p>
@@ -1682,6 +1697,20 @@ Options:
          <H2>
              <A NAME="technical-points"></A>Frequency analysis - Technical points
          </H2>
+
+         <H6>
+                 <A HREF="#file-types-in">Files that can be processed</A><br>
+                 <A HREF="#data-reference">Reference of data</A><br>
+                 <A HREF="#window-time-ref">Time reference for each window</A><br>
+                 <A HREF="#averaging-windows">Averaging windows</A><br>
+                 <A HREF="#windowing">Windowing function</A><br>
+                 <A HREF="#time-frequency">Time / frequency resolution issue</A><br>
+                 <A HREF="#averaging-freqs">Averaging frequencies together</A><br>
+                 <A HREF="#averaging-fft-appr">FFT Approximation and averaging</A><br>
+                 <A HREF="#avg-after-norm">Averaging is done after conversion</A><br>
+                 <br>
+         </H6>
+
          <H3>
              <A NAME="file-types-in"></A>Files that can be processed
          </H3>

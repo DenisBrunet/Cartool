@@ -28,7 +28,12 @@
              <A HREF="#what-is-exporting">What is Reprocess / Export Tracks?</A><br>
              <A HREF="#run-export"><em>Reprocess Tracks</em>, from the Dialog</A><br>
              <a href="#command-line"><em>Reprocess Tracks</em>, from the Command-Line Interface (CLI)</a><br>
-             <A HREF="#results">Results</A><br>
+         </H5>
+         <H6>
+                 <A HREF="#cli-options">CLI Options</A><br>
+                 <A HREF="#cli-examples">CLI Examples</A><br>
+         </H6>
+         <H5>
              <A HREF="#technical-points">Technical points and hints</A><br>
          </H5>
          <H6>
@@ -39,6 +44,10 @@
              <A HREF="#tracks-enumerate">Specifying list of tracks</A><br>
              <a href="#exportingcomputedtracks">Exporting Computed Tracks</a>
          </H6>
+         <H5>
+             <A HREF="#results">Results</A><br>
+         </H5>
+
          <H2>
              <A NAME="what-is-exporting"></A>What is Reprocess / Export Tracks?
          </H2>
@@ -47,51 +56,42 @@
              tracks-like files), then <B>
                  export them to some new files after
                  applying some basic transformations
-             </B>. They include things such as:
-         </P>
-         <UL>
-             <LI CLASS="mvd-P">
-                 <P>
-                     <strong>Cropping the time line</strong>,<BR>
-             <LI CLASS="mvd-P">
-                 <strong>Saving only a subset of tracks</strong>, possibliy
-                 re-orering them,<BR>
-             <LI CLASS="mvd-P">
-                 <strong>Tracks filtering</strong> (Butterworth, Notches,
-                 Spatial Filter etc..),<BR>
-             <LI CLASS="mvd-P">Baseline correction,<BR>
-             <LI CLASS="mvd-P"><strong>Re-referencing</strong>,<BR>
-             <LI CLASS="mvd-P">Rescaling / normalizing,<BR>
-             <LI CLASS="mvd-P"><strong>Downsampling</strong>,<BR>
-             <LI CLASS="mvd-P"><strong>Changing file format</strong>,
-             <LI CLASS="mvd-P">
-                 Applying Region Of Interests (ROIs)<BR>
-             <LI CLASS="mvd-P">etc...</P>
-         </UL>
+             </B>. They include things such as:</P>
+		<ul>
+			<li><strong>Cropping the time line</strong>,</li>
+			<li><strong>Saving only a subset of tracks</strong>, possibliy
+                 re-orering them,</li>
+			<li><strong>Tracks filtering</strong> (Butterworth, Notches,
+                 Spatial Filter etc..),</li>
+			<li>Baseline correction,</li>
+			<li><strong>Re-referencing</strong>,</li>
+			<li>Rescaling / normalizing,</li>
+			<li><strong>Downsampling</strong>,</li>
+			<li><strong>Changing file format</strong>,
+             </li>
+			<li>Applying Region Of Interests (ROIs),</li>
+			<li>..and much more.</li>
+		</ul>
+		<P>&nbsp;</P>
          <P>
-             &nbsp;
+             The
+             <B>input files</B> can be anything that <em>looks like</em> tracks:
          </P>
-         <P>
-             <B>Input files</B> can be anything that looks like tracks:
-         </P>
-         <UL>
-             <LI CLASS="mvd-P">
-                 <P>
-                     <A HREF="files-formats-others.html#eeg"><I>Any</I> EEG files recognized by Cartool,</A><BR>
-             <LI CLASS="mvd-P">
+		<ul>
+			<li>
+                     <A HREF="files-formats-others.html#eeg"><I>Any</I> EEG files recognized by Cartool,</A></li>
+			<li>
                  <A HREF="files-formats-cartool.html#ris">Ris files</A>
-                 (Results from Inverse Solution computation),<BR>
-             <LI CLASS="mvd-P">
+                 (Results from Inverse Solution computation),</li>
+			<li>
                  <A HREF="files-formats-cartool.html#freq">Freq files</A>
                  from the <A HREF="frequency-analysis.html">Frequency Analysis</A> (see
-                 also <A HREF="#result-from-freq">this point</A>),<BR>
-             <LI CLASS="mvd-P">
-                 Even exotic files like the <A HREF="files-formats-cartool.html#seg">.seg</A>
-                 and <A HREF="files-formats-cartool.html#data">.data</A> ones.</P>
-         </UL>
-         <P>
-             &nbsp;
-         </P>
+                 also <A HREF="#result-from-freq">this point</A>),</li>
+			<li>ven exotic files like the <A HREF="files-formats-cartool.html#seg">.seg</A>
+                 and <A HREF="files-formats-cartool.html#data">.data</A> ones.</li>
+		</ul>
+		<P>
+             &nbsp;</P>
          <P>
              See here what the <B><A HREF="#file-types-out">ouput files</A></B>
              can be, plus the <A HREF="#result-from-freq">
@@ -954,8 +954,17 @@
          <H2>
              <a name="command-line"></a><em>Reprocess Tracks</em>, from the Command-Line Interface (CLI)
          </H2>
+         <H6>
+                 <A HREF="#cli-options">CLI Options</A><br>
+                 <A HREF="#cli-examples">CLI Examples</A><br>
+                 <br>
+         </H6>
+		<h3>
+             <a name="cli-options"></a>CLI Options
+        </h3>
          <P>
-             You can get the <em>Reprocess / Export Tracks</em> subcommand full syntax with:</P>
+             You can get the exact <em>Reprocess / Export Tracks </em>subcommand 
+			 options with:</P>
          <pre>cartool64.exe reprocesstracks --help</pre>
          <P>
              Which gives:
@@ -1019,10 +1028,11 @@ Options:
          <p>
              &nbsp;</p>
 		<h4>
-             Notes:</h4>
+             Notes 
+			 about the sequentiality</h4>
          <ul>
              <li>
-                 &nbsp;<strong>You can combine most of these options</strong>, as long
+                 <strong>You can combine most of these options</strong>, as long
                  as they make sense to you!
              </li>
              <li>
@@ -1053,6 +1063,7 @@ Options:
              </li>
          </ul>
          <h4>
+             Notes about the
              Butterworth filters</h4>
          <p>
              Band-Pass option excludes both High-Pass and Low-Pass options. However, it is
@@ -1074,8 +1085,8 @@ Options:
          </p>
 		<p>
              &nbsp;</p>
-         <h4>
-             Examples:</h4>
+         <h3>
+             <a name="cli-examples"></a>CLI Examples</h3>
          <P>
              Saving files to another format, f.ex. to BrainVision <strong><em>.eeg</em></strong>:
          </P>
@@ -1153,39 +1164,20 @@ cartool64.exe reprocesstracks --reference=average --Infix=RefAvg -- &lt;file1&gt
 cartool64.exe reprocesstracks --keepbelow=-1 --keepabove=1 --infix=OutsideInterval -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;
 cartool64.exe reprocesstracks --keepabove=-1 --keepbelow=1 --infix=InsideInterval -- &lt;file1&gt; &lt;file2&gt; &lt;file3&gt;</pre>
          <H2>
-             <A NAME="results"></A>Results
-         </H2>
-         <UL>
-             <LI CLASS="mvd-P">
-                 <P>
-                     Exported files are written in the <B>same directories as their sources</B>.
-                     File names are inserted with the <B>infix</B> string, which is by
-                     default &quot;Export&quot;, followed by the appropriate file extension.
-                 </P>
-             <LI CLASS="mvd-P">
-                 <P>
-                     <A NAME="result-from-freq"></A>In case the input is a <A HREF="frequency-analysis.html#results">
-                         Freq
-                         file
-                     </A>, <B>
-                         each of the stored frequency will be output in a
-                         separate file
-                     </B>. The resulting filenames will include which
-                     frequency has been used, f.ex.&nbsp; &quot;MyFile.4-8 Hz.EP&quot;,
-                     &quot;MyFile.8-14 Hz.EP&quot;, &quot;MyFile.14-20 Hz.EP&quot;.
-                 </P>
-             <LI CLASS="mvd-P">
-                 <P>
-                     Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>
-                     (text), showing all the parameters.
-                 </P>
-         </UL>
-         <H2>
              <A NAME="technical-points"></A>Technical points and hints
          </H2>
-         <H4>
+         <H6>
+             <a href="#sequenceofprocessing">Sequence of Processing</a><br>
+             <a href="#temporalfiltering">Temporal Filtering</a><br>
+             <a href="#spatialfiltering">Spatial Filtering and Adding Null Track</a><br>
+             <a href="#rois">ROIs</a><br>
+             <A HREF="#tracks-enumerate">Specifying list of tracks</A><br>
+             <a href="#exportingcomputedtracks">Exporting Computed Tracks</a><br>
+             <br>
+         </H6>
+         <h3>
              <a name="sequenceofprocessing"></a>Sequence of Processing
-         </H4>
+         </h3>
          <P>
              The various available processing <strong><em>follow a very precise sequence</em></strong>,
              which is:
@@ -1228,10 +1220,10 @@ cartool64.exe reprocesstracks --keepabove=-1 --keepbelow=1 --infix=InsideInterva
              <LI CLASS="mvd-P">Averaging the whole time range or Downsampling<BR>
              <LI CLASS="mvd-P">Computing ROIs</P>
          </UL>
-         <H4>
+         <h3>
              <a name="temporalfiltering"></a>Temporal
              Filtering
-         </H4>
+         </h3>
          <P>
              Cartool uses a classic<B> sliding window</B> method, which is
              mandatory to avoid artifacts, especially with high-pass filter:
@@ -1268,10 +1260,10 @@ cartool64.exe reprocesstracks --keepabove=-1 --keepbelow=1 --infix=InsideInterva
              current file. The higher the sampling frequency, the bigger the <B><I>filtersize</I></B>
              variable, the longer the computation.
          </P>
-         <H4>
+         <h3>
              <a name="spatialfiltering"></a>Spatial
              Filtering and Adding Null Track
-         </H4>
+         </h3>
          <P>
              The <em><A HREF="eeg-display.html#spatial-filter">Spatial Filter</A></em> depends on a
              <a href="files-formats-cartool.html#xyz">
@@ -1303,9 +1295,9 @@ cartool64.exe reprocesstracks --keepabove=-1 --keepbelow=1 --infix=InsideInterva
              Filter step(!), and add an error message in the <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A> </I>
              verbose file...
          </P>
-         <H4>
+         <h3>
              <A NAME="rois"></A>ROIs
-         </H4>
+         </h3>
          <P>
              If a <B><I><A HREF="files-formats-cartool.html#rois">.rois</A></I></B><A HREF="files-formats-cartool.html#rois"> file</A>
              has been provided (see <A HREF="creating-rois.html">Creating ROIs</A>),
@@ -1342,9 +1334,9 @@ cartool64.exe reprocesstracks --keepabove=-1 --keepbelow=1 --infix=InsideInterva
          <P>
              <IMG SRC="images/rois.original-tracks-order.png" WIDTH="276" HEIGHT="397" VSPACE="0" HSPACE="0" BORDER="0"><IMG SRC="images/rois.new-tracks-order.png" WIDTH="276" HEIGHT="397" VSPACE="0" HSPACE="0" BORDER="0">
          </P>
-         <H4>
+         <h3>
              <A NAME="tracks-enumerate"></A>Specifying the list of tracks
-         </H4>
+         </h3>
          <P>
              You can:
          </P>
@@ -1382,29 +1374,55 @@ cartool64.exe reprocesstracks --keepabove=-1 --keepbelow=1 --infix=InsideInterva
          <P>
              <IMG SRC="images/export-tracks.tracks-order.png" WIDTH="216" HEIGHT="515" VSPACE="0" HSPACE="0" BORDER="0">
          </P>
-         <H4>
+         <h3>
              <a name="exportingcomputedtracks"></a>Exporting Computed Tracks
-         </H4>
+         </h3>
          <P>
              You can export the <A HREF="terms-definitions-formulas.html#tracks">computed tracks</A> by
-             using any of the following predefined names:
-         </P>
-         <UL>
-             <LI CLASS="mvd-P">
-                 <P>
-                     <B>GFP</B>&nbsp; for the Global Field Power, if data are signed.<BR>
-             <LI CLASS="mvd-P">
+             using any of the following predefined names:</P>
+		<ul>
+			<li>
+                     <B>GFP</B>&nbsp; for the Global Field Power, if data are signed.</li>
+			<li>
                  <B>RMS</B> for the Root Mean Square, instead of the
-                 GFP if <A HREF="terms-definitions-formulas.html#data-types">data are positive</A>.<BR>
-             <LI CLASS="mvd-P"><B>DIS</B>&nbsp; for the dissimilarity.<BR>
-             <LI CLASS="mvd-P"><B>AVG</B>&nbsp; for the average.</P>
-         </UL>
-         <H4>
+                 GFP if <A HREF="terms-definitions-formulas.html#data-types">data are positive</A>.</li>
+			<li><B>DIS</B>&nbsp; for the dissimilarity.</li>
+			<li><B>AVG</B>&nbsp; for the average.</li>
+		</ul>
+		<h3>
              Exporting frequency files
-         </H4>
+         </h3>
          <P>
              See the <A HREF="#results">Results paragraph</A>.
          </P>
+         <H2>
+             <A NAME="results"></A>Results
+         </H2>
+         <UL>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Exported files are written in the <B>same directories as their sources</B>.
+                     File names are inserted with the <B>infix</B> string, which is by
+                     default &quot;Export&quot;, followed by the appropriate file extension.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     <A NAME="result-from-freq"></A>In case the input is a <A HREF="frequency-analysis.html#results">
+                         Freq
+                         file
+                     </A>, <B>
+                         each of the stored frequency will be output in a
+                         separate file
+                     </B>. The resulting filenames will include which
+                     frequency has been used, f.ex.&nbsp; &quot;MyFile.4-8 Hz.EP&quot;,
+                     &quot;MyFile.8-14 Hz.EP&quot;, &quot;MyFile.14-20 Hz.EP&quot;.
+                 </P>
+             <LI CLASS="mvd-P">
+                 <P>
+                     Verbose file <I><A HREF="files-formats-cartool.html#vrb"><B>.vrb</B></A></I>
+                     (text), showing all the parameters.
+                 </P>
+         </UL>
          <P>
              &nbsp;
          </P>

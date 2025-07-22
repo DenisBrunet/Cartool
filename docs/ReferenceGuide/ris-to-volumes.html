@@ -76,18 +76,20 @@
              &nbsp;
          </P>
          <h5>
-             <a href="#dialog"><em>RIS to Volume</em>, from the dialog</a><br>
+             <a href="#dialog"><em>RIS to Volume</em>, from the Dialog</a><br>
              <a href="#command-line"><em>RIS to Volume</em>, from the Command-Line Interface (CLI)</a><br>
+         </H5>
+         <H6>
+                 <A HREF="#cli-options">CLI Options</A><br>
+                 <A HREF="#cli-examples">CLI Examples</A><br>
+         </H6>
+         <H5>
              <A HREF="#technical-points-and-hints">Technical points &amp; hints</A>
          </h5>
          <h6>
-             <A HREF="#grey-mask">Grey mask</A>
-         </h6>
-         <h6>
-             <a href="#interpolation">Types of interpolation</a>
-         </h6>
-         <h6>
-             <A HREF="#output-data-type">Output data types conversion</A>
+             <A HREF="#grey-mask">Grey mask</A><br>
+             <a href="#interpolation">Types of interpolation</a><br>
+             <A HREF="#output-data-type">Output data types conversion</A><br>
          </h6>
          <h5>
              <a href="#results">Results</a>
@@ -436,9 +438,21 @@
          </TABLE>
          <H2>
              <a name="command-line"></a><em>RIS to Volume</em>, from the Command-Line Interface 
-			 (CLI)</H2>
+			 (CLI)
+		 </H2>
+
+         <H6>
+                 <A HREF="#cli-options">CLI Options</A><br>
+                 <A HREF="#cli-examples">CLI Examples</A><br>
+                 <br>
+         </H6>
+
+		<h3>
+             <a name="cli-options"></a>CLI Options
+        </h3>
          <P>
-             You can get the <em>RIS to Volume</em> subcommand full syntax with:</P>
+             You can get the exact <em>RIS to Volume </em>subcommand 
+			 options with:</P>
          <pre>cartool64.exe ristovolume --help</pre>
          <P>
              Which gives:
@@ -465,8 +479,8 @@ Options:
 -h,--help 			This message&nbsp;</pre>
          <p>
              &nbsp;</p>
-		<h4>
-             Examples:</h4>
+		<h3>
+             <a name="cli-examples"></a>CLI Examples</h3>
          <P>
              Converting all time positions to a single 4D Nifti file:</P>
          <pre>cartool64.exe ristovolume --spfile=MNI152.NlinAsym20.6926.6mm.spi --greyfile=MNI152.NlinAsym20.Grey.nii -- &lt;files1.ris&gt;</pre>
@@ -490,9 +504,17 @@ Options:
 		<H2>
              <A NAME="technical-points-and-hints"></A>RIS to Volumes - Technical points &amp; hints
          </H2>
-         <P class="mvd-h4">
+
+         <h6>
+             <A HREF="#grey-mask">Grey mask</A><br>
+             <a href="#interpolation">Types of interpolation</a><br>
+             <A HREF="#output-data-type">Output data types conversion</A><br>
+             <br>
+         </h6>
+         
+         <h3>
              <A NAME="grey-mask"></A>Grey mask
-         </P>
+         </h3>
          <P>
              The <A HREF="#dialog-grey-mask">grey mask provided</A> will constrain
              the outputs in some important ways.
@@ -552,9 +574,9 @@ Options:
              </strong>. All other masks will generate some problems
              of their own (and who needs more problems?).
          </P>
-         <P class="mvd-h4">
+         <h3>
              <a name="interpolation"></a>Types of interpolation
-         </P>
+         </h3>
          <P>
              We can compute the value of any voxel that sits within a <A HREF="#grey-mask">
                  reasonable range of a set of solution points
@@ -711,9 +733,9 @@ Options:
                      </strong>
                  </em> files, as solution points usually do not fit exactly on 
 			 voxels' centers.</P>
-         <P class="mvd-h4">
+         <h3>
              <A NAME="output-data-type"></A>Output data type conversion
-         </P>
+         </h3>
          <P>
              Cartool can currently write files with these <em>internal</em> types:
          </P>
