@@ -100,7 +100,7 @@ if ( inversefiles.IsEmpty ()  || StringIsEmpty ( basedir ) )
 
                                         // force silent if not in interactive mode
 if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    verbosey = Silent;
+    verbosey    = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

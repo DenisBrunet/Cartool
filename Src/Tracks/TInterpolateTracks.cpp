@@ -485,7 +485,6 @@ DeleteFileExtended  ( DestXyz_To_FromXyzFile );
 //----------------------------------------------------------------------------
 
 bool    TInterpolateTracks::Set (   TracksInterpolationType         interpolationtype,  int                             splinedegree,
-                                    InterpolationTargetOptions      targetspace,
 
                                     const char*                     fromxyzfile,
                                     ElectrodesNormalizationOptions  fromnormalized,
@@ -497,21 +496,21 @@ bool    TInterpolateTracks::Set (   TracksInterpolationType         interpolatio
                                     const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,   
 
                                     const char*                     temppath,
-                                    bool                            silent
+                                    VerboseType                     verbosey
                                 )
 {
 Reset ();
 
                                         // force silent if not in interactive mode
-if ( ! silent && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    silent  = true;
+if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
+    verbosey    = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Making local copies as these will be needed all along our interpolation journey
 InterpolationType   = interpolationtype;
 SplineDegree        = Clip ( splinedegree, 1, MaxInterpolationDegree );
-TargetSpace         = targetspace;
+TargetSpace         = StringIsNotEmpty ( destxyzfile ) ? ToOtherElectrodes : BackToOriginalElectrodes;
 
 FromBadElectrodes   = frombadelectrodes ? frombadelectrodes : "";   // we tolerate a null pointer as an empty string, but not the STL...
 
@@ -532,7 +531,7 @@ StringCopy ( FromFiducials[ LandmarkRear  ], fromrear  );
 if ( FromNormalized == FiducialNormalization
   && FromFiducials.SomeStringsGrep ( GrepEmptyInput, GrepOptionDefault ) ) {
 
-    if ( ! silent )
+    if ( verbosey == Interactive )
         ShowMessage (   "Not all 'From' landmarks have been provided!"      NewLine 
                         "Can not compute a proper fiducial normalization.." NewLine 
                         "Check your input, or select 'Already Normlaized'", 
@@ -558,7 +557,7 @@ StringCopy ( DestFiducials[ LandmarkRear  ], destrear  );
 if ( DestNormalized == FiducialNormalization
   && DestFiducials.SomeStringsGrep ( GrepEmptyInput, GrepOptionDefault ) ) {
 
-    if ( ! silent )
+    if ( verbosey == Interactive )
         ShowMessage (   "Not all 'To' landmarks have been provided!"        NewLine 
                         "Can not compute a proper fiducial normalization.." NewLine 
                         "Check your input, or select 'Already Normlaized'", 
@@ -594,7 +593,7 @@ StringCopy  ( FromOrigXyzFile, fromxyzfile );
 
 if ( ! FromOrigPoints.ReadFile ( FromOrigXyzFile, &FromOrigPointsNames ) ) {
 
-    if ( ! silent )
+    if ( verbosey == Interactive )
         ShowMessage ( "Can not open Electrodes Coordinates file!", FromOrigXyzFile, ShowMessageWarning );
     Reset ();
     return false;
@@ -630,7 +629,7 @@ else {                                  // regular case
                                         // open From xyz, which can be either with Excluded electrodes, or the original From
 if ( ! FromPoints.ReadFile ( FromXyzFile, &FromPointsNames ) ) {
 
-    if ( ! silent )
+    if ( verbosey == Interactive )
         ShowMessage ( "Can not open Electrodes Coordinates file!", FromXyzFile, ShowMessageWarning );
     Reset ();
     return false;
@@ -649,7 +648,7 @@ else // ToOtherElectrodes
                                         // open To xyz
 if ( ! DestPoints.ReadFile ( DestXyzFile, &DestPointsNames ) ) {
 
-    if ( ! silent )
+    if ( verbosey == Interactive )
         ShowMessage ( "Can not open Electrodes Coordinates file!", DestXyzFile, ShowMessageWarning );
     Reset ();
     return false;
@@ -780,23 +779,22 @@ bool    TInterpolateTracks::Set (   TracksInterpolationType         interpolatio
                                     const char*                     frombadelectrodes,
 
                                     const char*                     temppath,
-                                    bool                            silent
+                                    VerboseType                     verbosey
                                 )
 {
 return (    Set (   interpolationtype,      splinedegree,
-                    BackToOriginalElectrodes,
 
                     fromxyzfile,
                     fromnormalized,
                     fromfront,  fromleft,   fromtop,    fromright,  fromrear,
                     frombadelectrodes,
                     
-                    0,
+                    0,                  // empty dest = back to from
                     AlreadyNormalized,
                     0,          0,          0,          0,          0,
 
                     temppath,
-                    silent
+                    verbosey
                 ) );
 }
 
@@ -814,23 +812,22 @@ return (    Set (   interpolationtype,      splinedegree,
                                         const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,
 
                                         const char*                     temppath,
-                                        bool                            silent
+                                        VerboseType                     verbosey
                                     )
 {
 return (    Set (   interpolationtype,      splinedegree,
-                    ToOtherElectrodes,
 
                     fromxyzfile,
                     fromnormalized,
                     fromfront,  fromleft,   fromtop,    fromright,  fromrear,
                     0,
                     
-                    destxyzfile,
+                    destxyzfile,        // non-empty dest = to another space
                     destnormalized,
                     destfront,  destleft,   desttop,    destright,  destrear,
 
                     temppath,
-                    silent
+                    verbosey
                 ) );
 }
 
@@ -1021,7 +1018,7 @@ return  true;
                                         // Simpler wrapper to full InterpolateTracks method
 bool    TInterpolateTracks::InterpolateTracks   (   const char*         fileeeg,
                                                     const char*         infixfilename,  const char*         fileoutext, char*               fileout,
-                                                    bool                silent
+                                                    VerboseType         verbosey
                                                 )
 {
                                         // will nicely close document upon exit
@@ -1029,7 +1026,7 @@ TOpenDoc<TTracksDoc>    eegdoc ( fileeeg, OpenDocHidden );
 
 return  InterpolateTracks   (   eegdoc,
                                 infixfilename,  fileoutext,     fileout,
-                                silent
+                                verbosey
                             );
 }
 
@@ -1038,7 +1035,7 @@ return  InterpolateTracks   (   eegdoc,
 
 bool    TInterpolateTracks::InterpolateTracks   (   const TTracksDoc*   eegdoc,
                                                     const char*         infixfilename,  const char*         fileoutext, char*               fileout,
-                                                    bool                silent
+                                                    VerboseType         verbosey
                                                 )
 {
                                         // this shouldn't happen
@@ -1050,8 +1047,8 @@ if ( ! IsOpen () )
     return  false;
 
                                         // force silent if not in interactive mode
-if ( ! silent && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    silent  = true;
+if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
+    verbosey    = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1066,7 +1063,7 @@ eegdoc->ClearPseudo ( fromgoodsel );
 
 if ( hasfrombadelectrodes )
                                         // remove specified electrodes
-    fromgoodsel.Reset ( FromBadElectrodes.c_str (), &FromOrigPointsNames, ! silent );
+    fromgoodsel.Reset ( FromBadElectrodes.c_str (), &FromOrigPointsNames, verbosey == Interactive );
 
                                         // not the same number of FINAL electrodes?
 if ( (int) fromgoodsel != FromPoints.GetNumPoints () )
@@ -1143,7 +1140,7 @@ TSelection          removesel ( FromOrigPoints.GetNumPoints (), OrderSorted );
 
 removesel.Reset ();
 
-removesel.Set ( FromBadElectrodes.empty () ? "" : FromBadElectrodes.c_str (), &FromOrigPointsNames, ! silent );
+removesel.Set ( FromBadElectrodes.empty () ? "" : FromBadElectrodes.c_str (), &FromOrigPointsNames, verbosey == Interactive );
 
 if ( (bool) removesel ) {
     verbose.Put ( "Number of bad electrodes:", (int) removesel );
@@ -1223,7 +1220,7 @@ enum                {
 
 TSuperGauge         Gauge;
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
 
     Gauge.Set           ( InterpolationTitle, SuperGaugeLevelInter );
 
@@ -1496,7 +1493,7 @@ expfile.Write ( dataout );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
 
     Gauge.FinishParts ();
 

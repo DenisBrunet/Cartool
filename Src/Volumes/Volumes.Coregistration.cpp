@@ -358,7 +358,7 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
                                         // special case for the source MRI
     tofile              = issource ? SourceMri->GetDocPath () : buddymris[ i ];
 
-    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, verbosey == Silent ?  OpenDocHidden : OpenDocVisible );
+    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, verbosey == Silent ? OpenDocHidden : OpenDocVisible );
 
     if ( ! TransfMri.IsOpen () )
         continue;
@@ -905,7 +905,7 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
                                         // special case for the source MRI
     tofile              = i == -1 ? SourceMri->GetDocPath () : buddymris[ i ];
 
-    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, verbosey == Silent ?  OpenDocHidden : OpenDocVisible );
+    TOpenDoc< TVolumeDoc >      TransfMri ( tofile, verbosey == Silent ? OpenDocHidden : OpenDocVisible );
 
     if ( ! TransfMri.IsOpen () )
         continue;

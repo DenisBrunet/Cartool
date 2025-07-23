@@ -39,7 +39,8 @@ enum                TracksInterpolationType
                     InterpolationSphericalCurrentDensitySpline,     // difficult to assess, but as it is derived from method above, we can infer it is also as good
                     Interpolation3DSpline,                          // best method 2
 
-                    NumInterpolationTypes
+                    NumInterpolationTypes,
+                    DefaultInterpolationType    = Interpolation3DSpline
                     };
 
 extern const char   InterpolationTypeInfix[ NumInterpolationTypes ][ 16 ];
@@ -137,20 +138,19 @@ public:
                         TInterpolateTracks  ();
 
                         TInterpolateTracks  (   TracksInterpolationType         interpolationtype,  int                             splinedegree,
-                                                InterpolationTargetOptions      targetspace,
 
                                                 const char*                     fromxyzfile,
                                                 ElectrodesNormalizationOptions  fromnormalized,
                                                 const char* fromfront,  const char* fromleft,   const char* fromtop,    const char* fromright,  const char* fromrear,
                                                 const char*                     frombadelectrodes,
                                                 
-                                                const char*                     destxyzfile,
+                                                const char*                     destxyzfile,        // back to from if empty
                                                 ElectrodesNormalizationOptions  destnormalized,
                                                 const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,
 
                                                 const char*                     temppath    = 0,
-                                                bool                            silent      = false
-                                            )   { Set ( interpolationtype, splinedegree, targetspace, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, frombadelectrodes, destxyzfile, destnormalized, destfront, destleft, desttop, destright, destrear, temppath, silent ); }
+                                                VerboseType                     verbosey    = Interactive
+                                            )   { Set ( interpolationtype, splinedegree, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, frombadelectrodes, destxyzfile, destnormalized, destfront, destleft, desttop, destright, destrear, temppath, verbosey ); }
 
                         TInterpolateTracks  (   TracksInterpolationType         interpolationtype,  int                             splinedegree,
 
@@ -160,8 +160,8 @@ public:
                                                 const char*                     frombadelectrodes,
 
                                                 const char*                     temppath    = 0,
-                                                bool                            silent      = false
-                                            )   { Set ( interpolationtype, splinedegree, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, frombadelectrodes, temppath, silent ); }
+                                                VerboseType                     verbosey    = Interactive
+                                            )   { Set ( interpolationtype, splinedegree, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, frombadelectrodes, temppath, verbosey ); }
 
                         TInterpolateTracks  (   TracksInterpolationType         interpolationtype,  int                             splinedegree,
 
@@ -174,8 +174,8 @@ public:
                                                 const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,
 
                                                 const char*                     temppath    = 0,    // could be a file, a path, or null
-                                                bool                            silent      = false
-                                            )   { Set ( interpolationtype, splinedegree, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, destxyzfile, destnormalized, destfront, destleft, desttop, destright, destrear, temppath, silent ); }
+                                                VerboseType                     verbosey    = Interactive
+                                            )   { Set ( interpolationtype, splinedegree, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, destxyzfile, destnormalized, destfront, destleft, desttop, destright, destrear, temppath, verbosey ); }
 
 
     bool                IsOpen              ()  const   { return InterpolationType != UnknownInterpolation && FromOrigPoints.IsNotEmpty () && FromOrigPointsNames.IsNotEmpty () && DestPoints.IsNotEmpty () && DestPointsNames.IsNotEmpty (); }
@@ -184,19 +184,18 @@ public:
 
                                         // Full initialization for all cases: bad electrodes and/or switching electrodes models
     bool                Set                 (   TracksInterpolationType         interpolationtype,  int                             splinedegree,
-                                                InterpolationTargetOptions      targetspace,
 
                                                 const char*                     fromxyzfile,
                                                 ElectrodesNormalizationOptions  fromnormalized,
                                                 const char* fromfront,  const char* fromleft,   const char* fromtop,    const char* fromright,  const char* fromrear,
                                                 const char*                     frombadelectrodes,
                                                 
-                                                const char*                     destxyzfile,
+                                                const char*                     destxyzfile,        // back to from if empty
                                                 ElectrodesNormalizationOptions  destnormalized,
                                                 const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,
 
                                                 const char*                     temppath    = 0,    // could be a file, a path, or null
-                                                bool                            silent      = false
+                                                VerboseType                     verbosey    = Interactive
                                             );
                                         // Simpler initialization for only bad electrodes interpolation
     bool                Set                 (   TracksInterpolationType         interpolationtype,  int                             splinedegree,
@@ -207,7 +206,7 @@ public:
                                                 const char*                     frombadelectrodes,
 
                                                 const char*                     temppath    = 0,
-                                                bool                            silent      = false
+                                                VerboseType                     verbosey    = Interactive
                                             );
                                         // Simpler initialization to go from one electrodes model to another one
     bool                Set                 (   TracksInterpolationType         interpolationtype,  int                             splinedegree,
@@ -221,18 +220,18 @@ public:
                                                 const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,
 
                                                 const char*                     temppath    = 0,    // could be a file, a path, or null
-                                                bool                            silent      = false
+                                                VerboseType                     verbosey    = Interactive
                                             );
 
 
     bool                InterpolateTracks   (   const TTracksDoc*   eegdoc,
                                                 const char*         infixfilename,  const char*         fileoutext, char*               fileout,
-                                                bool                silent      = false
+                                                VerboseType         verbosey    = Interactive
                                             );
                                         // Wrapper to method above
     bool                InterpolateTracks   (   const char*         fileeeg,
                                                 const char*         infixfilename,  const char*         fileoutext, char*               fileout,
-                                                bool                silent      = false
+                                                VerboseType         verbosey    = Interactive
                                             );
 
                                         // We can give read-only access to these guys

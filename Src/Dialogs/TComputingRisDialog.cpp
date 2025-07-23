@@ -705,7 +705,7 @@ CsvType             csvtype         = sf.GetType ();
                                         // We can deal with statistics type, too...
 if ( ! (    IsCsvComputingRis ( csvtype ) 
          || IsCsvStatFiles    ( csvtype ) ) ) {
-    if ( verbosey != Silent )
+    if ( verbosey == Interactive )
         ShowMessage ( SpreadSheetErrorMessage, "Read list file", ShowMessageWarning );
     return  false;
     }

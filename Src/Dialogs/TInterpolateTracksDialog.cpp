@@ -84,10 +84,11 @@ ClearString ( ToTop   );
 ClearString ( ToRight );
 ClearString ( ToRear  );
 
-SurfaceSpline  = BoolToCheck ( false );
-SphericalSpline= BoolToCheck ( false );
-ThreeDSpline   = BoolToCheck ( true  );
-CDSpherical    = BoolToCheck ( false );
+SurfaceSpline  = BoolToCheck ( DefaultInterpolationType == Interpolation2DSurfaceSpline                 );
+SphericalSpline= BoolToCheck ( DefaultInterpolationType == InterpolationSphericalSpline                 );
+ThreeDSpline   = BoolToCheck ( DefaultInterpolationType == Interpolation3DSpline                        );
+CDSpherical    = BoolToCheck ( DefaultInterpolationType == InterpolationSphericalCurrentDensitySpline   );
+
 IntegerToString ( Degree, DefaultInterpolationDegree );
 
 FileTypes.Clear ();
@@ -880,7 +881,7 @@ if ( transfer == 0 )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 bool                hasfrombadelectrodes    = ! StringIsSpace ( transfer->FromBadElectrodes );
-TSelection          fromgoodsel ( EEGDoc->GetTotalElectrodes(), OrderSorted );
+TSelection          fromgoodsel ( EEGDoc->GetTotalElectrodes (), OrderSorted );
 
                                         // select all
 fromgoodsel.Set ();
@@ -894,7 +895,7 @@ if ( hasfrombadelectrodes )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           buff;
+TFixedString<KiloByte>  buff;
 int                 fromnumpoints   = IT.GetFromPoints ().GetNumPoints ();
 
                                         // same number of FINAL electrodes
@@ -926,9 +927,6 @@ SavingEegFileTypes  filetype            = (SavingEegFileTypes) transfer->FileTyp
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // silencing in these cases
-bool                silent              = NumBatchFiles () > 1;
-
 
 if ( IsBatchFirstCall () && BatchFileNames.NumFiles () > 1 )
 
@@ -938,11 +936,13 @@ if ( IsBatchFirstCall () && BatchFileNames.NumFiles () > 1 )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TFileName           neweegfile;
+                                        // silencing in these cases
+VerboseType         verbosey            = NumBatchFiles () > 1 ? Silent : Interactive;
 
 
 IT.InterpolateTracks    (   EEGDoc,
                             transfer->InfixFilename,    SavingEegFileExtPreset[ filetype ],     neweegfile,
-                            silent
+                            verbosey
                         );
 
 
@@ -991,34 +991,31 @@ TracksInterpolationType         interpolationtype   = CheckToBool ( transfer->Su
                                                     // currently not editable, and set to DefaultInterpolationDegree
 int                             degree              = Clip ( StringToInteger ( transfer->Degree ), MinInterpolationDegree, MaxInterpolationDegree );
 
-InterpolationTargetOptions      targetspace         = CheckToBool ( transfer->SameXyz    )      ?   BackToOriginalElectrodes
-                                                    : CheckToBool ( transfer->AnotherXyz )      ?   ToOtherElectrodes
-                                                    :                                               BackToOriginalElectrodes;
-
+const char*                     toanotherxyz        = CheckToBool ( transfer->AnotherXyz )      ?   transfer->ToXyz 
+                                                                                                :   "";             // acts as a flag
 bool                            cleanupfiles        = CheckToBool ( transfer->CleanUp );
 
 int                             numinfiles          = BatchFileNames.NumFiles ();
 
-bool                            silent              = NumBatchFiles () > 1;
+VerboseType                     verbosey            = NumBatchFiles () > 1 ? Silent : Interactive;
 
 if ( numinfiles > MaxFilesToOpen )
     transfer->OpenAuto  = BoolToCheck ( false );
 
                                         // Init points, transform & matrices - better to do it only once for a batch of files, for efficiency reasons
 IT.Set  (   interpolationtype,      degree,
-            targetspace,
 
             transfer->FromXyz,
             FiducialNormalization,      // always when called from the dialog
             transfer->FromFront,    transfer->FromLeft,     transfer->FromTop,  transfer->FromRight,    transfer->FromRear, 
             transfer->FromBadElectrodes,
             
-            transfer->ToXyz,
+            toanotherxyz,
             FiducialNormalization,      // always when called from the dialog
             transfer->ToFront,      transfer->ToLeft,       transfer->ToTop,    transfer->ToRight,      transfer->ToRear, 
 
             BatchFileNames[ 0 ],        // temp files in the same directory as first EEG file
-            silent
+            verbosey
         );
 
 

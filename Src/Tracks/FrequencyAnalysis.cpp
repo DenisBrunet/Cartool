@@ -385,7 +385,7 @@ bool                savefftapprox       = fileoutapprfreqs != 0;
 
                                         // force silent if not in interactive mode
 if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    verbosey = Silent;
+    verbosey    = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
