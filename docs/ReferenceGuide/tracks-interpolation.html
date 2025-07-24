@@ -27,36 +27,39 @@
          <H5>
              <A HREF="#kind-interpolation">What is the use of interpolation?</A>
          </H5>
-         <UL>
-             <H5>
+         <H6>
                  <A HREF="#interpol-bad-chan">Interpolating bad channels</A><br>
                  <A HREF="#switching-config">Switching to another electrodes system</A><br>
-                 <A HREF="#interpol-switching">Interpolating bad channeles <em>and</em> switching system</A>
-             </H5>
-         </UL>
+                 <A HREF="#interpol-switching">Interpolating bad channels <em>and</em> switching system</A>
+         </H6>
          <H5>
              <A HREF="#how-interpol-works">How interpolation works</A>
          </H5>
-         <UL>
-             <H5>
-                 <A HREF="#main-loop">The main loop</A><br><A HREF="#which-splines">Which splines are being used</A><br>
+         <H6>
+                 <A HREF="#main-loop">The main loop</A><br>
+                 <A HREF="#which-splines">Which splines are being used</A><br>
                  <A HREF="#coregister-systems">Coregistering between two electrodes systems</A>
-             </H5>
-         </UL>
+         </H6>
          <H5>
-             <A HREF="#dialog">Tracks Interpolation dialog</A>
+             <A HREF="#dialog"><em>Tracks Interpolation</em>, from the Dialog</A><br>
+			 <a href="#cli"><em>Tracks Interpolation</em>, from the Command-Line Interface (CLI)</a><br>
          </H5>
+         <H6>
+                 <A HREF="#cli-options">CLI Options</A><br>
+                 <a href="#cli-from-to">Specifying the 'From' and 'To' space</a><br>
+                 <a href="#cli-fiducial">Specifying the fiducial landmarks</a><br>
+                 <A HREF="#cli-examples">CLI Examples</A><br>
+         </H6>
          <H5>
              <A HREF="#technical-points">Technical points</A>
          </H5>
-         <UL>
-             <H5>
+         <H6>
                  <A HREF="#centering-normaliz">Re-orienting, centering &amp; normalizing</A><br>
-                 <A HREF="#spline-degree">Degree of the spline</A><br><A HREF="#borders">Electrodes on the border</A><br>
-                 <A HREF="#punching-a-hole">Punching a hole in your geometry</A><br>
+                 <A HREF="#spline-degree">Degree of the spline</A><br>
+                 <A HREF="#borders">Electrodes at the edge</A><br>
+                 <A HREF="#punching-a-hole">Punching a big hole in your geometry</A><br>
                  <A HREF="#just-removing-elec">Just removing electrodes</A>
-             </H5>
-         </UL>
+         </H6>
          <H5>
              <A HREF="#results">Results</A>
          </H5>
@@ -589,7 +592,7 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
              </B> in the whole processing.
          </P>
          <H2>
-             <A NAME="dialog"></A>Tracks Interpolation dialog
+             <A NAME="dialog"></A><em>Tracks Interpolation</em>, from the Dialog
          </H2>
          <P>
              Call the dialog from <FONT FACE="Arial Black,Arial,Helvetica">
@@ -618,7 +621,7 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
          </P>
          <CENTER>
              <P ALIGN=CENTER>
-                 <IMG SRC="images/interpol.dialog.png" VSPACE="0" HSPACE="0" BORDER="0" height="661" width="704">
+                 <IMG SRC="images/interpol.dialog.png" width="640">
              </P>
          </CENTER>
          <P>
@@ -710,7 +713,7 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
                  <TR>
                      <TD WIDTH="27%" VALIGN=TOP>
                          <P>
-                             Front / Left / Top / Right / Rear
+                             <a name="dialog-fiducial-from"></a>Front / Left / Top / Right / Rear
                      </TD>
                      <TD WIDTH="73%" VALIGN=TOP>
                          <P>
@@ -814,7 +817,7 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
                  <tr>
                      <TD WIDTH="27%" VALIGN=TOP>
                          <P>
-                             Front / Left / Top / Right / Rear
+                             <a name="dialog-fiducial-to"></a>Front / Left / Top / Right / Rear
                      </TD>
                      <TD WIDTH="73%" VALIGN=TOP>
                          <P>
@@ -1031,12 +1034,175 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
                  </TR>
              </TABLE>
          </P>
+
+         <H2>
+			 <em><a name="cli"></a>Tracks Interpolation</em>, from the Command-Line Interface (CLI)
+		 </H2>
+
+         <H6>
+                 <A HREF="#cli-options">CLI Options</A><br>
+                 <a href="#cli-from-to">Specifying the 'From' and 'To' space</a><br>
+                 <a href="#cli-fiducial">Specifying the fiducial landmarks</a><br>
+                 <A HREF="#cli-examples">CLI Examples</A><br>
+                 <br>
+         </H6>
+
+		<h3>
+             <a name="cli-options"></a>CLI Options
+        </h3>
+		<P>
+             You can get the exact <em>Tracks Interpolation </em>subcommand 
+			 options with:</P>
+         <pre>cartool64.exe interpolatetracks --help</pre>
+         <P>
+             Which gives:</P>
+         <pre>Interpolate Tracks command
+Usage: interpolatetracks [OPTIONS]
+
+Options:
+--fromxyz FILE 			From Electrodes Coordinates file (Required)
+--fromfront TRACKS 		From front landmark
+--fromleft TRACKS 		From left landmark
+--fromtop TRACKS 		From top landmark
+--fromright TRACKS 		From right landmark
+--fromrear TRACKS 		From rear landmark
+--bad TRACKS 			Bad electrodes
+--toxyz FILE 			To Electrodes Coordinates file
+--tofront TRACKS 		To front landmark
+--toleft TRACKS 		To left landmark
+--totop TRACKS 			To top landmark
+--toright TRACKS 		To right landmark
+--torear TRACKS 		To rear landmark
+--method ENUM:{surfacespline,sphericalspline,3dspline,currentdensity}
+				Interpolation method (Required)
+--degree INTEGER 		Spline degree, in [2..4] range (Default:2)
+--infix TEXT 			Infix inserted into the output file names
+--ext,--extension ENUM:{txt,ep,eph,sef,eeg,edf,ris} [eeg]
+				Output file extension
+--nocleanup 			Saving intermediate files
+-h,--help 			This message</pre>
+
+		<p>
+             &nbsp;
+        </p>
+
+		<h3>
+             <a name="cli-from-to"></a>Specifying the 'From' and 'To' space
+        </h3>
+		<p>
+             &nbsp;You <em>have to</em> specify the input electrodes coordinates 
+			 with the <strong>--fromxyz</strong>&nbsp; option. These coordinates 
+			 should of course match exactly, both in the number of electrodes 
+			 and their sequence, the tracks from the input EEG.
+        </p>
+		<p>
+             &nbsp;</p>
+		<p>
+             You <em>can</em> provide another electrodes coordinates 
+			 destination, with the&nbsp; <strong>--toxyz</strong>&nbsp; option. 
+			 In that case, you will project the original EEG data <strong>into 
+			 another system</strong>. <em>If this option is missing</em>, it will be assumed that you wish to
+			 <strong>remain within the original coordinates system</strong>. 
+			 This is the case when one does just want to interpolate artefacted 
+			 tracks.</p>
+		<p>
+             &nbsp;</p>
+		<p>
+             Here is an example to remain within the same system:&nbsp;</p>
+         <pre>cartool64.exe interpolatetracks <strong>--fromxyz=&quot;EGI 257.Geneva Average 13.10-10.xyz&quot; </strong> <em>all-the-other-options -- files-to-process</em></pre>
+		<p>
+             And another one to switch to another system:&nbsp;</p>
+         <pre>cartool64.exe interpolatetracks <strong>--fromxyz=&quot;EGI 257.Geneva Average 13.10-10.xyz&quot; --toxyz=&quot;Biosemi 64.els&quot; </strong> <em>all-the-other-options -- files-to-process</em></pre>
+         <p>
+             &nbsp;</p>
+
+		<h3>
+             <a name="cli-fiducial"></a>Specifying the fiducial landmarks</h3>
+		<p>
+             It is <strong>highly recommended</strong> to provide with the fiducial landmarks for 
+			 the 'From' and 'To' spaces (<a href="#cli-from-to">when case is 
+			 relevant, see above</a>). These will be used to 
+			 <a href="#centering-normaliz">re-center, 
+			 re-orient and normalize</a> each coordinate space. It is also used to 
+			 build the coregistration transform needed when switching between electrodes systems.</p>
+		<p>
+             <strong>If no fiducial landmarks are being provided</strong>, the
+			 <strong>input electrodes will be used <em>&quot;as is&quot;</em></strong>, 
+			 i.e. assuming the 3D coordinates are actually <em>centered</em>,
+			 <em>re-oriented</em> (and with matching orientations), and <em>
+			 normalized</em> (max outer radius of 1). <strong><em>If any of 
+			 these is not true</em></strong>, results can range from slightly 
+			 off to utter non-sense! So, unless you know better, please provide 
+			 with the fiducial landmarks!</p>
+		<p>
+             &nbsp;</p>
+		<p>
+             You use the&nbsp; <strong>--fromfront&nbsp; --fromleft&nbsp; --fromtop&nbsp; --fromright&nbsp; --fromrear</strong>&nbsp; 
+			 options to specify the input fiducial landmarks.</p>
+		<p>
+             And their counterparts&nbsp; <strong>--tofront&nbsp; --toleft&nbsp; --totop&nbsp; --toright&nbsp; --torear</strong>&nbsp; 
+			 options to specify the output input fiducial landmarks.</p>
+		<p>
+             &nbsp;</p>
+		<p>
+             Completing the previous example, we can (luckily) specify the 
+			 landmarks with 10-10 system naming convention:&nbsp;</p>
+         <pre>cartool64.exe interpolatetracks --fromxyz=&quot;EGI 257.Geneva Average 13.10-10.xyz&quot; <strong>--fromfront=fpz --fromleft=t7 --fromtop=cz --fromright=t8 --fromrear=oz</strong> --toxyz=&quot;Biosemi 64.els&quot; <strong>--tofront=fpz --toleft=t7 --totop=cz --toright=t8 --torear=oz</strong>  <em>all-the-other-options -- files-to-process</em></pre>
+         <p>
+             &nbsp;</p>
+		<p>
+             Also note that you can, <a href="#dialog-fiducial-from">as per the 
+			 dialog</a>, provide <strong>multiple electrodes</strong> if no 
+			 single one is a good fit. F.ex. here the front fiducial actually 
+			 lies between 3 electrodes:</p>
+		<pre>cartool64.exe interpolatetracks --fromxyz=&quot;Hydrocel-129.els&quot; <strong>--fromfront=E14,E15,E21 --fromleft=E39 --fromtop=Ref --fromright=E108 --fromrear=E75</strong>  <em>all-the-other-options -- files-to-process</em></pre>
+		<p>&nbsp;</p>
+
+		<h3>
+             <a name="cli-examples"></a>CLI Examples
+        </h3>
+		<p>
+             &nbsp;
+        	 Interpolating a few bad tracks, while remaining in the same 
+			 electrodes system:</p>
+         <pre>cartool64.exe interpolatetracks --fromxyz=&quot;EGI 204.Geneva Average 13.10-10.xyz&quot; --fromfront=fpz --fromleft=t7 --fromtop=cz --fromright=t8 --fromrear=oz --bad=33,AF3,61,FP2,AF8 --method=3dspline --degree=2 --infix=MyInterpol --ext=eeg -- <em>files-to-process</em></pre>
+         <p>
+             &nbsp;</p>
+		<p>
+             Interpolating a few bad tracks <em>and</em> removing a few 
+			 electrodes (from 257 down to 204), while remaining in the same 
+			 electrodes system:</p>
+         <pre>cartool64.exe interpolatetracks --fromxyz=&quot;EGI 257.Geneva Average 13.10-10.xyz&quot; --fromfront=fpz --fromleft=t7 --fromtop=cz --fromright=t8 --fromrear=oz --bad=33,AF3,61,FP2,AF8 --toxyz=&quot;EGI 204.Geneva Average 13.10-10.xyz&quot; --tofront=fpz --toleft=t7 --totop=cz --toright=t8 --torear=oz --method=3dspline --degree=2 --infix=MyInterpol --ext=eeg -- <em>files-to-process</em></pre>
+         <p>
+             &nbsp;</p>
+		<p>
+             Interpolating from a given electrodes system to another one:</p>
+         <pre>cartool64.exe interpolatetracks --fromxyz=&quot;EGI 204.Geneva Average 13.10-10.xyz&quot; --fromfront=fpz --fromleft=t7 --fromtop=cz --fromright=t8 --fromrear=oz --toxyz=&quot;Hydrocel-129.els&quot; --tofront=E14,E15,E21 --toleft=E39 --totop=Ref --toright=E108 --torear=E75 --method=3dspline --degree=2 --infix=MyInterpol --ext=eeg -- <em>files-to-process</em></pre>
+         <p>
+             &nbsp;</p>
+		<p>
+             And finally combining both bad electrodes interpolation <em>and</em> 
+			 electrodes systems switching:</p>
+         <pre>cartool64.exe interpolatetracks --fromxyz=&quot;EGI 204.Geneva Average 13.10-10.xyz&quot; --fromfront=fpz --fromleft=t7 --fromtop=cz --fromright=t8 --fromrear=oz --bad=33,AF3,61,FP2,AF8 --toxyz=&quot;Hydrocel-129.els&quot; --tofront=E14,E15,E21 --toleft=E39 --totop=Ref --toright=E108 --torear=E75 --method=3dspline --degree=2 --infix=MyInterpol --ext=eeg -- <em>files-to-process</em></pre>
+         <p>
+             &nbsp;</p>
+			 
          <H2>
              <A NAME="technical-points"></A>Interpolation - Technical points
          </H2>
-         <H4>
+
+         <H6>
+                 <A HREF="#centering-normaliz">Re-orienting, centering &amp; normalizing</A><br>
+                 <A HREF="#spline-degree">Degree of the spline</A><br>
+                 <A HREF="#borders">Electrodes at the edge</A><br>
+                 <A HREF="#punching-a-hole">Punching a big hole in your geometry</A><br>
+                 <A HREF="#just-removing-elec">Just removing electrodes</A><br>
+                 <br>
+         </H6>
+
+         <h3>
              <A NAME="centering-normaliz"></A>Re-orienting, centering &amp; normalizing
-         </H4>
+         </h3>
          <P>
              After <A HREF="#coregister-systems">centering and normalizing</A>, we
              should end up with a geometrical system which:
@@ -1069,13 +1235,15 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
              <P ALIGN=CENTER>
                  <IMG SRC="images/interpol.normalizing.png" VSPACE="0" HSPACE="0" BORDER="0">
              </P>
+			 <P ALIGN=CENTER>
+                 &nbsp;</P>
          </CENTER>
-         <H4>
+         <h3>
              <A NAME="spline-degree"></A>Degree of the spline
-         </H4>
+         </h3>
          <P>
              For a spline of degree <B><I>m</I></B>, the actual degree of the
-             polynomials it is made of is <B><I>( m - 1 )</I></B>.
+             polynomials it is made of is <B><I>(m - 1)</I></B>.
          </P>
          <P>
              We definitely recommend to use <B>m = 2</B>, that is polynomials of
@@ -1094,12 +1262,14 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
              &nbsp;
          </P>
          <P>
-             <em><strong>Note:</strong></em> as per 2024, spline degree is not editable
-             from user, and will remain set to 2.
-         </P>
-         <H4>
-             <A NAME="borders"></A>Electrodes on the border
-         </H4>
+             <em><strong>Note:</strong></em> as per 2025, spline degree is <em>not</em> editable
+             from user, and will remain set to 2. The <a href="#cli">CLI</a> 
+			 allows for other values, though...</P>
+		<P>
+             &nbsp;</P>
+         <h3>
+             <A NAME="borders"></A>Electrodes at the edge
+         </h3>
          <P>
              When <A HREF="#switching-config">interpolating to another system</A>,
              you should be sure not to have <B>extrapolation issues</B>. As a rule
@@ -1162,11 +1332,13 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
                      <P ALIGN=CENTER>
                          <IMG SRC="images/interpol.extrapolation5.png" VSPACE="0" HSPACE="0" BORDER="0">
                      </P>
+					 <P ALIGN=CENTER>
+                         &nbsp;</P>
                  </CENTER>
          </UL>
-         <H4>
-             <A NAME="punching-a-hole"></A>Punching a hole in your geometry
-         </H4>
+         <h3>
+             <A NAME="punching-a-hole"></A>Punching a big hole in your geometry
+         </h3>
          <P>
              It is not so advisable to have to remove a bunch of electrodes
              (though it might happen due to circumstances) that will <B>
@@ -1180,6 +1352,7 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
          <CENTER>
              <P ALIGN=CENTER>
                  <IMG SRC="images/interpol.not-enough-neighbors.png" VSPACE="0" HSPACE="0" BORDER="0">
+
              </P>
          </CENTER>
          <P>
@@ -1187,13 +1360,17 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
              and use its position as a <A HREF="#coregister-systems">landmark</A>
              for the coregistration.
          </P>
-         <H4>
+		<P>
+             &nbsp;</P>
+         <h3>
              <A NAME="just-removing-elec"></A>Just removing electrodes
-         </H4>
+         </h3>
          <P>
-             In this case, using the interpolation is simply an overkill. Consider
-             the <B><A HREF="reprocess-tracks.html">Export Tracks</A></B> instead...
-         </P>
+             In this 
+			 very case, using the interpolation is simply overkill. Consider
+             the <B><A HREF="reprocess-tracks.html">Export Tracks</A></B> 
+			 instead. Cartool will totally work, however, and will just copy the 
+			 input data as is, <em>without any loss or rounding errors</em>.</P>
          <H2>
              <A NAME="results"></A>Interpolation - Results
          </H2>
@@ -1203,15 +1380,8 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
                      Interpolated EEG files are written in the <B>
                          same directories as
                          their sources
-                     </B>. File names are inserted with the <B>infix</B>
-                     string, which briefly describes the type of interpolation used.
-                     Currently, only <I><B><A HREF="files-formats-cartool.html#ep">.ep</A></B></I> <I>
-                         <B>
-                             or
-                             <A HREF="files-formats-cartool.html#eph">.eph</A>
-                         </B>
-                     </I> are outputed.
-                 </P>
+                     </B>. File names are inserted with the <B>infix</B> string, 
+					 which briefly describes the type of interpolation used.</P>
              <LI CLASS="mvd-P">
                  <P>
                      The temporary geometry files are written in the same directories as
