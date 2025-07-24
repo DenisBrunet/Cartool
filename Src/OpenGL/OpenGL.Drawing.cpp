@@ -271,23 +271,40 @@ M[ 2 ]  = ( A[ 2 ] + B[ 2 ] ) / 2;
 };
 
 
+auto    MiddleNormal        = [] ( GLfloat* N, const GLfloat* A, const GLfloat* B ) {
+N[ 0 ]  = ( A[ 0 ] + B[ 0 ] ) / 2;
+N[ 1 ]  = ( A[ 1 ] + B[ 1 ] ) / 2; 
+N[ 2 ]  = ( A[ 2 ] + B[ 2 ] ) / 2;
+
+double              norm            = sqrt ( N[ 0 ] * N[ 0 ] + N[ 1 ] * N[ 1 ] + N[ 2 ] * N[ 2 ] );
+
+if ( ! norm )
+    return;
+
+N[ 0 ]  /= norm;
+N[ 1 ]  /= norm;
+N[ 2 ]  /= norm;
+};
+
+
 auto    NormalizeNormal     = [] ( GLfloat* N ) {
 
 double              norm            = sqrt ( N[ 0 ] * N[ 0 ] + N[ 1 ] * N[ 1 ] + N[ 2 ] * N[ 2 ] );
 
-if ( norm ) {
-    N[ 0 ]  /= norm;
-    N[ 1 ]  /= norm;
-    N[ 2 ]  /= norm;
-    }
+if ( ! norm )
+    return;
+
+N[ 0 ]  /= norm;
+N[ 1 ]  /= norm;
+N[ 2 ]  /= norm;
 };
 
 
 //----------------------------------------------------------------------------
                                         // Do a colormap-correct triangle, by a recursive 4 sub-triangles decomposition
-void    GLColorTrianglefv ( GLfloat         v1[ 3 ],    GLfloat         v2[ 3 ],    GLfloat         v3[ 3 ],
-                            float           val1,       float           val2,       float           val3,
-                            TGLColorTable&  colormap,   double          sizelimit,  int             level    )
+void    GLColorTrianglefv ( GLfloat                 v1[ 3 ],    GLfloat         v2[ 3 ],    GLfloat         v3[ 3 ],
+                            float                   val1,       float           val2,       float           val3,
+                            const TGLColorTable&    colormap,   double          sizelimit,  int             level    )
 {
                                         // 0) value -> color
 TGLColor<GLfloat>   glcol1;
@@ -309,9 +326,9 @@ if ( level <= 0 ) {
 
 
                                         // 2) geometrical criterion: vertices proximity?
-bool                verticesveryclose   = fabs ( v1[ 0 ] - v2[ 0 ] ) + fabs ( v1[ 1 ] - v2[ 1 ] ) + fabs ( v1[ 2 ] - v2[ 2 ] )
-                                        + fabs ( v2[ 0 ] - v3[ 0 ] ) + fabs ( v2[ 1 ] - v3[ 1 ] ) + fabs ( v2[ 2 ] - v3[ 2 ] )
-                                        + fabs ( v1[ 0 ] - v3[ 0 ] ) + fabs ( v1[ 1 ] - v3[ 1 ] ) + fabs ( v1[ 2 ] - v3[ 2 ] ) < sizelimit;
+bool                verticesveryclose   = abs ( v1[ 0 ] - v2[ 0 ] ) + abs ( v1[ 1 ] - v2[ 1 ] ) + abs ( v1[ 2 ] - v2[ 2 ] )
+                                        + abs ( v2[ 0 ] - v3[ 0 ] ) + abs ( v2[ 1 ] - v3[ 1 ] ) + abs ( v2[ 2 ] - v3[ 2 ] )
+                                        + abs ( v1[ 0 ] - v3[ 0 ] ) + abs ( v1[ 1 ] - v3[ 1 ] ) + abs ( v1[ 2 ] - v3[ 2 ] ) < sizelimit;
 
 if ( verticesveryclose ) {
     glcol1.GLize ();    glVertex3fv ( v1 );
@@ -321,13 +338,13 @@ if ( verticesveryclose ) {
     }
 
                                         // 3) color criterion: color proximity?
-                                        // threshold is looser with depth
+                                        // threshold gets looser with greater depth
 double              colorveryclose      =  0.45 - (double) level * 0.07;
 
                                         // expensive to compute, but can cut down a lot of triangles
-bool                b12                 = fabs ( glcol1[ 0 ] - glcol2[ 0 ] ) + fabs ( glcol1[ 1 ] - glcol2[ 1 ] ) + fabs ( glcol1[ 2 ] - glcol2[ 2 ] ) < colorveryclose;
-bool                b23                 = fabs ( glcol3[ 0 ] - glcol2[ 0 ] ) + fabs ( glcol3[ 1 ] - glcol2[ 1 ] ) + fabs ( glcol3[ 2 ] - glcol2[ 2 ] ) < colorveryclose;
-bool                b13                 = fabs ( glcol1[ 0 ] - glcol3[ 0 ] ) + fabs ( glcol1[ 1 ] - glcol3[ 1 ] ) + fabs ( glcol1[ 2 ] - glcol3[ 2 ] ) < colorveryclose;
+bool                b12                 = abs ( glcol1[ 0 ] - glcol2[ 0 ] ) + abs ( glcol1[ 1 ] - glcol2[ 1 ] ) + abs ( glcol1[ 2 ] - glcol2[ 2 ] ) < colorveryclose;
+bool                b23                 = abs ( glcol3[ 0 ] - glcol2[ 0 ] ) + abs ( glcol3[ 1 ] - glcol2[ 1 ] ) + abs ( glcol3[ 2 ] - glcol2[ 2 ] ) < colorveryclose;
+bool                b13                 = abs ( glcol1[ 0 ] - glcol3[ 0 ] ) + abs ( glcol1[ 1 ] - glcol3[ 1 ] ) + abs ( glcol1[ 2 ] - glcol3[ 2 ] ) < colorveryclose;
 
 
 if ( b12 && b23 && b13 ) {
@@ -389,14 +406,13 @@ else {
 
                                         // complete the real border with the intermediate nodes
                                         // to avoid uncovered areas, due to roundings
-/*
-if ( fabs ( v1[0] + v2[0] - v[i12][0] + v1[1] + v2[1] - v[i12][1] + v1[2] + v2[2] - v[i12][2] ) > 1e-6 )
-    GLColorTrianglefv ( v1,     v2,     v[i12], val1,     val2,     val[i12], colormap, sizelimit, 0 );
-if ( fabs ( v1[0] + v3[0] - v[i13][0] + v1[1] + v3[1] - v[i13][1] + v1[2] + v3[2] - v[i13][2] ) > 1e-6 )
-    GLColorTrianglefv ( v3,     v1,     v[i13], val3,     val1,     val[i13], colormap, sizelimit, 0 );
-  if ( fabs ( v3[0] + v2[0] - v[i23][0] + v3[1] + v2[1] - v[i23][1] + v3[2] + v2[2] - v[i23][2] ) > 1e-6 )
-    GLColorTrianglefv ( v2,     v3,     v[i23], val2,     val3,     val[i23], colormap, sizelimit, 0 );
-*/
+//if ( abs ( v1[0] + v2[0] - v[i12][0] + v1[1] + v2[1] - v[i12][1] + v1[2] + v2[2] - v[i12][2] ) > 1e-6 )
+//    GLColorTrianglefv ( v1,     v2,     v[i12], val1,     val2,     val[i12], colormap, sizelimit, 0 );
+//if ( abs ( v1[0] + v3[0] - v[i13][0] + v1[1] + v3[1] - v[i13][1] + v1[2] + v3[2] - v[i13][2] ) > 1e-6 )
+//    GLColorTrianglefv ( v3,     v1,     v[i13], val3,     val1,     val[i13], colormap, sizelimit, 0 );
+//if ( abs ( v3[0] + v2[0] - v[i23][0] + v3[1] + v2[1] - v[i23][1] + v3[2] + v2[2] - v[i23][2] ) > 1e-6 )
+//    GLColorTrianglefv ( v2,     v3,     v[i23], val2,     val3,     val[i23], colormap, sizelimit, 0 );
+
 /*
 if ( level <= 0 ) {
     GLfloat glcol12[4];
@@ -436,19 +452,19 @@ if ( level <= 0 ) {
     }
 
 
-/*                                        // 2) geometrical criterion: vertices proximity
-bool                verticesveryclose   = fabs ( v1[0] - v2[0] ) + fabs ( v1[1] - v2[1] ) + fabs ( v1[2] - v2[2] )
-                                        + fabs ( v2[0] - v3[0] ) + fabs ( v2[1] - v3[1] ) + fabs ( v2[2] - v3[2] )
-                                        + fabs ( v1[0] - v3[0] ) + fabs ( v1[1] - v3[1] ) + fabs ( v1[2] - v3[2] ) < sizelimit;
-*/
+                                        // 2) geometrical criterion: vertices proximity
+//bool                verticesveryclose   = abs ( v1[0] - v2[0] ) + abs ( v1[1] - v2[1] ) + abs ( v1[2] - v2[2] )
+//                                        + abs ( v2[0] - v3[0] ) + abs ( v2[1] - v3[1] ) + abs ( v2[2] - v3[2] )
+//                                        + abs ( v1[0] - v3[0] ) + abs ( v1[1] - v3[1] ) + abs ( v1[2] - v3[2] ) < sizelimit;
+
 
                                         // 2) geometrical criterion: normals similarity
                                         // threshold is looser with depth
 double              normalsveryclose    = 0.30 - (double) level * 0.1;
 
-bool                b12                 = fabs ( n1[0] - n2[0] ) + fabs ( n1[1] - n2[1] ) + fabs ( n1[2] - n2[2] ) < normalsveryclose;
-bool                b23                 = fabs ( n3[0] - n2[0] ) + fabs ( n3[1] - n2[1] ) + fabs ( n3[2] - n2[2] ) < normalsveryclose;
-bool                b13                 = fabs ( n1[0] - n3[0] ) + fabs ( n1[1] - n3[1] ) + fabs ( n1[2] - n3[2] ) < normalsveryclose;
+bool                b12                 = abs ( n1[0] - n2[0] ) + abs ( n1[1] - n2[1] ) + abs ( n1[2] - n2[2] ) < normalsveryclose;
+bool                b23                 = abs ( n3[0] - n2[0] ) + abs ( n3[1] - n2[1] ) + abs ( n3[2] - n2[2] ) < normalsveryclose;
+bool                b13                 = abs ( n1[0] - n3[0] ) + abs ( n1[1] - n3[1] ) + abs ( n1[2] - n3[2] ) < normalsveryclose;
 
 
 if ( b12 && b23 && b13 ) {
@@ -471,12 +487,9 @@ MiddleVertex    ( v[i23], v2, v3 );
 MiddleVertex    ( v[i13], v1, v3 );
 
                                         // normals
-MiddleVertex    ( n[i12], n1, n2 );
-MiddleVertex    ( n[i23], n2, n3 );
-MiddleVertex    ( n[i13], n1, n3 );
-NormalizeNormal ( n[i12] );
-NormalizeNormal ( n[i23] );
-NormalizeNormal ( n[i13] );
+MiddleNormal    ( n[i12], n1, n2 );
+MiddleNormal    ( n[i23], n2, n3 );
+MiddleNormal    ( n[i13], n1, n3 );
 
 
 level--;
@@ -584,7 +597,7 @@ else if ( Quality == QuadBestQuality ) {
 //        GLColorTrianglefv ( v2, Vertex4, Vertex3, val2, Value4, Value3, *ColorTable, TriangleSizeLimit, TriangleLevel );
 
                                         // smartly choose how to split the quad in 2 triangles
-        if ( fabs ( val1 - Value4 ) > fabs ( val2 - Value3 ) ) {
+        if ( abs ( val1 - Value4 ) > abs ( val2 - Value3 ) ) {
             GLColorTrianglefv ( v1, v2,      Vertex3, val1, val2,   Value3, *ColorTable, TriangleSizeLimit, TriangleLevel );
             GLColorTrianglefv ( v2, Vertex4, Vertex3, val2, Value4, Value3, *ColorTable, TriangleSizeLimit, TriangleLevel );
             }
@@ -753,7 +766,7 @@ else if ( Quality == QuadBestQuality ) {
 //      GLColorTrianglefv ( vabove, vaboveleft, vleft, valueabove, valueaboveleft, valueleft, *ColorTable, TriangleSizeLimit, TriangleLevel );
 
                                         // smartly choose how to split the quad in 2 triangles
-        if ( fabs ( val - valueaboveleft ) > fabs ( valueleft - valueabove ) ) {
+        if ( abs ( val - valueaboveleft ) > abs ( valueleft - valueabove ) ) {
             GLColorTrianglefv ( v,      vabove,     vleft,      val,        valueabove,     valueleft,      *ColorTable, TriangleSizeLimit, TriangleLevel );
             GLColorTrianglefv ( vabove, vaboveleft, vleft,      valueabove, valueaboveleft, valueleft,      *ColorTable, TriangleSizeLimit, TriangleLevel );
             }
@@ -773,7 +786,7 @@ else if ( Quality == QuadRegularQuality ) {
                                         // not as nice as the fan, and could be hardware dependent (how the quad is split)
         glBegin ( GL_QUADS );
 
-        if ( fabs ( val - valueaboveleft ) > fabs ( valueleft - valueabove ) ) {
+        if ( abs ( val - valueaboveleft ) > abs ( valueleft - valueabove ) ) {
             ColorTable->GLize ( valueabove );
             glVertex3fv       ( vabove );
 
