@@ -42,6 +42,7 @@ limitations under the License.
 #include    "System.CLI11.h"
 #include    "CLIDefines.h"
 #include    "ReprocessTracksCLI.h"
+#include    "InterpolateTracksCLI.h"
 #include    "FrequencyAnalysisCLI.h"
 #include    "ESI.ComputingRisCLI.h"
 #include    "ESI.RisToVolumeCLI.h"
@@ -718,6 +719,13 @@ ReprocessTracksCLIDefine ( reprocsub );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Frequency Analysis sub-command
+CLI::App*           interpolsub     = app.add_subcommand ( __interpolatetracks, "Interpolate Tracks command" );
+
+InterpolateTracksCLIDefine ( interpolsub );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Frequency Analysis sub-command
 CLI::App*           freqsub         = app.add_subcommand ( __frequency, "Frequency Analysis command" );
 
 FrequencyAnalysisCLIDefine ( freqsub );
@@ -777,6 +785,7 @@ TGoF                gof             = GetCLIOptionFiles ( toapp, __files );
 if ( HasCLIOption ( toapp,              __help )   // redefined NOT as a flag
   || HasCLIFlag   ( regsub,             __help )
   || HasCLIFlag   ( reprocsub,          __help )
+  || HasCLIFlag   ( interpolsub,        __help )
   || HasCLIFlag   ( freqsub,            __help )
   || HasCLIFlag   ( computingrissub,    __help )
   || HasCLIFlag   ( ristovolsub,        __help )
@@ -787,6 +796,7 @@ if ( HasCLIOption ( toapp,              __help )   // redefined NOT as a flag
 
     if      ( HasCLIFlag ( regsub,          __help ) )  helpmessage     = regsub         ->help (); // <subcommand>  --help
     else if ( HasCLIFlag ( reprocsub,       __help ) )  helpmessage     = reprocsub      ->help ();
+    else if ( HasCLIFlag ( interpolsub,     __help ) )  helpmessage     = interpolsub    ->help ();
     else if ( HasCLIFlag ( freqsub,         __help ) )  helpmessage     = freqsub        ->help ();
     else if ( HasCLIFlag ( computingrissub, __help ) )  helpmessage     = computingrissub->help ();
     else if ( HasCLIFlag ( ristovolsub,     __help ) )  helpmessage     = ristovolsub    ->help ();
@@ -831,28 +841,30 @@ else if ( IsSubCommandUsed ( regsub ) ) {
 else if ( IsSubCommandUsed ( reprocsub ) ) {
 
     ReprocessTracksCLI ( reprocsub, gof );
+    exit ( 0 );
+    }
 
+else if ( IsSubCommandUsed ( interpolsub ) ) {
+
+    InterpolateTracksCLI ( interpolsub, gof );
     exit ( 0 );
     }
 
 else if ( IsSubCommandUsed ( freqsub ) ) {
 
     FrequencyAnalysisCLI ( freqsub, gof );
-
     exit ( 0 );
     }
 
 else if ( IsSubCommandUsed ( computingrissub ) ) {
 
     ComputingRisCLI ( computingrissub, gof );
-
     exit ( 0 );
     }
 
 else if ( IsSubCommandUsed ( ristovolsub ) ) {
 
     RisToVolumeCLI ( ristovolsub, gof );
-
     exit ( 0 );
     }
 

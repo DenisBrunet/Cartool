@@ -27,6 +27,7 @@ namespace crtl {
                                         // Sub-commands
 constexpr char*     __register                  = "register";
 constexpr char*     __reprocesstracks           = "reprocesstracks";
+constexpr char*     __interpolatetracks         = "interpolatetracks";
 constexpr char*     __frequency                 = "frequency";
 constexpr char*     __computingris              = "computingris";
 constexpr char*     __ristovolume               = "ristovolume";
@@ -112,7 +113,7 @@ constexpr char*     __reset                     = "--reset";
 
 
 //----------------------------------------------------------------------------
-                                        // ReprocessTracks
+                                        // Reprocess Tracks
 constexpr char*     __nulltracks                = "--nulltracks";
 
 constexpr char*     __filters                   = "--filters";
@@ -142,7 +143,31 @@ constexpr char*     __concatenate               = "--concatenate";
 
 
 //----------------------------------------------------------------------------
-                                        // FrequencyAnalysis
+                                        // Interpolate Tracks
+constexpr char*     __fromxyz                   = "--fromxyz";
+constexpr char*     __fromleft                  = "--fromleft";
+constexpr char*     __fromright                 = "--fromright";
+constexpr char*     __fromfront                 = "--fromfront";
+constexpr char*     __fromrear                  = "--fromrear";
+constexpr char*     __fromtop                   = "--fromtop";
+constexpr char*     __badelec                   = "--bad";
+constexpr char*     __toxyz                     = "--toxyz";
+constexpr char*     __toleft                    = "--toleft";
+constexpr char*     __toright                   = "--toright";
+constexpr char*     __tofront                   = "--tofront";
+constexpr char*     __torear                    = "--torear";
+constexpr char*     __totop                     = "--totop";
+constexpr char*     __splinemethod              = "--method";
+constexpr char*     __splinesurface             = "surfacespline";
+constexpr char*     __splinespherical           = "sphericalspline";
+constexpr char*     __spline3d                  = "3dspline";
+constexpr char*     __splinecurrentdensity      = "currentdensity";
+constexpr char*     __splinedegree              = "--degree";
+constexpr char*     __nocleanup                 = "--nocleanup";
+
+
+//----------------------------------------------------------------------------
+                                        // Frequency Analysis
 constexpr char*     __windowsize                = "--windowsize";
 constexpr char*     __windowstep                = "--windowstep";
 constexpr char*     __windowstep1               = "1tf";
@@ -181,7 +206,7 @@ constexpr char*     __splitspectrum             = "--splits";
 
 
 //----------------------------------------------------------------------------
-                                        // ESI.RisToVolumes
+                                        // Ris To Volumes
 constexpr char*     __spfile                    = "--spfile";
 constexpr char*     __greyfile                  = "--greyfile";
 
@@ -207,7 +232,7 @@ constexpr char*     __4D                        = "4";
 
 
 //----------------------------------------------------------------------------
-                                        // ESI.ComputingRis
+                                        // Computing Ris
 constexpr char*     __preset1                   = "ErpGrandAverages";
 constexpr char*     __preset2                   = "ErpSubjectsAverages";
 constexpr char*     __preset3                   = "ErpSubjectsEpochs";
