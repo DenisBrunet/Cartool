@@ -291,7 +291,7 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                     atomformat,             
                     filetype,           fileprefix.c_str (),
                     volgof,         // not used
-                    true
+                    Silent
                 );
 
     } // for file

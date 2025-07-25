@@ -853,8 +853,8 @@ StringCopy      ( fileprefix, RisToVolumeTransfer.BaseFileName );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // silencing in these cases
-bool                silent              = false; // NumBatchFiles () > 1;
+
+VerboseType         verbosey            = Interactive; // NumBatchFiles () > 1 ? Silent : Interactive;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -873,7 +873,7 @@ RisToVolume (   EEGDoc->GetDocPath (),
                 atomformat,             
                 filetype,           fileprefix,
                 volgof,
-                silent
+                verbosey
             );
 
 

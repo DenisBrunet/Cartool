@@ -25,6 +25,7 @@ enum        RisToVolumeInterpolationType;
 enum        FilterTypes;
 enum        AtomFormatType;
 enum        RisToVolumeFileType;
+enum        VerboseType;
 class       TSolutionPointsDoc;
 class       TVolumeDoc;
 class       TGoF;
@@ -40,7 +41,7 @@ void    RisToVolume (
                     AtomFormatType          atomformat,     
                     RisToVolumeFileType     filetype,       const char*     fileprefix,
                     TGoF&                   volgof,
-                    bool                    silent
+                    VerboseType             verbosey
                     );
 
 

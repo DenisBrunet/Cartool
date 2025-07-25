@@ -48,7 +48,7 @@ void    RisToVolume (
                     AtomFormatType          atomformat,     
                     RisToVolumeFileType     filetype,       const char*     fileprefix,
                     TGoF&                   volgof,
-                    bool                    silent
+                    VerboseType             verbosey
                     )
 
 {
@@ -91,15 +91,15 @@ if ( ! ( outputn3d || outputn4d ) )
 
 
                                         // force silent if not in interactive mode
-if ( ! silent && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    silent  = true;
+if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
+    verbosey    = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TSuperGauge         Gauge;
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
 
     Gauge.Set           ( RisToVolumeTitle, SuperGaugeLevelInter );
                                             // we don't know how many TF to actually save - but we give it 100% of progress bar
@@ -214,7 +214,7 @@ if ( steptf == 1 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! silent )
+if ( verbosey == Interactive )
     Gauge.SetRange ( 0, numsavedblocks + 1 );
 
 
@@ -537,7 +537,7 @@ verbose.NextLine ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
 
     Gauge.FinishParts ();
 
