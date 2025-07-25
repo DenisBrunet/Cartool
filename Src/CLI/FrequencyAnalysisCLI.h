@@ -117,6 +117,10 @@ DefineCLIOptionString   ( freqan,   "",     __reference,            __reference_
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+DefineCLIOptionFile     ( freqan,   "",     __inputdir,             __inputdir_descr )
+->TypeOfOption          ( __inputdir_type )
+->CheckOption           ( CLI::ExistingDirectory ); // could be incomplete, but it helps a bit, though
+
 DefineCLIOptionString   ( freqan,   "",     __infix,                __infix_descr );
 
 DefineCLIFlag           ( freqan,   "",     __subdir,               __subdir_descr );
@@ -129,17 +133,24 @@ DefineCLIFlag           ( freqan,   "",     __downsampling,         "Optimally d
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIFlag           ( freqan,     __h,    __help,               __help_descr );
+DefineCLIFlag           ( freqan,   __h,    __help,                 __help_descr );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Repeating positional files option seems OK
+DefineCLIOptionFiles    ( freqan, -1,"",    __files,                __files_descr );
 }
 
 
 //----------------------------------------------------------------------------
                                         // Running the command
-inline void     FrequencyAnalysisCLI ( CLI::App* freqan, const TGoF& gof )
+inline void     FrequencyAnalysisCLI ( CLI::App* freqan )
 {
 if ( ! IsSubCommandUsed ( freqan )  )
     return;
 
+
+TGoF                gof             = GetCLIOptionFiles ( freqan, __files, __inputdir );
 
 if ( gof.IsEmpty () ) {
 
@@ -185,7 +196,7 @@ else if ( method     == __methodstransform  )   SetFlags ( analysis, FreqMethodS
 
 string              tracks          = GetCLIOptionString ( freqan, __tracks );
 
-TFileName           xyzfile         = GetCLIOptionFile   ( freqan, __xyzfile );
+TFileName           xyzfile         = GetCLIOptionFile   ( freqan, __xyzfile, __inputdir );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

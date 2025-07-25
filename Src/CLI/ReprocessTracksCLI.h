@@ -197,6 +197,10 @@ DefineCLIOptionInt      ( reprocsub,        "",     __downsampling,         "Dow
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+DefineCLIOptionFile     ( reprocsub,        "",     __inputdir,             __inputdir_descr )
+->TypeOfOption          ( __inputdir_type )
+->CheckOption           ( CLI::ExistingDirectory ); // could be incomplete, but it helps a bit, though
+
 DefineCLIOptionString   ( reprocsub,        "",     __infix,                __infix_descr );
 
 DefineCLIOptionEnum     ( reprocsub,        __ext,  __extension,            __ext_descr )
@@ -214,16 +218,23 @@ DefineCLIFlag           ( reprocsub,        "",     __concatenate,          "Con
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIFlag           ( reprocsub,        __h,    __help,                 __help_descr );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Repeating positional files option seems OK
+DefineCLIOptionFiles    ( reprocsub,-1,      "",     __files,                __files_descr );
 }
 
 
 //----------------------------------------------------------------------------
                                         // Running the command
-inline void     ReprocessTracksCLI ( CLI::App* reprocsub, const TGoF& gof )
+inline void     ReprocessTracksCLI ( CLI::App* reprocsub )
 {
 if ( ! IsSubCommandUsed ( reprocsub )  )
     return;
 
+
+TGoF                gof             = GetCLIOptionFiles ( reprocsub, __files, __inputdir );
 
 if ( gof.IsEmpty () ) {
 
@@ -235,8 +246,8 @@ if ( gof.IsEmpty () ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Tracks parameters
 
-TFileName           roisfile        = GetCLIOptionFile ( reprocsub, __roisfile );
-TFileName           xyzfile         = GetCLIOptionFile ( reprocsub, __xyzfile  );
+TFileName           roisfile        = GetCLIOptionFile ( reprocsub, __roisfile, __inputdir );
+TFileName           xyzfile         = GetCLIOptionFile ( reprocsub, __xyzfile , __inputdir );
 
 TracksOptions       tracksoptions   = roisfile.IsNotEmpty () ? ProcessRois 
                                     :                          ProcessTracks;

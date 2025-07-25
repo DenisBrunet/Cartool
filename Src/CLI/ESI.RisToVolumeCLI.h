@@ -65,6 +65,10 @@ DefineCLIOptionEnum     ( ristovol,         "",     __interpolation,        "Typ
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+DefineCLIOptionFile     ( ristovol,         "",     __inputdir,             __inputdir_descr )
+->TypeOfOption          ( __inputdir_type )
+->CheckOption           ( CLI::ExistingDirectory ); // could be incomplete, but it helps a bit, though
+
 DefineCLIOptionString   ( ristovol,         "",     __prefix,               __prefix_descr );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -86,16 +90,23 @@ DefineCLIOptionEnum     ( ristovol,         "",     __dimensions,           "Fil
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIFlag           ( ristovol,         __h,    __help,                 __help_descr );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Repeating positional files option seems OK
+DefineCLIOptionFiles    ( ristovol, -1,     "",     __files,                __files_descr );
 }
 
 
 //----------------------------------------------------------------------------
                                         // Running the command
-inline void     RisToVolumeCLI ( CLI::App* ristovol, const TGoF& gof )
+inline void     RisToVolumeCLI ( CLI::App* ristovol)
 {
 if ( ! IsSubCommandUsed ( ristovol )  )
     return;
 
+
+TGoF                gof             = GetCLIOptionFiles ( ristovol, __files, __inputdir );
 
 if ( gof.IsEmpty () ) {
 
@@ -106,7 +117,7 @@ if ( gof.IsEmpty () ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           spfile          = GetCLIOptionFile ( ristovol, __spfile   );
+TFileName           spfile          = GetCLIOptionFile ( ristovol, __spfile  , __inputdir );
 
 if ( spfile.IsEmpty () ) {
 
@@ -115,7 +126,7 @@ if ( spfile.IsEmpty () ) {
     }
 
 
-TFileName           greyfile        = GetCLIOptionFile ( ristovol, __greyfile );
+TFileName           greyfile        = GetCLIOptionFile ( ristovol, __greyfile, __inputdir );
 
 if ( greyfile.IsEmpty () ) {
 
@@ -206,11 +217,6 @@ string              fileprefix      = GetCLIOptionString ( ristovol, __prefix );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-bool                silent          = true;
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Console output prototype
 //#define     CLIConsoleOutput
 #undef      CLIConsoleOutput
@@ -219,24 +225,50 @@ bool                silent          = true;
 
 CreateConsole ();
 
-cout << "SP file:        "          << spfile << NewLine;
-cout << "Grey Mask File: "          << greyfile << NewLine;
-cout << "Interpolation:  "          << ( interpolation.empty () ? "Default" : interpolation ) << NewLine;
-cout << "Volume Interpolation: "    << VolumeInterpolationPresetString[ interpol ] << NewLine;
-cout << "SP Interpolation: "        << SPInterpolationTypeNames[ spinterpol ] << NewLine;
-cout << NewLine;
 
-cout << "Time Min: "                << ( timemin == 0                   ? "Beginning of file" : IntegerToString ( timemin ) ) << NewLine;
-cout << "Time Max: "                << ( timemax == Highest ( timemax ) ? "End of file"       : IntegerToString ( timemax ) ) << NewLine;
-cout << "Time Step: "               << timestep << NewLine;
-cout << NewLine;
+TVerboseFile        verbose ( "cout", VerboseFileDefaultWidth );
 
-cout << "Merging: "                 << FilterPresets[ merging ].Text << NewLine;
-cout << NewLine;
 
-cout << "File Format: "             << fileformat << NewLine;
-cout << "File Type: "               << typeformat << NewLine;
-cout << "File Dimensions: "         << dimensions << NewLine;
+verbose.NextTopic ( "Input Files:" );
+{
+verbose.Put ( "Solution Points file:",  spfile );
+verbose.Put ( "MRI Grey Mask file:",    greyfile );
+
+verbose.NextLine ();
+verbose.Put ( "Number of input files:", (int) gof );
+for ( int i = 0; i < (int) gof; i++ )
+    verbose.Put ( "Input file:", gof[ i ] );
+}
+
+
+verbose.NextTopic ( "Volume Parameters:" );
+{
+//verbose.Put ( "Interpolation:",       interpolation.empty () ? "Default" : interpolation );
+verbose.Put ( "Using interpolation:", VolumeInterpolationPresetString[ interpol ] );
+//verbose.Put ( "SP interpolation:",    SPInterpolationTypeNames[ spinterpol ] );
+}
+
+
+verbose.NextTopic ( "Time Parameters:" );
+{
+verbose.Put ( "From     [TF]:", timemin == 0                   ? "Beginning of file" : IntegerToString ( timemin ) );
+verbose.Put ( "To       [TF]:", timemax == Highest ( timemax ) ? "End of file"       : IntegerToString ( timemax ) );
+verbose.Put ( "By steps [TF]:", timestep );
+verbose.Put ( "Averaging each block:", merging == FilterTypeNone ? "None" : FilterPresets[ merging ].Ext /*Text*/ );
+}
+
+
+verbose.NextTopic ( "Output Files:" );
+{
+verbose.Put ( "Output data type:",  AtomFormatTypePresets[ atomformat ].Text );
+verbose.Put ( "Output format:",     VolumeFileTypeString[ filetype ] );
+verbose.Put ( "Output dimensions:", IsFileTypeN3D ( filetype ) ? 3 : 4 );
+}
+
+
+verbose.Close ();
+
+cout << NewLine;
 cout << NewLine;
 
 #endif
@@ -246,7 +278,7 @@ cout << NewLine;
 for ( int filei = 0; filei < (int) gof; filei++ ) {
 
 #if defined(CLIConsoleOutput)
-    cout << "Processing: " << gof  [ filei ]<< NewLine;
+    cout << "Now Processing: " << gof  [ filei ]<< NewLine;
 #endif
 
     TGoF                volgof;
@@ -259,7 +291,7 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                     atomformat,             
                     filetype,           fileprefix.c_str (),
                     volgof,         // not used
-                    silent
+                    true
                 );
 
     } // for file

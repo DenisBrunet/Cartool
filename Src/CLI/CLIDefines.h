@@ -56,6 +56,9 @@ constexpr char*     __monitor                   = "--monitor";
                                         // Common options, with most common associated description strings
 #define             RequiredString              " (Required)"
 
+constexpr char*     __inputdir                  = "--input-dir";
+constexpr char*     __inputdir_descr            = "Input directory";
+constexpr char*     __inputdir_type             = "PATH";
 constexpr char*     __files                     = "files";
 constexpr char*     __files_descr               = "List of files";
 

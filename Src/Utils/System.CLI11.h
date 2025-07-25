@@ -253,14 +253,39 @@ else
 }
 
 inline string           GetCLIOptionEnum        ( CLI::App* app, const string option )  { return                    GetCLIOptionString ( app, option );             }
-inline TFileName        GetCLIOptionFile        ( CLI::App* app, const string option )  { return  TFileName (       GetCLIOptionString ( app, option ).c_str (), TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) ); }  // nicely resolving any relative path
 inline int              GetCLIOptionInt         ( CLI::App* app, const string option )  { return  StringToInteger ( GetCLIOptionString ( app, option ).c_str () );  }   // empty string / option will convert to 0
 inline double           GetCLIOptionDouble      ( CLI::App* app, const string option )  { return  StringToDouble  ( GetCLIOptionString ( app, option ).c_str () );  }   // empty string / option will convert to 0
+
+
 inline interval         GetCLIOptionInterval    ( CLI::App* app, const string option )  
 {
 interval            i;
 sscanf ( GetCLIOptionString ( app, option ).c_str (), "%lf-%lf", &i.first, &i.second ); // simplest way
 return  i;
+}
+
+                                        // Returns a resolved path directory string, if option exists, or an empty string otherwise
+inline TFileName        GetCLIOptionDir    ( CLI::App* app, const string optiondir )
+{
+if ( optiondir.empty () || ! HasCLIOption ( app, optiondir ) )
+
+    return  TFileName ( "" );
+else                                    // resolve path
+    return  TFileName ( GetCLIOptionString ( app, optiondir ).c_str (), TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) );
+}
+
+                                        // Returns a resolved path file string, optionally using a directory option
+inline TFileName        GetCLIOptionFile        ( CLI::App* app, const string option, const string optiondir = "" )  
+{
+TFileName           dir             = GetCLIOptionDir       ( app, optiondir );             // could be empty
+TFileName           filename        = GetCLIOptionString    ( app, option    ).c_str ();    // not resolved path yet
+                                        // compose with optional directory if path appears to be relative
+if ( filename.IsRelativePath () && dir.IsNotEmpty () )
+    filename    = dir + "\\" + filename;
+                                        // resolve path
+filename.CheckFileName ( TFilenameFlags ( TFilenameCorrectCase | TFilenameAbsolutePath | TFilenameExtendedPath ) );
+
+return  filename;
 }
 
 
@@ -269,9 +294,10 @@ return  i;
                                         // Default values are not currently allowed
 inline vector<string>   GetCLIOptionStrings     ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->results ()            : vector<string>(); }
 inline vector<string>   GetCLIOptionEnums       ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->results ()            : vector<string>(); }
-inline TGoF             GetCLIOptionFiles       ( CLI::App* app, const string option )  { return  TGoF ( GetCLIOptionStrings ( app, option ), TFilenameFlags ( TFilenameAbsolutePath | TFilenameExtendedPath ) ); } // nicely resolving all relative paths
-inline vector<int>      GetCLIOptionInts        ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->as<vector<int>> ()    : vector<int>();    }
+inline vector<int>      GetCLIOptionInts        ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->as<vector<int>> ()    : vector<int>   (); }
 inline vector<double>   GetCLIOptionDoubles     ( CLI::App* app, const string option )  { return  HasCLIOption ( app, option ) ? GetCLIOption ( app, option )->as<vector<double>> () : vector<double>(); }
+
+
 inline vector<interval> GetCLIOptionIntervals   ( CLI::App* app, const string option )
 {
 if ( ! HasCLIOption ( app, option ) )
@@ -287,6 +313,29 @@ for ( const auto& s : vs ) {
     }
 
 return  vi;
+}
+
+                                        // Returns a resolved path list of files, optionally using a directory option
+inline TGoF             GetCLIOptionFiles       ( CLI::App* app, const string option, const string optiondir = "" )
+{
+TFileName           dir             = GetCLIOptionDir       ( app, optiondir ); // could be empty
+TGoF                relfiles        = GetCLIOptionStrings   ( app, option );    // not resolved paths yet
+TGoF                absfiles;
+TFileName           filename;
+
+for ( int i = 0; i < (int) relfiles; i++ ) {
+                                        // copy AND update file name at the same time
+    filename    = relfiles[ i ];
+                                        // compose with optional directory if path appears to be relative
+    if ( filename.IsRelativePath () && dir.IsNotEmpty () )
+        filename    = dir + "\\" + filename;
+                                        // resolve path
+    filename.CheckFileName ( TFilenameFlags ( TFilenameCorrectCase | TFilenameAbsolutePath | TFilenameExtendedPath ) );
+
+    absfiles.Add ( filename );
+    }
+
+return  absfiles;
 }
 
 

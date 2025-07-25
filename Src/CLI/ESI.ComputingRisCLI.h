@@ -53,6 +53,7 @@ DefineCLIOptionFile     ( computingris,     "",     __listfiles,            "A .
 DefineCLIOptionFile     ( computingris,     "",     __inversefile,          "Inverse Matrix file" RequiredString );
 //->Required ();    // interferes with --help
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIOptionFile     ( computingris,     "",     __xyzfile,              "Electrodes coordinates file for Spatial Filter" /*__xyzfile_descr*/ );
@@ -64,6 +65,7 @@ NeedsCLIOption          ( computingris,     __spatialfilter,    __xyzfile )
 ->DefaultString         ( SpatialFilterShortName[ SpatialFilterDefault ] )
 ->ZeroOrOneArgument;
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIOptionEnum     ( computingris,     "",     __typeformat,           "Final file type" RequiredString )
@@ -74,11 +76,13 @@ DefineCLIOptionEnum     ( computingris,     __reg,  __regularization,       "Reg
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __regnone, __regauto, __reg0, __reg1, __reg2, __reg3, __reg4, __reg5, __reg6, __reg7, __reg8, __reg9, __reg10, __reg11, __reg12 } ) ) )
 ->DefaultString         ( __regauto );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIOptionEnum     ( computingris,     "",     __zscore,           "Final file type" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __compute, __loadfile } ) ) );
 // !no default enum!
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -93,13 +97,20 @@ DefineCLIOptionDouble   ( computingris,     "",     __envelope,             "Env
         return ""; 
     } );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIOptionFile     ( computingris,     "",     __roisfile,             __roisfile_descr );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+DefineCLIOptionFile     ( computingris,     "",     __inputdir,             __inputdir_descr )
+->TypeOfOption          ( __inputdir_type )
+->CheckOption           ( CLI::ExistingDirectory ); // could be incomplete, but it helps a bit, though
+
 DefineCLIOptionString   ( computingris,     "",     __prefix,               __prefix_descr );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Options with short version
@@ -111,21 +122,28 @@ DefineCLIFlag           ( computingris,     __savingzscoreS,            __saving
 
 ExcludeCLIOptions       ( computingris,     __savingtemplates,      __savingsubjects );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIFlag           ( computingris,     __h,    __help,                 __help_descr );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Repeating positional files option seems OK
+DefineCLIOptionFiles    ( computingris, -1, "",     __files,                __files_descr );
 }
 
 
 //----------------------------------------------------------------------------
                                         // Running the command
-inline void     ComputingRisCLI ( CLI::App* computingris, const TGoF& gof )
+inline void     ComputingRisCLI ( CLI::App* computingris )
 {
 if ( ! IsSubCommandUsed ( computingris )  )
     return;
 
 
-TFileName           listfiles       = GetCLIOptionFile ( computingris, __listfiles );
+TGoF                gof             = GetCLIOptionFiles ( computingris, __files,     __inputdir );
+TFileName           listfiles       = GetCLIOptionFile  ( computingris, __listfiles, __inputdir );
 
 if ( gof.IsEmpty () && listfiles.IsEmpty () ) {
 
@@ -203,7 +221,7 @@ TGoF                cliinverse;
 
 if ( HasCLIOption ( computingris, __inversefile ) )
                                         // try to read a single inverse file parameter
-    cliinverse  = TGoF ( GetCLIOptionFile ( computingris, __inversefile ) );
+    cliinverse  = TGoF ( GetCLIOptionFile ( computingris, __inversefile, __inputdir ) );
 
                                         // comment this to allow a single inverse file parameter to override those from the list of files
 //if ( HasInverses ( csvinverses ) && HasInverses ( cliinverse ) ) {
@@ -239,7 +257,7 @@ if ( ! ( singleinverse || matchinginverses ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           xyzfile         = GetCLIOptionFile ( computingris, __xyzfile  );
+TFileName           xyzfile         = GetCLIOptionFile ( computingris, __xyzfile, __inputdir );
                                         // !it is enough to provide the xyzfile to activate the default spatial filter!
 SpatialFilterType   spatialfilter   = SpatialFilterDefault;
 
@@ -338,7 +356,7 @@ if ( CRISPresets[ esicase ].IsInduced () && ! envelope ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           roisfile        = GetCLIOptionFile ( computingris, __roisfile );
+TFileName           roisfile        = GetCLIOptionFile ( computingris, __roisfile, __inputdir );
 
 bool                roiing          = CanOpenFile ( roisfile ) // roisfile.IsNotEmpty ()
                                    && ! IsVector ( datatypeproc );  // we have to do something to forbid ROIing on non-scalar data

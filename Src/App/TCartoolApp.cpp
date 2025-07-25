@@ -746,11 +746,17 @@ RisToVolumeCLIDefine ( ristovolsub );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Positional options (not starting with '-')
-                                        // Note that files list usually need to separated from other parameters with " -- ", like in "--<option>=<something> -- <file1> <file2> <file3>"
-                                        // Absolute paths are recommended, though local path to current exe file will be resolved
-DefineCLIOptionFiles    ( toapp,           -1,      "",     __files,                __files_descr )
-->TypeOfOption          ( "" );         // bypassing default message, which is kind of ugly
+                                        // Positional option = files
+                                        // Absolute vs Relative path:
+                                        //  - If a file has an absolute path, it will be accessed as is. This allows for any mix of input directories.
+                                        //  - If a file has a relative path:
+                                        //      - If the --input-dir option has been set, it will be used to resolve the path to absolute
+                                        //      - If not set, the current directory will be used to resolve the path to absolute
+DefineCLIOptionFile     ( toapp,                    "",     __inputdir,             __inputdir_descr )
+->TypeOfOption          ( __inputdir_type )
+->CheckOption           ( CLI::ExistingDirectory ); // could be incomplete, but it helps a bit, though
+
+DefineCLIOptionFiles    ( toapp,           -1,      "",     __files,                __files_descr );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -769,11 +775,6 @@ catch ( const CLI::ParseError &e ) {
 
     exit ( app.exit ( e ) );
     }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // For our own convenience, convert vector<string> files to TGoF, while also converting any relative path to absolute
-TGoF                gof             = GetCLIOptionFiles ( toapp, __files );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -840,31 +841,31 @@ else if ( IsSubCommandUsed ( regsub ) ) {
 
 else if ( IsSubCommandUsed ( reprocsub ) ) {
 
-    ReprocessTracksCLI ( reprocsub, gof );
+    ReprocessTracksCLI ( reprocsub );
     exit ( 0 );
     }
 
 else if ( IsSubCommandUsed ( interpolsub ) ) {
 
-    InterpolateTracksCLI ( interpolsub, gof );
+    InterpolateTracksCLI ( interpolsub );
     exit ( 0 );
     }
 
 else if ( IsSubCommandUsed ( freqsub ) ) {
 
-    FrequencyAnalysisCLI ( freqsub, gof );
+    FrequencyAnalysisCLI ( freqsub );
     exit ( 0 );
     }
 
 else if ( IsSubCommandUsed ( computingrissub ) ) {
 
-    ComputingRisCLI ( computingrissub, gof );
+    ComputingRisCLI ( computingrissub );
     exit ( 0 );
     }
 
 else if ( IsSubCommandUsed ( ristovolsub ) ) {
 
-    RisToVolumeCLI ( ristovolsub, gof );
+    RisToVolumeCLI ( ristovolsub );
     exit ( 0 );
     }
 
@@ -985,6 +986,9 @@ MDIClientRect   = CartoolMdiClient->GetClientRect ().Normalized ();
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Finally we can loop through the optional files
 if ( HasCLIOption ( toapp, __files ) ) {
+                                        // Retrieving files when no sub-command is being called
+    TGoF                gof             = GetCLIOptionFiles ( toapp, __files, __inputdir );
+
 
     for ( int filei = 0; filei < (int) gof; filei++ ) {
                                         // Caller should quote file names that contains spaces

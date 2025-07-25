@@ -89,6 +89,10 @@ DefineCLIOptionInt      ( interpol, "",     __splinedegree,         splinedegree
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+DefineCLIOptionFile     ( interpol, "",     __inputdir,             __inputdir_descr )
+->TypeOfOption          ( __inputdir_type )
+->CheckOption           ( CLI::ExistingDirectory ); // could be incomplete, but it helps a bit, though
+
 DefineCLIOptionString   ( interpol, "",     __infix,                __infix_descr );
 
 DefineCLIOptionEnum     ( interpol, __ext,  __extension,            __ext_descr )
@@ -101,16 +105,23 @@ DefineCLIFlag           ( interpol, "",     __nocleanup,            "Saving inte
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIFlag           ( interpol, __h,    __help,                 __help_descr );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Repeating positional files option seems OK
+DefineCLIOptionFiles    ( interpol, -1,      "",     __files,       __files_descr );
 }
 
 
 //----------------------------------------------------------------------------
                                         // Running the command
-inline void     InterpolateTracksCLI ( CLI::App* interpol, const TGoF& gof )
+inline void     InterpolateTracksCLI ( CLI::App* interpol )
 {
 if ( ! IsSubCommandUsed ( interpol )  )
     return;
 
+
+TGoF                gof             = GetCLIOptionFiles ( interpol, __files, __inputdir );
 
 if ( gof.IsEmpty () ) {
 
@@ -121,7 +132,7 @@ if ( gof.IsEmpty () ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           fromxyzfile     = GetCLIOptionFile   ( interpol, __fromxyz );
+TFileName           fromxyzfile     = GetCLIOptionFile   ( interpol, __fromxyz, __inputdir );
 
 string              fromfront       = GetCLIOptionString ( interpol, __fromfront );
 string              fromleft        = GetCLIOptionString ( interpol, __fromleft  );
@@ -146,7 +157,7 @@ string              badelec         = GetCLIOptionString ( interpol, __badelec  
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           toxyzfile       = GetCLIOptionFile   ( interpol, __toxyz );
+TFileName           toxyzfile       = GetCLIOptionFile   ( interpol, __toxyz, __inputdir );
 
 string              tofront         = GetCLIOptionString ( interpol, __tofront );
 string              toleft          = GetCLIOptionString ( interpol, __toleft  );
