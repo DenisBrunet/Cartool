@@ -413,41 +413,131 @@ string              prefix          = GetCLIOptionEnum ( computingris, __prefix 
 
 CreateConsole ();
 
-cout << "Preset:           "    << CRISPresets[ esicase ].Text << NewLine;
-cout << "Number subjects:  "    << numsubjects << NewLine;
-cout << "Number conds.  :  "    << numconditions << NewLine;
-cout << NewLine;
 
-if ( xyzfile.IsNotEmpty () ) {
-    cout << "XYZ file:         "    << xyzfile << NewLine;
-    cout << "Spatial Filter:   "    << SpatialFilterLongName[ spatialfilter ] << NewLine;
+TVerboseFile        verbose ( "cout", VerboseFileDefaultWidth );
+char                buff[ 256 ];
+
+verbose.NextTopic ( "Data Preprocessing:" );
+{
+verbose.Put ( "Spatial Filter:", SpatialFilterLongName[ spatialfilter ] );
+if ( spatialfilter != SpatialFilterNone )
+    verbose.Put ( "Electrodes Coordinates file:", xyzfile );
+}
+
+
+verbose.NextTopic ( "Inverse Processing:" );
+{
+verbose.Put ( "Preset:", CRISPresets[ esicase ].Text );
+
+verbose.NextLine ();
+
+verbose.Put ( "Inverse Matrix case:", matchinginverses ? "Individual Inverse Matrices" : numsubjects > 1 ? "Common Inverse Matrix" : "Single Inverse Matrix" );
+verbose.Put ( "Inverse Matrix file:", matchinginverses ? "See Input File section" : inverses[ 0 ] );
+verbose.Put ( "Regularization level:", RegularizationToString ( regularization, buff, false ) );
+
+verbose.NextLine ();
+
+if ( CRISPresets[ esicase ].IsEpochs () ) {
+    if      ( IsPositive ( datatypeepochs ) )   verbose.Put ( "Epochs data type:", "Positive Data (Norm of Vectors)" );
+    else if ( IsVector   ( datatypeepochs ) )   verbose.Put ( "Epochs data type:", "3D Vectorial Data" );
     }
 
-cout << "# of IS files:    "    << (int) inverses << NewLine;
-for ( int i = 0; i < (int) inverses; i++ )
-    cout << "IS file:          "    << inverses[ i ] << NewLine;
 
-cout << "Regularization:   "    << reg << NewLine;
-cout << "Standardization:  "    << BackgroundNormalizationNames[ backnorm ] << NewLine;
+if ( CRISPresets[ esicase ].IsEpochs () ) {
+    if      ( IsPositive ( datatypeepochs ) )        verbose.Put ( "Epochs data type:", "Positive Data (Norm of Vectors)" );
+    else if ( IsVector   ( datatypeepochs ) )        verbose.Put ( "Epochs data type:", "3D Vectorial Data" );
+    }
+
+if      ( IsPositive ( datatypeproc  ) )        verbose.Put ( "Proc. data type:", "Positive Data (Norm of Vectors)" );
+else if ( IsVector   ( datatypeproc  ) )        verbose.Put ( "Proc. data type:", "3D Vectorial Data" );
+
+if      ( IsPositive ( datatypefinal ) )        verbose.Put ( "Final data type:", "Positive Data (Norm of Vectors)" );
+else if ( IsVector   ( datatypefinal ) )        verbose.Put ( "Final data type:", "3D Vectorial Data" );
+}
+
+
+verbose.NextTopic ( "Inverse Postprocessing:" );
+{
+verbose.Put ( "Standardizing results:", BackgroundNormalizationNames[ backnorm ] );
+
+verbose.Put ( "Ranking results:", ranking );
+
+verbose.Put ( "Thresholding results:", thresholding );
+//if ( thresholding )
+//    verbose.Put ( "Threshold level:", threshold, 2 );
+
+verbose.Put ( "Envelope of results:", envelope );
+if ( envelope ) {
+    verbose.Put ( "Envelope method:", FilterPresets[ envelopetype ].Text );
+    verbose.Put ( "Envelope lowest frequency:", MillisecondsToFrequency ( envelopeduration ), 2, " [Hz]" );
+    verbose.Put ( "Envelope duration:", envelopeduration, 2, " [ms]" );
+    }
+
+verbose.Put ( "Applying ROIs:", roiing );
+if ( roiing ) {
+    verbose.Put ( "ROIs file:", roisfile );
+    verbose.Put ( "ROIs method:", FilterPresets[ RisRoiMethod ].Text );
+    }
+}
+
+
+verbose.NextTopic ( "Input Files:" );
+{
+verbose.Put ( "Number of subjects:",   numsubjects   );
+verbose.Put ( "Number of conditions:", numconditions );
+
+
+for ( int si = 0; si < subjects.NumGroups (); si++ ) {
+
+    verbose.NextLine ();
+    verbose.Put ( esicase     == ComputingRisPresetErpGroupMeans ?  "Group #:"  // more precise
+                :                                                   "Subject #:", si + 1 );
+    verbose.Put ( "Number of EEG files:", subjects[ si ].NumFiles () );
+
+
+    if ( CRISPresets[ esicase ].IsEpochs () ) {
+
+        TGoGoF              splitgogof;
+        TStrings            splitnames;
+
+        subjects[ si ].SplitByNames ( "." InfixEpoch, splitgogof, &splitnames );
+
+        verbose.Put ( "Number of groups of epochs:", splitgogof.NumGroups () );
+
+        for ( int gofi = 0; gofi < splitgogof.NumGroups (); gofi++ )
+        for ( int fi = 0; fi < splitgogof[ gofi ].NumFiles (); fi++ )
+            verbose.Put ( fi ? "" : StringCopy ( buff, "Epochs Group #", IntegerToString ( gofi + 1 ), ":" ), splitgogof[ gofi ][ fi ] );
+        }
+    else 
+        for ( int fi = 0; fi < subjects[ si ].NumFiles (); fi++ )
+            verbose.Put ( "", subjects[ si ][ fi ] );
+
+
+    if      ( matchinginverses )    verbose.Put ( "Individual Inverse Matrix file:", inverses[ si ] );
+    else if ( numsubjects > 1  )    verbose.Put ( "Common Inverse Matrix file:",     inverses[  0 ] );
+    else                            verbose.Put ( "Inverse Matrix file:",            inverses[  0 ] );
+    }
+}
+
+
+verbose.NextTopic ( "Output Files:" );
+{
+verbose.Put ( "Output base directory:",                 basedir );
+verbose.Put ( "Output file prefix:",                    prefix );
+
+verbose.NextLine ();
+
+verbose.Put ( "Saving every individual ris files:",     savingindividualfiles   );
+verbose.Put ( "Saving every epoch ris files:",          savingepochfiles        );
+verbose.Put ( "Computing each groups' averages:",       computegroupsaverages   );
+verbose.Put ( "Computing each groups' centroids:",      computegroupscentroids  );
+verbose.Put ( "Saving standardization factors files:",  savingzscorefactors     );
+}
+
+
+verbose.Close ();
+
 cout << NewLine;
-
-if ( CRISPresets[ esicase ].IsEpochs () )
-    cout << "Data Type Epochs: "    << AtomNames[ datatypeepochs ] << NewLine;
-cout << "Data Type Proc:   "    << AtomNames[ datatypeproc ] << NewLine;
-cout << "Data Type Final:  "    << AtomNames[ datatypefinal ] << NewLine;
-cout << "Ranking:          "    << BoolToString ( ranking ) << NewLine;
-cout << "Envelope:         "    << BoolToString ( envelope ) << NewLine;
-if ( envelope )
-    cout << "Envelope Duration:"  << envelopeduration << NewLine;
-cout << NewLine;
-
-cout << "Base Dir:         "    << basedir << NewLine;
-cout << "File prefix:      "    << prefix << NewLine;
-cout << NewLine;
-
-for ( int i = 0; i < (int) gof; i++ )
-    cout << "File:             "    << gof[ i ] << NewLine;
-
 cout << NewLine;
 
 #endif
