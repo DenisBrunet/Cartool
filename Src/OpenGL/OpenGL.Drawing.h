@@ -137,9 +137,9 @@ public:
 
 //----------------------------------------------------------------------------
                                         // Fill the triangle colormap-correct
-void    GLColorTrianglefv ( GLfloat         v1[ 3 ],    GLfloat         v2[ 3 ],    GLfloat         v3[ 3 ],
-                            float           val1,       float           val2,       float           val3,
-                            TGLColorTable&  colormap,   double          sizelimit,  int             level   );
+void    GLColorTrianglefv ( GLfloat                 v1[ 3 ],    GLfloat         v2[ 3 ],    GLfloat         v3[ 3 ],
+                            float                   val1,       float           val2,       float           val3,
+                            const TGLColorTable&    colormap,   double          sizelimit,  int             level   );
 
                                         // Subdivide a triangle (in material mode) to render it a la Phong
 void    GLSmoothTrianglefv ( GLfloat        v1[ 3 ],    GLfloat         v2[ 3 ],    GLfloat         v3[ 3 ], 

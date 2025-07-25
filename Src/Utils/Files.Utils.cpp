@@ -335,11 +335,29 @@ return  false;
 
 
 //----------------------------------------------------------------------------
+bool        IsAbsolutePath ( const char* path )
+{
+if ( StringIsEmpty ( path ) )
+    return false;
+
+return ! PathIsRelative ( path );
+}
+
+
+bool        IsRelativePath ( const char* path )
+{
+if ( StringIsEmpty ( path ) )
+    return false;
+
+return PathIsRelative ( path );
+}
+
+
+//----------------------------------------------------------------------------
 void        CheckAbsolutePath ( char* path, int maxsize )
 {
 if ( StringIsEmpty ( path ) )
     return;
-
 
 _fullpath ( path, path, maxsize );
 }
@@ -360,7 +378,7 @@ if ( ( force || StringLength ( path ) >= WindowsMaxPath )
 }
 
 
-bool        IsExtendedPath  ( char* path )
+bool        IsExtendedPath  ( const char* path )
 {
 return  StringStartsWith ( path, ExtendedPathPrefix ); 
 }

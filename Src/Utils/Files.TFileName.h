@@ -50,9 +50,9 @@ public:
     void            SetTempFileName         ( const char* ext )                 { GetTempFilePath ( String ); if ( StringIsNotEmpty ( ext ) ) ReplaceExtension ( ext ); }
 
 
-    bool            IsRelativePath          ()      const                       { return  ::PathIsRelative      ( String ); }
-    bool            IsAbsolutePath          ()      const                       { return  ! IsRelativePath      ();         }
-    bool            IsExtendedPath          ()                                  { return  crtl::IsExtendedPath  ( String ); }
+    bool            IsRelativePath          ()      const                       { return  crtl::IsRelativePath  ( String );     }
+    bool            IsAbsolutePath          ()      const                       { return  crtl::IsAbsolutePath  ( String );     }
+    bool            IsExtendedPath          ()                                  { return  crtl::IsExtendedPath  ( String );     }
     bool            IsExtension             ( const char* ext )     const       { return  crtl::IsExtension     ( String, ext );}
     void            ResetExtendedPath       ()                                  { if ( IsExtendedPath () ) StringClip ( String, StringLength ( ExtendedPathPrefix ), StringLength ( String ) - 1 ); } // remove extended special chars
 

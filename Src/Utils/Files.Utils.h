@@ -61,9 +61,11 @@ char*               AppendFilenameAsSubdirectory    ( char* path );
 bool                CreatePath                      ( const char* path, bool endswithfilename );  // make sure the whole chain of directories are created, up to the final file
 int                 FilenameToSiblings              ( char* file, TGoF &gof );              // transforms/expands a filename into its legal sibling (.img -> .hdr, MFF -> signal?.bin, etc..)
 void                CheckSiblingFile                ( char* path );
-void                CheckAbsolutePath               ( char* path, int maxsize );
-bool                IsExtendedPath                  ( char* path );
-void                CheckExtendedPath               ( char* path, bool force = false );     // checks if path needs the magic prefix "\\?\"
+bool                IsRelativePath                  ( const char* path );
+bool                IsAbsolutePath                  ( const char* path );
+bool                IsExtendedPath                  ( const char* path );
+void                CheckAbsolutePath               ( char* path, int maxsize );            // converts to absolute
+void                CheckExtendedPath               ( char* path, bool force = false );     // checks if path needs the magic prefix "\\?\", then adds it
 void                CheckNoOverwrite                ( char* path );                         // prevent overwriting by making the current file a variation
 
 enum                FilesWithEegExt
