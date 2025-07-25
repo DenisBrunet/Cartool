@@ -3462,10 +3462,10 @@ else if ( match.Length () > 20 )        // or too long
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // finally, compose the base name
 StringCopy ( base, directory, match );
-
                                         // gracefully checking these
-MsDosPathToWindowsPath  ( base );
-CheckExtendedPath       ( base );
+SetCorrectPathCase  ( base );
+
+CheckExtendedPath   ( base );
 
 
 return  found && StringLength ( match ) > 0;

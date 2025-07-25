@@ -41,23 +41,19 @@ namespace crtl {
 //----------------------------------------------------------------------------
                                         // Given a path "a la DOS", convert it to real Windows path (ie long file name + uppercase)
                                         // !path can actually grow, make sure the variable has enough allocated space!
-void    MsDosPathToWindowsPath ( char* path )
+void    SetCorrectPathCase ( char* path )
 {
 if ( StringIsEmpty ( path ) )
     return;
 
 
-TFileName           savedpath;
+//TFileName         savedpath       = path;
 TFileName           incrpath;
 TFindFile           findfile;
 TSplitStrings       splitpath ( path, NonUniqueStrings, "\\" );
 int                 spi             = 0;
 
 
-//DBGM ( path, "MsDosPathToWindowsPath: old path" );
-
-
-StringCopy  ( savedpath, path );
 ClearString ( path     );
 ClearString ( incrpath );
 
@@ -66,14 +62,12 @@ ClearString ( incrpath );
                                         // copy first drive letter
 if ( StringGrep ( splitpath[ spi ], "^[A-Za-z]:$", GrepOptionDefault ) ) {
 
-    StringCopy ( path,     splitpath[ spi ] );
-    StringCopy ( incrpath, splitpath[ spi ] );
+    StringCopy          ( path,     splitpath[ spi ] );
+    StringToUppercase   ( path );
+    StringCopy          ( incrpath, splitpath[ spi ] );
                                         // skip drive letter
     ++spi;
     }
-
-
-//CheckExtendedPath ( incrpath, true );
 
                                         // loop through each piece of path
 for ( ; spi < (int) splitpath; ++spi ) {
@@ -89,23 +83,11 @@ for ( ; spi < (int) splitpath; ++spi ) {
     else
                                         // next piece not OK, use the input one
         StringAppend ( path, StringIsNotEmpty ( path ) ? "\\" : "", splitpath[ spi ] );
-
-//  DBGM ( path, "incrpath -> path" );
     }
 
-
-//DBGM ( path, "MsDosPathToWindowsPath: processed path" );
-
-
-                                        // do this here?
-//CheckExtendedPath ( path /*, true*/ );
-
                                         // Old Borland does not like more than 256 long file names for the MRU
-if ( StringLength ( path ) > WindowsMaxPath )
-    StringCopy ( path, savedpath );
-
-
-//DBGM ( path, "MsDosPathToWindowsPath: final path" );
+//if ( StringLength ( path ) > WindowsMaxPath )
+//    StringCopy ( path, savedpath );
 }
 
 

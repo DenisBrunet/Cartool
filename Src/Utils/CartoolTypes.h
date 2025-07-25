@@ -773,7 +773,7 @@ inline  TypeD       ZPositiveToZSigned      ( TypeD& zpos    )                  
 enum                TFilenameFlags
                     {
                     TFilenameNoPreprocessing    = 0x000,
-                    TFilenameMsDosToWindows     = 0x001,
+                    TFilenameCorrectCase        = 0x001,
                     TFilenameAbsolutePath       = 0x002,
                     TFilenameExtendedPath       = 0x004,
                     TFilenameSibling            = 0x008,

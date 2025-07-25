@@ -55,7 +55,7 @@ constexpr int       MaxAppTitleLength           = 1 * KiloByte;
 class               TGoF;
 
                                         // Functions ACTUALLY operating on disk
-void                MsDosPathToWindowsPath          ( char* path );
+void                SetCorrectPathCase              ( char* path );                         // updates path with actual cases
 bool                CreateSubdirectoryFromFilename  ( char* path );                         // take the filename part, and insert a subdirectory with same name
 char*               AppendFilenameAsSubdirectory    ( char* path );
 bool                CreatePath                      ( const char* path, bool endswithfilename );  // make sure the whole chain of directories are created, up to the final file
@@ -103,7 +103,6 @@ bool                IsAbsoluteFilename      ( const char* filename );
 bool                IsFile                  ( const char* path );
 bool                IsDirectory             ( const char* path );
 bool                IsEmptyDirectory        ( const char* path );
-//bool              IsAbsolutePath          ( const char* filename );
 bool                IsGeodesicsMFFPath      ( const char* filename );   // true for signal*.bin in mff directory - used so we can move up one directory
 
 
