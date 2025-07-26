@@ -121,6 +121,7 @@ if ( ! IsSubCommandUsed ( interpol )  )
     return;
 
 
+TFileName           inputdir        = GetCLIOptionDir   ( interpol, __inputdir );
 TGoF                gof             = GetCLIOptionFiles ( interpol, __files, __inputdir );
 
 if ( gof.IsEmpty () ) {
@@ -321,6 +322,7 @@ for ( int i = 0; i < (int) gof; i++ )
 
 verbose.NextTopic ( "Options:" );
 {
+verbose.Put ( "Input directory:",           inputdir.IsEmpty () ? "None" : inputdir );
 verbose.Put ( "File name infix:",           infix );
 verbose.Put ( "Saving intermediate files:", nocleanup );
 }

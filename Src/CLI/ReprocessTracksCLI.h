@@ -24,6 +24,7 @@ limitations under the License.
 
 #include    "Strings.TFixedString.h"
 #include    "Files.TOpenDoc.h"
+#include    "Files.TVerboseFile.h"
 #include    "TExportTracks.h"
 #include    "ReprocessTracks.h"
 
@@ -234,6 +235,7 @@ if ( ! IsSubCommandUsed ( reprocsub )  )
     return;
 
 
+TFileName           inputdir        = GetCLIOptionDir   ( reprocsub, __inputdir );
 TGoF                gof             = GetCLIOptionFiles ( reprocsub, __files, __inputdir );
 
 if ( gof.IsEmpty () ) {
@@ -529,74 +531,136 @@ bool                silent          = true;
 
 CreateConsole ();
 
-cout << ( tracksoptions == ProcessRois ? "Exporting ROIs: " : "Exporting Tracks: " );
 
-if      ( RoisDoc.IsOpen () )   {   cout << roisfile << ", " << RoisDoc->ROIs->GetName () << ": " << RoisDoc->ROIs->GetNumRois () << " x " << RoisDoc->ROIs->GetDimension (); }
-else if ( XYZDoc .IsOpen () )   {   cout << xyzfile << ": " << XYZDoc->GetNumElectrodes (); }
-else                            {   cout << "EEG tracks names"; }
-cout << NewLine;
+TVerboseFile        verbose ( "cout", VerboseFileDefaultWidth );
+char                buff[ KiloByte ];
 
-cout << "Tracks: " << ( tracks.empty () ? "All tracks" : tracks ) << NewLine;
-
-cout << "Time Options: " << ( timeoptions == ExportTimeInterval  ? "Time Interval" 
-                            : timeoptions == ExportTimeTriggers  ? "Keeping triggers List"
-                            : timeoptions == ExcludeTimeTriggers ? "Excluding triggers List"
-                            :                                      "Unknown" ) << NewLine;
-if ( timeoptions == ExportTimeInterval ) {
-    cout << "Time Min: " << ( timemin == 0                   ? "Beginning of file" : IntegerToString ( timemin ) ) << NewLine;
-    cout << "Time Max: " << ( timemax == Highest ( timemax ) ? "End of file"       : IntegerToString ( timemax ) ) << NewLine;
-    }
-else if ( timeoptions == ExportTimeTriggers )
-    cout << "Keep Triggers: " << keeptriggers << NewLine;
-else if ( timeoptions == ExcludeTimeTriggers )
-    cout << "Exclude Triggers: " << excludetriggers << NewLine;
-
-cout << "Adding Null Tracks: " << BoolToString ( ! nulltracks.empty () ) << NewLine;
-if ( ! nulltracks.empty () )
-    cout << "Null tracks: " << nulltracks << NewLine;
-
-
-cout << "Filtering: " << BoolToString ( filteringoptions == UsingOtherFilters ) << NewLine;
-if ( filteringoptions == UsingOtherFilters ) {
-    char        buff[ KiloByte ];
-    cout << "Filters: " << altfilters.ParametersToText ( buff ) << NewLine;
-    }
-cout << "Default Sampling Frequency: " << defaultsamplingfrequency << NewLine;
-
-
-cout << "Reference: " << ReferenceNames[ ref ] << NewLine;
-if ( ref == ReferenceArbitraryTracks )
-    cout << "Reference list: " << reflist << NewLine;
-
-cout << "Baseline: " << BoolToString ( baselinecorr ) << NewLine;
-if ( baselinecorr )
-    cout << "From: " << baselinecorrint[ 0 ] << " To " << baselinecorrint[ 1 ] << NewLine;
-
-cout << "Rescaling: " << ( rescalingoptions == NotRescaled          ? "No rescaling" 
-                         : rescalingoptions == ConstantRescaling    ? "Constant rescaling"
-                         : rescalingoptions == GfpRescaling         ? "Mean GFP rescaling"
-                         :                                            "Unknown" ) << NewLine;
-if ( rescalingoptions == ConstantRescaling )
-    cout << "Scaling Factor: " << rescalingfactor << NewLine;
-else if ( rescalingoptions == GfpRescaling )
-    cout << "Scaling Factor: " << "Mean GFP" << NewLine;
-
-cout << "Sequence Option: " << ( sequenceoptions == SequenceProcessing  ? "Sequential Data" 
-                               : sequenceoptions == AverageProcessing   ? "Averaging Data in Time"
-                               :                                          "Unknown" ) << NewLine;
-cout << "Downsample Ratio: " << ( downsampleratio == 0 ? "No" : IntegerToString ( downsampleratio ) ) << NewLine;
-cout << "File Type & Extension: " << filetype << ", " << SavingEegFileExtPreset[ filetype ] << NewLine;
-cout << "Infix: " << ( infix.empty () ? ""<none>" : infix ) << NewLine;
-cout << "Saving Markers: " << BoolToString ( outputmarkers ) << NewLine;
-
-cout << "Concatenate Time: " << BoolToString ( concatenateoptions ) << NewLine;
+verbose.NextTopic ( "Files:" );
+{
 if ( concatenateoptions == ConcatenateTime ) {
-    cout << "Concatenating " << (int) gof << " files" << NewLine;
-    for ( int filei = 0; filei < (int) gof; filei++ )
-        cout << "Concatenate File: " << gof[ filei ]   << NewLine;
+    verbose.Put ( "Number of Input Files:", (int) gof );
+
+    for ( int i = 0; i < (int) gof; i++ )
+        verbose.Put ( ! i ? "Input   Files        :" : "", gof[ i ] );
+
+    verbose.NextLine ();
     }
 
-cout << NewLine;
+verbose.NextLine ();
+verbose.Put ( "Using electrode names from file:", XYZDoc .IsOpen () ? XYZDoc ->GetDocPath () : "No" );
+verbose.Put ( "Using ROIs            from file:", RoisDoc.IsOpen () ? RoisDoc->GetDocPath () : "No" );
+if ( concatenateoptions == ConcatenateTime )
+    verbose.Put ( "Concatenate into 1 file:", concatenateoptions == ConcatenateTime );
+}
+
+
+verbose.NextTopic ( "Exporting:" );
+{
+verbose.Put ( "Type of export:", tracksoptions == ProcessTracks ? "Tracks" : "ROIs" );
+
+if      ( tracksoptions == ProcessTracks ) {
+    verbose.Put ( "Track names:",   tracks.empty () ? "All" : tracks );
+    }
+else if ( tracksoptions == ProcessRois ) {
+    verbose.Put ( "ROIs names:",    RoisDoc->ROIs->RoiNamesToText ( buff ) );
+    }
+}
+
+
+verbose.NextTopic ( "Input Time Period:" );
+{
+verbose.Put ( "Input time range defined by:", timeoptions == ExportTimeInterval ? "Interval" : /*timeoptions == ExportTimeTriggers || timeoptions == ExcludeTimeTriggers*/ "Triggers" );
+
+if      ( timeoptions == ExportTimeInterval ) {
+    verbose.Put ( "From      Time Frame :", timemin == 0                   ? "Beginning of file" : IntegerToString ( timemin ) );
+    verbose.Put ( "To        Time Frame :", timemax == Highest ( timemax ) ? "End of file"       : IntegerToString ( timemax ) );
+    }
+else if ( timeoptions == ExportTimeTriggers ) {
+    verbose.Put ( "Keeping Triggers     :", keeptriggers );
+    }
+else if ( timeoptions == ExcludeTimeTriggers ) {
+    verbose.Put ( "Excluding Triggers   :", excludetriggers );
+    }
+}
+
+
+verbose.NextTopic ( "Processing Parameters:" );
+{
+verbose.Put ( "Sampling Frequency [Hz]:", defaultsamplingfrequency );
+
+
+verbose.NextLine ();
+verbose.Put ( "Adding null tracks:", nulltracks.empty () ? "No" : nulltracks );
+
+
+verbose.NextLine ();
+if      ( filteringoptions == UsingOtherFilters   ) verbose.Put ( "Other filters:",     altfilters.ParametersToText ( buff ) );
+else                                                verbose.Put ( "Filters:",           false );
+
+
+verbose.NextLine ();
+if      ( ref == ReferenceAsInFile          )       verbose.Put ( "Reference:", "No reference, as in file" );
+else if ( ref == ReferenceAverage           )       verbose.Put ( "Reference:", "Average reference" );
+else if ( ref == ReferenceArbitraryTracks   )       verbose.Put ( "Reference:", reflist );
+else                                                verbose.Put ( "Reference:", "Unknown" );
+
+
+verbose.NextLine ();
+verbose.Put ( "Baseline correction:", baselinecorr );
+
+if ( baselinecorr ) {
+    verbose.Put ( "Inferior limit (absolute value) in TF:", baselinecorrint[ 0 ] );
+    verbose.Put ( "Superior limit (absolute value) in TF:", baselinecorrint[ 1 ] );
+    }
+
+
+verbose.NextLine ();
+verbose.Put ( "Rescaling:", rescalingoptions != NotRescaled );
+
+if ( rescalingoptions != NotRescaled ) {
+
+    if      ( rescalingoptions == ConstantRescaling )
+        verbose.Put ( "Rescaling method:", "Fixed value" );
+    else if ( rescalingoptions == GfpRescaling )
+        verbose.Put ( "Rescaling method:", "Mean GFP" );
+
+    if ( rescalingoptions == ConstantRescaling || rescalingoptions == GfpRescaling && concatenateoptions == NoConcatenateTime )
+        verbose.Put ( "Rescaling factor:", rescalingfactor );
+                                    // concatenation: one factor per file
+    }
+}
+
+
+verbose.NextTopic ( "Output Time:" );
+{
+if ( concatenateoptions == ConcatenateTime )
+    verbose.Put ( "Output time is:", sequenceoptions == SequenceProcessing ? "Sequential" : "Sequence of each file's average" );
+else
+    verbose.Put ( "Output time is:", sequenceoptions == SequenceProcessing ? "Sequential" : "Average" );
+
+if ( sequenceoptions == SequenceProcessing ) {
+    verbose.NextLine ();
+    verbose.Put ( "Time downsampling:", downsampleratio != 0 );
+
+    if ( downsampleratio != 0 ) {
+        verbose.Put ( "Downsampling ratio:", downsampleratio );
+        verbose.Put ( "Downsampled Sampling Frequency [Hz]:", defaultsamplingfrequency / downsampleratio );
+        }
+    }
+}
+
+
+verbose.NextTopic ( "Options:" );
+{
+verbose.Put ( "Input directory:",                       inputdir.IsEmpty () ? "None" : inputdir );
+verbose.Put ( "File name infix:",                       infix );
+verbose.Put ( "Output file type:",                      SavingEegFileExtPreset[ filetype ] );
+verbose.Put ( "Saving markers:",                        outputmarkers );
+}
+
+
+verbose.NextLine ();
+verbose.NextLine ();
 
 #endif
 
@@ -610,7 +674,7 @@ TExportTracks       expfile;            // needed for files concatenation
 for ( int filei = 0; filei < (int) gof; filei++ ) {
 
 #if defined(CLIConsoleOutput)
-    cout << "Processing: " << gof  [ filei ]<< NewLine;
+    cout << "Now Processing: " << gof  [ filei ]<< NewLine;
 #endif
 
     TOpenDoc<TTracksDoc>    EEGDoc ( gof[ filei ], OpenDocHidden );

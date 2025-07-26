@@ -1485,6 +1485,14 @@ if ( closefile ) {
     }
 
 
+    verbose.NextTopic ( "Options:" );
+    {
+    verbose.Put ( "File name infix:",   infixfilename );
+    verbose.Put ( "Output file type:",  SavingEegFileExtPreset[ filetype ] );
+    verbose.Put ( "Saving markers:",    outputmarkers );
+    }
+
+
     verbose.NextTopic ( "Processing Summary:" );
     (ofstream&) verbose << "Data is processed according to this sequence:" << fastendl;
     (ofstream&) verbose                                                             << fastendl;

@@ -106,6 +106,7 @@ if ( ! IsSubCommandUsed ( ristovol )  )
     return;
 
 
+TFileName           inputdir        = GetCLIOptionDir   ( ristovol, __inputdir );
 TGoF                gof             = GetCLIOptionFiles ( ristovol, __files, __inputdir );
 
 if ( gof.IsEmpty () ) {
@@ -231,6 +232,7 @@ TVerboseFile        verbose ( "cout", VerboseFileDefaultWidth );
 
 verbose.NextTopic ( "Input Files:" );
 {
+verbose.Put ( "Input directory:",       inputdir.IsEmpty () ? "None" : inputdir );
 verbose.Put ( "Solution Points file:",  spfile );
 verbose.Put ( "MRI Grey Mask file:",    greyfile );
 

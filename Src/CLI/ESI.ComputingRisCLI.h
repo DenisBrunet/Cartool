@@ -142,6 +142,7 @@ if ( ! IsSubCommandUsed ( computingris )  )
     return;
 
 
+TFileName           inputdir        = GetCLIOptionDir   ( computingris, __inputdir );
 TGoF                gof             = GetCLIOptionFiles ( computingris, __files,     __inputdir );
 TFileName           listfiles       = GetCLIOptionFile  ( computingris, __listfiles, __inputdir );
 
@@ -415,7 +416,7 @@ CreateConsole ();
 
 
 TVerboseFile        verbose ( "cout", VerboseFileDefaultWidth );
-char                buff[ 256 ];
+char                buff[ KiloByte ];
 
 verbose.NextTopic ( "Data Preprocessing:" );
 {
@@ -483,8 +484,9 @@ if ( roiing ) {
 
 verbose.NextTopic ( "Input Files:" );
 {
-verbose.Put ( "Number of subjects:",   numsubjects   );
-verbose.Put ( "Number of conditions:", numconditions );
+verbose.Put ( "Input directory:",       inputdir.IsEmpty () ? "None" : inputdir );
+verbose.Put ( "Number of subjects:",    numsubjects   );
+verbose.Put ( "Number of conditions:",  numconditions );
 
 
 for ( int si = 0; si < subjects.NumGroups (); si++ ) {

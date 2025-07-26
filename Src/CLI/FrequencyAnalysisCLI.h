@@ -150,6 +150,7 @@ if ( ! IsSubCommandUsed ( freqan )  )
     return;
 
 
+TFileName           inputdir        = GetCLIOptionDir   ( freqan, __inputdir );
 TGoF                gof             = GetCLIOptionFiles ( freqan, __files, __inputdir );
 
 if ( gof.IsEmpty () ) {
@@ -693,6 +694,7 @@ verbose.Put ( "Electrodes coordinates file:", xyzfile.IsNotEmpty () ? xyzfile : 
 
 verbose.NextTopic ( "Options:" );
 {
+verbose.Put ( "Input directory:",                       inputdir.IsEmpty () ? "None" : inputdir );
 verbose.Put ( "File name infix:",                       infix );
 verbose.Put ( "Creating sub-directory for results:",    subdir );
 
