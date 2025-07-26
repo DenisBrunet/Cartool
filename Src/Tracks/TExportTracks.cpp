@@ -409,7 +409,7 @@ ios::openmode       mode        = (ios::openmode )  (                       ios:
                                                     );
 
                                         // massage that file name - avoiding update, though
-TFileName           filename ( Filename, (TFilenameFlags) ( TFilenameExtendedPath | TFilenameSibling /*| TFilenameNoOverwrite*/ ) );
+TFileName           filename ( Filename, (TFilenameFlags) ( TFilenameExtendedPath | TFilenameToSibling /*| TFilenameNoOverwrite*/ ) );
 
 of          = new ofstream ( filename, mode );
 

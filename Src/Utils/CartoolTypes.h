@@ -776,8 +776,8 @@ enum                TFilenameFlags
                     TFilenameCorrectCase        = 0x001,
                     TFilenameAbsolutePath       = 0x002,
                     TFilenameExtendedPath       = 0x004,
-                    TFilenameSibling            = 0x008,
-                    TFilenameDirectory          = 0x010,
+                    TFilenameToSibling          = 0x008,
+                    TFilenameToDirectory        = 0x010,
                     TFilenameNoOverwrite        = 0x020,
                     };
 

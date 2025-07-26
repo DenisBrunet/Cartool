@@ -400,7 +400,7 @@ if ( verbose == Interactive )
         return;
 
 
-file.CheckExtendedPath ();
+file.SetExtendedPath ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

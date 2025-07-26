@@ -406,7 +406,7 @@ for ( auto doc = DocList.Next ( 0 ); doc != 0; doc = DocList.Next ( doc ) )
 TDocument   *TCartoolDocManager::CreateAnyDoc ( const char *path, long flags )
 {
                                         // process file name copy
-TFileName           pathok ( path, (TFilenameFlags) ( TFilenameCorrectCase | TFilenameExtendedPath | TFilenameSibling ) );
+TFileName           pathok ( path, (TFilenameFlags) ( TFilenameCorrectCase | TFilenameExtendedPath | TFilenameToSibling ) );
                                         // path is coming as const, we shouldn't modify it!
 //StringCopy ( (char*) path, pathok );
 
@@ -777,7 +777,7 @@ return  command;
 TBaseDoc*   TCartoolDocManager::OpenDoc ( const char* path, long flags )
 {
                                         // process file name copy
-TFileName           pathok ( path, (TFilenameFlags) ( TFilenameCorrectCase | TFilenameExtendedPath | TFilenameSibling ) );
+TFileName           pathok ( path, (TFilenameFlags) ( TFilenameCorrectCase | TFilenameExtendedPath | TFilenameToSibling ) );
 
 //StringCopy ( path, pathok );          // not allowed anymore - do we really need to propagate the potentially updated path back?
 
@@ -933,7 +933,7 @@ if ( tpl == 0 ) {                       // unknown file type?
 //CartoolApplication->DestroySplashScreen ();
 
                                         // process file name copy
-TFileName           pathok ( path, (TFilenameFlags) ( TFilenameCorrectCase | TFilenameExtendedPath | TFilenameSibling ) );
+TFileName           pathok ( path, (TFilenameFlags) ( TFilenameCorrectCase | TFilenameExtendedPath | TFilenameToSibling ) );
                                         // a priori we own the path
 StringCopy ( path, pathok );
 

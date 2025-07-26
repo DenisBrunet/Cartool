@@ -59,10 +59,10 @@ public:
 
     bool            CanOpenFile             ()      const                       { return  crtl::CanOpenFile     ( String, CanOpenFileRead ); }
     inline void     CheckFileName           ( TFilenameFlags flags );
-    void            CheckExtendedPath       ()                                  { crtl::CheckExtendedPath       ( String ); }
+    void            SetExtendedPath         ()                                  { crtl::SetExtendedPath         ( String ); }
     void            SetCorrectPathCase      ()                                  { crtl::SetCorrectPathCase      ( String ); }
-    void            CheckAbsolutePath       ()                                  { crtl::CheckAbsolutePath       ( String, Size () ); }
-    void            CheckSiblingFile        ()                                  { crtl::CheckSiblingFile        ( String ); }
+    void            SetAbsolutePath         ()                                  { crtl::SetAbsolutePath         ( String, Size () ); }
+    void            SetToSiblingFile        ()                                  { crtl::SetToSiblingFile        ( String ); }
     void            CheckNoOverwrite        ()                                  { crtl::CheckNoOverwrite        ( String ); }
     void            GetCurrentDir           ()                                  { ::GetCurrentDirectory ( Size (), String );}
 
@@ -96,10 +96,10 @@ void   TFileName::CheckFileName ( TFilenameFlags flags )
 {
                                         // Check path with this preferred sequence:
 if ( IsFlag ( flags, TFilenameCorrectCase       ) )     SetCorrectPathCase  ();                 // convert path with actual lower and upper cases (used to convert old MS-DOS short names)
-if ( IsFlag ( flags, TFilenameAbsolutePath      ) )     CheckAbsolutePath   ();                 // convert a relative path to an absolute one
-if ( IsFlag ( flags, TFilenameExtendedPath      ) )     CheckExtendedPath   ();                 // add special prefix for path longer than 256
-if ( IsFlag ( flags, TFilenameSibling           ) )     CheckSiblingFile    ();                 // convert to another extension / sibling file for Cartool purpose (.img to .hdr f.ex.)
-if ( IsFlag ( flags, TFilenameDirectory         ) )     RemoveFilename      ( String, false );  // keeping only the directory part - trailing \ is removed
+if ( IsFlag ( flags, TFilenameAbsolutePath      ) )     SetAbsolutePath     ();                 // convert a relative path to an absolute one
+if ( IsFlag ( flags, TFilenameExtendedPath      ) )     SetExtendedPath     ();                 // add special prefix for path longer than 256
+if ( IsFlag ( flags, TFilenameToSibling         ) )     SetToSiblingFile    ();                 // convert to another extension / sibling file for Cartool purpose (.img to .hdr f.ex.)
+if ( IsFlag ( flags, TFilenameToDirectory       ) )     RemoveFilename      ( String, false );  // keeping only the directory part - trailing \ is removed
 if ( IsFlag ( flags, TFilenameNoOverwrite       ) )     CheckNoOverwrite    ();                 // avoiding overwrite by generating a variation of given file name
 }
 

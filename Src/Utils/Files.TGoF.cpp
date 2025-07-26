@@ -618,8 +618,8 @@ for ( int i = 0; i < (int) Strings; i++ ) {
         StringCopy ( Strings[ i ], newfilename );
 
 
-    oldfilename.CheckExtendedPath ();
-    newfilename.CheckExtendedPath ();   // not before copying to caller
+    oldfilename.SetExtendedPath ();
+    newfilename.SetExtendedPath ();   // not before copying to caller
 
                                         // loop through exts + no ext change case
     for ( int i = -1; i < (int) exts; i++ ) {
@@ -2506,7 +2506,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
 
     StringCopy   ( filemrkin, (*this)[ i ] );
     AddExtension ( filemrkin, FILEEXT_MRK );
-    filemrkin.CheckExtendedPath ();
+    filemrkin.SetExtendedPath ();
 
 
     if ( ! CanOpenFile ( filemrkin ) )
@@ -3006,7 +3006,7 @@ TGoF                str ( *this );
                                         // Use the first directory - we can not rely on all files being in the same directory
 if ( commondir )
 
-    StringCopy      ( commondir, TFileName ( str[ 0 ], (TFilenameFlags) ( TFilenameExtendedPath | TFilenameDirectory ) ) );
+    StringCopy      ( commondir, TFileName ( str[ 0 ], (TFilenameFlags) ( TFilenameExtendedPath | TFilenameToDirectory ) ) );
 
                                         // now we can remove the directory parts
 str.RemoveDir ();
@@ -3465,7 +3465,7 @@ StringCopy ( base, directory, match );
                                         // gracefully checking these
 SetCorrectPathCase  ( base );
 
-CheckExtendedPath   ( base );
+SetExtendedPath     ( base );
 
 
 return  found && StringLength ( match ) > 0;

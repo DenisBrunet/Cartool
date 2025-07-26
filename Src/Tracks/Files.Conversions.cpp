@@ -549,7 +549,7 @@ else if ( StringEndsWith ( commonend, FILEEXT_RIS     ) )   PostfixFilename ( Ou
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // here, all files are compatibles
-OutFileName.CheckExtendedPath ();
+OutFileName.SetExtendedPath ();
 
                                         // don't overwrite an existing file, which might be the original we split from on the first hand!
 //if ( CanOpenFile ( OutFileName ) ) {

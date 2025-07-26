@@ -221,7 +221,6 @@ if ( IsDirectory ( file ) ) {
     signalsfiles.FindFiles ( signaltemplate );
 
     for ( int i = 0; i < (int) signalsfiles; i++ ) {
-//        DBGM2 ( file, signalsfiles[ i ], "replaced with signal file" );
         gof.Add ( signalsfiles[ i ] );
         }
 
@@ -262,19 +261,13 @@ return  (int) gof;
 
 //----------------------------------------------------------------------------
                                         // !path will be overwritten, does it have enough space?!
-void    CheckSiblingFile ( char* path )
+void    SetToSiblingFile ( char* path )
 {
-//DBGM ( path, "CheckSiblingFile in" );
-
-
 TGoF                siblingfiles;
                                         // MFF Directory to signal.bin / Analyze .img to .hdr / EEG header to data
 FilenameToSiblings  ( path, siblingfiles );
                                         // copy only the first file, hopefully the good one?
 StringCopy          ( path, siblingfiles[ 0 ] );
-
-
-//DBGM ( path, "CheckSiblingFile out" );
 }
 
 
@@ -336,7 +329,7 @@ return PathIsRelative ( path );
 
 
 //----------------------------------------------------------------------------
-void        CheckAbsolutePath ( char* path, int maxsize )
+void        SetAbsolutePath ( char* path, int maxsize )
 {
 if ( StringIsEmpty ( path ) )
     return;
@@ -347,7 +340,7 @@ _fullpath ( path, path, maxsize );
 
 //----------------------------------------------------------------------------
                                         // check for very long filenames, and prepend the magic string if needed
-void        CheckExtendedPath ( char* path, bool force )
+void        SetExtendedPath ( char* path, bool force )
 {
 if ( StringIsEmpty ( path ) )
     return;
@@ -1379,7 +1372,7 @@ if ( ! IsFlag ( flags, CanOpenFlags ( CanOpenFileRead | CanOpenFileWrite ) ) )
     return  false;
 
                                         // modify given file?
-CheckExtendedPath ( file );
+SetExtendedPath ( file );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
