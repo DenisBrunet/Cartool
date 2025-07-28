@@ -59,6 +59,9 @@ constexpr char*     __monitor                   = "--monitor";
 constexpr char*     __inputdir                  = "--input-dir";
 constexpr char*     __inputdir_descr            = "Input directory";
 constexpr char*     __inputdir_type             = "PATH";
+constexpr char*     __outputdir                 = "--output-dir";
+constexpr char*     __outputdir_descr           = "Output directory";
+constexpr char*     __outputdir_type            = "PATH";
 constexpr char*     __files                     = "files";
 constexpr char*     __files_descr               = "List of files";
 

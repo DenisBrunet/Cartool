@@ -107,9 +107,10 @@ bool    ReprocessTracks (
                         RescalingOptions    rescalingoptions,       double              rescalingfactor,
                         SequenceOptions     sequenceoptions,
                         int                 downsampleratio,
-                        SavingEegFileTypes  filetype,
-                        const char*         infixfilename,
+                        const char*         outputdir,
+                        const char*         infix,
                         const char*         freqinfix,              // for frequency processing purpose
+                        SavingEegFileTypes  filetype,
                         bool                outputmarkers,
                         ConcatenateOptions  concatenateoptions,     long*               concatinputtime,        long*               concatoutputtime,
                         TExportTracks&      expfile,                // Needed for concatenating across multiple calls/files

@@ -1204,9 +1204,10 @@ ReprocessTracks (
                 rescalingoptions,   rescalingfactor,
                 sequenceoptions,
                 downsampleratio,
-                filetype,
+                0,                  // outputdir not specified from dialog
                 transfer->InfixFilename,
                 freqinfix,
+                filetype,
                 outputmarkers,
                 concatenateoptions, concatenateoptions == ConcatenateTime ? &ConcatInputTime : 0,   concatenateoptions == ConcatenateTime ? &ConcatOutputTime : 0,
                 ExpFile,
@@ -1384,7 +1385,7 @@ if ( concatenation ) {
 
         StringCopy ( ExpFile.Filename, match );
 
-        if ( *ExportTracksTransfer.InfixFilename )
+        if ( StringIsNotEmpty ( ExportTracksTransfer.InfixFilename ) )
             StringAppend ( ExpFile.Filename, ".", ExportTracksTransfer.InfixFilename );
         }
     else

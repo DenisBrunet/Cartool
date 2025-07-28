@@ -202,6 +202,9 @@ DefineCLIOptionFile     ( reprocsub,        "",     __inputdir,             __in
 ->TypeOfOption          ( __inputdir_type )
 ->CheckOption           ( CLI::ExistingDirectory ); // could be incomplete, but it helps a bit, though
 
+DefineCLIOptionFile     ( reprocsub,        "",     __outputdir,            __outputdir_descr )
+->TypeOfOption          ( __outputdir_type );
+
 DefineCLIOptionString   ( reprocsub,        "",     __infix,                __infix_descr );
 
 DefineCLIOptionEnum     ( reprocsub,        __ext,  __extension,            __ext_descr )
@@ -506,6 +509,8 @@ int                 downsampleratio = timeoptions     == ExportTimeInterval
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+TFileName           outputdir       = GetCLIOptionDir   ( reprocsub, __outputdir );
+
 string              extension       = GetCLIOptionEnum ( reprocsub, __extension );
 
 SavingEegFileTypes  filetype        = ExtensionToSavingEegFileTypes ( extension.c_str () );
@@ -652,10 +657,11 @@ if ( sequenceoptions == SequenceProcessing ) {
 
 verbose.NextTopic ( "Options:" );
 {
-verbose.Put ( "Input directory:",                       inputdir.IsEmpty () ? "None" : inputdir );
-verbose.Put ( "File name infix:",                       infix );
-verbose.Put ( "Output file type:",                      SavingEegFileExtPreset[ filetype ] );
-verbose.Put ( "Saving markers:",                        outputmarkers );
+verbose.Put ( "Input directory:",       inputdir .IsEmpty () ? "None" : inputdir );
+verbose.Put ( "Output directory:",      outputdir.IsEmpty () ? "None" : outputdir );
+verbose.Put ( "File name infix:",       infix );
+verbose.Put ( "Output file type:",      SavingEegFileExtPreset[ filetype ] );
+verbose.Put ( "Saving markers:",        outputmarkers );
 }
 
 
@@ -695,9 +701,10 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                     rescalingoptions,       rescalingfactor,
                     sequenceoptions,
                     downsampleratio,
-                    filetype,
+                    outputdir,
                     infix.c_str (),
-                    "",
+                    "",                     // no frequency infix
+                    filetype,
                     outputmarkers,
                     concatenateoptions,     concatenateoptions == ConcatenateTime ? &concatinputtime : 0,   concatenateoptions == ConcatenateTime ? &concatoutputtime : 0,
                     expfile,

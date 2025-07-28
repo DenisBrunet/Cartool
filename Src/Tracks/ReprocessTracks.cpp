@@ -59,9 +59,10 @@ bool    ReprocessTracks (
                         RescalingOptions    rescalingoptions,       double              rescalingfactor,
                         SequenceOptions     sequenceoptions,
                         int                 downsampleratio,        // <= 1 if no downsampling, > 1 if downsampling
-                        SavingEegFileTypes  filetype,
-                        const char*         infixfilename,
+                        const char*         outputdir,
+                        const char*         infix,
                         const char*         freqinfix,              // for frequency processing purpose
+                        SavingEegFileTypes  filetype,
                         bool                outputmarkers,
                         ConcatenateOptions  concatenateoptions,     long*               concatinputtime,        long*               concatoutputtime,
                         TExportTracks&      expfile,                // Needed for concatenating across multiple calls/files
@@ -456,17 +457,23 @@ if ( createfile ) {
         EEGDoc->GetBaseFileName ( filename );
 
 
-        if ( StringIsNotEmpty ( infixfilename ) )
-            StringAppend ( filename, ".", infixfilename );
+        if ( StringIsNotEmpty ( outputdir ) )
+            ReplaceDir   ( filename, outputdir );
+
+        if ( StringIsNotEmpty ( infix ) )
+            StringAppend ( filename, ".", infix );
 
         if ( StringIsNotEmpty ( freqinfix ) )
-            StringAppend ( filename, StringIsEmpty ( infixfilename ) ? "." : " ", freqinfix );
+            StringAppend ( filename, StringIsEmpty ( infix ) ? "." : " ", freqinfix );
         }
 
                                         // append extension if not already there?
     if ( ! IsExtension ( filename, SavingEegFileExtPreset[ filetype ] ) )
 
         AddExtension ( filename, SavingEegFileExtPreset[ filetype ] );
+
+
+    CreatePath  ( filename, true );
 
                                         // maybe not a good idea, if we expect an exact output file name(?)
 //  CheckNoOverwrite ( filename );
@@ -1319,6 +1326,8 @@ if ( closefile ) {
     else
         verbose.Put ( "Input   File         :", EEGDoc->GetDocPath () );
 
+    if ( StringIsNotEmpty ( outputdir ) )
+        verbose.Put ( "Output  Directory    :", outputdir );
     verbose.Put ( "Output  File         :", filename );
     verbose.Put ( "Verbose File (this)  :", verbosefilename );
 
@@ -1355,7 +1364,7 @@ if ( closefile ) {
 
     if ( isfrequency ) {
         verbose.NextTopic ( "Frequency:" );
-        verbose.Put ( "Frequency:", freqinfix );
+        verbose.Put ( "Frequency file name infix:", freqinfix );
         }
 
 
@@ -1487,7 +1496,7 @@ if ( closefile ) {
 
     verbose.NextTopic ( "Options:" );
     {
-    verbose.Put ( "File name infix:",   infixfilename );
+    verbose.Put ( "File name infix:",   infix );
     verbose.Put ( "Output file type:",  SavingEegFileExtPreset[ filetype ] );
     verbose.Put ( "Saving markers:",    outputmarkers );
     }
