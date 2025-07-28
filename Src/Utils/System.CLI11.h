@@ -270,7 +270,7 @@ inline TFileName        GetCLIOptionDir    ( CLI::App* app, const string optiond
 if ( optiondir.empty () || ! HasCLIOption ( app, optiondir ) )
 
     return  TFileName ( "" );
-else                                    // resolve path
+else                                    // set & resolve path
     return  TFileName ( GetCLIOptionString ( app, optiondir ).c_str (), TFilenameFlags ( TFilenameCorrectCase | TFilenameAbsolutePath | TFilenameExtendedPath ) );
 }
 

@@ -510,7 +510,8 @@ if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteract
                                         // Making local copies as these will be needed all along our interpolation journey
 InterpolationType   = interpolationtype;
 SplineDegree        = Clip ( splinedegree, 1, MaxInterpolationDegree );
-TargetSpace         = StringIsNotEmpty ( destxyzfile ) ? ToOtherElectrodes : BackToOriginalElectrodes;
+TargetSpace         = StringIsNotEmpty ( destxyzfile ) ? ToOtherElectrodes 
+                                                       : BackToOriginalElectrodes;  // 'to' missing == back to 'from'
 
 FromBadElectrodes   = frombadelectrodes ? frombadelectrodes : "";   // we tolerate a null pointer as an empty string, but not the STL...
 
@@ -570,6 +571,7 @@ if ( DestNormalized == FiducialNormalization
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // set temp path for all all temp files, preferably using the EEG path
 TFileName           TempPath;
+TFileName           filename;
 
 if      ( StringIsEmpty ( temppath ) ) {
 
@@ -578,12 +580,18 @@ if      ( StringIsEmpty ( temppath ) ) {
 
 else if ( ! IsDirectory ( temppath ) ) {
 
-    StringCopy      ( TempPath, temppath );
+    TempPath    = temppath;
     RemoveFilename  ( TempPath );
-                                        // up one dir?
+                                        // moving results in at the root of the MFF directory makes more sense
     if ( IsGeodesicsMFFPath ( temppath ) )
         RemoveFilename  ( TempPath );
     }
+
+else /*if ( IsDirectory ( temppath ) )*/
+    TempPath    = temppath;
+
+
+CreatePath  ( TempPath, false );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -595,6 +603,7 @@ if ( ! FromOrigPoints.ReadFile ( FromOrigXyzFile, &FromOrigPointsNames ) ) {
 
     if ( verbosey == Interactive )
         ShowMessage ( "Can not open Electrodes Coordinates file!", FromOrigXyzFile, ShowMessageWarning );
+
     Reset ();
     return false;
     }
@@ -604,13 +613,14 @@ if ( ! FromOrigPoints.ReadFile ( FromOrigXyzFile, &FromOrigPointsNames ) ) {
                                         // From with excluded electrodes
 if ( ! StringIsSpace ( FromBadElectrodes.c_str () ) ) {
 
-    TFileName           filename;
-
     StringCopy      ( filename, FromOrigXyzFile );
     GetFilename     ( filename );
+
     StringCopy      ( FromXyzExclFile, TempPath, "\\", filename );
     StringAppend    ( FromXyzExclFile, ".", /*InfixXyzFrom,*/ InfixExcl );
+
     AddExtension    ( FromXyzExclFile, ToExtension ( FromOrigXyzFile ) );
+
     CheckNoOverwrite( FromXyzExclFile );
 
 
@@ -665,21 +675,21 @@ if ( ! SetTransformMatrices () ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           filename;
-
-
 if ( TargetSpace == ToOtherElectrodes ) {
                                         // write the To xyz coregistered
     StringCopy      ( filename, DestXyzFile );
     GetFilename     ( filename );
+
     StringCopy      ( DestXyz_To_FromXyzFile, TempPath, "\\", filename );
 //  StringAppend    ( DestXyz_To_FromXyzFile, ".", InterpolationTypeInfix[ interpolationtype ] );
 
     StringCopy      ( filename, FromXyzFile );
     GetFilename     ( filename );
+
     StringAppend    ( DestXyz_To_FromXyzFile, InfixToCoregistered, filename );
 
     AddExtension    ( DestXyz_To_FromXyzFile, FILEEXT_XYZ );
+
     CheckNoOverwrite( DestXyz_To_FromXyzFile );
 
 
@@ -694,14 +704,17 @@ if ( TargetSpace == ToOtherElectrodes ) {
                                         // write the From xyz coregistered
     StringCopy      ( filename, FromXyzFile );
     GetFilename     ( filename );
+
     StringCopy      ( FromXyz_To_DestXyzFile, TempPath, "\\", filename );
 //  StringAppend    ( FromXyz_To_DestXyzFile, ".", InterpolationTypeInfix[ interpolationtype ] );
 
     StringCopy      ( filename, DestXyzFile );
     GetFilename     ( filename );
+
     StringAppend    ( FromXyz_To_DestXyzFile, InfixToCoregistered, filename );
 
     AddExtension    ( FromXyz_To_DestXyzFile, FILEEXT_XYZ );
+
     CheckNoOverwrite( FromXyz_To_DestXyzFile );
 
 
@@ -724,10 +737,13 @@ else { // BackToOriginalElectrodes
                                         // From Fiducial xyz
 StringCopy      ( filename, FromXyzFile );
 GetFilename     ( filename );
+
 StringCopy      ( FromXyz_To_FidFile, TempPath, "\\", filename );
 //StringAppend    ( FromXyz_To_FidFile, ".", InterpolationTypeInfix[ interpolationtype ] );
 StringAppend    ( FromXyz_To_FidFile, ".", InfixXyzFrom, InfixFiducial );
+
 AddExtension    ( FromXyz_To_FidFile, FILEEXT_XYZ );
+
 CheckNoOverwrite( FromXyz_To_FidFile );
 
 
@@ -742,10 +758,13 @@ From_To_FidPoints.WriteFile ( FromXyz_To_FidFile, &FromPointsNames );
                                         // !User can have asked no bad electrodes, and back to original, which would cause From == To, that's why we force names with "From" and "To" here!
 StringCopy      ( filename, DestXyzFile );
 GetFilename     ( filename );
+
 StringCopy      ( DestXyz_To_FidFile, TempPath, "\\", filename );
 //StringAppend    ( DestXyz_To_FidFile, ".", InterpolationTypeInfix[ interpolationtype ] );
 StringAppend    ( DestXyz_To_FidFile, ".", InfixXyzTo, InfixFiducial );
+
 AddExtension    ( DestXyz_To_FidFile, FILEEXT_XYZ );
+
 CheckNoOverwrite( DestXyz_To_FidFile );
 
 
@@ -789,7 +808,7 @@ return (    Set (   interpolationtype,      splinedegree,
                     fromfront,  fromleft,   fromtop,    fromright,  fromrear,
                     frombadelectrodes,
                     
-                    0,                  // empty dest = back to from
+                    0,                  // 'to' missing == back to 'from'
                     AlreadyNormalized,
                     0,          0,          0,          0,          0,
 
@@ -822,7 +841,7 @@ return (    Set (   interpolationtype,      splinedegree,
                     fromfront,  fromleft,   fromtop,    fromright,  fromrear,
                     0,
                     
-                    destxyzfile,        // non-empty dest = to another space
+                    destxyzfile,        // 'to' missing == back to 'from'
                     destnormalized,
                     destfront,  destleft,   desttop,    destright,  destrear,
 
@@ -1017,7 +1036,10 @@ return  true;
 //----------------------------------------------------------------------------
                                         // Simpler wrapper to full InterpolateTracks method
 bool    TInterpolateTracks::InterpolateTracks   (   const char*         fileeeg,
-                                                    const char*         infixfilename,  const char*         fileoutext, char*               fileout,
+                                                    const char*         outputdir,
+                                                    const char*         infix,
+                                                    const char*         ext,
+                                                    char*               fileout,
                                                     VerboseType         verbosey
                                                 )
 {
@@ -1025,7 +1047,10 @@ bool    TInterpolateTracks::InterpolateTracks   (   const char*         fileeeg,
 TOpenDoc<TTracksDoc>    eegdoc ( fileeeg, OpenDocHidden );
 
 return  InterpolateTracks   (   eegdoc,
-                                infixfilename,  fileoutext,     fileout,
+                                outputdir,
+                                infix,
+                                ext,
+                                fileout,
                                 verbosey
                             );
 }
@@ -1034,10 +1059,15 @@ return  InterpolateTracks   (   eegdoc,
 //----------------------------------------------------------------------------
 
 bool    TInterpolateTracks::InterpolateTracks   (   const TTracksDoc*   eegdoc,
-                                                    const char*         infixfilename,  const char*         fileoutext, char*               fileout,
+                                                    const char*         outputdir,
+                                                    const char*         infix,
+                                                    const char*         ext,
+                                                    char*               fileout,
                                                     VerboseType         verbosey
                                                 )
 {
+ClearString ( fileout );
+
                                         // this shouldn't happen
 if ( eegdoc == 0 )
     return  false;
@@ -1078,41 +1108,41 @@ if ( eegdoc->GetNumAuxElectrodes() != 0 )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // generate a new filename
-TFileName           neweegfile;
+TFileName           filename;
 unique_ptr<char[]>  buff ( new char[ EditSizeTextLong ] );
 
 
-eegdoc->GetBaseFileName ( neweegfile );
+eegdoc->GetBaseFileName ( filename );
 
 
-if ( StringIsNotEmpty ( infixfilename ) )
+if ( StringIsNotEmpty ( outputdir ) )
+    ReplaceDir   ( filename, outputdir );
 
-    StringAppend    ( neweegfile,   ".",    infixfilename );
-
+if ( StringIsNotEmpty ( infix ) )
+    StringAppend    ( filename,   ".",    infix );
 else {
-    StringAppend    ( neweegfile,   ".",                    InterpolationTypeInfix[ InterpolationType ], IntegerToString ( buff.get () , SplineDegree ) );
-    StringAppend    ( neweegfile,   InfixToCoregistered,    IntegerToString ( buff.get (), DestPoints.GetNumPoints () ) );
+    StringAppend    ( filename,   ".",                    InterpolationTypeInfix[ InterpolationType ], IntegerToString ( SplineDegree ) );
+    StringAppend    ( filename,   InfixToCoregistered,    IntegerToString ( DestPoints.GetNumPoints () ) );
     }
 
-/*                                      // insert a new directory in the base name
-CreatePath ( neweegfile, false );       // too much directories, indeed... maybe create a big one for the whole batch
-AppendFilenameAsSubdirectory ( neweegfile );
-*/
+AddExtension        ( filename, ext );
 
-                                        // extension
-AddExtension        ( neweegfile, fileoutext );
+CreatePath          ( filename, true );
 
-CheckNoOverwrite    ( neweegfile );
+CheckNoOverwrite    ( filename );
+                                        // test file creation - don't ask before overwriting
+if ( ! CanOpenFile ( filename, CanOpenFileWrite ) )
+    return  false;
 
 if ( fileout != 0 )
-    StringCopy ( fileout, neweegfile );
+    StringCopy ( fileout, filename );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // verbose file filling, one per new file
 TFileName           verbosefile;
 
-StringCopy      ( verbosefile, neweegfile  );
+StringCopy      ( verbosefile, filename  );
 AddExtension    ( verbosefile, FILEEXT_VRB );
 
 TVerboseFile    verbose ( verbosefile, VerboseFileDefaultWidth );
@@ -1123,7 +1153,9 @@ verbose.PutTitle ( "Tracks Interpolation" );
 verbose.NextTopic ( "Files:" );
 {
 verbose.Put ( "Input   EEG File   :", eegdoc->GetDocPath () );
-verbose.Put ( "Output  EEG File   :", neweegfile );
+if ( StringIsNotEmpty ( outputdir ) )
+    verbose.Put ( "Output  Directory  :", outputdir );
+verbose.Put ( "Output  EEG File   :", filename );
 verbose.Put ( "Verbose File (this):", verbosefile );
 }
 
@@ -1465,9 +1497,9 @@ OmpParallelEnd
                                         // Setting the exported file
 TExportTracks     expfile;
 
-StringCopy ( expfile.Filename, neweegfile );
+StringCopy ( expfile.Filename, filename );
 
-//StringCopy ( expfile.Type, fileoutext );
+//StringCopy ( expfile.Type, ext );
 
 expfile.SetAtomType ( AtomTypeScalar );
 expfile.NumTracks           = DestPoints.GetNumPoints ();

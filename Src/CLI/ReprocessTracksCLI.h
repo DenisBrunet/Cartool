@@ -511,11 +511,14 @@ int                 downsampleratio = timeoptions     == ExportTimeInterval
 
 TFileName           outputdir       = GetCLIOptionDir   ( reprocsub, __outputdir );
 
-string              extension       = GetCLIOptionEnum ( reprocsub, __extension );
+string              infix           = GetCLIOptionString( reprocsub, __infix );
+
+string              extension       = GetCLIOptionEnum  ( reprocsub, __extension );
 
 SavingEegFileTypes  filetype        = ExtensionToSavingEegFileTypes ( extension.c_str () );
 
-string              infix           = GetCLIOptionString ( reprocsub, __infix );
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 bool                outputmarkers   = ! HasCLIFlag ( reprocsub, __nomarkers );
 

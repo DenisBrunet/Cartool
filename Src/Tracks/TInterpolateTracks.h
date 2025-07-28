@@ -190,7 +190,7 @@ public:
                                                 const char* fromfront,  const char* fromleft,   const char* fromtop,    const char* fromright,  const char* fromrear,
                                                 const char*                     frombadelectrodes,
                                                 
-                                                const char*                     destxyzfile,        // back to from if empty
+                                                const char*                     destxyzfile,        // 'to' missing == back to 'from'
                                                 ElectrodesNormalizationOptions  destnormalized,
                                                 const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,
 
@@ -225,12 +225,18 @@ public:
 
 
     bool                InterpolateTracks   (   const TTracksDoc*   eegdoc,
-                                                const char*         infixfilename,  const char*         fileoutext, char*               fileout,
+                                                const char*         outputdir,
+                                                const char*         infix,
+                                                const char*         ext,
+                                                char*               fileout,
                                                 VerboseType         verbosey    = Interactive
                                             );
                                         // Wrapper to method above
     bool                InterpolateTracks   (   const char*         fileeeg,
-                                                const char*         infixfilename,  const char*         fileoutext, char*               fileout,
+                                                const char*         outputdir,
+                                                const char*         infix,
+                                                const char*         ext,
+                                                char*               fileout,
                                                 VerboseType         verbosey    = Interactive
                                             );
 

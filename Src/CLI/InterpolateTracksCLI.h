@@ -93,6 +93,9 @@ DefineCLIOptionFile     ( interpol, "",     __inputdir,             __inputdir_d
 ->TypeOfOption          ( __inputdir_type )
 ->CheckOption           ( CLI::ExistingDirectory ); // could be incomplete, but it helps a bit, though
 
+DefineCLIOptionFile     ( interpol, "",     __outputdir,            __outputdir_descr )
+->TypeOfOption          ( __outputdir_type );
+
 DefineCLIOptionString   ( interpol, "",     __infix,                __infix_descr );
 
 DefineCLIOptionEnum     ( interpol, __ext,  __extension,            __ext_descr )
@@ -225,11 +228,13 @@ if ( ! IsInsideLimits ( splinedegree, MinInterpolationDegree, MaxInterpolationDe
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              extension       = GetCLIOptionEnum ( interpol, __extension );
+TFileName           outputdir       = GetCLIOptionDir   ( interpol, __outputdir );
+
+string              infix           = GetCLIOptionString( interpol, __infix );
+
+string              extension       = GetCLIOptionEnum  ( interpol, __extension );
 
 SavingEegFileTypes  filetype        = ExtensionToSavingEegFileTypes ( extension.c_str () );
-
-string              infix           = GetCLIOptionString ( interpol, __infix );
 
 bool                nocleanup       = HasCLIFlag ( interpol, __nocleanup );
 
@@ -322,7 +327,8 @@ for ( int i = 0; i < (int) gof; i++ )
 
 verbose.NextTopic ( "Options:" );
 {
-verbose.Put ( "Input directory:",           inputdir.IsEmpty () ? "None" : inputdir );
+verbose.Put ( "Input directory:",           inputdir .IsEmpty () ? "None" : inputdir );
+verbose.Put ( "Output directory:",          outputdir.IsEmpty () ? "None" : outputdir );
 verbose.Put ( "File name infix:",           infix );
 verbose.Put ( "Saving intermediate files:", nocleanup );
 }
@@ -348,19 +354,16 @@ IT.Set  (   interpolationtype,      splinedegree,
             fromfront.c_str (),     fromleft.c_str (),      fromtop.c_str (),   fromright.c_str (),     fromrear.c_str (),      
             badelec.c_str (),
             
-            toxyzfile,                  // to missing = back to from
+            toxyzfile,                  // 'to' missing == back to 'from'
             tonormalized,
             tofront.c_str (),       toleft.c_str (),        totop.c_str (),     toright.c_str (),       torear.c_str (),      
 
-            gof[ 0 ],                   // temp files in the same directory as first EEG file
+            outputdir.IsEmpty () ? gof[ 0 ] : outputdir,    // method will gracefully sort out for us the directory vs file cases
             Silent
         );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TFileName           neweegfile;
-
                             // change loop to account for multi-sessions EEG?
 for ( int filei = 0; filei < (int) gof; filei++ ) {
 
@@ -372,7 +375,10 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
 
                                         // !Does NOT run any consistency check on electrodes!
     IT.InterpolateTracks    (   EEGDoc,
-                                infix.c_str (),     SavingEegFileExtPreset[ filetype ],     neweegfile,
+                                outputdir,
+                                infix.c_str (),
+                                SavingEegFileExtPreset[ filetype ],
+                                0,
                                 Silent
                             );
 

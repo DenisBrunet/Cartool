@@ -941,7 +941,10 @@ VerboseType         verbosey            = NumBatchFiles () > 1 ? Silent : Intera
 
 
 IT.InterpolateTracks    (   EEGDoc,
-                            transfer->InfixFilename,    SavingEegFileExtPreset[ filetype ],     neweegfile,
+                            0,          // outputdir not specified from dialog
+                            transfer->InfixFilename,
+                            SavingEegFileExtPreset[ filetype ],
+                            neweegfile,
                             verbosey
                         );
 
@@ -1010,11 +1013,11 @@ IT.Set  (   interpolationtype,      degree,
             transfer->FromFront,    transfer->FromLeft,     transfer->FromTop,  transfer->FromRight,    transfer->FromRear, 
             transfer->FromBadElectrodes,
             
-            toanotherxyz,
+            toanotherxyz,               // 'to' missing == back to 'from'
             FiducialNormalization,      // always when called from the dialog
             transfer->ToFront,      transfer->ToLeft,       transfer->ToTop,    transfer->ToRight,      transfer->ToRear, 
 
-            BatchFileNames[ 0 ],        // temp files in the same directory as first EEG file
+            BatchFileNames[ 0 ],        // temp files in the same directory as first EEG file - no forced output directory here
             verbosey
         );
 
