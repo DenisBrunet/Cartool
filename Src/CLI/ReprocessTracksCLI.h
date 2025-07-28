@@ -452,7 +452,7 @@ if ( HasCLIOption ( reprocsub, __keepbelow ) )
 
 
                                         // 3) Finally setting the filters from the struct - A quite robust and tested method
-altfilters.SetFromStruct ( defaultsamplingfrequency, true );
+altfilters.SetFromStruct ( defaultsamplingfrequency, Silent );
 
                                         // A final consistency check
 FiltersOptions          filteringoptions    = altfilters.HasNoFilters () ? NotUsingFilters      // default
@@ -524,11 +524,6 @@ bool                outputmarkers   = ! HasCLIFlag ( reprocsub, __nomarkers );
 
 ConcatenateOptions  concatenateoptions  = HasCLIFlag ( reprocsub, __concatenate ) && (int) gof > 1 ? ConcatenateTime
                                                                                                    : NoConcatenateTime;
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-bool                silent          = true;
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Console output prototype
@@ -713,7 +708,7 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                     expfile,
                     &gof,
                     filei,
-                    silent
+                    Silent
                     );
     } // for file
 

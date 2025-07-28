@@ -489,7 +489,10 @@ enum        VerboseType
             Silent,
             Interactive,
 
-            NumVerboseTypes
+            NumVerboseTypes,
+
+            CompactString   = Silent,       // more meaningful aliases for TSplitStrings::ToString
+            ExpandedString  = Interactive,
             };
 
 

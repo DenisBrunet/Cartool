@@ -1571,7 +1571,7 @@ for ( int i = 0; i < (int) splits; i++ ) {
 splits.CompactSpaces ();
 
                                         // first choice: simply compacting by removing spaces
-splits.ToString ( newname, false );
+splits.ToString ( newname, CompactString );
 
                                         // is it enough?
 if ( StringLength ( newname ) <= maxlen ) {
@@ -1602,7 +1602,7 @@ do {
     splits.CompactSpaces ();
 
                                         // compact results
-    splits.ToString ( newname, false );
+    splits.ToString ( newname, CompactString );
 //  DBGM ( newname, "intermediate result" );
 
 

@@ -19,6 +19,7 @@ limitations under the License.
 #pragma     hdrstop
 //-=-=-=-=-=-=-=-=-
 
+#include    "CartoolTypes.h"
 #include    "Strings.TSplitStrings.h"
 #include    "Strings.Utils.h"
 #include    "Dialogs.Input.h"
@@ -194,15 +195,15 @@ Tokens.Show ( StringIsEmpty ( title ) ? "Tokens" : title );
 }
 
 
-char*   TSplitStrings::ToString ( char* str, bool verbose ) const
+char*   TSplitStrings::ToString ( char* str, VerboseType verbosey ) const
 {
 if ( str == 0 )
     return str;
 
 
 if ( GetNumTokens () == 0 ) {
-    if ( verbose )  StringCopy  ( str, "- None -" );
-    else            ClearString ( str );
+    if ( verbosey == ExpandedString )   StringCopy  ( str, "- None -" );
+    else                                ClearString ( str );
 
     return str;
     }
@@ -218,27 +219,29 @@ for ( int i = 0; i < GetNumTokens (); i++ ) {
 
     StringCopy ( buff, Tokens[ i ] );
 
-                                        // if not verbose, replace wildchar
-    if ( ! verbose ) {
+                                        // if compact, replace any wildchar
+    if ( verbosey == CompactString ) {
+
         if ( StringIs ( buff, "*" ) )   // replace single "*" with "All"
+
             StringCopy ( buff, "All" );
         else                            // f.ex. "stuff*" -> "stuffAll"
             StringReplace ( buff, "*", "All" );
         }
 
                                         // add quotes if it contains space
-    if ( verbose && StringContains ( buff, ' ' ) ) {
+    if ( verbosey == ExpandedString && StringContains ( buff, ' ' ) ) {
+
         StringPrepend ( buff, DoubleQuoteS );
         StringAppend  ( buff, DoubleQuoteS );
         }
 
                                         // need a separator to global string?
-    if ( verbose && ! StringIsSpace ( str ) )
+    if ( verbosey == ExpandedString && ! StringIsSpace ( str ) )
         StringAppend ( str, ", " );
+
                                         // then add to current string
     StringAppend ( str, buff );
-
-//    DBGM ( str, buff );
     }
 
 
@@ -267,7 +270,7 @@ for ( int i = 0; i < GetNumTokens () - 1; i++ ) {
 }
 
 
-void    TSplitStrings::FilterWith ( TStrings&    strs, bool silent )
+void    TSplitStrings::FilterWith ( const TStrings& strs, VerboseType verbosey )
 {
 if ( GetNumTokens () == 0 || strs.IsEmpty () )
     return;
@@ -280,8 +283,8 @@ for ( int i = 0; i < GetNumTokens (); i++ ) {
 
     if ( ! strs.Contains ( Tokens[ i ] ) ) {
 
-        if ( ! silent )
-            ShowMessage ( "Can not find this name,\ncheck your spelling!", Tokens[ i ], ShowMessageWarning );
+        if ( verbosey == Interactive )
+            ShowMessage ( "Can not find this name," NewLine "check your spelling!", Tokens[ i ], ShowMessageWarning );
 
         Tokens.RemoveRef ( Tokens[ i ] );
         i--;
@@ -318,7 +321,7 @@ for ( int i = 0; i < GetNumTokens () - 1; i++ ) {
 }
 
 
-void    TSplitStrings::ExpandWildchars ( TStrings&    strs, StringsUnicity unicity )
+void    TSplitStrings::ExpandWildchars ( const TStrings& strs, StringsUnicity unicity )
 {
 if ( GetNumTokens () == 0 || strs.IsEmpty () )
     return;

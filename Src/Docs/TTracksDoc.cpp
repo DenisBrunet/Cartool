@@ -228,7 +228,7 @@ ReferenceTracks.Reset ();
 TTracksFiltersDialog    (   CartoolMainWindow,      IDD_TRACKSFILTERS, 
                             Filters.FiltersParam,   SamplingFrequency );
 Filters.FiltersParam.Reset ();
-Filters.SetFromStruct ( SamplingFrequency );
+Filters.SetFromStruct ( SamplingFrequency, Silent );
 DeactivateFilters ();
 
                                         // finally updating the views
@@ -942,7 +942,7 @@ if ( needshighpass ) {
     Filters.FiltersParam.ButterworthHigh    = BoolToCheck ( true );
     FloatToString   ( Filters.FiltersParam.ValueButterworthHigh, EegFilterDefaultMinFrequency );
 
-    Filters.SetFromStruct ( SamplingFrequency );
+    Filters.SetFromStruct ( SamplingFrequency, Silent );
 
     ActivateFilters ();
     }
@@ -1411,7 +1411,7 @@ if ( filters ) {
 
     Filters = *filters;                 // just copy, assuming the filling is correct
 
-    Filters.SetFilters ( SamplingFrequency );
+    Filters.SetFilters ( SamplingFrequency, Silent );
     }
 else {                                  // run dialog to ask the user
 
@@ -1425,7 +1425,7 @@ else {                                  // run dialog to ask the user
         return false;
 
                                         // chew the results in a proper way
-    Filters.SetFromStruct ( SamplingFrequency, false );
+    Filters.SetFromStruct ( SamplingFrequency, Interactive );
 
                                         // update in case of average reference
 //  if ( Filters.EnvelopeWidth && ReferenceType != ReferenceAsInFile ) {

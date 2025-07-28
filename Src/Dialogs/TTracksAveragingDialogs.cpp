@@ -277,7 +277,7 @@ for ( int i = 0; i < (int) xyzfiles; i++ ) {
 
     XyzDocFile->SetText ( xyzfiles[ i ] );
 
-    if ( ! CheckFilesCompatibility ( false ) )
+    if ( ! CheckFilesCompatibility ( Interactive ) )
         XyzDocFile->SetText ( "" );
     }
 
@@ -350,7 +350,7 @@ if ( (bool) remainingfiles )
 
 
 //----------------------------------------------------------------------------
-bool    TTracksAveragingFilesDialog::CheckFilesCompatibility ( bool silent )
+bool    TTracksAveragingFilesDialog::CheckFilesCompatibility ( VerboseType verbosey )
 {
 TAvgTransfer.AllFilesOk = true;
 
@@ -379,7 +379,7 @@ double              dsf;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( somexyz && ! ReadFromHeader ( buff, ReadNumElectrodes, &numelxyz ) ) {
-    if ( ! silent ) {
+    if ( verbosey == Interactive ) {
         sprintf ( buff, "Please check the provided coordinates file!" );
         ShowMessage ( buff, "Averaging Files", ShowMessageWarning );
         }
@@ -406,7 +406,7 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
     if ( ! ReadFromHeader ( buff, ReadNumElectrodes,     &numeleeg )
       || ! ReadFromHeader ( buff, ReadSamplingFrequency, &dsf      ) ) {
 
-        if ( ! silent ) {
+        if ( verbosey == Interactive ) {
             sprintf ( buff, "Problem while reading EEG file!" );
             ShowMessage ( buff, "Averaging Files", ShowMessageWarning );
             }
@@ -424,7 +424,7 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
 
     else if ( numeleeg1 != numeleeg ) {
 
-        if ( ! silent ) {
+        if ( verbosey == Interactive ) {
 
             sprintf     ( buff, "Number of electrodes does not match:" NewLine
                                 Tab "EEG : %d" NewLine 
@@ -440,7 +440,7 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
                                         // We choose to assume that a missing SF will be considered the same as the one we get
     else if ( dsf != 0 && dsf1 != 0 && fabs ( dsf1 - dsf ) / dsf > 1e-6 ) {
 
-        if ( ! silent ) {
+        if ( verbosey == Interactive ) {
 
             sprintf     ( buff, "Sampling frequencies do not match:" NewLine 
                                 Tab "%4g Hz" NewLine 
@@ -468,7 +468,7 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
                                         // test eeg and xyz
     if ( somexyz && numelxyz != numeleeg ) {
 
-        if ( ! silent ) {
+        if ( verbosey == Interactive ) {
 
 //          sprintf     ( buff, "XYZ (%d electrodes) and EEG file (%d electrodes) do not match together.", numelxyz, numeleeg-numauxeleeg );
             sprintf     ( buff, "Number of electrodes does not match:" NewLine 
@@ -574,7 +574,7 @@ ComboTva->Clear();
 ComboEeg->SetFocus();
 
 
-if ( ! CheckFilesCompatibility ( false ) ) {
+if ( ! CheckFilesCompatibility ( Interactive ) ) {
     CmRemoveFromList ();
     TAvgTransfer.AllFilesOk = true;
     }
@@ -768,7 +768,7 @@ for ( int i = ComboTrg->GetCount() - 1; i >= 0; i-- ) {
     }
 
                                         // construct a compact string, also expanding any '*'
-triggerlist.ToString ( triggers, false );
+triggerlist.ToString ( triggers, CompactString );
 
                                         // compact triggers name
 StringShrink ( triggers, triggers, 17 );
@@ -957,7 +957,7 @@ ComboWithFocus->DeleteString ( selindex );
 ComboWithFocus->InsertString ( buff, selindex );
 
 
-if ( ! CheckFilesCompatibility ( false ) ) {
+if ( ! CheckFilesCompatibility ( Interactive ) ) {
     ComboWithFocus->DeleteString ( selindex );
     ComboWithFocus->InsertString ( saved, selindex );
     TAvgTransfer.AllFilesOk = true;
@@ -979,7 +979,7 @@ if ( ! getfile.Execute ( TAvgTransfer.XyzDocFile ) )
 TransferData ( tdSetData );
 
 
-if ( ! CheckFilesCompatibility ( false ) ) {
+if ( ! CheckFilesCompatibility ( Interactive ) ) {
     ClearString ( TAvgTransfer.XyzDocFile );
     TransferData ( tdSetData );
     return;
@@ -1046,14 +1046,14 @@ else {                                  // only one -> just put in edit field
 /*
 void    TTracksAveragingFilesDialog::EvEnKillFocus ()
 {
-if ( ! CheckFilesCompatibility ( false ) )
+if ( ! CheckFilesCompatibility ( Interactive ) )
     XyzDocFile->SetFocus ();
 }
 */
 
 void    TTracksAveragingFilesDialog::EvXyzFileChange ()
 {
-CheckFilesCompatibility ( true );
+CheckFilesCompatibility ( Silent );
 }
 
 
@@ -1663,7 +1663,7 @@ if ( TTracksFiltersDialog   (   CartoolMainWindow,              IDD_TRACKSFILTER
     }
 
                                         // chew the results in a comprehensive way
-TAvgTransfer.Filters.SetFromStruct ( TAvgTransfer.SamplingFrequency, false );
+TAvgTransfer.Filters.SetFromStruct ( TAvgTransfer.SamplingFrequency, Interactive );
 
                                         // reset button if dialog returns no filters
 if ( TAvgTransfer.Filters.HasNoFilters () ) {
@@ -2724,7 +2724,7 @@ if ( StringToInteger ( session ) > 0 )
     StringAppend( tvafile, ".", session );
 
 char            buff[ KiloByte ];
-StringAppend    ( tvafile, ".", TSplitStrings ( triggerlist, UniqueStrings ).ToString ( buff, false ) );
+StringAppend    ( tvafile, ".", TSplitStrings ( triggerlist, UniqueStrings ).ToString ( buff, CompactString ) );
 AddExtension    ( tvafile, FILEEXT_TVA );
 
                                         // We don't want to overwrite any existing file
@@ -2754,7 +2754,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     verbose.Put ( "TVA file  :", StringIsEmpty ( goftva[ eegi ] ) ? "None" : goftva[ eegi ] );
 
     triggerlist.Set ( goftrg[ eegi ], UniqueStrings );
-    verbose.Put ( "Trigger(s):", triggerlist.ToString ( buff, true ) );
+    verbose.Put ( "Trigger(s):", triggerlist.ToString ( buff, ExpandedString ) );
 
     if ( IsFreqLoop () ) {
         verbose.NextLine ();
@@ -3225,7 +3225,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     triggerlist.ExpandWildchars ( markernames, UniqueStrings );
 
                                         // keep only existing triggers!
-    triggerlist.FilterWith ( markernames, true );
+    triggerlist.FilterWith ( markernames, Silent );
 
                                         // cumulate all real triggers
     alltriggers.Add ( triggerlist, UniqueStrings );
@@ -3440,7 +3440,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     verbose.NextLine ();
 
     verbose.Put ( "Session used:", session > 0 ? seslist : "None, using whole file" );
-    verbose.Put ( "Trigger(s) used:", triggerlist.ToString ( buff, true ) );
+    verbose.Put ( "Trigger(s) used:", triggerlist.ToString ( buff, ExpandedString ) );
 
 //  verbose.Put ( "Total number of triggers and markers:", EegDoc->GetNumMarkers ( AllMarkerTypes ) );
 
@@ -4930,7 +4930,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     verbose.Put ( "File  :", eegfile );
     verbose.NextLine ();
 
-    verbose.Put ( "Trigger(s) used:", triggerlist.ToString ( buff, true ) );
+    verbose.Put ( "Trigger(s) used:", triggerlist.ToString ( buff, ExpandedString ) );
     verbose.Put ( "Number of triggers scanned :", numtriggar, 4 );
     if ( numtriggar == 0 )  numtriggar = 1;
 

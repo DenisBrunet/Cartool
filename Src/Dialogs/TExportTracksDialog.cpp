@@ -972,7 +972,7 @@ if ( TTracksFiltersDialog   (   CartoolMainWindow, IDD_TRACKSFILTERS,
     }
 
                                         // chew the results in a proper way
-((TExportTracksStructEx *) GetTransferBuffer () )->Filters.SetFromStruct ( BatchProcessing ? 0 : EEGDoc->GetSamplingFrequency (), BatchProcessing );
+((TExportTracksStructEx *) GetTransferBuffer () )->Filters.SetFromStruct ( BatchProcessing ? 0 : EEGDoc->GetSamplingFrequency (), BatchProcessing ? Silent : Interactive );
 
 //WindowRestore ();
 }
@@ -1181,9 +1181,9 @@ ConcatenateOptions  concatenateoptions  = CheckToBool ( transfer->Concatenate ) 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // silencing in these cases
-bool                silent              =  isfrequency 
-                                        || concatenateoptions == ConcatenateTime 
-                                        || NumBatchFiles () > 1;
+VerboseType         verbosey            = isfrequency 
+                                       || concatenateoptions == ConcatenateTime 
+                                       || NumBatchFiles () > 1 ? Silent : Interactive;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1213,7 +1213,7 @@ ReprocessTracks (
                 ExpFile,
                 &BatchFileNames,
                 GetBatchFileIndex (),
-                silent
+                verbosey
                 );
 
 

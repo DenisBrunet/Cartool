@@ -155,8 +155,8 @@ public:
 
     void            Reset                   ();
 
-    void            SetFromStruct           ( double fsamp = 0, bool silent = true );   // calls SetFilters     - converts a struct to variables
-    void            SetFilters              ( double fsamp,     bool silent = true );   // init each relevant TFilterXXX objects; calls SetSamplingFrequency & check frequency ranges correctness
+    void            SetFromStruct           ( double fsamp, VerboseType verbosey );     // calls SetFilters     - converts a struct to variables
+    void            SetFilters              ( double fsamp, VerboseType verbosey );     // init each relevant TFilterXXX objects; calls SetSamplingFrequency & check frequency ranges correctness
     void            SetSamplingFrequency    ( double fsamp );                           // tries to update its SamplingFrequency
     int             GetSafeMargin           ()  const;                                  // returns the necessary margin for filtering
     int             GetOrder                ()  const;
@@ -689,7 +689,7 @@ return  HasButterworthBand  () ? 2 * max ( OrderHigh, OrderLow )            // O
 //----------------------------------------------------------------------------
                                         // Checking frequencies coherence & setting up filter objects to be ready for operation
 template <class TypeD>
-void    TTracksFilters<TypeD>::SetFilters ( double fsamp, bool silent )
+void    TTracksFilters<TypeD>::SetFilters ( double fsamp, VerboseType verbosey )
 {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Non temporal / frequency filters
@@ -794,7 +794,7 @@ if ( HasEnvelope () ) {
 
 //  double          minwidth        = FrequenciesToEnvelopeWidth ( ButterworthHigh, ButterworthLow );
 //
-//  if ( EnvelopeWidth < minwidth && ! silent ) {
+//  if ( EnvelopeWidth < minwidth && verbosey == Interactive ) {
 //      char                buff[ 256 ];
 //      StringCopy  ( buff, "Averaging time window should be at least  ", FloatToString ( minwidth, 2 ), " [ms]" );
 //      ShowMessage ( buff, "Filtering", ShowMessageWarning );
@@ -852,7 +852,7 @@ if ( HasNotches () ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( freqadjusted && ! silent ) {
+if ( freqadjusted && verbosey == Interactive ) {
                                         // informing user that the requested frequencies have been modified
     char                buff[ 256 ];
 
@@ -870,7 +870,7 @@ if ( freqadjusted && ! silent ) {
 //----------------------------------------------------------------------------
                                         // This will copy / convert / adjust / set all internal variables needed to pilot the filtering
 template <class TypeD>
-void    TTracksFilters<TypeD>::SetFromStruct ( double fsamp, bool silent )
+void    TTracksFilters<TypeD>::SetFromStruct ( double fsamp, VerboseType verbosey )
 {
 Baseline                    = FiltersParam.GetBaseline ();          // checks we are Non Causal
                                         // convert and store in a convenient way the frequencies - note that a value of 0 means no filter
@@ -922,7 +922,7 @@ if ( FiltersParam.GetNotches () ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // which in turn will call SetSamplingFrequency, as we really need this value set
-SetFilters ( fsamp, silent );
+SetFilters ( fsamp, verbosey );
 }
 
 
@@ -1312,7 +1312,7 @@ if ( ( toc = StringContains ( text, "showing Below " ) ) != 0 ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Convert & check parameters
-SetFromStruct ( fsamp, false );
+SetFromStruct ( fsamp, Interactive );
 }
 
 

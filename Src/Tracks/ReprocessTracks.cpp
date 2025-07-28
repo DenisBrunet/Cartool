@@ -68,7 +68,7 @@ bool    ReprocessTracks (
                         TExportTracks&      expfile,                // Needed for concatenating across multiple calls/files
                         const TGoF*         batchfilenames,         // For the moment, transmit this group of files
                         int                 batchfileindex,         // index of current file in batch processing
-                        bool                silent
+                        VerboseType         verbosey
                         )
 {
 if (   EEGDoc           == 0 
@@ -121,8 +121,8 @@ if ( concatenateoptions == ConcatenateTime && ( concatinputtime == 0 || concatou
     return  false;
 
                                         // force silent if not in interactive mode
-if ( ! silent && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    silent  = true;
+if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
+    verbosey    = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -242,7 +242,7 @@ else if ( StringContains ( (const char*) buff, "*" ) ) {
             }
         else // just insert whatever comes next
 
-            elsel.Set ( tokens[ toki ], &ElectrodesNames, ! silent );
+            elsel.Set ( tokens[ toki ], &ElectrodesNames, verbosey == Interactive );
         }
     } // "*"
 
@@ -251,7 +251,7 @@ else if ( numaddedels > 0 ) {
 
     TSelection      usersel ( numtotalels, OrderArbitrary );
 
-    usersel.Set ( buff, &ElectrodesNames, ! silent );
+    usersel.Set ( buff, &ElectrodesNames, verbosey == Interactive );
 
     bool            hasregular  = usersel.NumSet ( firstorig,   lastorig   );
     bool            haspseudos  = usersel.NumSet ( firstpseudo, lastpseudo );
@@ -290,7 +290,7 @@ else if ( numaddedels > 0 ) {
 
 else { // numaddedels == 0
                                         // no added tracks, just set from user
-    elsel.Set ( buff, &ElectrodesNames, ! silent );
+    elsel.Set ( buff, &ElectrodesNames, verbosey == Interactive );
     }
 
                                         // aborting now?
@@ -420,7 +420,7 @@ if      ( ref == ReferenceUsingCurrent ) {
 else if ( ref == ReferenceArbitraryTracks ) {
 
     refsel.Reset ();
-    refsel.Set   ( reflist, &ElectrodesNames, ! silent );   // could make use of the null tracks
+    refsel.Set   ( reflist, &ElectrodesNames, verbosey == Interactive );   // could make use of the null tracks
     }
 
                                         // safety check
@@ -586,7 +586,7 @@ else if ( timeoptions == ExportTimeTriggers ) {
     TStrings            markernames;
     EEGDoc->GetMarkerNames ( markernames, AllMarkerTypes );
 
-    triggerlist.FilterWith ( markernames, silent );
+    triggerlist.FilterWith ( markernames, verbosey );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -699,7 +699,7 @@ else if ( timeoptions == ExcludeTimeTriggers ) {
 
 if ( intimenum == 0 ) {
 
-    if ( ! silent ) {
+    if ( verbosey == Interactive ) {
         if      ( timeoptions == ExportTimeTriggers  )     ShowMessage ( "No triggers were found that match your input list,"  NewLine "skipping current file..",   EEGDoc->GetTitle (), ShowMessageWarning );
         else if ( timeoptions == ExcludeTimeTriggers )     ShowMessage ( "Your list of triggers excluded the whole file,"      NewLine "skipping current file..",   EEGDoc->GetTitle (), ShowMessageWarning );
         else if ( timeoptions == ExportTimeInterval  )     ShowMessage ( "The interval duration appears to be less than 1 TF," NewLine "skipping current file..",   EEGDoc->GetTitle (), ShowMessageWarning );
@@ -788,7 +788,7 @@ if ( samplfreq <= 0 && defaultsamplingfrequency > 0 )
     samplfreq   = defaultsamplingfrequency;
 
                                         // 4) at that point, we have to stop and ask user
-if ( samplfreq <= 0 && samplingfreqout && ! silent ) {
+if ( samplfreq <= 0 && samplingfreqout && verbosey == Interactive ) {
                                         // Not thread-safe but still OK-ish, we are not supposed to run this in concurrent threads, or are we?
     if ( ! GetValueFromUser ( "Missing sampling frequency, please provide one:", EEGDoc->GetTitle (), defaultsamplingfrequency, "1000" ) ) {
 //      return  false;
@@ -841,7 +841,7 @@ if ( spatialfiltererror ) {
                                         // disable Spatial Filter
     filters.SpatialFiltering    = false;
 
-    if ( ! silent ) {
+    if ( verbosey == Interactive ) {
 
         StringCopy (    buff,
                         "Spatial Filter has been disabled due to dimensions mismatch:"                          NewLine
@@ -883,7 +883,7 @@ TArray2<float>      eegbrois    ( tracksoptions == ProcessRois ? outnumtracks : 
 
 TSuperGauge         Gauge;
                                         // Frequency is annoying, concatenation is fast
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
 
     Gauge.Set           ( ExportTracksTitle );
 
@@ -1388,10 +1388,10 @@ if ( closefile ) {
         verbose.Put ( "To        Time Frame :", (int) intimemax );
         }
     else if ( timeoptions == ExportTimeTriggers ) {
-        verbose.Put ( "Keeping Triggers     :", triggerlist.ToString ( buff, true ) );
+        verbose.Put ( "Keeping Triggers     :", triggerlist.ToString ( buff, ExpandedString ) );
         }
     else if ( timeoptions == ExcludeTimeTriggers ) {
-        verbose.Put ( "Excluding Triggers   :", triggerlist.ToString ( buff, true ) );
+        verbose.Put ( "Excluding Triggers   :", triggerlist.ToString ( buff, ExpandedString ) );
         }
 
     if ( concatenateoptions == ConcatenateTime )
@@ -1556,7 +1556,7 @@ if ( closefile ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( ! silent ) {
+if ( verbosey == Interactive ) {
 
     Gauge.FinishParts ();
 
