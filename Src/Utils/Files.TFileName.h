@@ -94,13 +94,19 @@ public:
 
 void   TFileName::CheckFileName ( TFilenameFlags flags )
 {
-                                        // Check path with this preferred sequence:
-if ( IsFlag ( flags, TFilenameCorrectCase       ) )     SetCorrectPathCase  ();                 // convert path with actual lower and upper cases (used to convert old MS-DOS short names)
+                                        // Check path with - sequence matters!
+                                        // First step is to resolve relative path to absolute
 if ( IsFlag ( flags, TFilenameAbsolutePath      ) )     SetAbsolutePath     ();                 // convert a relative path to an absolute one
+                                        // Then we can check on "long" paths
 if ( IsFlag ( flags, TFilenameExtendedPath      ) )     SetExtendedPath     ();                 // add special prefix for path longer than 256
+
 if ( IsFlag ( flags, TFilenameToSibling         ) )     SetToSiblingFile    ();                 // convert to another extension / sibling file for Cartool purpose (.img to .hdr f.ex.)
+
 if ( IsFlag ( flags, TFilenameToDirectory       ) )     RemoveFilename      ( String, false );  // keeping only the directory part - trailing \ is removed
+
 if ( IsFlag ( flags, TFilenameNoOverwrite       ) )     CheckNoOverwrite    ();                 // avoiding overwrite by generating a variation of given file name
+                                        // only once relative path has been resolved to absolute
+if ( IsFlag ( flags, TFilenameCorrectCase       ) )     SetCorrectPathCase  ();                 // convert path with actual lower and upper cases (used to convert old MS-DOS short names)
 }
 
 
