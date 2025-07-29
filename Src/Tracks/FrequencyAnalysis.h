@@ -156,7 +156,9 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 bool                outputsequential,   // averaged otherwise
                                 FreqWindowingType   windowing,
                                 bool                optimaldownsampling,
-                                const char*         infixfilename,      bool                createsubdir,
+                                const char*         outputdir,
+                                const char*         infix,
+                                bool                createsubdir,
                                 char*               fileoutfreq,        // these parameters act as flags: if null, ignore specific output, otherwise, generate file
                                 char*               fileoutsplitelec,
                                 char*               fileoutsplitfreq,

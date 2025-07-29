@@ -121,9 +121,13 @@ DefineCLIOptionFile     ( freqan,   "",     __inputdir,             __inputdir_d
 ->TypeOfOption          ( __inputdir_type )
 ->CheckOption           ( CLI::ExistingDirectory ); // could be incomplete, but it helps a bit, though
 
+DefineCLIOptionFile     ( freqan,   "",     __outputdir,            __outputdir_descr )
+->TypeOfOption          ( __outputdir_type );
+
 DefineCLIOptionString   ( freqan,   "",     __infix,                __infix_descr );
 
 DefineCLIFlag           ( freqan,   "",     __subdir,               __subdir_descr );
+
 DefineCLIFlag           ( freqan,   "",     __savingfreq,           "Saving .freq files" );
 DefineCLIFlag           ( freqan,   "",     __splitelec,            "Splitting results by electrodes" );
 DefineCLIFlag           ( freqan,   "",     __splitfreq,            "Splitting results by frequencies" );
@@ -547,6 +551,8 @@ ReferenceType       ref             = reflist == "none"    || reflist == "asinfi
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+TFileName           outputdir       = GetCLIOptionDir   ( freqan, __outputdir );
+
 string              infix           = GetCLIOptionString ( freqan, __infix );
 
 bool                subdir          = HasCLIFlag ( freqan, __subdir        );
@@ -561,8 +567,10 @@ bool                savefftapprox   = IsFFTApproxMethod ( analysis );
 
 if ( ! ( savingfreq || splitelec || splitfreq || splitspectrum || savefftapprox ) ) {
 
-    ConsoleErrorMessage ( 0, "No output files has been selected!" );
-    return;
+    //ConsoleErrorMessage ( 0, "No output files has been selected!" );
+    //return;
+                                        // or set to default?
+    savingfreq  = true;
     }
 
 
@@ -694,7 +702,8 @@ verbose.Put ( "Electrodes coordinates file:", xyzfile.IsNotEmpty () ? xyzfile : 
 
 verbose.NextTopic ( "Options:" );
 {
-verbose.Put ( "Input directory:",                       inputdir.IsEmpty () ? "None" : inputdir );
+verbose.Put ( "Input directory:",                       inputdir .IsEmpty () ? "None" : inputdir  );
+verbose.Put ( "Output directory:",                      outputdir.IsEmpty () ? "None" : outputdir );
 verbose.Put ( "File name infix:",                       infix );
 verbose.Put ( "Creating sub-directory for results:",    subdir );
 
@@ -755,7 +764,9 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                             outputsequential,
                             windowing,
                             optimaldownsampling,
-                            infix.c_str (),     subdir,
+                            outputdir,
+                            infix.c_str (),
+                            subdir,
                             savingfreq    ? (char*) fileoutfreq        : (char*) 0,
                             splitelec     ? (char*) fileoutsplitelec   : (char*) 0,
                             splitfreq     ? (char*) fileoutsplitfreq   : (char*) 0,

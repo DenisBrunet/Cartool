@@ -100,7 +100,6 @@ if ( StringIsEmpty ( path ) )
 
 TFileName           buff;
 
-
 StringCopy   ( buff, ToFileName ( path ) );
 
 StringAppend ( path, "\\", buff );

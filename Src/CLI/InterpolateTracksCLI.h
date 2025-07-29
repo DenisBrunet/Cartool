@@ -327,7 +327,7 @@ for ( int i = 0; i < (int) gof; i++ )
 
 verbose.NextTopic ( "Options:" );
 {
-verbose.Put ( "Input directory:",           inputdir .IsEmpty () ? "None" : inputdir );
+verbose.Put ( "Input directory:",           inputdir .IsEmpty () ? "None" : inputdir  );
 verbose.Put ( "Output directory:",          outputdir.IsEmpty () ? "None" : outputdir );
 verbose.Put ( "File name infix:",           infix );
 verbose.Put ( "Saving intermediate files:", nocleanup );

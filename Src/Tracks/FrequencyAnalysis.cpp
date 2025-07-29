@@ -342,7 +342,9 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 bool                outputsequential,   // averaged otherwise
                                 FreqWindowingType   windowing,
                                 bool                optimaldownsampling,
-                                const char*         infixfilename,      bool                createsubdir,
+                                const char*         outputdir,
+                                const char*         infix,
+                                bool                createsubdir,
                                 char*               fileoutfreq,        // pointers act as flags and returned strings
                                 char*               fileoutsplitelec,
                                 char*               fileoutsplitfreq,
@@ -826,97 +828,117 @@ TFileName           BaseFileNameApprox;
 TFileName           BaseFileNameSplitFreqs;
 TFileName           BaseFileNameSplitElecs;
 TFileName           fileoutprefix;
+TFileName           filename;
 
 
-                                        // Get full path - extension and weird stuff
-eegdoc->GetBaseFileName ( buff );
+                                        // Setting base file name
+eegdoc->GetBaseFileName ( filename );
 
-                                        // Generate BaseDir
-if ( StringIsNotEmpty ( infixfilename ) )
+                                        // Adding infix(es)
+if ( StringIsNotEmpty ( infix ) ) {
 
-    StringCopy ( BaseDir, buff, ".", infixfilename );
+    filename   += "." + (TFileName) infix;
+    }
 
 else {
-                                        // append method name + parameters
-    StringCopy ( BaseDir, buff, ".", GetInfix ( analysis ) );
+                                        // infix for method name + parameters
+    filename   += "." + (TFileName) GetInfix ( analysis );
 
     if      ( outputbands == OutputLinearInterval 
            || outputbands == OutputLogInterval    )
 
-        sprintf ( StringEnd ( BaseDir ), " %.2f-%.2f Hz", freqbands[ 0 ].SaveFreqMin_hz, freqbands[ numfreqbands - 1 ].SaveFreqMax_hz );
+        filename   += " " + FloatToString ( freqbands[ 0 ].SaveFreqMin_hz, 0, 2 ) + "-" + FloatToString ( freqbands[ numfreqbands - 1 ].SaveFreqMax_hz, 0, 2 ) + " Hz";
 
     else // OutputBands
-        sprintf ( StringEnd ( BaseDir ), " %0d %s", numfreqbands, numfreqbands > 1 ? InfixBands : InfixBand );
+        filename   += " " + IntegerToString ( numfreqbands ) + " " + ( numfreqbands > 1 ? InfixBands : InfixBand );
 
-                                        // add if average or sequence
-    if ( ! IsSTMethod ( analysis ) )
-        if ( outputsequential ) StringAppend ( BaseDir, "." InfixSeq );
-        else                    StringAppend ( BaseDir, "." InfixAvg );
+                                        // one more infix if average or sequence
+    if ( ! IsSTMethod ( analysis ) ) {
+        if ( outputsequential ) filename   += "." + (TFileName) InfixSeq;
+        else                    filename   += "." + (TFileName) InfixAvg;
+        }
     }
 
 
-                                        // extract string "prefix"
-StringCopy      ( fileoutprefix,                 ToFileName ( BaseDir ) );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Saving file prefix for later
+StringCopy      ( fileoutprefix,                 ToFileName ( filename ) );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Setting base directory path
+if      ( StringIsNotEmpty ( outputdir ) ) {
+                                        // provided by caller
+    BaseDir     = outputdir;
+
+    if ( createsubdir )
+
+        BaseDir    += "\\" + fileoutprefix;
+    }
+else {
+                                        // extracted from input file
+    BaseDir     = filename;
+    
+    if ( ! createsubdir )
+
+        RemoveFilename  ( BaseDir );
+    }
+
+                                        // all other default paths = main path
+BaseDirSpectrum     = BaseDir;
+BaseDirApprox       = BaseDir;
+BaseDirSplitFreqs   = BaseDir;
+BaseDirSplitElecs   = BaseDir;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Creating all paths now
+CreatePath      ( BaseDir,     false );
 
 
 if ( createsubdir ) {
+                                        // specialize these paths
+    BaseDirSpectrum    += "\\" + (TFileName) InfixSpectrum;
+    BaseDirApprox      += "\\" + (TFileName) InfixApproxEeg;
+    BaseDirSplitFreqs  += "\\" + (TFileName) InfixSplitFreqs;
+    BaseDirSplitElecs  += "\\" + (TFileName) InfixSplitElecs;
 
-    StringCopy      ( BaseDirSpectrum,  BaseDir,     "\\",      InfixSpectrum   );
-    StringCopy      ( BaseDirApprox,    BaseDir,     "\\",      InfixApproxEeg  );
-    StringCopy      ( BaseDirSplitFreqs,BaseDir,     "\\",      InfixSplitFreqs );
-    StringCopy      ( BaseDirSplitElecs,BaseDir,     "\\",      InfixSplitElecs );
-                                        // can create subdirectories now
-    CreatePath      ( BaseDir,     false );
-
-    if ( splitspectrum                  ) CreatePath      ( BaseDirSpectrum,      false );
-    if ( splitspectrum && savefftapprox ) CreatePath      ( BaseDirApprox,        false );
-    if ( splitfrequency                 ) CreatePath      ( BaseDirSplitFreqs,    false );
-    if ( splitelectrode                 ) CreatePath      ( BaseDirSplitElecs,    false );
-    }
-
-else {
-
-    RemoveFilename  ( BaseDir );
-
-    StringCopy      ( BaseDirSpectrum,      BaseDir                                 );
-    StringCopy      ( BaseDirApprox,        BaseDir                                 );
-    StringCopy      ( BaseDirSplitFreqs,    BaseDir                                 );
-    StringCopy      ( BaseDirSplitElecs,    BaseDir                                 );
-                                        // no subdirectorie to be created here
+                                        // then create them all
+    if ( splitspectrum                  )   CreatePath  ( BaseDirSpectrum,      false );
+    if ( splitspectrum && savefftapprox )   CreatePath  ( BaseDirApprox,        false );
+    if ( splitfrequency                 )   CreatePath  ( BaseDirSplitFreqs,    false );
+    if ( splitelectrode                 )   CreatePath  ( BaseDirSplitElecs,    false );
     }
 
 
-                                        // compose path access and main prefix "full path\prefix\prefix"
-StringCopy ( BaseFileName,              BaseDir,            "\\",   fileoutprefix,  "." );
-StringCopy ( BaseFileNameSpectrum,      BaseDirSpectrum,    "\\",   fileoutprefix,  "." );
-StringCopy ( BaseFileNameApprox,        BaseDirApprox,      "\\",   fileoutprefix,  "." );
-StringCopy ( BaseFileNameSplitFreqs,    BaseDirSplitFreqs,  "\\",   fileoutprefix,  "." );
-StringCopy ( BaseFileNameSplitElecs,    BaseDirSplitElecs,  "\\",   fileoutprefix,  "." );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Composing all base file names
+BaseFileName            = BaseDir           + "\\" + fileoutprefix + ".";
+BaseFileNameSpectrum    = BaseDirSpectrum   + "\\" + fileoutprefix + ".";
+BaseFileNameApprox      = BaseDirApprox     + "\\" + fileoutprefix + ".";
+BaseFileNameSplitFreqs  = BaseDirSplitFreqs + "\\" + fileoutprefix + ".";
+BaseFileNameSplitElecs  = BaseDirSplitElecs + "\\" + fileoutprefix + ".";
 
 
 if ( StringLength ( BaseFileName ) > MaxPathShort - 32 ) {
+
     if ( verbosey == Interactive )
-        ShowMessage ( "File name is too long to generate a correct output...", eegdoc->GetDocPath(), ShowMessageWarning );
+        ShowMessage ( "File name is too long to generate a correct output...", eegdoc->GetDocPath (), ShowMessageWarning );
     return  false;
     }
 
-                                        // delete any previous files, with my prefix only!
-StringCopy  ( buff,  BaseFileName,     "*" );
-DeleteFiles ( buff );
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // clean-up previous results, files with our prefixes only!
+DeleteFiles ( BaseFileName + "*" );
+
 
 if ( createsubdir ) {
 
-    StringCopy  ( buff,  BaseFileNameSpectrum,      "*" );
-    DeleteFiles ( buff );
-
-    StringCopy  ( buff,  BaseFileNameApprox,        "*" );
-    DeleteFiles ( buff );
-
-    StringCopy  ( buff,  BaseFileNameSplitFreqs,    "*" );
-    DeleteFiles ( buff );
-
-    StringCopy  ( buff,  BaseFileNameSplitElecs,    "*" );
-    DeleteFiles ( buff );
+    DeleteFiles ( BaseFileNameSpectrum   + "*" );
+    DeleteFiles ( BaseFileNameApprox     + "*" );
+    DeleteFiles ( BaseFileNameSplitFreqs + "*" );
+    DeleteFiles ( BaseFileNameSplitElecs + "*" );
     }
 
 
@@ -980,6 +1002,9 @@ verbose.Put ( "Electrodes coordinates file:", xyzdoc.IsOpen () ? (char *) xyzdoc
 
 verbose.NextTopic ( "Output files:" );
 {
+if ( StringIsNotEmpty ( outputdir ) )
+    verbose.Put ( "Output  Directory:", outputdir );
+
 if ( savefreq )
     verbose.Put ( "All results in single file:", fileoutfreq );
 
@@ -1202,7 +1227,9 @@ else if     ( outputbands == OutputBands ) {
 
 verbose.NextTopic ( "Options:" );
 {
-verbose.Put ( "File name infix:",                       infixfilename );
+if ( StringIsNotEmpty ( outputdir ) )
+    verbose.Put ( "Output  Directory:",                 outputdir );
+verbose.Put ( "File name infix:",                       infix );
 verbose.Put ( "Creating sub-directory for results:",    createsubdir );
 
 verbose.NextLine ();
