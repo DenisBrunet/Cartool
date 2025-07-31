@@ -81,7 +81,8 @@ bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
 
                             bool                savingindividualfiles,  bool                savingepochfiles,   bool            savingzscorefactors,
                             bool                computegroupsaverages,  bool                computegroupscentroids,
-                            const char*         basedir,                const char*         fileprefix,
+                            const char*         outputdir,              // optional
+                            const char*         prefix,
                             VerboseType         verbose
                         );
 

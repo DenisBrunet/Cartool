@@ -2661,11 +2661,7 @@ bool                savingzscorefactors     = CheckToBool ( ComputingRisTransfer
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           basedir;
 TFileName           basefilename    = ComputingRisTransfer.BaseFileName;
-                                        // use first file directory as the base directory
-StringCopy      ( basedir,  Subjects[ 0 ][ 0 ] );
-RemoveFilename  ( basedir );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2687,7 +2683,8 @@ if ( ! ComputingRis (   esicase,
 
                         savingindividualfiles,  savingepochfiles,       savingzscorefactors,
                         computegroupsaverages,  computegroupscentroids,
-                        basedir,                basefilename,
+                        0,                      // no output dir specified
+                        basefilename,
                         Interactive
                     ) )
 

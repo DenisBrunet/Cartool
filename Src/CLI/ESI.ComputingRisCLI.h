@@ -109,6 +109,9 @@ DefineCLIOptionFile     ( computingris,     "",     __inputdir,             __in
 ->TypeOfOption          ( __inputdir_type )
 ->CheckOption           ( CLI::ExistingDirectory ); // could be incomplete, but it helps a bit, though
 
+DefineCLIOptionFile     ( computingris,     "",     __outputdir,            __outputdir_descr )
+->TypeOfOption          ( __outputdir_type );
+
 DefineCLIOptionString   ( computingris,     "",     __prefix,               __prefix_descr );
 
 
@@ -258,14 +261,24 @@ if ( ! ( singleinverse || matchinginverses ) ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+if ( HasCLIOption ( computingris, __xyzfile ) && esicase == ComputingRisPresetFreq ) {
+
+    ConsoleErrorMessage ( __xyzfile, "Can not use a Spatial Filter for the Frequency case!" );
+    return;
+    }
+
+
 TFileName           xyzfile         = GetCLIOptionFile ( computingris, __xyzfile, __inputdir );
+SpatialFilterType   spatialfilter   = SpatialFilterNone;
+
+
+if ( CanOpenFile ( xyzfile ) && esicase != ComputingRisPresetFreq ) {
                                         // !it is enough to provide the xyzfile to activate the default spatial filter!
-SpatialFilterType   spatialfilter   = SpatialFilterDefault;
+    if ( HasCLIOption ( computingris, __spatialfilter ) )
 
-if ( CanOpenFile ( xyzfile )
-  && HasCLIOption ( computingris, __spatialfilter ) ) {
-
-    spatialfilter   = TextToSpatialFilterType ( GetCLIOptionEnum ( computingris, __spatialfilter ).c_str () );
+        spatialfilter   = TextToSpatialFilterType ( GetCLIOptionEnum ( computingris, __spatialfilter ).c_str () );
+    else 
+        spatialfilter   = SpatialFilterDefault;
     }
 
 
@@ -396,13 +409,10 @@ if ( ! inverses.CanOpenFiles () ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // if empty, function will use some default
+TFileName           outputdir       = GetCLIOptionDir   ( computingris, __outputdir );
 
-TFileName           basedir;
-                                        // use first file directory as the base directory
-StringCopy      ( basedir,  subjects[ 0 ][ 0 ] );
-RemoveFilename  ( basedir );
-
-string              prefix          = GetCLIOptionEnum ( computingris, __prefix );
+string              prefix          = GetCLIOptionEnum  ( computingris, __prefix );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -524,8 +534,8 @@ for ( int si = 0; si < subjects.NumGroups (); si++ ) {
 
 verbose.NextTopic ( "Output Files:" );
 {
-verbose.Put ( "Output base directory:",                 basedir );
-verbose.Put ( "Output file prefix:",                    prefix );
+verbose.Put ( "Output directory:",                      outputdir.IsEmpty () ? "None" : outputdir );
+verbose.Put ( "Output file prefix:",                    prefix   .empty   () ? "None" : prefix    );
 
 verbose.NextLine ();
 
@@ -563,7 +573,8 @@ ComputingRis    (   esicase,
                     savingindividualfiles,  savingepochfiles,       savingzscorefactors,
                     computegroupsaverages,  computegroupscentroids,
 
-                    basedir,                prefix.c_str (),
+                    outputdir,
+                    prefix.c_str (),
                     Silent
                 );
 

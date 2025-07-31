@@ -107,10 +107,11 @@ void        PreProcessFiles (   const TGoF&             gofin,              Atom
                                 EpochsType              epochs,             const TStrings*         epochfrom,      const TStrings*     epochto,
                                 GfpPeaksDetectType      gfppeaks,           const char*             listgfppeaks,
                                 SkippingEpochsType      badepochs,          const char*             listbadepochs,  double              badepochstolerance,
-                                const char*             baselist,           const char*             fileprefix,
+                                const char*             outputdir,
+                                const char*             fileprefix,
                                 int                     clipfromname,       int                     cliptoname,
                                 bool                    createtempdir,      char*                   temppath,
-                                bool                    savemainfiles,      TGoGoF&                 gogofout,       TGoGoF*             dualgogofout,       TGoF&               outbaselist,    bool&       newfiles,
+                                bool                    savemainfiles,      TGoGoF&                 gogofout,       TGoGoF*             dualgogofout,       TGoF&               gofoutdir,      bool&       newfiles,
                                 bool                    savezscore,         TGoF*                   zscoregof,
                                 TSuperGauge*            gauge
                             )
@@ -122,7 +123,7 @@ gogofout.Reset ();
 
 if ( dualgogofout )  dualgogofout->Reset ();
 
-outbaselist.Reset ();
+gofoutdir.Reset ();
 
 newfiles    = false;
 
@@ -266,7 +267,7 @@ if ( ! ispreprocessing ) {
     if ( dualgogofout )
         dualgogofout->Add ( dualgofin, true, MaxPathShort );
 
-    outbaselist .Add ( baselist,     MaxPathShort );
+    gofoutdir   .Add ( outputdir,   MaxPathShort );
 
     return;
     }
@@ -337,7 +338,7 @@ if ( rois ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TFileName           infixfile;
+TFileName           infix;
 TFileName           infixbase;
 TFileName           filenamein;
 TFileName           filenameoutprefix;
@@ -346,7 +347,6 @@ TFileName           filenameoutalt;
 TFileName           filemrk;
 TFileName           tempdir;
 TFileName           fileext;
-TFileName           tempbasefilename;
 TFileName           concatfile;
 TFileName           concatfilef;
 
@@ -359,15 +359,15 @@ StringCopy ( fileext, ( computeesi || allris ) /*&& ! rois*/ ? FILEEXT_RIS : FIL
 
 AtomType            saveddatatypeout    = datatypeout;
 
+                                            // just to be sure
+CreatePath      ( outputdir, false );
 
-if ( createtempdir )
 
-    if ( StringIsEmpty ( temppath ) )
-                                        // generate a temp dir
-        GetTempFileName  ( tempdir );
-    else
-                                        // re-use a given temp dir
-        StringCopy ( tempdir, ToLastDirectory ( temppath ) );
+if ( createtempdir ) {
+
+    if ( StringIsEmpty ( temppath ) )   GetTempFileName ( tempdir );                                // generate a temp dir
+    else                                StringCopy      ( tempdir, ToLastDirectory ( temppath ) );  // use a given temp dir
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -424,6 +424,8 @@ if ( subsamplesallfiles ) {
 
     AddExtension            ( concatfile, FILEEXT_EEGSEF /*fileext*/ );
 
+    ReplaceDir              ( concatfile, outputdir );  // currently not using optional tempdir
+
     submaps.WriteFile       ( concatfile, false, 0 );
 
 
@@ -451,8 +453,6 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
     isfirstfile     =    ! mergecomplex && fi == 0 
                       ||   mergecomplex && fi <= 1;
 
-//  DBGV3 ( fi, istempfile, isfirstfile, "PreProcessing: File# istempfile isfirstfile" );
-
                                         // Free any existing data
     Data.DeallocateMemory ();
     ESI .DeallocateMemory ();
@@ -477,7 +477,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                         // this might be changed by the preprocessing, so just make sure we start each file anew
     datatypeout = saveddatatypeout;
 
-    ClearString ( infixfile );
+    infix.Clear ();
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -524,7 +524,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
     if ( spatialfilter != SpatialFilterNone ) {
 
-        StringAppend ( infixfile, "." PostfixSpatialFilter );
+        infix  += "." PostfixSpatialFilter;
 
         Data.FilterSpatial ( SpatialFilterDefault, xyzfile );
         } // spatialfilter
@@ -537,7 +537,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
     if ( computeesi )
                                         // do this inconditionnally
-        StringAppend    ( infixfile, ".", isfilename );
+        infix  += "." + isfilename;
 
                                         // !skip any of this if data was not read!
     if ( computeesi && Data.IsAllocated () ) {
@@ -604,7 +604,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                         // Should be exclusive with BackgroundNormalizationComputingZScore BTW
     if ( gfpnormalize ) {
 
-        StringAppend ( infixfile, ".GfpNorm" );
+        infix  += "." "GfpNorm";
 
 
         if ( istempfile )
@@ -649,7 +649,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
             datatypeout     = AtomTypeScalar;
 
 
-        StringAppend ( infixfile, ".", ZScoreEnumToInfix ( zscoremethod ) );
+        infix  += "." + (TFileName) ZScoreEnumToInfix ( zscoremethod );
 
         } // BackgroundNormalizationNone
 
@@ -677,7 +677,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
         ToData->ToRank  ( datatypeout, RankingOptions ( RankingAccountNulls | RankingCountIdenticals ) );
 
 
-        StringAppend ( infixfile, ".", "Rank" );
+        infix  += "." "Rank";
         } // BackgroundNormalizationNone
 
 
@@ -691,7 +691,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
         ToData->Thresholding ( threshold, datatypeout );
 
 
-        StringAppend ( infixfile, "." "Clip", FloatToString ( buff, threshold, 2 ) );
+        infix  += "." "Clip" + FloatToString ( threshold, 2 );
         } // BackgroundNormalizationNone
 
 
@@ -713,7 +713,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
         datatypeout     = AtomTypePositive;
 
 
-        StringAppend ( infixfile, "." PostfixEnvelope, IntegerToString ( buff, envelopeduration ) );
+        infix  += "." PostfixEnvelope + IntegerToString ( envelopeduration );
         }
 
 
@@ -742,8 +742,8 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
             ToData->Thresholding ( threshold, datatypeout );
 
 
-        StringAppend ( infixfile, ".ROIS", IntegerToString ( buff, rois->GetNumRois () ) );
-//      StringAppend ( infixfile, ".", rois->GetName (), ".", IntegerToString ( buff, rois->GetNumRois () ) );
+        infix  += ".ROIS" + IntegerToString ( rois->GetNumRois () );
+      //infix  += "." + (TFileName) rois->GetName () + "." + IntegerToString ( rois->GetNumRois () );
         } // rois
 
 
@@ -793,8 +793,6 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                             MarkerNameAutoBadEpoch 
                                             );
         }
-
-//  badepochslist.WriteFile ( "E:\\Data\\Epochs.Bad.mrk" );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -879,7 +877,6 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 //          }
 
 //      writingepochslist.InsertMarkers ( writingepochslist );
-//      writingepochslist.WriteFile ( "E:\\Data\\Epochs.Good.mrk" );
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -887,30 +884,32 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
         if ( gauge )    gauge->Actualize ();
 
                                         // adding processing dependent infix
-        StringCopy      ( filenameout, filenameoutprefix, infixfile );
+        filenameout = filenameoutprefix + infix;
 
                                         // adding optional temporal postfix
         if ( epochs     == EpochsFromList 
-          || epochs     == EpochsPeriodic       )   StringAppend    ( filenameout, ".", IntegerToString ( fromtf, 0 ), "_", IntegerToString ( totf, 0 ) ); // !separator "_" is used to retrieve epoch (for verbose purpose only) in segmentation!
-        if ( gfppeaks   != NoGfpPeaksDetection  )   StringAppend    ( filenameout, "." PostfixGfpMax );
-        if ( badepochs  != NoSkippingBadEpochs  )   StringAppend    ( filenameout, "." PostfixSkipBadEpochs );
+          || epochs     == EpochsPeriodic       )   filenameout += "." + IntegerToString ( fromtf, 0 ) + "_" + IntegerToString ( totf, 0 ); // !separator "_" is used to retrieve epoch (for verbose purpose only) in segmentation!
+        if ( gfppeaks   != NoGfpPeaksDetection  )   filenameout += "." + (TFileName) PostfixGfpMax;
+        if ( badepochs  != NoSkippingBadEpochs  )   filenameout += "." + (TFileName) PostfixSkipBadEpochs;
 
-        AddExtension    ( filenameout, fileext );
+        filenameout.AddExtension ( fileext );
 
+        filenameout.ReplaceDir   ( outputdir );
 
         if ( createtempdir ) {
 
             AppendDir       ( filenameout, true, tempdir );
-            CreatePath      ( filenameout, true );
+
+            if ( isfirstfile )
+                CreatePath  ( filenameout, true );
 
             if ( temppath && StringIsEmpty ( temppath ) ) {
                 StringCopy      ( temppath, filenameout );
                 RemoveFilename  ( temppath );
                 }
             }
-
                                         // thank you for avoiding overwriting!
-        CheckNoOverwrite    ( filenameout );
+        filenameout.CheckNoOverwrite ();
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -971,8 +970,6 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                         // currently, this contains only markers, and no triggers
                 markers.WriteFile ( filemrk );
 
-//              filemrk.Show ( "markers: output markers list" );
-
                                         // complimentary copying input markers to alt data(?)
                 if ( dualdata ) {
                     StringCopy      ( filemrk,  filenameoutalt );
@@ -990,18 +987,18 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
         if ( isfirstfile ) {
                                         // build an infix according to EpochsFromList and/or gfp peaks
-            ClearString ( infixbase );
+            infixbase.Clear ();
 
             if ( epochs     == EpochsFromList 
-              || epochs     == EpochsPeriodic       )   StringAppend    ( infixbase, ".", IntegerToString ( fromtf, 0 ), "_", IntegerToString ( totf, 0 ) );    // !separator "_" is used to retrieve epoch (for verbose purpose only) in segmentation!
+              || epochs     == EpochsPeriodic       )   StringAppend    ( infixbase, ".", IntegerToString ( fromtf ), "_", IntegerToString ( totf ) );  // !separator "_" is used to retrieve epoch (for verbose purpose only) in segmentation!
 //          if ( gfppeaks   != NoGfpPeaksDetection  )   StringAppend    ( infixbase, "." PostfixGfpMax );
 //          if ( badepochs  != NoSkippingBadEpochs  )   StringAppend    ( infixbase, "." PostfixSkipBadEpochs );
 
 
                                         // update current base file name with infix
-            StringCopy      ( tempbasefilename, baselist, infixbase );
+            TFileName       tempbasefilename    = outputdir + infixbase;
                                         // add to new list
-            outbaselist.Add ( tempbasefilename, MaxPathShort );
+            gofoutdir  .Add ( tempbasefilename, MaxPathShort );
 
                                         // create as many GoF as epochs, but only once
             gogofout   .Add ( new TGoF );
@@ -1023,7 +1020,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 /*                                      // save GFP Peaks marker to a separate file
         if ( gfppeaks != NoGfpPeaksDetection ) {
                                         // use new base file name - File name generation is OK, except the directoy doesn't exist yet at that point...    
-//          StringCopy      ( gfppeaksmrk,  outbaselist[ epoch ] );
+//          StringCopy      ( gfppeaksmrk,  gofoutdir[ epoch ] );
 //
 //          StringCopy      ( buff,         filenamein );
 //          RemoveDir       ( buff );
@@ -1035,10 +1032,8 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                         // file just before GFP peaks extraction
             StringCopy      ( gfppeaksmrk,  filenamein );
             RemoveExtension ( gfppeaksmrk );
-            StringAppend    ( gfppeaksmrk, infixfile, ".To", postfixfileepoch );
+            StringAppend    ( gfppeaksmrk, infix, ".To", postfixfileepoch );
             AddExtension    ( gfppeaksmrk, FILEEXT_MRK );
-
-//          DBGM ( gfppeaksmrk, "Saving markers" );
 
             goodepochslist.WriteFile ( gfppeaksmrk );
             }
@@ -1063,10 +1058,10 @@ if ( savezscore
     for ( int absg2 = 0; absg2 < gogofout.NumGroups (); absg2++ ) {
 
                                         // directory does not exist yet
-        CreatePath      ( outbaselist[ absg2 ], false );
+        CreatePath      ( gofoutdir[ absg2 ], false );
 
                                         // output directory, constant file name
-//      StringCopy      ( filenameout,  outbaselist[ absg2 ], "\\", ZScoreEnumToFactorFileInfix ( zscoremethod ) );
+//      StringCopy      ( filenameout,  gofoutdir[ absg2 ], "\\", ZScoreEnumToFactorFileInfix ( zscoremethod ) );
 //      AddExtension    ( filenameout,  /*fileext*/ FILEEXT_EEGSEF );
 
                                         // output directory, file name from first input file
@@ -1081,9 +1076,14 @@ if ( savezscore
                                         // optional prefix, unclipped
         PrefixFilename  ( filenameout, fileprefix );
 
-        StringAppend    ( filenameout, infixfile, ".", ZScoreEnumToFactorFileInfix ( zscoremethod ) );
+        StringAppend    ( filenameout, infix, ".", ZScoreEnumToFactorFileInfix ( zscoremethod ) );
 
         AddExtension    ( filenameout, /*fileext*/ FILEEXT_EEGSEF );
+
+        ReplaceDir      ( filenameout, outputdir );
+
+        if ( createtempdir )
+            AppendDir   ( filenameout, true, tempdir ); // or not(?)
 
         CheckNoOverwrite( filenameout );
 

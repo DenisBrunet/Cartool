@@ -69,10 +69,11 @@ void        PreProcessFiles (   const TGoF&             gofin,              Atom
                                 EpochsType              epochs,             const TStrings*         epochfrom,      const TStrings*     epochto,
                                 GfpPeaksDetectType      gfppeaks,           const char*             listgfppeaks,
                                 SkippingEpochsType      badepochs,          const char*             listbadepochs,  double              badepochstolerance,
-                                const char*             baselist,           const char*             fileprefix,
+                                const char*             outputdir,
+                                const char*             fileprefix,
                                 int                     clipfromname,       int                     cliptoname,
                                 bool                    createtempdir,      char*                   temppath,
-                                bool                    savemainfiles,      TGoGoF&                 gogofout,       TGoGoF*             dualgogofout,       TGoF&               outbaselist,    bool&       newfiles,
+                                bool                    savemainfiles,      TGoGoF&                 gogofout,       TGoGoF*             dualgogofout,       TGoF&               gofoutdir,      bool&       newfiles,
                                 bool                    savezscore,         TGoF*                   zscoregof,
                                 TSuperGauge*            gauge = 0 
                             );

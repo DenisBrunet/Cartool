@@ -81,7 +81,8 @@ bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
 
                             bool                savingindividualfiles,  bool                savingepochfiles,   bool            savingzscorefactors,
                             bool                computegroupsaverages,  bool                computegroupscentroids,
-                            const char*         basedir,                const char*         fileprefix,
+                            const char*         outputdir,              // optional
+                            const char*         prefix,
                             VerboseType         verbosey
                         )
 {
@@ -95,7 +96,7 @@ if ( spatialfilter != SpatialFilterNone )
         spatialfilter = SpatialFilterNone;
 
 
-if ( inversefiles.IsEmpty ()  || StringIsEmpty ( basedir ) )
+if ( inversefiles.IsEmpty () )
     return false;
 
                                         // force silent if not in interactive mode
@@ -318,19 +319,28 @@ if ( ! isprocessing )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+TFileName           BaseDir;
 TFileName           BaseFileName;
-TFileName           localfileprefix;
+TFileName           Prefix;
 TFileName           VerboseFile;
 TFileName           CentroidsFile;
 
 
-StringCopy      ( localfileprefix, fileprefix );
+if ( StringIsEmpty ( outputdir ) ) {
+                                        // default directory is the one from the first file
+    BaseDir     = subjects[ 0 ][ 0 ];
+    RemoveFilename  ( BaseDir );
+    }
+else {
+                                        // a path was provided
+    BaseDir     = outputdir;
+    CreatePath      ( BaseDir, false );
+    }
 
-if ( StringIsNotEmpty ( localfileprefix ) )
-    StringAppend ( localfileprefix, "." );
+if ( StringIsNotEmpty ( prefix ) )
+    StringCopy  ( Prefix, prefix, "." );
 
-
-StringCopy      ( BaseFileName,             basedir,                "\\",               localfileprefix );
+StringCopy      ( BaseFileName,             BaseDir,                "\\",               Prefix );
 
 StringCopy      ( VerboseFile,              BaseFileName,           "Computing RIS",    "." FILEEXT_VRB );
 
@@ -469,6 +479,8 @@ for ( int si = 0; si < numgroups; si++ ) {
 
 verbose.NextTopic ( "Output Files:" );
 {
+if ( StringIsNotEmpty ( outputdir ) )
+    verbose.Put ( "Output directory:",                  outputdir               );
 verbose.Put ( "Saving every individual ris files:",     savingindividualfiles   );
 verbose.Put ( "Saving every epoch ris files:",          savingepochfiles        );
 verbose.Put ( "Computing each groups' averages:",       computegroupsaverages   );
@@ -527,7 +539,7 @@ TGoGoF				gogofpercondition;
 TGoGoF		        risgogof;
 TGoF                gofmean;
 //TGoGoF              gogofsd;
-TGoF                baselistpreproc;
+TGoF                gofoutdirpreproc;
 TGoF                centroidsgof;
 TGoF                zscoregofout;
 TGoF                zscoregofin;
@@ -754,7 +766,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                                         // !The returned epochs can be any size, as specified by the markers themselves!
                                         // !The Batch Averaging below also seems to not really care, taking the first file size for all epochs!
                                         // ?We could add a fall-back option to split into blocks of known size?
-        gogofpersubject[ absg ].SplitByEpochs ( InfixEpochConcatGrep, -1, localfileprefix, gofsplitepochs );
+        gogofpersubject[ absg ].SplitByEpochs ( InfixEpochConcatGrep, -1, Prefix, gofsplitepochs );
 
                                         // here we can actually test all epochs are equally long - a bit late in the game, though
 //      TracksCompatibleClass       CompatEpochs;
@@ -799,10 +811,10 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                         EpochWholeTime,             0,                  0,
                         NoGfpPeaksDetection,        0,
                         NoSkippingBadEpochs,        0,                  0,
-                        basedir,                    localfileprefix,        // base file name / directory, optional file prefix
+                        BaseDir,                    Prefix,                 // base file name / directory, optional file prefix
                         -1,                        -1,                      // no filename clipping
                         false,                      0,                      // no temp dir
-                        computingindividualfiles,   risgogof,           0,          baselistpreproc,    newfiles,
+                        computingindividualfiles,   risgogof,           0,          gofoutdirpreproc,   newfiles,
                         actualsavingzscorefactors,  &zscoregofout,
                         &Gauge 
                     );
@@ -1396,7 +1408,7 @@ WindowMaximize ( CartoolObjects.CartoolMainWindow );
 Gauge.FinishParts ();
 
 //CartoolObjects.CartoolApplication->ResetMainTitle ();
-CartoolObjects.CartoolApplication->SetMainTitle ( ComputingRisTitle, localfileprefix, Gauge );
+CartoolObjects.CartoolApplication->SetMainTitle ( ComputingRisTitle, Prefix, Gauge );
 
 Gauge.HappyEnd ();
 
