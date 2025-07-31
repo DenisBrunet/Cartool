@@ -970,23 +970,26 @@
              Which gives:
          </P>
          <pre>Re-process / Export tracks command
-Usage: reprocesstracks [OPTIONS]
+Usage: Cartool64.exe reprocesstracks [OPTIONS] [files]
+
+Positionals:
+files FILES... List of files
 
 Options:
---tracks TEXT 			Tracks to export Special values: * gfp dis avg
+--tracks TRACKS 		Tracks to export Special values: * gfp dis avg
 --xyzfile FILE Excludes: --roisfile
-				Using electrodes names from a XYZ electrodes coordinates file
+				Using electrodes names from an Electrodes Coordinates file
 --roisfile FILE Excludes: --nulltracks --xyzfile
-				Computing ROIs &amp; using ROIs names from a ROIs file
+				Computing ROIs from a ROIs file
 --timemin INTEGER Excludes: --excludetriggers --keeptriggers
-				Exporting from Time Frame
+				Starting from time frame (Default:0)
 --timemax INTEGER Excludes: --excludetriggers --keeptriggers
-				Exporting to Time Frame
+				Ending at time frame (Default:EOF)
 --keeptriggers TEXT Excludes: --timemax --excludetriggers --timemin
-				Exporting only the data from a triggers / markers list
+				Using only time intervals from a triggers / markers list
 --excludetriggers TEXT Excludes: --timemax --keeptriggers --timemin
-				Exporting all data but from a triggers / markers list
---nulltracks TEXT Excludes: --roisfile
+				Excluding time intervals from a triggers / markers list
+--nulltracks TRACKS Excludes: --roisfile
 				List of null tracks to append
 --filters TEXT 			A whole string of filtering options, in double quote, as coming from a verbose file
 --dc,--baseline 		Baseline / DC correction (recommended with any High-Pass or Band-Pass filter)
@@ -1003,15 +1006,15 @@ Options:
 				Adding Notches harmonics
 --spatialfilter ENUM:{SpatialOutliers,SpatialOutGauss,SpatialOutWeight,SpatialIGM,SpatialIWM,SpatialMedian,SpatialIQM,SpatialMinMax} [SpatialIWM] Needs: --xyzfile
 				Spatial filter
---ranking 			Ranking data at each time point to [0..1] range
+--ranking 			Ranking data at each time point
 --rectification ENUM:{abs,absolute,power,squared}
 				Rectification, i.e. making data all positive
 --envelope FLOAT Needs: --rectification
-				Sliding-window smoothing after rectification (positive-only data), value in [ms]
+				Envelope filter on positive data (after rectification), value in [ms]
 --keepabove FLOAT 		Thresholding data, keeping data above value
 --keepbelow FLOAT 		Thresholding data, keeping data below value
---samplingfrequency FLOAT 	Default Sampling Frequency, only in case a file has none
---reference TEXT 		List of new reference tracks Special values: 'none' (default) or 'average'
+--samplingfrequency FLOAT 	Overriding Sampling Frequency
+--reference TRACKS 		Reference tracks Special values: 'none' (default), 'asinfile', 'average' or 'avgref'
 --baselinecorr INTEGERS x 2 	Baseline correction interval, in time frames since beginning of file
 --rescaling TEXT 		Scaling factor Special value: 'meangfp'
 --sequential Excludes: --average
@@ -1019,7 +1022,9 @@ Options:
 --average Excludes: --sequential
 				Averaging the time dimension
 --downsampling INTEGER 		Downsampling ratio
---infix TEXT 			Infix appended to the file name
+<a href="command-line-interface.html#dir-path-file">--input-dir</a> PATH:DIR 		Input directory
+--output-dir PATH 		Output directory
+--infix TEXT 			Infix inserted into the output file names
 --ext,--extension ENUM:{txt,ep,eph,sef,eeg,edf,ris} [eeg]
 				Output file extension
 --nomarkers 			Not saving the markers to file

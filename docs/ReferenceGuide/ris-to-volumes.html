@@ -458,25 +458,30 @@
              Which gives:
          </P>
          <pre>Ris-To-Volume command
-Usage: ristovolume [OPTIONS]
+Usage: Cartool64.exe ristovolume [OPTIONS] [files]
+
+Positionals:
+files FILES... List of files
 
 Options:
 --spfile FILE Needs: --greyfile
 				Solution Points file (Required)
 --greyfile FILE Needs: --spfile
 				Grey Mask file (Required)
---timemin INTEGER 		Converting from Time Frame (default 0)
---timemax INTEGER 		Converting to Time Frame (default End-Of-File)
---timestep INTEGER 		Converting by Step Time Frames (default 1)
+--timemin INTEGER 		Starting from time frame (Default:0)
+--timemax INTEGER 		Ending at time frame (Default:EOF)
+--timestep INTEGER 		Stepping by time frames (Default is 1)
 --interpolation ENUM:{1NN,4NN,linear,cubickernel}
 				Type of interpolation
---prefix TEXT 			Output files optional prefix
+<a href="command-line-interface.html#dir-path-file">--input-dir</a> PATH:DIR 		Input directory
+--output-dir PATH 		Output directory
+--prefix TEXT 			Prefix added to the output file names
 --file ENUM:{nifti,analyze} [nifti]
 				File format
 --type ENUM:{byte,float} [float]
 				Internal file type
 --dim ENUM:{3,4} [4] 		File dimensions
--h,--help 			This message&nbsp;</pre>
+-h,--help 			This message</pre>
          <p>
              &nbsp;</p>
 		<h3>

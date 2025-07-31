@@ -954,25 +954,30 @@ C.M. Michel, D. Brunet,
          <P>
              Which gives:</P>
          <pre>Computing Ris command
-Usage: computingris [OPTIONS]
+Usage: Cartool64.exe computingris [OPTIONS] [files]
+
+Positionals:
+files FILES... List of files
 
 Options:
 --preset ENUM:{ErpGrandAverages,ErpSubjectsAverages,ErpSubjectsEpochs,ErpSubjectsClusters,IndSubjectsEpochs,SpontSubjects,SpontSubjectsClusters,FreqComplex}
 				EEG Preset (Required); IndSubjectsEpochs needs: --envelope
 --listfiles FILE 		A .csv or .txt file containing the input files
 --isfile FILE 			Inverse Matrix file (Required)
---xyzfile FILE 			Electrodes coordinates file, for Spatial Filter
+--xyzfile FILE 			Electrodes coordinates file for Spatial Filter
 --spatialfilter ENUM:{SpatialOutliers,SpatialOutGauss,SpatialOutWeight,SpatialIGM,SpatialIWM,SpatialMedian,SpatialIQM,SpatialMinMax} [SpatialIWM] Needs: --xyzfile
 				Spatial filter
 --type ENUM:{norm,vector} 	Final file type (Required)
 --reg,--regularization ENUM:{none,auto,0,1,2,3,4,5,6,7,8,9,10,11,12} [auto]
 				Regularization level
 --zscore ENUM:{compute,loadfile}
-				Final file type
+				Background activity standardization
 --ranking 			Ranking results
 --envelope FLOAT 		Envelope filter on positive data, value in [ms]
---roisfile FILE 		Computing ROIs
---prefix TEXT 			Output files optional prefix
+--roisfile FILE 		Computing ROIs from a ROIs file
+<a href="command-line-interface.html#dir-path-file">--input-dir</a> PATH:DIR 		Input directory
+--output-dir PATH 		Output directory
+--prefix TEXT 			Prefix added to the output file names
 -s,--savingsubjects Excludes: --savingtemplates
 				Saving subjects
 -e,--savingepochs 		Saving subjects epochs

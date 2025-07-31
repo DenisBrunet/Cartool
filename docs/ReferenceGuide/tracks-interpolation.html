@@ -1057,7 +1057,10 @@ in <i>Electroencephalography and clinical Neurophysiology</i>, 1989, 72: 184-187
          <P>
              Which gives:</P>
          <pre>Interpolate Tracks command
-Usage: interpolatetracks [OPTIONS]
+Usage: Cartool64.exe interpolatetracks [OPTIONS] [files]
+
+Positionals:
+files FILES... List of files
 
 Options:
 --fromxyz FILE 			From Electrodes Coordinates file (Required)
@@ -1076,6 +1079,8 @@ Options:
 --method ENUM:{surfacespline,sphericalspline,3dspline,currentdensity}
 				Interpolation method (Required)
 --degree INTEGER 		Spline degree, in [2..4] range (Default:2)
+<a href="command-line-interface.html#dir-path-file">--input-dir</a> PATH:DIR 		Input directory
+--output-dir PATH 		Output directory
 --infix TEXT 			Infix inserted into the output file names
 --ext,--extension ENUM:{txt,ep,eph,sef,eeg,edf,ris} [eeg]
 				Output file extension

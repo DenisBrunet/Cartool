@@ -1222,7 +1222,10 @@ D. Lehman and C.M. Michel,
          <P>
              Which gives:</P>
          <pre>Frequency Analysis command
-Usage: frequency [OPTIONS]
+Usage: Cartool64.exe frequency [OPTIONS] [files]
+
+Positionals:
+files FILES... List of files
 
 Options:
 --case ENUM:{eegsurface,eegintra,general}
@@ -1244,11 +1247,11 @@ Options:
 				FFT Window Step (not for STransform)
 --freqmin FLOAT 		Lowest frequency to save (Required)
 --freqmax FLOAT 		Highest frequency to save (Required)
---freqlinstep FLOAT Excludes: --freqlogdecade --freqbands
+--freqlinstep FLOAT Excludes: --freqbands --freqlogdecade
 				Saving frequencies as Linear Interval, with Frequency step
---freqlogdecade INTEGER Excludes: --freqlinstep --freqbands
+--freqlogdecade INTEGER Excludes: --freqbands --freqlinstep
 				Saving frequencies as Log Interval, with this amount per Decade
---freqbands INTERVALS... Excludes: --freqlinstep --freqlogdecade
+--freqbands INTERVALS... Excludes: --freqlogdecade --freqlinstep
 				Saving a list of Frequency Bands (f.ex. 1-4,4-8,8-14)
 --hanning 			Hanning Windowing
 --rescaling ENUM:{none,sqrt,parseval}
@@ -1256,9 +1259,11 @@ Options:
 --output ENUM:{real,norm,power,complex,phase}
 				Output type (Default:power)
 --reference TRACKS 		Reference tracks Special values: 'none' (default), 'asinfile', 'average' or 'avgref'
+<a href="command-line-interface.html#dir-path-file">--input-dir</a> PATH:DIR 		Input directory
+--output-dir PATH 		Output directory
 --infix TEXT 			Infix inserted into the output file names
 --subdir 			Saving all resuts into a sub-directory
---savefreq 			Saving .freq files
+--savefreq 			Saving <a href="files-formats-cartool.html#freq">.freq files</a>
 --splite 			Splitting results by electrodes
 --splitf 			Splitting results by frequencies
 --splits 			Splitting results by spectrum

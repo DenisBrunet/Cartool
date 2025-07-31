@@ -79,7 +79,7 @@ DefineCLIOptionEnum     ( computingris,     __reg,  __regularization,       "Reg
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-DefineCLIOptionEnum     ( computingris,     "",     __zscore,           "Final file type" )
+DefineCLIOptionEnum     ( computingris,     "",     __zscore,               "Background activity standardization" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __compute, __loadfile } ) ) );
 // !no default enum!
 
