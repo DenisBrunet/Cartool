@@ -8,6 +8,10 @@
             font-family: Verdana;
         }
 
+        .auto-style2 {
+		font-family: "Courier New", Courier, monospace;
+	}
+
         </style>
 
     <!-- Google tag (gtag.js) -->
@@ -30,38 +34,38 @@
          <P>
              &nbsp;
          </P>
-         <P ALIGN=LEFT>
-             Cartool can be called directly from the <strong>command-line</strong>, either
-             from Windows batch files, Matlab or Python scripts, and therefor be called as a library
-             within external processing pipe-lines. To
+         <P>
+             Cartool can be called directly from the <strong>command-line</strong>, 
+			 f.ex. from Windows batch files, <em>Matlab</em> or <em>Python</em> scripts, and therefor be 
+			 used as a library
+             from all sorts of pipe-lines. To
              finer control its behavior, you can pass it options and sub-commands, which
-             are described in this page.
-         </P>
-         <P ALIGN=LEFT>
+             are all described here.</P>
+         <P>
              &nbsp;
          </P>
-         <h5 ALIGN=LEFT>
+         <h5>
              <a href="#syntax">CLI Syntax</a>
          </h5>
-         <h5 ALIGN=LEFT>
+         <h5>
              <a href="#generaloptions">General Options</a>
          </h5>
-         <h6 ALIGN=LEFT>
-             <a href="#help">Help &amp; version</a><br><a href="#mainwindow">
-                 Main window
-                 control
-             </a><br><a href="#childrenwindows">Children windows control</a>
-         </h6>
-         <h5 ALIGN=LEFT>
-             <a href="#subcommandsoption">Sub-Commands Options</a>
+         <h6>
+             <a href="#help">Help &amp; version</a><br>
+             <a href="#mainwindow">Main window control</a><br>
+             <a href="#childrenwindows">Children windows control</a><br>
+			 <a href="#dir-path-file">Directories, Paths and File Names</a>
+		 </h6>
+         <h5>
+             <a href="#subcommandsoption">Sub-Commands</a>
          </h5>
-         <h6 ALIGN=LEFT>
+         <h6>
              <a href="#registration">Registration</a><br>
-			 <a href="reprocess-tracks.html#cli">Reprocess / Export Tracks</a><br>
-             <a href="tracks-interpolation.html#cli">Tracks Interpolation</a><br>
-             <a href="frequency-analysis.html#cli">Frequency Analysis</a><br>
-			 <a href="computing-ris.html#cli">Computing Results of Inverse Solutions (RIS)</a><br>
-             <a href="ris-to-volumes.html#cli">Results of Inverse Solutions (RIS) to Volume</a>
+			 <em>See</em> <a href="reprocess-tracks.html#cli">Reprocess / Export Tracks</a><br>
+             <em>See</em> <a href="tracks-interpolation.html#cli">Tracks Interpolation</a><br>
+             <em>See</em> <a href="frequency-analysis.html#cli">Frequency Analysis</a><br>
+			 <em>See</em> <a href="computing-ris.html#cli">Computing Results of Inverse Solutions (RIS)</a><br>
+             <em>See</em> <a href="ris-to-volumes.html#cli">Results of Inverse Solutions (RIS) to Volume</a>
          </h6>
          <h2>
              <a name="syntax"></a>CLI Syntax
@@ -77,10 +81,8 @@
              <li>Options can be either short, like &quot;-h&quot;, or long, like &quot;--help&quot;.</li>
              <li>Options are all case sensitives.</li>
              <li>
-                 You'd better be providing files as <strong><em>full path</em></strong>,
-                 like&nbsp; &quot;D:\Data\MyFile.eeg&quot;&nbsp; and <em>not</em> as&nbsp;
-                 &quot;MyFile.eeg&quot;.
-             </li>
+                 See the topic about <a href="#dir-path-file">Directories, Paths 
+				 and File Names</a>.</li>
              <li>
                  Files with spaces in their names must be in double quotes, like&nbsp;
                  &quot;D:\Data\My File with spaces.eeg&quot;.
@@ -128,6 +130,7 @@ cartool64.exe &lt;subcommand&gt; --help</pre>
              Current version can be retrieved with:
          </P>
          <pre>cartool64.exe --version</pre>
+         <p>&nbsp;</p>
          <H3>
              <a name="mainwindow"></a>Main window control
          </H3>
@@ -163,6 +166,7 @@ cartool64.exe &lt;subcommand&gt; --help</pre>
              Fast opening Cartool full screen on a second monitor:
          </P>
          <pre>cartool64.exe --mainwindow=maximized --monitor=2 --nosplash</pre>
+         <p>&nbsp;</p>
          <H3>
              <a name="childrenwindows"></a>Children windows control
          </H3>
@@ -220,16 +224,101 @@ cartool64.exe --childwindow=normal minimized -- &lt;file1&gt; &lt;file2&gt;</pre
              Two files opened normally, with overridden sizes and positions:
          </P>
          <pre>cartool64.exe --childwindowsize=500,250 200,800 --childwindowpos=0,0 500,250 -- &lt;file1&gt; &lt;file2&gt;</pre>
+		<p>&nbsp;</p>
+         <H3>
+             <a name="dir-path-file"></a>Directories, Paths and File Names</H3>
+         <P>
+             When providing files to the command-line, you can use either
+			 <strong>absolute</strong> or <strong>relative paths</strong>, each 
+			 comes with their own pros and cons.</P>
+		<h4>Absolute Paths</h4>
+		<P>Providing <strong>absolute paths</strong> has the advantage of being 
+		unambigous and safe. It also allows to mix data from different 
+		directories without any worries.</P>
+		<P>Here is an example where the electrodes coordinates file comes from 
+		one directory, and the EEG data from another one:</P>
+         <pre>cartool64.exe reprocesstracks
+--xyzfile=<strong>D:\Data\Electrodes\Biosemi.128.xyz</strong> --ext=eeg
+-- <strong>D:\Data\EEG\Subject1.nsr</strong></pre>
+         <P>
+             Another example that uses 3 different sources:</P>
+		<pre>cartool64d.exe computingris --preset=ErpGrandAverages
+--isfile=<strong>D:\Data\Inverses\MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.eLORETA.is
+</strong>--xyzfile=<strong>D:\Data\Electrodes\MNI152.NlinAsym20.204.2023.xyz</strong> --spatialfilter --type=norm --reg=4 --savingsubjects
+-- <strong>"D:\Data\EEG\Face.Avg RISE1.V1.Recut.sef"</strong></pre>
+		<p>&nbsp;</p>
+		<h4>Relative Paths</h4>
+		<P>
+             Absolute paths, although safe, can be tedious to use as they tend 
+			 to be very long and verbosey. They also break any script if the 
+			 files move location. The alternative is to use <strong>
+			 relative paths</strong>, but they need to be <strong>resolved as 
+			 absolute path</strong> at some point.</P>
+		<ul>
+			<li>By default, a relative path will be resolved <strong>using the 
+			current working directory</strong>, usually the one Cartool was 
+			launched from. This may not be exactly very convenient, though.</li>
+			<li>Using the&nbsp; <strong>--input-dir</strong>&nbsp; 
+			option allows you to specify the absolute path used to <strong>resolve all 
+			relative paths</strong>.</li>
+		</ul>
+		<P>
+             &nbsp;</P>
+		<P>
+             Example of the default behavior,
+			 <em>without</em> the&nbsp; <strong>--input-dir</strong>&nbsp; 
+			 option:</P>
+         <pre>cartool64.exe reprocesstracks --xyzfile=<strong>Biosemi.128.xyz</strong> --ext=eeg -- <strong>Subject1.nsr</strong></pre>
+         <P>
+             will be resolve using the Cartool 
+			 current execution directory, usually&nbsp;
+			 <span class="auto-style2">C:\Program Files\Cartool</span>:</P>
+		<pre>cartool64.exe reprocesstracks --xyzfile=<strong>C:\Program Files\Cartool\Biosemi.128.xyz</strong> --ext=eeg -- <strong>C:\Program Files\Cartool\Subject1.nsr</strong></pre>
+		<p>&nbsp;</p>
+		<P>
+             Example <em>with</em> the&nbsp; <strong>--input-dir</strong>&nbsp; option, 
+			 if both electrodes and EEG data is located under&nbsp; <span class="auto-style2">
+			 D:\Data</span>:</P>
+         <pre>cartool64.exe reprocesstracks <strong>--input-dir=D:\Data</strong> --xyzfile=<strong>Biosemi.128.xyz</strong> --ext=eeg -- <strong>Subject1.nsr</strong></pre>
+         <P>
+             Or if data is located under&nbsp; <span class="auto-style2">
+			 D:\Data\Electrodes</span>&nbsp; 
+			 and&nbsp; 
+			 <span class="auto-style2">D:\Data\EEG</span>&nbsp; 
+			 respectively:</P>
+         <pre>cartool64.exe reprocesstracks <strong>--input-dir=D:\Data</strong> --xyzfile=<strong>Electrodes\Biosemi.128.xyz</strong> --ext=eeg -- <strong>EEG\Subject1.nsr</strong></pre>
+         <P>
+             &nbsp;</P>
+		<P>
+             Finally, one can also mix <strong>relative <em>and</em> absolute 
+			 paths</strong>, for example here using an absolute path for the 
+			 electrodes coordinates, and relative paths for all EEGs:</P>
+         <pre>cartool64.exe reprocesstracks --xyzfile=<strong>D:\Data\Electrodes\Biosemi.128.xyz</strong> --ext=eeg <strong>--input-dir=D:\Data\EEG</strong> -- <strong>Subject1.nsr Subject2.nsr Subject3.nsr</strong></pre>
          <h2>
-             <a name="subcommandsoption"></a>Sub-Commands Options
-         </h2>
+             <a name="subcommandsoption"></a>Sub-Commands</h2>
+
+         <h6>
+             <a href="#registration">Registration</a><br>
+			 <em>See</em> <a href="reprocess-tracks.html#cli">Reprocess / Export Tracks</a><br>
+             <em>See</em> <a href="tracks-interpolation.html#cli">Tracks Interpolation</a><br>
+             <em>See</em> <a href="frequency-analysis.html#cli">Frequency Analysis</a><br>
+			 <em>See</em> <a href="computing-ris.html#cli">Computing Results of Inverse Solutions (RIS)</a><br>
+             <em>See</em> <a href="ris-to-volumes.html#cli">Results of Inverse Solutions (RIS) to Volume</a><br>
+         </h6>
+
+		<p>
+             &nbsp;</p>
          <p>
              <strong><em>Sub-commands</em></strong> allow to run a specific toolbox or
              processing of Cartool. Each sub-command has <em>its own set of options</em>,
-             which are therefor <em>not</em> available to other sub-commands. Sub-commands
-             still can use some of the <a href="#generaloptions">general options</a>,
+             which are therefor <em>not</em> available to the other sub-commands. Sub-commands
+             still can use some of the <a href="#generaloptions">general options</a> 
+			 above,
              though.
          </p>
+		<p>
+             &nbsp;</p>
+
          <h4>
              <a name="registration"></a>Registration
          </h4>
