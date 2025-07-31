@@ -704,7 +704,7 @@ verbose.NextTopic ( "Options:" );
 {
 verbose.Put ( "Input directory:",                       inputdir .IsEmpty () ? "None" : inputdir  );
 verbose.Put ( "Output directory:",                      outputdir.IsEmpty () ? "None" : outputdir );
-verbose.Put ( "File name infix:",                       infix );
+verbose.Put ( "File name infix:",                       infix    .empty   () ? "None" : infix     );
 verbose.Put ( "Creating sub-directory for results:",    subdir );
 
 verbose.NextLine ();

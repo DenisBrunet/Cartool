@@ -52,16 +52,19 @@ DefineCLIOptionFile     ( ristovol,         "",     __greyfile,             "Gre
 NeedsCLIOption          ( ristovol,         __spfile,       __greyfile );
 NeedsCLIOption          ( ristovol,         __greyfile,     __spfile   );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIOptionInt      ( ristovol,         "",     __timemin,              __timemin_descr );
 DefineCLIOptionInt      ( ristovol,         "",     __timemax,              __timemax_descr );
 DefineCLIOptionInt      ( ristovol,         "",     __timestep,             "Stepping by time frames (Default is 1)" );
 
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 DefineCLIOptionEnum     ( ristovol,         "",     __interpolation,        "Type of interpolation" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __1NN, __4NN, __linear, __cubickernel } ) ) );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -69,7 +72,11 @@ DefineCLIOptionFile     ( ristovol,         "",     __inputdir,             __in
 ->TypeOfOption          ( __inputdir_type )
 ->CheckOption           ( CLI::ExistingDirectory ); // could be incomplete, but it helps a bit, though
 
+DefineCLIOptionFile     ( ristovol,         "",     __outputdir,            __outputdir_descr )
+->TypeOfOption          ( __outputdir_type );
+
 DefineCLIOptionString   ( ristovol,         "",     __prefix,               __prefix_descr );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -86,6 +93,7 @@ DefineCLIOptionEnum     ( ristovol,         "",     __typeformat,           "Int
 DefineCLIOptionEnum     ( ristovol,         "",     __dimensions,           "File dimensions" )
 ->CheckOption           ( CLI::IsMember ( vector<string> ( { __3D, __4D } ) ) )
 ->DefaultString         ( "4" );
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -214,7 +222,9 @@ RisToVolumeFileType filetype        = fileformat == __nifti   && dimensions == _
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-string              fileprefix      = GetCLIOptionString ( ristovol, __prefix );
+TFileName           outputdir       = GetCLIOptionDir    ( ristovol, __outputdir );
+
+string              prefix          = GetCLIOptionString ( ristovol, __prefix );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -262,6 +272,8 @@ verbose.Put ( "Averaging each block:", merging == FilterTypeNone ? "None" : Filt
 
 verbose.NextTopic ( "Output Files:" );
 {
+verbose.Put ( "Output directory:",  outputdir.IsEmpty () ? "None" : outputdir );
+verbose.Put ( "File name prefix:",  prefix   .empty   () ? "None" : prefix    );
 verbose.Put ( "Output data type:",  AtomFormatTypePresets[ atomformat ].Text );
 verbose.Put ( "Output format:",     VolumeFileTypeString[ filetype ] );
 verbose.Put ( "Output dimensions:", IsFileTypeN3D ( filetype ) ? 3 : 4 );
@@ -283,7 +295,7 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
     cout << "Now Processing: " << gof  [ filei ]<< NewLine;
 #endif
 
-    TGoF                volgof;
+    TGoF                gofvol;
 
     RisToVolume (   gof[ filei ],
                     SPDoc,              interpol, 
@@ -291,8 +303,10 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                     timemin,            timemax,            timestep,
                     merging,
                     atomformat,             
-                    filetype,           fileprefix.c_str (),
-                    volgof,         // not used
+                    outputdir,
+                    prefix.c_str (),
+                    filetype,
+                    gofvol,         // not used
                     Silent
                 );
 

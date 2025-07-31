@@ -46,13 +46,15 @@ void    RisToVolume (
                     int                     fromtf,         int             totf,           int             steptf,
                     FilterTypes             merging,
                     AtomFormatType          atomformat,     
-                    RisToVolumeFileType     filetype,       const char*     fileprefix,
-                    TGoF&                   volgof,
+                    const char*             outputdir,      // optional
+                    const char*             prefix,
+                    RisToVolumeFileType     filetype,
+                    TGoF&                   gofvol,
                     VerboseType             verbosey
                     )
 
 {
-volgof.Reset ();
+gofvol.Reset ();
 
                                         // These are deal-breakers
 if ( StringIsEmpty ( risfile ) || spdoc == 0 || mrigrey == 0 )
@@ -259,9 +261,14 @@ char                buff[ 256 ];
 
 StringCopy      ( BaseFileName, risfile );
 RemoveExtension ( BaseFileName );
-if ( StringIsNotEmpty ( fileprefix ) )
-    PrefixFilename  ( BaseFileName, StringCopy ( buff, fileprefix, "." ) );
 
+if ( StringIsNotEmpty ( outputdir ) )
+    ReplaceDir   ( BaseFileName, outputdir );
+
+if ( StringIsNotEmpty ( prefix ) )
+    PrefixFilename  ( BaseFileName, StringCopy ( buff, prefix, "." ) );
+
+CreatePath      ( BaseFileName, true );
 
 StringCopy      ( VerboseFile,              BaseFileName,           "." "RIS To Volume",    "." FILEEXT_VRB );
 CheckNoOverwrite( VerboseFile );
@@ -302,6 +309,8 @@ verbose.Put ( "Averaging each block:", merging == FilterTypeNone ? "None" : Filt
 
 verbose.NextTopic ( "Output Files:" );
 {
+if ( StringIsNotEmpty ( outputdir ) )
+    verbose.Put ( "Output directory:",  outputdir );
 verbose.Put ( "Output data type:", AtomFormatTypePresets[ atomformat ].Text );
 verbose.Put ( "Output format:", VolumeFileTypeString[ filetype ] );
 verbose.Put ( "Output dimensions:", IsFileTypeN3D ( filetype ) ? 3 : 4 );
@@ -354,7 +363,7 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
         CheckNoOverwrite    ( expvol.Filename );
 
                                         // store current volume file
-        volgof.Add          ( expvol.Filename );
+        gofvol.Add          ( expvol.Filename );
 
                                         // for each written volume, either 3D or 4D
         expvol.TimeOrigin   = TimeFrameToSeconds ( blockfromtf, ris.GetSamplingFrequency () );  // current TF relative time
@@ -525,10 +534,10 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
 verbose.NextLine ();
 
 
-verbose.Put ( "Number of volumes files:", volgof.NumFiles () );
+verbose.Put ( "Number of volumes files:", gofvol.NumFiles () );
 
-for ( int fi = 0; fi < volgof.NumFiles (); fi++ )
-    verbose.Put ( "", volgof[ fi ] );
+for ( int fi = 0; fi < gofvol.NumFiles (); fi++ )
+    verbose.Put ( "", gofvol[ fi ] );
 
 
 verbose.NextLine ();
@@ -541,7 +550,7 @@ if ( verbosey == Interactive ) {
 
     Gauge.FinishParts ();
 
-    //CartoolObjects.CartoolApplication->SetMainTitle ( RisToVolumeTitle, volgof[ 0 ], Gauge );
+    //CartoolObjects.CartoolApplication->SetMainTitle ( RisToVolumeTitle, gofvol[ 0 ], Gauge );
 
     UpdateApplication;
     }

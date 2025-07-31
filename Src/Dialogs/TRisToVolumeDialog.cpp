@@ -862,7 +862,7 @@ VerboseType         verbosey            = Interactive; // NumBatchFiles () > 1 ?
                                         // Changing priority
 SetProcessPriority ( BatchProcessingPriority );
 
-TGoF                volgof;
+TGoF                gofvol;
 
 
 RisToVolume (   EEGDoc->GetDocPath (),
@@ -871,8 +871,10 @@ RisToVolume (   EEGDoc->GetDocPath (),
                 fromtf,             totf,           steptf,
                 merging,
                 atomformat,             
-                filetype,           fileprefix,
-                volgof,
+                0,                  // no output dir provided
+                fileprefix,
+                filetype,
+                gofvol,
                 verbosey
             );
 
@@ -880,7 +882,7 @@ RisToVolume (   EEGDoc->GetDocPath (),
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // complimentary opening the file for the user
 if ( openauto && ( ! BatchProcessing || (int) BatchFileNames <= 10 ) )
-    volgof.OpenFiles ();
+    gofvol.OpenFiles ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

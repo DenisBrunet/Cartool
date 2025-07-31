@@ -39,8 +39,10 @@ void    RisToVolume (
                     int                     fromtf,         int             totf,           int             steptf,
                     FilterTypes             merging,
                     AtomFormatType          atomformat,     
-                    RisToVolumeFileType     filetype,       const char*     fileprefix,
-                    TGoF&                   volgof,
+                    const char*             outputdir,      // optional
+                    const char*             prefix,
+                    RisToVolumeFileType     filetype,
+                    TGoF&                   gofvol,
                     VerboseType             verbosey
                     );
 
