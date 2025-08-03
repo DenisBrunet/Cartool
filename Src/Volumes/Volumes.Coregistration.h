@@ -42,7 +42,7 @@ void    CoregisterMris      (   const TVolumeDoc*   SourceMri,  RemapIntensityTy
                                 const char*         fileprefix,
                                 TGoF&               outputmats, TGoF&               outputmris,     TGoF&               outputpoints,
                                 double&             quality,    char*               qualityopinion,
-                                VerboseType         verbosey
+                                ExecFlags           execflags
                             );
 
 
@@ -55,7 +55,7 @@ void    CoregisterBrains    (   const TVolumeDoc*   SourceMri,  RemapIntensityTy
                                 const char*         fileprefix,
                                 TGoF&               outputmats, TGoF&               outputmris,     TGoF&               outputpoints,
                                 double&             quality,    char*               qualityopinion,
-                                VerboseType         verbosey
+                                ExecFlags           execflags
                             );
 
 

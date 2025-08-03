@@ -1181,7 +1181,7 @@ ConcatenateOptions  concatenateoptions  = CheckToBool ( transfer->Concatenate ) 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // silencing in these cases
-VerboseType         verbosey            = isfrequency 
+ExecFlags           execflags           = isfrequency 
                                        || concatenateoptions == ConcatenateTime 
                                        || NumBatchFiles () > 1 ? Silent : Interactive;
 
@@ -1213,7 +1213,7 @@ ReprocessTracks (
                 ExpFile,
                 &BatchFileNames,
                 GetBatchFileIndex (),
-                verbosey
+                execflags
                 );
 
 

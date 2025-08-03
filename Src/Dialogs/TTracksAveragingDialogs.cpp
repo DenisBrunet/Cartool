@@ -350,7 +350,7 @@ if ( (bool) remainingfiles )
 
 
 //----------------------------------------------------------------------------
-bool    TTracksAveragingFilesDialog::CheckFilesCompatibility ( VerboseType verbosey )
+bool    TTracksAveragingFilesDialog::CheckFilesCompatibility ( ExecFlags execflags )
 {
 TAvgTransfer.AllFilesOk = true;
 
@@ -379,7 +379,7 @@ double              dsf;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if ( somexyz && ! ReadFromHeader ( buff, ReadNumElectrodes, &numelxyz ) ) {
-    if ( verbosey == Interactive ) {
+    if ( IsInteractive ( execflags ) ) {
         sprintf ( buff, "Please check the provided coordinates file!" );
         ShowMessage ( buff, "Averaging Files", ShowMessageWarning );
         }
@@ -406,7 +406,7 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
     if ( ! ReadFromHeader ( buff, ReadNumElectrodes,     &numeleeg )
       || ! ReadFromHeader ( buff, ReadSamplingFrequency, &dsf      ) ) {
 
-        if ( verbosey == Interactive ) {
+        if ( IsInteractive ( execflags ) ) {
             sprintf ( buff, "Problem while reading EEG file!" );
             ShowMessage ( buff, "Averaging Files", ShowMessageWarning );
             }
@@ -424,7 +424,7 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
 
     else if ( numeleeg1 != numeleeg ) {
 
-        if ( verbosey == Interactive ) {
+        if ( IsInteractive ( execflags ) ) {
 
             sprintf     ( buff, "Number of electrodes does not match:" NewLine
                                 Tab "EEG : %d" NewLine 
@@ -440,7 +440,7 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
                                         // We choose to assume that a missing SF will be considered the same as the one we get
     else if ( dsf != 0 && dsf1 != 0 && fabs ( dsf1 - dsf ) / dsf > 1e-6 ) {
 
-        if ( verbosey == Interactive ) {
+        if ( IsInteractive ( execflags ) ) {
 
             sprintf     ( buff, "Sampling frequencies do not match:" NewLine 
                                 Tab "%4g Hz" NewLine 
@@ -468,7 +468,7 @@ for ( int i = 0; i < ComboEeg->GetCount (); i++ ) {
                                         // test eeg and xyz
     if ( somexyz && numelxyz != numeleeg ) {
 
-        if ( verbosey == Interactive ) {
+        if ( IsInteractive ( execflags ) ) {
 
 //          sprintf     ( buff, "XYZ (%d electrodes) and EEG file (%d electrodes) do not match together.", numelxyz, numeleeg-numauxeleeg );
             sprintf     ( buff, "Number of electrodes does not match:" NewLine 

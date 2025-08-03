@@ -195,14 +195,14 @@ Tokens.Show ( StringIsEmpty ( title ) ? "Tokens" : title );
 }
 
 
-char*   TSplitStrings::ToString ( char* str, VerboseType verbosey ) const
+char*   TSplitStrings::ToString ( char* str, ExecFlags execflags ) const
 {
 if ( str == 0 )
     return str;
 
 
 if ( GetNumTokens () == 0 ) {
-    if ( verbosey == ExpandedString )   StringCopy  ( str, "- None -" );
+    if ( execflags == ExpandedString )  StringCopy  ( str, "- None -" );
     else                                ClearString ( str );
 
     return str;
@@ -220,7 +220,7 @@ for ( int i = 0; i < GetNumTokens (); i++ ) {
     StringCopy ( buff, Tokens[ i ] );
 
                                         // if compact, replace any wildchar
-    if ( verbosey == CompactString ) {
+    if ( execflags == CompactString ) {
 
         if ( StringIs ( buff, "*" ) )   // replace single "*" with "All"
 
@@ -230,14 +230,14 @@ for ( int i = 0; i < GetNumTokens (); i++ ) {
         }
 
                                         // add quotes if it contains space
-    if ( verbosey == ExpandedString && StringContains ( buff, ' ' ) ) {
+    if ( execflags == ExpandedString && StringContains ( buff, ' ' ) ) {
 
         StringPrepend ( buff, DoubleQuoteS );
         StringAppend  ( buff, DoubleQuoteS );
         }
 
                                         // need a separator to global string?
-    if ( verbosey == ExpandedString && ! StringIsSpace ( str ) )
+    if ( execflags == ExpandedString && ! StringIsSpace ( str ) )
         StringAppend ( str, ", " );
 
                                         // then add to current string
@@ -270,7 +270,7 @@ for ( int i = 0; i < GetNumTokens () - 1; i++ ) {
 }
 
 
-void    TSplitStrings::FilterWith ( const TStrings& strs, VerboseType verbosey )
+void    TSplitStrings::FilterWith ( const TStrings& strs, ExecFlags execflags )
 {
 if ( GetNumTokens () == 0 || strs.IsEmpty () )
     return;
@@ -283,7 +283,7 @@ for ( int i = 0; i < GetNumTokens (); i++ ) {
 
     if ( ! strs.Contains ( Tokens[ i ] ) ) {
 
-        if ( verbosey == Interactive )
+        if ( IsInteractive ( execflags ) )
             ShowMessage ( "Can not find this name," NewLine "check your spelling!", Tokens[ i ], ShowMessageWarning );
 
         Tokens.RemoveRef ( Tokens[ i ] );

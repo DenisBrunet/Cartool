@@ -233,7 +233,7 @@ protected:
 
 //----------------------------------------------------------------------------
                                         // Panel that controls all files input/output settings
-enum                VerboseType;
+enum                ExecFlags;
 
 class   TTracksAveragingFilesDialog :   public  TTracksAveragingBaseDialog
 {
@@ -259,7 +259,7 @@ protected:
     owl::TComboBox      *ComboWithFocus;
 
 
-    bool                CheckFilesCompatibility ( VerboseType verbosey );
+    bool                CheckFilesCompatibility ( ExecFlags execflags );
     void                SetBaseFilename         ();
     void                GuessTriggerType        ();
 

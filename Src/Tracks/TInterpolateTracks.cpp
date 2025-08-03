@@ -496,14 +496,14 @@ bool    TInterpolateTracks::Set (   TracksInterpolationType         interpolatio
                                     const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,   
 
                                     const char*                     temppath,
-                                    VerboseType                     verbosey
+                                    ExecFlags                       execflags
                                 )
 {
 Reset ();
 
                                         // force silent if not in interactive mode
-if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    verbosey    = Silent;
+if ( IsInteractive ( execflags ) && CartoolObjects.CartoolApplication->IsNotInteractive () )
+    execflags   = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -532,7 +532,7 @@ StringCopy ( FromFiducials[ LandmarkRear  ], fromrear  );
 if ( FromNormalized == FiducialNormalization
   && FromFiducials.SomeStringsGrep ( GrepEmptyInput, GrepOptionDefault ) ) {
 
-    if ( verbosey == Interactive )
+    if ( IsInteractive ( execflags ) )
         ShowMessage (   "Not all 'From' landmarks have been provided!"      NewLine 
                         "Can not compute a proper fiducial normalization.." NewLine 
                         "Check your input, or select 'Already Normlaized'", 
@@ -558,7 +558,7 @@ StringCopy ( DestFiducials[ LandmarkRear  ], destrear  );
 if ( DestNormalized == FiducialNormalization
   && DestFiducials.SomeStringsGrep ( GrepEmptyInput, GrepOptionDefault ) ) {
 
-    if ( verbosey == Interactive )
+    if ( IsInteractive ( execflags ) )
         ShowMessage (   "Not all 'To' landmarks have been provided!"        NewLine 
                         "Can not compute a proper fiducial normalization.." NewLine 
                         "Check your input, or select 'Already Normlaized'", 
@@ -601,7 +601,7 @@ StringCopy  ( FromOrigXyzFile, fromxyzfile );
 
 if ( ! FromOrigPoints.ReadFile ( FromOrigXyzFile, &FromOrigPointsNames ) ) {
 
-    if ( verbosey == Interactive )
+    if ( IsInteractive ( execflags ) )
         ShowMessage ( "Can not open Electrodes Coordinates file!", FromOrigXyzFile, ShowMessageWarning );
 
     Reset ();
@@ -639,7 +639,7 @@ else {                                  // regular case
                                         // open From xyz, which can be either with Excluded electrodes, or the original From
 if ( ! FromPoints.ReadFile ( FromXyzFile, &FromPointsNames ) ) {
 
-    if ( verbosey == Interactive )
+    if ( IsInteractive ( execflags ) )
         ShowMessage ( "Can not open Electrodes Coordinates file!", FromXyzFile, ShowMessageWarning );
     Reset ();
     return false;
@@ -658,7 +658,7 @@ else // ToOtherElectrodes
                                         // open To xyz
 if ( ! DestPoints.ReadFile ( DestXyzFile, &DestPointsNames ) ) {
 
-    if ( verbosey == Interactive )
+    if ( IsInteractive ( execflags ) )
         ShowMessage ( "Can not open Electrodes Coordinates file!", DestXyzFile, ShowMessageWarning );
     Reset ();
     return false;
@@ -798,7 +798,7 @@ bool    TInterpolateTracks::Set (   TracksInterpolationType         interpolatio
                                     const char*                     frombadelectrodes,
 
                                     const char*                     temppath,
-                                    VerboseType                     verbosey
+                                    ExecFlags                       execflags
                                 )
 {
 return (    Set (   interpolationtype,      splinedegree,
@@ -813,7 +813,7 @@ return (    Set (   interpolationtype,      splinedegree,
                     0,          0,          0,          0,          0,
 
                     temppath,
-                    verbosey
+                    execflags
                 ) );
 }
 
@@ -831,7 +831,7 @@ return (    Set (   interpolationtype,      splinedegree,
                                         const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,
 
                                         const char*                     temppath,
-                                        VerboseType                     verbosey
+                                        ExecFlags                       execflags
                                     )
 {
 return (    Set (   interpolationtype,      splinedegree,
@@ -846,7 +846,7 @@ return (    Set (   interpolationtype,      splinedegree,
                     destfront,  destleft,   desttop,    destright,  destrear,
 
                     temppath,
-                    verbosey
+                    execflags
                 ) );
 }
 
@@ -1040,7 +1040,7 @@ bool    TInterpolateTracks::InterpolateTracks   (   const char*         fileeeg,
                                                     const char*         infix,
                                                     const char*         ext,
                                                     char*               fileout,
-                                                    VerboseType         verbosey
+                                                    ExecFlags           execflags
                                                 )
 {
                                         // will nicely close document upon exit
@@ -1051,7 +1051,7 @@ return  InterpolateTracks   (   eegdoc,
                                 infix,
                                 ext,
                                 fileout,
-                                verbosey
+                                execflags
                             );
 }
 
@@ -1063,7 +1063,7 @@ bool    TInterpolateTracks::InterpolateTracks   (   const TTracksDoc*   eegdoc,
                                                     const char*         infix,
                                                     const char*         ext,
                                                     char*               fileout,
-                                                    VerboseType         verbosey
+                                                    ExecFlags           execflags
                                                 )
 {
 ClearString ( fileout );
@@ -1077,8 +1077,8 @@ if ( ! IsOpen () )
     return  false;
 
                                         // force silent if not in interactive mode
-if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    verbosey    = Silent;
+if ( IsInteractive ( execflags ) && CartoolObjects.CartoolApplication->IsNotInteractive () )
+    execflags   = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1093,7 +1093,7 @@ eegdoc->ClearPseudo ( fromgoodsel );
 
 if ( hasfrombadelectrodes )
                                         // remove specified electrodes
-    fromgoodsel.Reset ( FromBadElectrodes.c_str (), &FromOrigPointsNames, verbosey == Interactive );
+    fromgoodsel.Reset ( FromBadElectrodes.c_str (), &FromOrigPointsNames, IsInteractive ( execflags ) );
 
                                         // not the same number of FINAL electrodes?
 if ( (int) fromgoodsel != FromPoints.GetNumPoints () )
@@ -1172,7 +1172,7 @@ TSelection          removesel ( FromOrigPoints.GetNumPoints (), OrderSorted );
 
 removesel.Reset ();
 
-removesel.Set ( FromBadElectrodes.empty () ? "" : FromBadElectrodes.c_str (), &FromOrigPointsNames, verbosey == Interactive );
+removesel.Set ( FromBadElectrodes.empty () ? "" : FromBadElectrodes.c_str (), &FromOrigPointsNames, IsInteractive ( execflags ) );
 
 if ( (bool) removesel ) {
     verbose.Put ( "Number of bad electrodes:", (int) removesel );
@@ -1252,7 +1252,7 @@ enum                {
 
 TSuperGauge         Gauge;
 
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
 
     Gauge.Set           ( InterpolationTitle, SuperGaugeLevelInter );
 
@@ -1525,7 +1525,7 @@ expfile.Write ( dataout );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
 
     Gauge.FinishParts ();
 

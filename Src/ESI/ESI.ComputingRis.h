@@ -51,7 +51,7 @@ void            AddInverse              ( TGoF& inverses, const char* inverse );
 void            AddInverses             ( TGoF& inverses, const TGoF& moreinverses );
 void            RemoveInverse           ( TGoF& inverses );
 
-bool            ReadCsvRis              ( const char* filename, TGoGoF& subjects, TGoF& inverses, VerboseType verbosey = Interactive );
+bool            ReadCsvRis              ( const char* filename, TGoGoF& subjects, TGoF& inverses, ExecFlags execflags = Interactive );
 
 
 //----------------------------------------------------------------------------
@@ -83,7 +83,7 @@ bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
                             bool                computegroupsaverages,  bool                computegroupscentroids,
                             const char*         outputdir,              // optional
                             const char*         prefix,
-                            VerboseType         verbose
+                            ExecFlags         verbose
                         );
 
 

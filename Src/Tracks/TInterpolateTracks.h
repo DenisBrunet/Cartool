@@ -149,8 +149,8 @@ public:
                                                 const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,
 
                                                 const char*                     temppath    = 0,
-                                                VerboseType                     verbosey    = Interactive
-                                            )   { Set ( interpolationtype, splinedegree, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, frombadelectrodes, destxyzfile, destnormalized, destfront, destleft, desttop, destright, destrear, temppath, verbosey ); }
+                                                ExecFlags                       execflags   = Interactive
+                                            )   { Set ( interpolationtype, splinedegree, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, frombadelectrodes, destxyzfile, destnormalized, destfront, destleft, desttop, destright, destrear, temppath, execflags ); }
 
                         TInterpolateTracks  (   TracksInterpolationType         interpolationtype,  int                             splinedegree,
 
@@ -160,8 +160,8 @@ public:
                                                 const char*                     frombadelectrodes,
 
                                                 const char*                     temppath    = 0,
-                                                VerboseType                     verbosey    = Interactive
-                                            )   { Set ( interpolationtype, splinedegree, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, frombadelectrodes, temppath, verbosey ); }
+                                                ExecFlags                       execflags   = Interactive
+                                            )   { Set ( interpolationtype, splinedegree, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, frombadelectrodes, temppath, execflags ); }
 
                         TInterpolateTracks  (   TracksInterpolationType         interpolationtype,  int                             splinedegree,
 
@@ -174,8 +174,8 @@ public:
                                                 const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,
 
                                                 const char*                     temppath    = 0,    // could be a file, a path, or null
-                                                VerboseType                     verbosey    = Interactive
-                                            )   { Set ( interpolationtype, splinedegree, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, destxyzfile, destnormalized, destfront, destleft, desttop, destright, destrear, temppath, verbosey ); }
+                                                ExecFlags                       execflags   = Interactive
+                                            )   { Set ( interpolationtype, splinedegree, fromxyzfile, fromnormalized, fromfront, fromleft, fromtop, fromright, fromrear, destxyzfile, destnormalized, destfront, destleft, desttop, destright, destrear, temppath, execflags ); }
 
 
     bool                IsOpen              ()  const   { return InterpolationType != UnknownInterpolation && FromOrigPoints.IsNotEmpty () && FromOrigPointsNames.IsNotEmpty () && DestPoints.IsNotEmpty () && DestPointsNames.IsNotEmpty (); }
@@ -195,7 +195,7 @@ public:
                                                 const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,
 
                                                 const char*                     temppath    = 0,    // could be a file, a path, or null
-                                                VerboseType                     verbosey    = Interactive
+                                                ExecFlags                       execflags   = Interactive
                                             );
                                         // Simpler initialization for only bad electrodes interpolation
     bool                Set                 (   TracksInterpolationType         interpolationtype,  int                             splinedegree,
@@ -206,7 +206,7 @@ public:
                                                 const char*                     frombadelectrodes,
 
                                                 const char*                     temppath    = 0,
-                                                VerboseType                     verbosey    = Interactive
+                                                ExecFlags                       execflags   = Interactive
                                             );
                                         // Simpler initialization to go from one electrodes model to another one
     bool                Set                 (   TracksInterpolationType         interpolationtype,  int                             splinedegree,
@@ -220,7 +220,7 @@ public:
                                                 const char* destfront,  const char* destleft,   const char* desttop,    const char* destright,  const char* destrear,
 
                                                 const char*                     temppath    = 0,    // could be a file, a path, or null
-                                                VerboseType                     verbosey    = Interactive
+                                                ExecFlags                       execflags   = Interactive
                                             );
 
 
@@ -229,7 +229,7 @@ public:
                                                 const char*         infix,
                                                 const char*         ext,
                                                 char*               fileout,
-                                                VerboseType         verbosey    = Interactive
+                                                ExecFlags           execflags   = Interactive
                                             );
                                         // Wrapper to method above
     bool                InterpolateTracks   (   const char*         fileeeg,
@@ -237,7 +237,7 @@ public:
                                                 const char*         infix,
                                                 const char*         ext,
                                                 char*               fileout,
-                                                VerboseType         verbosey    = Interactive
+                                                ExecFlags           execflags   = Interactive
                                             );
 
                                         // We can give read-only access to these guys

@@ -683,7 +683,7 @@ ReadParams ();
 }
 
 
-bool    ReadCsvRis ( const char* filename, TGoGoF& subjects, TGoF& inverses, VerboseType verbosey )
+bool    ReadCsvRis ( const char* filename, TGoGoF& subjects, TGoF& inverses, ExecFlags execflags )
 {
 subjects.Reset ();
 inverses.Reset ();
@@ -705,7 +705,7 @@ CsvType             csvtype         = sf.GetType ();
                                         // We can deal with statistics type, too...
 if ( ! (    IsCsvComputingRis ( csvtype ) 
          || IsCsvStatFiles    ( csvtype ) ) ) {
-    if ( verbosey == Interactive )
+    if ( IsInteractive ( execflags ) )
         ShowMessage ( SpreadSheetErrorMessage, "Read list file", ShowMessageWarning );
     return  false;
     }

@@ -83,7 +83,7 @@ bool    ComputingRis    (   ComputingRisPresetsEnum esicase,
                             bool                computegroupsaverages,  bool                computegroupscentroids,
                             const char*         outputdir,              // optional
                             const char*         prefix,
-                            VerboseType         verbosey
+                            ExecFlags           execflags
                         )
 {
                                         // well, we do need some data...
@@ -100,8 +100,8 @@ if ( inversefiles.IsEmpty () )
     return false;
 
                                         // force silent if not in interactive mode
-if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    verbosey    = Silent;
+if ( IsInteractive ( execflags ) && CartoolObjects.CartoolApplication->IsNotInteractive () )
+    execflags   = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -511,7 +511,7 @@ enum                GaugeRisEnum
 
 TSuperGauge         Gauge;
 
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
 
     Gauge.Set           ( ComputingRisTitle, SuperGaugeLevelInter );
 
@@ -682,7 +682,7 @@ if ( backnorm == BackgroundNormalizationLoadingZScoreFile ) {
         loadzscorefiles.GrepGoF ( gogofpersubject[ absg ], ".*", ispostfilename, AllZScoreFilesExt, false );
 
                                         // Asking user if no Z-Score file is found(?)
-        if ( loadzscorefiles.IsEmpty () && verbosey == Interactive ) {
+        if ( loadzscorefiles.IsEmpty () && IsInteractive ( execflags ) ) {
 
             StringCopy      ( f, "Standardization factors file is missing for  '", ToFileName ( gogofpersubject[ absg ][ 0 ] ), "'  , please provide another one:" );
 

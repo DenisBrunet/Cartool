@@ -350,7 +350,7 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 char*               fileoutsplitfreq,
                                 char*               fileoutspectrum,
                                 char*               fileoutapprfreqs,
-                                VerboseType         verbosey
+                                ExecFlags           execflags
                             )
 {
 if ( ! eegdoc )
@@ -386,8 +386,8 @@ bool                splitspectrum       = fileoutspectrum  != 0;
 bool                savefftapprox       = fileoutapprfreqs != 0;
 
                                         // force silent if not in interactive mode
-if ( verbosey == Interactive && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    verbosey    = Silent;
+if ( IsInteractive ( execflags ) && CartoolObjects.CartoolApplication->IsNotInteractive () )
+    execflags   = Silent;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -489,7 +489,7 @@ enum                {
 
 TSuperGauge         Gauge;
                                         // Frequency is annoying, concatenation is fast
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
 
     Gauge.Set           ( FrequencyAnalysisTitle, SuperGaugeLevelInter );
 
@@ -764,7 +764,7 @@ for_each (  freqbands.cbegin (), freqbands.cend (),
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -798,7 +798,7 @@ if ( optimaldownsampling ) {
 if (   numblocks <= 0 
     || blocksize <= 0 ) {
 
-    if ( verbosey == Interactive ) {
+    if ( IsInteractive ( execflags ) ) {
 
         if ( numblocks <= 0 || blocksize <= 0 )
             ShowMessage ( "Number of windows or window size seem to be incorrect...", FrequencyAnalysisTitle, ShowMessageWarning );
@@ -810,7 +810,7 @@ if (   numblocks <= 0
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -922,7 +922,7 @@ BaseFileNameSplitElecs  = BaseDirSplitElecs + "\\" + fileoutprefix + ".";
 
 if ( StringLength ( BaseFileName ) > MaxPathShort - 32 ) {
 
-    if ( verbosey == Interactive )
+    if ( IsInteractive ( execflags ) )
         ShowMessage ( "File name is too long to generate a correct output...", eegdoc->GetDocPath (), ShowMessageWarning );
     return  false;
     }
@@ -967,7 +967,7 @@ if ( ref == ReferenceArbitraryTracks ) {
 
     refsel.Reset ();
 
-    refsel.Set    ( reflist, xyzdoc.IsOpen () ? xyzdoc->GetElectrodesNames() : eegdoc->GetElectrodesNames(), verbosey == Interactive );
+    refsel.Set    ( reflist, xyzdoc.IsOpen () ? xyzdoc->GetElectrodesNames() : eegdoc->GetElectrodesNames(), IsInteractive ( execflags ) );
 
                                         // that should not be...
     if ( refsel.NumSet () == 0 ) {
@@ -1255,7 +1255,7 @@ bool                oldfiltersactivated = eegdoc->DeactivateFilters ( true );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -1470,7 +1470,7 @@ else if ( outputbands == OutputBands
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -1564,7 +1564,7 @@ else { // FFT, Power Maps (also FFT), FFT Approximation
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -1572,7 +1572,7 @@ if ( verbosey == Interactive ) {
                                         // scan all blocks
 for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firsttf += blockstep ) {
 
-    if ( verbosey == Interactive && ! IsSTMethod ( analysis ) ) {
+    if ( IsInteractive ( execflags ) && ! IsSTMethod ( analysis ) ) {
         Gauge.Next ( gaugefreqloop );
         CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
         }
@@ -1668,7 +1668,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
         int         el      = elsave.GetValue ( eli );
 
-        if ( verbosey == Interactive && IsSTMethod ( analysis ) ) {
+        if ( IsInteractive ( execflags ) && IsSTMethod ( analysis ) ) {
             Gauge.Next ( gaugefreqloop );
             CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
             }
@@ -2105,7 +2105,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -2162,7 +2162,7 @@ eegdoc->SetFiltersActivated ( oldfiltersactivated, true );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // write a marker file
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -2210,7 +2210,7 @@ if ( outputmarkers ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // ouput to different files
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
     CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
     }
@@ -2266,7 +2266,7 @@ if ( xyzdoc.IsOpen () && xyzdoc->CanClose ( true ) )
     xyzdoc.Close ( isxyzdocalreadyopen /*|| BatchProcessing*/ ? CloseDocLetOpen : CloseDocRestoreAsBefore );
 
 
-if ( verbosey == Interactive ) {
+if ( IsInteractive ( execflags ) ) {
 
     Gauge.FinishParts ();
 

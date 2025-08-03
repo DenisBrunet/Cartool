@@ -1872,7 +1872,7 @@ bool                savefftapprox       = IsSTMethod ( analysis );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // silencing in these cases
-VerboseType         verbosey            = NumBatchFiles () > 1 ? Silent : Interactive;
+ExecFlags           execflags           = NumBatchFiles () > 1 ? Silent : Interactive;
 
 
 if ( IsBatchFirstCall () && BatchFileNames.NumFiles () > 1 )
@@ -1917,7 +1917,7 @@ FrequencyAnalysis   (   EEGDoc,
                         splitfrequency ? (char*) fileoutsplitfreq   : (char*) 0,
                         splitspectrum  ? (char*) fileoutspectrum    : (char*) 0,
                         savefftapprox  ? (char*) fileoutapprfreqs   : (char*) 0,
-                        verbosey
+                        execflags
                     );
 
 

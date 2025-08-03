@@ -484,16 +484,18 @@ bool                GetPolarityFromUser     ( const char* title, PolarityType& p
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-enum        VerboseType
+enum        ExecFlags
             {
             Silent,
             Interactive,
 
-            NumVerboseTypes,
-
             CompactString   = Silent,       // more meaningful aliases for TSplitStrings::ToString
             ExpandedString  = Interactive,
             };
+
+
+bool        IsSilent        ( const ExecFlags& ef )     { return ef == Silent;      }
+bool        IsInteractive   ( const ExecFlags& ef )     { return ef == Interactive; }
 
 
 //----------------------------------------------------------------------------

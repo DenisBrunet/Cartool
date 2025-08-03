@@ -186,7 +186,7 @@ public:
 
 
     MarkersError    InitMarkers             ( const char* file = 0 );                               // Sets MarkersDirty upon error; Sorting
-    void            CommitMarkers           ( bool force = false, VerboseType verbose = Silent );
+    void            CommitMarkers           ( bool force = false, ExecFlags execflags = Silent );
     virtual void    ReadNativeMarkers       ()                  {}                                  // Used to read any associated file with markers
     void            ResetMarkers            ();
 

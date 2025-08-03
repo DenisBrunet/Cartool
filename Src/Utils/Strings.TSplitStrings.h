@@ -35,7 +35,7 @@ enum                StringsUnicity
                     NonUniqueStrings
                     };
 
-enum                VerboseType;
+enum                ExecFlags;
 
 
 class   TSplitStrings
@@ -63,13 +63,13 @@ public:
 
 
     void            ExpandWildchars     ( const TStrings& strs, StringsUnicity unicity );
-    void            FilterWith          ( const TStrings& strs, VerboseType verbosey );
+    void            FilterWith          ( const TStrings& strs, ExecFlags execflags );
     void            CompactSpaces       ();
 
     bool            Contains            ( const char* str )                     const;
     bool            Intersect           ( const TSplitStrings& splitstring )    const;
     bool            PartiallyContains   ( const char* str )                     const;
-    char*           ToString            ( char* str, VerboseType verbosey )     const;
+    char*           ToString            ( char* str, ExecFlags execflags )      const;
     void            Show                ( const char* title = 0 )               const;
     const TStrings&     GetTokens       ()      const           { return Tokens; }
 

@@ -66,7 +66,7 @@ enum                ConcatenateOptions
 
 enum                ReferenceType;
 enum                SavingEegFileTypes;
-enum                VerboseType;
+enum                ExecFlags;
 class               TTracksDoc;
 class               TElectrodesDoc;
 class               TRoisDoc;
@@ -117,7 +117,7 @@ bool    ReprocessTracks (
                         TExportTracks&      expfile,                // Needed for concatenating across multiple calls/files
                         const TGoF*         batchfilenames,         // For the moment, transmit this group of files
                         int                 batchfileindex,         // index of current file in batch processing
-                        VerboseType         verbosey
+                        ExecFlags           execflags
                         );
 
 

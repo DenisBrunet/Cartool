@@ -132,7 +132,7 @@ extern const char   FreqWindowingString[ NumFreqWindowingType ][ 64 ];
 enum    ReferenceType;
 enum    SkippingEpochsType;
 enum    MarkerType;
-enum    VerboseType;
+enum    ExecFlags;
 class   TTracksDoc;
 
 
@@ -164,7 +164,7 @@ bool    FrequencyAnalysis   (   TTracksDoc*         eegdoc,             // not c
                                 char*               fileoutsplitfreq,
                                 char*               fileoutspectrum,
                                 char*               fileoutapprfreqs,
-                                VerboseType         verbosey
+                                ExecFlags           execflags
                             );
 
 

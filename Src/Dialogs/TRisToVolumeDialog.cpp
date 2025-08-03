@@ -854,7 +854,7 @@ StringCopy      ( fileprefix, RisToVolumeTransfer.BaseFileName );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-VerboseType         verbosey            = Interactive; // NumBatchFiles () > 1 ? Silent : Interactive;
+ExecFlags           execflags           = Interactive; // NumBatchFiles () > 1 ? Silent : Interactive;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -875,7 +875,7 @@ RisToVolume (   EEGDoc->GetDocPath (),
                 fileprefix,
                 filetype,
                 gofvol,
-                verbosey
+                execflags
             );
 
 

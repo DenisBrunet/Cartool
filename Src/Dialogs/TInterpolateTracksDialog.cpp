@@ -937,7 +937,7 @@ if ( IsBatchFirstCall () && BatchFileNames.NumFiles () > 1 )
 
 TFileName           neweegfile;
                                         // silencing in these cases
-VerboseType         verbosey            = NumBatchFiles () > 1 ? Silent : Interactive;
+ExecFlags           execflags           = NumBatchFiles () > 1 ? Silent : Interactive;
 
 
 IT.InterpolateTracks    (   EEGDoc,
@@ -945,7 +945,7 @@ IT.InterpolateTracks    (   EEGDoc,
                             transfer->InfixFilename,
                             SavingEegFileExtPreset[ filetype ],
                             neweegfile,
-                            verbosey
+                            execflags
                         );
 
 
@@ -1000,7 +1000,7 @@ bool                            cleanupfiles        = CheckToBool ( transfer->Cl
 
 int                             numinfiles          = BatchFileNames.NumFiles ();
 
-VerboseType                     verbosey            = NumBatchFiles () > 1 ? Silent : Interactive;
+ExecFlags                       execflags           = NumBatchFiles () > 1 ? Silent : Interactive;
 
 if ( numinfiles > MaxFilesToOpen )
     transfer->OpenAuto  = BoolToCheck ( false );
@@ -1018,7 +1018,7 @@ IT.Set  (   interpolationtype,      degree,
             transfer->ToFront,      transfer->ToLeft,       transfer->ToTop,    transfer->ToRight,      transfer->ToRear, 
 
             BatchFileNames[ 0 ],        // temp files in the same directory as first EEG file - no forced output directory here
-            verbosey
+            execflags
         );
 
 

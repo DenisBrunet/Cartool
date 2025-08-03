@@ -366,7 +366,7 @@ return  *this;
 
 
 //----------------------------------------------------------------------------
-void    TMarkers::CommitMarkers ( bool force, VerboseType verbose )
+void    TMarkers::CommitMarkers ( bool force, ExecFlags execflags )
 {
 if ( IsInMemory () ) {
     MarkersDirty    = false;
@@ -395,7 +395,7 @@ else
     file    = MarkersFileName;
 
 
-if ( verbose == Interactive )
+if ( IsInteractive ( execflags ) )
     if ( ! GetAnswerFromUser ( "Markers have been modified, do you want to save them to file now?", ToFileName ( file ) ) )
         return;
 
