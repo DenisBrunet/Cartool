@@ -488,14 +488,11 @@ enum        ExecFlags
             {
             Silent,
             Interactive,
-
-            CompactString   = Silent,       // more meaningful aliases for TSplitStrings::ToString
-            ExpandedString  = Interactive,
             };
 
 
-bool        IsSilent        ( const ExecFlags& ef )     { return ef == Silent;      }
-bool        IsInteractive   ( const ExecFlags& ef )     { return ef == Interactive; }
+inline bool IsSilent        ( const ExecFlags& ef )     { return ef == Silent;      }
+inline bool IsInteractive   ( const ExecFlags& ef )     { return ef == Interactive; }
 
 
 //----------------------------------------------------------------------------

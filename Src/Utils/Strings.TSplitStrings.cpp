@@ -195,14 +195,14 @@ Tokens.Show ( StringIsEmpty ( title ) ? "Tokens" : title );
 }
 
 
-char*   TSplitStrings::ToString ( char* str, ExecFlags execflags ) const
+char*   TSplitStrings::ToString ( char* str, StringsVerbosity verbosity ) const
 {
 if ( str == 0 )
     return str;
 
 
 if ( GetNumTokens () == 0 ) {
-    if ( execflags == ExpandedString )  StringCopy  ( str, "- None -" );
+    if ( verbosity == ExpandedString )  StringCopy  ( str, "- None -" );
     else                                ClearString ( str );
 
     return str;
@@ -220,7 +220,7 @@ for ( int i = 0; i < GetNumTokens (); i++ ) {
     StringCopy ( buff, Tokens[ i ] );
 
                                         // if compact, replace any wildchar
-    if ( execflags == CompactString ) {
+    if ( verbosity == CompactString ) {
 
         if ( StringIs ( buff, "*" ) )   // replace single "*" with "All"
 
@@ -230,14 +230,14 @@ for ( int i = 0; i < GetNumTokens (); i++ ) {
         }
 
                                         // add quotes if it contains space
-    if ( execflags == ExpandedString && StringContains ( buff, ' ' ) ) {
+    if ( verbosity == ExpandedString && StringContains ( buff, ' ' ) ) {
 
         StringPrepend ( buff, DoubleQuoteS );
         StringAppend  ( buff, DoubleQuoteS );
         }
 
                                         // need a separator to global string?
-    if ( execflags == ExpandedString && ! StringIsSpace ( str ) )
+    if ( verbosity == ExpandedString && ! StringIsSpace ( str ) )
         StringAppend ( str, ", " );
 
                                         // then add to current string
