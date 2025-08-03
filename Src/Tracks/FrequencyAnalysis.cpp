@@ -387,7 +387,7 @@ bool                savefftapprox       = fileoutapprfreqs != 0;
 
                                         // force silent if not in interactive mode
 if ( IsInteractive ( execflags ) && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    execflags   = Silent;
+    SetSilent ( execflags );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

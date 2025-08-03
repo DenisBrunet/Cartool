@@ -263,7 +263,7 @@ return  arg;
 //----------------------------------------------------------------------------
                                         // Safely setting / resetting bits within flag-like type
 template <typename TypeD>
-inline  TypeD   ResetFlags  (   TypeD&  var,    TypeD   clearmask   ) 
+inline constexpr TypeD  ResetFlags  (   TypeD&  var,    TypeD   clearmask   ) 
 {
 var     = (TypeD) ( var & ~clearmask );
 
@@ -272,7 +272,7 @@ return  var;
 
 
 template <typename TypeD>
-inline  TypeD   KeepFlags   (   TypeD&  var,    TypeD   keepmask   ) 
+inline constexpr TypeD  KeepFlags   (   TypeD&  var,    TypeD   keepmask   ) 
 {
 var     = (TypeD) ( var & keepmask );
 
@@ -281,26 +281,26 @@ return  var;
 
                                         // !No checks done on vars!
 template <typename TypeD>
-inline  TypeD   CombineFlags(   TypeD   flags1, TypeD   flags2 ) 
+inline constexpr TypeD  CombineFlags(   TypeD   flags1, TypeD   flags2 ) 
 {
 return  (TypeD) ( flags1 | flags2 );
 }
 
 template <typename TypeD>
-inline  void    CombinedFlags(  TypeD&  flags1, TypeD   flags2 ) 
+inline constexpr void   CombinedFlags(  TypeD&  flags1, TypeD   flags2 ) 
 {
 flags1  = (TypeD) ( flags1 | flags2 );
 }
 
 template <typename TypeD>
-inline  TypeD   CombineFlags(   TypeD   flags1, TypeD   flags2 , TypeD   flags3 ) 
+inline constexpr TypeD  CombineFlags(   TypeD   flags1, TypeD   flags2 , TypeD   flags3 ) 
 {
 return  (TypeD) ( flags1 | flags2 | flags3 );
 }
 
                                         // alternating set / reset
 template <typename TypeD>
-inline  TypeD   XorFlags    (   TypeD&  var,    TypeD   xorflags    ) 
+inline constexpr TypeD  XorFlags    (   TypeD&  var,    TypeD   xorflags    ) 
 {
 var     = (TypeD) ( var ^ xorflags );
 
@@ -309,7 +309,7 @@ return  var;
 
 
 template <typename TypeD>
-inline  TypeD   SetFlags    (   TypeD&  var,    TypeD   setflags    ) 
+inline constexpr TypeD  SetFlags    (   TypeD&  var,    TypeD   setflags    ) 
 {
 var     = (TypeD) ( var | setflags );
 
@@ -318,7 +318,7 @@ return  var;
 
                                         // Setting with clearing field first
 template <typename TypeD>
-inline  TypeD   SetFlags    (   TypeD&  var,    TypeD   clearmask,      TypeD   setflags    ) 
+inline constexpr TypeD  SetFlags    (   TypeD&  var,    TypeD   clearmask,      TypeD   setflags    ) 
 {
 ResetFlags  ( var,  clearmask   );
 
@@ -329,14 +329,14 @@ return  var;
 
                                         // Testing any combination of flag(s) (OR)
 template <typename TypeD>
-inline  bool    IsFlag      (   const TypeD&    var,    TypeD   testflags   ) 
+inline constexpr bool   IsFlag      (   const TypeD&    var,    TypeD   testflags   ) 
 {
 return  var & testflags;
 }
 
                                         // Testing for an exact flags combination (==)
 template <typename TypeD>
-inline  bool    IsFlag      (   const TypeD&    var,    TypeD   keepmask,   TypeD   testflags   ) 
+inline constexpr bool   IsFlag      (   const TypeD&    var,    TypeD   keepmask,   TypeD   testflags   ) 
 {
 return  ( var & keepmask ) == testflags;
 }
@@ -346,7 +346,7 @@ return  ( var & keepmask ) == testflags;
                                         // returns the space needed for printing the integer part explicitly
                                         // +-0.YY -> 1  +-X.YY -> 1  +-XX.YY -> 2  +-XXX.YY ->3
 template <typename TypeD>
-inline  int     NumIntegerDigits ( TypeD v )
+inline constexpr int    NumIntegerDigits ( TypeD v )
 {
 return  v == 0 ? 1 : AtLeast ( 1, Truncate ( Log10 ( fabs ( (double) v ) ) ) + 1 );
 }
@@ -365,35 +365,35 @@ constexpr double    BigDoubleFloat      = 1e308;
 
 
 template <typename T>
-constexpr double    GetMachineEpsilon ()
+inline constexpr double    GetMachineEpsilon ()
 {
 return  std::numeric_limits<T>::epsilon ();
 }
 
 
 template <typename T>
-constexpr T     Highest ()
+inline constexpr   T       Highest ()
 {
 return  std::numeric_limits<T>::max ();
 }
 
 
 template <typename T>
-constexpr T     Lowest ()
+inline constexpr   T       Lowest ()
 {
 return  -std::numeric_limits<T>::max ();
 }
 
                                         // parameter's type will constrain the template, so initilization will adapt if variable's type changes
 template <typename T>
-constexpr T     Highest ( const T& )
+inline constexpr   T       Highest ( const T& )
 {
 return  Highest<T> ();
 }
 
 
 template <typename T>
-constexpr T     Lowest ( const T& )
+inline constexpr   T       Lowest ( const T& )
 {
 return  Lowest<T> ();
 }

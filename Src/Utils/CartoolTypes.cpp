@@ -173,6 +173,14 @@ char            SkullStrippingNames[ NumSkullStrippingTypes ][ 16 ] =
 
 //----------------------------------------------------------------------------
 
+ExecFlags   SetSilent       (       ExecFlags& ef )     { return SetFlags ( ef, SilentMask, Silent      ); }
+ExecFlags   SetInteractive  (       ExecFlags& ef )     { return SetFlags ( ef, SilentMask, Interactive ); }
+bool        IsSilent        ( const ExecFlags  ef )     { return IsFlag   ( ef,             Silent      ); }
+bool        IsInteractive   ( const ExecFlags  ef )     { return IsFlag   ( ef,             Interactive ); }
+
+
+//----------------------------------------------------------------------------
+
 const char  EpochsNames[ NumEpochsTypes ][ 32 ] =
             {
             "Unspecified epoch",

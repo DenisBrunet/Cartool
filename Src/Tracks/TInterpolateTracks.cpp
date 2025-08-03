@@ -503,7 +503,7 @@ Reset ();
 
                                         // force silent if not in interactive mode
 if ( IsInteractive ( execflags ) && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    execflags   = Silent;
+    SetSilent ( execflags );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1078,7 +1078,7 @@ if ( ! IsOpen () )
 
                                         // force silent if not in interactive mode
 if ( IsInteractive ( execflags ) && CartoolObjects.CartoolApplication->IsNotInteractive () )
-    execflags   = Silent;
+    SetSilent ( execflags );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

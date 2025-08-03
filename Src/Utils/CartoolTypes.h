@@ -486,13 +486,16 @@ bool                GetPolarityFromUser     ( const char* title, PolarityType& p
 
 enum        ExecFlags
             {
-            Silent,
-            Interactive,
+            Silent          = 0x01,
+            Interactive     = 0x02,
+            SilentMask      = Silent | Interactive,
             };
 
 
-inline bool IsSilent        ( const ExecFlags& ef )     { return ef == Silent;      }
-inline bool IsInteractive   ( const ExecFlags& ef )     { return ef == Interactive; }
+ExecFlags   SetSilent       (       ExecFlags& ef );
+ExecFlags   SetInteractive  (       ExecFlags& ef );
+bool        IsSilent        ( const ExecFlags  ef );
+bool        IsInteractive   ( const ExecFlags  ef );
 
 
 //----------------------------------------------------------------------------
