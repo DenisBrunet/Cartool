@@ -205,7 +205,7 @@ owlnextlicence  ->SetText ( OWL_COMPANYNAME );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // OpenGL infos
                                         // using the same window as in TGlobalOpenGL, just by safety
-UseThisDC           pdc  ( CartoolObjects.CartoolMdiClient->GetHandle () );
+UseThisDC           pdc  ( Cartool.CartoolMdiClient->GetHandle () );
 
 TGlobalOpenGL       globopengl;         // although we create an object here, it is initialized only once
 

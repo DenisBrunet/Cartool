@@ -639,7 +639,7 @@ if ( ! GLpfd.IsDetected () || forcedetectpfd ) {
     FormatWish      accumbits       = ValueToFormatWish ( 32 );     // at least
     FormatWish      doublebuff      = FormatUse;                    // request double-buffering
 //  FormatWish      accel           = FormatUseBest;                // will go first for hardware if available, software otherwise, without failing
-    FormatWish      accel           = CartoolObjects.CartoolApplication->PrefGraphicAccel;
+    FormatWish      accel           = Cartool.CartoolApplication->PrefGraphicAccel;
 //  FormatWish      accel           = GetValue ( "Request Acceleration (-1:don't care, 0:off, 1:on):", "OpenGL" );
 
 

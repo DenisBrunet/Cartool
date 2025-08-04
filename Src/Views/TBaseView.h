@@ -178,8 +178,8 @@ constexpr int       BbSphereHighNumSlices       = 40;
 //----------------------------------------------------------------------------
                                         // Cartool makes use of 2 different fonts
 
-#define             SmallFontSize               AtLeast ( 13, CartoolObjects.CartoolApplication->MmToPixels ( 3.4 ) )
-#define             BigFontSize                 AtLeast ( 15, CartoolObjects.CartoolApplication->MmToPixels ( 4.6 ) )
+#define             SmallFontSize               AtLeast ( 13, Cartool.CartoolApplication->MmToPixels ( 3.4 ) )
+#define             BigFontSize                 AtLeast ( 15, Cartool.CartoolApplication->MmToPixels ( 4.6 ) )
 
 #define             SmallFontParameters         "Tahoma",  SmallFontSize, 0, 0, 0, FW_BOLD
 #define             BigFontParameters           "Verdana", BigFontSize,   0, 0, 0, FW_NORMAL

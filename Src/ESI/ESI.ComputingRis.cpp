@@ -100,7 +100,7 @@ if ( inversefiles.IsEmpty () )
     return false;
 
                                         // force silent if not in interactive mode
-if ( IsInteractive ( execflags ) && CartoolObjects.IsNotInteractive () )
+if ( IsInteractive ( execflags ) && Cartool.IsNotInteractive () )
     SetSilent ( execflags );
 
 
@@ -506,7 +506,7 @@ enum                GaugeRisEnum
                     };
 
                                         // shrinking size to keep the progress bar under observation
-//WindowSetGaugeSize ( CartoolObjects.CartoolMainWindow ); 
+//WindowSetGaugeSize ( Cartool.CartoolMainWindow ); 
 
 
 TSuperGauge         Gauge;
@@ -524,7 +524,7 @@ if ( IsInteractive ( execflags ) ) {
 
     if ( /*numgroups > 1 ||*/ numfiles > 10 )
                                             // batch can be long, hide Cartool until we are done
-        WindowMinimize ( CartoolObjects.CartoolMainWindow );
+        WindowMinimize ( Cartool.CartoolMainWindow );
     }
 
                                         // Changing priority
@@ -730,7 +730,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
     Gauge.CurrentPart   = gaugeriscomppreproc;
 
 
-    CartoolObjects.CartoolApplication->SetMainTitle ( "RIS Computation of", gogofpersubject[ absg ][ 0 ], Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( "RIS Computation of", gogofpersubject[ absg ][ 0 ], Gauge );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1403,12 +1403,12 @@ if ( rois )
 
 SetProcessPriority ();
 
-WindowMaximize ( CartoolObjects.CartoolMainWindow );
+WindowMaximize ( Cartool.CartoolMainWindow );
 
 Gauge.FinishParts ();
 
-//CartoolObjects.CartoolApplication->ResetMainTitle ();
-CartoolObjects.CartoolApplication->SetMainTitle ( ComputingRisTitle, Prefix, Gauge );
+//Cartool.CartoolApplication->ResetMainTitle ();
+Cartool.CartoolApplication->SetMainTitle ( ComputingRisTitle, Prefix, Gauge );
 
 Gauge.HappyEnd ();
 

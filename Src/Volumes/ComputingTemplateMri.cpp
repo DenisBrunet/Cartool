@@ -325,7 +325,7 @@ for ( int li = 0; li <= numiterations; li++ ) {
 
         Gauge.Next ( -1, SuperGaugeUpdateTitle );
 
-        CartoolObjects.CartoolApplication->SetMainTitle ( TemplateMriTitle, mrifiles[ mi ], Gauge );
+        Cartool.CartoolApplication->SetMainTitle ( TemplateMriTitle, mrifiles[ mi ], Gauge );
 
                                         // opening or just accessing
         mridoc[ mi ].Open ( mrifiles[ mi ], howopen );
@@ -990,10 +990,10 @@ Gauge.AddPart       ( gaugetemplmriloop,        123,            74 );
 //if ( IsBatchFirstCall () && (int) BatchFileNames > 5 )
 if ( nummrifiles > 5 )
                                         // batch can be long, hide Cartool until we are done
-    WindowMinimize ( CartoolObjects.CartoolMainWindow );
+    WindowMinimize ( Cartool.CartoolMainWindow );
 
 
-CartoolObjects.CartoolApplication->SetMainTitle ( TemplateMriTitle, BaseFileName, Gauge );
+Cartool.CartoolApplication->SetMainTitle ( TemplateMriTitle, BaseFileName, Gauge );
 
                                         // Changing priority
 SetProcessPriority ( BatchProcessingPriority );
@@ -1231,11 +1231,11 @@ templatedoc .Close  ( CloseDocLetOpen );
 //spidoc    .Close  ( CloseDocLetOpen );
 
 
-WindowMaximize ( CartoolObjects.CartoolMainWindow );
+WindowMaximize ( Cartool.CartoolMainWindow );
 
 Gauge.FinishParts ();
 
-CartoolObjects.CartoolApplication->SetMainTitle ( TemplateMriTitle, BaseFileName, Gauge );
+Cartool.CartoolApplication->SetMainTitle ( TemplateMriTitle, BaseFileName, Gauge );
 
 Gauge.HappyEnd ();
 

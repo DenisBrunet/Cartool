@@ -93,7 +93,7 @@ if ( ! ( outputn3d || outputn4d ) )
 
 
                                         // force silent if not in interactive mode
-if ( IsInteractive ( execflags ) && CartoolObjects.IsNotInteractive () )
+if ( IsInteractive ( execflags ) && Cartool.IsNotInteractive () )
     SetSilent ( execflags );
 
 
@@ -107,7 +107,7 @@ if ( IsInteractive ( execflags ) ) {
                                             // we don't know how many TF to actually save - but we give it 100% of progress bar
     Gauge.AddPart       ( 0, 100 );
 
-    CartoolObjects.CartoolApplication->SetMainTitle ( RisToVolumeTitle, risfile, Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( RisToVolumeTitle, risfile, Gauge );
     }
 
 
@@ -550,7 +550,7 @@ if ( IsInteractive ( execflags ) ) {
 
     Gauge.FinishParts ();
 
-    //CartoolObjects.CartoolApplication->SetMainTitle ( RisToVolumeTitle, gofvol[ 0 ], Gauge );
+    //Cartool.CartoolApplication->SetMainTitle ( RisToVolumeTitle, gofvol[ 0 ], Gauge );
 
     UpdateApplication;
     }

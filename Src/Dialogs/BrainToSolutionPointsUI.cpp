@@ -62,12 +62,12 @@ bool    BrainToSolutionPointsUI     (
                                         // Let's start by looking at all opened docs:
 TGoF                mrifiles;
 
-CartoolObjects.CartoolDocManager->GetDocs ( mrifiles, AllMriFilesExt );
+Cartool.CartoolDocManager->GetDocs ( mrifiles, AllMriFilesExt );
 
                                     // browse through all opened docs and try to retrieve the proper MRIs
 for ( int i = 0; i < (int) mrifiles; i++ ) {
 
-    TVolumeDoc*     mridoc         = static_cast<TVolumeDoc*> ( CartoolObjects.CartoolDocManager->IsOpen ( mrifiles[ i ] ) );
+    TVolumeDoc*     mridoc         = static_cast<TVolumeDoc*> ( Cartool.CartoolDocManager->IsOpen ( mrifiles[ i ] ) );
 
     if ( mridoc == 0 )  continue;   // just for safety, it should be OK
 
@@ -85,7 +85,7 @@ if ( mribraindoc == 0 ) {
     if ( ! filemri.Execute () )
         return  false;
 
-    mribraindoc = dynamic_cast<TVolumeDoc*> ( CartoolObjects.CartoolDocManager->OpenDoc ( filemri[ 0 ], dtOpenOptions ) );
+    mribraindoc = dynamic_cast<TVolumeDoc*> ( Cartool.CartoolDocManager->OpenDoc ( filemri[ 0 ], dtOpenOptions ) );
 
     if ( mribraindoc && ! mribraindoc->IsBrain () ) {
 
@@ -106,7 +106,7 @@ if ( mrigreydoc == 0 ) {
     if ( ! filemri.Execute () )
         return  false;
 
-    mrigreydoc  = dynamic_cast< TVolumeDoc* > ( CartoolObjects.CartoolDocManager->OpenDoc ( filemri[ 0 ], dtOpenOptions ) );
+    mrigreydoc  = dynamic_cast< TVolumeDoc* > ( Cartool.CartoolDocManager->OpenDoc ( filemri[ 0 ], dtOpenOptions ) );
 
     if ( mrigreydoc && ! mrigreydoc->IsMask () ) {
 

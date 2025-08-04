@@ -52,7 +52,7 @@ public:
 };
 
                                         // Creating a global object for those functions with a lack of class
-extern  TCartoolObjects     CartoolObjects;
+extern  TCartoolObjects     Cartool;
 
 
 //----------------------------------------------------------------------------

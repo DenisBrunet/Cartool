@@ -628,7 +628,7 @@ for ( int smooth = 0; smooth <= 1000; smooth += 100 ) {
     StringCopy          ( _file, _basefile, "." "CriteriaTracks", ".Smooth", IntegerToString ( smooth, 4 ), "." FILEEXT_EEGSEF );
     criteriatracks.WriteFile    ( _file, &criterianames );
 
-    CartoolObjects.CartoolDocManager->OpenDoc ( _file, dtOpenOptions );
+    Cartool.CartoolDocManager->OpenDoc ( _file, dtOpenOptions );
     }
 */
 
@@ -1234,7 +1234,7 @@ Gauge.AddPart       ( 0, ComputeCriteriaBandsGaugeCount + 3 );
 
 Gauge.CurrentPart   = 0;
 
-CartoolObjects.CartoolApplication->SetMainTitle   ( BadEpochsTitle, "", Gauge );
+Cartool.CartoolApplication->SetMainTitle   ( BadEpochsTitle, "", Gauge );
                                         // Changing priority
 SetProcessPriority ( BatchProcessingPriority );
 
@@ -1301,7 +1301,7 @@ criteriatracks.Index2.IndexRatio   = samplingfrequency;
 StringCopy          ( _file, _basefile, "." "CriteriaTracks", "." FILEEXT_EEGSEF );
 criteriatracks.WriteFile    ( _file, &criterianames );
 
-//CartoolObjects.CartoolDocManager->OpenDoc ( _file, dtOpenOptions );
+//Cartool.CartoolDocManager->OpenDoc ( _file, dtOpenOptions );
 
 #endif
 
@@ -1371,7 +1371,7 @@ for ( int metai = NumCriteriaBandsTracks; metai < TotalCriteriaBandsTracks; meta
 //StringCopy ( _file, _basefile, "." "Criteria", "." FILEEXT_EEGSEF );
 //criteriacrit.Index2.IndexRatio   = samplingfrequency;
 //criteriacrit.WriteFile ( _file, &criterianames );
-//CartoolObjects.CartoolDocManager->OpenDoc ( _file, dtOpenOptions );
+//Cartool.CartoolDocManager->OpenDoc ( _file, dtOpenOptions );
 
 //return;
 
@@ -1389,7 +1389,7 @@ criteriacrit.Index2.IndexRatio   = samplingfrequency;
 //criteriacrit.WriteFile ( _file, &criterianames );
 criteriacrit.WriteFile ( _file );
 
-CartoolObjects.CartoolDocManager->OpenDoc ( _file, dtOpenOptions );
+Cartool.CartoolDocManager->OpenDoc ( _file, dtOpenOptions );
 
 return;
 
@@ -1422,7 +1422,7 @@ SetProcessPriority ();
 
 Gauge.FinishParts ();
 
-CartoolObjects.CartoolApplication->SetMainTitle   ( BadEpochsTitle, "", Gauge );
+Cartool.CartoolApplication->SetMainTitle   ( BadEpochsTitle, "", Gauge );
 
 Gauge.Finished ();
 }

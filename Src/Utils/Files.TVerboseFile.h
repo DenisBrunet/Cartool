@@ -180,8 +180,8 @@ for ( int i = 0; i < StringLength ( title ); i++ )
 (*ofv) << fastendl << fastendl;
 
                                         // current program info
-//(*ofv) << "\t\t\t" <<  CartoolObjects.CartoolApplication->ApplicationFileName /*ProdName* / << " " << CartoolObjects.CartoolApplication->ProdVersion << " (" << CartoolObjects.CartoolApplication->ProdRevision << ")" << fastendl;
-(*ofv) << "\t\t\t" <<  CartoolObjects.CartoolApplication->DefaultTitle << fastendl;
+//(*ofv) << "\t\t\t" <<  Cartool.CartoolApplication->ApplicationFileName /*ProdName* / << " " << Cartool.CartoolApplication->ProdVersion << " (" << Cartool.CartoolApplication->ProdRevision << ")" << fastendl;
+(*ofv) << "\t\t\t" <<  Cartool.CartoolApplication->DefaultTitle << fastendl;
 
                                         // date & time
 char            timestamp[ 64 ];

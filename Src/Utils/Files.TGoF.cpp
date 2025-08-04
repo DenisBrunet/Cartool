@@ -798,7 +798,7 @@ void    TGoF::OpenFiles ()  const
 {
 for ( int i = 0; i < (int) Strings; i++ )
 
-    CartoolObjects.CartoolDocManager->OpenDoc ( Strings[ i ], dtOpenOptions );
+    Cartool.CartoolDocManager->OpenDoc ( Strings[ i ], dtOpenOptions );
 }
 
 

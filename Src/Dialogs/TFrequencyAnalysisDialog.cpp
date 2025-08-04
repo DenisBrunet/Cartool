@@ -1644,7 +1644,7 @@ const char*         xyzfile             = openxyz ? transfer->XyzDocFile : 0;
 
 TOpenDoc<TElectrodesDoc>    XYZDoc;
 
-bool                isxyzdocalreadyopen = openxyz && CartoolObjects.CartoolDocManager->IsOpen ( xyzfile );
+bool                isxyzdocalreadyopen = openxyz && Cartool.CartoolDocManager->IsOpen ( xyzfile );
                                         // see if a coordinates file has been provided
 if ( openxyz )
                                         // open in advance if needed

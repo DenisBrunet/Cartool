@@ -249,7 +249,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
 
                 if ( gauge ) {
                     gauge->Next ( gaugecorrfile1 );
-                    CartoolObjects.CartoolApplication->SetMainTitle ( corrtitle, filenames1[ i ], *gauge );
+                    Cartool.CartoolApplication->SetMainTitle ( corrtitle, filenames1[ i ], *gauge );
                     }
 
                                         // Read & preprocess data
@@ -271,7 +271,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
 
             if ( gauge ) {
                 gauge->Next ( gaugecorrfile2 );
-                CartoolObjects.CartoolApplication->SetMainTitle ( corrtitle, filenames2[ j ], *gauge );
+                Cartool.CartoolApplication->SetMainTitle ( corrtitle, filenames2[ j ], *gauge );
                 }
 
                                         // Read & preprocess data
@@ -330,7 +330,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
 
                     if ( gauge ) {
                         gauge->Next ( gaugecorrfile1 );
-                        CartoolObjects.CartoolApplication->SetMainTitle ( corrtitle, filenames1[ i ], *gauge );
+                        Cartool.CartoolApplication->SetMainTitle ( corrtitle, filenames1[ i ], *gauge );
                         }
 
                                         // Read & preprocess data
@@ -344,7 +344,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
 
                 if ( gauge ) {
                     gauge->Next ( gaugecorrfile2 );
-                    CartoolObjects.CartoolApplication->SetMainTitle ( corrtitle, filenames2[ j ], *gauge );
+                    Cartool.CartoolApplication->SetMainTitle ( corrtitle, filenames2[ j ], *gauge );
                     }
 
                                         // Read & preprocess data
@@ -390,7 +390,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
 
                 if ( gauge ) {
                     gauge->Next ( gaugecorrfile1 );
-                    CartoolObjects.CartoolApplication->SetMainTitle ( corrtitle, filenames1[ i ], *gauge );
+                    Cartool.CartoolApplication->SetMainTitle ( corrtitle, filenames1[ i ], *gauge );
                     }
 
                                         // Read & preprocess data
@@ -411,7 +411,7 @@ for ( int i = 0; i < (int) filenames1; i++ ) {
 
                     if ( gauge ) {
                         gauge->Next ( gaugecorrfile2 );
-                        CartoolObjects.CartoolApplication->SetMainTitle ( corrtitle, filenames2[ j ], *gauge );
+                        Cartool.CartoolApplication->SetMainTitle ( corrtitle, filenames2[ j ], *gauge );
                         }
 
                                         // Read & preprocess data

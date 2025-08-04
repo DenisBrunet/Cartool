@@ -79,7 +79,7 @@ using           owlwparam               = unsigned int;
 
                                         // Used to force the event list to be processed, keeping the application alive
 //#define       UpdateApplication       ::GetApplicationObject ()->PumpWaitingMessages ()
-#define         UpdateApplication       { if ( IsMainThread () ) CartoolObjects.CartoolApplication->PumpWaitingMessages (); }
+#define         UpdateApplication       { if ( IsMainThread () ) Cartool.CartoolApplication->PumpWaitingMessages (); }
 
 
 //----------------------------------------------------------------------------

@@ -154,7 +154,7 @@ if      ( IsTransversePlaneMNI ( how ) ) {
 
     TFileName       MniSliceFile;
 
-    StringCopy       ( MniSliceFile,    CartoolObjects.CartoolApplication->ApplicationDir, "\\",
+    StringCopy       ( MniSliceFile,    Cartool.CartoolApplication->ApplicationDir, "\\",
                                         how == TransversePlaneMNIT1 ? MniT1BrainCentralSliceFileName 
                                                                     : MniT2BrainCentralSliceFileName );
 

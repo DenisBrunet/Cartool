@@ -547,7 +547,7 @@ protected:
 // Implementation
 //----------------------------------------------------------------------------
                                         // Redefinitions - until we sort out all includes:
-#define         UpdateApplication       { if ( IsMainThread () ) CartoolObjects.CartoolApplication->PumpWaitingMessages (); }
+#define         UpdateApplication       { if ( IsMainThread () ) Cartool.CartoolApplication->PumpWaitingMessages (); }
 
 
 //----------------------------------------------------------------------------

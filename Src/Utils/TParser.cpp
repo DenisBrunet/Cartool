@@ -1453,7 +1453,7 @@ if ( Tokens.IsEmpty () )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TCartoolDocManager*     docmanager      = CartoolObjects.CartoolDocManager;
+TCartoolDocManager*     docmanager      = Cartool.CartoolDocManager;
 
 constexpr int           MaxOperands     = 4;
 

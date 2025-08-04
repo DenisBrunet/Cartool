@@ -686,7 +686,7 @@ TSelection          mapsel   ( reqmaxclusters,  OrderSorted );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // init and read template maps
-CartoolObjects.CartoolApplication->SetMainTitle    ( "Fitting of", /*FitTransfer.BaseFileName*/ basefilename, Gauge );
+Cartool.CartoolApplication->SetMainTitle    ( "Fitting of", /*FitTransfer.BaseFileName*/ basefilename, Gauge );
 
 Gauge.Next ( gaugefitglobal, SuperGaugeUpdateTitle );
 
@@ -1265,13 +1265,13 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
                                         // load 1 row of files for a set of group
         Gauge.CurrentPart  = gaugefitinit;
                                         // udpate with each processed file
-        CartoolObjects.CartoolApplication->SetMainTitle    ( "Fitting of", gogof[ gofi1 ][ subji ], Gauge );
+        Cartool.CartoolApplication->SetMainTitle    ( "Fitting of", gogof[ gofi1 ][ subji ], Gauge );
 
                                         // Here the data is: Spatially filtered / ESI / GFP Normalized / Z-Score'd
         ReadData        (   gogof, gofi1, gofi2, 
                             subji, 
                             datatype, ReferenceNone,
-                            CartoolObjects.IsInteractive () 
+                            Cartool.IsInteractive () 
                         );
 
         PreprocessMaps  (   Data,
@@ -1322,7 +1322,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 
                                         // set the list of template maps to be fitted
             mapsel.Reset ();
-            mapsel.Set ( epochmaps[ epochi ], true, CartoolObjects.IsInteractive () );
+            mapsel.Set ( epochmaps[ epochi ], true, Cartool.IsInteractive () );
 
                                         // was used for file output - but not anymore
 //          StringCopy      ( EpochString,  "Epoch ", IntegerToString ( fromtf, 3 ), "-", IntegerToString ( totf, 3 ) );
@@ -1451,7 +1451,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
             Mined ( allepochsfromtf, EpochsFrom ( epochi ) );
             Maxed ( allepochstotf,   EpochsTo   ( epochi ) );
                                         // add up all template maps
-            mapsel.Set ( epochmaps[ epochi ], true, CartoolObjects.IsInteractive () );
+            mapsel.Set ( epochmaps[ epochi ], true, Cartool.IsInteractive () );
             }
 
                                         // use biggest interval
@@ -2166,7 +2166,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
         else {
             Gauge.FinishPart ( gaugefitwritecorr );
 
-            CartoolObjects.CartoolApplication->SetMainTitle    ( Gauge );
+            Cartool.CartoolApplication->SetMainTitle    ( Gauge );
             }
 
 
@@ -2493,7 +2493,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 
     DeallocateVariables ();
                                         // restore generic title
-    CartoolObjects.CartoolApplication->SetMainTitle    ( "Fitting of", /*FitTransfer.BaseFileName*/ basefilename, Gauge );
+    Cartool.CartoolApplication->SetMainTitle    ( "Fitting of", /*FitTransfer.BaseFileName*/ basefilename, Gauge );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2752,7 +2752,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 
 
                                         // add some markers to big .seg file
-      /*TSegDoc          *docseg          = (TSegDoc *)*/ CartoolObjects.CartoolDocManager->OpenDoc ( expbigseg.Filename, dtOpenOptions );
+      /*TSegDoc          *docseg          = (TSegDoc *)*/ Cartool.CartoolDocManager->OpenDoc ( expbigseg.Filename, dtOpenOptions );
 
 /*
         if ( docseg ) {
@@ -2819,7 +2819,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
     else {
         Gauge.FinishPart ( gaugefitwriteseg );
 
-        CartoolObjects.CartoolApplication->SetMainTitle    ( Gauge );
+        Cartool.CartoolApplication->SetMainTitle    ( Gauge );
         }
 
 
@@ -3160,7 +3160,7 @@ if ( savehistovars ) {
 
 Gauge.FinishParts ();
 
-CartoolObjects.CartoolApplication->SetMainTitle    ( Gauge );
+Cartool.CartoolApplication->SetMainTitle    ( Gauge );
 
 Gauge.HappyEnd ();
 

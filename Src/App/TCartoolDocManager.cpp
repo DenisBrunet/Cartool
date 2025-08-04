@@ -76,7 +76,7 @@ namespace crtl {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-TCartoolObjects     CartoolObjects;
+TCartoolObjects     Cartool;
 
                                         // Just allocate and reset these guys - Main application will set them at creation time (and only once)
 TCartoolApp*        TCartoolObjects::CartoolApplication     = 0;

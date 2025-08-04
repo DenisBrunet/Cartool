@@ -121,7 +121,7 @@ if ( concatenateoptions == ConcatenateTime && ( concatinputtime == 0 || concatou
     return  false;
 
                                         // force silent if not in interactive mode
-if ( IsInteractive ( execflags ) && CartoolObjects.IsNotInteractive () )
+if ( IsInteractive ( execflags ) && Cartool.IsNotInteractive () )
     SetSilent ( execflags );
 
 
@@ -889,7 +889,7 @@ if ( IsInteractive ( execflags ) ) {
 
     Gauge.AddPart       ( 0, outtimenum );
 
-    CartoolObjects.CartoolApplication->SetMainTitle ( "Exporting", EEGDoc->GetDocPath (), Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( "Exporting", EEGDoc->GetDocPath (), Gauge );
     }
 
 
@@ -1560,7 +1560,7 @@ if ( IsInteractive ( execflags ) ) {
 
     Gauge.FinishParts ();
 
-    CartoolObjects.CartoolApplication->SetMainTitle ( ExportTracksTitle, expfile.Filename, Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( ExportTracksTitle, expfile.Filename, Gauge );
 
     UpdateApplication;
     }

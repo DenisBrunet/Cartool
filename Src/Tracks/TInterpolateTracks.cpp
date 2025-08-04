@@ -502,7 +502,7 @@ bool    TInterpolateTracks::Set (   TracksInterpolationType         interpolatio
 Reset ();
 
                                         // force silent if not in interactive mode
-if ( IsInteractive ( execflags ) && CartoolObjects.IsNotInteractive () )
+if ( IsInteractive ( execflags ) && Cartool.IsNotInteractive () )
     SetSilent ( execflags );
 
 
@@ -1077,7 +1077,7 @@ if ( ! IsOpen () )
     return  false;
 
                                         // force silent if not in interactive mode
-if ( IsInteractive ( execflags ) && CartoolObjects.IsNotInteractive () )
+if ( IsInteractive ( execflags ) && Cartool.IsNotInteractive () )
     SetSilent ( execflags );
 
 
@@ -1259,7 +1259,7 @@ if ( IsInteractive ( execflags ) ) {
     Gauge.AddPart       (  gaugeinterpolglobal, 1,   05 );
     Gauge.AddPart       (  gaugeinterpol,       0,   95 );
 
-    CartoolObjects.CartoolApplication->SetMainTitle ( InterpolationTitle " of", eegdoc->GetDocPath (), Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( InterpolationTitle " of", eegdoc->GetDocPath (), Gauge );
     }
 
 
@@ -1529,7 +1529,7 @@ if ( IsInteractive ( execflags ) ) {
 
     Gauge.FinishParts ();
 
-    CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( Gauge );
     }
 
 

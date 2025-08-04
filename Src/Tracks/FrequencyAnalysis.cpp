@@ -386,13 +386,13 @@ bool                splitspectrum       = fileoutspectrum  != 0;
 bool                savefftapprox       = fileoutapprfreqs != 0;
 
                                         // force silent if not in interactive mode
-if ( IsInteractive ( execflags ) && CartoolObjects.IsNotInteractive () )
+if ( IsInteractive ( execflags ) && Cartool.IsNotInteractive () )
     SetSilent ( execflags );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // check if file is already open, which also works for linked XYZ
-bool                isxyzdocalreadyopen = CartoolObjects.CartoolDocManager->IsOpen ( xyzfile );
+bool                isxyzdocalreadyopen = Cartool.CartoolDocManager->IsOpen ( xyzfile );
 
 TOpenDoc<TElectrodesDoc>    xyzdoc ( xyzfile, OpenDocHidden );
 
@@ -497,7 +497,7 @@ if ( IsInteractive ( execflags ) ) {
                                         // S-Transform has only 1 block, so let's animate on the electrodes
     Gauge.AddPart       ( gaugefreqloop,    IsSTMethod ( analysis ) ? numelsave : numblocks, 95 );
 
-    CartoolObjects.CartoolApplication->SetMainTitle ( "Frequency Analysis of", eegdoc->GetDocPath (), Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( "Frequency Analysis of", eegdoc->GetDocPath (), Gauge );
     }
 
 
@@ -766,7 +766,7 @@ for_each (  freqbands.cbegin (), freqbands.cend (),
 
 if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
-    CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( Gauge );
     }
 
 AtomType            datatypein          = eegdoc->GetAtomType ( AtomTypeUseOriginal );
@@ -812,7 +812,7 @@ if (   numblocks <= 0
 
 if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
-    CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( Gauge );
     }
 
                                         // base directory & file names
@@ -1257,7 +1257,7 @@ bool                oldfiltersactivated = eegdoc->DeactivateFilters ( true );
 
 if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
-    CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( Gauge );
     }
 
                                         // create file - don't ask for any overwriting
@@ -1472,7 +1472,7 @@ else if ( outputbands == OutputBands
 
 if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
-    CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( Gauge );
     }
 
                                         // we read blocks of EEG data
@@ -1566,7 +1566,7 @@ else { // FFT, Power Maps (also FFT), FFT Approximation
 
 if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
-    CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( Gauge );
     }
 
                                         // scan all blocks
@@ -1574,7 +1574,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
     if ( IsInteractive ( execflags ) && ! IsSTMethod ( analysis ) ) {
         Gauge.Next ( gaugefreqloop );
-        CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
+        Cartool.CartoolApplication->SetMainTitle ( Gauge );
         }
 
 
@@ -1670,7 +1670,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
         if ( IsInteractive ( execflags ) && IsSTMethod ( analysis ) ) {
             Gauge.Next ( gaugefreqloop );
-            CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
+            Cartool.CartoolApplication->SetMainTitle ( Gauge );
             }
 
 
@@ -2107,7 +2107,7 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
 
 if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
-    CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( Gauge );
     }
 
 
@@ -2164,7 +2164,7 @@ eegdoc->SetFiltersActivated ( oldfiltersactivated, true );
                                         // write a marker file
 if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
-    CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( Gauge );
     }
 
 
@@ -2212,7 +2212,7 @@ if ( outputmarkers ) {
                                         // ouput to different files
 if ( IsInteractive ( execflags ) ) {
     Gauge.Next ( gaugefreqglobal );
-    CartoolObjects.CartoolApplication->SetMainTitle ( Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( Gauge );
     }
 
 
@@ -2270,7 +2270,7 @@ if ( IsInteractive ( execflags ) ) {
 
     Gauge.FinishParts ();
 
-    CartoolObjects.CartoolApplication->SetMainTitle ( FrequencyAnalysisTitle, "", Gauge );
+    Cartool.CartoolApplication->SetMainTitle ( FrequencyAnalysisTitle, "", Gauge );
 
     UpdateApplication;
     }

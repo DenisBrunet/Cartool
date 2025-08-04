@@ -85,7 +85,7 @@ int                 targettop;
 if ( targetview && sourceview ) {
                                         // modify their positions
     targetwidth     =
-    targetheight    = min ( GetWindowWidth ( CartoolObjects.CartoolMainWindow->GetClientWindow () ), GetWindowHeight ( CartoolObjects.CartoolMainWindow->GetClientWindow () ) ) / 2;
+    targetheight    = min ( GetWindowWidth ( Cartool.CartoolMainWindow->GetClientWindow () ), GetWindowHeight ( Cartool.CartoolMainWindow->GetClientWindow () ) ) / 2;
 
     targetview->WindowRestore();
     targetview->WindowSetPosition ( 0, 0, targetwidth, targetheight );
@@ -403,7 +403,7 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.IsInteractive () && IsInteractive ( execflags ) ) {
+    if ( Cartool.IsInteractive () && IsInteractive ( execflags ) ) {
 
         TOpenDoc< TVolumeDoc >      SourceTransfMri ( sourcecoregfile, OpenDocVisible );
         TVolumeView*                sourcetransfview    =  dynamic_cast<TVolumeView*> ( SourceTransfMri->GetViewList () );
@@ -462,7 +462,7 @@ for ( int i = 0; i < (int) buddypoints; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.IsInteractive () && IsInteractive ( execflags ) ) {
+    if ( Cartool.IsInteractive () && IsInteractive ( execflags ) ) {
 
         if ( isspfile ) {
 
@@ -656,7 +656,7 @@ int                 targettop;
 if ( targetview && sourceview ) {
                                         // modify their positions
     targetwidth     =
-    targetheight    = min ( GetWindowWidth ( CartoolObjects.CartoolMainWindow->GetClientWindow () ), GetWindowHeight ( CartoolObjects.CartoolMainWindow->GetClientWindow () ) ) / 2;
+    targetheight    = min ( GetWindowWidth ( Cartool.CartoolMainWindow->GetClientWindow () ), GetWindowHeight ( Cartool.CartoolMainWindow->GetClientWindow () ) ) / 2;
 
     targetview->WindowRestore();
     targetview->WindowSetPosition ( 0, 0, targetwidth, targetheight );
@@ -957,7 +957,7 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.IsInteractive () && IsInteractive ( execflags ) ) {
+    if ( Cartool.IsInteractive () && IsInteractive ( execflags ) ) {
 
         TOpenDoc< TVolumeDoc >      SourceTransfMri ( sourcecoregfile, IsSilent ( execflags ) ?  OpenDocHidden : OpenDocVisible );
         TVolumeView*                sourcetransfview    =  dynamic_cast< TVolumeView * > ( SourceTransfMri->GetViewList () );
@@ -1017,7 +1017,7 @@ for ( int i = 0; i < (int) buddypoints; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.IsInteractive () && IsInteractive ( execflags ) ) {
+    if ( Cartool.IsInteractive () && IsInteractive ( execflags ) ) {
 
         if ( isspfile ) {
             TOpenDoc< TSolutionPointsDoc >  SpiDoc ( sourcecoregfile, OpenDocVisible );

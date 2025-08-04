@@ -287,7 +287,7 @@ Gauge.CurrentPart  = gaugeseginit;
                                         // read original data with appropriate data reference: filtering and Z-Score is already done here
 ReadData    (   gof,
                 datatype, ReferenceNone, 
-                CartoolObjects.IsInteractive ()
+                Cartool.IsInteractive ()
             );
                                         // attention: due to some artefacts, splitting into epochs could end up being empty
                                         // in that case, just leave, there is nothing to segment here!
@@ -3020,14 +3020,14 @@ if ( commondir ) {
 
             if ( IsExtension ( bestfiles[ i ], FILEEXT_DATA ) )
 
-                CartoolObjects.CartoolDocManager->OpenDoc ( bestfiles[ i ], dtOpenOptions );
+                Cartool.CartoolDocManager->OpenDoc ( bestfiles[ i ], dtOpenOptions );
     } // if commondir 
 
 else { // ! commondir
                                         // open the original error.data for the user
     if ( complimentaryopen )
 
-        CartoolObjects.CartoolDocManager->OpenDoc ( DataFile, dtOpenOptions );
+        Cartool.CartoolDocManager->OpenDoc ( DataFile, dtOpenOptions );
     }
 
 
@@ -3133,7 +3133,7 @@ if ( IsEmptyDirectory ( BaseDirPreproc ) )
 
 Gauge.FinishParts ();
 
-if ( GroupGauge.IsNotAlive () )     CartoolObjects.CartoolApplication->SetMainTitle    ( Gauge );
+if ( GroupGauge.IsNotAlive () )     Cartool.CartoolApplication->SetMainTitle    ( Gauge );
 
 Gauge.Finished ();
 

@@ -76,7 +76,7 @@ public:
 
 
     void            Show                    ( const char* title = 0 )   const   { ShowMessage ( String, TFixedString<256> ( StringIsEmpty ( title ) ? "File Name" : title ) ); }
-    void            Open                    ()                                  { if ( IsNotEmpty () && CanOpenFile () ) CartoolObjects.CartoolDocManager->OpenDoc ( String, dtOpenOptions ); }
+    void            Open                    ()                                  { if ( IsNotEmpty () && CanOpenFile () ) Cartool.CartoolDocManager->OpenDoc ( String, dtOpenOptions ); }
 
 
     TFileName&      operator    =           ( const TFileName& op2 )            { if ( &op2 != this )   Copy ( op2 );                   return *this;   }

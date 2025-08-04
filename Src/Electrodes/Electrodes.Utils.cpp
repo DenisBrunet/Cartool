@@ -166,8 +166,8 @@ TElectrodesDoc*     Xyz;
 bool                closexyz;
 
 
-closexyz            = ! CartoolObjects.CartoolDocManager->IsOpen ( filexyz );
-Xyz                 = dynamic_cast< TElectrodesDoc* > ( CartoolObjects.CartoolDocManager->OpenDoc ( filexyz, dtOpenOptionsNoView /*dtOpenOptions*/ ) );
+closexyz            = ! Cartool.CartoolDocManager->IsOpen ( filexyz );
+Xyz                 = dynamic_cast< TElectrodesDoc* > ( Cartool.CartoolDocManager->OpenDoc ( filexyz, dtOpenOptionsNoView /*dtOpenOptions*/ ) );
 Xyz->PreventClosing ();
 
                                         // Local -> RAS
@@ -186,7 +186,7 @@ if ( Xyz ) {
     Xyz->AllowClosing ();
 
     if ( closexyz && Xyz->CanClose ( true ) )
-        CartoolObjects.CartoolDocManager->CloseDoc ( Xyz );
+        Cartool.CartoolDocManager->CloseDoc ( Xyz );
     }
 }
 

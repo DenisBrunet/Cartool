@@ -93,7 +93,7 @@ TVector3Float       dipole;
 for ( int mi = 0; mi < fileduration; mi++ ) {
 
     Gauge.Next ( 0 );
-    CartoolObjects.CartoolApplication->SetMainTitle        ( GenerateOscillatingDataTitle, basefilename, Gauge );
+    Cartool.CartoolApplication->SetMainTitle        ( GenerateOscillatingDataTitle, basefilename, Gauge );
 
 
     for ( int di = 0; di < numsources; di++ ) {
@@ -154,9 +154,9 @@ Gauge.Next ( 1 );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-WindowMaximize ( CartoolObjects.CartoolMainWindow );
+WindowMaximize ( Cartool.CartoolMainWindow );
 
-CartoolObjects.CartoolApplication->SetMainTitle    ( GenerateOscillatingDataTitle, BaseFileName, Gauge );
+Cartool.CartoolApplication->SetMainTitle    ( GenerateOscillatingDataTitle, BaseFileName, Gauge );
 
 Gauge.HappyEnd ();
 }

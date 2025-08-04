@@ -207,7 +207,7 @@ BuildTemplateElectrodes (   getfilesin,
                         );
 
                                         // complimentary opening - assumes user gave a genuine <something>.xyz file name...
-CartoolObjects.CartoolDocManager->OpenDoc ( getfileout, dtOpenOptions );
+Cartool.CartoolDocManager->OpenDoc ( getfileout, dtOpenOptions );
 }
 
 

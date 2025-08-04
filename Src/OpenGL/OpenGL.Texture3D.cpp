@@ -129,7 +129,7 @@ if ( Texture3DEnable != - 1 )           // the test has already been run?
     return  Texture3DEnable;
 
 
-if ( CartoolObjects.CartoolApplication->PrefGraphic3DTextures == FormatDontUse )
+if ( Cartool.CartoolApplication->PrefGraphic3DTextures == FormatDontUse )
     Texture3DEnable         = false;
 else // FormatUse || FormatUseBest
     Texture3DEnable         = (bool) glTexImage3D ();
@@ -149,7 +149,7 @@ if ( PalettedTextureEnable != - 1 )     // the test has already been run?
     return  PalettedTextureEnable;
 
 
-//if ( CartoolObjects.CartoolApplication->PrefGraphic3DTextures == FormatDontUse )
+//if ( Cartool.CartoolApplication->PrefGraphic3DTextures == FormatDontUse )
 //    PalettedTextureEnable   = false;
 //else // FormatUse || FormatUseBest
 //    PalettedTextureEnable   = (bool) glColorTableEXT ();

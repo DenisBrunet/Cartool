@@ -90,7 +90,7 @@ void    CoregistrationMrisUI(   const TVolumeDoc*   SourceMri,
                             )
 {
 
-TCartoolDocManager* DocManager      = CartoolObjects.CartoolDocManager;
+TCartoolDocManager* DocManager      = Cartool.CartoolDocManager;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

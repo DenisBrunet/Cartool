@@ -201,7 +201,7 @@ for ( int    filei   = 0;                filei   <  numfiles;        filei++ ) {
         StringCopy      ( templaterisfile,  filename,                   ".", FILEEXT_RIS    );
 
 
-        CartoolObjects.CartoolApplication->SetMainTitle        ( GenerateDataTitle, filename, Gauge );
+        Cartool.CartoolApplication->SetMainTitle        ( GenerateDataTitle, filename, Gauge );
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -481,9 +481,9 @@ for ( int    filei   = 0;                filei   <  numfiles;        filei++ ) {
 //if ( deletemapfiles )
 //    NukeDirectory ( BaseDir );
 
-WindowMaximize ( CartoolObjects.CartoolMainWindow );
+WindowMaximize ( Cartool.CartoolMainWindow );
 
-CartoolObjects.CartoolApplication->SetMainTitle    ( GenerateDataTitle, BaseFileName, Gauge );
+Cartool.CartoolApplication->SetMainTitle    ( GenerateDataTitle, BaseFileName, Gauge );
 
 Gauge.HappyEnd ();
 }

@@ -47,7 +47,7 @@ void    TCartoolMdiClient::DownsamplingElectrodesUI ()
                                         // try to use all opened XYZ docs, which can come from various directories
 TGoF                xyzfiles;
 
-CartoolObjects.CartoolDocManager->GetDocs ( xyzfiles, AllCoordinatesFilesExt );
+Cartool.CartoolDocManager->GetDocs ( xyzfiles, AllCoordinatesFilesExt );
 
 
 if ( xyzfiles.IsNotEmpty () ) {

@@ -61,7 +61,7 @@ CreateFonts ();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // using MDI Client window, which should exist when a child window is created
-UseThisDC           pdc  ( CartoolObjects.CartoolMdiClient->GetHandle () ); 
+UseThisDC           pdc  ( Cartool.CartoolMdiClient->GetHandle () ); 
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -77,7 +77,7 @@ UseThisDC           pdc  ( CartoolObjects.CartoolMdiClient->GetHandle () );
     FormatWish      accumbits       = ValueToFormatWish ( 32 );     // at least
     FormatWish      doublebuff      = FormatUse;                    // request double-buffering
 //  FormatWish      accel           = FormatUseBest;                // will go first for hardware if available, software otherwise, without failing
-    FormatWish      accel           = CartoolObjects.CartoolApplication->PrefGraphicAccel;
+    FormatWish      accel           = Cartool.CartoolApplication->PrefGraphicAccel;
 //  FormatWish      accel           = GetValue ( "Request Acceleration (-1:don't care, 0:off, 1:on):", "OpenGL" );
 
 
@@ -121,7 +121,7 @@ GLrc.Reset ();                          // non-static
 {
 GLrc.Reset ();                          // non-static
 
-if ( ! CartoolObjects.CartoolApplication->Closing )
+if ( ! Cartool.CartoolApplication->Closing )
     return;
 
 

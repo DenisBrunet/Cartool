@@ -79,7 +79,7 @@ ClearString ( CoregTransfer.SavingAltElectrodes );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // init the dialog modeless
-CoregistrationDlg   = new TCoregistrationDialog ( CartoolObjects.CartoolMdiClient, IDD_COREGISTRATION, false );
+CoregistrationDlg   = new TCoregistrationDialog ( Cartool.CartoolMdiClient, IDD_COREGISTRATION, false );
 
                                         // run it modeless, so that we can switch focus to another window to tailor its view
 bool                success         = CoregistrationDlg->Create ();
@@ -101,7 +101,7 @@ if ( success ) {
 
     xyzpoints.ReadFile ( fileoutxyz );
 
-    CartoolObjects.CartoolDocManager->CloseDoc ( fileoutxyz );
+    Cartool.CartoolDocManager->CloseDoc ( fileoutxyz );
     }
 
 
@@ -818,7 +818,7 @@ XyzView->SendMessage ( WM_COMMAND, IDB_SURFACEMODE, 0 );
 XyzView->SendMessage ( WM_COMMAND, IDB_SHOWELNAMES, 0 );
 
 
-int                 maxsize         = GetWindowMinSide ( CartoolObjects.CartoolMainWindow->GetClientWindow () );
+int                 maxsize         = GetWindowMinSide ( Cartool.CartoolMainWindow->GetClientWindow () );
 
 MriView->WindowRestore      ();
 MriView->WindowSetPosition  (   0,
@@ -833,10 +833,10 @@ XyzView->UsedBy.Append ( MriView );
 MriView->ShowNow ();
 
                                         // finally setting the control (this) window's position
-int                 dlgleft         = GetWindowLeft     ( CartoolObjects.CartoolMainWindow->GetClientWindow () ) + maxsize;
-int                 dlgtop          = GetWindowTop      ( CartoolObjects.CartoolMainWindow->GetClientWindow () ) * 2 + ( maxsize - GetWindowHeight ( this ) ) / 2;
-int                 offsetleft      = IsWindowMaximized ( CartoolObjects.CartoolMainWindow ) ? 0 : GetWindowLeft ( CartoolObjects.CartoolMainWindow );
-int                 offsettop       = IsWindowMaximized ( CartoolObjects.CartoolMainWindow ) ? 0 : GetWindowTop  ( CartoolObjects.CartoolMainWindow );
+int                 dlgleft         = GetWindowLeft     ( Cartool.CartoolMainWindow->GetClientWindow () ) + maxsize;
+int                 dlgtop          = GetWindowTop      ( Cartool.CartoolMainWindow->GetClientWindow () ) * 2 + ( maxsize - GetWindowHeight ( this ) ) / 2;
+int                 offsetleft      = IsWindowMaximized ( Cartool.CartoolMainWindow ) ? 0 : GetWindowLeft ( Cartool.CartoolMainWindow );
+int                 offsettop       = IsWindowMaximized ( Cartool.CartoolMainWindow ) ? 0 : GetWindowTop  ( Cartool.CartoolMainWindow );
 
 WindowSetOrigin             (   this,
                                 offsetleft + dlgleft,

@@ -316,7 +316,7 @@ if ( savetopo ) {
     eigenvectors.WriteFile ( TopoFileName, false, 0, &xyznames );
 
 
-    CartoolObjects.CartoolDocManager->OpenDoc ( TopoFileName, dtOpenOptions );
+    Cartool.CartoolDocManager->OpenDoc ( TopoFileName, dtOpenOptions );
     } // savetopo
 
 
@@ -364,7 +364,7 @@ if ( savepcatracks ) {
     pcamaps.WriteFile ( PcaDataFileName, false, pcamaps.GetSamplingFrequency (), &compnames );
 
 
-    CartoolObjects.CartoolDocManager->OpenDoc ( PcaDataFileName, dtOpenOptions );
+    Cartool.CartoolDocManager->OpenDoc ( PcaDataFileName, dtOpenOptions );
 
     } // savepcatracks
 
@@ -396,7 +396,7 @@ if ( savepcapoints ) {
 
         points.WriteFile    ( CloudFileName );
 
-        CartoolObjects.CartoolDocManager->OpenDoc ( CloudFileName, dtOpenOptions );
+        Cartool.CartoolDocManager->OpenDoc ( CloudFileName, dtOpenOptions );
         }
 
     } // savepcapoints
