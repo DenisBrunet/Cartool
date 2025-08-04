@@ -40,7 +40,7 @@ G.SetValue ( Round ( Percentage ( N, D ) ) );
 
 G.UpdateWindow ();
 
-UpdateApplication;
+Cartool.UpdateApplication ();
 }
 
 
@@ -579,7 +579,7 @@ if ( displayvalue >= 0 )
 
 Gauge->UpdateWindow ();
 
-UpdateApplication;
+UpdateApplication ();
 }
 
                                         // display value according to current setting

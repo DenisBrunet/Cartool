@@ -141,12 +141,6 @@ protected:
 //----------------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------------
-                                        // Redefinitions - until we sort out all includes:
-#define         UpdateApplication       { if ( IsMainThread () ) Cartool.CartoolApplication->PumpWaitingMessages (); }
-
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 template <class TypeD>
         TArray3<TypeD>::TArray3 ( const TArray3 &op )
 {

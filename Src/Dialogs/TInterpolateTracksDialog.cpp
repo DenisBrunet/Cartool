@@ -968,7 +968,7 @@ if ( IsBatchLastCall () && BatchFileNames.NumFiles () > 1 ) {
     CartoolApplication->SetMainTitle ( "Done - " InterpolationTitle, neweegfile );
     }
 
-UpdateApplication;
+UpdateApplication ();
 }
 
 

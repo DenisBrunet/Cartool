@@ -1926,7 +1926,7 @@ HCURSOR             hPrevCursor = ::SetCursor ( ::LoadCursor ( 0, IDC_WAIT ) );
 Paint ( pdc, true, PaintRect );         // call this silly window directly, otherwise we may lose the window if too long painting!
 
 
-//UpdateApplication;
+//UpdateApplication ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1973,7 +1973,7 @@ GLrc.unGLize ();
 
                                         // back to regular display
 CartoolApplication->Bitmapping    = false;
-//UpdateApplication;
+//UpdateApplication ();
 
 
 Invalidate ();                          // sending message (slow) is totally fine here
@@ -2311,7 +2311,7 @@ if      ( CaptureMode == CaptureGLMagnify ) {
     if      ( Magnifier[1] < -0.1 ) Magnifier[1] = -0.1;
     else if ( Magnifier[1] >  1.1 ) Magnifier[1] =  1.1;
 
-//    UpdateApplication;                // to smooth zooming animation & mouse move - seems ok?? not always with sync windows?
+//    UpdateApplication ();                // to smooth zooming animation & mouse move - seems ok?? not always with sync windows?
 
 //  Invalidate ( false );
     ShowNow ();

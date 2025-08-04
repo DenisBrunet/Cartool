@@ -893,7 +893,7 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
                 view->WindowRestore ();
                 view->WindowSetPosition ( x, y, w, h );
 
-                UpdateApplication;
+                UpdateApplication ();
                 }
             } // EEG
 
@@ -921,7 +921,7 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
                 view->WindowRestore ();
                 view->WindowSetPosition ( x, y, w, h );
 
-                UpdateApplication;
+                UpdateApplication ();
                 }
             } // RIS
 
@@ -956,7 +956,7 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
                     view->WindowRestore ();
                     view->WindowSetOrigin ( x, y );
 
-                    UpdateApplication;
+                    UpdateApplication ();
                     }
                 }
             } // EEG
@@ -987,7 +987,7 @@ if ( IsFlag ( flags, GroupTilingViews_SizeMask ) ) {
                     view->WindowRestore ();
                     view->WindowSetOrigin ( x, y );
 
-                    UpdateApplication;
+                    UpdateApplication ();
                     }
                 }
             } // RIS
@@ -1046,7 +1046,7 @@ if ( IsFlag ( flags, GroupTilingViews_Insert ) ) {
             if ( r.Left() >= myleft ) {
                 view->WindowRestore ();
                 view->WindowSetOrigin ( r.Left() + delta, r.Top() );
-                UpdateApplication;
+                UpdateApplication ();
                 }
             }
     } // GroupTilingViews_Insert

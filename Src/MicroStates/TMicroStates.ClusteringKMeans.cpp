@@ -94,7 +94,7 @@ gev     = 0;
                                         // don't loop forever by using a liberal max number of iterations
 for ( int kmi = 0; kmi < KMeansMaxIter; kmi++ ) {
 
-//  UpdateApplication;
+//  UpdateApplication ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

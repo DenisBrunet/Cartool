@@ -1390,7 +1390,7 @@ if ( esicase == ComputingRisPresetFreq )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-UpdateApplication;
+Cartool.UpdateApplication ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

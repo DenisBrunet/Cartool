@@ -808,7 +808,7 @@ TVector3Float           v;
 for ( int tfi = tfmin; tfi <= tfmax; tfi++ ) {
 
     if ( Gauge.IsAlive () ) Gauge.Next ( 0, SuperGaugeUpdateTitle );
-    else                    UpdateApplication;
+    else                    Cartool.UpdateApplication ();
 
 
     risdoc->GetInvSol ( 0, tfi, tfi, InvBuff, 0, 0 );
@@ -839,7 +839,7 @@ TPoints             allaxis;
 for ( TIteratorSelectedForward spi ( spsel ); (bool) spi; ++spi ) {
 
     if ( Gauge.IsAlive () ) Gauge.Next ( 1, SuperGaugeUpdateTitle );
-    else                    UpdateApplication;
+    else                    Cartool.UpdateApplication ();
 
 
     v   = ComputeCloudFolding ( points[ spi.GetIndex () ],   ReferenceNumSamplesSP,    ReferenceNumSamplesSP2 );
@@ -866,7 +866,7 @@ TPoints             oneaxis;
 for ( TIteratorSelectedForward spi ( spsel ); (bool) spi; ++spi ) {
 
     if ( Gauge.IsAlive () ) Gauge.Next ( 2, SuperGaugeUpdateTitle );
-    else                    UpdateApplication;
+    else                    Cartool.UpdateApplication ();
 
 
     StringCopy          ( filenamerissp, risdoc->GetDocPath () );

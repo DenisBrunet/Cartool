@@ -1717,7 +1717,7 @@ void    TExportTracks::Write ( const TVector<float> v, long t, int f )
 {
 for ( int el = 0; el < v.GetDim (); el++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
     Write ( v[ el ], t, el, f );
     }
@@ -1808,7 +1808,7 @@ if      ( Type == ExportTracksSef
        || Type == ExportTracksRis /*&& ! IsVector ( AtomTypeUseOriginal )*/   // caller's responsibility to send a multiplexed array
         ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
                                         // send the whole array at once
     of->write ( (char *) values.GetMemoryAddress (), values.GetMemorySize () );
 
@@ -1819,7 +1819,7 @@ else
 
     for ( long tf = 0; tf < values.GetDim1 (); tf++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         Write ( values ( tf ) );
         }
@@ -1835,7 +1835,7 @@ if ( ! DoneBegin )
 
 for ( long tf = 0; tf < values.GetDim1 (); tf++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
     Write ( values ( tf ) );
     }
@@ -1851,7 +1851,7 @@ if ( ! DoneBegin )
 
 for ( long tf = 0; tf < values.GetDim1 (); tf++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
     Write ( (double) values ( tf ) );
     }
@@ -1867,7 +1867,7 @@ if ( ! DoneBegin )
 
 for ( long tf = 0; tf < vec3.GetDim1 (); tf++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
     Write ( vec3 ( tf ) );
     }
@@ -1888,7 +1888,7 @@ if      ( Type == ExportTracksSef
 //     && typeid ( TMapAtomType ) == typeid ( float ) 
         ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
                                         // send the whole array at once
     of->write ( (char *) map.GetMemoryAddress (), map.GetMemorySize () );
 
@@ -1899,7 +1899,7 @@ else
 
     for ( int i = 0; i < map.GetDim (); i++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         Write ( map ( i ) );
         }
@@ -1923,7 +1923,7 @@ if ( ! DoneBegin )
 for ( int ki = 0; ki < (int) (*keeplist); ki++ ) {
 
     if ( Gauge.IsAlive () )     Gauge.Next ();
-    else                        UpdateApplication
+    else                        Cartool.UpdateApplication ();
 
 
     const TMarker*  tomarker   = (*keeplist)[ ki ];
@@ -1960,7 +1960,7 @@ if ( transpose == Transposed ) {        // the "\n" is not handled correctly, ca
     for ( long tf = 0; tf < NumTime; tf++ ) {
 
         if ( Gauge.IsAlive () )     Gauge.Next ();
-        else                        UpdateApplication
+        else                        Cartool.UpdateApplication ();
         
         for ( int el = 0; el < NumTracks * NumFiles; el++ )
             Write ( values ( el, tf ) );
@@ -1975,7 +1975,7 @@ else { // NotTransposed
             ) {
 
         if ( Gauge.IsAlive () )     Gauge.SetValue ( 0, NumTime / 2 );
-        else                        UpdateApplication
+        else                        Cartool.UpdateApplication ();
 
                                         // send the whole array at once
         of->write ( (char *) values.GetMemoryAddress (), values.GetMemorySize () );
@@ -1984,7 +1984,7 @@ else { // NotTransposed
 
 
         if ( Gauge.IsAlive () )     Gauge.SetValue ( 0, NumTime );
-        else                        UpdateApplication
+        else                        Cartool.UpdateApplication ();
         } // optimized
 
     else { // not optimized
@@ -1992,7 +1992,7 @@ else { // NotTransposed
         for ( long tf = 0; tf < NumTime; tf++ ) {
 
             if ( Gauge.IsAlive () )     Gauge.Next ();
-            else                        UpdateApplication
+            else                        Cartool.UpdateApplication ();
 
             for ( int el = 0; el < NumTracks * NumFiles; el++ )
                 Write ( values ( tf, el ) );
@@ -2019,7 +2019,7 @@ if ( ! DoneBegin )
 for ( long tf = 0; tf < NumTime; tf++ ) {
 
     if ( Gauge.IsAlive () )     Gauge.Next ();
-    else                        UpdateApplication
+    else                        Cartool.UpdateApplication ();
 
     for ( int e    = 0; e    < NumTracks;       e++    )
     for ( int freq = 0; freq < NumFrequencies ; freq++ )
@@ -2051,7 +2051,7 @@ if ( transpose ) {
     for ( long tf = 0; tf < NumTime; tf++ ) {
 
         if ( Gauge.IsAlive () )     Gauge.Next ();
-        else                        UpdateApplication
+        else                        Cartool.UpdateApplication ();
 
         for ( int e    = 0; e    < NumTracks;       e++    )
         for ( int freq = 0; freq < NumFrequencies ; freq++ )
@@ -2066,7 +2066,7 @@ else { // NotTransposed
             ) {
 
         if ( Gauge.IsAlive () )     Gauge.SetValue ( 0, NumTime / 2 );
-        else                        UpdateApplication
+        else                        Cartool.UpdateApplication ();
 
 
         of->seekp ( EndOfHeader, ios::beg );
@@ -2077,7 +2077,7 @@ else { // NotTransposed
 
 
         if ( Gauge.IsAlive () )     Gauge.SetValue ( 0, NumTime );
-        else                        UpdateApplication
+        else                        Cartool.UpdateApplication ();
         }
 
     else {
@@ -2085,7 +2085,7 @@ else { // NotTransposed
         for ( long tf = 0; tf < NumTime; tf++ ) {
 
             if ( Gauge.IsAlive () )     Gauge.Next ();
-            else                        UpdateApplication
+            else                        Cartool.UpdateApplication ();
 
             for ( int e    = 0; e    < NumTracks;       e++    )
             for ( int freq = 0; freq < NumFrequencies ; freq++ )
@@ -2113,7 +2113,7 @@ if ( ! DoneBegin )
 for ( long tf = 0; tf < NumTime; tf++ ) {
 
     if ( Gauge.IsAlive () )     Gauge.Next ();
-    else                        UpdateApplication
+    else                        Cartool.UpdateApplication ();
 
     for ( int e    = 0; e    < NumTracks;       e++    )
     for ( int freq = 0; freq < NumFrequencies ; freq++ )
@@ -2139,7 +2139,7 @@ if ( ! DoneBegin )
 for ( long tf = 0; tf < NumTime; tf++ ) {
 
     if ( Gauge.IsAlive () )     Gauge.Next ();
-    else                        UpdateApplication
+    else                        Cartool.UpdateApplication ();
 
     for ( int el = 0; el < NumTracks * NumFiles; el++ )
 
@@ -2165,7 +2165,7 @@ if ( ! DoneBegin )
 for ( long tf = 0; tf < NumTime; tf++ ) {
 
     if ( Gauge.IsAlive () )     Gauge.Next ();
-    else                        UpdateApplication
+    else                        Cartool.UpdateApplication ();
 
     for ( int el = 0; el < NumTracks * NumFiles; el++ )
 
@@ -2191,7 +2191,7 @@ if ( ! DoneBegin )
 for ( long tf = 0; tf < NumTime; tf++ ) {
 
     if ( Gauge.IsAlive () )     Gauge.Next ();
-    else                        UpdateApplication
+    else                        Cartool.UpdateApplication ();
 
     for ( int el = 0; el < NumTracks * NumFiles; el++ )
 
@@ -2231,7 +2231,7 @@ bool                savevector      = IsVector ( AtomTypeUseOriginal ) && NumTra
 for ( long tf = 0; tf < NumTime; tf++) {
 
     if ( Gauge.IsAlive () )     Gauge.Next ();
-    else                        UpdateApplication
+    else                        Cartool.UpdateApplication ();
 
 
     if ( savevector )
@@ -2350,7 +2350,7 @@ if ( keeplist ) {
 
         for ( long tf = tomarker->From, tf0 = tf - timemin; tf <= tomarker->To; tf++, tf0++ ) {
 
-            UpdateApplication;
+            Cartool.UpdateApplication ();
 
             for ( int el = 0; el < NumTracks; el++)
                 Write ( EegBuff[ el ][ tf0 ] );
@@ -2364,7 +2364,7 @@ else {
 
     for ( long tf0 = 0; tf0 < deltatime; tf0++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         for ( int el = 0; el < NumTracks; el++)
             Write ( EegBuff[ el ][ tf0 ] );
@@ -2456,7 +2456,7 @@ if ( keeplist ) {
 
         for ( long tf = tomarker->From; tf <= tomarker->To; tf++ ) {
 
-            UpdateApplication;
+            Cartool.UpdateApplication ();
 
             RISDoc->GetInvSol ( reg, tf, tf, InvBuff, 0, 0 );
 
@@ -2473,7 +2473,7 @@ else {
 
     for ( long tf0 = 0; tf0 < deltatime; tf0++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         RISDoc->GetInvSol ( reg, tf0, tf0, InvBuff, 0, 0 );
 

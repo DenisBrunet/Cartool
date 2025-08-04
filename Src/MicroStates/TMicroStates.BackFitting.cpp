@@ -2078,7 +2078,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
             for ( int  relg = 0; relg < NumFiles /*numwithinsubjects*/; relg++ )
             for ( long tf = 0, tf2 = OffsetTF[ relg ]; tf < SubjTimeFrames ( relg, subji, FileDuration ); tf++, tf2++ ) {
 
-                UpdateApplication;
+                Cartool.UpdateApplication ();
 
                                         // within range of current file & within current epoch scope
                 LabelType   l       = IsInsideLimits ( tf, fromtf, totf ) ? labels[ tf2 ]   // <- could be UndefinedLabel
@@ -2512,7 +2512,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
                                         // save a file per subject + average
             for ( int subji = 0; subji <= gogof[ absg ].NumFiles (); subji++ ) {
 
-                UpdateApplication;
+                Cartool.UpdateApplication ();
 
                                         // Set a local base file name for all things duration
                 StringCopy      ( DurationFile,         BaseFileNameStatDurations );
@@ -2695,7 +2695,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
         for ( int  relg  = 0; relg  < numwithinsubjects; relg++  )
         for ( int  subji = 0; subji < maxfilespergroup;  subji++ ) {
 
-            UpdateApplication;
+            Cartool.UpdateApplication ();
 
             for ( int vari = 0; vari < NumSegVariables; vari++ )
 
@@ -2841,7 +2841,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
         for ( int relg  = 0, absg = gofi1 + relg; relg < numwithinsubjects; relg++, absg++ )
         for ( int subji = 0; subji < maxfilespergroup; subji++ ) {
 
-            UpdateApplication;
+            Cartool.UpdateApplication ();
 
             StringCopy      ( freqmapfile.Filename,          BaseFileNameSegFrequency );
             StringAppend    ( freqmapfile.Filename,          InfixGroup, IntegerToString ( absg  + 1 ) );

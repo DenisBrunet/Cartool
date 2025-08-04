@@ -85,8 +85,9 @@ TDecoratedMDIFrame* TCartoolObjects::CartoolMainWindow      = 0;
 TCartoolMdiClient*  TCartoolObjects::CartoolMdiClient       = 0;
 
 
-bool    TCartoolObjects::IsInteractive    () const   { return CartoolApplication && CartoolApplication->IsInteractive    (); }
-bool    TCartoolObjects::IsNotInteractive () const   { return CartoolApplication && CartoolApplication->IsNotInteractive (); }
+bool    TCartoolObjects::IsInteractive      () const    { return CartoolApplication && CartoolApplication->IsInteractive    (); }
+bool    TCartoolObjects::IsNotInteractive   () const    { return CartoolApplication && CartoolApplication->IsNotInteractive (); }
+void    TCartoolObjects::UpdateApplication  () const    { if ( IsMainThread () && CartoolApplication )  CartoolApplication->PumpWaitingMessages (); }
 
 
 //----------------------------------------------------------------------------
@@ -433,7 +434,7 @@ TDocument*          todoc           = TDocManager::CreateAnyDoc ( /*path*/ patho
 CartoolApplication->AnimateViews    = oldav;
 
 
-//UpdateApplication;
+//UpdateApplication ();
 
 return  todoc;
 }
@@ -492,7 +493,7 @@ for ( int i = 0; i < (int) getfiles; i++ )
     OpenDoc ( getfiles[ i ], dtOpenOptions );
 
 
-//UpdateApplication;
+//UpdateApplication ();
 
 CartoolApplication->AnimateViews    = oldav;
 }
@@ -985,7 +986,7 @@ CartoolApplication->AnimateViews    = oldav;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-//UpdateApplication;
+//UpdateApplication ();
 
 return doc;
 }
@@ -1007,7 +1008,7 @@ if ( doc && doc->CanClose () )  // normally calls back to FlushDoc()
 
 
 //if ( refresh )
-//    UpdateApplication;
+//    UpdateApplication ();
 }
 
 
@@ -1039,7 +1040,7 @@ if ( view == 0 )
 
 PostEvent ( dnClose, *view );
 
-//UpdateApplication;
+//UpdateApplication ();
 }
 
 

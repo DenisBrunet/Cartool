@@ -710,7 +710,7 @@ void    TKeyboard::Reset ()
 ClearVirtualMemory ( KeyboardState,         KeyboardSize * sizeof ( *KeyboardState ) );
 ClearVirtualMemory ( PreviousKeyboardState, KeyboardSize * sizeof ( *KeyboardState ) );
 
-UpdateApplication;
+Cartool.UpdateApplication ();
 
 StopAccelerating ();
 }
@@ -719,7 +719,7 @@ StopAccelerating ();
 void    TKeyboard::GetState ()
 {
                                         // purge the queue first
-UpdateApplication;
+Cartool.UpdateApplication ();
                                         // save current state
 CopyVirtualMemory ( PreviousKeyboardState, KeyboardState, KeyboardSize * sizeof ( *KeyboardState ) );
                                         // load whole keyboard state at once

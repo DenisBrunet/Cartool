@@ -385,7 +385,7 @@ ControlBar->LayoutSession ();
 
 ControlBar->Invalidate ();
 
-//UpdateApplication;    // ?interferes with Set/Kill focus from child windows?
+//UpdateApplication ();    // ?interferes with Set/Kill focus from child windows?
 }
 
 
@@ -418,7 +418,7 @@ ControlBar->LayoutSession ();
 
 ControlBar->Invalidate ();
 
-//UpdateApplication;    // ?interferes with Set/Kill focus from child windows?
+//UpdateApplication ();    // ?interferes with Set/Kill focus from child windows?
 }
 
 
@@ -1581,7 +1581,7 @@ if ( CartoolMdiClient ) {
     child->GetClientWindow ()->SetFocus ();
     }
 
-//UpdateApplication;
+//UpdateApplication ();
 }
 
 
@@ -1596,7 +1596,7 @@ if ( LastActiveBaseView ) {
         LastActiveBaseView->GetParentO ()->SetFocus ();
     }
 
-//UpdateApplication;
+//UpdateApplication ();
 }
 
                                         // Saving to the list of recent files
@@ -1606,7 +1606,7 @@ if ( doc.GetDocPath () )
 
     SaveMenuChoice ( TFileName ( doc.GetDocPath (), TFilenameExtendedPath ) );
 
-//UpdateApplication;
+//UpdateApplication ();
 }
 
 

@@ -296,7 +296,7 @@ xyz.WriteFile ( "E:\\Data\\NormalizePoints.0.xyz" );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 1) Better center: BFS center
 Gauge.Next ();
-UpdateApplication;
+Cartool.UpdateApplication ();
 
 TFitModelOnPoints   gosurf1 ( xyz );
 
@@ -337,7 +337,7 @@ xyz.WriteFile ( "E:\\Data\\NormalizePoints.1.Center.xyz" );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 2) Aligning Top to +Z (approximately..)
 Gauge.Next ();
-UpdateApplication;
+Cartool.UpdateApplication ();
 
 TPointsProperties   gotop ( xyz );
 
@@ -368,7 +368,7 @@ xyz.WriteFile ( "E:\\Data\\NormalizePoints.2.ToTop.xyz" );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 3) Finding Sagittal plane YZ
 Gauge.Next ();
-UpdateApplication;
+Cartool.UpdateApplication ();
 
 TPointsProperties   gosag ( xyz );
 
@@ -398,7 +398,7 @@ xyz.WriteFile ( "E:\\Data\\NormalizePoints.3.Sagittal.xyz" );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 4) Finding upward orientation / approximate Transverse plane
 Gauge.Next ();
-UpdateApplication;
+Cartool.UpdateApplication ();
 
 /*
 TPointsProperties   gotra ( xyz );
@@ -457,7 +457,7 @@ mat.Apply   ( xyz180 );
 
                                         // run twice the coregistration, with 2 versions of the xyz
 Gauge.Next ();
-UpdateApplication;
+Cartool.UpdateApplication ();
 
 double              quality000      = CoregisterXyzToXyz    (   xyz000,         xyzref, 
                                                                 FitPointsOnPointClosestMethod,  ClosestPoints,  1e-3,       // quick & good enough
@@ -466,7 +466,7 @@ double              quality000      = CoregisterXyzToXyz    (   xyz000,         
                                                             );
 
 Gauge.Next ();
-UpdateApplication;
+Cartool.UpdateApplication ();
 
 double              quality180      = CoregisterXyzToXyz    (   xyz180,         xyzref, 
                                                                 FitPointsOnPointClosestMethod,  ClosestPoints,  1e-3,       // quick & good enough
@@ -487,7 +487,7 @@ xyzcoreg.WriteFile ( "E:\\Data\\NormalizePoints.5.Coreg.xyz" );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // rotate our xyz, and coregister again for best results
 Gauge.Next ();
-UpdateApplication;
+Cartool.UpdateApplication ();
 
 if ( quality180 > quality000 ) {
 
@@ -564,7 +564,7 @@ xyzremap.WriteFile ( "E:\\Data\\NormalizePoints.6.Remapped.Names.xyz" );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // 2) If either not enough names, or name remapping failed -> remapping by location
 Gauge.Next ();
-UpdateApplication;
+Cartool.UpdateApplication ();
 
                                         // !this is not an 'else' from previous test, so it can account for previous method's failure!
 if ( (int) xyznames < (int) xyzrefnames 

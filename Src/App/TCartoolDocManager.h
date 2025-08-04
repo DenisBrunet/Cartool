@@ -49,6 +49,8 @@ public:
                                         // Called so often
     bool                                IsInteractive    () const;
     bool                                IsNotInteractive () const;
+                                        // Used to force the event list to be processed, keeping the application responsive
+    void                                UpdateApplication() const;
 };
 
                                         // Creating a global object for those functions with a lack of class

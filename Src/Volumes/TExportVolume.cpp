@@ -563,7 +563,7 @@ if ( arrayorder == ExportArrayOrderZYX )
 
     for ( int z = 0; z < vol.GetDim3 (); z++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         for ( int y = 0; y < vol.GetDim2 (); y++ )
         for ( int x = 0; x < vol.GetDim1 (); x++ )
@@ -572,7 +572,7 @@ if ( arrayorder == ExportArrayOrderZYX )
 else
     for ( int x = 0; x < vol.GetDim1 (); x++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         for ( int y = 0; y < vol.GetDim2 (); y++ )
         for ( int z = 0; z < vol.GetDim3 (); z++ )
@@ -592,7 +592,7 @@ if ( arrayorder == ExportArrayOrderZYX )
 
     for ( int z = 0; z < vol.GetDim3 (); z++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         for ( int y = 0; y < vol.GetDim2 (); y++ )
         for ( int x = 0; x < vol.GetDim1 (); x++ )
@@ -601,7 +601,7 @@ if ( arrayorder == ExportArrayOrderZYX )
 else
     for ( int x = 0; x < vol.GetDim1 (); x++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         for ( int y = 0; y < vol.GetDim2 (); y++ )
         for ( int z = 0; z < vol.GetDim3 (); z++ )
@@ -621,7 +621,7 @@ if ( arrayorder == ExportArrayOrderZYX )
 
     for ( int z = 0; z < vol.GetDim3 (); z++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         for ( int y = 0; y < vol.GetDim2 (); y++ )
         for ( int x = 0; x < vol.GetDim1 (); x++ )
@@ -630,7 +630,7 @@ if ( arrayorder == ExportArrayOrderZYX )
 else
     for ( int x = 0; x < vol.GetDim1 (); x++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         for ( int y = 0; y < vol.GetDim2 (); y++ )
         for ( int z = 0; z < vol.GetDim3 (); z++ )
@@ -650,7 +650,7 @@ if ( arrayorder == ExportArrayOrderZYX )
 
     for ( int z = 0; z < vol.GetDim3 (); z++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         for ( int y = 0; y < vol.GetDim2 (); y++ )
         for ( int x = 0; x < vol.GetDim1 (); x++ )
@@ -659,7 +659,7 @@ if ( arrayorder == ExportArrayOrderZYX )
 else
     for ( int x = 0; x < vol.GetDim1 (); x++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         for ( int y = 0; y < vol.GetDim2 (); y++ )
         for ( int z = 0; z < vol.GetDim3 (); z++ )

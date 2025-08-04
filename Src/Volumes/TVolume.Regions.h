@@ -1301,7 +1301,7 @@ if ( iteration > maxiterations )
 
 do {
                                         // processing can be quite long, refresh the app once in a while
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
                                         // damping factor
 //  dampfactor    = (double) ( 1 + 3 ) / ( iteration - 1 + 3 );   // 0.5 after 5 iterations

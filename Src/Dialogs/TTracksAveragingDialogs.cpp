@@ -3086,7 +3086,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
         EegDoc.Lock ();
         }
 
-    UpdateApplication;
+    UpdateApplication ();
                                         // retrieving current value anyway
     session     = EegDoc->GetCurrentSession ();
 
@@ -3158,7 +3158,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
         EegView->WindowHide ();
 
-    UpdateApplication;
+    UpdateApplication ();
 
                                         // now, we know the window's Id
     EegView->LinkedViewId   = EegView->GetViewId ();
@@ -3207,7 +3207,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
 
 //  EegView->ShowNow ();
 
-    UpdateApplication;
+    UpdateApplication ();
 
     EegView->SetMarkerType ( CombineFlags ( markertype, MarkerTypeTemp ) );
 
@@ -4980,7 +4980,7 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
     markersfiltered.ResetMarkers ();
 
                                         // make everything up to date
-    UpdateApplication;
+    UpdateApplication ();
 
     } // for gofeeg
 
@@ -5702,7 +5702,7 @@ if ( openauto ) {
         fileout1epoch.Open ();
 
 
-//  UpdateApplication;
+//  UpdateApplication ();
     }
 
 else if ( ! IsFreqLoop () || IsLastFreq () ) {

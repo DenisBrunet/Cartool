@@ -75,11 +75,7 @@ constexpr int   DefaultWindowState      = SW_SHOWMAXIMIZED;
 
                                         // WPARAM type inside OWLNext
 //using         owlwparam               = WPARAM;       // !NOT working in OwlNext 64 bits, which still fancy 32 bits WPARAM!
-using           owlwparam               = unsigned int;
-
-                                        // Used to force the event list to be processed, keeping the application alive
-//#define       UpdateApplication       ::GetApplicationObject ()->PumpWaitingMessages ()
-#define         UpdateApplication       { if ( IsMainThread () ) Cartool.CartoolApplication->PumpWaitingMessages (); }
+using           owlwparam               = DWORD32;
 
 
 //----------------------------------------------------------------------------

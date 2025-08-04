@@ -654,7 +654,7 @@ switch ( timerId ) {
 
     case TimerRefresh :                 // only when IsInteractive
 
-        UpdateApplication;
+        UpdateApplication ();
                                         // we don't increment nor reset the timer, so it keeps flashing forever
                                         // refresh only if focus is on eeg
         if ( GetFocus () == BaseView->GetHandle () )

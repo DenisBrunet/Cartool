@@ -312,7 +312,7 @@ for ( int i = 0; i < (int) getfiles; i++ ) {
 
     mridoc.Close ();
 
-    UpdateApplication;
+    UpdateApplication ();
     }
 
 

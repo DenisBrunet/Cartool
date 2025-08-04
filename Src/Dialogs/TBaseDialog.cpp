@@ -255,7 +255,7 @@ if ( ! BatchProcessing ) {
 
     CartoolMdiClient->RefreshWindows ();
 
-    UpdateApplication;
+    UpdateApplication ();
     }
 
 

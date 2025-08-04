@@ -1191,7 +1191,7 @@ else if ( scantemplate ) {
         if ( Truncate ( ( tfi * 4.0 ) / ( timemax - timemin ) ) != Truncate ( ( ( tfi + 1 ) * 4.0 ) / ( timemax - timemin ) ) ) {
             Invalidate ( false );
 //          ShowNow ();
-//          UpdateApplication;
+//          UpdateApplication ();
             }
 
 
@@ -1365,7 +1365,7 @@ EEGDoc->AllowClosing ();
 
 CartoolApplication->SetMainTitle ( ScanningTriggersTitle, EEGDoc->GetDocPath () );
 
-UpdateApplication;
+UpdateApplication ();
 }
 
 

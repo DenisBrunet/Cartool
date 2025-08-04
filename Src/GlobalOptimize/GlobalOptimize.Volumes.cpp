@@ -1964,7 +1964,7 @@ if ( IsEqualSizes ( Flags ) || IsSourceBigger ( Flags ) ) {
                                         // test all points within target mask
     for ( int x = ToFirst.X; x <= ToLast.X; x += ToStep ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         for ( int y = ToFirst.Y; y <= ToLast.Y; y += ToStep )
         for ( int z = ToFirst.Z; z <= ToLast.Z; z += ToStep ) {
@@ -2019,7 +2019,7 @@ if ( IsEqualSizes ( Flags ) || IsTargetBigger ( Flags ) ) {
                                         // scan remaining points not inside target mask but still inside source mask
     for ( int x = FromFirst.X; x <= FromLast.X; x += FromStep ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         for ( int y = FromFirst.Y; y <= FromLast.Y; y += FromStep )
         for ( int z = FromFirst.Z; z <= FromLast.Z; z += FromStep ) {
@@ -2165,7 +2165,7 @@ if ( IsEqualSizes ( Flags ) || IsTargetBigger ( Flags ) ) {
     for ( int y = FromFirst.Y; y <= FromLast.Y; y += FromStep )
     for ( int z = FromFirst.Z; z <= FromLast.Z; z += FromStep ) {
 
-        UpdateApplication;
+        UpdateApplication ();
 
                                         // already done?
         if ( IsEqualSizes ( Flags ) && ToMask.GetValueChecked ( x, y, z ) )

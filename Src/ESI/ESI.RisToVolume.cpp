@@ -552,7 +552,7 @@ if ( IsInteractive ( execflags ) ) {
 
     //Cartool.CartoolApplication->SetMainTitle ( RisToVolumeTitle, gofvol[ 0 ], Gauge );
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
     }
 
 }

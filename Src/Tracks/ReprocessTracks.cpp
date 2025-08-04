@@ -1562,7 +1562,7 @@ if ( IsInteractive ( execflags ) ) {
 
     Cartool.CartoolApplication->SetMainTitle ( ExportTracksTitle, expfile.Filename, Gauge );
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
     }
 
 

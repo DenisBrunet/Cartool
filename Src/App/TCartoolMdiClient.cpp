@@ -271,7 +271,7 @@ try {
 
                 CartoolDocManager->CloseDoc ( doc );
 
-                UpdateApplication;
+                UpdateApplication ();
 
                 break;
                 }
@@ -299,7 +299,7 @@ try {
 
                 CartoolDocManager->CloseDoc ( doc );
 
-                UpdateApplication;
+                UpdateApplication ();
 
                 break;
                 }

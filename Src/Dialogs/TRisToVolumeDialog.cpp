@@ -889,7 +889,7 @@ if ( openauto && ( ! BatchProcessing || (int) BatchFileNames <= 10 ) )
 
 SetProcessPriority ();
 
-UpdateApplication;
+UpdateApplication ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

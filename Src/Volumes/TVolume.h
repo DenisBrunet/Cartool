@@ -546,11 +546,6 @@ protected:
 //----------------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------------
-                                        // Redefinitions - until we sort out all includes:
-#define         UpdateApplication       { if ( IsMainThread () ) Cartool.CartoolApplication->PumpWaitingMessages (); }
-
-
-//----------------------------------------------------------------------------
 template <class TypeD>
 inline  void    SetOvershootingOption   ( InterpolationType& it, const TypeD* data, int numdata, bool fast )
 {

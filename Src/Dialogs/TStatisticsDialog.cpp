@@ -2394,7 +2394,7 @@ if ( transfer.UseXyzDoc
                                         // will automatically close the document in case of premature exit    
     XYZDoc.Open ( transfer.XyzDocFile, OpenDocHidden );
 
-    UpdateApplication;
+    UpdateApplication ();
     }
 
 
@@ -4204,7 +4204,7 @@ if ( rois )
 delete[]    Data;
 delete[]    Results;
 
-UpdateApplication;
+UpdateApplication ();
 }
 
 

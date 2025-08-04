@@ -1334,7 +1334,7 @@ for ( int nc1 = 0; nc1 < maps1.GetNumMaps (); nc1++ ) {
 
     for ( int ri = 0; ri < numrand; ri++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
                                         // shuffling only maps1 - also, make sure we do have an offset
         do  offset  = randunif ( (UINT) dim1 );  while ( offset == 0 );
@@ -1540,7 +1540,7 @@ if ( mapsel == 0 )
                                         // time can be restricted to an epoch (limits are not tested here)
     for ( long tf = tfmin; tf <= tfmax; tf++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         double          maxcorr     = Lowest ( maxcorr );
                                         // most of the time (segmentation) we use all maps
@@ -1558,7 +1558,7 @@ else
                                         // time can be restricted to an epoch (limits are not tested here)
     for ( long tf = tfmin; tf <= tfmax; tf++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         double          maxcorr     = Lowest ( maxcorr );
                                         // maps can be restricted to a given subset (fitting)
@@ -1699,7 +1699,7 @@ OmpParallelFor
 
 for ( int dimi = 0; dimi < Dimension; dimi += stepdim ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
 
     for ( int mi = 0; mi < NumMaps; mi++ ) {
@@ -1821,7 +1821,7 @@ map     = IsVector ( datatype ) ? 0 : -FLT_MAX;
 
 for ( int mi = 0; mi < NumMaps; mi++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
                                         // labeling provided?
     if ( labels && (*labels)[ mi ] != l )
@@ -1931,7 +1931,7 @@ OmpParallelFor
 
 for ( int dimi = 0; dimi < Dimension; dimi += stepdim ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
 
     for ( int mi = 0; mi < NumMaps; mi++ ) {
@@ -2059,7 +2059,7 @@ int                 offset2         = AtLeast ( 1, step / 2 );
 
 for ( int mi1 = 0, mri1 = 0; mi1 < NumMaps; mi1++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
                                         // skip wrong labels, if any
     if ( labels && (*labels)[ mi1 ] != l )
@@ -2188,7 +2188,7 @@ mindist     = Highest ( mindist );
 
 for ( int mi1 = 0, mri1 = 0; mi1 < NumMaps; mi1++ ) {
 
-    UpdateApplication;
+    UpdateApplication ();
 
                                         // skip wrong labels, if any
     if ( labels && (*labels)[ mi1 ] != l )
@@ -2620,7 +2620,7 @@ TMap                signs ( polarity == PolarityEvaluate && IsVector ( datatype 
 
 for ( int mi = 0; mi < NumMaps; mi++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
                                         // labeling provided?
     if ( labels && (*labels)[ mi ] != l )
@@ -2821,7 +2821,7 @@ double              sumw            = 0;
 
 for ( int mi = 0; mi < NumMaps; mi++ ) {
 
-    UpdateApplication;
+    UpdateApplication ();
 
                                         // labeling provided?
     if ( labels && (*labels)[ mi ] != l )
@@ -3034,7 +3034,7 @@ int                 step            = AtLeast ( 1, Truncate ( nummaps / NonNull 
 
 for ( int mi = 0, mri = 0; mi < NumMaps; mi++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
                                         // skip wrong labels, if any
     if ( labels && (*labels)[ mi ] != l )
@@ -3504,7 +3504,7 @@ zscorevalues.Resize ( NumZValuesCalibration, dimension );
 
 for ( int e = 0; e < dimension; e++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
 
     stat.Reset ();
@@ -3581,7 +3581,7 @@ OmpParallelFor
 for ( int nc = 0; nc < NumMaps; nc++ )
 for ( int e = 0; e < dimension; e++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
 
     double          center      = zscorevalues ( NumZValuesCenter , e );
@@ -3638,7 +3638,7 @@ zscorevalues.Resize ( NumZValuesCalibration, dimensionsp );
                                         // work on the norm of vector
 for ( int e = 0; e < dimensionsp; e++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
                                         // scan ALL data, we need the norm and normal values on everything
     for ( int nc = 0; nc < NumMaps; nc++ ) {
@@ -3814,7 +3814,7 @@ OmpParallelFor
 for ( int nc = 0; nc < NumMaps; nc++ )
 for ( int e = 0; e < dimensionsp; e++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
 
     double      center      = zscorevalues ( NumZValuesCenter , e );
@@ -3943,7 +3943,7 @@ zscorevalues.Resize ( NumZValuesCalibration, dimensionsp );
                                         // work on the norm of vector
 for ( int e1 = 0, e3 = 0; e1 < dimensionsp; e1++, e3 += 3 ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
                                         // Once centered, we look for the spreading, but norm is skewed, so un-skew first
     for ( int nc = 0; nc < NumMaps; nc++ ) {
@@ -4103,7 +4103,7 @@ OmpParallelFor
 for ( int nc = 0; nc < NumMaps; nc++ )
 for ( int e1 = 0, e3 = 0; e1 < dimensionsp; e1++, e3 += 3 ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
 
     double      center      = zscorevalues ( NumZValuesCenter , e1 );
@@ -4944,7 +4944,7 @@ if      ( datatype != AtomTypeVector ) {
                                         // !Overlapping markers are NOT tested, so it can technically save un-ordered and/or overlapping epochs!
     for ( int ki = 0, tf = 0; ki < (int) keeplist; ki++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         tomarker   = keeplist[ ki ];
 
@@ -4982,7 +4982,7 @@ else if ( datatype == AtomTypeVector ) {
                                         // !Overlapping markers are NOT tested, so it can technically save un-ordered and/or overlapping epochs!
     for ( int ki = 0, tf = 0; ki < (int) keeplist; ki++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         tomarker   = keeplist[ ki ];
 
@@ -5248,7 +5248,7 @@ expfile.Begin   ();
 
 for ( int tf = 0; tf < NumMaps; tf++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
     if ( vectorial )
 
@@ -5303,7 +5303,7 @@ expfile.Begin   ();
 
 for ( int tf = 0; tf < NumMaps; tf++ ) {
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
 
     for ( int e = 0; e < expfile.NumTracks; e++ )
 
@@ -5387,7 +5387,7 @@ for ( int ki = 0; ki < (int) keeplist; ki++ ) {
 
     for ( long tf = tomarker->From; tf <= tomarker->To; tf++, tf0++ ) {
 
-        UpdateApplication;
+        Cartool.UpdateApplication ();
 
         if ( usebuff )
             CopyVirtualMemory ( buff[ tf0 ], Maps[ tf ], Maps[ tf ].MemorySize () );

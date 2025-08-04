@@ -2272,7 +2272,7 @@ if ( IsInteractive ( execflags ) ) {
 
     Cartool.CartoolApplication->SetMainTitle ( FrequencyAnalysisTitle, "", Gauge );
 
-    UpdateApplication;
+    Cartool.UpdateApplication ();
     }
 
 

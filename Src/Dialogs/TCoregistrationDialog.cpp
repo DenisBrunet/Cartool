@@ -85,7 +85,7 @@ CoregistrationDlg   = new TCoregistrationDialog ( Cartool.CartoolMdiClient, IDD_
 bool                success         = CoregistrationDlg->Create ();
 
                                         // !we have to actively wait for completion, as the modeless dialog has already exited!
-do UpdateApplication while ( CoregistrationDlg != 0 );
+do Cartool.UpdateApplication (); while ( CoregistrationDlg != 0 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

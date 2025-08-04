@@ -1955,7 +1955,7 @@ if ( IsBatchLastCall () && BatchFileNames.NumFiles () > 1 ) {
     }
 
 
-UpdateApplication;
+UpdateApplication ();
 }
 
 

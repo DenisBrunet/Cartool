@@ -8150,7 +8150,7 @@ else {                                  // ask user to choose in a list
 
         pickl.AddString ( MarkerStrings[ i ] );
 
-    UpdateApplication;                  // there could be some keyboard inputs that might interfere
+    UpdateApplication ();                  // there could be some keyboard inputs that might interfere
 
     pickl.Execute ();
 

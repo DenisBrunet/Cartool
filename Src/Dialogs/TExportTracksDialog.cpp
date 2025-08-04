@@ -1243,7 +1243,7 @@ CloseRois ();
 
 CartoolApplication->SetMainTitle ( ExportTracksTitle, ExpFile.Filename );
 
-UpdateApplication;
+UpdateApplication ();
 }
 
 
