@@ -172,11 +172,16 @@ char            SkullStrippingNames[ NumSkullStrippingTypes ][ 16 ] =
 
 
 //----------------------------------------------------------------------------
+                                                    // These options are mutually exclusive
+                                                    // !No flag set will also be considered as default!
+ExecFlags   SetDefault      ( ExecFlags& ef )   { return SetFlags   ( ef, SilentMask, Default     );}
+ExecFlags   SetSilent       ( ExecFlags& ef )   { return SetFlags   ( ef, SilentMask, Silent      );}
+ExecFlags   SetInteractive  ( ExecFlags& ef )   { return SetFlags   ( ef, SilentMask, Interactive );}
 
-ExecFlags   SetSilent       (       ExecFlags& ef )     { return SetFlags ( ef, SilentMask, Silent      ); }
-ExecFlags   SetInteractive  (       ExecFlags& ef )     { return SetFlags ( ef, SilentMask, Interactive ); }
-bool        IsSilent        ( const ExecFlags  ef )     { return IsFlag   ( ef,             Silent      ); }
-bool        IsInteractive   ( const ExecFlags  ef )     { return IsFlag   ( ef,             Interactive ); }
+bool        IsDefault       ( ExecFlags  ef )   { return IsFlag     ( ef, Default     )
+                                                      || HasNoFlags ( ef, SilentMask  );            }   // default == either explicit flag or no flags set
+bool        IsSilent        ( ExecFlags  ef )   { return IsFlag     ( ef, Silent      );            }
+bool        IsInteractive   ( ExecFlags  ef )   { return IsFlag     ( ef, Interactive );            }
 
 
 //----------------------------------------------------------------------------

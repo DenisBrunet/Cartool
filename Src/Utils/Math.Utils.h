@@ -329,16 +329,23 @@ return  var;
 
                                         // Testing any combination of flag(s) (OR)
 template <typename TypeD>
-inline constexpr bool   IsFlag      (   const TypeD&    var,    TypeD   testflags   ) 
+inline constexpr bool   IsFlag      (   TypeD   var,    TypeD   testflags   ) 
 {
-return  var & testflags;
+return    var & testflags;
 }
 
                                         // Testing for an exact flags combination (==)
 template <typename TypeD>
-inline constexpr bool   IsFlag      (   const TypeD&    var,    TypeD   keepmask,   TypeD   testflags   ) 
+inline constexpr bool   IsFlag      (   TypeD   var,    TypeD   keepmask,   TypeD   testflags   ) 
 {
 return  ( var & keepmask ) == testflags;
+}
+
+                                        // Whole mask is empty
+template <typename TypeD>
+inline constexpr bool   HasNoFlags  (   TypeD   var,    TypeD   keepmask   ) 
+{
+return  ! ( var & keepmask );
 }
 
 

@@ -3219,16 +3219,16 @@ for ( int eegi = 0; eegi < (int) gofeeg; eegi++ )  {
                                         // retrieve marker names
     TStrings            markernames;
 
-    EegDoc->GetMarkerNames ( markernames, markertype );
+    EegDoc->GetMarkerNames      ( markernames, markertype );
 
                                         // also expand the list to real names, in case of '*'
     triggerlist.ExpandWildchars ( markernames, UniqueStrings );
 
                                         // keep only existing triggers!
-    triggerlist.FilterWith ( markernames, Silent );
+    triggerlist.FilterWith      ( markernames, Silent );
 
                                         // cumulate all real triggers
-    alltriggers.Add ( triggerlist, UniqueStrings );
+    alltriggers.Add             ( triggerlist, UniqueStrings );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -486,16 +486,22 @@ bool                GetPolarityFromUser     ( const char* title, PolarityType& p
 
 enum        ExecFlags
             {
-            Silent          = 0x01,
-            Interactive     = 0x02,
-            SilentMask      = Silent | Interactive,
+                                                    // These options are mutually exclusive
+                                                    // !No flag set will also be considered as default!
+            Default         = 0x01,
+            Silent          = 0x02,
+            Interactive     = 0x04,
+            SilentMask      = Default | Silent | Interactive,
             };
 
 
-ExecFlags   SetSilent       (       ExecFlags& ef );
-ExecFlags   SetInteractive  (       ExecFlags& ef );
-bool        IsSilent        ( const ExecFlags  ef );
-bool        IsInteractive   ( const ExecFlags  ef );
+ExecFlags   SetDefault      ( ExecFlags& ef );
+ExecFlags   SetSilent       ( ExecFlags& ef );
+ExecFlags   SetInteractive  ( ExecFlags& ef );
+
+bool        IsDefault       ( ExecFlags  ef );
+bool        IsSilent        ( ExecFlags  ef );
+bool        IsInteractive   ( ExecFlags  ef );
 
 
 //----------------------------------------------------------------------------
