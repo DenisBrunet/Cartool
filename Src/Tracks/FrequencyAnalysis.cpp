@@ -386,7 +386,7 @@ bool                splitspectrum       = fileoutspectrum  != 0;
 bool                savefftapprox       = fileoutapprfreqs != 0;
 
                                         // force silent if not in interactive mode
-if ( IsInteractive ( execflags ) && CartoolObjects.CartoolApplication->IsNotInteractive () )
+if ( IsInteractive ( execflags ) && CartoolObjects.IsNotInteractive () )
     SetSilent ( execflags );
 
 

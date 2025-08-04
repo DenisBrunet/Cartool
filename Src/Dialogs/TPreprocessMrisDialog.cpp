@@ -1163,7 +1163,7 @@ StringCleanup   ( infixfilename );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool                showstepgauge       = CartoolObjects.CartoolApplication->IsInteractive ();      // global step for current file
+bool                showstepgauge       = CartoolObjects.IsInteractive ();  // global step for current file
 bool                showprocessgauge    = showstepgauge; // && ( ! BatchProcessing || (int) BatchFileNames == 1 );  // each sub-processing can also show-up
 
 TSuperGauge         Gauge;

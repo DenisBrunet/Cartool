@@ -136,7 +136,7 @@ if ( spatialfilter != SpatialFilterNone && StringIsEmpty ( xyzfile ) )
 
 
 if ( computeesi && ISDoc == 0 ) {
-    if ( CartoolObjects.CartoolApplication->IsInteractive () )
+    if ( CartoolObjects.IsInteractive () )
         ShowMessage ( "There seems to be a problem with your Inverse Matrix!\nCheck your input file and come back...", "Data Preprocessing", ShowMessageWarning );
     return;
     }
@@ -323,13 +323,13 @@ if ( usedregularization )   *usedregularization = regularization;
 if ( rois ) {
 
     if      (   computeesi && rois->GetDimension () != numsp ) {
-        if ( CartoolObjects.CartoolApplication->IsInteractive () )
+        if ( CartoolObjects.IsInteractive () )
             ShowMessage ( "Your ROIs dimension does not fit to your Inverse Matrix's Solution Points.\nPlease check your ROIs file and come back...", "Data Preprocessing", ShowMessageWarning );
         return;
         }
 
     else if ( ! computeesi && rois->GetDimension () != numeegelec ) {
-        if ( CartoolObjects.CartoolApplication->IsInteractive () )
+        if ( CartoolObjects.IsInteractive () )
             ShowMessage ( "Your ROIs dimension does not fit to your EEG number of electrodes.\nPlease check your ROIs file and come back...", "Data Preprocessing", ShowMessageWarning );
         return;
         }
@@ -543,7 +543,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
     if ( computeesi && Data.IsAllocated () ) {
                                         // compatible EEG & IS? (should be tested before)
         if ( numeegelec != numiselec ) {
-            if ( CartoolObjects.CartoolApplication->IsInteractive () )
+            if ( CartoolObjects.IsInteractive () )
                 ShowMessage ( "Your Inverse Matrix does not fit your EEG data.\nCheck the dimensions of your files and come back...", "Data Preprocessing", ShowMessageWarning );
             return;
             }
@@ -845,7 +845,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                         // In case there is no more markers, still proceed by outputting an empty file
                                         // This is a utility function, it is better to output something even empty and rather have the caller check that
 //      if ( goodepochslist.IsEmpty () ) {
-//          if ( CartoolObjects.CartoolApplication->IsInteractive () )
+//          if ( CartoolObjects.IsInteractive () )
 //              ShowMessage ( "No markers were found, resulting in an empty extracted file.\nPlease check your files and markers and come back...", "Data Preprocessing", ShowMessageWarning );
 //          return;
 //          } 
@@ -871,7 +871,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Same remark as above: save an empty file, get the caller do the testing
 //      if ( writingepochslist.IsEmpty () ) {
-//          if ( CartoolObjects.CartoolApplication->IsInteractive () )
+//          if ( CartoolObjects.IsInteractive () )
 //              ShowMessage ( "There appear to be no remaining time points...\nConsider checking this:\n\t-No GFP Peaks marker were found due to erroneous marker names\n\t-Too much BAD epochs\n\t-Too small epochs\n\nPlease check your parameters and come back...", "Data Preprocessing", ShowMessageWarning );
 //          return;
 //          }

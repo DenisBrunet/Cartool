@@ -85,6 +85,10 @@ TDecoratedMDIFrame* TCartoolObjects::CartoolMainWindow      = 0;
 TCartoolMdiClient*  TCartoolObjects::CartoolMdiClient       = 0;
 
 
+bool    TCartoolObjects::IsInteractive    () const   { return CartoolApplication && CartoolApplication->IsInteractive    (); }
+bool    TCartoolObjects::IsNotInteractive () const   { return CartoolApplication && CartoolApplication->IsNotInteractive (); }
+
+
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 // To add a new type of EEG file:

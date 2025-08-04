@@ -1271,7 +1271,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
         ReadData        (   gogof, gofi1, gofi2, 
                             subji, 
                             datatype, ReferenceNone,
-                            CartoolObjects.CartoolApplication->IsInteractive () 
+                            CartoolObjects.IsInteractive () 
                         );
 
         PreprocessMaps  (   Data,
@@ -1322,7 +1322,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
 
                                         // set the list of template maps to be fitted
             mapsel.Reset ();
-            mapsel.Set ( epochmaps[ epochi ], true, CartoolObjects.CartoolApplication->IsInteractive () );
+            mapsel.Set ( epochmaps[ epochi ], true, CartoolObjects.IsInteractive () );
 
                                         // was used for file output - but not anymore
 //          StringCopy      ( EpochString,  "Epoch ", IntegerToString ( fromtf, 3 ), "-", IntegerToString ( totf, 3 ) );
@@ -1451,7 +1451,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
             Mined ( allepochsfromtf, EpochsFrom ( epochi ) );
             Maxed ( allepochstotf,   EpochsTo   ( epochi ) );
                                         // add up all template maps
-            mapsel.Set ( epochmaps[ epochi ], true, CartoolObjects.CartoolApplication->IsInteractive () );
+            mapsel.Set ( epochmaps[ epochi ], true, CartoolObjects.IsInteractive () );
             }
 
                                         // use biggest interval

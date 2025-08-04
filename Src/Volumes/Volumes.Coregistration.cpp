@@ -403,7 +403,7 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.CartoolApplication->IsInteractive () && IsInteractive ( execflags ) ) {
+    if ( CartoolObjects.IsInteractive () && IsInteractive ( execflags ) ) {
 
         TOpenDoc< TVolumeDoc >      SourceTransfMri ( sourcecoregfile, OpenDocVisible );
         TVolumeView*                sourcetransfview    =  dynamic_cast<TVolumeView*> ( SourceTransfMri->GetViewList () );
@@ -462,7 +462,7 @@ for ( int i = 0; i < (int) buddypoints; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.CartoolApplication->IsInteractive () && IsInteractive ( execflags ) ) {
+    if ( CartoolObjects.IsInteractive () && IsInteractive ( execflags ) ) {
 
         if ( isspfile ) {
 
@@ -957,7 +957,7 @@ for ( int i = -1; i < (int) buddymris; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.CartoolApplication->IsInteractive () && IsInteractive ( execflags ) ) {
+    if ( CartoolObjects.IsInteractive () && IsInteractive ( execflags ) ) {
 
         TOpenDoc< TVolumeDoc >      SourceTransfMri ( sourcecoregfile, IsSilent ( execflags ) ?  OpenDocHidden : OpenDocVisible );
         TVolumeView*                sourcetransfview    =  dynamic_cast< TVolumeView * > ( SourceTransfMri->GetViewList () );
@@ -1017,7 +1017,7 @@ for ( int i = 0; i < (int) buddypoints; i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( CartoolObjects.CartoolApplication->IsInteractive () && IsInteractive ( execflags ) ) {
+    if ( CartoolObjects.IsInteractive () && IsInteractive ( execflags ) ) {
 
         if ( isspfile ) {
             TOpenDoc< TSolutionPointsDoc >  SpiDoc ( sourcecoregfile, OpenDocVisible );

@@ -222,7 +222,7 @@ for ( int runagain = 0; runagain < numrandomruns; runagain++, numeffrandomruns++
                                         // only increment when successful
     Gauge.Next ();
 
-    if ( ! GroupGauge.IsAlive () && CartoolObjects.CartoolApplication->IsInteractive () )
+    if ( ! GroupGauge.IsAlive () && CartoolObjects.IsInteractive () )
         CartoolObjects.CartoolApplication->SetMainTitle    ( Gauge );
 
 

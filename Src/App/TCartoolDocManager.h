@@ -46,6 +46,9 @@ public:
     static  owl::TDecoratedMDIFrame*    CartoolMainWindow;
     static  TCartoolMdiClient*          CartoolMdiClient;
 
+                                        // Called so often
+    bool                                IsInteractive    () const;
+    bool                                IsNotInteractive () const;
 };
 
                                         // Creating a global object for those functions with a lack of class

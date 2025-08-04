@@ -100,7 +100,7 @@ bool                dogrey          = doskullstripping && computegrey && IsFlag 
 bool                dosps           = dogrey           && sppreset != SPPresetOff;
 
                                         // force silent if not in interactive mode
-if ( ( gauge || showsubprocess ) && CartoolObjects.CartoolApplication->IsNotInteractive () ) {
+if ( ( gauge || showsubprocess ) && CartoolObjects.IsNotInteractive () ) {
     gauge           = 0;
     showsubprocess  = false;
     }

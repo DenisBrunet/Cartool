@@ -121,7 +121,7 @@ if ( concatenateoptions == ConcatenateTime && ( concatinputtime == 0 || concatou
     return  false;
 
                                         // force silent if not in interactive mode
-if ( IsInteractive ( execflags ) && CartoolObjects.CartoolApplication->IsNotInteractive () )
+if ( IsInteractive ( execflags ) && CartoolObjects.IsNotInteractive () )
     SetSilent ( execflags );
 
 

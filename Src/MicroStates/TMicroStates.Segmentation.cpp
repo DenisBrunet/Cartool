@@ -287,7 +287,7 @@ Gauge.CurrentPart  = gaugeseginit;
                                         // read original data with appropriate data reference: filtering and Z-Score is already done here
 ReadData    (   gof,
                 datatype, ReferenceNone, 
-                CartoolObjects.CartoolApplication->IsInteractive ()
+                CartoolObjects.IsInteractive ()
             );
                                         // attention: due to some artefacts, splitting into epochs could end up being empty
                                         // in that case, just leave, there is nothing to segment here!

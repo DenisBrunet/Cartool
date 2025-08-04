@@ -224,7 +224,7 @@ for ( int nc = startclust; nc > nclusters; ) {
 
     Gauge.Next ();
 
-    if ( ! GroupGauge.IsAlive () && CartoolObjects.CartoolApplication->IsInteractive () )
+    if ( ! GroupGauge.IsAlive () && CartoolObjects.IsInteractive () )
         CartoolObjects.CartoolApplication->SetMainTitle    ( Gauge );
 
                                         // 1) Destroy "least valuable" cluster
@@ -352,7 +352,7 @@ for ( int nc = startclust; nc > nclusters; ) {
                                         // when going back to the loop, we need this labeling to be correct
     Gauge.Next ();
 
-    if ( ! GroupGauge.IsAlive () && CartoolObjects.CartoolApplication->IsInteractive () )
+    if ( ! GroupGauge.IsAlive () && CartoolObjects.IsInteractive () )
         CartoolObjects.CartoolApplication->SetMainTitle    ( Gauge );
 
 
