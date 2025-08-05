@@ -324,7 +324,7 @@ SetTransferBuffer ( dynamic_cast <TFrequencyAnalysisStruct*> ( &FrequencyAnalysi
 
 static bool     init    = true;
 
-PreviousPreset  = -1;
+PreviousPreset  = FreqDialogPresetInit;
 
 if ( init ) {
 
@@ -1134,29 +1134,30 @@ timenum     = AtLeast ( 0, timemax - timemin + 1 );
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // force update the BlockSize if we change of processing time (FFT <-> S-Transform)
                                         // we have to do this quite early
-
+if ( PreviousPreset != FreqDialogPresetInit ) {
                                         // be convenient to the user: save the current block size, which might not be the default anymore
-if ( ! FreqPresets[ PreviousPreset ].IsSTMethod ()  )
+    if ( ! FreqPresets[ PreviousPreset ].IsSTMethod ()  )
 
-    savedblocksize  = GetInteger ( BlockSize );
+        savedblocksize  = GetInteger ( BlockSize );
 
                                         // transitionning to a S-Transform?
-if ( FreqPresets[ CurrentPreset ].IsSTMethod () && ! FreqPresets[ PreviousPreset ].IsSTMethod () ) {
+    if ( FreqPresets[ CurrentPreset ].IsSTMethod () && ! FreqPresets[ PreviousPreset ].IsSTMethod () ) {
 
-    timenum     = RoundFFTBlockSize ( timenum );
+        timenum     = RoundFFTBlockSize ( timenum );
 
-    SetInteger ( BlockSize, timenum );
+        SetInteger ( BlockSize, timenum );
 
-    if ( timenum <= 1 )
-        ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "<File End>" : "<Invalid>" );
+        if ( timenum <= 1 )
+            ClippedTimeMax->SetText ( IsChecked ( EndOfFile ) ? "<File End>" : "<Invalid>" );
 
-//  DBGV4 ( timemin, timemax, timenum, sf, "timemin, timemax, timenum, sf - ST" );
-    }
+    //  DBGV4 ( timemin, timemax, timenum, sf, "timemin, timemax, timenum, sf - ST" );
+        }
 
                                         // quitting a S-Transform, or simply needing to refresh the number of blocks
-else if ( /*FreqPresets[ PreviousPreset ].IsSTMethod () &&*/ ! FreqPresets[ CurrentPreset ].IsSTMethod () ) {
+    else if ( /*FreqPresets[ PreviousPreset ].IsSTMethod () &&*/ ! FreqPresets[ CurrentPreset ].IsSTMethod () ) {
                                         // restore the saved block size, which the user might be happy to see back
-    SetInteger ( BlockSize, savedblocksize );
+        SetInteger ( BlockSize, savedblocksize );
+        }
     }
 
 
@@ -1871,9 +1872,8 @@ bool                savefftapprox       = IsSTMethod ( analysis );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // silencing in these cases
-ExecFlags           execflags           = NumBatchFiles () > 1 ? Silent : Interactive;
 
+ExecFlags           execflags           = ExecFlags ( ( NumBatchFiles () > 1 ? Silent : Interactive ) | DefaultOverwrite );
 
 if ( IsBatchFirstCall () && BatchFileNames.NumFiles () > 1 )
 //if ( BatchProcessing && IsBatchFirstCall () )

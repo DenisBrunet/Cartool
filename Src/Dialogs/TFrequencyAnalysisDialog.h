@@ -184,6 +184,8 @@ constexpr double                DefaultSaveFreqMin      = 1; // 0 or 1
 constexpr double                DefaultSaveFreqMax      = 40;
 constexpr int                   DefaultSaveLogDecade    = 20;
 
+constexpr int                   FreqDialogPresetInit    = -1;
+
 
 int                 ComputeTimeMax  ( bool isstransform, bool blockstep1tf, int timemin, int blocksize, double blocksoverlap, int numblocks );
 int                 ComputeNumBlocks( bool isstransform, bool blockstep1tf, int timespan, int blocksize, double blocksoverlap );

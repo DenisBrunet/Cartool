@@ -486,22 +486,29 @@ bool                GetPolarityFromUser     ( const char* title, PolarityType& p
 
 enum        ExecFlags
             {
+            NoExecFlags         = 0x00,
                                                     // These options are mutually exclusive
                                                     // !No flag set will also be considered as default!
-            Default         = 0x01,
-            Silent          = 0x02,
-            Interactive     = 0x04,
-            SilentMask      = Default | Silent | Interactive,
+            Silent              = 0x01,
+            Interactive         = 0x02,
+            SilentMask          = Silent | Interactive,
+
+            Overwrite           = 0x10,
+            NoOverwrite         = 0x20,
+            OverwriteMask       = Overwrite | NoOverwrite,
+            DefaultOverwrite    = NoOverwrite,      // Default application behavior is to not overwrite existing files
             };
 
 
-ExecFlags   SetDefault      ( ExecFlags& ef );
 ExecFlags   SetSilent       ( ExecFlags& ef );
 ExecFlags   SetInteractive  ( ExecFlags& ef );
+ExecFlags   SetOverwrite    ( ExecFlags& ef );
+ExecFlags   SetNoOverwrite  ( ExecFlags& ef );
 
-bool        IsDefault       ( ExecFlags  ef );
 bool        IsSilent        ( ExecFlags  ef );
 bool        IsInteractive   ( ExecFlags  ef );
+bool        IsOverwrite     ( ExecFlags  ef );
+bool        IsNoOverwrite   ( ExecFlags  ef );
 
 
 //----------------------------------------------------------------------------

@@ -137,6 +137,17 @@ DefineCLIFlag           ( freqan,   "",     __downsampling,         "Optimally d
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+DefineCLIFlag           ( freqan,   "",     __verbose,              __verbose_descr     );
+DefineCLIFlag           ( freqan,   "",     __quiet,                __quiet_descr       );
+DefineCLIFlag           ( freqan,   "",     __overwrite,            __overwrite_descr   );
+DefineCLIFlag           ( freqan,   "",     __nooverwrite,          __nooverwrite_descr );
+
+ExcludeCLIOptions       ( freqan,     __verbose,        __quiet         );
+ExcludeCLIOptions       ( freqan,     __overwrite,      __nooverwrite   );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 DefineCLIFlag           ( freqan,   __h,    __help,                 __help_descr );
 
 
@@ -586,16 +597,28 @@ bool                optimaldownsampling = HasCLIFlag ( freqan, __downsampling );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Console output prototype
-//#define     CLIConsoleOutput
-#undef      CLIConsoleOutput
 
-#if defined(CLIConsoleOutput)
+ExecFlags           execflags           = ExecFlags ( Silent | DefaultOverwrite );
+
+                                        // Overriding defaults
+if      ( HasCLIFlag ( freqan, __verbose     ) )    SetInteractive  ( execflags );
+else if ( HasCLIFlag ( freqan, __quiet       ) )    SetSilent       ( execflags );
+
+if      ( HasCLIFlag ( freqan, __overwrite   ) )    SetOverwrite    ( execflags );
+else if ( HasCLIFlag ( freqan, __nooverwrite ) )    SetNoOverwrite  ( execflags );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Console output prototype
+TVerboseFile        verbose;
+
+
+if ( IsInteractive ( execflags ) ) {
 
 CreateConsole ();
 
 
-TVerboseFile        verbose ( "cout", VerboseFileDefaultWidth );
+verbose.Open ( "cout", VerboseFileDefaultWidth );
 
 verbose.NextTopic ( "Analysis:" );
 {
@@ -706,6 +729,8 @@ verbose.Put ( "Input directory:",                       inputdir .IsEmpty () ? "
 verbose.Put ( "Output directory:",                      outputdir.IsEmpty () ? "None" : outputdir );
 verbose.Put ( "File name infix:",                       infix    .empty   () ? "None" : infix     );
 verbose.Put ( "Creating sub-directory for results:",    subdir );
+verbose.Put ( "Verbose mode:",                          IsInteractive ( execflags ) );
+verbose.Put ( "Overwriting existing files:",            IsOverwrite   ( execflags ) );
 
 verbose.NextLine ();
 verbose.Put ( "Saving all freqs into a single file:",   savingfreq );
@@ -719,12 +744,9 @@ verbose.Put ( "Optimally downsampling the file:",       optimaldownsampling );
 }
 
 
-verbose.Close ();
+verbose.NextLine ( 2 );
+}
 
-cout << NewLine;
-cout << NewLine;
-
-#endif
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -737,9 +759,9 @@ TFileName           fileoutapprfreqs;
 
 for ( int filei = 0; filei < (int) gof; filei++ ) {
 
-#if defined(CLIConsoleOutput)
-    cout << "Now Processing: " << gof  [ filei ]<< NewLine;
-#endif
+    if ( IsInteractive ( execflags ) ) {
+        (ofstream&) verbose << "Now Processing: " << gof  [ filei ] << NewLine;
+        }
 
     TOpenDoc<TTracksDoc>    EEGDoc ( gof[ filei ], OpenDocHidden );
 
@@ -772,15 +794,16 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                             splitfreq     ? (char*) fileoutsplitfreq   : (char*) 0,
                             splitspectrum ? (char*) fileoutspectrum    : (char*) 0,
                             savefftapprox ? (char*) fileoutapprfreqs   : (char*) 0,
-                            Silent
+                            execflags
                         );
 
     } // for file
 
 
-#if defined(CLIConsoleOutput)
-DeleteConsole ( true );
-#endif
+if ( IsInteractive ( execflags ) ) {
+    verbose.Close ();
+    DeleteConsole ( true );
+    }
 }
 
 //----------------------------------------------------------------------------

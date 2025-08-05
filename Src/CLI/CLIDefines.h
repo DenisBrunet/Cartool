@@ -64,6 +64,14 @@ constexpr char*     __outputdir_descr           = "Output directory";
 constexpr char*     __outputdir_type            = "PATH";
 constexpr char*     __files                     = "files";
 constexpr char*     __files_descr               = "List of files";
+constexpr char*     __verbose                   = "--verbose";
+constexpr char*     __verbose_descr             = "Verbose mode";
+constexpr char*     __quiet                     = "--quiet";
+constexpr char*     __quiet_descr               = "Quiet mode";
+constexpr char*     __overwrite                 = "--overwrite";
+constexpr char*     __overwrite_descr           = "Overwrite existing files";
+constexpr char*     __nooverwrite               = "--no-overwrite";
+constexpr char*     __nooverwrite_descr         = "Do not overwrite existing files";
 
 constexpr char*     __h                         = "-h";
 constexpr char*     __help                      = "--help";

@@ -174,14 +174,15 @@ char            SkullStrippingNames[ NumSkullStrippingTypes ][ 16 ] =
 //----------------------------------------------------------------------------
                                                     // These options are mutually exclusive
                                                     // !No flag set will also be considered as default!
-ExecFlags   SetDefault      ( ExecFlags& ef )   { return SetFlags   ( ef, SilentMask, Default     );}
-ExecFlags   SetSilent       ( ExecFlags& ef )   { return SetFlags   ( ef, SilentMask, Silent      );}
-ExecFlags   SetInteractive  ( ExecFlags& ef )   { return SetFlags   ( ef, SilentMask, Interactive );}
+ExecFlags   SetSilent       ( ExecFlags& ef )   { return SetFlags   ( ef, SilentMask,    Silent      ); }
+ExecFlags   SetInteractive  ( ExecFlags& ef )   { return SetFlags   ( ef, SilentMask,    Interactive ); }
+ExecFlags   SetOverwrite    ( ExecFlags& ef )   { return SetFlags   ( ef, OverwriteMask, Overwrite   ); }
+ExecFlags   SetNoOverwrite  ( ExecFlags& ef )   { return SetFlags   ( ef, OverwriteMask, NoOverwrite ); }
 
-bool        IsDefault       ( ExecFlags  ef )   { return IsFlag     ( ef, Default     )
-                                                      || HasNoFlags ( ef, SilentMask  );            }   // default == either explicit flag or no flags set
-bool        IsSilent        ( ExecFlags  ef )   { return IsFlag     ( ef, Silent      );            }
-bool        IsInteractive   ( ExecFlags  ef )   { return IsFlag     ( ef, Interactive );            }
+bool        IsSilent        ( ExecFlags  ef )   { return IsFlag     ( ef,                Silent      ); }
+bool        IsInteractive   ( ExecFlags  ef )   { return IsFlag     ( ef,                Interactive ); }
+bool        IsOverwrite     ( ExecFlags  ef )   { return IsFlag     ( ef,                Overwrite   ); }
+bool        IsNoOverwrite   ( ExecFlags  ef )   { return IsFlag     ( ef,                NoOverwrite ); }
 
 
 //----------------------------------------------------------------------------

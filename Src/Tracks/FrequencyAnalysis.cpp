@@ -827,42 +827,36 @@ TFileName           BaseFileNameSpectrum;
 TFileName           BaseFileNameApprox;
 TFileName           BaseFileNameSplitFreqs;
 TFileName           BaseFileNameSplitElecs;
-TFileName           fileoutprefix;
-TFileName           filename;
+TFileName           basefilename;
 
 
                                         // Setting base file name
-eegdoc->GetBaseFileName ( filename );
+eegdoc->GetBaseFileName ( basefilename );
 
                                         // Adding infix(es)
 if ( StringIsNotEmpty ( infix ) ) {
 
-    filename   += "." + (TFileName) infix;
+    basefilename   += "." + (TFileName) infix;
     }
 
 else {
                                         // infix for method name + parameters
-    filename   += "." + (TFileName) GetInfix ( analysis );
+    basefilename   += "." + (TFileName) GetInfix ( analysis );
 
     if      ( outputbands == OutputLinearInterval 
            || outputbands == OutputLogInterval    )
 
-        filename   += " " + FloatToString ( freqbands[ 0 ].SaveFreqMin_hz, 0, 2 ) + "-" + FloatToString ( freqbands[ numfreqbands - 1 ].SaveFreqMax_hz, 0, 2 ) + " Hz";
+        basefilename   += " " + FloatToString ( freqbands[ 0 ].SaveFreqMin_hz, 0, 2 ) + "-" + FloatToString ( freqbands[ numfreqbands - 1 ].SaveFreqMax_hz, 0, 2 ) + " Hz";
 
     else // OutputBands
-        filename   += " " + IntegerToString ( numfreqbands ) + " " + ( numfreqbands > 1 ? InfixBands : InfixBand );
+        basefilename   += " " + IntegerToString ( numfreqbands ) + " " + ( numfreqbands > 1 ? InfixBands : InfixBand );
 
                                         // one more infix if average or sequence
     if ( ! IsSTMethod ( analysis ) ) {
-        if ( outputsequential ) filename   += "." + (TFileName) InfixSeq;
-        else                    filename   += "." + (TFileName) InfixAvg;
+        if ( outputsequential ) basefilename   += "." + (TFileName) InfixSeq;
+        else                    basefilename   += "." + (TFileName) InfixAvg;
         }
     }
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Saving file prefix for later
-StringCopy      ( fileoutprefix,                 ToFileName ( filename ) );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -873,11 +867,11 @@ if      ( StringIsNotEmpty ( outputdir ) ) {
 
     if ( createsubdir )
 
-        BaseDir    += "\\" + fileoutprefix;
+        BaseDir    += "\\" + (TFileName) ToFileName ( basefilename );
     }
 else {
                                         // extracted from input file
-    BaseDir     = filename;
+    BaseDir     = basefilename;
     
     if ( ! createsubdir )
 
@@ -912,12 +906,26 @@ if ( createsubdir ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // build freq file name anyway, as we use it to derive all other file names
+TFileName           filenamefreq    = BaseDir + "\\" + ToFileName ( basefilename ) + "." + FILEEXT_FREQ;
+
+                                        // test for no overwriting and update file name
+if ( IsNoOverwrite ( execflags ) ) {
+                                        // check is done only on the .freq file level, even if not actually saved
+    filenamefreq.CheckNoOverwrite ();
+                                        // update basefilename, too
+    basefilename    = filenamefreq;
+    basefilename.RemoveExtension ();    // remove the trailing .freq
+    }
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Composing all base file names
-BaseFileName            = BaseDir           + "\\" + fileoutprefix + ".";
-BaseFileNameSpectrum    = BaseDirSpectrum   + "\\" + fileoutprefix + ".";
-BaseFileNameApprox      = BaseDirApprox     + "\\" + fileoutprefix + ".";
-BaseFileNameSplitFreqs  = BaseDirSplitFreqs + "\\" + fileoutprefix + ".";
-BaseFileNameSplitElecs  = BaseDirSplitElecs + "\\" + fileoutprefix + ".";
+BaseFileName            = BaseDir           + "\\" + ToFileName ( basefilename ) + ".";
+BaseFileNameSpectrum    = BaseDirSpectrum   + "\\" + ToFileName ( basefilename ) + ".";
+BaseFileNameApprox      = BaseDirApprox     + "\\" + ToFileName ( basefilename ) + ".";
+BaseFileNameSplitFreqs  = BaseDirSplitFreqs + "\\" + ToFileName ( basefilename ) + ".";
+BaseFileNameSplitElecs  = BaseDirSplitElecs + "\\" + ToFileName ( basefilename ) + ".";
 
 
 if ( StringLength ( BaseFileName ) > MaxPathShort - 32 ) {
@@ -930,10 +938,11 @@ if ( StringLength ( BaseFileName ) > MaxPathShort - 32 ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // clean-up previous results, files with our prefixes only!
-DeleteFiles ( BaseFileName + "*" );
+if ( IsOverwrite ( execflags ) )
+    DeleteFiles ( BaseFileName + "*" );
 
 
-if ( createsubdir ) {
+if ( IsOverwrite ( execflags ) && createsubdir ) {
 
     DeleteFiles ( BaseFileNameSpectrum   + "*" );
     DeleteFiles ( BaseFileNameApprox     + "*" );
@@ -943,20 +952,17 @@ if ( createsubdir ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Generate file names
-TFileName           fileoutvrb;
-TFileName           fileoutmrk;
+                                        // Generate all file names
+                                        // Note: the CheckNoOverwrite is done only on the .freq file, and NOT on any derived files so to preserve some general consistency in the ouput file names
 
+TFileName           fileoutmrk      = filenamefreq + "." + FILEEXT_MRK;     // the correct updated file name
+TFileName           fileoutvrb      = BaseFileName       + FILEEXT_VRB;
 
-StringCopy      ( fileoutvrb,           BaseFileName,     FILEEXT_VRB  );
-
-
-if ( savefreq       )   StringCopy      ( fileoutfreq,          BaseFileName,     FILEEXT_FREQ );
-if ( savefreq       )   StringCopy      ( fileoutmrk,           fileoutfreq,  "." FILEEXT_MRK  );
-if ( splitelectrode )   StringCopy      ( fileoutsplitelec,     BaseFileNameSplitElecs, "*.",                                                       FILEEXT_EEGSEF /*FILEEXT_EEGEP*/ );
-if ( splitfrequency )   StringCopy      ( fileoutsplitfreq,     BaseFileNameSplitFreqs, "*.",                                                       FILEEXT_EEGSEF /*FILEEXT_EEGEP*/ );
-if ( splitspectrum  )   StringCopy      ( fileoutspectrum,      BaseFileNameSpectrum, outputsequential ? InfixWindow" *." : "", InfixSpectrum".",   FILEEXT_EEGSEF /*FILEEXT_EEGEP*/ );
-if ( savefftapprox  )   StringCopy      ( fileoutapprfreqs,     BaseFileNameApprox,   outputsequential ? InfixWindow" *." : "", InfixApproxEeg".",  FILEEXT_EEGSEF /*FILEEXT_EEGEP*/ );
+if ( savefreq       )   StringCopy      ( fileoutfreq,          filenamefreq );
+if ( splitelectrode )   StringCopy      ( fileoutsplitelec,     BaseFileNameSplitElecs, "*.",                                                       FILEEXT_EEGSEF );
+if ( splitfrequency )   StringCopy      ( fileoutsplitfreq,     BaseFileNameSplitFreqs, "*.",                                                       FILEEXT_EEGSEF );
+if ( splitspectrum  )   StringCopy      ( fileoutspectrum,      BaseFileNameSpectrum, outputsequential ? InfixWindow" *." : "", InfixSpectrum".",   FILEEXT_EEGSEF );
+if ( savefftapprox  )   StringCopy      ( fileoutapprfreqs,     BaseFileNameApprox,   outputsequential ? InfixWindow" *." : "", InfixApproxEeg".",  FILEEXT_EEGSEF );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1231,6 +1237,7 @@ if ( StringIsNotEmpty ( outputdir ) )
     verbose.Put ( "Output  Directory:",                 outputdir );
 verbose.Put ( "File name infix:",                       infix );
 verbose.Put ( "Creating sub-directory for results:",    createsubdir );
+verbose.Put ( "Overwriting existing files:",            IsOverwrite   ( execflags ) );
 
 verbose.NextLine ();
 verbose.Put ( "Saving all freqs into a single file:",   savefreq );
@@ -2223,7 +2230,7 @@ if ( IsInteractive ( execflags ) ) {
                                         // add our single freq file
     goffreqdoc.Add ( fileoutfreq );
 
-
+                                        // Splitting currently does NOT check for overwrite/no-overwrite flags, it relies on the input freq file for this
     if ( splitfrequency ) {
 
         goffreqdoc.SplitFreqFiles ( SplitFreqByFrequency, &gofsplit, false );
