@@ -621,7 +621,8 @@ if ( ! StringIsSpace ( FromBadElectrodes.c_str () ) ) {
 
     AddExtension    ( FromXyzExclFile, ToExtension ( FromOrigXyzFile ) );
 
-    CheckNoOverwrite( FromXyzExclFile );
+    if ( IsNoOverwrite ( execflags ) )
+        CheckNoOverwrite( FromXyzExclFile );
 
 
     FromOrigPoints.ExtractToFile ( FromXyzExclFile, FromBadElectrodes.c_str (), &FromOrigPointsNames );
@@ -690,7 +691,8 @@ if ( TargetSpace == ToOtherElectrodes ) {
 
     AddExtension    ( DestXyz_To_FromXyzFile, FILEEXT_XYZ );
 
-    CheckNoOverwrite( DestXyz_To_FromXyzFile );
+    if ( IsNoOverwrite ( execflags ) )
+        CheckNoOverwrite( DestXyz_To_FromXyzFile );
 
 
     TPoints             dest_to_frompoints ( DestPoints );
@@ -715,7 +717,8 @@ if ( TargetSpace == ToOtherElectrodes ) {
 
     AddExtension    ( FromXyz_To_DestXyzFile, FILEEXT_XYZ );
 
-    CheckNoOverwrite( FromXyz_To_DestXyzFile );
+    if ( IsNoOverwrite ( execflags ) )
+        CheckNoOverwrite( FromXyz_To_DestXyzFile );
 
 
     TPoints             from_to_destpoints ( FromPoints );
@@ -744,7 +747,8 @@ StringAppend    ( FromXyz_To_FidFile, ".", InfixXyzFrom, InfixFiducial );
 
 AddExtension    ( FromXyz_To_FidFile, FILEEXT_XYZ );
 
-CheckNoOverwrite( FromXyz_To_FidFile );
+if ( IsNoOverwrite ( execflags ) )
+    CheckNoOverwrite( FromXyz_To_FidFile );
 
 
 From_To_FidPoints   = TransformToFiducial ( FromPoints, From_To_Fid, interpolationtype );
@@ -765,7 +769,8 @@ StringAppend    ( DestXyz_To_FidFile, ".", InfixXyzTo, InfixFiducial );
 
 AddExtension    ( DestXyz_To_FidFile, FILEEXT_XYZ );
 
-CheckNoOverwrite( DestXyz_To_FidFile );
+if ( IsNoOverwrite ( execflags ) )
+    CheckNoOverwrite( DestXyz_To_FidFile );
 
 
 Dest_To_FidPoints   = TransformToFiducial ( DestPoints, Dest_To_Fid, interpolationtype );
@@ -1129,7 +1134,8 @@ AddExtension        ( filename, ext );
 
 CreatePath          ( filename, true );
 
-CheckNoOverwrite    ( filename );
+if ( IsNoOverwrite ( execflags ) )
+    CheckNoOverwrite    ( filename );
                                         // test file creation - don't ask before overwriting
 if ( ! CanOpenFile ( filename, CanOpenFileWrite ) )
     return  false;
@@ -1157,6 +1163,7 @@ if ( StringIsNotEmpty ( outputdir ) )
     verbose.Put ( "Output  Directory  :", outputdir );
 verbose.Put ( "Output  EEG File   :", filename );
 verbose.Put ( "Verbose File (this):", verbosefile );
+verbose.Put ( "Overwriting existing files:", IsOverwrite   ( execflags ) );
 }
 
 
@@ -1239,8 +1246,7 @@ verbose.Put ( "Degree of the Spline:", SplineDegree );
 }
 
 
-verbose.NextLine ();
-verbose.NextLine ();
+verbose.NextLine ( 2 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -107,6 +107,14 @@ DefineCLIFlag           ( interpol, "",     __nocleanup,            "Saving inte
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+DefineCLIFlag           ( interpol, "",     __verbose,              __verbose_descr     );
+DefineCLIFlag           ( interpol, "",     __quiet,                __quiet_descr       );
+DefineCLIFlag           ( interpol, "",     __overwrite,            __overwrite_descr   );
+DefineCLIFlag           ( interpol, "",     __nooverwrite,          __nooverwrite_descr );
+
+ExcludeCLIOptions       ( interpol, __verbose,        __quiet         );
+ExcludeCLIOptions       ( interpol, __overwrite,      __nooverwrite   );
+
 DefineCLIFlag           ( interpol, __h,    __help,                 __help_descr );
 
 
@@ -240,17 +248,28 @@ bool                nocleanup       = HasCLIFlag ( interpol, __nocleanup );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Console output prototype
-//#define     CLIConsoleOutput
-#undef      CLIConsoleOutput
 
-#if defined(CLIConsoleOutput)
+ExecFlags           execflags           = ExecFlags ( Silent | DefaultOverwrite );
+
+                                        // Overriding defaults
+if      ( HasCLIFlag ( interpol, __verbose     ) )  SetInteractive  ( execflags );
+else if ( HasCLIFlag ( interpol, __quiet       ) )  SetSilent       ( execflags );
+
+if      ( HasCLIFlag ( interpol, __overwrite   ) )  SetOverwrite    ( execflags );
+else if ( HasCLIFlag ( interpol, __nooverwrite ) )  SetNoOverwrite  ( execflags );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Console output prototype
+TVerboseFile        verbose;
+
+
+if ( IsInteractive ( execflags ) ) {
 
 CreateConsole ();
 
 
-TVerboseFile        verbose ( "cout", VerboseFileDefaultWidth );
-
+verbose.Open ( "cout", VerboseFileDefaultWidth );
 
 verbose.NextTopic ( "'From' Space:" );
 {
@@ -331,15 +350,14 @@ verbose.Put ( "Input directory:",           inputdir .IsEmpty () ? "None" : inpu
 verbose.Put ( "Output directory:",          outputdir.IsEmpty () ? "None" : outputdir );
 verbose.Put ( "File name infix:",           infix    .empty   () ? "None" : infix     );
 verbose.Put ( "Saving intermediate files:", nocleanup );
+verbose.Put ( "Verbose mode:",              IsInteractive ( execflags ) );
+verbose.Put ( "Overwriting existing files:",IsOverwrite   ( execflags ) );
 }
 
 
-verbose.Close ();
+verbose.NextLine ( 2 );
+}
 
-cout << NewLine;
-cout << NewLine;
-
-#endif
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -359,7 +377,7 @@ IT.Set  (   interpolationtype,      splinedegree,
             tofront.c_str (),       toleft.c_str (),        totop.c_str (),     toright.c_str (),       torear.c_str (),      
 
             outputdir.IsEmpty () ? gof[ 0 ] : outputdir,    // method will gracefully sort out for us the directory vs file cases
-            Silent
+            execflags
         );
 
 
@@ -367,9 +385,8 @@ IT.Set  (   interpolationtype,      splinedegree,
                             // change loop to account for multi-sessions EEG?
 for ( int filei = 0; filei < (int) gof; filei++ ) {
 
-#if defined(CLIConsoleOutput)
-    cout << "Now Processing: " << gof  [ filei ]<< NewLine;
-#endif
+    if ( IsInteractive ( execflags ) )
+        (ofstream&) verbose << "Now Processing: " << gof  [ filei ] << NewLine;
 
     TOpenDoc<TTracksDoc>    EEGDoc ( gof[ filei ], OpenDocHidden );
 
@@ -379,7 +396,7 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                                 infix.c_str (),
                                 SavingEegFileExtPreset[ filetype ],
                                 0,
-                                Silent
+                                execflags
                             );
 
     } // for file
@@ -390,9 +407,10 @@ if ( ! nocleanup )
     IT.FilesCleanUp ();
 
 
-#if defined(CLIConsoleOutput)
-DeleteConsole ( true );
-#endif
+if ( IsInteractive ( execflags ) ) {
+    verbose.Close ();
+    DeleteConsole ( true );
+    }
 }
 
 //----------------------------------------------------------------------------

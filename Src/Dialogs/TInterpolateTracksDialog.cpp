@@ -937,7 +937,8 @@ if ( IsBatchFirstCall () && BatchFileNames.NumFiles () > 1 )
 
 TFileName           neweegfile;
                                         // silencing in these cases
-ExecFlags           execflags           = NumBatchFiles () > 1 ? Silent : Interactive;
+ExecFlags           execflags           = ExecFlags ( ( NumBatchFiles () > 1 ? Silent : Interactive )
+                                                    | DefaultOverwrite );
 
 
 IT.InterpolateTracks    (   EEGDoc,
@@ -1000,11 +1001,17 @@ bool                            cleanupfiles        = CheckToBool ( transfer->Cl
 
 int                             numinfiles          = BatchFileNames.NumFiles ();
 
-ExecFlags                       execflags           = NumBatchFiles () > 1 ? Silent : Interactive;
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ExecFlags                       execflags           = ExecFlags ( ( NumBatchFiles () > 1 ? Silent : Interactive )
+                                                                | DefaultOverwrite );
 
 if ( numinfiles > MaxFilesToOpen )
     transfer->OpenAuto  = BoolToCheck ( false );
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Init points, transform & matrices - better to do it only once for a batch of files, for efficiency reasons
 IT.Set  (   interpolationtype,      degree,
 
