@@ -1873,7 +1873,8 @@ bool                savefftapprox       = IsSTMethod ( analysis );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-ExecFlags           execflags           = ExecFlags ( ( NumBatchFiles () > 1 ? Silent : Interactive ) | DefaultOverwrite );
+ExecFlags           execflags           = ExecFlags ( ( NumBatchFiles () > 1 ? Silent : Interactive )
+                                                    | DefaultOverwrite );
 
 if ( IsBatchFirstCall () && BatchFileNames.NumFiles () > 1 )
 //if ( BatchProcessing && IsBatchFirstCall () )

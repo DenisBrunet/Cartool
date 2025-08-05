@@ -1181,9 +1181,10 @@ ConcatenateOptions  concatenateoptions  = CheckToBool ( transfer->Concatenate ) 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // silencing in these cases
-ExecFlags           execflags           = isfrequency 
-                                       || concatenateoptions == ConcatenateTime 
-                                       || NumBatchFiles () > 1 ? Silent : Interactive;
+ExecFlags           execflags           = ExecFlags ( (    isfrequency 
+                                                        || concatenateoptions == ConcatenateTime 
+                                                        || NumBatchFiles () > 1 ? Silent : Interactive ) 
+                                                    | DefaultOverwrite );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

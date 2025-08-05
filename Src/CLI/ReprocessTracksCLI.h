@@ -221,6 +221,14 @@ DefineCLIFlag           ( reprocsub,        "",     __concatenate,          "Con
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+DefineCLIFlag           ( reprocsub,        "",     __verbose,              __verbose_descr     );
+DefineCLIFlag           ( reprocsub,        "",     __quiet,                __quiet_descr       );
+DefineCLIFlag           ( reprocsub,        "",     __overwrite,            __overwrite_descr   );
+DefineCLIFlag           ( reprocsub,        "",     __nooverwrite,          __nooverwrite_descr );
+
+ExcludeCLIOptions       ( reprocsub,        __verbose,        __quiet         );
+ExcludeCLIOptions       ( reprocsub,        __overwrite,      __nooverwrite   );
+
 DefineCLIFlag           ( reprocsub,        __h,    __help,                 __help_descr );
 
 
@@ -526,16 +534,29 @@ ConcatenateOptions  concatenateoptions  = HasCLIFlag ( reprocsub, __concatenate 
                                                                                                    : NoConcatenateTime;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Console output prototype
-//#define     CLIConsoleOutput
-#undef      CLIConsoleOutput
 
-#if defined(CLIConsoleOutput)
+ExecFlags           execflags           = ExecFlags ( Silent | DefaultOverwrite );
+
+                                        // Overriding defaults
+if      ( HasCLIFlag ( reprocsub, __verbose     ) )     SetInteractive  ( execflags );
+else if ( HasCLIFlag ( reprocsub, __quiet       ) )     SetSilent       ( execflags );
+
+if      ( HasCLIFlag ( reprocsub, __overwrite   ) )     SetOverwrite    ( execflags );
+else if ( HasCLIFlag ( reprocsub, __nooverwrite ) )     SetNoOverwrite  ( execflags );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Console output prototype
+TVerboseFile        verbose;
+
+
+if ( IsInteractive ( execflags ) ) {
 
 CreateConsole ();
 
 
-TVerboseFile        verbose ( "cout", VerboseFileDefaultWidth );
+verbose.Open ( "cout", VerboseFileDefaultWidth );
+
 char                buff[ KiloByte ];
 
 verbose.NextTopic ( "Files:" );
@@ -655,18 +676,19 @@ if ( sequenceoptions == SequenceProcessing ) {
 
 verbose.NextTopic ( "Options:" );
 {
-verbose.Put ( "Input directory:",       inputdir .IsEmpty () ? "None" : inputdir  );
-verbose.Put ( "Output directory:",      outputdir.IsEmpty () ? "None" : outputdir );
-verbose.Put ( "File name infix:",       infix    .empty   () ? "None" : infix     );
-verbose.Put ( "Output file type:",      SavingEegFileExtPreset[ filetype ] );
-verbose.Put ( "Saving markers:",        outputmarkers );
+verbose.Put ( "Input directory:",               inputdir .IsEmpty () ? "None" : inputdir  );
+verbose.Put ( "Output directory:",              outputdir.IsEmpty () ? "None" : outputdir );
+verbose.Put ( "File name infix:",               infix    .empty   () ? "None" : infix     );
+verbose.Put ( "Output file type:",              SavingEegFileExtPreset[ filetype ] );
+verbose.Put ( "Saving markers:",                outputmarkers );
+verbose.Put ( "Verbose mode:",                  IsInteractive ( execflags ) );
+verbose.Put ( "Overwriting existing files:",    IsOverwrite   ( execflags ) );
 }
 
 
-verbose.NextLine ();
-verbose.NextLine ();
+verbose.NextLine ( 2 );
+}
 
-#endif
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -677,9 +699,8 @@ TExportTracks       expfile;            // needed for files concatenation
 
 for ( int filei = 0; filei < (int) gof; filei++ ) {
 
-#if defined(CLIConsoleOutput)
-    cout << "Now Processing: " << gof  [ filei ]<< NewLine;
-#endif
+    if ( IsInteractive ( execflags ) )
+        (ofstream&) verbose << "Now Processing: " << gof  [ filei ] << NewLine;
 
     TOpenDoc<TTracksDoc>    EEGDoc ( gof[ filei ], OpenDocHidden );
 
@@ -708,14 +729,15 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                     expfile,
                     &gof,
                     filei,
-                    Silent
+                    execflags
                     );
     } // for file
 
 
-#if defined(CLIConsoleOutput)
-DeleteConsole ( true );
-#endif
+if ( IsInteractive ( execflags ) ) {
+    verbose.Close ();
+    DeleteConsole ( true );
+    }
 }
 
 

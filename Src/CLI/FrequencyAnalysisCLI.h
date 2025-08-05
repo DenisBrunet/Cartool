@@ -145,9 +145,6 @@ DefineCLIFlag           ( freqan,   "",     __nooverwrite,          __nooverwrit
 ExcludeCLIOptions       ( freqan,     __verbose,        __quiet         );
 ExcludeCLIOptions       ( freqan,     __overwrite,      __nooverwrite   );
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 DefineCLIFlag           ( freqan,   __h,    __help,                 __help_descr );
 
 
@@ -759,9 +756,8 @@ TFileName           fileoutapprfreqs;
 
 for ( int filei = 0; filei < (int) gof; filei++ ) {
 
-    if ( IsInteractive ( execflags ) ) {
+    if ( IsInteractive ( execflags ) )
         (ofstream&) verbose << "Now Processing: " << gof  [ filei ] << NewLine;
-        }
 
     TOpenDoc<TTracksDoc>    EEGDoc ( gof[ filei ], OpenDocHidden );
 

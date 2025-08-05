@@ -475,8 +475,9 @@ if ( createfile ) {
 
     CreatePath  ( filename, true );
 
-                                        // maybe not a good idea, if we expect an exact output file name(?)
-//  CheckNoOverwrite ( filename );
+
+    if ( IsNoOverwrite ( execflags ) )
+        CheckNoOverwrite ( filename );
 
                                         // test file creation - don't ask before overwriting
     if ( ! CanOpenFile ( filename, CanOpenFileWrite ) )
@@ -1496,9 +1497,10 @@ if ( closefile ) {
 
     verbose.NextTopic ( "Options:" );
     {
-    verbose.Put ( "File name infix:",   infix );
-    verbose.Put ( "Output file type:",  SavingEegFileExtPreset[ filetype ] );
-    verbose.Put ( "Saving markers:",    outputmarkers );
+    verbose.Put ( "File name infix:",               infix );
+    verbose.Put ( "Output file type:",              SavingEegFileExtPreset[ filetype ] );
+    verbose.Put ( "Saving markers:",                outputmarkers );
+    verbose.Put ( "Overwriting existing files:",    IsOverwrite   ( execflags ) );
     }
 
 
