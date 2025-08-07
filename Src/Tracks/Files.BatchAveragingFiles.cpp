@@ -39,7 +39,7 @@ namespace crtl {
 void    BatchAveragingScalar    (   const TGoF& gof,
                                     char*       meanfile,       char*       sdfile,         char*       snrfile,
                                     char*       medianfile,     char*       madfile,
-                                    bool        openresults,    bool        showgauge 
+                                    ExecFlags   execflags
                                 )
 {
 ClearString ( meanfile   );
@@ -95,18 +95,21 @@ StringCopy          ( filemedian,   commondir, "\\", commonstart, commonend, "."
 StringCopy          ( filemad,      commondir, "\\", commonstart, commonend, "." InfixMad    " ", IntegerToString ( (int) gof ), ".", fileext );
 
 
-CheckNoOverwrite    ( filemean   );
-CheckNoOverwrite    ( filesd     );
-CheckNoOverwrite    ( filesnr    );
-CheckNoOverwrite    ( filemedian );
-CheckNoOverwrite    ( filemad    );
+if ( IsOverwrite ( execflags ) ) {
+
+    CheckNoOverwrite    ( filemean   );
+    CheckNoOverwrite    ( filesd     );
+    CheckNoOverwrite    ( filesnr    );
+    CheckNoOverwrite    ( filemedian );
+    CheckNoOverwrite    ( filemad    );
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TSuperGauge         Gauge;
 
-if ( showgauge ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Set           ( BatchAveragingTitle );
     Gauge.AddPart       ( 0, (int) gof );
     }
@@ -264,7 +267,7 @@ if ( meanfile ) {
 
         StringCopy ( meanfile, expfile.Filename );
                                             // complimentary opening the resulting file
-        if ( openresults )
+        if ( IsOpenResults ( execflags ) )
             expfile.Filename.Open ();
         }
     }
@@ -289,7 +292,7 @@ if ( medianfile ) {
 
         StringCopy ( medianfile, expfile.Filename );
                                             // complimentary opening the resulting file
-        if ( openresults )
+        if ( IsOpenResults ( execflags ) )
             expfile.Filename.Open ();
         }
     }
@@ -313,7 +316,7 @@ if ( sdfile ) {
 
         StringCopy ( sdfile, expfile.Filename );
                                         // complimentary opening the resulting file(?)
-        if ( openresults && ! meanfile )
+        if ( IsOpenResults ( execflags ) && ! meanfile )
               expfile.Filename.Open ();
         }
     }
@@ -335,7 +338,7 @@ if ( snrfile ) {
 
         StringCopy ( snrfile, expfile.Filename );
                                         // complimentary opening the resulting file(?)
-        if ( openresults && ! meanfile )
+        if ( IsOpenResults ( execflags ) && ! meanfile )
               expfile.Filename.Open ();
         }
     }
@@ -360,7 +363,7 @@ if ( madfile ) {
 
         StringCopy ( madfile, expfile.Filename );
                                         // complimentary opening the resulting file(?)
-        if ( openresults && ! medianfile )
+        if ( IsOpenResults ( execflags ) && ! medianfile )
             expfile.Filename.Open ();
         }
     }
@@ -379,7 +382,7 @@ if ( madfile ) {
                                         // but produces (normalized) histograms of the arg max'es of each criterion
 void    BatchAveragingErrorData (   const TGoF& gof, 
                                     char*       meanfile,
-                                    bool        openresults,    bool        showgauge 
+                                    ExecFlags   execflags
                                 )
 {
 ClearString ( meanfile   );
@@ -395,7 +398,7 @@ if ( ! ( meanfile ) )
 
 TSuperGauge         Gauge;
 
-if ( showgauge ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Set           ( "Error.Data Averaging" );
     Gauge.AddPart       ( 0, 3 );
     }
@@ -438,8 +441,11 @@ StringCopy      ( filemedianed,     commondir, "\\", commonstart, commonend, "."
 //StringCopy    ( filemediansef,    commondir, "\\", commonstart, commonend, "." InfixMean   " ", IntegerToString ( (int) gof ), ".", FILEEXT_EEGSEF    );
 
 
-CheckNoOverwrite ( filemedianed  );
-//CheckNoOverwrite ( filemediansef );
+if ( IsOverwrite ( execflags ) ) {
+
+    CheckNoOverwrite ( filemedianed  );
+//  CheckNoOverwrite ( filemediansef );
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -621,7 +627,7 @@ if ( maxmetacrit > 0 ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // complimentary opening the resulting file
-if ( openresults ) {
+if ( IsOpenResults ( execflags ) ) {
 //  filemediansef.Open ();
     filemedianed .Open ();
     }
@@ -645,7 +651,7 @@ if ( Gauge.IsAlive () )
 void    BatchAveragingVectorial (   const TGoF& gof, 
                                     char*       vmeanfile,      char*       nmeanfile,      char*       snrfile,
                                     char*       sphmeanfile,    char*       sphsdfile,      char*       sphsnrfile,
-                                    bool        openresults,    bool        showgauge 
+                                    ExecFlags   execflags
                                 )
 {
 ClearString ( vmeanfile     );
@@ -733,19 +739,22 @@ StringCopy          ( filesphsd,    commondir, "\\", commonstart, commonend, "."
 StringCopy          ( filesphsnr,   commondir, "\\", commonstart, commonend, "." InfixVectorial " Spherical " InfixSNR  " " , IntegerToString ( (int) gof ), ".", fileext );
 
 
-CheckNoOverwrite    ( filevmean     );
-CheckNoOverwrite    ( filenmean     );
-CheckNoOverwrite    ( filesnr       );
-CheckNoOverwrite    ( filesphmean   );
-CheckNoOverwrite    ( filesphsd     );
-CheckNoOverwrite    ( filesphsnr    );
+if ( IsOverwrite ( execflags ) ) {
+
+    CheckNoOverwrite    ( filevmean     );
+    CheckNoOverwrite    ( filenmean     );
+    CheckNoOverwrite    ( filesnr       );
+    CheckNoOverwrite    ( filesphmean   );
+    CheckNoOverwrite    ( filesphsd     );
+    CheckNoOverwrite    ( filesphsnr    );
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TSuperGauge         Gauge;
 
-if ( showgauge ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Set           ( BatchAveragingTitle );
     Gauge.AddPart       ( 0, (int) gof );
     }
@@ -810,7 +819,7 @@ if ( vmeanfile ) {
     sum.WriteFile ( filevmean, datatype == AtomTypeVector, samplingfrequency );
 
                                         // complimentary opening the resulting file
-    if ( openresults )
+    if ( IsOpenResults ( execflags ) )
         filevmean.Open ();
 
     StringCopy ( vmeanfile, filevmean );
@@ -824,7 +833,7 @@ if ( nmeanfile ) {
     sum.WriteFileScalar ( filenmean, samplingfrequency );
 
                                         // complimentary opening the resulting file
-    if ( openresults )
+    if ( IsOpenResults ( execflags ) )
         filenmean.Open ();
 
     StringCopy ( nmeanfile, filenmean );
@@ -838,7 +847,7 @@ if ( sphmeanfile ) {
     sumn.WriteFile ( filesphmean, datatype == AtomTypeVector, samplingfrequency );
 
                                         // complimentary opening the resulting file
-    if ( openresults && ! ( vmeanfile || nmeanfile ) )
+    if ( IsOpenResults ( execflags ) && ! ( vmeanfile || nmeanfile ) )
         filesphmean.Open ();
 
     StringCopy ( sphmeanfile, filesphmean );
@@ -876,7 +885,7 @@ if ( sphsdfile ) {
     sphsd.WriteFile ( filesphsd, false, samplingfrequency );
 
                                         // complimentary opening the resulting file
-    if ( openresults && ! ( vmeanfile || nmeanfile ) )
+    if ( IsOpenResults ( execflags ) && ! ( vmeanfile || nmeanfile ) )
         filesphsd.Open ();
 
     StringCopy ( sphsdfile, filesphsd );
@@ -904,7 +913,7 @@ if ( snrfile ) {
     snr.WriteFile ( filesnr, false, samplingfrequency );
 
                                         // complimentary opening the resulting file
-    if ( openresults && ! ( vmeanfile || nmeanfile ) )
+    if ( IsOpenResults ( execflags ) && ! ( vmeanfile || nmeanfile ) )
         filesnr.Open ();
 
     StringCopy ( snrfile, filesnr );
@@ -932,7 +941,7 @@ if ( sphsnrfile ) {
     snr.WriteFile ( filesphsnr, false, samplingfrequency );
 
                                         // complimentary opening the resulting file
-    if ( openresults && ! ( vmeanfile || nmeanfile ) )
+    if ( IsOpenResults ( execflags ) && ! ( vmeanfile || nmeanfile ) )
         filesphsnr.Open ();
 
     StringCopy ( sphsnrfile, filesphsnr );
@@ -952,7 +961,7 @@ void    BatchPoolAveragingVectorial (   const TGoF& gof,
                                         char*       vmeanfile,      char*       nmeanfile,      char*       snrfile,
                                         char*       sphmeanfile,    char*       sphsdfile,      char*       sphsnrfile,
                                         int         numlocalavg,    int         numrepeatavg,
-                                        bool        openresults,    bool        showgauge 
+                                        ExecFlags   execflags
                                     )
 {
 ClearString ( vmeanfile     );
@@ -1031,7 +1040,7 @@ StringCopy          ( fileext,      IsExtensionAmong ( gof[ 0 ], AllRisFilesExt 
 
 TSuperGauge         Gauge;
 
-if ( showgauge ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Set           ( BatchAveragingTitle, SuperGaugeLevelInter );
     Gauge.AddPart       ( 0, numrepeatavg * numlocalavg + 2 );
     }
@@ -1075,7 +1084,8 @@ for ( int repi = 0; repi < numrepeatavg; repi++ ) {
 
     StringCopy          ( filevmean,    commondir, "\\", commonstart, commonend, "." InfixVectorial " Pooled " InfixMean " " , IntegerToString ( repi + 1, NumIntegerDigits ( numrepeatavg ) ), ".", fileext );
 
-    CheckNoOverwrite    ( filevmean     );
+    if ( IsOverwrite ( execflags ) )
+        CheckNoOverwrite    ( filevmean     );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1096,7 +1106,7 @@ if ( Gauge.IsAlive () )
 BatchAveragingVectorial (   gofvmean,
                             vmeanfile,      nmeanfile,      snrfile,
                             sphmeanfile,    sphsdfile,      sphsnrfile,
-                            openresults,    showgauge 
+                            execflags
                         );
 
 
@@ -1120,7 +1130,7 @@ gofvmean.DeleteFiles ();
 void    BatchAveragingFreq      (   const TGoF&             gof,
                                     FrequencyAnalysisType   freqtype,       PolarityType    fftapproxpolarity,
                                     char*                   meanfile,       char*           sdfile, 
-                                    bool                    openresults,    bool            showgauge 
+                                    ExecFlags               execflags
                                 )
 {
 int                 numfiles        = (int) gof;
@@ -1162,15 +1172,18 @@ StringCopy          ( filemean,     commondir, "\\", commonstart, commonend, "."
 StringCopy          ( filesd,       commondir, "\\", commonstart, commonend, "." InfixSD     " ", IntegerToString ( numfiles ), ".", FILEEXT_FREQ );
 
 
-CheckNoOverwrite    ( filemean );
-CheckNoOverwrite    ( filesd   );
+if ( IsOverwrite ( execflags ) ) {
+
+    CheckNoOverwrite    ( filemean );
+    CheckNoOverwrite    ( filesd   );
+    }
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TSuperGauge         Gauge;
 
-if ( showgauge ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Set           ( BatchAveragingTitle );
     Gauge.AddPart       ( 0, 3 + 3 * numfiles + ( poleval ? 3 : 0 ) + ( meanfile ? 2 : 0 ) + ( sdfile ? 3 : 0 ) );
     }
@@ -1416,7 +1429,7 @@ if ( meanfile ) {
 
     StringCopy ( meanfile, expfile.Filename );
                                         // complimentary opening the resulting file
-    if ( openresults )
+    if ( IsOpenResults ( execflags ) )
         expfile.Filename.Open ();
     }
 
@@ -1447,7 +1460,7 @@ if ( sdfile ) {
 
     StringCopy ( sdfile, expfile.Filename );
                                         // complimentary opening the resulting file
-    if ( openresults && ! meanfile )
+    if ( IsOpenResults ( execflags ) && ! meanfile )
         expfile.Filename.Open ();
     }
 

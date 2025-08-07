@@ -22,40 +22,41 @@ namespace crtl {
 
 constexpr char*     BatchAveragingTitle         = "Batch Averaging";
 
+enum        ExecFlags;
 enum        FrequencyAnalysisType;
 enum        PolarityType;
 class       TGoF;
 
                                         // Each  file*  acts as a flag as whether or not computing a given output
-void    BatchAveragingScalar    (   const TGoF& gof,
-                                    char*       meanfile,       char*       sdfile,         char*       snrfile,
-                                    char*       medianfile,     char*       madfile,
-                                    bool        openresults,    bool        showgauge       = true
-                                );
+void    BatchAveragingScalar        (   const TGoF& gof,
+                                        char*       meanfile,       char*       sdfile,         char*       snrfile,
+                                        char*       medianfile,     char*       madfile,
+                                        ExecFlags   execflags
+                                    );
                                         // can also save the results as norms
-void    BatchAveragingVectorial (   const TGoF& gof, 
-                                    char*       vmeanfile,      char*       nmeanfile,      char*       snrfile,
-                                    char*       sphmeanfile,    char*       sphsdfile,      char*       sphsnrfile,
-                                    bool        openresults,    bool        showgauge       = true
-                                );
+void    BatchAveragingVectorial     (   const TGoF& gof, 
+                                        char*       vmeanfile,      char*       nmeanfile,      char*       snrfile,
+                                        char*       sphmeanfile,    char*       sphsdfile,      char*       sphsnrfile,
+                                        ExecFlags   execflags
+                                    );
 
 void    BatchPoolAveragingVectorial (   const TGoF& gof, 
                                         char*       vmeanfile,      char*       nmeanfile,      char*       snrfile,
                                         char*       sphmeanfile,    char*       sphsdfile,      char*       sphsnrfile,
                                         int         numlocalavg,    int         numrepeatavg,
-                                        bool        openresults,    bool        showgauge 
+                                        ExecFlags   execflags
                                     );
 
-void    BatchAveragingFreq      (   const TGoF&             gof,
-                                    FrequencyAnalysisType   freqtype,       PolarityType    fftapproxpolarity,
-                                    char*                   meanfile,       char*           sdfile, 
-                                    bool                    openresults,    bool            showgauge       = true
-                                );
+void    BatchAveragingFreq          (   const TGoF&             gof,
+                                        FrequencyAnalysisType   freqtype,       PolarityType    fftapproxpolarity,
+                                        char*                   meanfile,       char*           sdfile, 
+                                        ExecFlags               execflags
+                                    );
 
-void    BatchAveragingErrorData (   const TGoF& gof, 
-                                    char*       meanfile,
-                                    bool        openresults,    bool        showgauge       = true
-                                );
+void    BatchAveragingErrorData     (   const TGoF& gof, 
+                                        char*       meanfile,
+                                        ExecFlags   execflags
+                                    );
 
 
 //----------------------------------------------------------------------------

@@ -48,6 +48,7 @@ enum        FilterTypes;
 enum        EpochsType;
 enum        GfpPeaksDetectType;
 enum        SkippingEpochsType;
+enum        ExecFlags;
 class       TGoF;
 class       TGoGoF;
 class       TRois;
@@ -75,6 +76,7 @@ void        PreProcessFiles (   const TGoF&             gofin,              Atom
                                 bool                    createtempdir,      char*                   temppath,
                                 bool                    savemainfiles,      TGoGoF&                 gogofout,       TGoGoF*             dualgogofout,       TGoF&               gofoutdir,      bool&       newfiles,
                                 bool                    savezscore,         TGoF*                   zscoregof,
+                                ExecFlags               execflags,
                                 TSuperGauge*            gauge = 0 
                             );
 

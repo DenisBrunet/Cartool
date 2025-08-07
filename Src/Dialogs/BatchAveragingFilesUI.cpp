@@ -221,7 +221,7 @@ if      (   tg.alleeg
                                                                                             0,                  0,
 //                                                                                          meanfile,           sdfile,             snrfile,
 //                                                                                          medianfile,   madfile,
-                                                                                            true,               true
+                                                                                            ExecFlags ( Interactive | DefaultOverwrite | OpenResults )
                                                                                         );
 else if   ( tg.allrisv ) {
 
@@ -231,7 +231,7 @@ else if   ( tg.allrisv ) {
 //                                                                                          meanfile,           nmeanfile,          snrfile,
 //                                                                                          sphmeanfile,        sphsdfile,          sphsnrfile,
                                                                                             poolednumlocalavg,  poolednumrepeatavg,
-                                                                                            true,               true
+                                                                                            ExecFlags ( Interactive | DefaultOverwrite | OpenResults )
                                                                                         );
 
     else                                                    BatchAveragingVectorial     (   gof,
@@ -239,7 +239,7 @@ else if   ( tg.allrisv ) {
                                                                                             0,                  sphsdfile,          0,
 //                                                                                          meanfile,           nmeanfile,          snrfile,
 //                                                                                          sphmeanfile,        sphsdfile,          sphsnrfile,
-                                                                                            true,               true
+                                                                                            ExecFlags ( Interactive | DefaultOverwrite | OpenResults )
                                                                                         );
     } // allrisv
 
@@ -247,12 +247,12 @@ else if   ( tg.allfreq )                                    BatchAveragingFreq  
                                                                                             freqtype,           fftapproxpolarity,
                                                                                             meanfile,           0,
 //                                                                                          meanfile,           sdfile,
-                                                                                            true,               true    
+                                                                                            ExecFlags ( Interactive | DefaultOverwrite | OpenResults )
                                                                                         );
 
 else if   ( tg.alldata )                                    BatchAveragingErrorData     (   gof,    
                                                                                             meanfile,
-                                                                                            true,               true
+                                                                                            ExecFlags ( Interactive | DefaultOverwrite | OpenResults )
                                                                                         );
 }
 

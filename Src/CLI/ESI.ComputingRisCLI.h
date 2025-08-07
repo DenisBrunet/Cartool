@@ -128,6 +128,14 @@ ExcludeCLIOptions       ( computingris,     __savingtemplates,      __savingsubj
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+DefineCLIFlag           ( computingris,     "",     __verbose,              __verbose_descr     );
+DefineCLIFlag           ( computingris,     "",     __quiet,                __quiet_descr       );
+DefineCLIFlag           ( computingris,     "",     __overwrite,            __overwrite_descr   );
+DefineCLIFlag           ( computingris,     "",     __nooverwrite,          __nooverwrite_descr );
+
+ExcludeCLIOptions       ( computingris,     __verbose,        __quiet         );
+ExcludeCLIOptions       ( computingris,     __overwrite,      __nooverwrite   );
+
 DefineCLIFlag           ( computingris,     __h,    __help,                 __help_descr );
 
 
@@ -416,16 +424,28 @@ string              prefix          = GetCLIOptionEnum  ( computingris, __prefix
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Console output prototype
-//#define     CLIConsoleOutput
-#undef      CLIConsoleOutput
 
-#if defined(CLIConsoleOutput)
+ExecFlags           execflags           = ExecFlags ( Silent | DefaultOverwrite );
+
+                                        // Overriding defaults
+if      ( HasCLIFlag ( computingris, __verbose     ) )  SetInteractive  ( execflags );
+else if ( HasCLIFlag ( computingris, __quiet       ) )  SetSilent       ( execflags );
+
+if      ( HasCLIFlag ( computingris, __overwrite   ) )  SetOverwrite    ( execflags );
+else if ( HasCLIFlag ( computingris, __nooverwrite ) )  SetNoOverwrite  ( execflags );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Console output prototype
+TVerboseFile        verbose;
+
+
+if ( IsInteractive ( execflags ) ) {
 
 CreateConsole ();
 
 
-TVerboseFile        verbose ( "cout", VerboseFileDefaultWidth );
+verbose.Open ( "cout", VerboseFileDefaultWidth );
 char                buff[ KiloByte ];
 
 verbose.NextTopic ( "Data Preprocessing:" );
@@ -547,12 +567,16 @@ verbose.Put ( "Saving standardization factors files:",  savingzscorefactors     
 }
 
 
-verbose.Close ();
+verbose.NextTopic ( "Options:" );
+{
+verbose.Put ( "Verbose mode:",                          IsInteractive ( execflags ) );
+verbose.Put ( "Overwriting existing files:",            IsOverwrite   ( execflags ) );
+}
 
-cout << NewLine;
-cout << NewLine;
 
-#endif
+verbose.NextLine ( 2 );
+}
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -575,13 +599,14 @@ ComputingRis    (   esicase,
 
                     outputdir,
                     prefix.c_str (),
-                    Silent
+                    execflags
                 );
 
 
-#if defined(CLIConsoleOutput)
-DeleteConsole ( true );
-#endif
+if ( IsInteractive ( execflags ) ) {
+    verbose.Close ();
+    DeleteConsole ( true );
+    }
 }
 
 //----------------------------------------------------------------------------

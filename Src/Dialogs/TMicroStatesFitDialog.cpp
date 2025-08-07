@@ -2396,6 +2396,7 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
                             usetempdir,         temppath,                   // there can be problems if we generate files within the original directory, in case of parallel computations
                             true,               tempgogof,      0,          baselistpreproc,    newfiles,
                             true,               0,
+                            ExecFlags ( ( Cartool.IsInteractive () ? Interactive : Silent ) | DefaultOverwrite ),
                             &GroupGauge
                         );
 

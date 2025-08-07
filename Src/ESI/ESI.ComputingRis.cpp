@@ -344,7 +344,8 @@ StringCopy      ( BaseFileName,             BaseDir,                "\\",       
 
 StringCopy      ( VerboseFile,              BaseFileName,           "Computing RIS",    "." FILEEXT_VRB );
 
-CheckNoOverwrite( VerboseFile );
+if ( IsNoOverwrite ( execflags ) )
+    CheckNoOverwrite( VerboseFile );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -481,6 +482,10 @@ verbose.NextTopic ( "Output Files:" );
 {
 if ( StringIsNotEmpty ( outputdir ) )
     verbose.Put ( "Output directory:",                  outputdir               );
+verbose.Put ( "File name prefix:",                      prefix );
+verbose.Put ( "Overwriting existing files:",            IsOverwrite   ( execflags ) );
+
+verbose.NextLine ();
 verbose.Put ( "Saving every individual ris files:",     savingindividualfiles   );
 verbose.Put ( "Saving every epoch ris files:",          savingepochfiles        );
 verbose.Put ( "Computing each groups' averages:",       computegroupsaverages   );
@@ -587,7 +592,7 @@ if ( esicase == ComputingRisPresetFreq ) {
         Gauge.Next ( gaugerisfreqgroups );
 
                                         // we will have all freqs for cond1, then all freqs for cond2, etc...
-        subjects[ absg ].SplitFreqFiles ( SplitFreqByFrequency, &onesubjallfreqs, false );
+        subjects[ absg ].SplitFreqFiles ( SplitFreqByFrequency, &onesubjallfreqs, execflags );
                                         // results: first GoF   SiC1F1R, SiC1F1I, SiC1F2R, SiC1F2I, etc...
                                         //          next  GoF   SiC2F1R, SiC2F1I, SiC2F2R, SiC2F2I, etc...
 
@@ -816,6 +821,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                         false,                      0,                      // no temp dir
                         computingindividualfiles,   risgogof,           0,          gofoutdirpreproc,   newfiles,
                         actualsavingzscorefactors,  &zscoregofout,
+                        execflags,
                         &Gauge 
                     );
 
@@ -860,31 +866,31 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                 if ( esicase == ComputingRisPresetFreq )    BatchAveragingFreq      (   splitgogof[ condi ],
                                                                                         FreqFFTComplex, PolarityDirect, // not important as long as not FreqFFTApproximation
                                                                                         meanfile,       0,
-                                                                                        false,          true    
+                                                                                        execflags
                                                                                     );
                 else {                                                                                           // writing vectorial, as should be
                     if ( IsVector ( datatypeepochs ) )      BatchAveragingVectorial (   splitgogof[ condi ],    
                                                                                         meanfile,       0,              0,
                                                                                         0,              0,              0,
-                                                                                        false,          true
+                                                                                        execflags
                                                                                     );
 //                                                                                                               // !force writing vectorial sum as norm!
 //                  if ( IsVector ( datatypeepochs ) )      BatchAveragingVectorial (   splitgogof[ condi ],    
 //                                                                                      0,              meanfile,       0,
 //                                                                                      0,              0,              0,
-//                                                                                      false,  true    
+//                                                                                      execflags
 //                                                                                  );
 //                                                                                                              // !saving either as vectorial or norm - for debugging!
 //                  if ( IsVector ( datatypeepochs ) )      BatchAveragingVectorial (   splitgogof[ condi ],
 //                                                                                      IsVector ( datatypefinal ) ? (char*) meanfile : (char*) 0, IsVector ( datatypefinal ) ? (char*) 0 : (char*) meanfile,   0,
 //                                                                                      0,              0,              0,
-//                                                                                      false,          true
+//                                                                                      execflags
 //                                                                                  );
 
                     else                                    BatchAveragingScalar    (   splitgogof[ condi ],
                                                                                         meanfile,       0,              0,
                                                                                         0,              0,
-                                                                                        false,          true
+                                                                                        execflags
                                                                                     );
                     }
                 } // batch averaging
@@ -926,7 +932,8 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
             if ( StringIsNot ( newmeanfile, meanfile ) ) {
 
-                CheckNoOverwrite    ( newmeanfile );
+                if ( IsNoOverwrite ( execflags ) )
+                    CheckNoOverwrite    ( newmeanfile );
                                         // and rename
                 MoveFileExtended    ( meanfile, newmeanfile );
                 }
@@ -961,7 +968,8 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                                         // then remove it
                 StringReplace       ( ToFileName ( newzscorefile1 ), matched ( 0 ), "." );
 
-            CheckNoOverwrite    ( newzscorefile1 );
+            if ( IsNoOverwrite ( execflags ) )
+                CheckNoOverwrite    ( newzscorefile1 );
 
             MoveFileExtended    ( oldzscorefile1, newzscorefile1 );
 
@@ -975,7 +983,8 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                                         // then remove it
                 StringReplace       ( ToFileName ( newzscorefile2 ), matched ( 0 ), "." );
 
-            CheckNoOverwrite    ( newzscorefile2 );
+            if ( IsNoOverwrite ( execflags ) )
+                CheckNoOverwrite    ( newzscorefile2 );
 
             MoveFileExtended    ( oldzscorefile2, newzscorefile2 );
 
@@ -1135,7 +1144,7 @@ if ( esicase == ComputingRisPresetFreq ) {
             for ( int fi0 = 0, fi2 = fi1; fi0 < numexpandedfreqs; fi0++, fi2++ )
                 gof1subj.Add ( gogofpercondition[ absg ][ fi2 ] );
 
-            MergeTracksToFreqFiles ( gof1subj, FreqESI, returnfreqfile, false );
+            MergeTracksToFreqFiles ( gof1subj, FreqESI, returnfreqfile, execflags );
 
             rismergedgogof[ absg ].Add ( returnfreqfile );
             } // for fi1
@@ -1178,20 +1187,20 @@ if ( computegroupsaverages ) {
         if ( esicase == ComputingRisPresetFreq )    BatchAveragingFreq      (   gogofpercondition[ absg ],
                                                                                 FreqFFTComplex, PolarityDirect, // not important as long as not FreqFFTApproximation
                                                                                 meanfile,       0,
-                                                                                false,          true
+                                                                                execflags
                                                                             );
         else {                          // vectorial results allowed
             if ( IsVector ( datatypefinal ) )       BatchAveragingVectorial (   gogofpercondition[ absg ],
                                                                                 meanfile,       0,              0,
                                                                                 0,              0,              0,
-                                                                                false,          true
+                                                                                execflags
                                                                             );
                                         // For RIS: note that the SDm of the Mean is SDm = SD / sqrt ( #files ) - the resulting Mean is therefore not N(1,1/3) but N(1,1/(3*sqrt(#))
                                         // RIS Vectorial will be straightforwardly averaged as Norm
             else                                    BatchAveragingScalar    (   gogofpercondition[ absg ],
                                                                                 meanfile,       0,              0,
                                                                                 0,              0,
-                                                                                false,          true
+                                                                                execflags
                                                                             );
             }
 
@@ -1201,7 +1210,8 @@ if ( computegroupsaverages ) {
 
         if ( StringIsNot ( newmeanfile, meanfile ) ) {
 
-            CheckNoOverwrite    ( newmeanfile );
+            if ( IsNoOverwrite ( execflags ) )
+                CheckNoOverwrite    ( newmeanfile );
 
             MoveFileExtended    ( meanfile,     newmeanfile );
             }
@@ -1260,7 +1270,8 @@ if ( computegroupscentroids ) {
         StringAppend        ( CentroidsFile,            ".Cond ",           IntegerToString ( ci + 1, NumIntegerDigits ( numconditions - 1 ) ) );
         AddExtension        ( CentroidsFile,            FILEEXT_RIS );
 
-        CheckNoOverwrite    ( CentroidsFile );
+        if ( IsNoOverwrite ( execflags ) )
+            CheckNoOverwrite    ( CentroidsFile );
 
         centroidsgof.Add    ( CentroidsFile );
 
@@ -1284,7 +1295,8 @@ if ( computegroupscentroids ) {
         StringAppend        ( CentroidsFile,            ".Subj Mean" );
         AddExtension        ( CentroidsFile,            FILEEXT_RIS );
 
-        CheckNoOverwrite    ( CentroidsFile );
+        if ( IsNoOverwrite ( execflags ) )
+            CheckNoOverwrite    ( CentroidsFile );
                                         // shamelessly putting the name in this list for the verbose
         centroidsgof.Add    ( CentroidsFile );
 

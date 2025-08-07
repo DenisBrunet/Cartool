@@ -113,6 +113,7 @@ void        PreProcessFiles (   const TGoF&             gofin,              Atom
                                 bool                    createtempdir,      char*                   temppath,
                                 bool                    savemainfiles,      TGoGoF&                 gogofout,       TGoGoF*             dualgogofout,       TGoF&               gofoutdir,      bool&       newfiles,
                                 bool                    savezscore,         TGoF*                   zscoregof,
+                                ExecFlags               execflags,
                                 TSuperGauge*            gauge
                             )
 
@@ -129,6 +130,16 @@ newfiles    = false;
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // force silent if not in interactive mode
+if ( IsInteractive ( execflags ) && Cartool.IsNotInteractive () )
+    SetSilent ( execflags );
+
+                                        // force reset input gauge if silent
+if ( IsSilent ( execflags ) && gauge != 0 )
+    gauge   = 0;
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Parameters no-nonsense check
 if ( spatialfilter != SpatialFilterNone && StringIsEmpty ( xyzfile ) )
 
@@ -136,8 +147,10 @@ if ( spatialfilter != SpatialFilterNone && StringIsEmpty ( xyzfile ) )
 
 
 if ( computeesi && ISDoc == 0 ) {
-    if ( Cartool.IsInteractive () )
+
+    if ( IsInteractive ( execflags ) )
         ShowMessage ( "There seems to be a problem with your Inverse Matrix!\nCheck your input file and come back...", "Data Preprocessing", ShowMessageWarning );
+
     return;
     }
 
@@ -323,14 +336,18 @@ if ( usedregularization )   *usedregularization = regularization;
 if ( rois ) {
 
     if      (   computeesi && rois->GetDimension () != numsp ) {
-        if ( Cartool.IsInteractive () )
+
+        if ( IsInteractive ( execflags ) )
             ShowMessage ( "Your ROIs dimension does not fit to your Inverse Matrix's Solution Points.\nPlease check your ROIs file and come back...", "Data Preprocessing", ShowMessageWarning );
+
         return;
         }
 
     else if ( ! computeesi && rois->GetDimension () != numeegelec ) {
-        if ( Cartool.IsInteractive () )
+
+        if ( IsInteractive ( execflags ) )
             ShowMessage ( "Your ROIs dimension does not fit to your EEG number of electrodes.\nPlease check your ROIs file and come back...", "Data Preprocessing", ShowMessageWarning );
+
         return;
         }
     }
@@ -426,12 +443,19 @@ if ( subsamplesallfiles ) {
 
     ReplaceDir              ( concatfile, outputdir );  // currently not using optional tempdir
 
+//  if ( IsNoOverwrite ( execflags ) )  // not needed for a random tmp file
+//      concatfile.CheckNoOverwrite ();
+
     submaps.WriteFile       ( concatfile, false, 0 );
 
 
     if ( mergecomplex ) {
         StringCopy          ( concatfilef, concatfile );
         StringReplace       ( concatfilef, "." InfixReal, "." InfixImag );
+
+//      if ( IsNoOverwrite ( execflags ) )  // not needed for a random tmp file
+//          concatfilef.CheckNoOverwrite ();
+
         submapsf.WriteFile  ( concatfilef, false, 0 );
         }
 
@@ -543,8 +567,10 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
     if ( computeesi && Data.IsAllocated () ) {
                                         // compatible EEG & IS? (should be tested before)
         if ( numeegelec != numiselec ) {
-            if ( Cartool.IsInteractive () )
+
+            if ( IsInteractive ( execflags ) )
                 ShowMessage ( "Your Inverse Matrix does not fit your EEG data.\nCheck the dimensions of your files and come back...", "Data Preprocessing", ShowMessageWarning );
+
             return;
             }
 
@@ -845,8 +871,10 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                         // In case there is no more markers, still proceed by outputting an empty file
                                         // This is a utility function, it is better to output something even empty and rather have the caller check that
 //      if ( goodepochslist.IsEmpty () ) {
-//          if ( Cartool.IsInteractive () )
+//
+//            if ( IsInteractive ( execflags ) )
 //              ShowMessage ( "No markers were found, resulting in an empty extracted file.\nPlease check your files and markers and come back...", "Data Preprocessing", ShowMessageWarning );
+//
 //          return;
 //          } 
             
@@ -871,8 +899,10 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Same remark as above: save an empty file, get the caller do the testing
 //      if ( writingepochslist.IsEmpty () ) {
-//          if ( Cartool.IsInteractive () )
+//
+//          if ( IsInteractive ( execflags ) )
 //              ShowMessage ( "There appear to be no remaining time points...\nConsider checking this:\n\t-No GFP Peaks marker were found due to erroneous marker names\n\t-Too much BAD epochs\n\t-Too small epochs\n\nPlease check your parameters and come back...", "Data Preprocessing", ShowMessageWarning );
+//
 //          return;
 //          }
 
@@ -908,8 +938,9 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                 RemoveFilename  ( temppath );
                 }
             }
-                                        // thank you for avoiding overwriting!
-        filenameout.CheckNoOverwrite ();
+
+        if ( IsNoOverwrite ( execflags ) )
+            filenameout.CheckNoOverwrite ();
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -944,10 +975,11 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
 
                 StringCopy          ( filenameoutalt, filenameout );
+
                 ReplaceExtension    ( filenameoutalt, DualDataPresets[ dualdata ].SavingExtension );
 
-
-                CheckNoOverwrite    ( filenameoutalt );
+                if ( IsNoOverwrite ( execflags ) )
+                    CheckNoOverwrite    ( filenameoutalt );
 
 
                 altesi.WriteFileEpochs  (   filenameoutalt, 
@@ -1035,6 +1067,9 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
             StringAppend    ( gfppeaksmrk, infix, ".To", postfixfileepoch );
             AddExtension    ( gfppeaksmrk, FILEEXT_MRK );
 
+            if ( IsNoOverwrite ( execflags ) )
+                gfppeaksmrk.CheckNoOverwrite ();
+
             goodepochslist.WriteFile ( gfppeaksmrk );
             }
 */
@@ -1085,7 +1120,8 @@ if ( savezscore
         if ( createtempdir )
             AppendDir   ( filenameout, true, tempdir ); // or not(?)
 
-        CheckNoOverwrite( filenameout );
+        if ( IsNoOverwrite ( execflags ) )
+            CheckNoOverwrite( filenameout );
 
                                         // transposed: values are shown in the X axis
         TStrings            zscorenames;
@@ -1104,7 +1140,8 @@ if ( savezscore
 
         ReplaceExtension    ( filenameout, FILEEXT_RIS );
 
-        CheckNoOverwrite    ( filenameout );
+        if ( IsNoOverwrite ( execflags ) )
+            CheckNoOverwrite    ( filenameout );
 
         ZScoreFactors.WriteFile ( filenameout );
 

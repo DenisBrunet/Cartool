@@ -2666,6 +2666,11 @@ TFileName           basefilename    = ComputingRisTransfer.BaseFileName;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+ExecFlags           execflags           = ExecFlags ( Interactive
+                                                    | DefaultOverwrite );
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 if ( ! ComputingRis (   esicase,
 
                         Subjects,              
@@ -2685,7 +2690,7 @@ if ( ! ComputingRis (   esicase,
                         computegroupsaverages,  computegroupscentroids,
                         0,                      // no output dir specified
                         basefilename,
-                        Interactive
+                        execflags
                     ) )
 
     ShowMessage ( "Something went wrong during the RIS processing!" NewLine 

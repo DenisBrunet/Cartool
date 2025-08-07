@@ -2771,6 +2771,7 @@ for ( int absg = 0; absg < gogof.NumGroups (); absg++ ) {
                         usetempdir,     temppath,               // there can be problems if we generate files within the original directory, in case of parallel computations
                         true,           preprocgogof,   dualdata ? &preprocgogofalt : 0,    preprocbaselist,    newfiles,
                         true,           0,
+                        ExecFlags ( ( Cartool.IsInteractive () ? Interactive : Silent ) | DefaultOverwrite ),
                         &GroupGauge 
                     );
 
@@ -2945,7 +2946,9 @@ if ( presetfile == SegPresetFilesRestingStatesGroupResampling /*IsSegResamplingF
 
     TFileName           errdataavg;
                                         // !NOT your regular averaging here - see code!
-    BatchAveragingErrorData ( goferrdata, errdataavg, false );
+    BatchAveragingErrorData (   goferrdata, 
+                                errdataavg, 
+                                ExecFlags ( Silent | DefaultOverwrite ) );
 
                                         // copy & rename
     StringCopy      ( buff, outputcommondir, "\\", ToFileName ( SegTransfer.BaseFileName ), "." PostfixResampled );

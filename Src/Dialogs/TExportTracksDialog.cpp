@@ -1287,7 +1287,7 @@ else {                                  // loop for each frequency, and export e
         }
 
                                         // merge back for the user...
-    MergeTracksToFreqFiles ( filestomerge, FreqDoc->GetFreqType (), mergedfreqfile, true );
+    MergeTracksToFreqFiles ( filestomerge, FreqDoc->GetFreqType (), mergedfreqfile, ExecFlags ( Interactive | DefaultOverwrite ) );
 
                                         // getting rid of the individual, per-frequency, ris files
     filestomerge.DeleteFiles ();
