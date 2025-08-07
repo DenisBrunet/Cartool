@@ -387,6 +387,9 @@ else {
     RemoveExtension ( oldpath );
     }
 
+                                        // avoiding ugly "._2.ext"
+StringReplace   ( ToFileName ( oldpath ), "._", "_" );
+
                                         // starts variation from 2, as this is the second version of the file
 for ( int vari = 2; vari < 1000; vari++ ) {
 

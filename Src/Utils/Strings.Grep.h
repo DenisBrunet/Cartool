@@ -80,6 +80,10 @@ constexpr int       PCRE_REPLACEDLENGTH     = KiloByte;
                                         // A few useful grep expressions
 #define             GrepBegin               "^"
 #define             GrepEnd                 "$"
+
+#define             GrepNonSpace            "\\S"
+#define             GrepSpace               "\\s"
+#define             GrepAnyChar             "[" GrepNonSpace GrepSpace "]"
                                                 // 12 12. 12.34 but not .34
 #define             GrepDecimal             "(\\d+(?:\\.\\d*)?)"
                                                 // 12.0-34.0
@@ -121,6 +125,9 @@ public:
                                         // returns a pointer to beginning of a given match
 //  char*           GetMatchStart   ( int i )   const           { return  IsInsideLimits ( i, 0, NumMatches - 1 ) ? const_cast<char*> ( ToMatch[ i ] ) : 0; }
     const char*     GetMatchStart   ( int i )   const           { return  IsInsideLimits ( i, 0, NumMatches - 1 ) ? ToMatch[ i ] : 0; }
+
+
+    void            Show            ( const char* title = 0 )   const;
 
 
                     operator bool   ()          const           { return  IsValid (); }

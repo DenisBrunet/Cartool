@@ -24,6 +24,7 @@ limitations under the License.
 #include    "Strings.TFixedString.h"
 #include    "Files.Utils.h"
 #include    "TList.h"
+#include    "Dialogs.Input.h"
 
 using namespace std;
 
@@ -299,8 +300,6 @@ else {                                  // 1 or more matches
             StringCopy      ( substring, tosearch + pcreOutputVector[ 2 * i ], pcreOutputVector[ 2 * i + 1 ] - pcreOutputVector[ 2 * i ] );
 
             matches->Add    ( substring );
-
-//            DBGM ( substring, "pcre SubString" );
             }  
         }
     } // pcreResult > 0 
@@ -360,6 +359,33 @@ if ( replacelength != 0 )
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 return  true;
+}
+
+
+//----------------------------------------------------------------------------
+void    TStringGrep::Show ( const char* title ) const
+{
+if ( ! IsValid () ) {
+    ShowMessage ( "- Invalid or Uninitialized Grep -", StringIsEmpty ( title ) ? "Grep" : title );
+    return;
+    }
+
+if ( NumMatches == 0 ) {
+    ShowMessage ( "- No Match -", StringIsEmpty ( title ) ? "Grep" : title );
+    return;
+    }
+
+char                localtitle[ 256 ];
+char                substring[ KiloByte ];
+                                        // skip first match which is a bit confusing
+for ( int i = 1 /*0*/; i < NumMatches; i++ ) {
+
+    StringCopy  ( localtitle, StringIsEmpty ( title ) ? "Grep" : title, " / Group#", IntegerToString ( i ) );
+                                // first string is the full match; successive strings are optional groups retrieved from the expression
+    StringCopy  ( substring, ToMatch[ i ], pcreOutputVector[ 2 * i + 1 ] - pcreOutputVector[ 2 * i ] );
+
+    ShowMessage ( substring, localtitle );
+    }  
 }
 
 
