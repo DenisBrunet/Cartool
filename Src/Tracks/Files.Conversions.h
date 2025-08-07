@@ -16,6 +16,8 @@ limitations under the License.
 
 #pragma once
 
+#include    "CartoolTypes.h"
+
 namespace crtl {
 
 //----------------------------------------------------------------------------
@@ -30,9 +32,19 @@ void                FileConversionVrbToTva  ( const char* file );
 enum                FrequencyAnalysisType;
 class               TGoF;
 
-void                MergeTracksToFreqFiles  ( const TGoF& gof,           FrequencyAnalysisType freqtype = (FrequencyAnalysisType) 0, char *returnfreqfile = 0, bool showgauge = true );
-void                MergeTracksToFreqFiles  ( const char* filestemplate, FrequencyAnalysisType freqtype = (FrequencyAnalysisType) 0, char *returnfreqfile = 0, bool showgauge = true );
-void                SortFFTApproximation    ( const char* file );
+void                MergeTracksToFreqFiles  (   
+                                            const TGoF&             gof,           
+                                            FrequencyAnalysisType   freqtype        = (FrequencyAnalysisType) 0, 
+                                            char*                   returnfreqfile  = 0,
+                                            ExecFlags               execflags       = ExecFlags ( Interactive | DefaultOverwrite )
+                                            );
+void                MergeTracksToFreqFiles  (   
+                                            const char*             filestemplate, 
+                                            FrequencyAnalysisType   freqtype        = (FrequencyAnalysisType) 0,
+                                            char*                   returnfreqfile  = 0,
+                                            ExecFlags               execflags       = ExecFlags ( Interactive | DefaultOverwrite )
+                                            );
+void                SortFFTApproximation    (   const char*             file );
 
 
 //----------------------------------------------------------------------------
@@ -47,7 +59,7 @@ void                RisToCloudVectors       (
                                             const TSelection*   spselin,        const char*     splist,
                                             bool                spontaneous,    bool            normalize,
                                             TGoF&               outgof,
-                                            bool                showprogress
+                                            ExecFlags           execflags       = ExecFlags ( Interactive | DefaultOverwrite )
                                             );
 
 

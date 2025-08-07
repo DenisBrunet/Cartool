@@ -229,7 +229,7 @@ public:
 
     void            Sort                        ()  final;
 
-    void            SplitFreqFiles              ( SplitFreqFlags how, TGoGoF *gogofout = 0, bool showgauge = true ) const;
+    void            SplitFreqFiles              ( SplitFreqFlags how, TGoGoF *gogofout = 0, ExecFlags execflags = ExecFlags ( Interactive | DefaultOverwrite ) ) const;
     void            Resample                    ( ResamplingType resampling, int numresamples, int resamplingsize, const TGoF* gofalt, TGoGoF& resgogof, TGoGoF* resgogofalt );  // resampling into anoth group of files
     int             SplitByNames                ( const char* splitwith, TGoGoF& gogofout, TStrings*    groupnames = 0 )        const;
     void            SplitByEpochs               ( const char* greppedwith, int maxepochs, const char* dirprefix, TGoF& gofout ) const;

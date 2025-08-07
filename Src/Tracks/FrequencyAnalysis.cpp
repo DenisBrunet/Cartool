@@ -2233,7 +2233,7 @@ if ( IsInteractive ( execflags ) ) {
                                         // Splitting currently does NOT check for overwrite/no-overwrite flags, it relies on the input freq file for this
     if ( splitfrequency ) {
 
-        goffreqdoc.SplitFreqFiles ( SplitFreqByFrequency, &gofsplit, false );
+        goffreqdoc.SplitFreqFiles ( SplitFreqByFrequency, &gofsplit, ExecFlags ( Silent | DefaultOverwrite ) );
 
         gofsplit.CopyFilesTo      ( BaseDirSplitFreqs, (CopyToFlags) ( CopyAndDeleteOriginals | CopyAndUpdateFileNames | CopyAllKnownBuddies ) );
         }
@@ -2241,7 +2241,7 @@ if ( IsInteractive ( execflags ) ) {
 
     if ( splitelectrode ) {
 
-        goffreqdoc.SplitFreqFiles ( SplitFreqByElectrode, &gofsplit, false );
+        goffreqdoc.SplitFreqFiles ( SplitFreqByElectrode, &gofsplit, ExecFlags ( Silent | DefaultOverwrite ) );
 
         gofsplit.CopyFilesTo      ( BaseDirSplitElecs, (CopyToFlags) ( CopyAndDeleteOriginals | CopyAndUpdateFileNames | CopyAllKnownBuddies ) );
         }
@@ -2249,7 +2249,7 @@ if ( IsInteractive ( execflags ) ) {
 
     if ( splitspectrum ) {
 
-        goffreqdoc.SplitFreqFiles ( SplitFreqByTime, &gofsplit, false );
+        goffreqdoc.SplitFreqFiles ( SplitFreqByTime, &gofsplit, ExecFlags ( Silent | DefaultOverwrite ) );
 
         gofsplit.CopyFilesTo      ( BaseDirSpectrum, (CopyToFlags) ( CopyAndDeleteOriginals | CopyAndUpdateFileNames | CopyAllKnownBuddies ) );
         }

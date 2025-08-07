@@ -10374,7 +10374,7 @@ RisToCloudVectors   (
                     &sel,                   0,
                     spontaneous,            normalize,
                     outgof,
-                    true
+                    ExecFlags ( Interactive | DefaultOverwrite )
                     );
 
 

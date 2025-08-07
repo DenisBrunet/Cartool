@@ -42,9 +42,9 @@ if ( ! getfiles.Execute () )
     return;
 
 
-if      ( w == CM_SPLITFREQBYFREQUENCY )    ((TGoF*)getfiles)->SplitFreqFiles ( SplitFreqByFrequency );
-else if ( w == CM_SPLITFREQBYELECTRODE )    ((TGoF*)getfiles)->SplitFreqFiles ( SplitFreqByElectrode );
-else if ( w == CM_SPLITFREQBYTIME      )    ((TGoF*)getfiles)->SplitFreqFiles ( SplitFreqByTime      );
+if      ( w == CM_SPLITFREQBYFREQUENCY )    ((TGoF*)getfiles)->SplitFreqFiles ( SplitFreqByFrequency, 0, ExecFlags ( Interactive | DefaultOverwrite ) );
+else if ( w == CM_SPLITFREQBYELECTRODE )    ((TGoF*)getfiles)->SplitFreqFiles ( SplitFreqByElectrode, 0, ExecFlags ( Interactive | DefaultOverwrite ) );
+else if ( w == CM_SPLITFREQBYTIME      )    ((TGoF*)getfiles)->SplitFreqFiles ( SplitFreqByTime     , 0, ExecFlags ( Interactive | DefaultOverwrite ) );
 }
 
 

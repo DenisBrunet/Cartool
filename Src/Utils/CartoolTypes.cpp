@@ -178,11 +178,13 @@ ExecFlags   SetSilent       ( ExecFlags& ef )   { return SetFlags   ( ef, Silent
 ExecFlags   SetInteractive  ( ExecFlags& ef )   { return SetFlags   ( ef, SilentMask,    Interactive ); }
 ExecFlags   SetOverwrite    ( ExecFlags& ef )   { return SetFlags   ( ef, OverwriteMask, Overwrite   ); }
 ExecFlags   SetNoOverwrite  ( ExecFlags& ef )   { return SetFlags   ( ef, OverwriteMask, NoOverwrite ); }
+ExecFlags   SetOpenResults  ( ExecFlags& ef )   { return SetFlags   ( ef, OpenMask,      OpenResults ); }
 
 bool        IsSilent        ( ExecFlags  ef )   { return IsFlag     ( ef,                Silent      ); }
 bool        IsInteractive   ( ExecFlags  ef )   { return IsFlag     ( ef,                Interactive ); }
 bool        IsOverwrite     ( ExecFlags  ef )   { return IsFlag     ( ef,                Overwrite   ); }
 bool        IsNoOverwrite   ( ExecFlags  ef )   { return IsFlag     ( ef,                NoOverwrite ); }
+bool        IsOpenResults   ( ExecFlags  ef )   { return IsFlag     ( ef,                OpenResults ); }
 
 
 //----------------------------------------------------------------------------

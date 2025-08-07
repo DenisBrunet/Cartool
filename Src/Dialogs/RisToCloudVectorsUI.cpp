@@ -132,7 +132,7 @@ for ( int eegi = 0; eegi < (int) files; eegi++ ) {
                         0,                      savingsp,
                         spontaneous,            normalize,
                         outgof,
-                        true
+                        ExecFlags ( Interactive | DefaultOverwrite )
                         );
 
 

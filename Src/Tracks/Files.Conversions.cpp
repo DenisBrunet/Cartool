@@ -220,7 +220,12 @@ do {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
                                         // convert the template to a TGoF, then call the main function MergeTracksToFreqFiles
-void    MergeTracksToFreqFiles ( const char* filestemplate, FrequencyAnalysisType freqtype, char *returnfreqfile, bool showgauge )
+void    MergeTracksToFreqFiles  (   
+                                const char*             filestemplate, 
+                                FrequencyAnalysisType   freqtype,
+                                char*                   returnfreqfile,
+                                ExecFlags               execflags
+                                )
 {
 if ( StringIsEmpty ( filestemplate ) )
     return;
@@ -233,7 +238,7 @@ if ( ! gof.FindFiles ( filestemplate ) )
     return;
 
                                         // do the merge
-MergeTracksToFreqFiles ( gof, freqtype, returnfreqfile, showgauge );
+MergeTracksToFreqFiles ( gof, freqtype, returnfreqfile, execflags );
 
                                         // clean-up
 DeleteFiles ( filestemplate );
@@ -250,7 +255,12 @@ DeleteFiles  ( filestemplatemrk );
 
 //----------------------------------------------------------------------------
 
-void    MergeTracksToFreqFiles ( const TGoF& gof, FrequencyAnalysisType freqtype, char *returnfreqfile, bool showgauge )
+void    MergeTracksToFreqFiles  (   
+                                const TGoF&             gof,           
+                                FrequencyAnalysisType   freqtype, 
+                                char*                   returnfreqfile,
+                                ExecFlags               execflags
+                                )
 {
 if ( gof.IsEmpty () )
     return;
@@ -266,12 +276,16 @@ constexpr char*     BatchTracks2Freq            = "Merging Frequencies";
 
                                         // Check file extensions
 if ( ! gof.AllExtensionsAre ( AllEegRisFilesExt ) ) {
-    ShowMessage (   "Files type not allowed for this operation!" NewLine 
-                    "Check again your input files...", 
-                    BatchTracks2Freq, ShowMessageWarning );
+    
+    if ( IsInteractive ( execflags ) )
+        ShowMessage (   "Files type not allowed for this operation!" NewLine 
+                        "Check again your input files...", 
+                        BatchTracks2Freq, ShowMessageWarning );
     return;
     }
 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Check whole group dimensions
 TracksCompatibleClass   tc;
 
@@ -283,52 +297,66 @@ gof.AllTracksAreCompatible ( tc );
 
 
 if      ( tc.NumTracks == CompatibilityNotConsistent ) {
-    ShowMessage (   "Files don't seem to have the same number of electrodes/tracks!" NewLine 
-                    "Check again your input files...", 
-                    BatchTracks2Freq, ShowMessageWarning );
+
+    if ( IsInteractive ( execflags ) )
+        ShowMessage (   "Files don't seem to have the same number of electrodes/tracks!" NewLine 
+                        "Check again your input files...", 
+                        BatchTracks2Freq, ShowMessageWarning );
     return;
     }
 else if ( tc.NumTracks == CompatibilityIrrelevant ) {
-    ShowMessage (   "Files don't seem to have any electrodes/tracks at all!" NewLine 
-                    "Check again your input files...", 
-                    BatchTracks2Freq, ShowMessageWarning );
+
+    if ( IsInteractive ( execflags ) )
+        ShowMessage (   "Files don't seem to have any electrodes/tracks at all!" NewLine 
+                        "Check again your input files...", 
+                        BatchTracks2Freq, ShowMessageWarning );
     return;
     }
 
 
 //if      ( tc.NumAuxTracks > 0 ) {
-//    ShowMessage ( "Files shouldn't have auxiliary channels!" NewLine 
-//                  "Check again your input files...", 
-//                  BatchTracks2Freq, ShowMessageWarning );
+// 
+//    if ( IsInteractive ( execflags ) )
+//        ShowMessage ( "Files shouldn't have auxiliary channels!" NewLine 
+//                      "Check again your input files...", 
+//                      BatchTracks2Freq, ShowMessageWarning );
 //    return;
 //    }
                                         // this test is quite weak, as ReadFromHeader does a lousy job at retrieving the aux tracks (it needs the strings, so opening the whole file)
 if      ( tc.NumAuxTracks == CompatibilityNotConsistent ) {
-    ShowMessage (   "Files don't seem to have the same number of auxiliary tracks!" NewLine 
-                    "Check again your input files...", 
-                    BatchTracks2Freq, ShowMessageWarning );
+
+    if ( IsInteractive ( execflags ) )
+        ShowMessage (   "Files don't seem to have the same number of auxiliary tracks!" NewLine 
+                        "Check again your input files...", 
+                        BatchTracks2Freq, ShowMessageWarning );
     return;
     }
 
 
 if      ( tc.NumTF == CompatibilityNotConsistent ) {
-    ShowMessage (   "Files don't seem to have the same number of samples/time range!" NewLine 
-                    "Check again your input files...", 
-                    BatchTracks2Freq, ShowMessageWarning );
+
+    if ( IsInteractive ( execflags ) )
+        ShowMessage (   "Files don't seem to have the same number of samples/time range!" NewLine 
+                        "Check again your input files...", 
+                        BatchTracks2Freq, ShowMessageWarning );
     return;
     }
 else if ( tc.NumTF == CompatibilityIrrelevant ) {
-    ShowMessage (   "Files don't seem to have any samples or time at all!" NewLine 
-                    "Check again your input files...", 
-                    BatchTracks2Freq, ShowMessageWarning );
+
+    if ( IsInteractive ( execflags ) )
+        ShowMessage (   "Files don't seem to have any samples or time at all!" NewLine 
+                        "Check again your input files...", 
+                        BatchTracks2Freq, ShowMessageWarning );
     return;
     }
 
 
 if      ( tc.SamplingFrequency == CompatibilityNotConsistent ) {
-    ShowMessage (   "Files don't seem to have the same sampling frequencies!" NewLine 
-                    "Check again your input files...", 
-                    BatchTracks2Freq, ShowMessageWarning );
+
+    if ( IsInteractive ( execflags ) )
+        ShowMessage (   "Files don't seem to have the same sampling frequencies!" NewLine 
+                        "Check again your input files...", 
+                        BatchTracks2Freq, ShowMessageWarning );
     return;
     }
 
@@ -408,6 +436,8 @@ TStringGrep         grepinfix ( grepinfixstring, GrepOptionDefault );
 TStrings            infix;
 
 grepinfix.Matched ( commonend, &infix );
+
+//grepinfix.Show ( "grepinfix" );
                                         // We don't need this part, it was just for retrieval...
 StringReplace       ( infix ( 0 ), "Hz.", "" );
 
@@ -428,28 +458,42 @@ StringReplace       ( infix ( 0 ), "Hz.", "" );
         }
 //  }
 
-                                        // skip the "Hz"
-if      ( StringStartsWith ( commonend, " Hz." ) )  StringCopy ( commonend, commonend + 4 );
-else if ( StringStartsWith ( commonend, "Hz."  ) )  StringCopy ( commonend, commonend + 3 );
-else if ( StringStartsWith ( commonend, " Hz"  ) )  StringCopy ( commonend, commonend + 3 );
-else if ( StringStartsWith ( commonend, "Hz"   ) )  StringCopy ( commonend, commonend + 2 );
 
-//DBGM ( (const char*) commonend, "common end, final" );
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Skipping leading "Hz" - !sequence matters!
+if      ( StringStartsWith ( commonend, " Hz." ) )  StringCopy ( commonend, commonend + 4 );
+else if ( StringStartsWith ( commonend,  "Hz." ) )  StringCopy ( commonend, commonend + 3 );
+else if ( StringStartsWith ( commonend, " Hz"  ) )  StringCopy ( commonend, commonend + 3 );
+else if ( StringStartsWith ( commonend,  "Hz"  ) )  StringCopy ( commonend, commonend + 2 );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Catching and deleting any leading "_2", and skipping any "." before end string
+TStringGrep         grepunderscore ( "^(_\\d+)\\.?(" GrepAnyChar "*)$", GrepOptionDefaultFiles );
 
-TStringGrep         grepHz ( "\\.[0-9]+\\.?[0-9]*Hz\\.", GrepOptionDefaultFiles );
+TStrings            matched;
 
+grepunderscore.Matched ( commonend, &matched );
+
+//grepunderscore.Show ( "grepunderscore" );
+
+if ( grepunderscore.HasMatches () ) {
+    if      ( grepunderscore.GetNumMatches () == 3 )    commonend   = matched[ 2 ];
+    else if ( grepunderscore.GetNumMatches () == 2 )    commonend.Clear ();         // second part is optional, here empty
+    }
+
+//commonend.Show ( "common end, final" );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // retrieve frequency names
                                         // we need to read all files, extract frequency info, and sort it
+                                            // NOT testing for trailing "." after "Hz", as duplicated files could have "Hz_2" f.ex.
+TStringGrep         grepHz ( "\\.(\\d+\\.?\\d*)Hz", GrepOptionDefaultFiles );
+
 TFreqFrequencyName  freqname;
 TArray2<double>     freqindex ( numfreqs, 2 );
 TStrings            freqnames;
 TFileName           OutFileName;
-TStrings            matched;
 
 
 freqindex.ResetMemory ();
@@ -461,14 +505,19 @@ for ( int freqi = 0; freqi < numfreqs; freqi++ ) {
 
     grepHz.Matched ( gofr[ freqi ], &matched );
 
-    StringClip ( matched ( 0 ), 1, StringLength ( matched ( 0 ) ) - 2 );
+  //grepHz.Show ( IntegerToString ( freqi + 1 ) );
 
                                         // store the converted value for later sorting
-    freqindex ( freqi , 0 ) = StringToDouble ( matched ( 0 ) );    // could add the second value, after the dot, in case two freqs begins with the same value
+    freqindex ( freqi , 0 ) = grepHz.HasMatches () ? StringToDouble ( matched ( 1 ) ) : 0;
     freqindex ( freqi , 1 ) = freqi;
 
                                         // store the frequency name
-    StringCopy      ( freqname.FrequencyName, matched ( 0 ), sizeof ( freqname ) - 1 );
+    if ( grepHz.HasMatches () ) {
+        StringCopy      ( freqname.FrequencyName, matched ( 1 ), sizeof ( freqname ) - 1 );
+        StringAppend    ( freqname.FrequencyName, "Hz",          sizeof ( freqname ) - 1 );
+        }
+    else
+        ClearString     ( freqname.FrequencyName, sizeof ( freqname ) - 1 );
 
     freqnames.Add   ( freqname.FrequencyName );
 
@@ -557,8 +606,8 @@ OutFileName.SetExtendedPath ();
 //    StringAppend    ( OutFileName, "." "Merged", "." FILEEXT_FREQ );
 //    }
 
-CheckNoOverwrite    ( OutFileName );
-
+if ( IsNoOverwrite ( execflags ) )
+    CheckNoOverwrite    ( OutFileName );
                                         // check we can write that one
 if ( ! CanOpenFile ( OutFileName, CanOpenFileWrite ) )
     return;
@@ -627,7 +676,7 @@ for ( int freq = 0; freq < numfreqs; freq++ ) {
 
 TSuperGauge     Gauge;
 
-if ( showgauge ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Set       ( BatchTracks2Freq );
     Gauge.AddPart   ( 0, numfreqs );
     }
@@ -695,7 +744,7 @@ if ( returnfreqfile )
 
 //CartoolDocManager->OpenDoc ( OutFileName, dtOpenOptions );
 
-Gauge.HappyEnd ();
+//Gauge.HappyEnd ();    // takes too much time when called from other processing
 }
 
 
@@ -722,7 +771,7 @@ void    RisToCloudVectors   (
                             const TSelection*   spselin,        const char*     splist,
                             bool                spontaneous,    bool            normalize,
                             TGoF&               outgof,
-                            bool                showprogress
+                            ExecFlags           execflags
                             )
 
 {
@@ -786,7 +835,7 @@ if ( numspsaved == 0 )
 TSuperGauge         Gauge;
 
 
-if ( showprogress ) {
+if ( IsInteractive ( execflags ) ) {
     Gauge.Set           ( RisToPointsTitle, SuperGaugeLevelDefault );
 
     Gauge.AddPart       ( 0, tfmax - tfmin + 1, 33 );
@@ -797,12 +846,10 @@ if ( showprogress ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // We are going to store all the needed points before writing to file - hoping for enough memory
-TPoints*                points      = new TPoints [ numspsaved ];
+TPoints*                points          = new TPoints [ numspsaved ];
 TStrings                pointsnames;
-TFileName               filenamerissp;
 char                    buff[ 256 ];
 TArray1<TVector3Float>  InvBuff ( numsp );
-TVector3Float           v;
 
                                         // Scanning only once!
 for ( int tfi = tfmin; tfi <= tfmax; tfi++ ) {
@@ -816,7 +863,7 @@ for ( int tfi = tfmin; tfi <= tfmax; tfi++ ) {
                                         // Dispatch to our list of points
     for ( TIteratorSelectedForward spi ( spsel ); (bool) spi; ++spi ) {
 
-        v   = InvBuff[ spi() ];
+        TVector3Float   v   = InvBuff[ spi() ];
 
         if ( normalize )
             v.Normalize ();
@@ -842,7 +889,7 @@ for ( TIteratorSelectedForward spi ( spsel ); (bool) spi; ++spi ) {
     else                    Cartool.UpdateApplication ();
 
 
-    v   = ComputeCloudFolding ( points[ spi.GetIndex () ],   ReferenceNumSamplesSP,    ReferenceNumSamplesSP2 );
+    TVector3Float   v   = ComputeCloudFolding ( points[ spi.GetIndex () ],   ReferenceNumSamplesSP,    ReferenceNumSamplesSP2 );
 
 
     if ( spontaneous )
@@ -861,6 +908,7 @@ for ( TIteratorSelectedForward spi ( spsel ); (bool) spi; ++spi ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Write files
 TPoints             oneaxis;
+TFileName           filenamerissp;
 
 
 for ( TIteratorSelectedForward spi ( spsel ); (bool) spi; ++spi ) {
@@ -878,7 +926,9 @@ for ( TIteratorSelectedForward spi ( spsel ); (bool) spi; ++spi ) {
         StringAppend    ( filenamerissp, ".Norm" );
 
     AddExtension        ( filenamerissp, FILEEXT_SPIRR );
-    CheckNoOverwrite    ( filenamerissp );
+    
+    if ( IsNoOverwrite ( execflags ) )
+        CheckNoOverwrite    ( filenamerissp );
 
 
     if ( spontaneous ) {                // To emphasize the cloud main direction, we can duplicate each vector on its opposite side

@@ -2375,7 +2375,9 @@ delete[]    writingepochslist;
                                         // Complex data will generate 2 files, one real and one imaginary
                                         // Real (FFT Approximation) data will have the spectrum as the squared input
                                         // ?TODO: if file is Complex format, read complex & save norm^2 ?
-void    TGoF::SplitFreqFiles ( SplitFreqFlags how, TGoGoF *gogofout, bool showgauge )   const
+void    TGoF::SplitFreqFiles    (   SplitFreqFlags  how, 
+                                    TGoGoF*         gogofout, 
+                                    ExecFlags       execflags   )   const
 {
 if ( gogofout )
     gogofout->Reset ();
@@ -2389,7 +2391,8 @@ if ( IsEmpty () )
 
 TSuperGauge     Gauge;
 
-if ( showgauge ) {
+if ( IsInteractive ( execflags ) ) {
+
     if      ( how == SplitFreqByFrequency ) {
         Gauge.Set       ( "Split FREQ to Frequencies" );
         Gauge.AddPart   ( 0, NumFiles () + 1 );
@@ -2450,10 +2453,12 @@ for ( int i = 0; i < NumFiles (); i++ ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // assume all files have the same number of frequencies...
-    if ( i == 0 )
+    if ( i == 0 && IsInteractive ( execflags ) ) {
+
         if      ( how == SplitFreqByFrequency )     Gauge.SetRange ( 0, NumFiles () * numfreqs * numparts );
         else if ( how == SplitFreqByElectrode )     Gauge.SetRange ( 0, NumFiles () * numel    * numparts );
         else if ( how == SplitFreqByTime      )     Gauge.SetRange ( 0, NumFiles () * numtf    * numparts );
+        }
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2527,7 +2532,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
                                         // then split to 1 or 2 files per freq
         for ( int part = 0; part < numparts; part++ ) {
 
-            if ( showgauge )    Gauge.Next ( 0 );
+            Gauge.Next ( 0 );
 
 
             exptracks.Filename  = (*this)[ i ];
@@ -2543,10 +2548,12 @@ for ( int i = 0; i < NumFiles (); i++ ) {
                 exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
 
             exptracks.Filename.AddExtension ( fileext );
-
                                         // 2 consecutive equal freq names?
     //      if ( freq && StringIs ( FreqDoc->GetFrequencyName ( freq ), FreqDoc->GetFrequencyName ( freq - 1 ) ) )
     //          ReplaceExtension    ( OutFileName, FILEEXT_EEGSEF );
+
+            if ( IsNoOverwrite ( execflags ) )
+                exptracks.Filename.CheckNoOverwrite ();
 
 
             if ( gogofout )
@@ -2580,7 +2587,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
                                         // then split to 1 or 2 files per freq
         for ( int part = 0; part < numparts; part++ ) {
 
-            if ( showgauge )    Gauge.Next ( 0 );
+            Gauge.Next ( 0 );
 
 
             exptracks.Filename  = (*this)[ i ];
@@ -2596,6 +2603,9 @@ for ( int i = 0; i < NumFiles (); i++ ) {
                 exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
 
             exptracks.Filename.AddExtension ( /*fileext*/ FILEEXT_EEGSEF );
+
+            if ( IsNoOverwrite ( execflags ) )
+                exptracks.Filename.CheckNoOverwrite ();
 
 
             if ( gogofout )
@@ -2630,7 +2640,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
                                         // then split to 1 or 2 files per freq
         for ( int part = 0; part < numparts; part++ ) {
 
-            if ( showgauge )    Gauge.Next ( 0 );
+            Gauge.Next ( 0 );
 
 
             exptracks.Filename  = (*this)[ i ];
@@ -2643,6 +2653,9 @@ for ( int i = 0; i < NumFiles (); i++ ) {
                 exptracks.Filename += "." + TStringValue ( part == 0 ? InfixReal : InfixImag );
 
             exptracks.Filename.AddExtension ( /*fileext*/ FILEEXT_EEGSEF );
+
+            if ( IsNoOverwrite ( execflags ) )
+                exptracks.Filename.CheckNoOverwrite ();
 
 
             if ( gogofout )
@@ -2683,7 +2696,7 @@ for ( int i = 0; i < NumFiles (); i++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if ( showgauge )    Gauge.HappyEnd ();
+//if ( IsInteractive ( execflags ) )  Gauge.HappyEnd ();    // takes too much time when called from other processing
 }
 
 
