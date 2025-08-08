@@ -18,7 +18,6 @@ limitations under the License.
 
 #include    <owl\wsyscls.h>
 
-#include    "CartoolTypes.h"            // TFilenameFlags
 #include    "Files.Utils.h"
 #include    "Strings.TStrings.h"
 
@@ -149,6 +148,7 @@ public:
 
 //----------------------------------------------------------------------------
                                         // Group of Files (GoF) is a strings list at its core, but with methods to interact with real files
+enum    ExecFlags;
 enum    ResamplingType;
 class   TGoGoF;
 
@@ -229,10 +229,10 @@ public:
 
     void            Sort                        ()  final;
 
-    void            SplitFreqFiles              ( SplitFreqFlags how, TGoGoF *gogofout = 0, ExecFlags execflags = ExecFlags ( Interactive | DefaultOverwrite ) ) const;
-    void            Resample                    ( ResamplingType resampling, int numresamples, int resamplingsize, const TGoF* gofalt, TGoGoF& resgogof, TGoGoF* resgogofalt );  // resampling into anoth group of files
-    int             SplitByNames                ( const char* splitwith, TGoGoF& gogofout, TStrings*    groupnames = 0 )        const;
-    void            SplitByEpochs               ( const char* greppedwith, int maxepochs, const char* dirprefix, TGoF& gofout ) const;
+    void            SplitFreqFiles              ( SplitFreqFlags how, TGoGoF *gogofout, ExecFlags execflags )                                           const;
+    void            SplitEpochsFiles            ( const char* greppedwith, int maxepochs, const char* dirprefix, TGoF& gofout, ExecFlags execflags )    const;
+    void            ResampleFiles               ( ResamplingType resampling, int numresamples, int resamplingsize, const TGoF* gofalt, TGoGoF& resgogof, TGoGoF* resgogofalt, ExecFlags execflags );  // resampling into anoth group of files
+    int             SplitGoFByNames             ( const char* splitwith, TGoGoF& gogofout, TStrings*    groupnames = 0 )                                const;  // does NOT write files
 
 
 //  char*           operator    []              ( int index )           { return TStrings::operator[] ( index ); }

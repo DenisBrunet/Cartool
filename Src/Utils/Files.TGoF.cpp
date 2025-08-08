@@ -1640,7 +1640,7 @@ TFileName           commonend;
 for ( int gofi = 0; gofi < NumGroups (); gofi++ ) {
 
                                   // Default to split by our epoch name 
-    Group[ gofi ]->SplitByNames ( "." InfixEpoch, splitgogof, &splitnames );
+    Group[ gofi ]->SplitGoFByNames ( "." InfixEpoch, splitgogof, &splitnames );
 
     numsplit    = (int) splitgogof;
 
@@ -2167,10 +2167,11 @@ enum            FilesProjectedEnum
                 };
 
 
-void    TGoF::Resample  (   ResamplingType  resampling,     int         numresamples,   int         resamplingsize,
-                            const TGoF*     gofalt,
-                            TGoGoF&         resgogof,       TGoGoF*     resgogofalt
-                        )
+void    TGoF::ResampleFiles (   ResamplingType  resampling,     int         numresamples,   int         resamplingsize,
+                                const TGoF*     gofalt,
+                                TGoGoF&         resgogof,       TGoGoF*     resgogofalt,
+                                ExecFlags       execflags
+                            )
 {
 resgogof.Reset ();
 if ( resgogofalt )  resgogofalt->Reset ();
@@ -2327,7 +2328,8 @@ for ( int rsi = 0; rsi < numresamples; rsi++ ) {
     StringCopy          ( filenameout,  basefilename, IntegerToString ( buff, rsi + 1, NumIntegerDigits ( numresamples ) ) );
     AddExtension        ( filenameout,  ext );
 
-    CheckNoOverwrite    ( filenameout );
+    if ( IsNoOverwrite ( execflags ) )
+        CheckNoOverwrite    ( filenameout );
 
                                         // we have a new TGoF at each resampling - each TGoF then has the same number of files as the input TGoF
     resgogof.Add ( new TGoF );
@@ -2702,9 +2704,9 @@ for ( int i = 0; i < NumFiles (); i++ ) {
 
 //----------------------------------------------------------------------------
                                         // Try to group this big GoF into smaller GoF
-int     TGoF::SplitByNames  (   const char*     splitwith, 
-                                TGoGoF&         gogofout,   TStrings*       groupnames 
-                            )   const
+int     TGoF::SplitGoFByNames   (   const char*     splitwith, 
+                                    TGoGoF&         gogofout,   TStrings*       groupnames 
+                                )   const
 {
 gogofout.Reset ();
 
@@ -2822,11 +2824,12 @@ return  gogofout.NumGroups ();
                                         // Epochs can have any durations
                                         // Will always produce new temp files, so that caller can delete them at will
                                         // !Only scalar for the moment!
-void    TGoF::SplitByEpochs (   const char*     greppedwith,
-                                int             maxepochs,
-                                const char*     dirprefix,
-                                TGoF&           gofout
-                            )   const
+void    TGoF::SplitEpochsFiles  (   const char*     greppedwith,
+                                    int             maxepochs,
+                                    const char*     dirprefix,
+                                    TGoF&           gofout,
+                                    ExecFlags       execflags
+                                )   const
 {
 gofout.Reset ();
 
@@ -2834,7 +2837,7 @@ if ( IsEmpty () )
     return;
 
 if ( maxepochs <= 0 )
-    maxepochs   = INT_MAX;
+    maxepochs   = Highest ( maxepochs );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2866,21 +2869,22 @@ for ( int i = 0; i < (int) Strings; i++ ) {
     if ( grepepoch.Matched   ( tempdir, &matched ) )
         StringReplace   ( tempdir, matched ( 0 ), "." );
 
-    crtl::RemoveExtension   ( tempdir );
+    crtl::RemoveExtension( tempdir );
 
 
     StringCopy          ( subdir, Strings[ i ] );
 
-    crtl::RemoveFilename    ( subdir );
+    crtl::RemoveFilename( subdir );
 
     AppendDir           ( subdir, false, tempdir );
                                         // works also for directory
-    CheckNoOverwrite    ( subdir );
+    if ( IsNoOverwrite ( execflags ) )
+        CheckNoOverwrite( subdir );
 
     CreatePath          ( subdir, false );
                                         // get the actual sub-directory, after checking for no overwrite
     StringCopy          ( tempdir, subdir );
-    crtl::RemoveDir         ( tempdir );
+    crtl::RemoveDir     ( tempdir );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2916,7 +2920,8 @@ for ( int i = 0; i < (int) Strings; i++ ) {
 
         crtl::ReplaceExtension  ( copyfilename,  FILEEXT_EEGSEF );
 
-        CheckNoOverwrite    ( copyfilename );
+        if ( IsNoOverwrite ( execflags ) )
+            CheckNoOverwrite( copyfilename );
 
 
         maps.WriteFile      ( copyfilename, false, maps.GetSamplingFrequency () );
@@ -2943,7 +2948,7 @@ for ( int i = 0; i < (int) Strings; i++ ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+                                        // Markers exist here
     oneepoch.Type   = MarkerTypeTemp;
     StringCopy  ( oneepoch.Name, MarkerNameEpoch );
 
@@ -2974,7 +2979,8 @@ for ( int i = 0; i < (int) Strings; i++ ) {
 
         PostfixFilename     ( onefilename,  epochname );
 
-        CheckNoOverwrite    ( onefilename );
+        if ( IsNoOverwrite ( execflags ) )
+            CheckNoOverwrite( onefilename );
 
 
         maps.WriteFileEpochs( onefilename, false, maps.GetSamplingFrequency (), onetaglist/*, &tracksnames*/ );

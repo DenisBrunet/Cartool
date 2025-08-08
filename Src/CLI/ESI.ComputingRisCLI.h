@@ -532,7 +532,7 @@ for ( int si = 0; si < subjects.NumGroups (); si++ ) {
         TGoGoF              splitgogof;
         TStrings            splitnames;
 
-        subjects[ si ].SplitByNames ( "." InfixEpoch, splitgogof, &splitnames );
+        subjects[ si ].SplitGoFByNames ( "." InfixEpoch, splitgogof, &splitnames );
 
         verbose.Put ( "Number of groups of epochs:", splitgogof.NumGroups () );
 

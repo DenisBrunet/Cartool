@@ -458,7 +458,7 @@ for ( int si = 0; si < numgroups; si++ ) {
         TGoGoF              splitgogof;
         TStrings            splitnames;
 
-        subjects[ si ].SplitByNames ( "." InfixEpoch, splitgogof, &splitnames );
+        subjects[ si ].SplitGoFByNames ( "." InfixEpoch, splitgogof, &splitnames );
 
         verbose.Put ( "Number of groups of epochs:", splitgogof.NumGroups () );
 
@@ -771,14 +771,14 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                                         // !The returned epochs can be any size, as specified by the markers themselves!
                                         // !The Batch Averaging below also seems to not really care, taking the first file size for all epochs!
                                         // ?We could add a fall-back option to split into blocks of known size?
-        gogofpersubject[ absg ].SplitByEpochs ( InfixEpochConcatGrep, -1, Prefix, gofsplitepochs );
+        gogofpersubject[ absg ].SplitEpochsFiles ( InfixEpochConcatGrep, -1, Prefix, gofsplitepochs, execflags );
 
                                         // here we can actually test all epochs are equally long - a bit late in the game, though
 //      TracksCompatibleClass       CompatEpochs;
 //
 //      gofsplitepochs.AllTracksAreCompatible ( CompatEpochs );
 //
-//      if  ( CompatEpochs.NumTF == CompatibilityNotConsistent ) {
+//      if  ( CompatEpochs.NumTF == CompatibilityNotConsistent && IsInteractive ( execflags ) ) {
 //          ShowMessage ( "Epochs don't seem to have the same number of samples/time range!" NewLine 
 //                        "Proceeding anyway, but the averaging will have some problems...", ComputingRisTitle, ShowMessageWarning );
 //          }
@@ -846,7 +846,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
         TFileName           newmeanfile;
 
                 // only 1 output TGoF  Default to split by our epoch name 
-        risgogof[ 0 ].SplitByNames (  "." InfixEpoch, splitgogof );
+        risgogof[ 0 ].SplitGoFByNames (  "." InfixEpoch, splitgogof );
 
 
         #ifdef ShowGroupsShuffling

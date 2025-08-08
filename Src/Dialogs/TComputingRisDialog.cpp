@@ -75,7 +75,7 @@ if ( areepochs ) {
     TGoGoF          splitgogof;
                                         // Default to split by our epoch name
                                         // !Missing: splitting by "Concat" / "Concatenate" strings!
-    subject.SplitByNames ( "." InfixEpoch, splitgogof );
+    subject.SplitGoFByNames ( "." InfixEpoch, splitgogof );
 
     return  (int) splitgogof;
     }
@@ -103,7 +103,7 @@ int             NumEpochs ( const TGoF& subject, const char* fileprefix )
 TGoGoF              splitgogof;
                                         // Default to split by our epoch name
                                         // !Missing: splitting by "Concat" / "Concatenate" strings!
-subject.SplitByNames ( "." InfixEpoch, splitgogof );
+subject.SplitGoFByNames ( "." InfixEpoch, splitgogof );
 
 return  splitgogof.NumFiles ();
 
@@ -112,7 +112,7 @@ TGoF                gofsplitepochs;
                                         // !The returned epochs can be any size, as specified by the markers themselves!
                                         // !The Batch Averaging below also seems to not really care, taking the first file size for all epochs!
                                         // ?We could add a fall-back option to split into blocks of known size?
-subject.SplitByEpochs ( InfixEpochConcatGrep, -1, fileprefix /*localfileprefix* /, gofsplitepochs );
+subject.SplitEpochsFiles ( InfixEpochConcatGrep, -1, fileprefix /*localfileprefix* /, gofsplitepochs );
 
 if ( gofsplitepochs.IsEmpty () )
     return  0;

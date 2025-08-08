@@ -2863,10 +2863,11 @@ for ( int absg = 0; absg < gogof.NumGroups (); absg++ ) {
             resamplingsize  = gfppeaks != NoGfpPeaksDetection   ? reqresamplingsize / GfpPeaksDownsamplingRatio
                                                                 : reqresamplingsize;
 
-            preprocgogof[ absg2 ].Resample  (   resampling,     numresampling,  resamplingsize,
-                                                dualdata ? &preprocgogofalt[ absg2  ] : 0,
-                                                resampgogof, dualdata ? &resampgogofalt : 0
-                                            );
+            preprocgogof[ absg2 ].ResampleFiles (   resampling,     numresampling,  resamplingsize,
+                                                    dualdata ? &preprocgogofalt[ absg2  ] : 0,
+                                                    resampgogof, dualdata ? &resampgogofalt : 0,
+                                                    ExecFlags ( Interactive | DefaultOverwrite )
+                                                );
             }
 
 //        resampgogof    .Show ( "PreProcessFiles Resampled: output" );
