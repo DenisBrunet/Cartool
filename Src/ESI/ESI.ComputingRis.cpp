@@ -765,6 +765,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                                           && gogofpersubject[ absg ].AllStringsGrep ( InfixEpochConcatGrep, GrepOptionDefaultFiles );
 
     TGoF                gofsplitepochs;
+    TFileName           outputdir       = BaseDir;
 
 
     if ( splitepochs ) {
@@ -785,9 +786,14 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
 
         if ( gofsplitepochs.IsEmpty () )
+
             splitepochs = false;
-        else                            // !Replacing subjects with split epochs!
+        else {                          // !Replacing subjects with split epochs!
             gogofpersubject[ absg ] = gofsplitepochs;
+                                        // !Epochs have been written in a sub-directory!
+            outputdir               = gofsplitepochs[ 0 ];
+            outputdir.RemoveFilename ();
+            }
 
         } // if splitepochs
 
@@ -816,7 +822,8 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                         EpochWholeTime,             0,                  0,
                         NoGfpPeaksDetection,        0,
                         NoSkippingBadEpochs,        0,                  0,
-                        BaseDir,                    Prefix,                 // base file name / directory, optional file prefix
+                        outputdir,                                          // output directory: either provided or from epochs sub-dir
+                        Prefix,                                             // optional file prefix
                         -1,                        -1,                      // no filename clipping
                         false,                      0,                      // no temp dir
                         computingindividualfiles,   risgogof,           0,          gofoutdirpreproc,   newfiles,
@@ -827,8 +834,8 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // We can get rid of these temp EEG split epochs
-    if ( splitepochs )
+                                        // We can get rid of these temp EEG split epochs - no need to test for overwriting, we own them
+    if ( splitepochs /*&& IsNoOverwrite ( execflags )*/ )
 
         gofsplitepochs.DeleteFiles ( TracksBuddyExt );
 
@@ -921,7 +928,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
             //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // do a bit of file name clean-up
-            StringCopy          ( newmeanfile, meanfile );
+            newmeanfile = meanfile;
                                         // look for some remnant like ".Epoch 00." in the FILE NAME ONLY
             if ( grepepoch.Matched  ( ToFileName ( newmeanfile ), &matched ) )
                                         // then remove it
@@ -959,7 +966,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
         if ( actualsavingzscorefactors ) {
                                         // we need to move 1 directory up the last 2 files (ris and sef)
-            const char*         oldzscorefile1  = zscoregofout [ (int) zscoregofout - 2 ];
+            TFileName           oldzscorefile1  = zscoregofout [ (int) zscoregofout - 2 ];
             TFileName           newzscorefile1  = oldzscorefile1;
 
             RemoveLastDir       ( newzscorefile1 );
@@ -974,7 +981,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
             MoveFileExtended    ( oldzscorefile1, newzscorefile1 );
 
 
-            const char*         oldzscorefile2  = zscoregofout [ (int) zscoregofout - 1 ];
+            TFileName           oldzscorefile2  = zscoregofout [ (int) zscoregofout - 1 ];
             TFileName           newzscorefile2  = oldzscorefile2;
 
             RemoveLastDir       ( newzscorefile2 );
@@ -996,23 +1003,18 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-        if ( ! savingepochfiles )
+                                        // no need to test for overwriting, we own them
+        if ( ! savingepochfiles /*&& IsNoOverwrite ( execflags )*/ )
                                         // first delete these files
             risgogof.DeleteFiles ( FILEEXT_MRK /*TracksBuddyExt*/ );
 
                                         // finally trying to remove the directory, only if empty
-        TFileName           tempdir ( risgogof[ 0 ][ 0 ] );
+        TFileName           tempdir         = risgogof[ 0 ][ 0 ];
         RemoveFilename  ( tempdir );
-
-        if ( IsEmptyDirectory ( tempdir ) )
+                                        // no need to test for overwriting, we own them
+        if ( IsEmptyDirectory ( tempdir ) /*&& IsNoOverwrite ( execflags )*/ )
 
             risgogof.NukeDirectories ();
-
-
-//          else
-            // saving to a TGoGoF for verbose?
-
 
 //                                      // Average of vectorial Z-Scored epochs is no longer Z-Score'd
 //                                      // At least rescale all tracks so that the global max mode is back to 1?
@@ -1020,6 +1022,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 //        && actualbacknorm != BackgroundNormalizationNone )
 //
 //          RescaleZScore (   mergedgof   );
+
 
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // we have reduced dimensionality, we can proceed with the regular case

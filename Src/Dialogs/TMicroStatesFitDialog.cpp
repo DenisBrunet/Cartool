@@ -2391,7 +2391,8 @@ for ( int gofi1 = 0, gofi2 = gofi1 + numwithinsubjects - 1; gofi1 < numgroups &&
                             EpochWholeTime,     0,          0,              // no cropping, epochs are managed in the actual fitting, we want the output to be the same size as the input
                             NoGfpPeaksDetection,0,
                             NoSkippingBadEpochs,0,          0,              // no Skipping Bad Epochs, this is handled in the actual fitting
-                            FitTransfer.BaseFileName,       0,
+                            FitTransfer.BaseFileName,
+                            0,
                             0,                  30,                         // not optimal, should look for enough chars to discriminate all files
                             usetempdir,         temppath,                   // there can be problems if we generate files within the original directory, in case of parallel computations
                             true,               tempgogof,      0,          baselistpreproc,    newfiles,

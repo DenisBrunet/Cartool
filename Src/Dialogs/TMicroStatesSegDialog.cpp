@@ -2766,7 +2766,8 @@ for ( int absg = 0; absg < gogof.NumGroups (); absg++ ) {
                         epochs,        &epochfrom,             &epochto,
                         gfppeaks,       listgfppeaks,
                         badepochs,      listbadepochs,          BadEpochsToleranceDefault,
-                        baselist[ absg ],           0,
+                        baselist[ absg ],
+                        0,
                         0 /*fromchars*/,tochars,                // also clip preprocessed file, so file name can be optimally smaller
                         usetempdir,     temppath,               // there can be problems if we generate files within the original directory, in case of parallel computations
                         true,           preprocgogof,   dualdata ? &preprocgogofalt : 0,    preprocbaselist,    newfiles,

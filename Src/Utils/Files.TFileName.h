@@ -68,11 +68,12 @@ public:
 
 
     void            ClipFileName            ( int from, int to )                {               StringClip      ( ToFileName ( String ), from, to ); }  // only the (last) file name part
-    char*           AddExtension            ( const char* ext    )              { return  crtl::AddExtension    ( String, ext    ); }
-    char*           ReplaceExtension        ( const char* newext )              { return  crtl::ReplaceExtension( String, newext ); }
-    char*           RemoveExtension         ()                                  { return  crtl::RemoveExtension ( String );         }
-    char*           ReplaceDir              ( const char* newdir )              { return  crtl::ReplaceDir      ( String, newdir ); }
-    char*           GetFilename             ()                                  { return  crtl::GetFilename     ( String );         }
+    char*           AddExtension            ( const char* ext    )              { return  crtl::AddExtension    ( String, ext    );         }
+    char*           ReplaceExtension        ( const char* newext )              { return  crtl::ReplaceExtension( String, newext );         }
+    char*           RemoveExtension         ()                                  { return  crtl::RemoveExtension ( String );                 }
+    char*           RemoveFilename          ( bool keepbackslash = false )      { return  crtl::RemoveFilename  ( String, keepbackslash );  }
+    char*           ReplaceDir              ( const char* newdir )              { return  crtl::ReplaceDir      ( String, newdir );         }
+    char*           GetFilename             ()                                  { return  crtl::GetFilename     ( String );                 }
 
 
     void            Show                    ( const char* title = 0 )   const   { ShowMessage ( String, TFixedString<256> ( StringIsEmpty ( title ) ? "File Name" : title ) ); }
@@ -102,7 +103,7 @@ if ( IsFlag ( flags, TFilenameExtendedPath      ) )     SetExtendedPath     (); 
 
 if ( IsFlag ( flags, TFilenameToSibling         ) )     SetToSiblingFile    ();                 // convert to another extension / sibling file for Cartool purpose (.img to .hdr f.ex.)
 
-if ( IsFlag ( flags, TFilenameToDirectory       ) )     RemoveFilename      ( String, false );  // keeping only the directory part - trailing \ is removed
+if ( IsFlag ( flags, TFilenameToDirectory       ) )     RemoveFilename      ( false );          // keeping only the directory part - trailing \ is removed
 
 if ( IsFlag ( flags, TFilenameNoOverwrite       ) )     CheckNoOverwrite    ();                 // avoiding overwrite by generating a variation of given file name
                                         // only once relative path has been resolved to absolute
