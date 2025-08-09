@@ -772,7 +772,12 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                                         // !The returned epochs can be any size, as specified by the markers themselves!
                                         // !The Batch Averaging below also seems to not really care, taking the first file size for all epochs!
                                         // ?We could add a fall-back option to split into blocks of known size?
-        gogofpersubject[ absg ].SplitEpochsFiles ( InfixEpochConcatGrep, -1, Prefix, gofsplitepochs, execflags );
+        gogofpersubject[ absg ].SplitEpochsFiles    (   InfixEpochConcatGrep, 
+                                                        -1,
+                                                        BaseDir,
+                                                        Prefix,
+                                                        gofsplitepochs, 
+                                                        execflags           );
 
                                         // here we can actually test all epochs are equally long - a bit late in the game, though
 //      TracksCompatibleClass       CompatEpochs;
@@ -790,7 +795,7 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
             splitepochs = false;
         else {                          // !Replacing subjects with split epochs!
             gogofpersubject[ absg ] = gofsplitepochs;
-                                        // !Epochs have been written in a sub-directory!
+                                        // !Epochs have been written into a sub-directory!
             outputdir               = gofsplitepochs[ 0 ];
             outputdir.RemoveFilename ();
             }
@@ -850,7 +855,6 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
         TGoF                mergedgof;
         TStringGrep         grepepoch ( InfixEpochConcatGrep, GrepOptionDefault );  // !handling file names ourselves here!
         TStrings            matched;
-        TFileName           newmeanfile;
 
                 // only 1 output TGoF  Default to split by our epoch name 
         risgogof[ 0 ].SplitGoFByNames (  "." InfixEpoch, splitgogof );
@@ -927,26 +931,27 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
 
 
             //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Reprocess / move output file, if any
+            if ( savingindividualfiles || computegroupsaverages ) {
                                         // do a bit of file name clean-up
-            newmeanfile = meanfile;
-                                        // look for some remnant like ".Epoch 00." in the FILE NAME ONLY
-            if ( grepepoch.Matched  ( ToFileName ( newmeanfile ), &matched ) )
-                                        // then remove it
-                StringReplace       ( ToFileName ( newmeanfile ), matched ( 0 ), "." );
-                                        // files were in a temp directory, so move them up for better visibility
-            if ( splitepochs )
-                RemoveLastDir       ( newmeanfile );
+                TFileName       newmeanfile     = meanfile;
 
-            if ( StringIsNot ( newmeanfile, meanfile ) ) {
+                                        // look for some remnant like ".Epoch 00." in the FILE NAME ONLY
+                if ( grepepoch.Matched  ( ToFileName ( newmeanfile ), &matched ) )
+                                        // then remove it
+                    StringReplace       ( ToFileName ( newmeanfile ), matched ( 0 ), "." );
+                                        // move to requested output directory
+                newmeanfile.ReplaceDir   ( BaseDir );
 
                 if ( IsNoOverwrite ( execflags ) )
-                    CheckNoOverwrite    ( newmeanfile );
-                                        // and rename
+                    newmeanfile.CheckNoOverwrite ();
+
                 MoveFileExtended    ( meanfile, newmeanfile );
-                }
 
                                         // remember only the Mean
-            mergedgof.Add       ( newmeanfile );
+                mergedgof.Add       ( newmeanfile );
+                }
+
             } // for splitgogof
 
 
@@ -1008,9 +1013,9 @@ for ( int absg = 0; absg < gogofpersubject.NumGroups (); absg++ ) {
                                         // first delete these files
             risgogof.DeleteFiles ( FILEEXT_MRK /*TracksBuddyExt*/ );
 
-                                        // finally trying to remove the directory, only if empty
+                                        // finally trying to remove the directory, but only if it appears to be empty
         TFileName           tempdir         = risgogof[ 0 ][ 0 ];
-        RemoveFilename  ( tempdir );
+        tempdir.RemoveFilename ();
                                         // no need to test for overwriting, we own them
         if ( IsEmptyDirectory ( tempdir ) /*&& IsNoOverwrite ( execflags )*/ )
 

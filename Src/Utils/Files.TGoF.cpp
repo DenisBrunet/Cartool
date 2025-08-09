@@ -778,7 +778,7 @@ tonuke.RemoveDuplicates ();
 
 for ( int i = 0; i < (int) tonuke; i++ ) {
 
-//    DBGM ( tonuke[ i ], "Nuking" );
+    //DBGM ( tonuke[ i ], "Nuking" );
 
     crtl::NukeDirectory ( tonuke[ i ], confirm );
     } // for strings
@@ -2826,7 +2826,8 @@ return  gogofout.NumGroups ();
                                         // !Only scalar for the moment!
 void    TGoF::SplitEpochsFiles  (   const char*     greppedwith,
                                     int             maxepochs,
-                                    const char*     dirprefix,
+                                    const char*     outputdir,
+                                    const char*     prefix,
                                     TGoF&           gofout,
                                     ExecFlags       execflags
                                 )   const
@@ -2841,13 +2842,31 @@ if ( maxepochs <= 0 )
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-TFileName           mrkfilename;
+                                        // Writing all epochs of all files into a single directory - this helps cleaning-up later on
 TFileName           tempdir;
 TFileName           subdir;
+
+
+GetTempFileName     ( tempdir );
+
+tempdir = (TFileName) prefix + "SplitEpochs." + tempdir;
+
+tempdir.RemoveExtension ();
+
+subdir  = outputdir;
+
+AppendDir           ( subdir, false, tempdir );
+                                    // works also for directory
+if ( IsNoOverwrite ( execflags ) )
+    subdir.CheckNoOverwrite ();
+
+CreatePath          ( subdir, false );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+TFileName           mrkfilename;
 TMarkers            onetaglist;
-TFileName           onefilename;
-TFileName           epochname;
 TMarker             oneepoch;
 TStringGrep         grepepoch ( InfixEpochConcatGrep, GrepOptionDefault );  // !handling file names ourselves here!
 TStrings            matched;
@@ -2859,32 +2878,6 @@ for ( int i = 0; i < (int) Strings; i++ ) {
 //  TStrings            tracksnames;
                                         // these are temp files, we don't care for names
     TMaps               maps ( Strings[ i ], 0, AtomTypeScalar, ReferenceAsInFile/*, &tracksnames*/ );
-
-
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // create a temp subdirectory
-//  GetTempFileName     ( tempdir );
-    StringCopy          ( tempdir, dirprefix, ToFileName ( Strings[ i ] ) );
-
-    if ( grepepoch.Matched   ( tempdir, &matched ) )
-        StringReplace   ( tempdir, matched ( 0 ), "." );
-
-    crtl::RemoveExtension( tempdir );
-
-
-    StringCopy          ( subdir, Strings[ i ] );
-
-    crtl::RemoveFilename( subdir );
-
-    AppendDir           ( subdir, false, tempdir );
-                                        // works also for directory
-    if ( IsNoOverwrite ( execflags ) )
-        CheckNoOverwrite( subdir );
-
-    CreatePath          ( subdir, false );
-                                        // get the actual sub-directory, after checking for no overwrite
-    StringCopy          ( tempdir, subdir );
-    crtl::RemoveDir     ( tempdir );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2906,11 +2899,9 @@ for ( int i = 0; i < (int) Strings; i++ ) {
                                         // Oops, there is nothing - what do?
 
                                         // Option 1: duplicating the file
-        TFileName           copyfilename;
+        TFileName           copyfilename    = Strings[ i ];
 
-        StringCopy          ( copyfilename, Strings[ i ] );
-                                        // relocate to subdirectory
-        AppendDir           ( copyfilename, true, tempdir );
+        copyfilename.ReplaceDir ( subdir );
                                         // when not relocating, we need to avoid overwriting
 //      crtl::RemoveExtension   ( copyfilename );
 //
@@ -2918,10 +2909,10 @@ for ( int i = 0; i < (int) Strings; i++ ) {
 //
 //      AddExtension        ( copyfilename,  FILEEXT_EEGSEF );
 
-        crtl::ReplaceExtension  ( copyfilename,  FILEEXT_EEGSEF );
+        copyfilename.ReplaceExtension ( FILEEXT_EEGSEF );
 
         if ( IsNoOverwrite ( execflags ) )
-            CheckNoOverwrite( copyfilename );
+            copyfilename.CheckNoOverwrite();
 
 
         maps.WriteFile      ( copyfilename, false, maps.GetSamplingFrequency () );
@@ -2968,19 +2959,20 @@ for ( int i = 0; i < (int) Strings; i++ ) {
         onetaglist.AppendMarker    ( oneepoch );
 
                                         // Epoch file name
-        StringCopy          ( onefilename, Strings[ i ] );
-                                        // relocate to subdirectory
-        AppendDir           ( onefilename, true, tempdir );
+        TFileName           onefilename     = Strings[ i ];
+
+        onefilename.ReplaceDir  ( subdir );
                                         // replace any existing epochs name
         if ( grepepoch.Matched   ( ToFileName ( onefilename ), &matched ) )
             StringReplace   ( ToFileName ( onefilename ), matched ( 0 ), "." );
+
                                         // cooking a new epoch name
-        StringCopy          ( epochname,   "." InfixEpoch  " ", IntegerToString ( markeri + 1, NumIntegerDigits ( eegmarkers.GetNumMarkers () ) ) );
+        TFileName           epochname   = "." InfixEpoch " " + IntegerToString ( markeri + 1, NumIntegerDigits ( eegmarkers.GetNumMarkers () ) );
 
         PostfixFilename     ( onefilename,  epochname );
 
         if ( IsNoOverwrite ( execflags ) )
-            CheckNoOverwrite( onefilename );
+            onefilename.CheckNoOverwrite ();
 
 
         maps.WriteFileEpochs( onefilename, false, maps.GetSamplingFrequency (), onetaglist/*, &tracksnames*/ );

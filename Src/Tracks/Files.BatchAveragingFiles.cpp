@@ -186,7 +186,7 @@ for ( int eegi = 0; eegi < (int) gof; eegi++ ) {
     eegdoc->ReadRawTracks ( 0, numtf - 1, eegbuff );
 
 
-    if ( robust )
+    if ( robust ) {
 
         OmpParallelFor
 
@@ -194,6 +194,7 @@ for ( int eegi = 0; eegi < (int) gof; eegi++ ) {
         for ( int tf = 0; tf < numtf;     tf++ )
 
             stat[ e * numtf + tf ].Add ( eegbuff ( e, tf ) );
+        }
 
 
     if ( nonrobust ) {
@@ -780,13 +781,14 @@ for ( int risi = 0; risi < (int) gof; risi++ ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if ( regstats )
+    if ( regstats ) {
 
         OmpParallelFor
 
         for ( int nc = 0; nc < sum.GetNumMaps (); nc++ )
 
             sum[ nc ]  += risbuff[ nc ];
+        }
 
 
 

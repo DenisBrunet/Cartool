@@ -72,6 +72,7 @@ public:
     char*           ReplaceExtension        ( const char* newext )              { return  crtl::ReplaceExtension( String, newext );         }
     char*           RemoveExtension         ()                                  { return  crtl::RemoveExtension ( String );                 }
     char*           RemoveFilename          ( bool keepbackslash = false )      { return  crtl::RemoveFilename  ( String, keepbackslash );  }
+    char*           RemoveDir               ()                                  { return  crtl::RemoveDir       ( String );                 }
     char*           ReplaceDir              ( const char* newdir )              { return  crtl::ReplaceDir      ( String, newdir );         }
     char*           GetFilename             ()                                  { return  crtl::GetFilename     ( String );                 }
 

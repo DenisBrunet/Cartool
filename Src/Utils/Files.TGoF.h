@@ -230,7 +230,7 @@ public:
     void            Sort                        ()  final;
 
     void            SplitFreqFiles              ( SplitFreqFlags how, TGoGoF *gogofout, ExecFlags execflags )                                           const;
-    void            SplitEpochsFiles            ( const char* greppedwith, int maxepochs, const char* dirprefix, TGoF& gofout, ExecFlags execflags )    const;
+    void            SplitEpochsFiles            ( const char* greppedwith, int maxepochs, const char* outputdir, const char* prefix, TGoF& gofout, ExecFlags execflags )    const;
     void            ResampleFiles               ( ResamplingType resampling, int numresamples, int resamplingsize, const TGoF* gofalt, TGoGoF& resgogof, TGoGoF* resgogofalt, ExecFlags execflags );  // resampling into anoth group of files
     int             SplitGoFByNames             ( const char* splitwith, TGoGoF& gogofout, TStrings*    groupnames = 0 )                                const;  // does NOT write files
 
