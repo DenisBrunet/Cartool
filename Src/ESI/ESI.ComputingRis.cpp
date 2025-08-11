@@ -27,6 +27,7 @@ limitations under the License.
 #include    "Files.Extensions.h"
 #include    "Files.PreProcessFiles.h"   // GetInverseInfix
 
+#include    "TInverseResults.h"         // RegularizationToString
 #include    "TInverseMatrixDoc.h"
 #include    "TFreqDoc.h"
 

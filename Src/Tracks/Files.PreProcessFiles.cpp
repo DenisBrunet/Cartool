@@ -28,6 +28,7 @@ limitations under the License.
 #include    "TExportTracks.h"
 
 #include    "TTracksDoc.h"
+#include    "TInverseResults.h"         // RegularizationToString
 #include    "TInverseMatrixDoc.h"
 
 #pragma     hdrstop

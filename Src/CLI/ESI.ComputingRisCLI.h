@@ -22,6 +22,7 @@ limitations under the License.
 #include    "System.CLI11.h"
 #include    "CLIDefines.h"
 
+#include    "TInverseResults.h"         // RegularizationToString
 #include    "ESI.ComputingRis.h"
 #include    "TComputingRisDialog.h"
 
