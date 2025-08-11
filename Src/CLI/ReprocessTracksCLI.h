@@ -239,15 +239,16 @@ DefineCLIOptionFiles    ( reprocsub,-1,      "",     __files,                __f
 
 
 //----------------------------------------------------------------------------
-                                        // Running the command
-inline void     ReprocessTracksCLI ( CLI::App* reprocsub )
+                                        // Running the command        optional gof for tests
+inline void     ReprocessTracksCLI ( CLI::App* reprocsub, const TGoF* othergof = 0 )
 {
 if ( ! IsSubCommandUsed ( reprocsub )  )
     return;
 
 
 TFileName           inputdir        = GetCLIOptionDir   ( reprocsub, __inputdir );
-TGoF                gof             = GetCLIOptionFiles ( reprocsub, __files, __inputdir );
+TGoF                gof             = othergof ? *othergof 
+                                               : GetCLIOptionFiles ( reprocsub, __files, __inputdir );
 
 if ( gof.IsEmpty () ) {
 
