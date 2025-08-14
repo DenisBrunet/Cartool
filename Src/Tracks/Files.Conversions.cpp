@@ -254,6 +254,47 @@ DeleteFiles  ( filestemplatemrk );
 
 
 //----------------------------------------------------------------------------
+                                        // Handy utility to return the grepped Hz from file
+TStringValue    GetFileInfixHz ( const char* file )
+{
+if ( StringIsEmpty ( file ) )
+    return  "";
+
+TStringGrep         grepHz ( InfixHzGrep, GrepOptionDefaultFiles );
+TStrings            matched;
+
+grepHz.Matched ( file, &matched );
+
+//grepHz.Show ( ToFileName ( file ) );
+
+return  grepHz.HasMatches () ? matched ( 1 ) : "";
+}
+
+                                        // Same, but for a group of files
+TStringValue    GetFilesInfixHz ( const TGoF& files )
+{
+if ( files.IsEmpty () )
+    return  "";
+
+
+TStringValue        freqvalue       = GetFileInfixHz ( files[ 0 ] );
+
+if ( freqvalue.IsEmpty () )
+    return  "";
+                                        // here freqvalue exists
+
+for ( int fi = 1; fi < files.NumFiles (); fi++ )
+                                        // any difference, including missing string?
+    if ( GetFileInfixHz ( files[ fi ] ) != freqvalue )
+
+        return  "";
+
+
+return  freqvalue;
+}
+
+
+//----------------------------------------------------------------------------
 
 void    MergeTracksToFreqFiles  (   
                                 const TGoF&             gof,           
@@ -487,11 +528,9 @@ if ( grepunderscore.HasMatches () ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // retrieve frequency names
                                         // we need to read all files, extract frequency info, and sort it
-                                            // NOT testing for trailing "." after "Hz", as duplicated files could have "Hz_2" f.ex.
-TStringGrep         grepHz ( "\\.(\\d+\\.?\\d*)Hz", GrepOptionDefaultFiles );
-
-TFreqFrequencyName  freqname;
+TStringValue        freqvalue;
 TArray2<double>     freqindex ( numfreqs, 2 );
+TFreqFrequencyName  freqname;
 TStrings            freqnames;
 TFileName           OutFileName;
 
@@ -499,25 +538,22 @@ TFileName           OutFileName;
 freqindex.ResetMemory ();
 OutFileName.Clear ();
 
-
                                         // try to extract a (frequency) value from each file
 for ( int freqi = 0; freqi < numfreqs; freqi++ ) {
 
-    grepHz.Matched ( gofr[ freqi ], &matched );
-
-  //grepHz.Show ( IntegerToString ( freqi + 1 ) );
+    freqvalue   = GetFileInfixHz ( gofr[ freqi ] );
 
                                         // store the converted value for later sorting
-    freqindex ( freqi , 0 ) = grepHz.HasMatches () ? StringToDouble ( matched ( 1 ) ) : 0;
-    freqindex ( freqi , 1 ) = freqi;
+    freqindex ( freqi, 0 )  = StringToDouble ( freqvalue ); // 0 if empty
+    freqindex ( freqi, 1 )  = freqi;
 
-                                        // store the frequency name
-    if ( grepHz.HasMatches () ) {
-        StringCopy      ( freqname.FrequencyName, matched ( 1 ), sizeof ( freqname ) - 1 );
-        StringAppend    ( freqname.FrequencyName, "Hz",          sizeof ( freqname ) - 1 );
+                                        // store the frequency name, while also taking care of proper string length
+    if ( freqvalue.IsNotEmpty () ) {
+        StringCopy      ( freqname.FrequencyName, freqvalue, sizeof ( freqname ) - 1 );
+        StringAppend    ( freqname.FrequencyName, "Hz",      sizeof ( freqname ) - 1 );
         }
     else
-        ClearString     ( freqname.FrequencyName, sizeof ( freqname ) - 1 );
+        ClearString     ( freqname.FrequencyName,            sizeof ( freqname ) - 1 );
 
     freqnames.Add   ( freqname.FrequencyName );
 

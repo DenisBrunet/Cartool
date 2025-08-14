@@ -67,14 +67,16 @@ public:
     void            GetCurrentDir           ()                                  { ::GetCurrentDirectory ( Size (), String );}
 
 
-    void            ClipFileName            ( int from, int to )                {               StringClip      ( ToFileName ( String ), from, to ); }  // only the (last) file name part
-    char*           AddExtension            ( const char* ext    )              { return  crtl::AddExtension    ( String, ext    );         }
-    char*           ReplaceExtension        ( const char* newext )              { return  crtl::ReplaceExtension( String, newext );         }
-    char*           RemoveExtension         ()                                  { return  crtl::RemoveExtension ( String );                 }
-    char*           RemoveFilename          ( bool keepbackslash = false )      { return  crtl::RemoveFilename  ( String, keepbackslash );  }
-    char*           RemoveDir               ()                                  { return  crtl::RemoveDir       ( String );                 }
-    char*           ReplaceDir              ( const char* newdir )              { return  crtl::ReplaceDir      ( String, newdir );         }
-    char*           GetFilename             ()                                  { return  crtl::GetFilename     ( String );                 }
+    void            ClipFileName            ( int from, int to )                            {               StringClip      ( ToFileName ( String ), from, to ); }  // only the (last) file name part
+    char*           AddExtension            ( const char* ext    )                          { return  crtl::AddExtension    ( String, ext    );                     }
+    char*           ReplaceExtension        ( const char* newext )                          { return  crtl::ReplaceExtension( String, newext );                     }
+    char*           RemoveExtension         ()                                              { return  crtl::RemoveExtension ( String );                             }
+    char*           RemoveFilename          ( bool keepbackslash = false )                  { return  crtl::RemoveFilename  ( String, keepbackslash );              }
+    char*           RemoveDir               ()                                              { return  crtl::RemoveDir       ( String );                             }
+    char*           ReplaceDir              ( const char* newdir )                          { return  crtl::ReplaceDir      ( String, newdir );                     }
+    char*           AppendDir               ( bool endswithfilename, const char* addeddir ) { return  crtl::AppendDir       ( String, endswithfilename, addeddir ); }
+    char*           GetFilename             ()                                              { return  crtl::GetFilename     ( String );                 }
+    char*           PrefixFilename          ( const char* prefix, const char* tail = 0 )    { return  crtl::PrefixFilename  ( String, prefix, tail );   }
 
 
     void            Show                    ( const char* title = 0 )   const   { ShowMessage ( String, TFixedString<256> ( StringIsEmpty ( title ) ? "File Name" : title ) ); }

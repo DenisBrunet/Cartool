@@ -306,7 +306,7 @@ int                 numeegelec          = gof.GetNumElectrodes ();
                                         // if not found, returns 0, which will use the duration as time frames
 double              samplingfrequency   = gof.GetSamplingFrequency ();
 
-//int                 maxnumtf            = gof.GetMaxNumTF ( true );
+//int                 maxnumtf            = gof.GetMaxNumTF ( false );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -391,16 +391,42 @@ if ( createtempdir ) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Do a sub-sampling of all the data: 1 GoF -> 1 file
 if ( subsamplesallfiles ) {
+/*
+                                        // Data coming from frequency analysis have side-effects artefacts:
+                                        // the border of the data is either tapered to 0 via Hanning border
+                                        // or is irrelevant data due to data padding / circular assomptions
+                                        // We better skip the data at the edge in either case!
 
+                                        // Retrieve the common Hz coming from a split freq file
+    TStringValue    freqvalue       = GetFilesInfixHz ( gof );
+    int             skipborder      = 0;
+
+                                        // This will act as a flag that we are indeed dealing with frequency data
+    if ( freqvalue.IsNotEmpty () && false ) {
+
+        int         sthwi       = Truncate ( HanningBorder ( samplingfrequency, StringToDouble ( freqvalue ), maxnumtf ) );
+
+                                        // systematically cutting the lower half of Hanning border
+      //skipborder  = sthwi / 2;
+                                        // cutting the whole Hanning border while preventing losing more than half of the data
+                                        // in the worse case scenario, this is equivalent to cutting half the Hanning border
+        skipborder  = NoMore ( maxnumtf / 4, sthwi );
+        }
+*/
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // we might not need the same amount of resampling
                                         // regularization might downsample again if the amount is still too much, f.ex. from Z-Score
     int                 DownsamplingTargetSize  = max ( gfpnormalize                                        ? DownsamplingTargetSizeGfp     : 0,
                                                         regularization == RegularizationAutoGlobal          ? DownsamplingTargetSizeReg     : 0,
                                                         backnorm == BackgroundNormalizationComputingZScore  ? DownsamplingTargetSizeZScore  : 0 );
 
+                                        // optionally discounting the edges of data, for each file
+//  int                 totalvaliddata  = gof.GetSumNumTF () - ( 2 * skipborder ) * gof.NumFiles ();
+    int                 totalvaliddata  = gof.GetSumNumTF ();
 
-                              // For frequencies, subsampling is done in 2 files, one Real and one Imaginary
-    TDownsampling       downtf ( gof.GetSumNumTF () / ( mergecomplex ? 2 : 1 ), DownsamplingTargetSize );
+                                        // For complex frequency files, subsampling is spread into the Real and Imaginary files
+    TDownsampling       downtf ( totalvaliddata / ( mergecomplex ? 2 : 1 ), DownsamplingTargetSize );
 
 
     TMaps               submaps  (                downtf.NumDownData,                    numeegelec     );
@@ -433,25 +459,31 @@ if ( subsamplesallfiles ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // write the sub-sampled data to a single file
-    StringCopy              ( concatfile, gof[ 0 ] );
-    RemoveExtension         ( concatfile );
-    PrefixFilename          ( concatfile, fileprefix );
-    StringAppend            ( concatfile, "." InfixSubsampled ".", StringRandom ( buff, 6 ) );
+    concatfile      = gof[ 0 ];
+
+    concatfile.RemoveExtension ();
+
+    concatfile.PrefixFilename ( fileprefix );
+
+    concatfile     += "." InfixSubsampled "." + (TFileName) StringRandom ( buff, 6 );
+
     if ( mergecomplex )
-        StringAppend        ( concatfile, "." InfixReal );
+        concatfile += "." InfixReal;
 
-    AddExtension            ( concatfile, FILEEXT_EEGSEF /*fileext*/ );
+    concatfile.AddExtension ( FILEEXT_EEGSEF /*fileext*/ );
 
-    ReplaceDir              ( concatfile, outputdir );  // currently not using optional tempdir
+    concatfile.ReplaceDir   ( outputdir );  // currently not using optional tempdir
 
 //  if ( IsNoOverwrite ( execflags ) )  // not needed for a random tmp file
 //      concatfile.CheckNoOverwrite ();
 
-    submaps.WriteFile       ( concatfile, false, 0 );
+    submaps.WriteFile ( concatfile, false, 0 );
 
 
     if ( mergecomplex ) {
-        StringCopy          ( concatfilef, concatfile );
+
+        concatfilef = concatfile;
+
         StringReplace       ( concatfilef, "." InfixReal, "." InfixImag );
 
 //      if ( IsNoOverwrite ( execflags ) )  // not needed for a random tmp file
@@ -464,6 +496,7 @@ if ( subsamplesallfiles ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 FctParams           p;
 bool                istempfile;
 bool                isfirstfile;
@@ -508,9 +541,9 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Output directory / file name cooking
 
-    StringCopy      ( filenameoutprefix, filenamein );
+    filenameoutprefix   = filenamein;
 
-    RemoveExtension ( filenameoutprefix );
+    filenameoutprefix.RemoveExtension ();
 
     if ( mergecomplex ) {
         StringReplace ( filenameoutprefix, "." InfixReal, "" );
@@ -521,7 +554,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
         filenameoutprefix.ClipFileName ( clipfromname, cliptoname );
 
                                         // optional prefix, unclipped
-    PrefixFilename  ( filenameoutprefix, fileprefix );
+    filenameoutprefix.PrefixFilename ( fileprefix );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -529,8 +562,9 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
                                         // If triggers are needed, then the ReadNativeMarkers functions should be called somehow
     TMarkers            markers;
 
-    StringCopy          ( filemrk, filenamein  );
-    AddExtension        ( filemrk, FILEEXT_MRK );
+    filemrk     = filenamein;
+
+    filemrk.AddExtension ( FILEEXT_MRK );
 
     markers.ReadFile    ( filemrk );
 
@@ -929,7 +963,7 @@ for ( int fi = - numextrafiles; fi < numprocfiles; fi++ ) {
 
         if ( createtempdir ) {
 
-            AppendDir       ( filenameout, true, tempdir );
+            filenameout.AppendDir ( true, tempdir );
 
             if ( isfirstfile )
                 CreatePath  ( filenameout, true );
@@ -1097,32 +1131,32 @@ if ( savezscore
         CreatePath      ( gofoutdir[ absg2 ], false );
 
                                         // output directory, constant file name
-//      StringCopy      ( filenameout,  gofoutdir[ absg2 ], "\\", ZScoreEnumToFactorFileInfix ( zscoremethod ) );
-//      AddExtension    ( filenameout,  /*fileext*/ FILEEXT_EEGSEF );
+      //filenameout = gofoutdir[ absg2 ] + "\\" + ZScoreEnumToFactorFileInfix ( zscoremethod );
+      //filenameout.AddExtension  ( /*fileext*/ FILEEXT_EEGSEF );
 
                                         // output directory, file name from first input file
-        StringCopy      ( filenameout, gof[ 0 ] );
+        filenameout     = gof[ 0 ];
 
-        RemoveExtension ( filenameout );
+        filenameout.RemoveExtension ();
 
         if ( mergecomplex ) {
             StringReplace ( filenameout, "." InfixReal, "" );
             StringReplace ( filenameout, "." InfixImag, "" );
             }
                                         // optional prefix, unclipped
-        PrefixFilename  ( filenameout, fileprefix );
+        filenameout.PrefixFilename  ( fileprefix );
 
-        StringAppend    ( filenameout, infix, ".", ZScoreEnumToFactorFileInfix ( zscoremethod ) );
+        filenameout    += infix + "." + ZScoreEnumToFactorFileInfix ( zscoremethod );
 
-        AddExtension    ( filenameout, /*fileext*/ FILEEXT_EEGSEF );
+        filenameout.AddExtension    ( /*fileext*/ FILEEXT_EEGSEF );
 
-        ReplaceDir      ( filenameout, outputdir );
+        filenameout.ReplaceDir ( outputdir );
 
         if ( createtempdir )
-            AppendDir   ( filenameout, true, tempdir ); // or not(?)
+            filenameout.AppendDir ( true, tempdir ); // or not(?)
 
         if ( IsNoOverwrite ( execflags ) )
-            CheckNoOverwrite( filenameout );
+            filenameout.CheckNoOverwrite ();
 
                                         // transposed: values are shown in the X axis
         TStrings            zscorenames;
@@ -1139,10 +1173,10 @@ if ( savezscore
                                         // we can be interested in a ris version that we can visualize in 3D
         ZScoreFactors.Transpose ();
 
-        ReplaceExtension    ( filenameout, FILEEXT_RIS );
+        filenameout.ReplaceExtension ( FILEEXT_RIS );
 
         if ( IsNoOverwrite ( execflags ) )
-            CheckNoOverwrite    ( filenameout );
+            filenameout.CheckNoOverwrite ();
 
         ZScoreFactors.WriteFile ( filenameout );
 

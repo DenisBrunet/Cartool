@@ -17,6 +17,7 @@ limitations under the License.
 #pragma once
 
 #include    "CartoolTypes.h"
+#include    "Strings.Utils.h"
 
 namespace crtl {
 
@@ -31,6 +32,9 @@ void                FileConversionVrbToTva  ( const char* file );
 
 enum                FrequencyAnalysisType;
 class               TGoF;
+
+TStringValue        GetFileInfixHz          ( const char* file );
+TStringValue        GetFilesInfixHz         ( const TGoF& files );
 
 void                MergeTracksToFreqFiles  (   
                                             const TGoF&             gof,           

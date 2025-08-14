@@ -401,7 +401,7 @@ return  ( RoundAbove ( v / precision ) ) * precision;
                                         // Find a power of 10 rescaling factor for the input, as to fit into maxoutput
 double      RescalingFactor ( double maxinput, double maxoutput )
 {
-double              digitratio      = RoundBelow ( Log10 ( fabs ( maxoutput ) / fabs ( maxinput ) ) );
+double              digitratio      = RoundBelow ( Log10 ( abs ( maxoutput ) / abs ( maxinput ) ) );
 double              rescalefactor   = Power      ( 10, digitratio );
 
 //DBGV3 ( maxinput, maxoutput, rescalefactor, "maxinput, maxoutput -> rescalefactor" );
@@ -428,7 +428,7 @@ return  angle;
 double      RelativeDifference ( double v1, double v2 )
 {
                                         // comparing to the average of v1+v2
-return  v1 + v2 == 0 ? 0 : fabs ( v1 - v2 ) / fabs ( v1 + v2 ) * 2;
+return  v1 + v2 == 0 ? 0 : abs ( v1 - v2 ) / abs ( v1 + v2 ) * 2;
 }
 
                                         // return the worst case: the max of relative differences beween all pairs
@@ -519,8 +519,8 @@ return  ( v - mean ) / NonNull ( sd );
 
 double      ZScore ( double v, double mean, double sd, bool absolute )
 {
-return  ( absolute ? fabs ( v - mean )
-                   :      ( v - mean ) ) / NonNull ( sd );
+return  ( absolute ? abs ( v - mean )
+                   :     ( v - mean ) ) / NonNull ( sd );
 }
 
 
@@ -730,7 +730,7 @@ double      GeneralizedGaussian ( double x, double center, double width, double 
 if ( width == 0 )
     return  x == center ? height : 0;
 
-width   = fabs ( width );
+width   = abs ( width );
 
 x      -= center;
 
@@ -760,12 +760,12 @@ double      GaussianCDF ( double x, double center, double width )
 if ( width == 0 )
     return  x >= center ? 1 : 0;
 
-width   = fabs ( width );
+width   = abs ( width );
                                         // normalize (use sigma, not width)
 x       = ( x - center ) / GaussianWidthToSigma ( width );
 
                                         // normal to CDF
-double              xabs            = fabs ( x );
+double              xabs            = abs ( x );
 double              cdf;
 double              e;
 double              b;
@@ -821,7 +821,7 @@ double      GeneralizedGaussianCDF ( double x, double center, double width, doub
 if ( width == 0 )
     return  x >= center ? 1 : 0;
 
-width   = fabs ( width );
+width   = abs ( width );
 
 x      -= center;
 
@@ -846,7 +846,7 @@ if ( degree < 1 )
 if ( width == 0 )
     return  x == center ? height : 0;
 
-width   = fabs ( width );
+width   = abs ( width );
 
 x       = ( x - center ) / width;
 
@@ -892,18 +892,39 @@ double      RaisedCosine ( double x, double center, double width, double height,
 if ( width == 0 )
     return  x == center ? height : 0;
 
-width   = fabs ( width );
+width   = abs ( width );
 
-x       = ( x - center ) / width;
+x   = ( x - center ) / width;
 
 return  x <= -1 || x >= 1 ? 0
-                           : height * Power ( ( FastCosine ( x * Pi ) + 1 ) / 2, power );
+                          : height * Power ( ( FastCosine ( x * Pi ) + 1 ) / 2, power );
 }
 
                                         // v in [0..1] -> Hanning in [0..1..0]
 double      Hanning ( double v )
 {
-return  ( 1 - cos ( Clip ( v, 0.0, 1.0 ) * TwoPi ) ) / 2;
+return  Clip ( ( 1 - cos ( Clip ( v, 0.0, 1.0 ) * TwoPi ) ) / 2, 0.0, 1.0 );
+}
+
+
+constexpr double    numcyclesinhanning  = 2; // 2 * ( SqrtTwo * 6 / TwoPi ); // = 2.70 - from litterature
+
+                                        // Formula that does a good job for cleaning borders of wavelets, using 2 full cycles on each side (instead of 1)
+double      HanningBorder ( int blocksize, int freqi )
+{
+                                        // Hanning window size, one at each edge of the data
+double              sthwd           = Clip ( numcyclesinhanning * blocksize / (double) freqi, 0.0, blocksize / 2.0 );    
+
+return  sthwd;
+}
+
+                                        // Another way to write it
+double      HanningBorder ( double samplingfrequency, double freq, int blocksize )
+{
+                                        // Hanning window size, one at each edge of the data
+double              sthwd           = Clip ( numcyclesinhanning * samplingfrequency / freq, 0.0, blocksize / 2.0 );    
+
+return  sthwd;
 }
 
 
@@ -928,7 +949,7 @@ double      BoundedSigmoid ( double v, double k )
 if ( k < 0 )
     k--;
 
-return  k * fabs ( v ) / ( k - fabs ( v ) + 1 ) * Sign ( v );
+return  k * abs ( v ) / ( k - abs ( v ) + 1 ) * Sign ( v );
 }
 
 
@@ -941,7 +962,7 @@ if ( rate <= 0 )
 if ( width == 0 )
     return  x == center ? height : 0;
 
-width   = fabs ( width );
+width   = abs ( width );
 
 x       = ( x - center ) / width;
 
@@ -958,7 +979,7 @@ if ( shape <= 0 || scale <= 0 )
 if ( width == 0 )
     return  x == center ? height : 0;
 
-width   = fabs ( width );
+width   = abs ( width );
 
 x       = ( x - center ) / width;
 
@@ -1002,7 +1023,7 @@ return (   (     -t3 + 3 * t2 - 3 * t + 1 ) * xp
                                         // support [-2..2]
 double      Keys ( double t )
 {
-t       = fabs ( t );
+t       = abs ( t );
 
 double              t2              = t * t;
 double              t3              = t * t2;
@@ -1019,7 +1040,7 @@ double      MexicanHat ( double x, double center, double width, double height )
 if ( width == 0 )
     return  x == center ? height : 0;
 
-width   = fabs ( width );
+width   = abs ( width );
 
 x      -= center;
 
@@ -1088,9 +1109,9 @@ if ( numsol < 2 )
 double              y1              = Gaussian ( x1, c2, w2, h2 );
 double              y2              = Gaussian ( x2, c2, w2, h2 );
 
-if ( fabs ( y2 / h2 ) < 1e-3 )  numsol--;               // ignore second intersection
+if ( abs ( y2 / h2 ) < 1e-3 )  numsol--;                // ignore second intersection
 
-if ( fabs ( y1 / h2 ) < 1e-3 )
+if ( abs ( y1 / h2 ) < 1e-3 )
     if ( numsol == 2 )          { x1  = x2; numsol--; } // move second intersection to first
     else                        numsol  = 0;            // that is bad news!
 
@@ -1102,7 +1123,7 @@ return  numsol;
                                         // || u1 - u2 || / ( max ( s1, s2 ) * sqrt ( dimensions ) )
 double      GaussiansDistance       ( double c1, double w1, double c2, double w2 )
 {
-double              dc              = fabs ( c1 - c2 );
+double              dc              = abs ( c1 - c2 );
 
                     w1              = GaussianWidthToSigma ( w1 );
                     w2              = GaussianWidthToSigma ( w2 );
@@ -1354,7 +1375,7 @@ return  PredefinedCosinus[ i >= 0 ? i : i + PredefinedCosinus.Size ];
 double          FastLanczos2 ( double x )
 {
                                         // Lanczos is symmetrical, and up to 2
-int                 i               = PredefinedLanczos2.ToIndex ( fabs ( x ) );
+int                 i               = PredefinedLanczos2.ToIndex ( abs ( x ) );
 
 return  i <= PredefinedLanczos2.Size ? PredefinedLanczos2[ i ] : 0;
 }
@@ -1363,7 +1384,7 @@ return  i <= PredefinedLanczos2.Size ? PredefinedLanczos2[ i ] : 0;
 double          FastLanczos3 ( double x )
 {
                                         // Lanczos is symmetrical, and up to 3
-int                 i               = PredefinedLanczos3.ToIndex ( fabs ( x ) );
+int                 i               = PredefinedLanczos3.ToIndex ( abs ( x ) );
 
 return  i <= PredefinedLanczos3.Size ? PredefinedLanczos3[ i ] : 0;
 }
@@ -1414,7 +1435,7 @@ Set ( center, radius, numsd );
                                         // FWHM = 2.35482 x Spread  (2*sqrt(2*ln(2)))
 void    TGaussian::Set ( double center, double radius, double numsd )
 {
-radius              = fabs ( radius );
+radius              = abs ( radius );
 
 double              Spread          = radius / ( numsd ? numsd : 1 );
 

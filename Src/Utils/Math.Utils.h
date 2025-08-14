@@ -567,6 +567,8 @@ double          ZScoreAsym              ( double v, double mean, double sdleft, 
 
                                         // v in [0..1] (will be clipped anyway)
 double          Hanning                 ( double v );
+double          HanningBorder           ( int blocksize, int freqi );
+double          HanningBorder           ( double samplingfrequency, double freq, int blocksize );
 
                                         // v in [-1..1], returned values in [-1..1], k>0 inflexion is horizontal, k<0 inflexion is vertical
 double          BoundedSigmoid          ( double v, double k );

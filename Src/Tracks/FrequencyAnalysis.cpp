@@ -1807,22 +1807,17 @@ for ( int blocki0 = 0, firsttf = timemin; blocki0 < numblocks; blocki0++, firstt
                                         // this is also known as Cone Of Influence (COI)
                             if ( windowing      == FreqWindowingHanningBorder 
                               && outputatomtype != OutputAtomPhase ) {
+
                                         // the trick here is to have the width varying with the current frequency
                                         // also paying attention to avoid scaling twice the middle point of the lowest frequency
-
-                                        // Formula that does a good job at cleaning the borders, using 2 (4/8) full cycles on each side (instead of 1)
-                                        // It has to be reminded that with Hanning, weighting will be 50% at the middle of that window
-//                              constexpr double    numcyclesinhanning  = ( 2 * ( SqrtTwo * 6 / TwoPi ) ); // = 2.70 - from litterature
-                                constexpr double    numcyclesinhanning  = 2;
-
-                                double      sthwd       = Clip ( blocksize / (double) fi2 * numcyclesinhanning, 0.0, blocksize / 2.0 );    
-                                int         sthwi       = Truncate ( sthwd );
+                                double      sthwd       = HanningBorder ( blocksize, fi2 ); // the real width
+                                int         sthwi       = Truncate ( sthwd );               // the truncated one for the loop
 
                                         // weighting has a limited support (not applied on all data)
                                 for ( int i = 0; i < sthwi; i++ ){
                                         // !using a floating point length, NOT an integer one, to avoid weird clipping artifacts!
                                         // we also use only the first half of the Hanning, the one going 0->1
-                                    double      h       = Hanning ( (double) i / sthwd / 2 );
+                                    double      h       = Hanning ( i / ( 2 * sthwd ) );
 
                                         // do 1 half Hanning 0->1 on the left, and the other half on the right 1->0
                                     ST (                 i )   *= h;

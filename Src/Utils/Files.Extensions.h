@@ -317,6 +317,9 @@ limitations under the License.
                                         // Known extensions don't include locale chars
 #define     InfixAnyExtensionGrep       "\\.([A-Za-z]+)$"
 
+                                        // "Hz" infix -     NOT testing for trailing "." after "Hz", as duplicated files could have "Hz_2" f.ex.
+#define     InfixHzGrep                 "\\.(\\d+\\.?\\d*)Hz"
+
                                         // Histograms
 #define     InfixHistogramLong      "Histogram"
 #define     InfixHistogramShort     "Histo"
