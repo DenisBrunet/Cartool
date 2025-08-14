@@ -854,7 +854,8 @@ StringCopy      ( fileprefix, RisToVolumeTransfer.BaseFileName );
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-ExecFlags           execflags           = Interactive; // NumBatchFiles () > 1 ? Silent : Interactive;
+ExecFlags           execflags           = ExecFlags ( Interactive // NumBatchFiles () > 1 ? Silent : Interactive
+                                                    | DefaultOverwrite );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

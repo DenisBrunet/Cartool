@@ -91,7 +91,6 @@ bool                outputn4d       = IsFileType4D  ( filetype );
 if ( ! ( outputn3d || outputn4d ) )
     return;
 
-
                                         // force silent if not in interactive mode
 if ( IsInteractive ( execflags ) && Cartool.IsNotInteractive () )
     SetSilent ( execflags );
@@ -259,19 +258,23 @@ TFileName           VerboseFile;
 char                buff[ 256 ];
 
 
-StringCopy      ( BaseFileName, risfile );
-RemoveExtension ( BaseFileName );
+BaseFileName    = risfile;
+
+BaseFileName.RemoveExtension ();
 
 if ( StringIsNotEmpty ( outputdir ) )
-    ReplaceDir   ( BaseFileName, outputdir );
+    BaseFileName.ReplaceDir ( outputdir );
 
 if ( StringIsNotEmpty ( prefix ) )
-    PrefixFilename  ( BaseFileName, StringCopy ( buff, prefix, "." ) );
+    BaseFileName.PrefixFilename ( StringCopy ( buff, prefix, "." ) );
 
 CreatePath      ( BaseFileName, true );
 
-StringCopy      ( VerboseFile,              BaseFileName,           "." "RIS To Volume",    "." FILEEXT_VRB );
-CheckNoOverwrite( VerboseFile );
+
+VerboseFile     = BaseFileName + "." "RIS To Volume" "." FILEEXT_VRB;
+
+if ( IsNoOverwrite ( execflags ) )
+    VerboseFile.CheckNoOverwrite ();
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -310,7 +313,11 @@ verbose.Put ( "Averaging each block:", merging == FilterTypeNone ? "None" : Filt
 verbose.NextTopic ( "Output Files:" );
 {
 if ( StringIsNotEmpty ( outputdir ) )
-    verbose.Put ( "Output directory:",  outputdir );
+    verbose.Put ( "Output directory:",          outputdir );
+verbose.Put ( "File name prefix:",              prefix );
+verbose.Put ( "Overwriting existing files:",    IsOverwrite   ( execflags ) );
+
+verbose.NextLine ();
 verbose.Put ( "Output data type:", AtomFormatTypePresets[ atomformat ].Text );
 verbose.Put ( "Output format:", VolumeFileTypeString[ filetype ] );
 verbose.Put ( "Output dimensions:", IsFileTypeN3D ( filetype ) ? 3 : 4 );
@@ -344,23 +351,28 @@ for ( int blocki = 0; blocki < numsavedblocks; blocki++ ) {
     if ( outputn3d 
       || outputn4d && firstblock ) {
                                         // set current volume's file name
-        StringCopy          ( expvol.Filename,      BaseFileName );
+        expvol.Filename     = BaseFileName;
 
         if ( outputn3d ) {
-            StringAppend        ( expvol.Filename, ".TF", IntegerToString ( blockfromtf,    NumIntegerDigits ( lasttimeframes ) ) );
+
+            expvol.Filename    += ".TF"   + IntegerToString ( blockfromtf,    NumIntegerDigits ( lasttimeframes ) );
+
             if ( steptf > 1 )
-                StringAppend    ( expvol.Filename, "-",   IntegerToString ( blocktotf,      NumIntegerDigits ( lasttimeframes ) ) );
+                expvol.Filename    += "-" + IntegerToString ( blocktotf,      NumIntegerDigits ( lasttimeframes ) );
             }
         else {
-            StringAppend        ( expvol.Filename, ".TF", IntegerToString ( fromtf,         NumIntegerDigits ( lasttimeframes ) ) );
+            expvol.Filename    += ".TF"   + IntegerToString ( fromtf,         NumIntegerDigits ( lasttimeframes ) );
+
             if ( numsavedblocks > 1 )                                                        
-                StringAppend    ( expvol.Filename, "-",   IntegerToString ( totf,           NumIntegerDigits ( lasttimeframes ) ) );
+                expvol.Filename    += "-" + IntegerToString ( totf,           NumIntegerDigits ( lasttimeframes ) );
             }
 
-        AddExtension        ( expvol.Filename, FILEEXT_RIS );   // output files XXX.ris.hdr
-        AddExtension        ( expvol.Filename, fileext     );
+        expvol.Filename.AddExtension ( FILEEXT_RIS );   // output files XXX.ris.hdr
 
-        CheckNoOverwrite    ( expvol.Filename );
+        expvol.Filename.AddExtension ( fileext     );
+
+        if ( IsNoOverwrite ( execflags ) )
+            expvol.Filename.CheckNoOverwrite ();
 
                                         // store current volume file
         gofvol.Add          ( expvol.Filename );

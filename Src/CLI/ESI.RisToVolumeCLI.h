@@ -97,6 +97,14 @@ DefineCLIOptionEnum     ( ristovol,         "",     __dimensions,           "Fil
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+DefineCLIFlag           ( ristovol,         "",     __verbose,              __verbose_descr     );
+DefineCLIFlag           ( ristovol,         "",     __quiet,                __quiet_descr       );
+DefineCLIFlag           ( ristovol,         "",     __overwrite,            __overwrite_descr   );
+DefineCLIFlag           ( ristovol,         "",     __nooverwrite,          __nooverwrite_descr );
+
+ExcludeCLIOptions       ( ristovol,     __verbose,        __quiet         );
+ExcludeCLIOptions       ( ristovol,     __overwrite,      __nooverwrite   );
+
 DefineCLIFlag           ( ristovol,         __h,    __help,                 __help_descr );
 
 
@@ -228,17 +236,28 @@ string              prefix          = GetCLIOptionString ( ristovol, __prefix );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Console output prototype
-//#define     CLIConsoleOutput
-#undef      CLIConsoleOutput
 
-#if defined(CLIConsoleOutput)
+ExecFlags           execflags           = ExecFlags ( Silent | DefaultOverwrite );
+
+                                        // Overriding defaults
+if      ( HasCLIFlag ( ristovol, __verbose     ) )  SetInteractive  ( execflags );
+else if ( HasCLIFlag ( ristovol, __quiet       ) )  SetSilent       ( execflags );
+
+if      ( HasCLIFlag ( ristovol, __overwrite   ) )  SetOverwrite    ( execflags );
+else if ( HasCLIFlag ( ristovol, __nooverwrite ) )  SetNoOverwrite  ( execflags );
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // Console output prototype
+TVerboseFile        verbose;
+
+
+if ( IsInteractive ( execflags ) ) {
 
 CreateConsole ();
 
 
-TVerboseFile        verbose ( "cout", VerboseFileDefaultWidth );
-
+verbose.Open ( "cout", VerboseFileDefaultWidth );
 
 verbose.NextTopic ( "Input Files:" );
 {
@@ -272,28 +291,29 @@ verbose.Put ( "Averaging each block:", merging == FilterTypeNone ? "None" : Filt
 
 verbose.NextTopic ( "Output Files:" );
 {
-verbose.Put ( "Output directory:",  outputdir.IsEmpty () ? "None" : outputdir );
-verbose.Put ( "File name prefix:",  prefix   .empty   () ? "None" : prefix    );
+//verbose.Put ( "Input directory:",               inputdir .IsEmpty () ? "None" : inputdir );
+verbose.Put ( "Output directory:",              outputdir.IsEmpty () ? "None" : outputdir );
+verbose.Put ( "File name prefix:",              prefix   .empty   () ? "None" : prefix    );
+verbose.Put ( "Verbose mode:",                  IsInteractive ( execflags ) );
+verbose.Put ( "Overwriting existing files:",    IsOverwrite   ( execflags ) );
+
+verbose.NextLine ();
 verbose.Put ( "Output data type:",  AtomFormatTypePresets[ atomformat ].Text );
 verbose.Put ( "Output format:",     VolumeFileTypeString[ filetype ] );
 verbose.Put ( "Output dimensions:", IsFileTypeN3D ( filetype ) ? 3 : 4 );
 }
 
 
-verbose.Close ();
+verbose.NextLine ( 2 );
+}
 
-cout << NewLine;
-cout << NewLine;
-
-#endif
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 for ( int filei = 0; filei < (int) gof; filei++ ) {
 
-#if defined(CLIConsoleOutput)
-    cout << "Now Processing: " << gof  [ filei ]<< NewLine;
-#endif
+    if ( IsInteractive ( execflags ) )
+        (ofstream&) verbose << "Now Processing: " << gof  [ filei ] << NewLine;
 
     TGoF                gofvol;
 
@@ -307,15 +327,16 @@ for ( int filei = 0; filei < (int) gof; filei++ ) {
                     prefix.c_str (),
                     filetype,
                     gofvol,         // not used
-                    Silent
+                    execflags
                 );
 
     } // for file
 
 
-#if defined(CLIConsoleOutput)
-DeleteConsole ( true );
-#endif
+if ( IsInteractive ( execflags ) ) {
+    verbose.Close ();
+    DeleteConsole ( true );
+    }
 }
 
 //----------------------------------------------------------------------------
