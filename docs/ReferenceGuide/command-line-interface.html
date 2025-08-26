@@ -38,9 +38,11 @@
              Cartool can be called directly from the <strong>command-line</strong>, 
 			 f.ex. from Windows batch files, <em>Matlab</em> or <em>Python</em> scripts, and therefor be 
 			 used as a library
-             from all sorts of pipe-lines. To
-             finer control its behavior, you can pass it options and sub-commands, which
-             are all described here.</P>
+             for all sorts of processing pipe-lines. To
+             finer control its behavior, you can pass it 
+			 <a href="#generaloptions">general options</a>, described here, or
+			 <a href="#subcommandsoption">sub-commands</a>, described for each 
+			 related toolbox.</P>
          <P>
              &nbsp;
          </P>
@@ -54,13 +56,19 @@
              <a href="#help">Help &amp; version</a><br>
              <a href="#mainwindow">Main window control</a><br>
              <a href="#childrenwindows">Children windows control</a><br>
-			 <a href="#dir-path-file">Directories, Paths and File Names</a>
-		 </h6>
+			 <a href="#dir-path-file">Directories, Paths and File Names</a><br>
+			 <a href="#input-dir">--input-dir</a><br>
+			 <a href="#output-dir">--output-dir</a><br>
+			 <a href="#overwrite">--overwrite</a><br>
+			 <a href="#no-overwrite">--no-overwrite</a><br>	
+			 <a href="#quiet">--quiet</a><br>
+			 <a href="#verbose">--verbose</a>
+	     </h6>
          <h5>
              <a href="#subcommandsoption">Sub-Commands</a>
          </h5>
          <h6>
-             <a href="#registration">Registration</a><br>
+             <a href="#registration">Windows Registration</a><br>
 			 <em>See</em> <a href="reprocess-tracks.html#cli">Reprocess / Export Tracks</a><br>
              <em>See</em> <a href="tracks-interpolation.html#cli">Tracks Interpolation</a><br>
              <em>See</em> <a href="frequency-analysis.html#cli">Frequency Analysis</a><br>
@@ -74,60 +82,72 @@
              This will not be a full tutorial on the
              <a href="https://cliutils.github.io/CLI11/book/">
                  <strong><em>CLI11</em></strong>
-                 Command-Line syntax
-             </a>, but just a few hints to help you get the job done:
+                 Command-Line syntax</a>, but just a guidelines to help you get the job done:
          </p>
          <ul>
-             <li>Options can be either short, like &quot;-h&quot;, or long, like &quot;--help&quot;.</li>
+             <li>Options can be either long (most of the time), like "<strong>--help</strong>", 
+			 or short, like &quot;<strong>-h</strong>&quot;.</li>
              <li>Options are all case sensitives.</li>
              <li>
-                 See the topic about <a href="#dir-path-file">Directories, Paths 
-				 and File Names</a>.</li>
+                 For files path, see the topic about <a href="#dir-path-file">
+				 <strong>Directories, Paths and File Names</strong></a> below.</li>
              <li>
-                 Files with spaces in their names must be in double quotes, like&nbsp;
+                 File 
+				 names with spaces in their paths must be enclosed by double quotes, like&nbsp;
                  &quot;D:\Data\My File with spaces.eeg&quot;.
              </li>
              <li>
-                 <strong>Files are to be specified at the end of the command-line</strong>, and prefixed
-                 with &quot;<strong>--</strong>&quot;, like&nbsp; &quot;-- D:\Data\MyFile.eeg&quot;.
+                 <strong>Files are specified at the end of the command-line</strong>, and prefixed
+                 with &quot;<strong>--</strong>", f.ex.&nbsp; &quot;<strong>-- D:\Data\MyFile.eeg</strong>&quot;.
              </li>
              <li>
-                 An option showing f.ex.&nbsp; {minimized,maximized,normal}&nbsp;
-                 expects only one of these 3 values.
-             </li>
+                 An option showing 
+				 curly braces, like "<strong>{</strong>minimized,maximized,normal<strong>}</strong>", expects 
+				 exactly one and only one of the listed values.</li>
              <li>
-                 An option showing f.ex.&nbsp; [normal]&nbsp; means this is the default
-                 value.
-             </li>
+                 An option showing 
+				 square brackets, like "<strong>[</strong>normal<strong>]</strong>", shows 
+				 the default
+                 value used if option is missing.</li>
              <li>
-                 A sub-command, like reprocesstracks, has a set of specific options not
-                 available elsewhere.
-             </li>
+                 All sub-commands, like 
+				 <strong><em>reprocesstracks</em></strong>, have their own set of options, 
+				 which you can show with:<br><span class="auto-style2">cartool64.exe 
+				 reprocesstracks --help</span></li>
          </ul>
          <h2>
              <a name="generaloptions"></a>General Options
          </h2>
-         <p>
-             <strong><em>General options</em></strong> are used to control the <strong>
-                 <a href="#mainwindow">main window</a> and <a href="#childrenwindows">
-                     children
-                     windows appearance
-                 </a>
-             </strong>. It can also return a full, up-to-date
-             <strong><a href="#help">help syntax message</a></strong> in case you are
-             lost.
-         </p>
+
+         <h6>
+             <a href="#help">Help &amp; version</a><br>
+             <a href="#mainwindow">Main window control</a><br>
+             <a href="#childrenwindows">Children windows control</a><br>
+			 <a href="#dir-path-file">Directories, Paths and File Names</a><br>
+			 <a href="#input-dir">--input-dir</a><br>
+			 <a href="#output-dir">--output-dir</a><br>
+			 <a href="#overwrite">--overwrite</a><br>
+			 <a href="#no-overwrite">--no-overwrite</a><br>	
+			 <a href="#quiet">--quiet</a><br>
+			 <a href="#verbose">--verbose</a>
+	     </h6>
+
+		<p>
+             &nbsp;</p>
          <H3>
              <a name="help"></a>Help &amp; version
          </H3>
          <P>
-             To get the latest, up-to-date commands and syntax, you can always call:
+             To get the latest up-to-date 
+			 list of sub-commands and options, simply call:
          </P>
          <pre>cartool64.exe --help
  or
-cartool64.exe &lt;subcommand&gt; --help</pre>
+cartool64.exe &lt;subcommand&gt; --help
+ or
+cartool64.exe --help &lt;subcommand&gt;</pre>
          <P>
-             Current version can be retrieved with:
+             The current Cartool version can be retrieved with:
          </P>
          <pre>cartool64.exe --version</pre>
          <p>&nbsp;</p>
@@ -135,7 +155,7 @@ cartool64.exe &lt;subcommand&gt; --help</pre>
              <a name="mainwindow"></a>Main window control
          </H3>
          <P>
-             You can control the <strong>main window state, size and position</strong> with:
+             You can control the <strong>Cartool main window state, size and position</strong> with:
          </P>
          <pre>cartool64.exe --mainwindow={minimized,maximized,normal} [maximized]
               --mainwindowsize=width,height
@@ -171,9 +191,9 @@ cartool64.exe &lt;subcommand&gt; --help</pre>
              <a name="childrenwindows"></a>Children windows control
          </H3>
          <P>
-             You can control every <strong>new child window state, size and position</strong>
+             You can control every <strong>new opened file child window state, size and position</strong>
              by using any of these options <strong>before a given file</strong> (note the
-             &quot;--&quot; before the files):
+             &quot;<strong>--</strong>&quot; before the files):
          </P>
          <pre>cartool64.exe --childwindow={minimized,maximized,normal} [normal]
               --childwindowsize=width,height
@@ -230,18 +250,20 @@ cartool64.exe --childwindow=normal minimized -- &lt;file1&gt; &lt;file2&gt;</pre
          <P>
              When providing files to the command-line, you can use either
 			 <strong>absolute</strong> or <strong>relative paths</strong>, each 
-			 comes with their own pros and cons.</P>
+			 way coming with its own pros and cons.</P>
 		<h4>Absolute Paths</h4>
 		<P>Providing <strong>absolute paths</strong> has the advantage of being 
-		unambigous and safe. It also allows to mix data from different 
-		directories without any worries.</P>
+		unambigous and therefor safe. It also allows for mixing data from different 
+		directories. Disadvantages are they are longer to 
+		specify, and needs updating if said files got moved around...</P>
+		<P>&nbsp;</P>
 		<P>Here is an example where the electrodes coordinates file comes from 
 		one directory, and the EEG data from another one:</P>
          <pre>cartool64.exe reprocesstracks
 --xyzfile=<strong>D:\Data\Electrodes\Biosemi.128.xyz</strong> --ext=eeg
 -- <strong>D:\Data\EEG\Subject1.nsr</strong></pre>
          <P>
-             Another example that uses 3 different sources:</P>
+             Another example that uses 3 different input directories:</P>
 		<pre>cartool64d.exe computingris --preset=ErpGrandAverages
 --isfile=<strong>D:\Data\Inverses\MNI152.NlinAsym20.4Shell.EGI204.6mm.2025.eLORETA.is
 </strong>--xyzfile=<strong>D:\Data\Electrodes\MNI152.NlinAsym20.204.2023.xyz</strong> --spatialfilter --type=norm --reg=4 --savingsubjects
@@ -253,14 +275,14 @@ cartool64.exe --childwindow=normal minimized -- &lt;file1&gt; &lt;file2&gt;</pre
 			 to be very long and verbosey. They also break any script if the 
 			 files move location. The alternative is to use <strong>
 			 relative paths</strong>, but they need to be <strong>resolved as 
-			 absolute path</strong> at some point.</P>
+			 absolute path</strong> at some point:</P>
 		<ul>
 			<li>By default, a relative path will be resolved <strong>using the 
 			current working directory</strong>, usually the one Cartool was 
-			launched from. This may not be exactly very convenient, though.</li>
-			<li>Using the&nbsp; <strong>--input-dir</strong>&nbsp; 
+			launched from. This may not be exactly what the caller expected, though.</li>
+			<li>Using the&nbsp; <strong><a href="#input-dir">--input-dir</a></strong>&nbsp; 
 			option allows you to specify the absolute path used to <strong>resolve all 
-			relative paths</strong>.</li>
+			the relative paths</strong>.</li>
 		</ul>
 		<P>
              &nbsp;</P>
@@ -270,8 +292,7 @@ cartool64.exe --childwindow=normal minimized -- &lt;file1&gt; &lt;file2&gt;</pre
 			 option:</P>
          <pre>cartool64.exe reprocesstracks --xyzfile=<strong>Biosemi.128.xyz</strong> --ext=eeg -- <strong>Subject1.nsr</strong></pre>
          <P>
-             will be resolve using the Cartool 
-			 current execution directory, usually&nbsp;
+             will be resolve using the current Cartool execution directory, usually&nbsp;
 			 <span class="auto-style2">C:\Program Files\Cartool</span>:</P>
 		<pre>cartool64.exe reprocesstracks --xyzfile=<strong>C:\Program Files\Cartool\Biosemi.128.xyz</strong> --ext=eeg -- <strong>C:\Program Files\Cartool\Subject1.nsr</strong></pre>
 		<p>&nbsp;</p>
@@ -281,21 +302,109 @@ cartool64.exe --childwindow=normal minimized -- &lt;file1&gt; &lt;file2&gt;</pre
 			 D:\Data</span>:</P>
          <pre>cartool64.exe reprocesstracks <strong>--input-dir=D:\Data</strong> --xyzfile=<strong>Biosemi.128.xyz</strong> --ext=eeg -- <strong>Subject1.nsr</strong></pre>
          <P>
-             Or if data is located under&nbsp; <span class="auto-style2">
+             will be resolve 
+			 as:</P>
+		<pre>cartool64.exe reprocesstracks --xyzfile=<strong>D:\Data\Biosemi.128.xyz</strong> --ext=eeg -- <strong>D:\Data\Subject1.nsr</strong></pre>
+		<P>
+             &nbsp;</P>
+		<P>
+             Or, if data is located under sub-directories&nbsp; <span class="auto-style2">
 			 D:\Data\Electrodes</span>&nbsp; 
 			 and&nbsp; 
 			 <span class="auto-style2">D:\Data\EEG</span>&nbsp; 
 			 respectively:</P>
          <pre>cartool64.exe reprocesstracks <strong>--input-dir=D:\Data</strong> --xyzfile=<strong>Electrodes\Biosemi.128.xyz</strong> --ext=eeg -- <strong>EEG\Subject1.nsr</strong></pre>
          <P>
+             will be resolve as:</P>
+		<pre>cartool64.exe reprocesstracks --xyzfile=<strong>D:\Data\Electrodes\Biosemi.128.xyz</strong> --ext=eeg -- <strong>D:\Data\EEG\Subject1.nsr</strong></pre>
+         <P>
              &nbsp;</P>
 		<P>
              Finally, one can also mix <strong>relative <em>and</em> absolute 
 			 paths</strong>, for example here using an absolute path for the 
-			 electrodes coordinates, and relative paths for all EEGs:</P>
+			 electrodes coordinates, and relative paths for the EEGs:</P>
          <pre>cartool64.exe reprocesstracks --xyzfile=<strong>D:\Data\Electrodes\Biosemi.128.xyz</strong> --ext=eeg <strong>--input-dir=D:\Data\EEG</strong> -- <strong>Subject1.nsr Subject2.nsr Subject3.nsr</strong></pre>
-         <h2>
-             <a name="subcommandsoption"></a>Sub-Commands</h2>
+		<p>&nbsp;</p>
+		
+		<h3>
+		<a name="input-dir"></a>--input-dir
+		</h3>
+		<p>This option allows to <strong>convert relative paths to absolute, by 
+		prepending them with the specified path</strong>. Of course, the input 
+		directory should exist! See the related paragraph on <a href="#dir-path-file">
+		directories and paths</a>.</p>
+		<p>For example if both electrodes and EEG data is located under&nbsp; <span class="auto-style2">
+			 D:\Data</span>:</p>
+         <pre>cartool64.exe reprocesstracks <strong>--input-dir=D:\Data</strong> --xyzfile=<strong>Biosemi.128.xyz</strong> --ext=eeg -- <strong>Subject1.nsr</strong></pre>
+         <P>
+             relative paths
+             will be resolve as:</P>
+		<pre>cartool64.exe reprocesstracks --xyzfile=<strong>D:\Data\Biosemi.128.xyz</strong> --ext=eeg -- <strong>D:\Data\Subject1.nsr</strong></pre>
+		<p>If option is missing, the current directory will be used, usually the one from which Cartool 
+		has been launched.</p>
+		<p>&nbsp;</p>
+		
+		<h3>
+		<a name="output-dir"></a>--output-dir
+		</h3>
+		<p>This option controls <strong>where all the output files and results will be 
+		written</strong>.&nbsp;For example, if the input data is located under&nbsp;
+		<span class="auto-style2">D:\Data</span>, but output data is in&nbsp;
+		<span class="auto-style2">E:\Data\Results</span>:</p>
+		<pre>cartool64.exe reprocesstracks --input-dir=D:\Data <strong>--output-dir=E:\Data\Results</strong> --xyzfile=Biosemi.128.xyz --ext=eeg -- Subject1.nsr</pre>
+		<p>If missing, the output directory will be the same as the input 
+		directory.</p>
+		<p>Also note that <strong>--input-dir</strong> and <strong>--output-dir</strong> 
+		are <em>not</em> exclusive options.</p>
+		<p>&nbsp;</p>
+		
+		<h3>
+		<a name="overwrite"></a>--overwrite
+		</h3>
+		<p>This option forces any <strong>previously existing <em>output files</em> to be silently 
+		overwritten</strong>. This means that even if you repeat the same 
+		processing multiple times, you will overwrite the old results each time, 
+		and end up with only the latest results. Although kind of radical, this 
+		is very handy for results retrieval within a script, as you can always 
+		predict the output file names, which is not the case with the <strong>
+		<a href="#no-overwrite">--no-overwrite</a></strong> option.</p>
+		<p>Option is exclusive with <strong><a href="#no-overwrite">--no-overwrite</a></strong>, obviously.</p>
+		<p>&nbsp;</p>
+		
+		<h3>
+		<a name="no-overwrite"></a>--no-overwrite
+		</h3>
+		<p>This option will <strong>prevent any deletion or overwriting of any 
+		existing file(s)</strong>. This is a safety flag, useful if you want to keep previous results 
+		when running the same processing again and again. <em>Note that this is the default behavior when processing data from Cartool's dialogs</em>.</p>
+		<p>If an <em>output file</em> already exists, say "<strong>D:\Data\MyResults.eeg</strong>", 
+		then Cartool will use the variation "<strong>D:\Data\MyResults_1.eeg</strong>" 
+		instead. 
+		If the latter also exists, it will actually iterate until it finds the one variation that 
+		does not exist yet, f.ex. "<strong>D:\Data\MyResults_2.eeg</strong>" 
+		here.</p>
+		<p>Option is exclusive with <strong><a href="#overwrite">--overwrite</a></strong>, 
+		obviously.</p>
+		<p>&nbsp;</p>
+		
+		<h3>
+		<a name="quiet"></a>--quiet
+		</h3>
+		<p>This option forces a <strong>totally silent execution</strong>, with no messages, 
+		pop-ups, console nor any input requests of any sort.</p>
+		<p>Option is exclusive with <strong><a href="#verbose">--verbose</a></strong>.</p>
+		<p>&nbsp;</p>
+		
+		<h3>
+		<a name="verbose"></a>--verbose
+		</h3>
+		<p>Currently opens up a <strong>console</strong> showing a recap of your 
+		input parameters, plus some real-time progress as each file is being processed.</p>
+		<p>Option is exclusive with <strong><a href="#quiet">--quiet</a></strong>.</p>
+		
+        <h2>
+        <a name="subcommandsoption"></a>Sub-Commands
+        </h2>
 
          <h6>
              <a href="#registration">Registration</a><br>
@@ -312,15 +421,14 @@ cartool64.exe --childwindow=normal minimized -- &lt;file1&gt; &lt;file2&gt;</pre
              <strong><em>Sub-commands</em></strong> allow to run a specific toolbox or
              processing of Cartool. Each sub-command has <em>its own set of options</em>,
              which are therefor <em>not</em> available to the other sub-commands. Sub-commands
-             still can use some of the <a href="#generaloptions">general options</a> 
+             can also make use of (most of) the <a href="#generaloptions">general options</a> 
 			 above,
-             though.
-         </p>
+             though.</p>
 		<p>
              &nbsp;</p>
 
          <h4>
-             <a name="registration"></a>Registration
+             <a name="registration"></a>Windows Registration
          </h4>
          <P>
              <strong>Registering Cartool to Windows</strong> allows for double-click file opening,
