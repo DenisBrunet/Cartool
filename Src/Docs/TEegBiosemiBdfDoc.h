@@ -76,7 +76,7 @@ public:
 
     bool            CanClose        ()                                  final;
     bool            Close           ()                                  final;
-    bool            IsOpen          ()                                  final       { return InputStream != 0; }
+    bool            IsOpen          ()                                  final       { return FileStream.IsOpen (); }
     bool            Open            ( int mode, const char *path = 0 )  final;
 
 
@@ -85,8 +85,6 @@ public:
 
 
 protected:
-
-    owl::TInStream* InputStream;
 
     EdfType         FileType;
     int             MaxSamplesPerBlock;

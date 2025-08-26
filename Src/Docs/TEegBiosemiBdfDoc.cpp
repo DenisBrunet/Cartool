@@ -37,8 +37,6 @@ namespace crtl {
         TEegBiosemiBdfDoc::TEegBiosemiBdfDoc (TDocument *parent)
       : TTracksDoc (parent)
 {
-InputStream         = 0;
-
 FileType            = UnknownBdfEdf;
 MaxSamplesPerBlock  = 0;
 BlockSize           = 0;
@@ -49,10 +47,7 @@ NumElectrodesInFile = 0;
 
 bool	TEegBiosemiBdfDoc::Close()
 {
-if ( InputStream != 0 ) {
-    delete      InputStream;
-    InputStream = 0;
-    }
+FileStream.Close ();
 
 return  TTracksDoc::Close ();
 }
@@ -365,15 +360,15 @@ SetDirty ( false );
 
 if ( GetDocPath () ) {
 
-    InputStream     = InStream ( ofRead );
+    ifstream    InputStream ( GetDocPath () );
 
-    if ( ! InputStream ) 
+    if ( InputStream.fail () ) 
         return  false;
 
     char        buff[ 256 ];
                                         // file header is in fixed-length formatted text
 
-    InputStream->read ( buff, 8 );      // read identification
+    InputStream.read ( buff, 8 );      // read identification
     buff[ 8 ]   = EOS;
 
     if ( buff[ 0 ] == '0' )             // char '0' for edf
@@ -390,19 +385,16 @@ if ( GetDocPath () ) {
 
         ShowMessage ( "Unrecognized file format (unknown magic number)!", "Open file", ShowMessageWarning );
 
-        delete  InputStream;
-        InputStream = 0;
-
         return  false;
         }
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // skip subject and recording infos
-    InputStream->seekg ( 80 + 80, ios::cur );
+    InputStream.seekg ( 80 + 80, ios::cur );
 
 
-    InputStream->read ( buff, 8 );      // read date
+    InputStream.read ( buff, 8 );      // read date
     buff[ 8 ]   = EOS;
     int                 dd;
     int                 MM;
@@ -412,7 +404,7 @@ if ( GetDocPath () ) {
     else            yy = 1900 + yy;
 
 
-    InputStream->read ( buff, 8 );      // read time
+    InputStream.read ( buff, 8 );      // read time
     buff[ 8 ]   = EOS;
     int                 hh;
     int                 mm;
@@ -424,12 +416,12 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    InputStream->read ( buff, 8 );      // read header size
+    InputStream.read ( buff, 8 );      // read header size
     buff[ 8 ]   = EOS;
     DataOrg     = StringToInteger ( buff );
 
 
-    InputStream->read ( buff, 44 );     // read data version
+    InputStream.read ( buff, 44 );     // read data version
     buff[ 44 ]  = EOS;
                                         // can be more precise on file type?
     if      ( StringStartsWith ( buff, "EDF+C", 5 ) )
@@ -475,19 +467,19 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    InputStream->read ( buff, 8 );      // read number of blocks (of fixed size)
+    InputStream.read ( buff, 8 );      // read number of blocks (of fixed size)
     buff[ 8 ]   = EOS;
     int                 numblocks       = StringToInteger ( buff ); // !can be -1 if unkown -> need to recompute it later
 
 
-    InputStream->read ( buff, 8 );      // block duration in seconds - could be 0 in sampling frequency is unknown
+    InputStream.read ( buff, 8 );      // block duration in seconds - could be 0 in sampling frequency is unknown
     buff[ 8 ]   = EOS;
     int                 blockduration   = StringToInteger ( buff );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    InputStream->read ( buff, 4 );      // number of channels
+    InputStream.read ( buff, 4 );      // number of channels
     buff[ 4 ]   = EOS;
     NumElectrodesInFile     = StringToInteger ( buff );
 
@@ -495,13 +487,13 @@ if ( GetDocPath () ) {
     ChannelsSampling.Resize ( NumElectrodesInFile );
 
                                         // beginning of variable part
-    long    variableheader = InputStream->tellg ();
-//    DBGV ( InputStream->tellg (), "Var Part begin" );
+    long    variableheader = InputStream.tellg ();
+//    DBGV ( InputStream.tellg (), "Var Part begin" );
 
                                         // see if last channel is "Status" (& triggers)
-    InputStream->seekg ( ( NumElectrodesInFile - 1 ) * 16, ios::cur );
-    InputStream->read ( buff, 16 );
-//    DBGV ( InputStream->tellg (), "Read Status name" );
+    InputStream.seekg ( ( NumElectrodesInFile - 1 ) * 16, ios::cur );
+    InputStream.read ( buff, 16 );
+//    DBGV ( InputStream.tellg (), "Read Status name" );
 
     buff[ 16 ]  = EOS;
     StringCleanup ( buff );
@@ -524,19 +516,19 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // skip variable part
-//  InputStream->seekg ( NumElectrodesInFile * 216, ios::cur );
-//  InputStream->seekg ( NumElectrodesInFile * 200, ios::cur );
+//  InputStream.seekg ( NumElectrodesInFile * 216, ios::cur );
+//  InputStream.seekg ( NumElectrodesInFile * 200, ios::cur );
 
                                         // previous formula screw up for 1 + 1 electrodes??
-    InputStream->seekg ( variableheader + NumElectrodesInFile * 16 + NumElectrodesInFile * 200 );
-//    DBGV ( InputStream->tellg (), "Channel Samples" );
+    InputStream.seekg ( variableheader + NumElectrodesInFile * 16 + NumElectrodesInFile * 200 );
+//    DBGV ( InputStream.tellg (), "Channel Samples" );
 
 
     MaxSamplesPerBlock  = 0;
                                         // number of samples per channels
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
-        InputStream->read ( buff, 8 );
+        InputStream.read ( buff, 8 );
         buff[ 8 ]   = EOS;
                                         // get # of samples
         ChannelsSampling[ el ].SamplesPerBlock  = StringToInteger ( buff );
@@ -569,23 +561,19 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // space allocation + default names
-    if ( ! SetArrays () ) {
-
-        delete  InputStream;
-        InputStream = 0;
+    if ( ! SetArrays () )
 
         return  false;
-        }
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // go back to beginning of variable part
-    InputStream->seekg ( variableheader, ios::beg );
+    InputStream.seekg ( variableheader, ios::beg );
 
                                         // read electrode names
     for ( int el = 0; el < NumElectrodesInFile; el++ ) {
 
-        InputStream->read ( buff, 16 );
+        InputStream.read ( buff, 16 );
 
         buff[ 16 ]  = EOS;
         buff[ ElectrodeNameSize - 1 ] = 0;
@@ -601,10 +589,10 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // skip transducer type
-    InputStream->seekg ( NumElectrodesInFile * 80, ios::cur );
+    InputStream.seekg ( NumElectrodesInFile * 80, ios::cur );
 
                                         // skip units
-    InputStream->seekg ( NumElectrodesInFile * 8, ios::cur );
+    InputStream.seekg ( NumElectrodesInFile * 8, ios::cur );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -617,7 +605,7 @@ if ( GetDocPath () ) {
                                         // read physical min
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
-        InputStream->read ( buff, 8 );
+        InputStream.read ( buff, 8 );
         buff[ 8 ]   = EOS;
 
         physmin[ el ]       = StringToDouble ( buff );
@@ -625,7 +613,7 @@ if ( GetDocPath () ) {
                                         // read physical max
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
-        InputStream->read ( buff, 8 );
+        InputStream.read ( buff, 8 );
         buff[ 8 ]   = EOS;
 
         physmax[ el ]       = StringToDouble ( buff );
@@ -633,7 +621,7 @@ if ( GetDocPath () ) {
                                         // read recorded min
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
-        InputStream->read ( buff, 8 );
+        InputStream.read ( buff, 8 );
         buff[ 8 ]   = EOS;
 
         digitalmin[ el ]    = StringToDouble ( buff );
@@ -641,7 +629,7 @@ if ( GetDocPath () ) {
                                         // read recorded max
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
-        InputStream->read ( buff, 8 );
+        InputStream.read ( buff, 8 );
         buff[ 8 ]   = EOS;
 
         digitalmax[ el ]    = StringToDouble ( buff );
@@ -660,11 +648,11 @@ if ( GetDocPath () ) {
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // scan for channel type
-    InputStream->seekg ( variableheader + NumElectrodesInFile * 16 );
+    InputStream.seekg ( variableheader + NumElectrodesInFile * 16 );
                                         //
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
-        InputStream->read ( buff, 80 );
+        InputStream.read ( buff, 80 );
         buff[ 80 ]  = EOS;
 
         if      ( StringStartsWith ( buff, "Auxiliar" ) )    AuxTracks.Set   ( el );
@@ -677,14 +665,10 @@ if ( GetDocPath () ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     InitAuxiliaries ();
+                                        // re-open in binary mode, using our own FileStream field
+    InputStream.close ();
 
-                                        // re-open in binary mode
-    delete  InputStream;
-
-    InputStream     = InStream ( ofRead | ofBinary );
-
-    if ( !InputStream ) return false;
-
+    FileStream.Open ( GetDocPath (), FileStreamRead );
     }
 else {
     return false;
@@ -745,7 +729,7 @@ ifstream            ifs ( TFileName ( file, TFilenameExtendedPath ), ios::binary
 if ( ifs.fail () )
     return  0;
                                         // this is the trick: we know data is written as entire blocks, so we can simply read backward the last block
-ifs.seekg ( -BlockSize , ios::end );
+ifs.seekg ( -BlockSize, ios::end );
 
 
 for ( int e = 0; e < NumElectrodes; e++ ) {
@@ -847,13 +831,13 @@ for ( int   block           = tf1 / MaxSamplesPerBlock,
 
                                         // max number of tf to be read in this block
     int     numtfinblock    = MaxSamplesPerBlock - firsttfinblock;
-
-                                        // reading a whole block at once
-    InputStream->seekg  ( DataOrg + block * BlockSize );
-
-    InputStream->read   ( (char*) Block.GetArray (), BlockSize );
                                         // offset of electrode within big block
     int     eloffset        = 0;
+
+                                        // reading a whole block at once
+    FileStream.SeekBegin ( DataOrg + block * BlockSize );
+
+    FileStream.Read      ( Block.GetArray (), BlockSize );
 
                                         // within a single block, values for a given track are consecutives
     for ( int el = 0; el < NumElectrodes; el++ ) {
