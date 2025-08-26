@@ -96,7 +96,7 @@ protected:
     TArray1<TEegBdfChannel> ChannelsSampling;
 
     int             NumElectrodesInFile;
-    TArray1<UCHAR>  Tracks;
+    TArray1<UCHAR>  Block;
 
 
     bool            SetArrays           ()  final;

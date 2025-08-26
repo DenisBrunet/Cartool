@@ -86,12 +86,13 @@ ifstream            ifs ( TFileName ( GetDocPath(), TFilenameExtendedPath ), ios
 
                                         // goto first block, and skip regular electrodes
 ifs.seekg ( DataOrg + cellsize * NumElectrodes * MaxSamplesPerBlock );
-ifs.read  ( (char*) Tracks.GetArray (), BuffSize );
+
+ifs.read  ( (char*) Block.GetArray (), BuffSize );
 
                                         // scan first block, and guess if we have 16 or 8 bits per trigger code
 bool                triggers8       = true;
                                         //  skip 1st TF, which is often irrelevent / noise
-UCHAR*              toT             = &Tracks[ 1 * cellsize ];
+UCHAR*              toT             = &Block[ 1 * cellsize ];
 
 for ( int tfi = 1, tf0 = 1; tf0 < MaxSamplesPerBlock - 1 && tfi < NumTimeFrames; tfi++, tf0++ ) {
 
@@ -135,10 +136,10 @@ for ( int   block     = 0,
 
                                         // get the complete line for this electrode
                                         // assuming Status channel has the same sampling as the max channel
-    ifs.read ( (char*) Tracks.GetArray (), BuffSize );
+    ifs.read ( (char*) Block.GetArray (), BuffSize );
 
 
-    UCHAR*              toT             = Tracks.GetArray ();
+    UCHAR*              toT             = Block.GetArray ();
 
     for ( int tfi = firsttf, tf0 = 0; tf0 < MaxSamplesPerBlock && tfi < NumTimeFrames; tfi++, tf0++ ) {
 
@@ -311,7 +312,7 @@ for ( int el=0; el < NumElectrodesInFile; el++ ) {
 BlockSize   = 0;
 
 for ( int el = 0; el < NumElectrodesInFile; el++ )
-    BlockSize               += ChannelsSampling[ el ].ChannelSize;
+    BlockSize      += ChannelsSampling[ el ].ChannelSize;
 
                                         // here we have the (max) sampling frequency
 SamplingFrequency   = blockduration <= 0 ? 0 : MaxSamplesPerBlock / (double) blockduration;
@@ -547,11 +548,10 @@ if ( GetDocPath () ) {
         Maxed ( MaxSamplesPerBlock, ChannelsSampling[ el ].SamplesPerBlock );
         }
 
-                                        // compute the total block size
+                                        // compute the total block size: sum of all electrodes lines
     BlockSize               = 0;
-    for ( int el = 0; el < NumElectrodesInFile; el++ ) {
-        BlockSize               += ChannelsSampling[ el ].ChannelSize;
-        }
+    for ( int el = 0; el < NumElectrodesInFile; el++ )
+        BlockSize          += ChannelsSampling[ el ].ChannelSize;
 
                                         // here we have the max sampling frequency
     SamplingFrequency   = blockduration <= 0 ? 0 : MaxSamplesPerBlock / (double) blockduration;
@@ -740,7 +740,7 @@ TArray1<UCHAR>      Tracks ( MaxSamplesPerBlock * cellsize );
 short*              todata          = (short*) Tracks.GetArray ();
 
                                         // this should be a proble, even if file is already open somewhere else
-ifstream        ifs ( TFileName ( file, TFilenameExtendedPath ), ios::binary );
+ifstream            ifs ( TFileName ( file, TFilenameExtendedPath ), ios::binary );
 
 if ( ifs.fail () )
     return  0;
@@ -784,7 +784,7 @@ OffDis              = NumElectrodes + PseudoTrackOffsetDis;
 OffAvg              = NumElectrodes + PseudoTrackOffsetAvg;
 
 
-Tracks .Resize ( CellSize ( FileType ) * MaxSamplesPerBlock + sizeof ( long ) );    // little extra for safety, when reading the last long
+Block  .Resize ( BlockSize     );
 Gains  .Resize ( NumElectrodes );
 Offsets.Resize ( NumElectrodes );
 
@@ -847,38 +847,24 @@ for ( int   block           = tf1 / MaxSamplesPerBlock,
 
                                         // max number of tf to be read in this block
     int     numtfinblock    = MaxSamplesPerBlock - firsttfinblock;
-                                        // origin of next full track to be read
-//  long    nextelpos       = DataOrg + block * BlockSize;
-//  int     tfremainingread = tf2 - firsttf + 1;
 
-                                        // read a whole block at once
-    InputStream->seekg ( DataOrg + block * BlockSize );
+                                        // reading a whole block at once
+    InputStream->seekg  ( DataOrg + block * BlockSize );
+
+    InputStream->read   ( (char*) Block.GetArray (), BlockSize );
+                                        // offset of electrode within big block
+    int     eloffset        = 0;
 
                                         // within a single block, values for a given track are consecutives
     for ( int el = 0; el < NumElectrodes; el++ ) {
                                         // get that channel length
         int     spb1        = ChannelsSampling[ el ].SamplesPerBlock - 1;
 
-                                        // get the complete line for this electrode
-        InputStream->read ( (char*) Tracks.GetArray (), ChannelsSampling[ el ].ChannelSize );
-
-                                        // taken from EGI MFF, but there seems to be a problem for the first TFs to be read...
-/*                                        // optimal jump to where data are
-        InputStream->seekg ( nextelpos + firsttfinblock * CellSize ( FileType ), ios::beg );
-                                        // so that we can read the min # of data: min of remaining block or remaining data
-        uint    tfminread   = min ( toch->SamplesPerBlock - firsttfinblock, tfremainingread );
-                                        // still put the data at offset position
-        InputStream->read ( &Tracks[ firsttfinblock * CellSize ( FileType ), tfminread * CellSize ( FileType ) ] );
-                                        // next channel beginning
-        nextelpos          += toch->ChannelSize;
-*/
-
-
         if ( IsEdf ( FileType ) ) {
 
             for ( int tfi = firsttf, tf0 = 0; tfi <= tf2 && tf0 < numtfinblock; tfi++, tf0++ ) {
 
-                short       s       = *( ( (const short*) Tracks.GetArray () ) + Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 ) );
+                short       s       = *( (const short*) ( Block.GetArray () + eloffset ) + Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 ) );
 
                 buff ( el, tfoffset + tf0 )  = s * Gains[ el ] + Offsets[ el ];
 
@@ -891,13 +877,15 @@ for ( int   block           = tf1 / MaxSamplesPerBlock,
 
             for ( int tfi = firsttf, tf0 = 0; tfi <= tf2 && tf0 < numtfinblock; tfi++, tf0++ ) {
 
-                long        l       = Bdf24To32 ( &Tracks[ 3 * Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 ) ] );
+                long        l       = Bdf24To32 ( &Block[ 3 * Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 ) ] + eloffset );
 
                 buff ( el, tfoffset + tf0 )  = l * Gains[ el ] + Offsets[ el ];
                 } // for tfi
 
             } // if Bdf
 
+                                        // pointing to next electrode line
+        eloffset   += ChannelsSampling[ el ].ChannelSize;
         } // for el
 
     } // for block
