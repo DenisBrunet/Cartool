@@ -59,10 +59,10 @@
 			 <a href="#dir-path-file">Directories, Paths and File Names</a><br>
 			 <a href="#input-dir">--input-dir</a><br>
 			 <a href="#output-dir">--output-dir</a><br>
-			 <a href="#overwrite">--overwrite</a><br>
-			 <a href="#no-overwrite">--no-overwrite</a><br>	
+			 <a href="#verbose">--verbose</a><br>
 			 <a href="#quiet">--quiet</a><br>
-			 <a href="#verbose">--verbose</a>
+			 <a href="#overwrite">--overwrite</a><br>
+			 <a href="#no-overwrite">--no-overwrite</a>
 	     </h6>
          <h5>
              <a href="#subcommandsoption">Sub-Commands</a>
@@ -126,10 +126,10 @@
 			 <a href="#dir-path-file">Directories, Paths and File Names</a><br>
 			 <a href="#input-dir">--input-dir</a><br>
 			 <a href="#output-dir">--output-dir</a><br>
-			 <a href="#overwrite">--overwrite</a><br>
-			 <a href="#no-overwrite">--no-overwrite</a><br>	
+			 <a href="#verbose">--verbose</a><br>
 			 <a href="#quiet">--quiet</a><br>
-			 <a href="#verbose">--verbose</a>
+			 <a href="#overwrite">--overwrite</a><br>
+			 <a href="#no-overwrite">--no-overwrite</a>
 	     </h6>
 
 		<p>
@@ -359,6 +359,22 @@ cartool64.exe --childwindow=normal minimized -- &lt;file1&gt; &lt;file2&gt;</pre
 		<p>&nbsp;</p>
 		
 		<h3>
+		<a name="verbose"></a>--verbose
+		</h3>
+		<p>Currently opens up a <strong>console</strong> showing a recap of your 
+		input parameters, plus some real-time progress as each file is being processed.</p>
+		<p>Option is exclusive with <strong><a href="#quiet">--quiet</a></strong>.</p>
+		<p>&nbsp;</p>
+		
+		<h3>
+		<a name="quiet"></a>--quiet
+		</h3>
+		<p>This option forces a <strong>totally silent execution</strong>, with no messages, 
+		pop-ups, console nor any input requests of any sort.</p>
+		<p>Option is exclusive with <strong><a href="#verbose">--verbose</a></strong>.</p>
+		<p>&nbsp;</p>
+		
+		<h3>
 		<a name="overwrite"></a>--overwrite
 		</h3>
 		<p>This option forces any <strong>previously existing <em>output files</em> to be silently 
@@ -384,23 +400,7 @@ cartool64.exe --childwindow=normal minimized -- &lt;file1&gt; &lt;file2&gt;</pre
 		does not exist yet, f.ex. "<strong>D:\Data\MyResults_2.eeg</strong>" 
 		here.</p>
 		<p>Option is exclusive with <strong><a href="#overwrite">--overwrite</a></strong>, 
-		obviously.</p>
-		<p>&nbsp;</p>
-		
-		<h3>
-		<a name="quiet"></a>--quiet
-		</h3>
-		<p>This option forces a <strong>totally silent execution</strong>, with no messages, 
-		pop-ups, console nor any input requests of any sort.</p>
-		<p>Option is exclusive with <strong><a href="#verbose">--verbose</a></strong>.</p>
-		<p>&nbsp;</p>
-		
-		<h3>
-		<a name="verbose"></a>--verbose
-		</h3>
-		<p>Currently opens up a <strong>console</strong> showing a recap of your 
-		input parameters, plus some real-time progress as each file is being processed.</p>
-		<p>Option is exclusive with <strong><a href="#quiet">--quiet</a></strong>.</p>
+		obviously.&nbsp;</p>
 		
         <h2>
         <a name="subcommandsoption"></a>Sub-Commands

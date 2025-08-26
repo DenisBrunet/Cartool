@@ -1259,8 +1259,8 @@ Options:
 --output ENUM:{real,norm,power,complex,phase}
 				Output type (Default:power)
 --reference TRACKS 		Reference tracks Special values: 'none' (default), 'asinfile', 'average' or 'avgref'
-<a href="command-line-interface.html#dir-path-file">--input-dir</a> PATH:DIR 		Input directory
---output-dir PATH 		Output directory
+<a href="command-line-interface.html#input-dir">--input-dir</a> PATH:DIR 		Input directory
+<a href="command-line-interface.html#output-dir">--output-dir</a> PATH 		Output directory
 --infix TEXT 			Infix inserted into the output file names
 --subdir 			Saving all resuts into a sub-directory
 --savefreq 			Saving <a href="files-formats-cartool.html#freq">.freq files</a>
@@ -1268,6 +1268,12 @@ Options:
 --splitf 			Splitting results by frequencies
 --splits 			Splitting results by spectrum
 --downsampling 			Optimally downsampling time for STransform
+<a href="command-line-interface.html#verbose">--verbose</a> Excludes: --quiet 	Verbose mode
+<a href="command-line-interface.html#quiet">--quiet</a> Excludes: --verbose 	Quiet mode
+<a href="command-line-interface.html#overwrite">--overwrite</a> Excludes: --no-overwrite
+				Overwrite existing files
+<a href="command-line-interface.html#no-overwrite">--no-overwrite</a> Excludes: --overwrite
+				Do not overwrite existing files
 -h,--help 			This message</pre>
 		<p>
              &nbsp;</p>

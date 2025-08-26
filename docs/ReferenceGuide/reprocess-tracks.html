@@ -973,7 +973,7 @@
 Usage: Cartool64.exe reprocesstracks [OPTIONS] [files]
 
 Positionals:
-files FILES... List of files
+files FILES... 			List of files
 
 Options:
 --tracks TRACKS 		Tracks to export Special values: * gfp dis avg
@@ -1022,13 +1022,19 @@ Options:
 --average Excludes: --sequential
 				Averaging the time dimension
 --downsampling INTEGER 		Downsampling ratio
-<a href="command-line-interface.html#dir-path-file">--input-dir</a> PATH:DIR 		Input directory
---output-dir PATH 		Output directory
+<a href="command-line-interface.html#input-dir">--input-dir</a> PATH:DIR 		Input directory
+<a href="command-line-interface.html#output-dir">--output-dir</a> PATH 		Output directory
 --infix TEXT 			Infix inserted into the output file names
 --ext,--extension ENUM:{txt,ep,eph,sef,eeg,edf,ris} [eeg]
 				Output file extension
 --nomarkers 			Not saving the markers to file
 --concatenate 			Concatenate all output into a single file
+<a href="command-line-interface.html#verbose">--verbose</a> Excludes: --quiet 	Verbose mode
+<a href="command-line-interface.html#quiet">--quiet</a> Excludes: --verbose 	Quiet mode
+<a href="command-line-interface.html#overwrite">--overwrite</a> Excludes: --no-overwrite
+				Overwrite existing files
+<a href="command-line-interface.html#no-overwrite">--no-overwrite</a> Excludes: --overwrite
+				Do not overwrite existing files
 -h,--help 			This message</pre>
          <p>
              &nbsp;</p>

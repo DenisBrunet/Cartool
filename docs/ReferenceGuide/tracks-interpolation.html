@@ -1079,12 +1079,18 @@ Options:
 --method ENUM:{surfacespline,sphericalspline,3dspline,currentdensity}
 				Interpolation method (Required)
 --degree INTEGER 		Spline degree, in [2..4] range (Default:2)
-<a href="command-line-interface.html#dir-path-file">--input-dir</a> PATH:DIR 		Input directory
---output-dir PATH 		Output directory
+<a href="command-line-interface.html#input-dir">--input-dir</a> PATH:DIR 		Input directory
+<a href="command-line-interface.html#output-dir">--output-dir</a> PATH 		Output directory
 --infix TEXT 			Infix inserted into the output file names
 --ext,--extension ENUM:{txt,ep,eph,sef,eeg,edf,ris} [eeg]
 				Output file extension
 --nocleanup 			Saving intermediate files
+<a href="command-line-interface.html#verbose">--verbose</a> Excludes: --quiet 	Verbose mode
+<a href="command-line-interface.html#quiet">--quiet</a> Excludes: --verbose 	Quiet mode
+<a href="command-line-interface.html#overwrite">--overwrite</a> Excludes: --no-overwrite
+				Overwrite existing files
+<a href="command-line-interface.html#no-overwrite">--no-overwrite</a> Excludes: --overwrite
+				Do not overwrite existing files
 -h,--help 			This message</pre>
 
 		<p>
