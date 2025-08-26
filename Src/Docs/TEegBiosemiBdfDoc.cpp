@@ -15,7 +15,6 @@ limitations under the License.
 \************************************************************************/
 
 #include    <owl/pch.h>
-
 #include    <owl/file.h>
 
 #include    "MemUtil.h"
@@ -223,17 +222,13 @@ long            NumTimeFrames;
                                         // file header is in fixed-length formatted text
 
 ifs.read ( buff, 8 );                   // read identification
-buff[8] = 0;
+buff[ 8 ]   = EOS;
 
-if ( buff[0] == '0' ) {                 // char '0' for edf
+if ( buff[ 0 ] == '0' )                 // char '0' for edf
                                         // check for next chars...
-    if ( StringStartsWith ( buff + 1, "BIOSEMI", 7 ) )
+    FileType    = StringStartsWith ( buff + 1, "BIOSEMI", 7 ) ? BiosemiEdf : RegularEdf;
 
-        FileType    = BiosemiEdf;
-    else
-        FileType    = RegularEdf;
-    }
-else if ( (uchar) buff[0] == 255 )      // 255 for bdf
+else if ( (uchar) buff[ 0 ] == 255 )    // 255 for bdf
 
     FileType    = BiosemiBdf;
 
@@ -251,19 +246,19 @@ ifs.seekg ( 80 + 80 + 3 * 8 + 44, ios::cur );
 
 
 ifs.read ( buff, 8 );                   // read number of blocks (of fixed size)
-buff[8] = 0;
+buff[ 8 ]   = EOS;
 int                 numblocks       = StringToInteger ( buff ); // !can be -1 if unkown -> need to recompute it later
 
 
 ifs.read ( buff, 8 );                   // block duration in seconds - could be 0 in sampling frequency is unknown
-buff[8] = 0;
+buff[ 8 ]   = EOS;
 int                 blockduration   = StringToInteger ( buff );
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ifs.read ( buff, 4 );                   // number of channels
-buff[4] = 0;
+buff[ 4 ]   = EOS;
 NumElectrodesInFile     = StringToInteger ( buff );
 
                                         // prepare channel sampling array
@@ -273,7 +268,7 @@ ChannelsSampling.Resize ( NumElectrodesInFile );
 ifs.seekg ( ( NumElectrodesInFile - 1 ) * 16, ios::cur );
 ifs.read ( buff, 16 );
 
-buff[16] = 0;
+buff[ 16 ]  = EOS;
 StringCleanup ( buff );
 //if ( JumpToChars ( buff, " " ) )
 //    *JumpToChars ( buff, " " )  = 0;
@@ -299,7 +294,7 @@ MaxSamplesPerBlock  = 0;
 for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
     ifs.read ( buff, 8 );
-    buff[8] = 0;
+    buff[ 8 ]   = EOS;
                                         // get # of samples
     ChannelsSampling[ el ].SamplesPerBlock  = StringToInteger ( buff );
 
@@ -367,7 +362,7 @@ if ( path )
 SetDirty ( false );
 
 
-if ( GetDocPath() ) {
+if ( GetDocPath () ) {
 
     InputStream     = InStream ( ofRead );
 
@@ -378,18 +373,13 @@ if ( GetDocPath() ) {
                                         // file header is in fixed-length formatted text
 
     InputStream->read ( buff, 8 );      // read identification
-    buff[8] = 0;
+    buff[ 8 ]   = EOS;
 
-    if ( buff[0] == '0' ) {             // char '0' for edf
+    if ( buff[ 0 ] == '0' )             // char '0' for edf
                                         // check for next chars...
-        if ( StringStartsWith ( buff + 1, "BIOSEMI", 7 ) )
+        FileType    = StringStartsWith ( buff + 1, "BIOSEMI", 7 ) ? BiosemiEdf : RegularEdf;
 
-            FileType    = BiosemiEdf;
-        else
-            FileType    = RegularEdf;
-        }
-
-    else if ( (uchar) buff[0] == 255 )  // 255 for bdf
+    else if ( (uchar) buff[ 0 ] == 255 )// 255 for bdf
 
         FileType    = BiosemiBdf;
 
@@ -412,7 +402,7 @@ if ( GetDocPath() ) {
 
 
     InputStream->read ( buff, 8 );      // read date
-    buff[8] = 0;
+    buff[ 8 ]   = EOS;
     int                 dd;
     int                 MM;
     int                 yy;
@@ -422,7 +412,7 @@ if ( GetDocPath() ) {
 
 
     InputStream->read ( buff, 8 );      // read time
-    buff[8] = 0;
+    buff[ 8 ]   = EOS;
     int                 hh;
     int                 mm;
     int                 ss;
@@ -434,13 +424,12 @@ if ( GetDocPath() ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     InputStream->read ( buff, 8 );      // read header size
-    buff[8] = 0;
+    buff[ 8 ]   = EOS;
     DataOrg     = StringToInteger ( buff );
 
 
     InputStream->read ( buff, 44 );     // read data version
-    buff[44] = 0;
-//  DBGM ( buff, "44 bytes ID" );
+    buff[ 44 ]  = EOS;
                                         // can be more precise on file type?
     if      ( StringStartsWith ( buff, "EDF+C", 5 ) )
 
@@ -486,19 +475,19 @@ if ( GetDocPath() ) {
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     InputStream->read ( buff, 8 );      // read number of blocks (of fixed size)
-    buff[8] = 0;
+    buff[ 8 ]   = EOS;
     int                 numblocks       = StringToInteger ( buff ); // !can be -1 if unkown -> need to recompute it later
 
 
     InputStream->read ( buff, 8 );      // block duration in seconds - could be 0 in sampling frequency is unknown
-    buff[8] = 0;
+    buff[ 8 ]   = EOS;
     int                 blockduration   = StringToInteger ( buff );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     InputStream->read ( buff, 4 );      // number of channels
-    buff[4] = 0;
+    buff[ 4 ]   = EOS;
     NumElectrodesInFile     = StringToInteger ( buff );
 
                                         // prepare channel sampling array
@@ -513,7 +502,7 @@ if ( GetDocPath() ) {
     InputStream->read ( buff, 16 );
 //    DBGV ( InputStream->tellg (), "Read Status name" );
 
-    buff[16] = 0;
+    buff[ 16 ]  = EOS;
     StringCleanup ( buff );
 //    if ( JumpToChars ( buff, " " ) )
 //        *JumpToChars ( buff, " " )  = 0;
@@ -547,7 +536,7 @@ if ( GetDocPath() ) {
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
         InputStream->read ( buff, 8 );
-        buff[8] = 0;
+        buff[ 8 ]   = EOS;
                                         // get # of samples
         ChannelsSampling[ el ].SamplesPerBlock  = StringToInteger ( buff );
 
@@ -598,7 +587,7 @@ if ( GetDocPath() ) {
 
         InputStream->read ( buff, 16 );
 
-        buff[ 16 ] = 0;
+        buff[ 16 ]  = EOS;
         buff[ ElectrodeNameSize - 1 ] = 0;
 
         if ( el >= NumElectrodes )  continue;
@@ -629,7 +618,7 @@ if ( GetDocPath() ) {
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
         InputStream->read ( buff, 8 );
-        buff[8] = 0;
+        buff[ 8 ]   = EOS;
 
         physmin[ el ]       = StringToDouble ( buff );
         }
@@ -637,7 +626,7 @@ if ( GetDocPath() ) {
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
         InputStream->read ( buff, 8 );
-        buff[8] = 0;
+        buff[ 8 ]   = EOS;
 
         physmax[ el ]       = StringToDouble ( buff );
         }
@@ -645,7 +634,7 @@ if ( GetDocPath() ) {
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
         InputStream->read ( buff, 8 );
-        buff[8] = 0;
+        buff[ 8 ]   = EOS;
 
         digitalmin[ el ]    = StringToDouble ( buff );
         }
@@ -653,7 +642,7 @@ if ( GetDocPath() ) {
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
         InputStream->read ( buff, 8 );
-        buff[8] = 0;
+        buff[ 8 ]   = EOS;
 
         digitalmax[ el ]    = StringToDouble ( buff );
         }
@@ -676,7 +665,7 @@ if ( GetDocPath() ) {
     for ( int el=0; el < NumElectrodesInFile; el++ ) {
 
         InputStream->read ( buff, 80 );
-        buff[ 80 ] = 0;
+        buff[ 80 ]  = EOS;
 
         if      ( StringStartsWith ( buff, "Auxiliar" ) )    AuxTracks.Set   ( el );
         else if ( StringStartsWith ( buff, "Computed" ) )    AuxTracks.Set   ( el );
@@ -821,7 +810,26 @@ return true;
 
 
 //----------------------------------------------------------------------------
-void    TEegBiosemiBdfDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float> &buff, int tfoffset )
+                                        // Converting the 3 bytes to long
+inline INT32    Bdf24To32 ( const UCHAR* triplet )
+{
+INT32           i32         = 0;
+UCHAR*          tobyte      = (UCHAR*) &i32;
+
+*tobyte++   = *triplet++;
+*tobyte++   = *triplet++;
+*tobyte++   = *triplet;                 // stay on last byte (MSB)
+
+if ( *triplet & 0x80 )                  // negative value?
+    *tobyte = 0xFF;                     // report two's complement single bit to the full 4th byte
+
+return  i32;
+}
+
+
+//----------------------------------------------------------------------------
+
+void    TEegBiosemiBdfDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float>& buff, int tfoffset )
 {
 int                 blockmax        = tf2 / MaxSamplesPerBlock;
 double              mspb1           = MaxSamplesPerBlock - 1;   // !converted to double!
@@ -847,13 +855,12 @@ for ( int   block           = tf1 / MaxSamplesPerBlock,
     InputStream->seekg ( DataOrg + block * BlockSize );
 
                                         // within a single block, values for a given track are consecutives
-    TEegBdfChannel*     toch    = ChannelsSampling;
-
-    for ( int el = 0; el < NumElectrodes; el++, toch++ ) {
+    for ( int el = 0; el < NumElectrodes; el++ ) {
                                         // get that channel length
-        int     spb1        = toch->SamplesPerBlock - 1;
+        int     spb1        = ChannelsSampling[ el ].SamplesPerBlock - 1;
+
                                         // get the complete line for this electrode
-        InputStream->read ( (char*) Tracks.GetArray (), toch->ChannelSize );
+        InputStream->read ( (char*) Tracks.GetArray (), ChannelsSampling[ el ].ChannelSize );
 
                                         // taken from EGI MFF, but there seems to be a problem for the first TFs to be read...
 /*                                        // optimal jump to where data are
@@ -871,31 +878,28 @@ for ( int   block           = tf1 / MaxSamplesPerBlock,
 
             for ( int tfi = firsttf, tf0 = 0; tfi <= tf2 && tf0 < numtfinblock; tfi++, tf0++ ) {
 
-                short*  toS     = (short*) Tracks.GetArray () + Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 );
+                short       s       = *( ( (const short*) Tracks.GetArray () ) + Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 ) );
 
-                buff ( el, tfoffset + tf0 )  = *toS * Gains[ el ] + Offsets[ el ];
+                buff ( el, tfoffset + tf0 )  = s * Gains[ el ] + Offsets[ el ];
 
 //              if ( buff ( el, tfoffset + tf0 )    == -MAXSHORT-1 )    buff ( el, tfoffset + tf0 ) = 0;
                 } // for tfi
+
             } // if Edf
 
-        else { // Bdf
+        else { // IsBdf
 
             for ( int tfi = firsttf, tf0 = 0; tfi <= tf2 && tf0 < numtfinblock; tfi++, tf0++ ) {
 
-                UCHAR*  toT     = &Tracks[ 3 * Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 ) ];
-
-                long    l       = *((long *) toT);
-
-                toT    += 2;
-
-                *( ((uchar *) &l) + 3 ) = (uchar) ( ( *toT & 0x80 ) ? 0xFF : 0x00 );
-//              toT++;
+                long        l       = Bdf24To32 ( &Tracks[ 3 * Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 ) ] );
 
                 buff ( el, tfoffset + tf0 )  = l * Gains[ el ] + Offsets[ el ];
                 } // for tfi
+
             } // if Bdf
+
         } // for el
+
     } // for block
 }
 

@@ -63,6 +63,9 @@ inline int      CellSize    ( EdfType t )   { return IsEdf  ( t ) ? 2 : IsBdf ( 
 constexpr int   EdfMaxBlockSize     = 0xF000; // 61440;
 
 
+inline INT32    Bdf24To32   ( const UCHAR* triplet );
+
+
 //----------------------------------------------------------------------------
 
 class   TEegBiosemiBdfDoc   :   public  TTracksDoc
