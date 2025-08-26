@@ -1,4 +1,16 @@
 
+## 2025-08-26
+
+- **Command-Line Interface (CLI)**:
+    - **Tracks Interpolation** can now be called from the command-line
+    - New **--input-dir** and **--output-dir** options
+    - New **--verbose** and **--quiet** flags
+    - New **--overwrite** and **--no-overwrite** flags
+
+## 2025-07-22
+- **Frequency Analysis Toolbox**:
+    - Added the CLI interface for the Frequency Analysis
+
 ## 2025-07-07
 - **Frequency Analysis** toolbox:
     - Added an _Excluding Bad Epochs_ option
