@@ -1907,9 +1907,9 @@ else
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray2<float>& values, const TMarkers* keeplist, AnimationEnum animation )
+void    TExportTracks::Write ( const TArray2<float>& values, const TMarkers* keeplist, ExecFlags execflags )
 {
-TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? (int) (*keeplist) : 0 );
+TSuperGauge         Gauge ( "Exporting Tracks", IsInteractive ( execflags ) ? (int) (*keeplist) : 0 );
 
                                         // compute / update number of time frames - !Note that it could be less than that due to TimeMin/TimeMax test!
 NumTime     = keeplist->GetMarkersTotalLength ();
@@ -1945,10 +1945,10 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray2<float>& values, ExportTracksTransposed transpose, AnimationEnum animation )
+void    TExportTracks::Write ( const TArray2<float>& values, ExportTracksTransposed transpose, ExecFlags execflags )
 {
                                         // TSuperGauge will handle the non-interactive case by itself
-TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+TSuperGauge         Gauge ( "Exporting Tracks", IsInteractive ( execflags ) ? NumTime : 0 );
 
 
 if ( ! DoneBegin )
@@ -2007,9 +2007,9 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TSetArray2<float>& values, AnimationEnum animation )
+void    TExportTracks::Write ( const TSetArray2<float>& values, ExecFlags execflags )
 {
-TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+TSuperGauge         Gauge ( "Exporting Tracks", IsInteractive ( execflags ) ? NumTime : 0 );
 
 
 if ( ! DoneBegin )
@@ -2037,9 +2037,9 @@ End ();
                                         //   Dim 1: Electrodes, downward
                                         //   Dim 2: Time,       rightward
                                         //   Dim 3: Frequency,  upward
-void    TExportTracks::Write ( const TArray3<float>& values, ExportTracksTransposed transpose, AnimationEnum animation )
+void    TExportTracks::Write ( const TArray3<float>& values, ExportTracksTransposed transpose, ExecFlags execflags )
 {
-TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+TSuperGauge         Gauge ( "Exporting Tracks", IsInteractive ( execflags ) ? NumTime : 0 );
 
 
 if ( ! DoneBegin )
@@ -2101,9 +2101,9 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray3<double>& values, AnimationEnum animation )
+void    TExportTracks::Write ( const TArray3<double>& values, ExecFlags execflags )
 {
-TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+TSuperGauge         Gauge ( "Exporting Tracks", IsInteractive ( execflags ) ? NumTime : 0 );
 
 
 if ( ! DoneBegin )
@@ -2127,9 +2127,9 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray2<double>& values, ExportTracksTransposed transpose, AnimationEnum animation )
+void    TExportTracks::Write ( const TArray2<double>& values, ExportTracksTransposed transpose, ExecFlags execflags )
 {
-TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+TSuperGauge         Gauge ( "Exporting Tracks", IsInteractive ( execflags ) ? NumTime : 0 );
 
 
 if ( ! DoneBegin )
@@ -2153,9 +2153,9 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray2<bool>& values, ExportTracksTransposed transpose, AnimationEnum animation )
+void    TExportTracks::Write ( const TArray2<bool>& values, ExportTracksTransposed transpose, ExecFlags execflags )
 {
-TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+TSuperGauge         Gauge ( "Exporting Tracks", IsInteractive ( execflags ) ? NumTime : 0 );
 
 
 if ( ! DoneBegin )
@@ -2179,9 +2179,9 @@ End ();
 
 
 //----------------------------------------------------------------------------
-void    TExportTracks::Write ( const TArray2<long>& values, ExportTracksTransposed transpose, AnimationEnum animation )
+void    TExportTracks::Write ( const TArray2<long>& values, ExportTracksTransposed transpose, ExecFlags execflags )
 {
-TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+TSuperGauge         Gauge ( "Exporting Tracks", IsInteractive ( execflags ) ? NumTime : 0 );
 
 
 if ( ! DoneBegin )
@@ -2206,9 +2206,9 @@ End ();
 
 //----------------------------------------------------------------------------
                                         // This version not fully tested
-void    TExportTracks::Write ( const TMaps& maps, AnimationEnum animation )
+void    TExportTracks::Write ( const TMaps& maps, ExecFlags execflags )
 {
-TSuperGauge         Gauge ( "Exporting Tracks", animation == ShowAnimation ? NumTime : 0 );
+TSuperGauge         Gauge ( "Exporting Tracks", IsInteractive ( execflags ) ? NumTime : 0 );
 
 
 if ( ! DoneBegin )

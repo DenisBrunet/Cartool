@@ -109,16 +109,6 @@ enum            ExportTracksTransposed
                 };
 
 
-enum            AnimationEnum
-                {
-                NoAnimation,
-                ShowAnimation,
-
-                Silently    = NoAnimation,
-                Verbosy     = ShowAnimation,
-                };
-
-
 //----------------------------------------------------------------------------
                                         // EDF file format needs some extra care
 constexpr double    EdfPhysicalMaxDefault   = 100;      // Default physical max
@@ -205,12 +195,12 @@ public:
     void            Write ( const TMap&             map    );                   // write whole map at once
 
                                         // Writing full 2D array at once
-    void            Write ( const TArray2<float>&   values, const TMarkers* keeplist,         AnimationEnum animation = NoAnimation );
-    void            Write ( const TArray2<float>&   values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );
-    void            Write ( const TArray2<double>&  values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );
-    void            Write ( const TArray2<bool>&    values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );
-    void            Write ( const TArray2<long>&    values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );
-    void            Write ( const TMaps& maps,                                                AnimationEnum animation = NoAnimation );
+    void            Write ( const TArray2<float>&   values, const TMarkers* keeplist,         ExecFlags execflags = Silent );
+    void            Write ( const TArray2<float>&   values, ExportTracksTransposed transpose, ExecFlags execflags = Silent );
+    void            Write ( const TArray2<double>&  values, ExportTracksTransposed transpose, ExecFlags execflags = Silent );
+    void            Write ( const TArray2<bool>&    values, ExportTracksTransposed transpose, ExecFlags execflags = Silent );
+    void            Write ( const TArray2<long>&    values, ExportTracksTransposed transpose, ExecFlags execflags = Silent );
+    void            Write ( const TMaps& maps,                                                ExecFlags execflags = Silent );
 
                                         // Writing full EEG / RIS Doc at once
     void            Write (       TTracksDoc*       EEGDoc,     const TMarkers* keeplist = 0 );             // write & crop an EEG Doc
@@ -222,9 +212,9 @@ public:
     void            Write ( std::complex<float> comp,       long t, int e, int f );
     void            Write ( float realpart, float imagpart, long t, int e, int f );
     void            Write ( const TVector<float>        v,  long t,        int f );
-    void            Write ( const TSetArray2<float>&    values,                                   AnimationEnum animation = NoAnimation );  // FREQ only! write a full array at once
-    void            Write ( const TArray3<float>&       values, ExportTracksTransposed transpose, AnimationEnum animation = NoAnimation );
-    void            Write ( const TArray3<double>&      values,                                   AnimationEnum animation = NoAnimation );
+    void            Write ( const TSetArray2<float>&    values,                                   ExecFlags execflags = Silent );   // FREQ only! write a full array at once
+    void            Write ( const TArray3<float>&       values, ExportTracksTransposed transpose, ExecFlags execflags = Silent );
+    void            Write ( const TArray3<double>&      values,                                   ExecFlags execflags = Silent );
 
                                                             // Copying all variables, as well as the ofstream* which is still debatable
     TExportTracks                           ( const TExportTracks &op  );   // copy constructor
