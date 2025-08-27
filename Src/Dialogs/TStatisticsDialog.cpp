@@ -3729,9 +3729,9 @@ for ( int proci = 0; proci < numprocessings; proci++ ) {
         }
 
 
-    if ( expt && expt->IsFileTextual () )   (ofstream&) (*expt)    << StreamFormatLeft;
-    if ( expd && expd->IsFileTextual () )   (ofstream&) (*expd)    << StreamFormatLeft;
-    if ( expp && expp->IsFileTextual () )   (ofstream&) (*expp)    << StreamFormatLeft;
+    if ( expt && expt->IsTextFile () )  (ofstream&) (*expt)    << StreamFormatLeft;
+    if ( expd && expd->IsTextFile () )  (ofstream&) (*expd)    << StreamFormatLeft;
+    if ( expp && expp->IsTextFile () )  (ofstream&) (*expp)    << StreamFormatLeft;
 
 
     for ( int tf0 = 0; tf0 < writenumtf;   tf0++ )

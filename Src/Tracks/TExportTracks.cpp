@@ -42,18 +42,18 @@ namespace crtl {
 
 //----------------------------------------------------------------------------
 
-const ExportTracksTypeSpec  ExportTracksTypes[ NumExportTracksType ] = 
+const ExportTracksTypeSpec  ExportTracksTypes[ NumExportTracksFileType ] = 
                 {
-                {   ExportTracksUnknown,    "",                 false,      false   },
-                {   ExportTracksEp,         FILEEXT_EEGEP,      false,      false   },
-                {   ExportTracksEph,        FILEEXT_EEGEPH,     false,      false   },
-                {   ExportTracksData,       FILEEXT_DATA,       false,      false   },
-                {   ExportTracksSeg,        FILEEXT_SEG,        false,      false   },
-                {   ExportTracksSef,        FILEEXT_EEGSEF,     true,       false   },
-                {   ExportTracksBv,         FILEEXT_EEGBV,      true,       true    },
-                {   ExportTracksEdf,        FILEEXT_EEGEDF,     true,       true    },
-                {   ExportTracksRis,        FILEEXT_RIS,        true,       false   },
-                {   ExportTracksFreq,       FILEEXT_FREQ,       true,       false   },
+                {   ExportTracksUnknown,    "",                 UnknownFileType                                             },
+                {   ExportTracksEp,         FILEEXT_EEGEP,      ExportTracksFileFlags ( TextFile    |   NoNativeTriggers )  },
+                {   ExportTracksEph,        FILEEXT_EEGEPH,     ExportTracksFileFlags ( TextFile    |   NoNativeTriggers )  },
+                {   ExportTracksData,       FILEEXT_DATA,       ExportTracksFileFlags ( TextFile    |   NoNativeTriggers )  },
+                {   ExportTracksSeg,        FILEEXT_SEG,        ExportTracksFileFlags ( TextFile    |   NoNativeTriggers )  },
+                {   ExportTracksSef,        FILEEXT_EEGSEF,     ExportTracksFileFlags ( BinaryFile  |   NoNativeTriggers )  },
+                {   ExportTracksBV,         FILEEXT_EEGBV,      ExportTracksFileFlags ( BinaryFile  |   NativeTriggers   )  },
+                {   ExportTracksEdf,        FILEEXT_EEGEDF,     ExportTracksFileFlags ( BinaryFile  |   NativeTriggers   )  },
+                {   ExportTracksRis,        FILEEXT_RIS,        ExportTracksFileFlags ( BinaryFile  |   NoNativeTriggers )  },
+                {   ExportTracksFreq,       FILEEXT_FREQ,       ExportTracksFileFlags ( BinaryFile  |   NoNativeTriggers )  },
                 };
 
 
@@ -309,7 +309,7 @@ if ( ! DoneBegin )
     return;                             // this should called right after the header has been written
 
 
-if ( IsFileTextual () )
+if ( IsTextFile () )
     return;                             // this is only for binary files
 
 
@@ -322,7 +322,7 @@ size_t              sizetoreset;
 
 if      ( Type == ExportTracksRis   )   sizetoreset     = NumTracks * NumTime * ( IsVector ( AtomTypeUseOriginal ) ? 3 : 1 ) * sizeof ( float );
 else if ( Type == ExportTracksSef   )   sizetoreset     = NumTracks * NumTime * sizeof ( float );
-else if ( Type == ExportTracksBv    )   sizetoreset     = NumTracks * NumTime * sizeof ( float );   // BVTypeFloat32
+else if ( Type == ExportTracksBV    )   sizetoreset     = NumTracks * NumTime * sizeof ( float );   // BVTypeFloat32
                                     //  sizetoreset     = NumTracks * NumTime * sizeof ( short );   // OK only for equal sampling frequencies across channels
 else if ( Type == ExportTracksEdf   )   sizetoreset     = ( ( NumTime + EdfTrailingTF ) / EdfTfPerRec ) * EdfBlockSize;
 else if ( Type == ExportTracksFreq  )   sizetoreset     = NumTracks * NumTime * NumFrequencies * ( IsComplex ( AtomTypeUseOriginal ) ? sizeof ( complex<float> ) : sizeof ( float ) );
@@ -362,21 +362,21 @@ if ( IsOpen () && Type == ExportTracksEdf ) {
 
             for ( long tfi = NumTime; tfi < NumTime + EdfTrailingTF; tfi++ ) {
                                         // 0, after conversion
-                EdfValue    = (short) ( EdfDigitalMin - EdfPhysicalMin * EdfRatio );
+                short   s   = EdfDigitalMin - EdfPhysicalMin * EdfRatio;
 
                 of->seekp ( EDFseekp ( tfi, j ) );
 
-                of->write ( (char *) &EdfValue, sizeof ( EdfValue ) );
+                of->write ( (char *) &s, sizeof ( s ) );
                 }
             }
                                         // and again the status
         for ( long tfi = NumTime; tfi < NumTime + EdfTrailingTF; tfi++ ) {
                                         // resetting trigger line
-            EdfValue    = (short) 0;
+            short   s   = 0;
 
             of->seekp ( EDFseekp ( tfi, NumTracks ) );
 
-            of->write ( (char *) &EdfValue, sizeof ( EdfValue ) );
+            of->write ( (char *) &s, sizeof ( s ) );
             }
         } // EdfTrailingTF
 
@@ -405,7 +405,7 @@ if ( IsOpen () )
                                         // be careful with the opening mode
 ios::openmode       mode        = (ios::openmode )  (                       ios::out            // always output...
 //                                                  | ( reopen          ?   ios::app    : 0 )   // !not working for streams!
-                                                    | ( IsFileBinary () ?   ios::binary : 0 )   // some files are binary
+                                                    | ( IsBinaryFile () ?   ios::binary : 0 )   // some files are binary
                                                     );
 
                                         // massage that file name - avoiding update, though
@@ -438,7 +438,7 @@ of  = 0;
 
 //----------------------------------------------------------------------------
                                         // Deduce output format from provided file name
-ExportTracksType    GetExportType ( const char* file, bool isext )
+ExportTracksFileType    GetExportType ( const char* file, bool isext )
 {
 if ( StringIsEmpty ( file ) )
     return  ExportTracksUnknown;
@@ -463,7 +463,7 @@ else if ( IsStringAmong ( ext, FILEEXT_TXT ) )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Loop through our known output formats
-for ( int i = ExportTracksUnknown + 1; i < NumExportTracksType; i++ )
+for ( int i = ExportTracksUnknown + 1; i < NumExportTracksFileType; i++ )
 
     if ( StringIs ( ExportTracksTypes[ i ].Ext, ext ) ) {
 
@@ -654,25 +654,25 @@ if      ( Type == ExportTracksEdf ) {
             continue;
 
                                         // try to convert the name to integer
-        EdfValue    = (short) StringToInteger ( tomarker->Name );
+        short   s   = StringToInteger ( tomarker->Name );
                                         // if not, try the associated code
-        if ( ! EdfValue )
-            EdfValue    = (short) tomarker->Code;
+        if ( s == 0 )
+            s   = tomarker->Code;
                                         // still not, put a default
-        if ( ! EdfValue )
-            EdfValue    = (short) 1;
+        if ( s == 0 )
+            s   = 1;
 
                                         // write as long as needed
         for ( long tf = tomarker->From; tf <= tomarker->To; tf++ ) {
 
             if ( ofs.IsOpen () )
 
-                ofs.WriteBegin ( EDFseekp ( tf - TimeMin, NumTracks ), EdfValue );
+                ofs.WriteBegin ( EDFseekp ( tf - TimeMin, NumTracks ), s );
 
             else {
                 of->seekp ( EDFseekp ( tf - TimeMin, NumTracks ) );
 
-                of->write ( (char *) &EdfValue, sizeof ( EdfValue ) );
+                of->write ( (char *) &s, sizeof ( s ) );
                 }
             }
         } // for marker
@@ -681,7 +681,7 @@ if      ( Type == ExportTracksEdf ) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // This one can be done at any time, it doesn't need the main file to be open
-else if ( Type == ExportTracksBv ) {
+else if ( Type == ExportTracksBV ) {
 
     TFileName           fileoutmrk;
     TFileName           filenameout;
@@ -939,13 +939,13 @@ else if ( Type == ExportTracksSef ) {
     sefheader.SamplingFrequency = SamplingFrequency;
     sefheader.NumTimeFrames     = NumTime;
 
-    sefheader.Year              = (short) DateTime.GetYear  ();
-    sefheader.Month             = (short) DateTime.GetMonth ();
-    sefheader.Day               = (short) DateTime.GetDay   ();
-    sefheader.Hour              = (short) DateTime.GetHour  ();
-    sefheader.Minute            = (short) DateTime.GetMinute();
-    sefheader.Second            = (short) DateTime.GetSecond();
-    sefheader.Millisecond       = (short) DateTime.GetMillisecond ();
+    sefheader.Year              = DateTime.GetYear        ();
+    sefheader.Month             = DateTime.GetMonth       ();
+    sefheader.Day               = DateTime.GetDay         ();
+    sefheader.Hour              = DateTime.GetHour        ();
+    sefheader.Minute            = DateTime.GetMinute      ();
+    sefheader.Second            = DateTime.GetSecond      ();
+    sefheader.Millisecond       = DateTime.GetMillisecond ();
 
                                         // write header
     of->write ( (char *) (&sefheader), sizeof ( sefheader ) );
@@ -978,7 +978,7 @@ else if ( Type == ExportTracksSef ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-else if ( Type == ExportTracksBv ) {
+else if ( Type == ExportTracksBV ) {
                                         // write the header file
     TFileName           fileouthdr;
     TFileName           fileoutmrk;
@@ -1018,7 +1018,7 @@ else if ( Type == ExportTracksBv ) {
     ofhdr << fastendl;
 
                                         // if binary
-    if ( IsFileBinary () ) {
+    if ( IsBinaryFile () ) {
         ofhdr << "[Binary Infos]" << fastendl;
         ofhdr << "BinaryFormat=IEEE_FLOAT_32" << fastendl;  // only this type for the moment, also possible: INT_16 and UINT_16
         ofhdr << fastendl;
@@ -1149,7 +1149,7 @@ else if ( Type == ExportTracksEdf ) {
 //  EdfNumRecords       = NumTime / EdfTfPerRec;                                // truncated number of records, the easiest way
 
                                         // used later
-    EdfBlockSize        = numelinfile * EdfTfPerRec * sizeof ( EdfValue );
+    EdfBlockSize        = numelinfile * EdfTfPerRec * sizeof ( short );
 
                                         // the remaining part will be padded with 0
     EdfTrailingTF       = EdfNumRecords * EdfTfPerRec - NumTime;
@@ -1360,13 +1360,13 @@ else if ( Type == ExportTracksFreq ) {
     freqheader.SamplingFrequency= SamplingFrequency;
     freqheader.BlockFrequency   = BlockFrequency;
 
-    freqheader.Year             = (short) DateTime.GetYear();
-    freqheader.Month            = (short) DateTime.GetMonth();
-    freqheader.Day              = (short) DateTime.GetDay();
-    freqheader.Hour             = (short) DateTime.GetHour ();
-    freqheader.Minute           = (short) DateTime.GetMinute ();
-    freqheader.Second           = (short) DateTime.GetSecond ();
-    freqheader.Millisecond      = (short) DateTime.GetMillisecond ();
+    freqheader.Year             = DateTime.GetYear        ();
+    freqheader.Month            = DateTime.GetMonth       ();
+    freqheader.Day              = DateTime.GetDay         ();
+    freqheader.Hour             = DateTime.GetHour        ();
+    freqheader.Minute           = DateTime.GetMinute      ();
+    freqheader.Second           = DateTime.GetSecond      ();
+    freqheader.Millisecond      = DateTime.GetMillisecond ();
 
                                         // write header
     of->write ( (char *)(&freqheader), sizeof ( freqheader ) );
@@ -1444,7 +1444,7 @@ if      ( Type == ExportTracksEp
 
 
 else if ( Type == ExportTracksSef
-       || Type == ExportTracksBv  ) {
+       || Type == ExportTracksBV  ) {
 
     of->write ( (char *) &value, sizeof ( float ) );
 
@@ -1476,20 +1476,20 @@ else if ( Type == ExportTracksEdf ) {
                                         // convert value to 16 bits
     value       = EdfDigitalMin + ( value - EdfPhysicalMin ) * EdfRatio;
                                         // do a nice rounding + final safety clipping
-    EdfValue    = (short) Clip ( Round ( value ), SHRT_MIN, SHRT_MAX );
+    short   s   = Clip ( Round ( value ), (int) numeric_limits<short>::min (), (int) numeric_limits<short>::max () );
 
     of->seekp ( EDFseekp ( CurrentPositionTime, CurrentPositionTrack ) );
 
-    of->write ( (char *) &EdfValue, sizeof ( EdfValue ) );
+    of->write ( (char *) &s, sizeof ( s ) );
 
                                         // handle only once the status line
     if ( CurrentPositionTrack == NumTracks - 1 ) {
                                         // reset trigger line to 0
-        EdfValue    = (short) 0;
+        s   = 0;
 
         of->seekp ( EDFseekp ( CurrentPositionTime, NumTracks ) );
 
-        of->write ( (char *) &EdfValue, sizeof ( EdfValue ) );
+        of->write ( (char *) &s, sizeof ( s ) );
         }
 
 
@@ -1593,7 +1593,7 @@ if      ( Type == ExportTracksEp
 
 
 else if ( Type == ExportTracksSef
-       || Type == ExportTracksBv
+       || Type == ExportTracksBV
        || Type == ExportTracksRis ) {
 
 
@@ -1775,7 +1775,7 @@ if      ( Type == ExportTracksEp
 
 
 else if ( Type == ExportTracksSef
-       || Type == ExportTracksBv
+       || Type == ExportTracksBV
        || Type == ExportTracksRis ) {
 
 
@@ -1804,7 +1804,7 @@ if ( ! DoneBegin )
 
                                         // optimized write
 if      ( Type == ExportTracksSef
-       || Type == ExportTracksBv
+       || Type == ExportTracksBV
        || Type == ExportTracksRis /*&& ! IsVector ( AtomTypeUseOriginal )*/   // caller's responsibility to send a multiplexed array
         ) {
 
@@ -1883,7 +1883,7 @@ if ( ! DoneBegin )
 
                                         // optimized write
 if      ( Type == ExportTracksSef
-       || Type == ExportTracksBv
+       || Type == ExportTracksBV
        || Type == ExportTracksRis /*&& ! IsVector ( AtomTypeUseOriginal )*/   // caller's responsibility to send a multiplexed array
 //     && typeid ( TMapAtomType ) == typeid ( float ) 
         ) {
@@ -1970,7 +1970,7 @@ if ( transpose == Transposed ) {        // the "\n" is not handled correctly, ca
 else { // NotTransposed
                                         // optimized write - only for float case
     if      ( Type == ExportTracksSef
-           || Type == ExportTracksBv
+           || Type == ExportTracksBV
            || Type == ExportTracksRis /*&& ! IsVector ( AtomTypeUseOriginal )*/   // caller's responsibility to send a multiplexed array
             ) {
 

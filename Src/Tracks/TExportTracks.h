@@ -39,7 +39,7 @@ template <class TypeD> class        TVector;
 class           TTracksDoc;
 
                                         // Actual output file types - Note that some file extensions can resolve into one of these
-enum            ExportTracksType
+enum            ExportTracksFileType
                 {
                 ExportTracksUnknown,
                 ExportTracksEp,
@@ -47,32 +47,43 @@ enum            ExportTracksType
                 ExportTracksData,
                 ExportTracksSeg,
                 ExportTracksSef,
-                ExportTracksBv,
+                ExportTracksBV,
                 ExportTracksEdf,
                 ExportTracksRis,
                 ExportTracksFreq,
 
-                NumExportTracksType,
-                ExportTracksDefault     = ExportTracksBv
+                NumExportTracksFileType,
+                ExportTracksDefault     = ExportTracksBV
+                };
+
+                                        // Some properties for each file type
+enum            ExportTracksFileFlags
+                {
+                UnknownFileType     = 0x00,
+
+                TextFile            = 0x01,
+                BinaryFile          = 0x02,
+
+                NoNativeTriggers    = 0x10,
+                NativeTriggers      = 0x20,
                 };
 
 
 class           ExportTracksTypeSpec
 {
 public:
-    ExportTracksType        Code;                   // redundant but included for clarity
-    const char              Ext [ 16 ];             // extension
-    bool                    Binary;                 // binary file
-    bool                    NativeTriggers;         // format integrates triggers natively
+    ExportTracksFileType    Code;           // redundant but included for clarity
+    const char              Ext [ 16 ];     // extension
+    ExportTracksFileFlags   Flags;
 };
 
-extern  const ExportTracksTypeSpec  ExportTracksTypes[ NumExportTracksType ];
+extern  const ExportTracksTypeSpec  ExportTracksTypes[ NumExportTracksFileType ];
 
-ExportTracksType    GetExportType ( const char* file, bool isext );
+ExportTracksFileType    GetExportType ( const char* file, bool isext );
 
 
 //----------------------------------------------------------------------------
-
+                                            // To be really versatile, we need to re-route triggers and markers at will
 enum            ExportTriggers
                 {
                 NoTriggersNoMarkers = 0x00,
@@ -80,12 +91,10 @@ enum            ExportTriggers
                 NoTriggers          = 0x00,
                 TriggersAsTriggers  = 0x01,
                 TriggersAsMarkers   = 0x02,
-                TriggersMask        = TriggersAsTriggers | TriggersAsMarkers,
 
                 NoMarkers           = 0x00,
                 MarkersAsMarkers    = 0x10,
                 MarkersAsTriggers   = 0x20,
-                MarkersMask         = MarkersAsMarkers | MarkersAsTriggers,
 
                 AnyTriggers         = TriggersAsTriggers | MarkersAsTriggers,
                 AnyMarkers          = TriggersAsMarkers  | MarkersAsMarkers,
@@ -127,8 +136,8 @@ public:
                    ~TExportTracks ();
 
                                         // most fields have to be filled
-    TFileName           Filename;
-    ExportTracksType    Type;
+    TFileName               Filename;
+    ExportTracksFileType    Type;
 
     int             NumTracks;          // mandatory for EP / EPH / RIS
     long            NumTime;
@@ -163,10 +172,10 @@ public:
                                         // Or use 1 object multiple times, then call in sequence: Reset, Begin, Write, End
     void            Reset               ();
     bool            IsOpen              ()              const   { return  of != 0; }
-    bool            IsFileBinary        ()              const   { return    ExportTracksTypes[ Type ].Binary; }
-    bool            IsFileTextual       ()              const   { return  ! ExportTracksTypes[ Type ].Binary; }
-    bool            HasNativeTriggers   ()              const   { return  ExportTracksTypes[ Type ].NativeTriggers; }
-    const char*     GetExtension        ()              const   { return  ExportTracksTypes[ Type ].Ext; }
+    bool            IsTextFile          ()              const   { return  IsFlag ( ExportTracksTypes[ Type ].Flags, TextFile        );  }
+    bool            IsBinaryFile        ()              const   { return  IsFlag ( ExportTracksTypes[ Type ].Flags, BinaryFile      );  }
+    bool            HasNativeTriggers   ()              const   { return  IsFlag ( ExportTracksTypes[ Type ].Flags, NativeTriggers  );  }
+    const char*     GetExtension        ()              const   { return  ExportTracksTypes[ Type ].Ext;                                }
 
     void            CloneParameters ( const char* ext, const char* file1, const char* file2 = 0 );
                                         // Overriding from TDataFormat - force assignation all the time, as the object could be re-used multiple times
@@ -231,7 +240,7 @@ protected:
     bool            DoneBegin;
     LONGLONG        EndOfHeader;
 
-                                        // Used for convenient Edf generation
+                                        // Used for Edf output
     LONGLONG        EdfDataOrg;
     long            EdfBlockSize;
     long            EdfTrailingTF;
@@ -240,7 +249,6 @@ protected:
     double          EdfPhysicalMin;
     double          EdfDigitalMin;
     double          EdfRatio;
-    short           EdfValue;
 
 
     bool            OpenStream  ( bool reopen = false );        // open stream - Called automatically
