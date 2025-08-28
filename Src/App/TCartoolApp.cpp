@@ -104,7 +104,7 @@ FileRegistrationInfo    ExtReg[ NumExtensionRegistrations ] =
             { FILEEXT_EEGNSRRAW,    "EGI RAW",                          IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },
             { FILEEXT_EEGNSCNT,     "NeuroScan CNT",                    IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },
             { FILEEXT_EEGNSAVG,     "NeuroScan AVG",                    IDI_EEGTEXT,        OpenCartool                 | OpenWordPad                       },
-            { FILEEXT_EEGBDF,       "Biosemi BDF",                      IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },
+            { FILEEXT_EEGBDF,       "BioSemi BDF",                      IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },
             { FILEEXT_EEGEDF,       "EDF",                              IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },
             { FILEEXT_EEGRDF,       "ERPSS RDF",                        IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },
             { FILEEXT_EEGTRC,       "Micromed TRC",                     IDI_EEGBINARY,      OpenCartool                 | OpenWordPad                       },

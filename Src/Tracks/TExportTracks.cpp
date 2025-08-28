@@ -52,6 +52,7 @@ const ExportTracksTypeSpec  ExportTracksTypes[ NumExportTracksFileType ] =
                 {   ExportTracksSef,        FILEEXT_EEGSEF,     ExportTracksFileFlags ( BinaryFile  |   NoNativeTriggers )  },
                 {   ExportTracksBV,         FILEEXT_EEGBV,      ExportTracksFileFlags ( BinaryFile  |   NativeTriggers   )  },
                 {   ExportTracksEdf,        FILEEXT_EEGEDF,     ExportTracksFileFlags ( BinaryFile  |   NativeTriggers   )  },
+                {   ExportTracksBdf,        FILEEXT_EEGBDF,     ExportTracksFileFlags ( BinaryFile  |   NativeTriggers   )  },
                 {   ExportTracksRis,        FILEEXT_RIS,        ExportTracksFileFlags ( BinaryFile  |   NoNativeTriggers )  },
                 {   ExportTracksFreq,       FILEEXT_FREQ,       ExportTracksFileFlags ( BinaryFile  |   NoNativeTriggers )  },
                 };
@@ -324,7 +325,8 @@ if      ( Type == ExportTracksRis   )   sizetoreset     = NumTracks * NumTime * 
 else if ( Type == ExportTracksSef   )   sizetoreset     = NumTracks * NumTime * sizeof ( float );
 else if ( Type == ExportTracksBV    )   sizetoreset     = NumTracks * NumTime * sizeof ( float );   // BVTypeFloat32
                                     //  sizetoreset     = NumTracks * NumTime * sizeof ( short );   // OK only for equal sampling frequencies across channels
-else if ( Type == ExportTracksEdf   )   sizetoreset     = ( ( NumTime + EdfTrailingTF ) / EdfTfPerRec ) * EdfBlockSize;
+else if ( Type == ExportTracksEdf
+       || Type == ExportTracksBdf   )   sizetoreset     = ( ( NumTime + EdfTrailingTF ) / EdfTfPerRec ) * EdfBlockSize;
 else if ( Type == ExportTracksFreq  )   sizetoreset     = NumTracks * NumTime * NumFrequencies * ( IsComplex ( AtomTypeUseOriginal ) ? sizeof ( complex<float> ) : sizeof ( float ) );
 else                                    sizetoreset     = 0;
 
@@ -339,12 +341,37 @@ of->seekp ( EndOfHeader, ios::beg );
 
 
 //----------------------------------------------------------------------------
+                                        // EDF and BDF
+int         TExportTracks::EdfCellSize  ()
+{
+return Type == ExportTracksEdf ? 2 
+     : Type == ExportTracksBdf ? 3 
+     :                           0;
+}
+
                                         // Compute the correct position for EDF files
 LONGLONG    TExportTracks::EDFseekp ( long tf, long e )
 {
 return      EdfDataOrg 
-        + ( tf / EdfTfPerRec ) * EdfBlockSize                               // block position
-        + ( e  * EdfTfPerRec + ( tf % EdfTfPerRec ) ) * sizeof ( short );   // position within block
+        + ( tf / EdfTfPerRec )                        * EdfBlockSize    // block position
+        + ( e  * EdfTfPerRec + ( tf % EdfTfPerRec ) ) * EdfCellSize (); // position within block
+}
+
+                                        // Rounding, clipping to safe limits, then writing either as 2 or 3 bytes signed integers
+void        TExportTracks::EdfWrite ( float value )
+{
+if      ( Type == ExportTracksEdf ) {
+
+    short   s   =                Clip ( Round ( value ),   -0x8000,   0x7FFF );
+                    
+    of->write ( (char *) &s, sizeof ( s ) );
+    }
+else if ( Type == ExportTracksBdf ) {
+
+    INT32   i32 = INT32ToINT24 ( Clip ( Round ( value ), -0x800000, 0x7FFFFF ) );
+
+    of->write ( (char *) &i32, 3 );
+    }
 }
 
 
@@ -352,32 +379,32 @@ return      EdfDataOrg
 void    TExportTracks::End ()
 {
                                         // Some last-minute processing needed for EDF: trailing space, triggers
-if ( IsOpen () && Type == ExportTracksEdf ) {
+if ( IsOpen () 
+  && ( Type == ExportTracksEdf 
+    || Type == ExportTracksBdf ) ) {
                                         // 1) pad the last block with 0
-    if ( EdfTrailingTF ) {
+    if ( EdfTrailingTF > 0 ) {
 
         TIteratorSelectedForward    seli ( SelTracks );
 
         for ( int i = SelTracks.IsNotAllocated () ? 0 : seli(), j = 0; i >= 0 && ( SelTracks.IsAllocated () || i < NumTracks ); i = SelTracks.IsNotAllocated () ? i + 1 : ++seli, j++ ) {
 
             for ( long tfi = NumTime; tfi < NumTime + EdfTrailingTF; tfi++ ) {
-                                        // 0, after conversion
-                short   s   = EdfDigitalMin - EdfPhysicalMin * EdfRatio;
 
                 of->seekp ( EDFseekp ( tfi, j ) );
-
-                of->write ( (char *) &s, sizeof ( s ) );
+                                        // value of 0, after conversion
+                EdfWrite ( EdfDigitalMin - EdfPhysicalMin * EdfRatio );
                 }
             }
+
                                         // and again the status
         for ( long tfi = NumTime; tfi < NumTime + EdfTrailingTF; tfi++ ) {
                                         // resetting trigger line
-            short   s   = 0;
-
             of->seekp ( EDFseekp ( tfi, NumTracks ) );
+                                        // actual 0 in file
+            EdfWrite ( 0 );
+            } // status
 
-            of->write ( (char *) &s, sizeof ( s ) );
-            }
         } // EdfTrailingTF
 
                                         // 2) write the triggers
@@ -446,7 +473,7 @@ if ( StringIsEmpty ( file ) )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-char            ext[ 256 ];
+TFileName       ext;
 
 if ( isext )    StringCopy      ( ext, file );
 else            GetExtension    ( ext, file );
@@ -465,12 +492,9 @@ else if ( IsStringAmong ( ext, FILEEXT_TXT ) )
                                         // Loop through our known output formats
 for ( int i = ExportTracksUnknown + 1; i < NumExportTracksFileType; i++ )
 
-    if ( StringIs ( ExportTracksTypes[ i ].Ext, ext ) ) {
-
-//      DBGV ( i, ExportTracksTypes[ i ].Ext );
+    if ( StringIs ( ExportTracksTypes[ i ].Ext, ext ) )
 
         return  ExportTracksTypes[ i ].Code;
-        }
 
                                         // We don't make any choice at that point
 return  ExportTracksUnknown;
@@ -590,7 +614,7 @@ return  name;
 
 
 //----------------------------------------------------------------------------
-                                        // Possible only on a few types of output files
+                                        // Allowed only on a limited set of output file types
                                         // If not possible, fallback will be to output triggers as markers (maybe add a controlling option on that?)
 void    TExportTracks::WriteTriggers ()
 {
@@ -625,7 +649,8 @@ if ( markertype == MarkerTypeUnknown )
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // Done at the end just before closing file
-if      ( Type == ExportTracksEdf ) {
+if      ( Type == ExportTracksEdf
+       || Type == ExportTracksBdf ) {
                                         // check if file is still open
     bool                isopen          = IsOpen ();
     TFileStream         ofs;
@@ -636,11 +661,9 @@ if      ( Type == ExportTracksEdf ) {
             return;                     // hu-hu...
 
                                         // Here we have the EEG file open
-    const TMarker*      tomarker;
-
     for ( int ti = 0; ti < Markers.GetNumMarkers (); ti++ ) {
 
-        tomarker   = Markers[ ti ];
+        const TMarker*  tomarker   = Markers[ ti ];
 
         if ( ! IsFlag ( tomarker->Type, markertype ) )
             continue;
@@ -654,27 +677,40 @@ if      ( Type == ExportTracksEdf ) {
             continue;
 
                                         // try to convert the name to integer
-        short   s   = StringToInteger ( tomarker->Name );
+        int     status  = StringToInteger ( tomarker->Name );
                                         // if not, try the associated code
-        if ( s == 0 )
-            s   = tomarker->Code;
-                                        // still not, put a default
-        if ( s == 0 )
-            s   = 1;
+        if ( status == 0 )
+            status  = tomarker->Code;
+                                        // still not, set a default value
+        if ( status == 0 )
+            status  = 1;
 
-                                        // write as long as needed
+                                        // write marker as long as needed
         for ( long tf = tomarker->From; tf <= tomarker->To; tf++ ) {
 
-            if ( ofs.IsOpen () )
+            if ( ofs.IsOpen () ) {
 
-                ofs.WriteBegin ( EDFseekp ( tf - TimeMin, NumTracks ), s );
+                if ( Type == ExportTracksEdf ) {
 
-            else {
+                    short   s   = Clip ( status, -0x8000, 0x7FFF );
+                    
+                    ofs.WriteBegin ( EDFseekp ( tf - TimeMin, NumTracks ), s );
+                    }
+                else { // ExportTracksBdf
+
+                    INT32   i32 = INT32ToINT24 ( status );
+
+                    ofs.WriteBegin ( EDFseekp ( tf - TimeMin, NumTracks ), &i32, 3 );
+                    }
+                }
+
+            else { // of stream
+
                 of->seekp ( EDFseekp ( tf - TimeMin, NumTracks ) );
 
-                of->write ( (char *) &s, sizeof ( s ) );
-                }
-            }
+                EdfWrite ( status );
+                } // of stream
+            } // for duration
         } // for marker
     } // EDF
 
@@ -704,11 +740,9 @@ else if ( Type == ExportTracksBV ) {
     ofstream            ofmrk ( TFileName ( fileoutmrk, TFilenameExtendedPath ), ios::app );
 
 
-    const TMarker*      tomarker;
-
     for ( int ti = 0, trigout = 2; ti < Markers.GetNumMarkers (); ti++ ) {
 
-        tomarker   = Markers[ ti ];
+        const TMarker*  tomarker   = Markers[ ti ];
 
         if ( ! IsFlag ( tomarker->Type, markertype ) )
             continue;
@@ -1101,19 +1135,29 @@ else if ( Type == ExportTracksBV ) {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-else if ( Type == ExportTracksEdf ) {
+else if ( Type == ExportTracksEdf
+       || Type == ExportTracksBdf ) {
 
     SetAtomType ( AtomTypeScalar );
                                         // Write fixed size header
                                         // type
     SetString ( buff, ' ', 8 );
-    buff[ 0 ] = '0';
+    if ( Type == ExportTracksEdf ) {
+        buff[ 0 ]   = '0';
+        }
+    else { // ExportTracksBdf
+        buff[ 0 ]   = 255;
+        CopyVirtualMemory   ( buff + 1, "BIOSEMI", 7 );
+        }
     of->write ( buff, 8 );
+
                                         // subject id
     SetString ( buff, ' ', 80 );
     of->write ( buff, 80 );
+
                                         // recording id
     of->write ( buff, 80 );
+
                                         // write date - !only last 2 digits for year!
     sprintf ( buff, "%02d.%02d.%02d", DateTime.GetDay(), DateTime.GetMonth(), ( DateTime.GetYear() % 100 ) );
     of->write ( buff, 8 );
@@ -1130,8 +1174,14 @@ else if ( Type == ExportTracksEdf ) {
     *StringEnd ( buff ) = ' ';
     of->write ( buff, 8 );
 
-                                        // reserved
+                                        // reserved / version data format
     SetString ( buff, ' ', 44 );
+    if ( Type == ExportTracksEdf ) {
+        // Anything here?
+        }
+    else { // ExportTracksBdf
+        CopyVirtualMemory   ( buff, "24BIT", 5 );
+        }
     of->write ( buff, 44 );
 
                                         // sets block size
@@ -1142,14 +1192,14 @@ else if ( Type == ExportTracksEdf ) {
 
 
     int     blockduration   = SamplingFrequency > 0 ? Round ( EdfTfPerRec / SamplingFrequency ) // also rounding the result, if below 1 Hz
-                                                : 0;                                        // unknown - we count on the reading part to handle that...
+                                                    : 0;                                        // unknown - we count on the reading part to handle that...
 
 
     EdfNumRecords       = ( NumTime + EdfTfPerRec - 1 ) / EdfTfPerRec;          // round the number of records, but have to handle trailing data
 //  EdfNumRecords       = NumTime / EdfTfPerRec;                                // truncated number of records, the easiest way
 
                                         // used later
-    EdfBlockSize        = numelinfile * EdfTfPerRec * sizeof ( short );
+    EdfBlockSize        = numelinfile * EdfTfPerRec * EdfCellSize ();
 
                                         // the remaining part will be padded with 0
     EdfTrailingTF       = EdfNumRecords * EdfTfPerRec - NumTime;
@@ -1177,18 +1227,19 @@ else if ( Type == ExportTracksEdf ) {
     sprintf ( buff, "%0ld", EdfNumRecords );
     *StringEnd ( buff ) = ' ';
     of->write ( buff, 8 );
+
                                         // duration of 1 record, in [s] - could be 0 if sampling frequency is unknown
     SetString ( buff, ' ', 8 );
     sprintf ( buff, "%0d", blockduration );
     *StringEnd ( buff ) = ' ';
     of->write ( buff, 8 );
+
                                         // number of electrodes + status line
     SetString ( buff, ' ', 4 );
     sprintf ( buff, "%0d", numelinfile );
-    if ( StringLength ( buff ) < 4 )          // this will allow up to 9999 electrodes, in case we deal with solution points!
+    if ( StringLength ( buff ) < 4 )    // this will allow up to 9999 electrodes, in case we deal with solution points!
         *StringEnd ( buff ) = ' ';
     of->write ( buff, 4 );
-
                                         // Header, variable part
                                         // Electrodes names
     TIteratorSelectedForward    seli ( SelTracks );
@@ -1243,7 +1294,9 @@ else if ( Type == ExportTracksEdf ) {
     double          physicalmax     =   MaxValue > 0 ? MaxValue                 // trust the caller? or force EdfPhysicalMaxMargin scaling factor in?
                                                      : EdfPhysicalMaxDefault;   // don't allow a null value
     double          physicalmin     = - physicalmax;
-    int             digitalmax      =   EdfDigitalMax;  // what is actually written in file, as if coming from an ADC converter - !also added some margin in case of real-time output!
+
+    int             digitalmax      = Type == ExportTracksEdf ? EdfDigitalMax   // what is actually written in file, as if coming from an ADC converter - !also added some margin in case of real-time output!
+                                                              : BdfDigitalMax;
     int             digitalmin      = - digitalmax;
 
                                         // convert values to strings
@@ -1472,24 +1525,19 @@ else if ( Type == ExportTracksRis ) {
     }
 
 
-else if ( Type == ExportTracksEdf ) {
-                                        // convert value to 16 bits
-    value       = EdfDigitalMin + ( value - EdfPhysicalMin ) * EdfRatio;
-                                        // do a nice rounding + final safety clipping
-    short   s   = Clip ( Round ( value ), (int) numeric_limits<short>::min (), (int) numeric_limits<short>::max () );
+else if ( Type == ExportTracksEdf
+       || Type == ExportTracksBdf ) {
+    
+    of->seekp   ( EDFseekp ( CurrentPositionTime, CurrentPositionTrack ) );
 
-    of->seekp ( EDFseekp ( CurrentPositionTime, CurrentPositionTrack ) );
-
-    of->write ( (char *) &s, sizeof ( s ) );
+    EdfWrite    ( EdfDigitalMin + ( value - EdfPhysicalMin ) * EdfRatio );
 
                                         // handle only once the status line
     if ( CurrentPositionTrack == NumTracks - 1 ) {
                                         // reset trigger line to 0
-        s   = 0;
-
-        of->seekp ( EDFseekp ( CurrentPositionTime, NumTracks ) );
-
-        of->write ( (char *) &s, sizeof ( s ) );
+        of->seekp   ( EDFseekp ( CurrentPositionTime, NumTracks ) );
+    
+        EdfWrite    ( 0 );
         }
 
 

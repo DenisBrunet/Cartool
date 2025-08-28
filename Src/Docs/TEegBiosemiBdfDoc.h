@@ -63,7 +63,36 @@ inline int      CellSize    ( EdfType t )   { return IsEdf  ( t ) ? 2 : IsBdf ( 
 constexpr int   EdfMaxBlockSize     = 0xF000; // 61440;
 
 
-inline INT32    Bdf24To32   ( const UCHAR* triplet );
+//----------------------------------------------------------------------------
+                                        // Converting the 3 bytes to long
+inline INT32    INT24ToINT32 ( const UCHAR* triplet )
+{
+INT32               i32             = 0;
+UCHAR*              tobyte          = (UCHAR*) &i32;
+
+*tobyte++   = *triplet++;
+*tobyte++   = *triplet++;
+*tobyte++   = *triplet;                 // stay on last byte (MSB)
+
+if ( *triplet & 0x80 )                  // negative value?
+    *tobyte = 0xFF;                     // report two's complement single bit to the full 4th byte
+
+return  i32;
+}
+
+                                        // Use only the first 3 bytes of the returned value
+inline INT32    INT32ToINT24 ( INT32 i32 )
+{
+                                        // Clipping to a 3-bytes integer range
+Clipped ( i32, -0x800000, 0x7FFFFF );
+
+if ( i32 < 0 ) {                        // negative value?
+    *( (uchar*) &i32 + 2 ) |= 0x80;     // report the sign bit from 4th to 3rd byte
+//  *( (uchar*) &i32 + 3 )  = 0x00;     // we could also clear the 4th byte(?)
+    }
+
+return  i32;
+}
 
 
 //----------------------------------------------------------------------------

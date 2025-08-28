@@ -45,7 +45,7 @@ NumElectrodesInFile = 0;
 }
 
 
-bool	TEegBiosemiBdfDoc::Close()
+bool	TEegBiosemiBdfDoc::Close ()
 {
 FileStream.Close ();
 
@@ -365,8 +365,10 @@ if ( GetDocPath () ) {
     if ( InputStream.fail () ) 
         return  false;
 
-    char        buff[ 256 ];
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                         // file header is in fixed-length formatted text
+    char        buff[ 256 ];
 
     InputStream.read ( buff, 8 );      // read identification
     buff[ 8 ]   = EOS;
@@ -390,9 +392,16 @@ if ( GetDocPath () ) {
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // skip subject and recording infos
-    InputStream.seekg ( 80 + 80, ios::cur );
+                                        // skip subject infos
+    InputStream.seekg ( 80, ios::cur );
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                        // skip recording infos
+    InputStream.seekg ( 80, ios::cur );
+
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     InputStream.read ( buff, 8 );      // read date
     buff[ 8 ]   = EOS;
@@ -403,6 +412,8 @@ if ( GetDocPath () ) {
     if ( yy < 91 )  yy = 2000 + yy;     // !format exist since 1991!
     else            yy = 1900 + yy;
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     InputStream.read ( buff, 8 );      // read time
     buff[ 8 ]   = EOS;
@@ -420,6 +431,8 @@ if ( GetDocPath () ) {
     buff[ 8 ]   = EOS;
     DataOrg     = StringToInteger ( buff );
 
+
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     InputStream.read ( buff, 44 );     // read data version
     buff[ 44 ]  = EOS;
@@ -541,9 +554,9 @@ if ( GetDocPath () ) {
         }
 
                                         // compute the total block size: sum of all electrodes lines
-    BlockSize               = 0;
+    BlockSize           = 0;
     for ( int el = 0; el < NumElectrodesInFile; el++ )
-        BlockSize          += ChannelsSampling[ el ].ChannelSize;
+        BlockSize      += ChannelsSampling[ el ].ChannelSize;
 
                                         // here we have the max sampling frequency
     SamplingFrequency   = blockduration <= 0 ? 0 : MaxSamplesPerBlock / (double) blockduration;
@@ -556,7 +569,7 @@ if ( GetDocPath () ) {
     NumTimeFrames       = MaxSamplesPerBlock * numblocks;
 
                                         // truncate end of file if null data
-    NumTimeFrames  -= GetTrailingSize ( GetDocPath (), BlockSize, MaxSamplesPerBlock, FileType, ChannelsSampling );
+    NumTimeFrames      -= GetTrailingSize ( GetDocPath (), BlockSize, MaxSamplesPerBlock, FileType, ChannelsSampling );
 
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -685,11 +698,6 @@ return true;
                                         // This method will scan the last block of data and detect the size of padded physical (near) 0's
 int     TEegBiosemiBdfDoc::GetTrailingSize ()
 {
-                                        // !does not expect nor search for clipped end of file for BDF files!
-if ( IsBdf ( FileType ) )
-    return  0;
-
-
 TTracks<float>      eegbuff ( NumElectrodes, MaxSamplesPerBlock );
 
                                         // NumTimeFrames might already have been truncated, so find it back if needed
@@ -713,46 +721,50 @@ return  0;
                                         // This method will scan the last block of data and detect the size of constant digital values
 int     TEegBiosemiBdfDoc::GetTrailingSize ( const char* file, int BlockSize, int MaxSamplesPerBlock, EdfType FileType, const TArray1<TEegBdfChannel>& ChannelsSampling )
 {
-                                        // !does not expect nor search for clipped end of file for BDF files!
-if ( IsBdf ( FileType ) )
-    return  0;
-
-
+TArray1<UCHAR>      Block ( BlockSize );
 int                 NumElectrodes   = ChannelsSampling.GetDim (); // number of electrodes in file
 int                 cellsize        = CellSize ( FileType );
-TArray1<UCHAR>      Tracks ( MaxSamplesPerBlock * cellsize );
-short*              todata          = (short*) Tracks.GetArray ();
+int                 eloffset        = 0;
 
-                                        // this should be a proble, even if file is already open somewhere else
+                                        // this shouldn't be a problem, even if file is already open somewhere else
 ifstream            ifs ( TFileName ( file, TFilenameExtendedPath ), ios::binary );
 
 if ( ifs.fail () )
     return  0;
                                         // this is the trick: we know data is written as entire blocks, so we can simply read backward the last block
-ifs.seekg ( -BlockSize, ios::end );
+ifs.seekg   ( -BlockSize, ios::end );
+
+ifs.read    ( (char*) Block.GetArray (), BlockSize );
+
+                                                          // !tfel in the range of the current channel!
+auto    getvalue    = [ &FileType, &Block, &eloffset ] ( int tfel ) -> INT32
+{
+return  IsEdf ( FileType )  ? *(const short*) &Block[ eloffset + 2 * tfel ]
+                            : INT24ToINT32  ( &Block[ eloffset + 3 * tfel ] );
+};
 
 
 for ( int e = 0; e < NumElectrodes; e++ ) {
-                                        // read current channel data
-    ifs.read ( (char*) Tracks.GetArray (), ChannelsSampling[ e ].ChannelSize );
 
     int         samplesperblock     = ChannelsSampling[ e ].SamplesPerBlock;
 
-                                        // early test
-    if ( todata[ samplesperblock - 2 ] != todata[ samplesperblock - 1 ] )
+    INT32       lastdata            = getvalue ( samplesperblock - 1 );
+                                        // early, trivial test on the last 2 values
+    if ( getvalue ( samplesperblock - 2 ) != lastdata )
         return  0;
 
-
-    short       lastdata            = todata[ samplesperblock - 1 ];
-
+                                        // scanning backward
     for ( int tf0 = samplesperblock - 2; tf0 > 0; tf0-- ) {
 
-        //double  v       = *toS * Gains[ e ] + Offsets[ e ];
+        //double  v       = getvalue ( tf0 ) * Gains[ e ] + Offsets[ e ];
                                         // this is another trick: we simply look for EQUAL DIGITAL VALUES, NOT any physical close-to-0 ones
-        if ( todata[ tf0 ] != lastdata )
+        if ( getvalue ( tf0 ) != lastdata )
                                         // !formula does not work if tf0 == samplesperblock - 2, hence the early test!
-            return  Round ( ( ( samplesperblock - tf0 - 1 ) / (double) ( MaxSamplesPerBlock - 1 ) ) * ( samplesperblock - 1 ) );
+            return  Round ( ( samplesperblock - tf0 - 1 ) / (double) ( samplesperblock - 1 ) * ( MaxSamplesPerBlock - 1 ) );
         }
+
+                                        // pointing to next electrode line
+    eloffset   += ChannelsSampling[ e ].ChannelSize;
     }
 
                                         // error, just ignore
@@ -794,30 +806,10 @@ return true;
 
 
 //----------------------------------------------------------------------------
-                                        // Converting the 3 bytes to long
-inline INT32    Bdf24To32 ( const UCHAR* triplet )
-{
-INT32           i32         = 0;
-UCHAR*          tobyte      = (UCHAR*) &i32;
-
-*tobyte++   = *triplet++;
-*tobyte++   = *triplet++;
-*tobyte++   = *triplet;                 // stay on last byte (MSB)
-
-if ( *triplet & 0x80 )                  // negative value?
-    *tobyte = 0xFF;                     // report two's complement single bit to the full 4th byte
-
-return  i32;
-}
-
-
-//----------------------------------------------------------------------------
 
 void    TEegBiosemiBdfDoc::ReadRawTracks ( long tf1, long tf2, TArray2<float>& buff, int tfoffset )
 {
 int                 blockmax        = tf2 / MaxSamplesPerBlock;
-double              mspb1           = MaxSamplesPerBlock - 1;   // !converted to double!
-
 
                                         // loop through all blocks
 for ( int   block           = tf1 / MaxSamplesPerBlock,
@@ -831,7 +823,7 @@ for ( int   block           = tf1 / MaxSamplesPerBlock,
 
                                         // max number of tf to be read in this block
     int     numtfinblock    = MaxSamplesPerBlock - firsttfinblock;
-                                        // offset of electrode within big block
+                                        // offset of electrode within big block - !in bytes!
     int     eloffset        = 0;
 
                                         // reading a whole block at once
@@ -841,14 +833,16 @@ for ( int   block           = tf1 / MaxSamplesPerBlock,
 
                                         // within a single block, values for a given track are consecutives
     for ( int el = 0; el < NumElectrodes; el++ ) {
-                                        // get that channel length
-        int     spb1        = ChannelsSampling[ el ].SamplesPerBlock - 1;
+                                        // current channel resampling
+        double  samplesratio    = ( ChannelsSampling[ el ].SamplesPerBlock - 1 ) / (double) ( MaxSamplesPerBlock - 1 );
 
         if ( IsEdf ( FileType ) ) {
 
             for ( int tfi = firsttf, tf0 = 0; tfi <= tf2 && tf0 < numtfinblock; tfi++, tf0++ ) {
 
-                short       s       = *( (const short*) ( Block.GetArray () + eloffset ) + Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 ) );
+                int         tfel    = Round ( ( firsttfinblock + tf0 ) * samplesratio );
+
+                short       s       = *(const short*) &Block[ eloffset + 2 * tfel ];
 
                 buff ( el, tfoffset + tf0 )  = s * Gains[ el ] + Offsets[ el ];
 
@@ -861,9 +855,11 @@ for ( int   block           = tf1 / MaxSamplesPerBlock,
 
             for ( int tfi = firsttf, tf0 = 0; tfi <= tf2 && tf0 < numtfinblock; tfi++, tf0++ ) {
 
-                long        l       = Bdf24To32 ( &Block[ 3 * Round ( ( ( firsttfinblock + tf0 ) / mspb1 ) * spb1 ) ] + eloffset );
+                int         tfel    = Round ( ( firsttfinblock + tf0 ) * samplesratio );
 
-                buff ( el, tfoffset + tf0 )  = l * Gains[ el ] + Offsets[ el ];
+                INT32       i32     = INT24ToINT32 ( &Block[ eloffset + 3 * tfel ] );
+
+                buff ( el, tfoffset + tf0 )  = i32 * Gains[ el ] + Offsets[ el ];
                 } // for tfi
 
             } // if Bdf

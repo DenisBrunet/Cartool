@@ -49,6 +49,7 @@ enum            ExportTracksFileType
                 ExportTracksSef,
                 ExportTracksBV,
                 ExportTracksEdf,
+                ExportTracksBdf,
                 ExportTracksRis,
                 ExportTracksFreq,
 
@@ -114,6 +115,7 @@ enum            ExportTracksTransposed
 constexpr double    EdfPhysicalMaxDefault   = 100;      // Default physical max
 constexpr double    EdfPhysicalMaxMargin    = 5;        // Boosting the max value with this factor, as the given max might be approximate
 constexpr int       EdfDigitalMax           = 0x77FF;   // Digital max value, a little less than 0x7FFF / SHRT_MAX
+constexpr int       BdfDigitalMax           = 0x77FFFF; // Digital max value, a little less than 0x7FFFFF
 
 
 //----------------------------------------------------------------------------
@@ -249,8 +251,9 @@ protected:
     const char*     GetFrequencyName ( int i, char *name, int maxlen );
 
     void            WriteBrainVisionMarkerFile ( const char* fileoutmrk, const char* filenameout );
-    inline LONGLONG EDFseekp ( long tf, long e );
-
+    int             EdfCellSize ();
+    LONGLONG        EDFseekp    ( long tf, long e );
+    void            EdfWrite    ( float value );
 };
 
 

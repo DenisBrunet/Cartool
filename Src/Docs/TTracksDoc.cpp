@@ -923,7 +923,7 @@ if ( ! needshighpass ) {
     }
 
 
-                                        // 3) Biosemi always need a high pass filter
+                                        // 3) BioSemi always need a high pass filter
 //if ( ! needshighpass ) {
 //    needshighpass   = IsExtension ( FILEEXT_EEGBDF );
 

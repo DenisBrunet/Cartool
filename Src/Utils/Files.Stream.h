@@ -123,6 +123,7 @@ public:
 
     inline bool     Write           ( LPCVOID data, DWORD sizeofdata );
     inline bool     Write           ( const LARGE_INTEGER& pos, DWORD where, LPCVOID data, DWORD sizeofdata );
+    inline bool     WriteBegin      ( LONGLONG pos, LPCVOID data, DWORD sizeofdata );
     inline bool     WriteBegin      ( LONGLONG pos, short data );
 
 
@@ -532,8 +533,13 @@ bool        writeok     = seekok && Write ( data, sizeofdata );
 return  writeok;
 }
 
-
                                         // Special cases
+bool    TFileStream::WriteBegin ( LONGLONG pos, LPCVOID data, DWORD sizeofdata )
+{
+return  Write ( LONGLONG_to_LARGE_INTEGER ( pos ), FILE_BEGIN, data, sizeofdata );
+}
+
+
 bool    TFileStream::WriteBegin ( LONGLONG pos, short data )
 {
 return  Write ( LONGLONG_to_LARGE_INTEGER ( pos ), FILE_BEGIN, &data, sizeof ( short ) );

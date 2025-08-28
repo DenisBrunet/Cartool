@@ -55,9 +55,9 @@ const char  PredefLandmarksStrings[ NumLandmarksSystems ][ NumLandmarksInfo ][ 3
                 {   "E14 E15 E21",  "E39",      "REF",      "E115",     "E75",          "EGI Hydrocel 129"  },  // !For 128 electrodes, NOT 256!
                 {   "E14 E15 E21",  "E39",      "Cz",       "E115",     "E75",          "EGI Hydrocel 129"  },  // !For 128 electrodes, NOT 256!
                 {   "104",          "38",       "96",       "70",       "7",            "Neuroscan"         },
-                {   "C17",          "D23",      "A1",       "B26",      "A23",          "Biosemi 128"       },
-                {   "D8",           "E9",       "A1",       "B32",      "A23",          "Biosemi 192"       },
-                {   "140",          "82",       "1",        "203",      "19",           "Biosemi 256"       },
+                {   "C17",          "D23",      "A1",       "B26",      "A23",          "BioSemi 128"       },
+                {   "D8",           "E9",       "A1",       "B32",      "A23",          "BioSemi 192"       },
+                {   "140",          "82",       "1",        "203",      "19",           "BioSemi 256"       },
             };
 
 
@@ -571,7 +571,7 @@ else if (   DocFromXyz->GetElectrodeName ( "E39"  )
     }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Biosemi 256
+                                        // BioSemi 256
 else if (   DocFromXyz->GetElectrodeName ( "140" )
        &&   DocFromXyz->GetElectrodeName ( "82"  )
        &&   DocFromXyz->GetElectrodeName ( "1"   )
@@ -589,7 +589,7 @@ else if (   DocFromXyz->GetElectrodeName ( "140" )
     }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Biosemi 192 tested before Biosemi 128
+                                        // BioSemi 192 tested before Biosemi 128
 else if (   DocFromXyz->GetElectrodeName ( "D8"   )
        &&   DocFromXyz->GetElectrodeName ( "E9"   )
        &&   DocFromXyz->GetElectrodeName ( "A1"   )
@@ -607,7 +607,7 @@ else if (   DocFromXyz->GetElectrodeName ( "D8"   )
     }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Biosemi 128
+                                        // BioSemi 128
 else if (   DocFromXyz->GetElectrodeName ( "C17"  )
        &&   DocFromXyz->GetElectrodeName ( "D23"  )
        &&   DocFromXyz->GetElectrodeName ( "A1"   )
@@ -747,7 +747,7 @@ else if (   DocToXyz->GetElectrodeName ( "E39"  )
     }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Biosemi 256
+                                        // BioSemi 256
 else if (   DocToXyz->GetElectrodeName ( "140" )
        &&   DocToXyz->GetElectrodeName ( "82"  )
        &&   DocToXyz->GetElectrodeName ( "1"   )
@@ -765,7 +765,7 @@ else if (   DocToXyz->GetElectrodeName ( "140" )
     }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Biosemi 192 tested before Biosemi 128
+                                        // BioSemi 192 tested before Biosemi 128
 else if (   DocToXyz->GetElectrodeName ( "D8"   )
        &&   DocToXyz->GetElectrodeName ( "E9"   )
        &&   DocToXyz->GetElectrodeName ( "A1"   )
@@ -783,7 +783,7 @@ else if (   DocToXyz->GetElectrodeName ( "D8"   )
     }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                        // Biosemi 128
+                                        // BioSemi 128
 else if (   DocToXyz->GetElectrodeName ( "C17"  )
        &&   DocToXyz->GetElectrodeName ( "D23"  )
        &&   DocToXyz->GetElectrodeName ( "A1"   )

@@ -44,12 +44,13 @@ namespace crtl {
 
 const char SavingEegFileTypePreset[ NumSavingEegFileTypes ][ 64 ] =
                                         {
-                                        "Text    file ." FILEEXT_TXT "    (plain matrix)",
-                                        "Text    file ." FILEEXT_EEGEP "    (plain matrix)",
-                                        "Text    file ." FILEEXT_EEGEPH "  (header + plain matrix)",
+                                        "Text    file ." FILEEXT_TXT "   (plain text matrix)",
+                                        "Text    file ." FILEEXT_EEGEP "    (plain text matrix)",
+                                        "Text    file ." FILEEXT_EEGEPH "  (header + plain text matrix)",
                                         "Binary file ." FILEEXT_EEGSEF "   (Simple EEG Format)",
-                                        "Binary file ." FILEEXT_EEGBV "  (BrainVision format)",
-                                        "Binary file ." FILEEXT_EEGEDF "   (avoid this if possible)",
+                                        "Binary file ." FILEEXT_EEGBV "  (BrainVision)",
+                                        "Binary file ." FILEEXT_EEGEDF "   (European Data Format)",
+                                        "Binary file ." FILEEXT_EEGBDF "   (BioSemi)",
                                         "Binary file ." FILEEXT_RIS "    (Results of Inverse Solutions)",
                                         };
 
@@ -61,6 +62,7 @@ const char SavingEegFileExtPreset[ NumSavingEegFileTypes ][ 8 ] =
                                         FILEEXT_EEGSEF,
                                         FILEEXT_EEGBV,
                                         FILEEXT_EEGEDF,
+                                        FILEEXT_EEGBDF,
                                         FILEEXT_RIS,
                                         };
 

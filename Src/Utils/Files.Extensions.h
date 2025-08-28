@@ -393,7 +393,7 @@ limitations under the License.
 
 #define     AllCartoolNewFileExt    FILEEXT_LM " " FILEEXT_IS
 #define     AllCartoolSaveFileExt   FILEEXT_LM " " AllSolPointsFilesExt " " AllCoordinatesFilesExt " " AllMriFilesExt " " AllInverseFilesExt
-#define     AllCommitTracksExt      FILEEXT_EEGEP " " FILEEXT_EEGEPH " " FILEEXT_EEGSEF " " FILEEXT_EEGBV " " FILEEXT_EEGEDF " " FILEEXT_RIS
+#define     AllCommitTracksExt      FILEEXT_EEGEP " " FILEEXT_EEGEPH " " FILEEXT_EEGSEF " " FILEEXT_EEGBV " " FILEEXT_EEGEDF " " FILEEXT_EEGBDF " " FILEEXT_RIS
 
                                         // File extensions that are associated with others, like pairs of files
 #define     TracksBuddyExt          FILEEXT_BVEEG " " FILEEXT_BVDAT " " FILEEXT_BVHDR " " FILEEXT_BVMRK " " FILEEXT_MRK

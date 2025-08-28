@@ -147,6 +147,7 @@ enum                SavingEegFileTypes
                     PresetFileTypeSef,
                     PresetFileTypeBV,
                     PresetFileTypeEdf,
+                    PresetFileTypeBdf,
                     PresetFileTypeRis,
 
                     NumSavingEegFileTypes,
