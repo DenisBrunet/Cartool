@@ -1,3 +1,8 @@
+## Maintenance Status
+This project is currently not actively maintained due to the author's health-related sick leave.  
+Updates will resume when possible.
+##
+
 # ![CartoolGitHubLogo5](https://github.com/DenisBrunet/Cartool/assets/145106558/60ad91e9-8f4b-4765-a68b-b6b4c7c14af3)
 **Cartool** is a software primarily designed as a scientific tool tailored for the **visualization and analysis of EEG data**, encompassing full recordings, resting states, evoked responses, intra-cranial activity, and more.
 
